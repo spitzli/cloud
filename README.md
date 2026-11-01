@@ -1,6 +1,6 @@
-# Webdock
+# Spitzli Cloud
 
-Webdock is a plugin-based admin platform with a small identity, project registry and capability core. Hosting, databases, Mail and storage are optional product modules; new installations enable no products by default. Billing is not included. It is maintained by Spitzli Development. Customer websites keep their own repositories and content stores.
+Spitzli Cloud is a plugin-based admin platform with a small identity, project registry and capability core. Hosting, databases, Mail and storage are optional product modules; new installations enable no products by default. Billing is not included. It is maintained by Spitzli Development. Customer websites keep their own repositories and content stores.
 
 ## Self-hosting
 
@@ -17,7 +17,7 @@ The alpha includes signed checksums, an image manifest and native execution evid
 
 ## License
 
-Original Webdock code is **AGPL-3.0-only**. Separate written commercial or special licenses may be available from Spitzli Development for code it owns or may sublicense. See [LICENSE](LICENSE), [alternative licensing](COMMERCIAL-LICENSING.md) and [contribution requirements](CONTRIBUTING.md). Third-party components keep their own licenses.
+Original Spitzli Cloud code is **AGPL-3.0-only**. Separate written commercial or special licenses may be available from Spitzli Development for code it owns or may sublicense. See [LICENSE](LICENSE), [alternative licensing](COMMERCIAL-LICENSING.md) and [contribution requirements](CONTRIBUTING.md). Third-party components keep their own licenses.
 
 ## Repository structure
 
