@@ -1,0 +1,17 @@
+{
+  "unitProperties": [
+    "CPUQuotaPerSecUSec=4s",
+    "MemoryMax=8589934592",
+    "TasksMax=1024",
+    "ActiveState=active"
+  ],
+  "qualifiedRootlessClientHashVerified": true,
+  "socketUID": 1001,
+  "fullProcessSandbox": true,
+  "snapshotter": "overlayfs",
+  "applicationBuildStarted": false,
+  "state": "READY_FOR_SOURCE",
+  "frozenSourceArchiveReceived": false,
+  "githubWorkflowTriggered": false,
+  "productionAccessPerformed": false
+}

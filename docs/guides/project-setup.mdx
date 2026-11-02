@@ -1,43 +1,39 @@
 ---
 title: "Set up an application"
-description: "Connect a Git repository or container image, choose services and review your deployment."
+description: "Create an application from an immutable image and check its deployment."
 ---
 
-<Note>Guided setup requires enabled project setup, assigned container hosting and compatible cluster/build capacity. Missing prerequisites appear in the review. Existing Vercel projects keep their current deployment workflow.</Note>
+Select the intended project in [Console](https://console.spitzli.cloud). Application creation requires enabled Hosting, an assigned execution target and sufficient configured resources. A project record alone does not provide those resources.
 
-## Create a saved setup
+## Create from an image
 
-Open your project and select **Add application**. Saving a draft does not start a container or order a database. You can continue the draft later from the project overview.
+Where **New application** is available:
 
-1. **Source:** Connect an authorized GitHub repository, enter a supported immutable image reference with `@sha256:`, or choose the HTTP healthcheck template.
-2. **Application:** Set the name, HTTP port, resource limits, healthcheck and environment variables. Saved values are encrypted and hidden; their names remain visible.
-3. **Services:** Connect an existing PostgreSQL database or select an available database offer. Optionally connect native Mail sending with a verified sender domain.
-4. **Review:** Check the source, resources and services. Explicitly accept each new database offer before selecting **Deploy application**.
+1. Enter an **Application name** and immutable **Image digest**, such as `registry.example/app@sha256:…`.
+2. Review **Startup arguments**, **Application port** and **Health path**. The process must listen on the configured port and answer the healthcheck.
+3. Set CPU, memory, temporary storage and replicas within the available allowance.
+4. Set **Persistent storage** if the application needs durable files. The fixed-volume model supports one replica.
+5. Add private environment values and select **Request application**.
+6. Open the application and its operation. Wait for the rollout result and check the expected endpoint.
 
-The review identifies missing permissions, hosting assignments and technical prerequisites. Operators can assign hosting where authorized. Existing services retain their prices and limits; new database offers show price, currency, terms and backup status. Expired offers require a new review and acceptance.
+Where public address allocation is enabled, **Public website or app** requests an HTTPS address under the configured domain. Default Spitzli Cloud project addresses use `spitzli.site`. Use the exact address shown by Console; creating a project does not reserve a hostname. Your own domain is configured separately.
 
-## Connect Git or a container image
+## Use a Git repository
 
-Each application has its own repository, branch and root directory. Multiple applications can use different directories of one repository. The build expects a `Dockerfile` in the selected directory. Review pins a specific commit; repository inspection does not run scripts.
+Git self-service is not generally available. Repository authorization, project registry bindings and build execution must be explicitly activated before this route can work. The presence of a Builds screen does not open public build access.
 
-Isolated builds require configured build capacity and registry storage. GitHub Actions requires an existing workflow and the displayed artifact contract; Webdock does not install that workflow automatically. Releases requiring approval link to the relevant deployment.
+For an activated project, follow [Git builds and deployments](/guides/git-deployments). A repository URL alone does not authorize fetching or running its code.
 
-Arbitrary container tags and private registry credentials are not imported automatically. Use an immutable digest supported by the cluster. This setup supports applications with HTTP healthchecks; background-only workers require a separate runtime configuration.
+## Connect services
 
-## Connect a database or Mail
+For a new PostgreSQL database, create it in your own Neon account and use [Connections](/guides/byok-neon) to inspect its project. Neon inventory is not an automatic SQL or runtime binding. Set the appropriate database connection details only through your application's private configuration.
 
-PostgreSQL must be ready in the same project and cluster. Webdock supplies application credentials and a mounted CA for a TLS-verified connection, normally through `DATABASE_URL`. Manage this value through the service connection. Choose distinct service variable names and remove conflicting manual values before deployment.
+Existing service bindings and guided setup are available only where explicitly enabled. Use ready services and resolve conflicting manual environment values before deploying. Disconnecting a service does not delete its data.
 
-For Mail, select a ready native connection and verified sender domain. Webdock creates a sending-only key restricted to that domain. The default variables are `WEBDOCK_MAIL_API_KEY` and `WEBDOCK_MAIL_API_URL`. The cluster needs a verified network route to the Mail API.
+Mail requires a ready sending connection and verified domain. Incoming mailboxes and forwarding are activated separately; see [Mail](/guides/mail).
 
-<Warning>Mail sending does not activate incoming email. Enable mailboxes or forwarding separately in the Mail area. Disabling incoming email retains its data; deletion is a separate operation.</Warning>
+## Recover an interrupted setup
 
-## Follow progress and recover
+Open the existing application or setup record before submitting another request. Use the displayed retry for the same uncertain request, or ask the operator to reconcile its result. Existing resources remain allocated after a partial failure.
 
-Progress separates preparation, service connections, build, release and observed readiness. If a step fails, already-created resources remain available. Resolve the reported issue and select **Retry setup**. An expired session requires signing in again. Uncertain deployment outcomes may require operator reconciliation.
-
-A terminal Git release failure can rebuild the reviewed commit while retaining its application and services. A blocked draft with conflicting manual environment variables offers **Correct draft variables**. Save the correction before retrying.
-
-Use **Services** to inspect connections, rotate Mail keys or disconnect services. Disconnecting does not delete a database. Changes to running applications become connected only after the rollout is observed. After provisioning, use application and service settings for configuration changes.
-
-See [application lifecycle](/guides/applications), [databases](/guides/databases), [Mail](/guides/mail) and [persistent storage](/guides/storage).
+Continue with [application management](/guides/applications) and [persistent storage](/guides/storage).

@@ -353,9 +353,10 @@ async fn standalone_private_rpc_scoped_https_redaction_and_revocation() {
         .unwrap()
         .into_inner();
     let panel: Value = serde_json::from_slice(&panel.output_json).unwrap();
-    assert_eq!(panel["blocks"][0]["kind"], "table");
-    assert_eq!(panel["blocks"][1]["kind"], "form");
-    assert_eq!(panel["blocks"][2]["kind"], "actions");
+    // This full output is also parsed by the Console consumer contract test.
+    let console_panel: Value =
+        serde_json::from_str(include_str!("fixtures/servers-panel.json")).unwrap();
+    assert_eq!(panel, console_panel);
     drop(client);
     let pid = rustix::process::Pid::from_raw(i32::try_from(child.id().unwrap()).unwrap()).unwrap();
     rustix::process::kill_process(pid, rustix::process::Signal::INT).unwrap();

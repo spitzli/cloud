@@ -14,8 +14,8 @@ export const authPanel =
   "[&_.editor]:mt-5 [&_.text-button]:mx-auto [&_.text-button]:mt-3 [&_.text-button]:text-xs";
 export function Brand({ product, href }: { product?: string | undefined; href?: string | undefined }) {
   const content = <>
-    <span className={brandMark} aria-hidden>w</span>
-    <span className="max-[420px]:sr-only">webdock</span>
+    <span className={brandMark} aria-hidden><img src="/spitzli-logo.png" alt="" width={24} height={24} /></span>
+    <span className="max-[420px]:sr-only">Spitzli Cloud</span>
     {product ? <span className="ml-1 border-l border-outline pl-3 text-[13px] font-normal tracking-normal text-muted max-[700px]:hidden">{product}</span> : null}
   </>;
   const style = "flex shrink-0 items-center gap-2 text-xl font-semibold tracking-tight text-foreground no-underline hover:no-underline max-[700px]:text-lg";
@@ -33,7 +33,7 @@ export function AuthHeader({ product, href }: { product?: string | undefined; hr
 /** Network failures surface as browser-specific text; never show that raw to people. */
 export function describeFailure(error: Error): string {
   if (error instanceof ApiError) return error.status >= 500 ? "The service is not responding right now." : error.message;
-  if (error instanceof TypeError) return "Webdock could not be reached. Check your connection and try again.";
+  if (error instanceof TypeError) return "Spitzli Cloud could not be reached. Check your connection and try again.";
   return error.message;
 }
 export function PageProgress({ product, children, action }: { product?: string | undefined; children: ReactNode; action?: ReactNode }) {

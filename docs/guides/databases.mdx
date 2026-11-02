@@ -1,20 +1,30 @@
 ---
-title: "Managed PostgreSQL"
-description: "Review PostgreSQL availability, service models and connection requirements."
+title: "Databases"
+description: "Connect your own Neon account or manage an existing database service."
 ---
 
-<Info>Managed PostgreSQL requires operator enablement and capacity. The documented initial rollout is a pilot, not a general-availability promise. Use the offers and status shown for your workspace.</Info>
+For a new database, create a project in your own Neon account, then connect it through your workspace's **Connections** page. Follow [Connect Neon](/guides/byok-neon).
 
-The initial managed database model uses PostgreSQL 18 with transaction pooling. Shared customers have separate databases and roles. Dedicated services receive their own installation.
+<Note>New shared and self-hosted PostgreSQL orders are retired in the current service. Existing database access, credentials, backups and maintenance remain available where configured.</Note>
 
-## Order and readiness
+## Connect a new Neon project
 
-Select a project, review the offered resources and terms, then accept explicitly. Provisioning starts after reservation and availability checks. A created order is not a ready database; wait for verified readiness before connecting applications.
+Create the project and configure its database in Neon. Neon bills your account and applies its provider limits. In Console, connecting an API key lets an authorized workspace administrator view the projects available to that key.
 
-## Connections and lifecycle
+This connection currently provides connection management and read-only project inventory. Database provisioning, SQL access and automatic application bindings through this connection are separate capabilities and are not enabled by saving a key. Configure application connection details through the supported application environment workflow; keep them server-side and verify TLS.
 
-Use the connection details provided for your database. Keep credentials server-side and verify TLS. Transaction pooling does not preserve a client session on one connection across transactions; choose an appropriate connection mode for tools needing session state.
+## Open an existing database
 
-Project creation and sign-in do not automatically create a database. Pausing does not necessarily end billing or release retained storage. Review the accepted terms before cancellation.
+1. Select the correct workspace and open **Databases**.
+2. Choose a database you are permitted to access.
+3. Open its database browser and wait for connection and schema discovery.
 
-<Warning>The initial service is single-primary. Automatic backups, point-in-time recovery, backup-based cloning and automatic failover are not included in the documented initial implementation. Retained volumes are not backups.</Warning>
+If startup fails or times out, use the displayed retry action. Repeated failure can require an operator to check the gateway, database state or access grant. Do not change credentials or delete the service to clear an uncertain state.
+
+## Existing service maintenance
+
+Use the service's available controls for credentials, backups and supported lifecycle changes. Check its reported state before connecting an application. Transaction-pool connections do not keep one server connection across transactions; use a suitable connection mode for tools that require session state.
+
+Backup availability is service-specific. Review the displayed backup configuration and recovery window. A retained volume is not a backup, and stopping a database does not necessarily release storage or end its charges.
+
+<Warning>Deletion and permanent data purge are separate actions. Export required data and review the exact deletion preview before confirming a destructive operation.</Warning>

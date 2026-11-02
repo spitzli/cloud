@@ -1,6 +1,7 @@
 mod completed;
 mod lifecycle;
 mod metrics;
+pub mod public_routing;
 use k8s_openapi::api::{
     apps::v1::Deployment,
     core::v1::{Namespace, Node, Pod, Secret},
@@ -14,13 +15,30 @@ pub use lifecycle::verify_retirement_manifest;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::{
-    io::Write,
+    io::{Read, Write},
     path::{Path, PathBuf},
     process::Stdio,
     sync::Arc,
     time::Duration,
 };
 use webdock_supervisor::*;
+
+fn helm_upgrade_options(action: Action) -> Vec<&'static str> {
+    let mut options = vec![
+        "--wait",
+        "--timeout",
+        "120s",
+        "--history-max",
+        "10",
+        "--skip-crds",
+        "--no-hooks",
+    ];
+    if action == Action::Apply {
+        // Restore failed live changes before Helm next diffs against its last deployed release.
+        options.push("--atomic");
+    }
+    options
+}
 
 pub fn helm_values(spec: &RuntimeSpec, generation: u64, stop: bool) -> Result<Value> {
     spec.validate()?;
@@ -36,7 +54,7 @@ pub fn helm_values(spec: &RuntimeSpec, generation: u64, stop: bool) -> Result<Va
     }
     let limits = json!({"cpu":format!("{}m",spec.cpu_millicores),"memory":spec.memory_bytes.to_string(),"ephemeral-storage":spec.ephemeral_bytes.to_string()});
     Ok(
-        json!({"name":spec.name(),"labels":spec.labels(),"revision":spec.revision,"generation":generation,"specHash":digest(spec)?,"image":spec.image,"arguments":spec.arguments,"replicas":if stop{0}else{spec.replicas},"port":spec.port,"healthPath":spec.health_path,"ephemeralBytes":spec.ephemeral_bytes,"resources":{"requests":limits,"limits":limits},"volume":{"enabled":spec.volume.is_some(),"sizeBytes":spec.volume.as_ref().and_then(|v|v.size_bytes).unwrap_or(0)},"plugin":spec.plugin,"mounts":spec.mounts.iter().map(|m|json!({"name":m.name,"secretName":crate::policy::RuntimePolicy::kubernetes_secret_name(spec,&m.name)})).collect::<Vec<_>>()}),
+        json!({"name":spec.name(),"labels":spec.labels(),"revision":spec.revision,"generation":generation,"specHash":digest(spec)?,"image":spec.image,"arguments":spec.arguments,"replicas":if stop{0}else{spec.replicas},"port":spec.port,"healthPath":spec.health_path,"healthHost":spec.health_host,"ephemeralBytes":spec.ephemeral_bytes,"resources":{"requests":limits,"limits":limits},"volume":{"enabled":spec.volume.is_some(),"sizeBytes":spec.volume.as_ref().and_then(|v|v.size_bytes).unwrap_or(0)},"plugin":spec.plugin,"mounts":spec.mounts.iter().map(|m|json!({"name":m.name,"secretName":crate::policy::RuntimePolicy::kubernetes_secret_name(spec,&m.name)})).collect::<Vec<_>>()}),
     )
 }
 #[derive(Clone)]
@@ -132,6 +150,114 @@ pub struct KubernetesAdapter {
     chart: ApprovedChart,
     policy: Arc<crate::policy::RuntimePolicy>,
     storage: Option<(crate::storage::StorageClient, crate::storage::StorageConfig)>,
+    storage_node: Option<String>,
+    public_routing: Option<crate::config::PublicRoutingConfig>,
+}
+
+fn local_storage_identity() -> Result<(String, String)> {
+    fn read(path: &str) -> Result<String> {
+        let mut value = String::new();
+        std::fs::File::open(path)
+            .and_then(|file| file.take(65).read_to_string(&mut value))
+            .map_err(|_| ExecutionError::Ownership)?;
+        Ok(value.trim().to_owned())
+    }
+    Ok((
+        read("/etc/machine-id")?,
+        read("/sys/class/dmi/id/product_uuid")?,
+    ))
+}
+
+fn verify_storage_node(
+    nodes: &[Node],
+    continued: bool,
+    helper_node: &str,
+    selected: Option<&str>,
+    machine_id: Option<&str>,
+    local_system_uuid: Option<&str>,
+) -> Result<()> {
+    if continued || nodes.is_empty() || nodes.len() > 200 {
+        return Err(ExecutionError::Ownership);
+    }
+    let Some(selected) = selected else {
+        return if nodes.len() == 1 && nodes[0].metadata.name.as_deref() == Some(helper_node) {
+            Ok(())
+        } else {
+            Err(ExecutionError::Unsupported(
+                "single-node local storage binding",
+            ))
+        };
+    };
+    let machine = machine_id.ok_or(ExecutionError::Ownership)?;
+    if selected != helper_node
+        || machine.len() != 32
+        || !machine
+            .bytes()
+            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+        || machine.bytes().all(|b| b == b'0')
+    {
+        return Err(ExecutionError::Ownership);
+    }
+    let matches = nodes
+        .iter()
+        .filter(|node| node.metadata.name.as_deref() == Some(selected))
+        .collect::<Vec<_>>();
+    if matches.len() != 1 {
+        return Err(ExecutionError::Ownership);
+    }
+    let local_system_uuid =
+        uuid::Uuid::parse_str(local_system_uuid.ok_or(ExecutionError::Ownership)?)
+            .map_err(|_| ExecutionError::Ownership)?;
+    if local_system_uuid.is_nil() {
+        return Err(ExecutionError::Ownership);
+    }
+    let mut systems = std::collections::BTreeSet::new();
+    for candidate in nodes {
+        let system = candidate
+            .status
+            .as_ref()
+            .and_then(|status| status.node_info.as_ref())
+            .ok_or(ExecutionError::Ownership)?;
+        let system =
+            uuid::Uuid::parse_str(&system.system_uuid).map_err(|_| ExecutionError::Ownership)?;
+        if system.is_nil()
+            || !systems.insert(system)
+            || (candidate.metadata.name.as_deref() == Some(selected) && system != local_system_uuid)
+        {
+            return Err(ExecutionError::Ownership);
+        }
+    }
+    let node = matches[0];
+    // Existing retained PVs use this label; refuse an ambiguous or different affinity target.
+    if node
+        .metadata
+        .labels
+        .as_ref()
+        .and_then(|labels| labels.get("kubernetes.io/hostname"))
+        .map(String::as_str)
+        != Some(selected)
+        || nodes
+            .iter()
+            .filter(|node| {
+                node.metadata
+                    .labels
+                    .as_ref()
+                    .and_then(|labels| labels.get("kubernetes.io/hostname"))
+                    .map(String::as_str)
+                    == Some(selected)
+            })
+            .count()
+            != 1
+        || node
+            .status
+            .as_ref()
+            .and_then(|status| status.node_info.as_ref())
+            .map(|info| info.machine_id.as_str())
+            != Some(machine)
+    {
+        return Err(ExecutionError::Ownership);
+    }
+    Ok(())
 }
 impl KubernetesAdapter {
     pub(crate) fn database_client(&self) -> Client {
@@ -207,13 +333,19 @@ impl KubernetesAdapter {
             chart,
             policy: Arc::new(crate::policy::RuntimePolicy::default()),
             storage: None,
+            storage_node: None,
+            public_routing: None,
         })
     }
     pub fn with_policy(mut self, policy: Arc<crate::policy::RuntimePolicy>) -> Self {
         self.policy = policy;
         self
     }
-    pub async fn with_storage_socket(mut self, socket: PathBuf) -> Result<Self> {
+    pub async fn with_storage_socket(self, socket: PathBuf) -> Result<Self> {
+        self.with_storage_node(socket, None).await
+    }
+    /// One operator-selected local pool; this does not allocate across cluster nodes.
+    pub async fn with_storage_node(mut self, socket: PathBuf, node: Option<&str>) -> Result<Self> {
         let helper = crate::storage::StorageClient::new(socket);
         let config = helper.information().await?;
         let nodes: Api<k8s_openapi::api::core::v1::Node> = Api::all(self.client.clone());
@@ -221,14 +353,15 @@ impl KubernetesAdapter {
             .list(&ListParams::default().limit(201))
             .await
             .map_err(|_| ExecutionError::Runtime)?;
-        if nodes.metadata.continue_.is_some_and(|s| !s.is_empty())
-            || nodes.items.len() != 1
-            || nodes.items[0].metadata.name.as_deref() != Some(config.node.as_str())
-        {
-            return Err(ExecutionError::Unsupported(
-                "single-node local storage binding",
-            ));
-        }
+        let identity = node.map(|_| local_storage_identity()).transpose()?;
+        verify_storage_node(
+            &nodes.items,
+            nodes.metadata.continue_.is_some_and(|s| !s.is_empty()),
+            &config.node,
+            node,
+            identity.as_ref().map(|value| value.0.as_str()),
+            identity.as_ref().map(|value| value.1.as_str()),
+        )?;
         let capacity = helper
             .capability(std::slice::from_ref(&config.node))
             .await?;
@@ -236,6 +369,7 @@ impl KubernetesAdapter {
             return Err(ExecutionError::Runtime);
         }
         self.storage = Some((helper, config));
+        self.storage_node = node.map(str::to_owned);
         Ok(self)
     }
     async fn checked_registry_secret(
@@ -480,15 +614,7 @@ impl KubernetesAdapter {
             .arg(&self.context)
             .arg("--values")
             .arg(file.path())
-            .args([
-                "--wait",
-                "--timeout",
-                "120s",
-                "--history-max",
-                "10",
-                "--skip-crds",
-                "--no-hooks",
-            ])
+            .args(helm_upgrade_options(command.action))
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(Stdio::null())
@@ -532,6 +658,24 @@ impl RuntimeAdapter for KubernetesAdapter {
         {
             return Err(ExecutionError::Runtime);
         }
+        let storage_binding_valid = self.storage.as_ref().is_some_and(|(_, config)| {
+            let identity = self
+                .storage_node
+                .as_ref()
+                .map(|_| local_storage_identity())
+                .transpose();
+            identity.is_ok_and(|identity| {
+                verify_storage_node(
+                    &list.items,
+                    false,
+                    &config.node,
+                    self.storage_node.as_deref(),
+                    identity.as_ref().map(|value| value.0.as_str()),
+                    identity.as_ref().map(|value| value.1.as_str()),
+                )
+                .is_ok()
+            })
+        });
         let mut nodes = Vec::new();
         let mut versions = std::collections::BTreeSet::new();
         for node in list.items {
@@ -587,14 +731,16 @@ impl RuntimeAdapter for KubernetesAdapter {
         }
         let storage = if let Some((helper, config)) = &self.storage {
             let actual = helper.information().await;
-            let capability = if actual.as_ref().is_ok_and(|actual| actual == config) {
-                helper
-                    .capability(&nodes.iter().map(|n| n.id.clone()).collect::<Vec<_>>())
-                    .await
-                    .ok()
-            } else {
-                None
-            };
+            let capability =
+                if storage_binding_valid && actual.as_ref().is_ok_and(|actual| actual == config) {
+                    helper
+                        .capability(std::slice::from_ref(&config.node))
+                        .await
+                        .ok()
+                        .filter(|v| v.ready && v.capacity_bytes == config.capacity_bytes)
+                } else {
+                    None
+                };
             Some(StorageCapacity {
                 capacity_bytes: capability
                     .as_ref()
@@ -610,6 +756,7 @@ impl RuntimeAdapter for KubernetesAdapter {
             environment: true,
             registry_version: self.registry_ready().await.unwrap_or(false).then_some(1),
             service_bindings_version: Some(1),
+            public_routing_version: self.public_routing_ready().await.then_some(1),
             version,
             nodes,
             runtime_kind: "kubernetes".into(),
@@ -637,14 +784,35 @@ impl RuntimeAdapter for KubernetesAdapter {
             } else {
                 crate::registry::PullSelection::Unconfigured
             };
-            return crate::legacy::reconcile_with_registry(
+            // Refuse unsupported routing before changing any customer workload.
+            if spec
+                .hosting_binding
+                .as_ref()
+                .is_some_and(|b| b.public_route.is_some())
+            {
+                public_routing::ingress(
+                    spec,
+                    self.public_routing
+                        .as_ref()
+                        .ok_or(ExecutionError::Unsupported("qualified public routing"))?,
+                )?;
+                if command.action == Action::Apply && !self.public_routing_ready().await {
+                    return Err(ExecutionError::Unsupported(
+                        "ready public ingress and ACME issuer",
+                    ));
+                }
+            }
+            let mut observed = crate::legacy::reconcile_with_registry(
                 self.client.clone(),
                 command,
                 guard,
                 self.storage.as_ref(),
                 registry,
             )
-            .await;
+            .await?;
+            self.reconcile_public_route(command, guard, &mut observed)
+                .await?;
+            return Ok(observed);
         }
         if command.action == Action::Retire {
             return self.retire_release(command, guard).await;
@@ -691,7 +859,7 @@ impl RuntimeAdapter for KubernetesAdapter {
         command.validate()?;
         self.validate(&command.spec)?;
         guard.check_for(command).await?;
-        let observed = match command.action {
+        let mut observed = match command.action {
             Action::Retire | Action::PurgeStorage if command.spec.hosting_binding.is_some() => {
                 crate::legacy::inspect_completed(
                     self.client.clone(),
@@ -709,6 +877,8 @@ impl RuntimeAdapter for KubernetesAdapter {
                 self.inspect(&command.spec).await?
             }
         };
+        self.observe_public_https(command, guard, &mut observed, false)
+            .await?;
         guard.check_for(command).await?;
         Ok(observed)
     }
@@ -896,4 +1066,337 @@ fn parse_quantity_scaled(value: &str, scale: u64) -> Result<u64> {
     result
         .to_u64()
         .ok_or(ExecutionError::Invalid("Kubernetes quantity range"))
+}
+
+#[cfg(test)]
+mod helm_rollback_tests {
+    use super::*;
+
+    #[test]
+    fn real_helm_failed_port_upgrade_restores_previous_release_without_duplicate_ports() {
+        use webdock_core::id::RecordId;
+        let root = tempfile::tempdir().unwrap();
+        let mut spec = RuntimeSpec {
+            version: 1,
+            installation: "owned".into(),
+            project_id: RecordId::parse("1").unwrap(),
+            resource_id: RecordId::parse("1").unwrap(),
+            revision: 1,
+            image: format!("docker.io/library/busybox@sha256:{}", "a".repeat(64)),
+            arguments: vec!["httpd".into(), "-f".into(), "-p".into(), "8080".into()],
+            cpu_millicores: 100,
+            memory_bytes: 32 * 1024 * 1024,
+            ephemeral_bytes: 16 * 1024 * 1024,
+            replicas: 1,
+            port: 8080,
+            health_path: Some("/".into()),
+            health_host: None,
+            volume: Some(RetainedVolume {
+                mount_path: "/data".into(),
+                size_bytes: Some(64 * 1024 * 1024),
+            }),
+            plugin: None,
+            mounts: Vec::new(),
+            hosting_binding: None,
+            hosted_access: None,
+        };
+        let mut files = Vec::new();
+        for (revision, port) in [(1, 8080), (2, 8081), (3, 8080)] {
+            spec.revision = revision;
+            spec.port = port;
+            spec.arguments[3] = port.to_string();
+            spec.image = format!(
+                "docker.io/library/busybox@sha256:{}",
+                if revision == 2 { "b" } else { "a" }.repeat(64)
+            );
+            let mut values = helm_values(&spec, revision, false).unwrap();
+            values["imagePullSecrets"] = json!([]);
+            let path = root.path().join(format!("{revision}.json"));
+            std::fs::write(&path, serde_json::to_vec(&values).unwrap()).unwrap();
+            files.push(path);
+        }
+        let repo = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let output = std::process::Command::new("python3")
+            .arg(repo.join("tools/tests/helm-port-rollback.py"))
+            .arg(repo.join("deploy/helm/webdock-plugin"))
+            .args(files)
+            .arg(serde_json::to_string(&helm_upgrade_options(Action::Apply)).unwrap())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    #[test]
+    fn failed_stop_cannot_use_atomic_rollback_to_restore_running_replicas() {
+        assert!(!helm_upgrade_options(Action::Stop).contains(&"--atomic"));
+    }
+}
+
+#[cfg(test)]
+mod storage_binding_tests {
+    use super::*;
+
+    fn node(name: &str, machine: Option<&str>) -> Node {
+        let mut value = json!({"metadata":{"name":name,"labels":{"kubernetes.io/hostname":name}}});
+        if let Some(machine) = machine {
+            value["status"] = json!({"nodeInfo":{"architecture":"amd64","bootID":"boot","containerRuntimeVersion":"containerd","kernelVersion":"linux","kubeProxyVersion":"","kubeletVersion":"v1.32","machineID":machine,"operatingSystem":"linux","osImage":"linux","systemUUID":match name { "storage" => SYSTEM, "third" => THIRD, _ => FIRST }}});
+        }
+        serde_json::from_value(value).unwrap()
+    }
+    const MACHINE: &str = "11111111111111111111111111111111";
+    const SYSTEM: &str = "123e4567-e89b-42d3-a456-426614174000";
+    const FIRST: &str = "123e4567-e89b-42d3-a456-426614174001";
+    const THIRD: &str = "123e4567-e89b-42d3-a456-426614174002";
+
+    #[test]
+    fn old_config_still_requires_exactly_one_helper_named_node() {
+        let one = [node("storage", None)];
+        assert!(verify_storage_node(&one, false, "storage", None, None, None).is_ok());
+        assert!(verify_storage_node(&one, false, "foreign", None, None, None).is_err());
+        assert!(verify_storage_node(&[], false, "storage", None, None, None).is_err());
+        assert!(verify_storage_node(&one, true, "storage", None, None, None).is_err());
+        let many = [node("storage", None), node("other", None)];
+        assert!(verify_storage_node(&many, false, "storage", None, None, None).is_err());
+    }
+
+    #[test]
+    fn cloned_machine_ids_cannot_authorize_duplicated_system_uuid() {
+        let mut nodes = [
+            node("first", Some(MACHINE)),
+            node("storage", Some(MACHINE)),
+            node("third", Some(MACHINE)),
+        ];
+        assert!(
+            verify_storage_node(
+                &nodes,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_ok()
+        );
+        for system in [
+            None,
+            Some(""),
+            Some("invalid"),
+            Some("00000000-0000-0000-0000-000000000000"),
+            Some(FIRST),
+        ] {
+            assert!(
+                verify_storage_node(
+                    &nodes,
+                    false,
+                    "storage",
+                    Some("storage"),
+                    Some(MACHINE),
+                    system
+                )
+                .is_err()
+            );
+        }
+        // The cloned machine ID matches every host; a different physical host must still fail.
+        nodes[1]
+            .status
+            .as_mut()
+            .unwrap()
+            .node_info
+            .as_mut()
+            .unwrap()
+            .system_uuid = "123e4567-e89b-42d3-a456-426614174003".into();
+        assert!(
+            verify_storage_node(
+                &nodes,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_err()
+        );
+        nodes[1] = node("storage", Some(MACHINE));
+        nodes[0]
+            .status
+            .as_mut()
+            .unwrap()
+            .node_info
+            .as_mut()
+            .unwrap()
+            .system_uuid = "123e4567-e89b-42d3-a456-426614174000".into();
+        nodes[1]
+            .status
+            .as_mut()
+            .unwrap()
+            .node_info
+            .as_mut()
+            .unwrap()
+            .system_uuid = "123e4567-e89b-42d3-a456-426614174000".into();
+        assert!(
+            verify_storage_node(
+                &nodes,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_err()
+        );
+        nodes[0] = node("first", Some(MACHINE));
+        nodes[2]
+            .status
+            .as_mut()
+            .unwrap()
+            .node_info
+            .as_mut()
+            .unwrap()
+            .system_uuid
+            .clear();
+        assert!(
+            verify_storage_node(
+                &nodes,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn selected_local_storage_accepts_only_matching_helper_node_and_local_machine() {
+        let nodes = [
+            node("first", Some("other")),
+            node("storage", Some(MACHINE)),
+            node("third", Some("other")),
+        ];
+        assert!(
+            verify_storage_node(
+                &nodes,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_ok()
+        );
+        for (helper, selected, machine) in [
+            ("first", "storage", Some(MACHINE)),
+            ("storage", "missing", Some(MACHINE)),
+            ("storage", "storage", None),
+            ("storage", "storage", Some("")),
+            (
+                "storage",
+                "storage",
+                Some("00000000000000000000000000000000"),
+            ),
+            (
+                "storage",
+                "storage",
+                Some("22222222222222222222222222222222"),
+            ),
+        ] {
+            assert!(
+                verify_storage_node(&nodes, false, helper, Some(selected), machine, Some(SYSTEM))
+                    .is_err()
+            );
+        }
+        assert!(
+            verify_storage_node(
+                &nodes,
+                true,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_err()
+        );
+        let mut invalid = nodes.to_vec();
+        invalid[1].status = None;
+        assert!(
+            verify_storage_node(
+                &invalid,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_err()
+        );
+        invalid[1] = node("storage", Some(MACHINE));
+        invalid[1]
+            .metadata
+            .labels
+            .as_mut()
+            .unwrap()
+            .insert("kubernetes.io/hostname".into(), "linux-hostname".into());
+        assert!(
+            verify_storage_node(
+                &invalid,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_err()
+        );
+        let mut ambiguous_affinity = nodes.to_vec();
+        ambiguous_affinity[0]
+            .metadata
+            .labels
+            .as_mut()
+            .unwrap()
+            .insert("kubernetes.io/hostname".into(), "storage".into());
+        assert!(
+            verify_storage_node(
+                &ambiguous_affinity,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_err()
+        );
+        let duplicate = [
+            node("storage", Some(MACHINE)),
+            node("storage", Some(MACHINE)),
+        ];
+        assert!(
+            verify_storage_node(
+                &duplicate,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_err()
+        );
+        let too_many = vec![node("storage", Some(MACHINE)); 201];
+        assert!(
+            verify_storage_node(
+                &too_many,
+                false,
+                "storage",
+                Some("storage"),
+                Some(MACHINE),
+                Some(SYSTEM)
+            )
+            .is_err()
+        );
+    }
 }

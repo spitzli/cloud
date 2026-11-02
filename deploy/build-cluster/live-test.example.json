@@ -1,0 +1,13 @@
+{
+  "buildKubeconfig": "/private/build.kubeconfig",
+  "kubeContext": "owned-build-live",
+  "apiEndpoint": "https://127.0.0.1:16443",
+  "buildCaSHA256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "runnerImage": "registry.invalid/owned/runner@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "s3Config": "/private/owned-staging-s3.json",
+  "credentials": "/private/owned-staging-credentials.json",
+  "caFile": "/private/owned-staging-public-ca.crt",
+  "transferPolicy": "/private/owned-transfer-policy.json",
+  "evidenceDirectory": "/private/owned-build-evidence",
+  "timeoutSeconds": 1500
+}

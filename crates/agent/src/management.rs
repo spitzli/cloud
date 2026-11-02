@@ -463,6 +463,8 @@ impl Daemon {
                 chart,
                 chart_sha256,
                 storage_socket,
+                storage_node,
+                public_routing,
             } => {
                 let adapter = crate::kubernetes::KubernetesAdapter::connect(
                     kubeconfig.clone(),
@@ -473,6 +475,7 @@ impl Daemon {
                 )
                 .await?
                 .with_policy(policy.clone());
+                let adapter = adapter.with_public_routing(public_routing.clone())?;
                 let database_runtime = config
                     .database_runtime
                     .as_ref()
@@ -495,7 +498,9 @@ impl Daemon {
                     ))
                 });
                 let adapter = Arc::new(if let Some(socket) = storage_socket {
-                    adapter.with_storage_socket(socket.clone()).await?
+                    adapter
+                        .with_storage_node(socket.clone(), storage_node.as_deref())
+                        .await?
                 } else {
                     adapter
                 });
@@ -804,6 +809,7 @@ impl Daemon {
                 value["capabilities"]["storageVersion"] = 1.into();
                 value["capacity"]["volumeBytes"] = storage.capacity_bytes.into();
             }
+            add_public_routing_capability(&mut value, snapshot.public_routing_version);
             if let Some(version) = snapshot.registry_version {
                 value["capabilities"]["registryVersion"] = version.into();
             }
@@ -1032,19 +1038,19 @@ impl Daemon {
         command: &ReadCommand,
     ) -> webdock_supervisor::Result<wire::receipt::Result> {
         self.authority.authorize_read(command).await?;
+        // This is read-only work. Authority is checked before, periodically while pending,
+        // and freshly after it; ownership is independently checked on both sides of the read.
         let work = async {
-            if let Some(expected) = &command.expected_runtime_id {
-                if self
+            if let Some(expected) = &command.expected_runtime_id
+                && self
                     .adapter
                     .inspect(&command.spec)
                     .await?
                     .runtime_id
                     .as_ref()
                     != Some(expected)
-                {
-                    return Err(ExecutionError::Ownership);
-                }
-                self.authority.authorize_read(command).await?;
+            {
+                return Err(ExecutionError::Ownership);
             }
             let result = match command.kind {
                 ReadKind::Inspect => {
@@ -1064,18 +1070,16 @@ impl Daemon {
                         .map_err(|_| ExecutionError::Runtime)
                 }
             }?;
-            if let Some(expected) = &command.expected_runtime_id {
-                if self
+            if let Some(expected) = &command.expected_runtime_id
+                && self
                     .adapter
                     .inspect(&command.spec)
                     .await?
                     .runtime_id
                     .as_ref()
                     != Some(expected)
-                {
-                    return Err(ExecutionError::Ownership);
-                }
-                self.authority.authorize_read(command).await?;
+            {
+                return Err(ExecutionError::Ownership);
             }
             Ok(result)
         };
@@ -1083,8 +1087,21 @@ impl Daemon {
         let deadline = tokio::time::sleep(Duration::from_secs(15));
         tokio::pin!(deadline);
         let mut interval = tokio::time::interval(Duration::from_millis(250));
-        let result = loop {
-            tokio::select! {r=&mut work=>break r?,_=&mut deadline=>return Err(ExecutionError::Expired),_=interval.tick()=>self.authority.authorize_read(command).await?,}
+        // The initial guard just succeeded; the next periodic check is due after one interval.
+        interval.reset();
+        // Poll runtime work while a remote authorization check is in flight.
+        let revalidation_failure = async {
+            loop {
+                interval.tick().await;
+                if let Err(error) = self.authority.authorize_read(command).await {
+                    return error;
+                }
+            }
+        };
+        let result = tokio::select! {
+            result = &mut work => result?,
+            _ = &mut deadline => return Err(ExecutionError::Expired),
+            error = revalidation_failure => return Err(error),
         };
         self.authority.authorize_read(command).await?;
         let size = match &result {
@@ -1289,5 +1306,33 @@ mod recovery_validation_tests {
                 "Recovery runtime installation differs from enrolled agent"
             ))
         ));
+    }
+}
+
+fn add_public_routing_capability(value: &mut serde_json::Value, version: Option<u8>) {
+    if let Some(version) = version {
+        value["capabilities"]["publicRoutingVersion"] = version.into();
+    }
+}
+#[cfg(test)]
+mod public_routing_contract_tests {
+    use super::*;
+    #[test]
+    fn advertised_public_routing_capability_matches_the_strict_core_contract() {
+        let schema: serde_json::Value =
+            serde_json::from_str(include_str!("../../hosting/src/observation.schema.json"))
+                .unwrap();
+        let allowed = schema["properties"]["capabilities"]["properties"]
+            .as_object()
+            .unwrap();
+        let mut value = serde_json::json!({"capabilities":{}});
+        add_public_routing_capability(&mut value, Some(1));
+        assert_eq!(value["capabilities"]["publicRoutingVersion"], 1);
+        for key in value["capabilities"].as_object().unwrap().keys() {
+            assert!(allowed.contains_key(key), "Undeclared capability {key}");
+        }
+        let mut disabled = serde_json::json!({"capabilities":{}});
+        add_public_routing_capability(&mut disabled, None);
+        assert_eq!(disabled, serde_json::json!({"capabilities":{}}));
     }
 }

@@ -1,0 +1,47 @@
+# Strategic deployment patch. The Secret retains the same private invocation key.
+# Core metadata endpoints need this host, not a fabricated external installation.
+spec:
+  template:
+    spec:
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+      initContainers:
+        - name: prepare-plugin-host
+          image: webdock.local/core/backend@sha256:48bebbf9ade294d89243048cceae83ed8ecafcf1cf5dabfbda4bff866e11a04a
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              umask 077
+              mkdir -p /private-plugins/data
+              chmod 700 /private-plugins/data
+              for name in plugin-config.json host-bindings.json connections.json invocation.key; do
+                cp "/plugin-source/$name" "/private-plugins/data/$name"
+                chmod 600 "/private-plugins/data/$name"
+              done
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+            seccompProfile: {type: RuntimeDefault}
+          resources:
+            requests: {cpu: 10m, memory: 16Mi}
+            limits: {cpu: 100m, memory: 64Mi}
+          volumeMounts:
+            - {name: plugin-source, mountPath: /plugin-source, readOnly: true}
+            - {name: plugin-private, mountPath: /private-plugins}
+      containers:
+        - name: core
+          env:
+            - {name: WEBDOCK_NATIVE_PLUGIN_CONFIG, value: /private-plugins/data/plugin-config.json}
+          volumeMounts:
+            - {name: plugin-private, mountPath: /private-plugins, readOnly: true}
+      volumes:
+        - name: plugin-source
+          secret: {secretName: webdock-native-plugin-host, defaultMode: 0440}
+        - name: plugin-private
+          emptyDir: {medium: Memory, sizeLimit: 16Mi}

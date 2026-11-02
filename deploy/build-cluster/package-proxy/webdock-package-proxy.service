@@ -1,0 +1,41 @@
+[Unit]
+Description=Owned CONNECT-only Webdock package gateway
+Requires=webdock-package-proxy-firewall.service
+After=network-online.target webdock-build-network.service webdock-package-proxy-firewall.service nss-lookup.target
+Wants=network-online.target systemd-resolved.service
+[Service]
+Type=simple
+User=proxy
+Group=proxy
+RuntimeDirectory=webdock-package-proxy
+RuntimeDirectoryMode=0700
+ExecStartPre=/usr/local/libexec/webdock-package-proxy-manage --check
+ExecStart=/usr/sbin/squid -N -f /etc/squid/webdock-package-proxy.conf
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=5s
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectHostname=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+LockPersonality=yes
+MemoryMax=256M
+MemorySwapMax=0
+CPUQuota=100%
+TasksMax=64
+LimitNOFILE=4096
+LimitCORE=0
+StandardOutput=null
+StandardError=null
+[Install]
+WantedBy=multi-user.target

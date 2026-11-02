@@ -1,0 +1,100 @@
+{
+  "date": "2026-11-01T10:18:50.264410+00:00",
+  "legacyChecks": [
+    {
+      "repository": "spitzli/webdock-extension-project-notes",
+      "sourceSHA": "767dfb10f15599b767e2a3afc3ea2a2bc2ae4970",
+      "runURL": "https://github.com/spitzli/webdock-extension-project-notes/actions/runs/41295825457",
+      "conclusion": "success",
+      "runner": "cloud-plugin-eu2-trusted-01",
+      "candidateImageJob": "skipped"
+    },
+    {
+      "repository": "spitzli/webdock-extension-managed-analytics",
+      "sourceSHA": "ad575f5b0b5863717d00952aeb2c7d75ebc154df",
+      "runURL": "https://github.com/spitzli/webdock-extension-managed-analytics/actions/runs/41295829450",
+      "conclusion": "success",
+      "runner": "cloud-plugin-eu2-trusted-01",
+      "candidateImageJob": "skipped"
+    },
+    {
+      "repository": "spitzli/webdock-extension-managed-apps",
+      "sourceSHA": "d0f9ef50594c5f4d06876313d42b3b8491843d62",
+      "runURL": "https://github.com/spitzli/webdock-extension-managed-apps/actions/runs/41295833752",
+      "conclusion": "success",
+      "runner": "cloud-plugin-eu2-trusted-01",
+      "candidateImageJob": "skipped"
+    },
+    {
+      "repository": "spitzli/webdock-extension-lumaserv",
+      "sourceSHA": "1162c55386f7834d0961e2c8744d7b8c7b26ba25",
+      "runURL": "https://github.com/spitzli/webdock-extension-lumaserv/actions/runs/41295838190",
+      "conclusion": "success",
+      "runner": "cloud-plugin-eu2-trusted-01",
+      "candidateImageJob": "skipped"
+    }
+  ],
+  "publishedV1ReleasesPreserved": [
+    {
+      "slug": "project-notes",
+      "version": "0.1.0-alpha.2",
+      "manifestSha256": "8ba299bd12f41e43033b5389815f1d1f54f85541e36d77a363b36799ab0d1190",
+      "bytes": 2228,
+      "identicalDescriptor": true,
+      "parentPinnedJWSProofStillMatches": true,
+      "publishedImageUnchanged": true
+    },
+    {
+      "slug": "managed-analytics",
+      "version": "0.1.0-alpha.3",
+      "manifestSha256": "8b38e860297fac2e10d9f241971f14882c23e97e5f9d49490028462e24a0e8f2",
+      "bytes": 2942,
+      "identicalDescriptor": true,
+      "parentPinnedJWSProofStillMatches": true,
+      "publishedImageUnchanged": true
+    },
+    {
+      "slug": "managed-apps",
+      "version": "0.1.0-alpha.1",
+      "manifestSha256": "03369c7843a82969162c6696e0dd6405e8b8751b6f0aff696fd558244ae94b97",
+      "bytes": 4090,
+      "identicalDescriptor": true,
+      "parentPinnedJWSProofStillMatches": true,
+      "publishedImageUnchanged": true
+    },
+    {
+      "slug": "lumaserv",
+      "version": "0.1.0-alpha.2",
+      "manifestSha256": "cfe86230939cca974cecbd683c85d09f353222ca561278f951d312a3d7413c32",
+      "bytes": 43404,
+      "identicalDescriptor": true,
+      "parentPinnedJWSProofStillMatches": true,
+      "publishedImageUnchanged": true
+    }
+  ],
+  "oldPrivateSourceImportRetirement": {
+    "repository": "spitzli/webdock-plugin-builds",
+    "headUnchanged": "e697afeb0b50c16b66643813f5adcd25cf1bf6fb",
+    "workflowID": 388583633,
+    "workflowPath": ".github/workflows/plugin-build.yml",
+    "oldRunner": "ubuntu-24.04 (unqualified hosted region)",
+    "previousWorkflowState": "active",
+    "currentWorkflowState": "disabled_manually",
+    "repositoryActionsPreviouslyEnabled": true,
+    "repositoryActionsEnabled": false,
+    "repositoryStillPrivate": true,
+    "repositorySourceHistoryPreserved": true,
+    "activeRunsBeforeRetirement": 0,
+    "lastRunDate": "2026-10-18T22:34:27Z",
+    "admittedToTrustedGroup": false,
+    "sourceReroutedToTrustedCache": false,
+    "callerFailsBeforeSourceHandoff": "apps/build-worker/plugin_actions.py checks active workflow before actions-prepare",
+    "historicalReferences": [
+      "tools/plugins/github-actions/README.md",
+      "apps/build-worker/plugin-installer.example.json"
+    ]
+  },
+  "newLogicalVersionsOrPublishedArtifactsCreated": false,
+  "customerCredentialsUsed": false,
+  "groupIDsModified": false
+}

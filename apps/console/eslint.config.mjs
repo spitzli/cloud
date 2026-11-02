@@ -7,6 +7,8 @@ import globals from "globals";
 export default defineConfig(
   {
     ignores: ["dist/**"],
+  },
+  {
     linterOptions: {
       noInlineConfig: true,
       reportUnusedDisableDirectives: "error",

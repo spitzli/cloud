@@ -43,3 +43,10 @@ __pycache__/
 # Rebuild intermediates are local; graph/report/source manifest are committed.
 /graphify-out/cache/
 /graphify-out/.graphify*
+.neon
+
+# Bundled private SDK adapter build output
+/apps/realtime-sealer/dist/
+
+# Regenerate legacy release artifacts; never commit bundled executables.
+/legacy/console/public/hosting-agent.zip

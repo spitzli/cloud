@@ -76,7 +76,7 @@ export function SignIn() {
             ? "Enter the code from your authenticator."
             : mode === "reset"
               ? "We’ll send a reset link to your account email."
-              : "Sign in to your Webdock account."}
+              : "Sign in to your Spitzli Cloud account."}
         </p>
         {/* A new form per step: password managers must not reuse the email field for the code. */}
         <form
@@ -262,7 +262,7 @@ export function Account() {
             <h2 className={ui.sectionTitle}>Account security</h2>
             <p className="text-muted">
               Manage your password, authenticator, passkeys, and sessions in your
-              Webdock account.
+              Spitzli Cloud account.
             </p>
           </div>
           <div className={ui.cx(`${ui.cardFooter} justify-end`)}>

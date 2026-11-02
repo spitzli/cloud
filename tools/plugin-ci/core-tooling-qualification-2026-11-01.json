@@ -1,0 +1,32 @@
+{
+  "node": "24.21.0",
+  "nodeRuntime": "node",
+  "bunAsNodeFallbackUsed": false,
+  "dockerCLI": "Docker version 29.9.2, build a82e528",
+  "compose": "5.6.1",
+  "daemonlessComposeConfigPassed": true,
+  "dockerHost": "unix:///nonexistent/manual-quality-no-daemon.sock",
+  "daemonSocketMounted": false,
+  "guestUID": 1001,
+  "applicationBuildExecuted": false,
+  "githubWorkflowTriggered": false,
+  "binaries": [
+    {
+      "path": "/usr/local/bin/node",
+      "sha256": "7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c"
+    },
+    {
+      "path": "/usr/local/bin/docker",
+      "sha256": "6c71cfe71faff949a602946a4df4799b563232e79d0b8b6fd343d0ef081c9621"
+    },
+    {
+      "path": "/usr/local/libexec/docker/cli-plugins/docker-compose",
+      "sha256": "47737f4236e6d3ccea7291995203f8f018058783b4c3a9469119811a0b5db8c0"
+    }
+  ],
+  "buildHost": "167.86.75.144",
+  "dmiUUID": "e6d9884c-e6bd-4699-8a0c-99f2358ae8a1",
+  "approvedExecution": "Contabo EU2 manual qualification",
+  "sourceContext": ".runtime-test/waitlist-release-ready-20261101/tooling-qualification",
+  "qualificationScope": "actual Node identity + Docker/Compose versions + disposable Compose config only; full source distribution gate not run"
+}

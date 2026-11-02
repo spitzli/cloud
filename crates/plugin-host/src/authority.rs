@@ -24,6 +24,8 @@ use webdock_plugin_protocol::{
 use webdock_plugin_runtime::{InvocationAuthority, PeerIdentity};
 
 pub const MAIL_ACTION_INPUT_BYTES: usize = 128 * 1024;
+#[path = "database_orders.rs"]
+mod database_orders;
 pub(crate) fn invocation_input_limit(plugin: &str, action: &str, job: bool) -> usize {
     if !job && plugin == "mail" && action == "mail.send" {
         MAIL_ACTION_INPUT_BYTES
@@ -85,6 +87,7 @@ pub trait AppsAdapter: Send + Sync {
 pub struct HostService {
     installation: Option<crate::installation::InstallationConfig>,
     native_mail_control: bool,
+    new_database_orders_enabled: bool,
     storage_gateway: Option<Arc<crate::storage::StorageGateway>>,
     pub(crate) db: DatabaseConnection,
     worker: DatabaseConnection,
@@ -163,6 +166,7 @@ impl HostService {
             session_authority: None,
             installation: None,
             native_mail_control: false,
+            new_database_orders_enabled: false,
             storage_gateway: None,
         })
     }
@@ -186,6 +190,25 @@ impl HostService {
     pub fn with_native_mail_control(mut self, available: bool) -> Self {
         self.native_mail_control = available;
         self
+    }
+    pub fn with_new_database_orders_enabled(mut self, enabled: bool) -> Self {
+        self.new_database_orders_enabled = enabled;
+        self
+    }
+    fn blocked_database_creates(&self, manifest: &Manifest) -> Vec<String> {
+        ["databases.create", "instances.create"]
+            .into_iter()
+            .filter(|action| {
+                manifest.action(action).is_some()
+                    && !database_orders::create_allowed(
+                        self.new_database_orders_enabled,
+                        manifest.id(),
+                        action,
+                        false,
+                    )
+            })
+            .map(str::to_owned)
+            .collect()
     }
     pub fn with_apps(mut self, apps: Arc<dyn AppsAdapter>) -> Self {
         self.apps = Some(apps);
@@ -558,6 +581,17 @@ impl HostService {
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.plugin_invocation(id,plugin_id,customer_id,project_id,runtime_generation,grant_revision,kind,name,intent,actor_id,session_id,operation_id,capabilities,created_at,expires_at,session_context,request_hash) VALUES($1::uuid,$2,$3,$4,$5,$6,'action',$7,$8,$9,$10,$11,$12,to_timestamp($13)-interval '60 seconds',to_timestamp($13),$14,$15)",[claims.id.clone().into(),input.plugin_id.into(),customer.into(),input.project_id.clone().into(),(claims.generation as i64).into(),integer(&metadata.grant,"revision")?.into(),claims.action.clone().into(),string(action,"intent")?.into(),actor.user_id.clone().into(),actor.session_id.clone().into(),operation.into(),action["capabilities"].clone().into(),claims.exp.into(),stored_scope.into(),request_hash.into()])).await.map_err(db_error)?;
         let replay_result =
             self_service::reserve(&tx, action, &claims.plugin_id, &claims.id).await?;
+        // Retained public receipts may replay; a fresh reservation rolls back before dispatch.
+        if !database_orders::create_allowed(
+            self.new_database_orders_enabled,
+            &claims.plugin_id,
+            &claims.action,
+            replay_result.is_some(),
+        ) {
+            return Err(conflict(
+                "New shared and self-hosted PostgreSQL orders are retired. Use your own Neon account for a new database; existing databases remain available.",
+            ));
+        }
         Self::project(&session, &input.project_id, write).await?;
         if let (Some(auth_tx), Some(authority)) = (&auth_tx, authority) {
             self.session_authority
@@ -1225,6 +1259,8 @@ pub struct PluginView {
     pub launch_links: Vec<Value>,
     /// Self-service features this actor may use in the project; operators get all of them.
     pub features: Vec<String>,
+    /// New-create eligibility is separate from feature grants used for retained maintenance.
+    pub blocked_create_actions: Vec<String>,
     /// The project's resources of this plugin from the Core index.
     pub resources: Vec<Value>,
 }
@@ -1360,6 +1396,7 @@ impl HostService {
                 manifest_sha256: string(&metadata.release, "manifest_sha256")?.into(),
                 launch_links: vec![],
                 features,
+                blocked_create_actions: self.blocked_database_creates(&metadata.manifest),
                 resources,
             });
         }
@@ -1415,6 +1452,7 @@ impl HostService {
                 manifest_sha256: string(&metadata.release, "manifest_sha256")?.into(),
                 launch_links: vec![],
                 features: vec![],
+                blocked_create_actions: self.blocked_database_creates(&metadata.manifest),
                 resources: vec![],
             });
         }

@@ -1,83 +1,22 @@
 ---
-title: Authentication adapters
-description: Select a browser provider while preserving local Webdock identity and authorization.
+title: "Identity and authentication providers"
+description: "Understand managed sign-in, Core security and retained protocol compatibility."
 ---
 
-<Note>The matching implementation is available in the signed [v0.1.0-alpha.2 release](https://github.com/spitzli/webdock/releases/tag/v0.1.0-alpha.2). Webdock production uses the verified mixed mode: global Better Auth, native Clerk Console and Better Auth OAuth. A full global Clerk cutover remains separate.</Note>
+Spitzli Cloud uses Neon Managed Auth for all users' first-factor authentication. Core retains canonical local user IDs, tenant memberships, authorization, MFA and passkey controls. Neon sign-in alone does not grant workspace or operator access.
 
-Webdock keeps stable local user IDs and workspace/project mappings when changing authentication. The selected provider owns roles and memberships: Better Auth uses local records; Clerk uses live Clerk authority. An installation without `WEBDOCK_AUTH_PROVIDER` continues using Better Auth. A configured object with issuer, authorized parties and audience defaults to Clerk when `provider` is omitted; an entirely absent environment variable retains legacy compatibility. New configured installations can select Clerk explicitly:
+## Session and security boundary
 
-```json
-{"provider":"clerk","issuer":"https://your-instance.clerk.accounts.dev","authorizedParties":["https://console.example.com"],"audience":"webdock-console"}
-```
+Core binds a managed provider session to the exact local identity and checks that binding on subsequent requests. Disabled mappings, revoked provider sessions, expired local sessions and account restrictions deny access. Accounts with MFA enabled must complete Core's security step; operators require MFA. Existing MFA enrollment and local IDs remain part of the Core security boundary.
 
-For native Clerk session tokens without an `aud` claim, select this explicit mode instead:
+The Console uses a server-side authorization-code exchange with PKCE. Signed browser cookies contain opaque references; provider credentials and OAuth tokens stay server-side. Password, security and passkey screens use the canonical account origin.
 
-```json
-{"provider":"clerk","issuer":"https://your-instance.clerk.accounts.dev","authorizedParties":["https://console.example.com"],"tokenMode":"session"}
-```
+## Compatibility
 
-Native session mode requires the exact issuer and authorized party, signed user/session claims, live provider checks and explicit local identity mapping. It cannot include `audience`. Unknown modes fail configuration. Existing configurations without `tokenMode` continue requiring and checking `audience`.
+Older Better Auth and Clerk adapters remain historical compatibility code and migration records. Their environment settings are not the current hosted sign-in setup. Do not enable them to bypass a managed identity mapping, link accounts by email or copy an old role projection into current authority.
 
-For local development only, add `"allowLocalHTTP":true` to allow exact HTTP browser origins on `localhost`, `127.0.0.1` or `[::1]` (for example `"authorizedParties":["http://localhost:3460"]`). The issuer still requires HTTPS. Production rejects this option when enabled, including when all origins use HTTPS. Without the explicit option, HTTP origins are rejected.
+Existing OAuth issuer, registered clients, Studio resource audiences and website SSO contracts remain stable. The move to Neon Managed Auth does not turn a Neon credential into a Spitzli Cloud API token. See [authentication](/developers/authentication).
 
-Set the same value on the API and Console. When using the audience configuration, configure Clerk's session token to contain the matching `aud` claim; tokens without that audience fail verification. Keep the configured issuer and Console origin exact. Explicit legacy selection is `{"provider":"better-auth"}`. There is no automatic fallback between providers.
+## Source
 
-The API needs `CLERK_SECRET_KEY` and may use `CLERK_JWT_KEY`. The Console's server middleware needs `CLERK_SECRET_KEY` and the public `CLERK_PUBLISHABLE_KEY`. The usual `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is also supported, but the server-only public-key setting supports runtime configuration of the same built artifact. Never put a secret in a `NEXT_PUBLIC_` variable or pass it to a client component. Configure the same server-only `WEBDOCK_CONSOLE_SERVICE_KEY` (at least 32 characters) on the API and Console, plus `WEBDOCK_API_ORIGIN` and the exact `WEBDOCK_CONSOLE_ORIGIN`. Native Clerk Console transport does not require a running Better Auth service or `BETTER_AUTH_SECRET`. Clerk defaults legacy OAuth to disabled; select `WEBDOCK_OAUTH_PROVIDER=better-auth` explicitly and configure its origin and secret only when retaining those protocols.
-
-Apply the normal migrations, including `0040_clerk_identity_mapping.sql`, before enabling Clerk. The Console supplies sign-in at `/sign-in`, account/security controls at `/account`, and selected-provider sign-out. Existing `/api/sso/login` links route to the selected sign-in experience. Signing in does not grant membership or create a Webdock account.
-
-## Role authority
-
-With Clerk selected, workspace memberships, organization roles and their explicit permissions come from Clerk Organizations. Custom `org:*` roles are accepted. Only `org:admin` projects to the compatibility administrator role; other custom roles retain their explicit permissions without becoming platform operators.
-
-The global platform role is separate from a workspace role. Set `privateMetadata.webdockRole` to `"operator"` on the mapped Clerk user through the Clerk Dashboard or authenticated Backend API. The exact string is required; missing or unknown values mean an ordinary user. Never use `unsafeMetadata`, browser input or a local Webdock role column to grant access.
-
-For example, from a trusted administrator backend:
-
-```typescript
-await clerkClient.users.updateUserMetadata(clerkUserId, {
-  privateMetadata: { webdockRole: "operator" },
-});
-```
-
-Use `"user"` to revoke platform-operator authority. Preserve unrelated user metadata. This is a deliberate administrator action; selecting Clerk does not copy local operator roles into Clerk automatically.
-
-The host reads current provider state and binds short-lived authorization proofs to the issuer, user, session and resource mappings. Revalidation applies to plugin callbacks and background work as well as browser requests. A stale local operator row, retained local membership or unsigned database setting cannot grant Clerk access. Provider failures deny access; they do not fall back to local roles. Local bans, disabled mappings and archived customer/project records remain additional deny conditions.
-
-Better Auth retains its existing local roles, memberships and security setup when selected, even if old Clerk mappings are retained. Switching providers requires matching API/Console/worker configuration and a coordinated restart. It does not migrate accounts or preserve old sessions automatically. Before switching to Clerk, explicitly map the intended administrators and assign their Clerk platform roles.
-
-See Clerk's [metadata controls](https://clerk.com/docs/guides/users/extending) and [organization roles and permissions](https://clerk.com/docs/guides/organizations/control-access/roles-and-permissions).
-
-## Enroll an existing local identity
-
-Create or identify the local Webdock identity to map, then configure its Clerk identity and platform role explicitly. Native Clerk Console authentication uses Clerk account verification and organization membership. The optional legacy OAuth compatibility bridge retains its account-setup and MFA admission checks; a role assignment does not bypass those checks. Better Auth installations continue using the local bootstrap/password/MFA workflow.
-
-Native Console and existing Better Auth OAuth clients use the reviewed `clerk_identity` link between the exact issuer, Clerk user ID and local ID. OAuth also requires that link to remain enabled and `legacy_eligible`. The SDK bearer bridge uses the separate `clerk_identity_mapping` table; the command below enrolls that SDK mapping only. Neither workflow links accounts by email or creates a provider session.
-
-Prepare a mapping with the verified Clerk subject and existing immutable local ID:
-
-```json
-{"issuer":"https://your-instance.clerk.accounts.dev","subject":"user_example","localSubject":"123456789"}
-```
-
-Preview and apply it from the API workspace using the protected bootstrap authentication database connection:
-
-```sh
-bun scripts/clerk-map.ts mapping.json
-bun scripts/clerk-map.ts mapping.json --apply
-```
-
-This mapping operation never matches by email, creates accounts, grants a Clerk role or invents MFA enrollment. Existing or revoked mappings cannot be rebound. Review subject IDs before applying; revocation is separate from reassignment. An authenticated Clerk user without a usable local mapping sees an account-setup message instead of gaining access.
-
-## Adapter contract
-
-The core `IdentityDirectory` works with local subjects and sessions. The Clerk adapter verifies external evidence and uses typed mapping/backend ports; Better Auth projects the existing local identity. API composition supplies the selected directory to Mail and Hosting policies; managed Database services use the same Hosting authorization port. Provider tokens do not become database identities or product DTOs.
-
-The Console sends Clerk tokens through its server transport to the configured API, authenticated with the shared Console service key. The API verifies the provider session, explicit local identity mapping and current permissions. The separate SDK bearer bridge creates a short native session projection from a verified Clerk session.
-
-With Clerk selected and `WEBDOCK_OAUTH_PROVIDER=better-auth`, existing OAuth clients keep Better Auth authentication and local session IDs. After token verification, the host binds fresh Clerk authority to that exact session. Product authorization checks the real local session's expiry, account ban and setup state, then uses only Clerk roles and memberships. Operators must pass both the local and Clerk MFA admission checks. This compatibility path needs no synthetic Clerk session or SDK session mapping, and it never accepts a native browser cookie as a fallback for Clerk sign-in. Missing, disabled, mismatched or expired proof denies access. Tenant preview restrictions and product permissions still apply.
-
-OAuth, MCP, application API keys and legacy Auth setup are separate from this browser-provider choice. Enabling Clerk does not migrate their clients or replace their credentials. Roll out configuration and explicit mappings deliberately; this feature does not migrate production accounts automatically.
-
-Mail and Hosting workers must receive the same provider selection and `CLERK_SECRET_KEY` for live identity checks; do not give them `AUTH_DATABASE_URL`. Startup rejects missing verification credentials when a Clerk-configured worker owns either product. Workers use their restricted database connection. Mail scopes read only identity mappings. Hosting session-mapping reads are limited to an active approved Git release, the exact actor of a live setup lease/generation, or the exact subject/session reference from an authorized database-order admission. Agent, enrollment, scheduler and setup-dispatch scopes gain no general mapping authority; workers cannot alter mappings or read native session tokens.
+The current implementation is in native identity (`crates/identity`), managed-session checks (`crates/identity/src/neon.rs`), all-user policy migration (`crates/persistence/migrations/0070_neon_all_users.sql`) and first-party browser sessions (`crates/browser-session`). Older README migration notes can predate this managed-auth implementation.

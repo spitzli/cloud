@@ -1,0 +1,38 @@
+[Unit]
+Description=Webdock native Core HTTPS edge
+Wants=network-online.target
+After=network-online.target k3s.service webdock-management-firewall.service
+
+[Service]
+Type=notify
+User=webdock-core-edge
+Group=webdock-core-edge
+Environment=XDG_DATA_HOME=/var/lib/webdock-core-edge
+Environment=XDG_CONFIG_HOME=/var/lib/webdock-core-edge
+ExecStartPre=/usr/local/bin/webdock-core-caddy validate --config /etc/webdock-core-edge/Caddyfile --adapter caddyfile
+ExecStart=/usr/local/bin/webdock-core-caddy run --config /etc/webdock-core-edge/Caddyfile --adapter caddyfile
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=15s
+UMask=0077
+StateDirectory=webdock-core-edge
+StateDirectoryMode=0700
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+MemoryMax=256M
+CPUQuota=50%
+TasksMax=128
+LimitNOFILE=8192
+
+[Install]
+WantedBy=multi-user.target

@@ -3,6 +3,8 @@ title: "Mail webhooks"
 description: "Verify signatures and process events without repeating side effects."
 ---
 
+<Note>These examples preserve the existing Mail API contract. Use an explicitly enabled connection whose required native endpoint, dispatch and event processing have been verified. The generated reference alone does not establish rollout readiness.</Note>
+
 Mail webhooks deliver events at least once. Create an HTTPS endpoint through the enabled connection's Mail controls or API. Keep the returned signing secret server-side and separate from your Mail API key.
 
 ## Verify before parsing

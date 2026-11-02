@@ -54,6 +54,7 @@ export const pluginViewSchema = z.object({
     }),
   }),
   features: z.array(z.string()).max(32),
+  blockedCreateActions: z.array(z.string().max(64)).max(64).optional(),
   resources: z.array(z.object({ id: z.string(), offering: z.string(), name: z.string(), createdVia: z.enum(["operator", "self-service"]) })).max(1000),
 });
 export type PluginView = z.infer<typeof pluginViewSchema>;
@@ -71,7 +72,7 @@ export function usePluginViews(projectID: string) {
 /** Create actions this viewer may run here, each with its feature and offering labels. */
 export function creatable(view: PluginView) {
   return view.manifest.actions.flatMap((action) => {
-    if (action.resource !== "create" || !action.feature || !view.features.includes(action.feature)) return [];
+    if (action.resource !== "create" || !action.feature || !view.features.includes(action.feature) || view.blockedCreateActions?.includes(action.name)) return [];
     const feature = view.manifest.selfService.features.find((f) => f.id === action.feature);
     const offering = view.manifest.offerings.find((o) => o.id === action.offering);
     return feature && offering ? [{ action, feature, offering }] : [];

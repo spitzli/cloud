@@ -62,3 +62,51 @@ fn redirect_boundaries_allow_existing_console_paths_and_reject_auth_loops() {
         .is_err()
     );
 }
+
+#[test]
+fn redirect_boundaries_allow_current_console_routes() {
+    for path in [
+        "/plans",
+        "/plans?customer=123",
+        "/databases",
+        "/databases?customer=123",
+        "/databases/456?customer=123&managed=true",
+        "/clusters",
+        "/clusters?customer=123",
+        "/access-requests",
+        "/access-requests?status=pending",
+        "/mail",
+        "/mail?customer=123",
+        "/mail/inbox/456?customer=123",
+    ] {
+        assert_eq!(safe_return_to(path).as_deref(), Some(path), "{path}");
+    }
+}
+
+#[test]
+fn redirect_boundaries_reject_lookalikes_and_unsafe_current_route_paths() {
+    for root in ["plans", "databases", "clusters", "access-requests", "mail"] {
+        for suffix in [
+            "-external",
+            ".evil.invalid",
+            "/%2f%2fevil.invalid",
+            "/%5cevil.invalid",
+            "/%252f",
+            "/%00",
+            "/%20",
+            "\\evil",
+            "//evil.invalid",
+            "/login",
+            "/logout",
+            "/%6cogout",
+            "/LOGOUT",
+            "/forgot",
+            "/reset",
+            "/create-first-user",
+            "/unauthorized",
+        ] {
+            let path = format!("/{root}{suffix}");
+            assert!(safe_return_to(&path).is_none(), "{path}");
+        }
+    }
+}

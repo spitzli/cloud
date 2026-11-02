@@ -371,6 +371,17 @@ pub fn run_bounded(
     file_limit: u64,
     lease: &mut impl FnMut() -> Result<()>,
 ) -> Result<Vec<u8>> {
+    run_bounded_observed(command, timeout, file_limit, lease, &mut |_| Ok(()))
+}
+/// The observer receives bounded raw bytes; callers must redact before persisting or displaying.
+/// Observer failure uses the same complete process-group shutdown as timeout/lease failure.
+pub fn run_bounded_observed(
+    command: &mut Command,
+    timeout: Duration,
+    file_limit: u64,
+    lease: &mut impl FnMut() -> Result<()>,
+    observer: &mut impl FnMut(&[u8]) -> Result<()>,
+) -> Result<Vec<u8>> {
     command.stdout(Stdio::piped()).stderr(Stdio::piped());
     // SAFETY: async-signal-safe libc calls only between fork and exec; no allocator or locks.
     let parent_pid = unsafe { libc::getpid() };
@@ -451,6 +462,7 @@ pub fn run_bounded(
                     if bytes.len() > available {
                         return Err(error("log_limit"));
                     }
+                    observer(&bytes)?;
                 }
                 Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => disconnected = true,
                 Err(_) => {}

@@ -1,0 +1,12 @@
+{
+  "image": "docker.io/library/node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20",
+  "indexDigest": "sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20",
+  "linuxAMD64Child": "sha256:51b1100cc2a83d370c6a60952e3f2989c8a43159d0e38586e090f3b3326efefd",
+  "officialRegistryContentChainVerified": true,
+  "toolVersionEnvironment": {
+    "NODE_VERSION": "24.21.0",
+    "YARN_VERSION": "1.22.22"
+  },
+  "runtimeToolingAssertionExecuted": true,
+  "qualificationReceipt": "tools/plugin-ci/core-tooling-qualification-2026-11-01.json"
+}

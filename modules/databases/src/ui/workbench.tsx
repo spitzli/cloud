@@ -51,48 +51,68 @@ function DatabaseWorkbenchState({
     client: TabularisClient;
   }>();
   const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    void preloadTabularisWorkspace().catch(() => {});
+    void preloadTabularisWorkspace().catch(() => undefined);
     let active = true;
     let close: (() => void) | undefined;
-    void (async () => {
+    const controller = new AbortController();
+    const deadline = setTimeout(() => { controller.abort(); }, 30_000);
+    // Server actions cannot be cancelled, so also fence their late results.
+    const cancelled = new Promise<never>((_, reject) => {
+      controller.signal.addEventListener("abort", () => { reject(new Error("Database access is unavailable.")); }, { once: true });
+    });
+    void Promise.race([(async () => {
       const result = await (managed
         ? launchManagedDatabase(bindingID)
         : launchDatabase(bindingID));
-      if (!active) return;
+      controller.signal.throwIfAborted();
       if (!result.launch)
-        throw Error(result.error || "Database access is unavailable.");
+        throw Error("Database access is unavailable.");
       const response = await fetch(result.launch.gatewayOrigin + "/session", {
         method: "POST",
         credentials: "include",
         redirect: "error",
+        signal: controller.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: result.launch.code }),
       });
       if (!response.ok) throw Error("Database access is unavailable.");
-      const session = await response.json();
+      const session: unknown = await response.json();
+      controller.signal.throwIfAborted();
       if (
+        !session || typeof session !== "object" ||
+        !("scopeID" in session) || !("connectionID" in session) || !("baseUrl" in session) ||
         typeof session.scopeID !== "string" ||
         typeof session.connectionID !== "string" ||
+        typeof session.baseUrl !== "string" ||
         session.baseUrl !==
           `${result.launch.gatewayOrigin}/s/${session.scopeID}`
       )
         throw Error("Invalid database response.");
+      const baseUrl = session.baseUrl;
       const transport = new HttpTransport({
-        baseUrl: session.baseUrl,
+        baseUrl,
         fetch: (input, init) =>
-          fetch(input, { ...init, credentials: "include" }),
+          fetch(input, {
+            ...init,
+            credentials: "include",
+            signal: init?.signal
+              ? AbortSignal.any([controller.signal, init.signal])
+              : controller.signal,
+          }),
       });
       const negotiation = await transport.initialize();
       close = () => {
-        void fetch(session.baseUrl + "/api/v1/logout", {
+        close = undefined;
+        void fetch(baseUrl + "/api/v1/logout", {
           method: "POST",
           credentials: "include",
           keepalive: true,
           headers: { "X-Tabularis-Csrf": negotiation.csrfToken },
-        }).catch(() => {});
+        }).catch(() => undefined);
       };
-      if (!active) {
+      if (controller.signal.aborted) {
         close();
         return;
       }
@@ -108,24 +128,30 @@ function DatabaseWorkbenchState({
         connectionID: session.connectionID,
         client,
       });
-    })().catch((cause: unknown) => {
-      if (active)
-        setError(
-          cause instanceof Error
-            ? cause.message
-            : "Database access is unavailable.",
-        );
-    });
+    })(), cancelled]).catch(() => {
+      controller.abort();
+      close?.();
+      if (active) setError("Database access is unavailable.");
+    }).finally(() => { clearTimeout(deadline); });
     return () => {
       active = false;
+      clearTimeout(deadline);
+      controller.abort();
       close?.();
     };
-  }, [bindingID, userID, managed, launchDatabase, launchManagedDatabase]);
+  }, [bindingID, userID, managed, launchDatabase, launchManagedDatabase, attempt]);
   if (error)
     return (
-      <p className="notice error" role="alert">
-        {i18n.error(error)}
-      </p>
+      <div className="notice error" role="alert">
+        <p>{i18n.error(error)}</p>
+        <button className="button secondary" onClick={() => {
+          setError("");
+          setWorkspace(undefined);
+          setAttempt(value => value + 1);
+        }}>
+          {i18n.t("Try again")}
+        </button>
+      </div>
     );
   if (!workspace)
     return <p role="status">{i18n.t("Connecting to database…")}</p>;

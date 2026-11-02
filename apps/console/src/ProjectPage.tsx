@@ -148,6 +148,9 @@ export function ChosenCreate(props: { view: PluginView; action: PluginAction; ti
 function inputs(schema: JsonSchema | undefined) {
   return Object.entries(schema?.properties ?? {}).filter(([name]) => name !== "resource_id");
 }
+function secretInput(name: string) {
+  return /(^|_)(secret|password)$/.test(name) || ["api_key", "access_token", "refresh_token", "consumer_key"].includes(name);
+}
 /** A form generated from the create action's input schema. */
 function CreateForm({ view, action, title, customer, projectID, onCancel }: { view: PluginView; action: PluginAction; title: string; customer: string; projectID: string; onCancel: () => void }) {
   const api = useApi();
@@ -172,6 +175,11 @@ function CreateForm({ view, action, title, customer, projectID, onCancel }: { vi
           }
           if (typeof raw !== "string" || !raw) continue;
           input[name] = field.type === "integer" || field.type === "number" ? Number(raw) : raw;
+        }
+        // Keep credentials only in the request, including when submission fails.
+        for (const [name] of inputs(action.input)) {
+          const field = event.currentTarget.elements.namedItem(name);
+          if (secretInput(name) && field instanceof HTMLInputElement) field.value = "";
         }
         setPending(true);
         setError(undefined);
@@ -218,8 +226,8 @@ function CreateForm({ view, action, title, customer, projectID, onCancel }: { vi
               className={ui.input}
               name={name}
               // Inputs named like a secret are write-only fields: masked and never autofilled.
-              type={field.type === "integer" || field.type === "number" ? "number" : /(^|_)(secret|password)$/.test(name) ? "password" : "text"}
-              autoComplete={/(^|_)(secret|password)$/.test(name) ? "new-password" : undefined}
+              type={secretInput(name) ? "password" : field.type === "integer" || field.type === "number" ? "number" : "text"}
+              autoComplete={secretInput(name) ? "new-password" : undefined}
               required={required.has(name)}
               minLength={field.minLength}
               maxLength={field.maxLength}

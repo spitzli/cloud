@@ -142,7 +142,7 @@ try {
     await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await page.getByRole('heading', { name: 'Verify your identity' }).waitFor();
     await page.getByRole('button', { name: 'Back to sign in', exact: true }).click();
-    await page.getByRole('heading', { name: 'Sign in to Webdock' }).waitFor();
+    await page.getByRole('heading', { name: 'Sign in to Spitzli Cloud' }).waitFor();
   }, false));
   await check('Clicking modal padding preserves it and short screens fit the dialog', () => using('operator', 'console', async ({ page }) => {
     await page.goto(previewOrigin + '/projects');

@@ -1,6 +1,7 @@
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/csr/ArrowClockwise";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/csr/WarningCircle";
 import { useEffect, useRef, type ReactNode } from "react";
+import { useOptionalI18n } from "@webdock/i18n/react";
 import * as ui from "./ui";
 import { describeFailure } from "./AuthFrame";
 const state = "flex items-start gap-3 rounded-xl border border-outline bg-surface px-7 py-10 max-sm:px-[18px] max-sm:py-6";
@@ -15,20 +16,24 @@ export function Loading({ children = "Loading…" }: { children?: ReactNode }) {
 export function Failure({
   error,
   retry,
+  title = "Unable to load",
 }: {
   error: Error;
   retry?: () => void;
+  title?: string;
 }) {
+  const i18n = useOptionalI18n();
+  const message = describeFailure(error);
   return (
     <div className={`${state} text-danger`} role="alert">
       <WarningCircleIcon size={22} className="shrink-0" />
       <div>
-        <strong className="font-semibold">Unable to load</strong>
-        <p className="mt-1.5">{describeFailure(error)}</p>
+        <strong className="font-semibold">{i18n?.t(title) ?? title}</strong>
+        <p className="mt-1.5">{i18n?.t(message) ?? message}</p>
         {retry ? (
           <button className={ui.cx(`${ui.button()} mt-4`)} onClick={retry}>
             <ArrowClockwiseIcon />
-            Try again
+            {i18n?.t("Try again") ?? "Try again"}
           </button>
         ) : null}
       </div>

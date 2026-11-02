@@ -899,6 +899,7 @@ pub(super) async fn core_services(
                 oauth,
                 ids: dependencies.ids.clone(),
                 rls_secret: SECRET.into(),
+                database_new_orders_enabled: false,
             },
             plugin_config,
         )
@@ -5837,7 +5838,7 @@ async fn install_mail_profile(c: &mut Context<'_>, runtime: &Value) -> (Value, S
         age_identity: "/owned/operator-recovery/identity.agekey".into(),
         independent_files: independent,
         source: RecoverySource::Mail {
-            core,
+            core: Box::new(core),
             metadata,
             runtime_labels: BTreeMap::from([("webdock.dev/plugin-id".into(), "mail".into())]),
             ce_labels: BTreeMap::from([("webdock.dev/customer-id".into(), c.customer.into())]),
@@ -6260,7 +6261,7 @@ async fn cold_restore(
         nonce: uuid::Uuid::new_v4().to_string(),
         configuration: TargetConfiguration::Mail {
             core: core_endpoint.clone(),
-            metadata: metadata_endpoint.clone(),
+            metadata: Box::new(metadata_endpoint.clone()),
             ce_image: CE_IMAGE.into(),
             volume_plan: MailBudget::current().target_volumes(c.customer),
         },

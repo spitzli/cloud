@@ -951,6 +951,7 @@ impl RuntimeAdapter for DockerAdapter {
             environment: true,
             registry_version: self.registry_ready().unwrap_or(false).then_some(1),
             service_bindings_version: None,
+            public_routing_version: None,
             version,
             nodes: vec![TargetNode {
                 id,
@@ -1176,11 +1177,11 @@ impl RuntimeAdapter for DockerAdapter {
                     .and_then(|ip| ip.parse::<Ipv4Addr>().ok())
                     .filter(|ip| ip.is_private());
                 result.ready = if let Some(ip) = ip {
-                    self.http
-                        .get(format!("http://{ip}:{}{path}", spec.port))
-                        .send()
-                        .await
-                        .is_ok_and(|r| r.status().is_success())
+                    let mut probe = self.http.get(format!("http://{ip}:{}{path}", spec.port));
+                    if let Some(host) = &spec.health_host {
+                        probe = probe.header(reqwest::header::HOST, host);
+                    }
+                    probe.send().await.is_ok_and(|r| r.status().is_success())
                 } else {
                     false
                 };

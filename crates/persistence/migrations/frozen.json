@@ -128,6 +128,46 @@
     {
       "file": "0055_native_operator_allowances.sql",
       "sha256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de"
+    },
+    {
+      "file": "0057_native_kubernetes_builds.sql",
+      "sha256": "395c6b82022c8c5fe4d71cfb8315eed1967fb71b9a7f21a691c16ff6e33e8687"
+    },
+    {
+      "file": "0058_kubernetes_build_completion_logs.sql",
+      "sha256": "b7561893b9999fe40ac827aefa9ddd470c6bb62a66ab841b89d1f36f765e455f"
+    },
+    {
+      "file": "0059_git_build_webhooks.sql",
+      "sha256": "575128218d7323711f85c7531618ca29e4e2d59e62ff2e092686b71a368d2c23"
+    },
+    {
+      "file": "0060_container_build_settings.sql",
+      "sha256": "18de2d45c41e27c8833899ba2ae0694a109162a4ccd637ac99cd529b324e0134"
+    },
+    {
+      "file": "0061_build_production_environments.sql",
+      "sha256": "f582c597cfa7c7ad798ccc41a58481b7ebbab9db4d6e767f7cd5ec019a8ea72f"
+    },
+    {
+      "file": "0062_build_attempt_resource_budget.sql",
+      "sha256": "050174114b2fd5f61ec2b229d706f64ef59161a3b309bf15d636e7f8cdf3b968"
+    },
+    {
+      "file": "0063_build_volume_authority.sql",
+      "sha256": "b3219a48e8f874e90ad55b18ed7199d697c77732fa9aa8ca8b39a98bce0b3825"
+    },
+    {
+      "file": "0064_build_fair_queue_retry.sql",
+      "sha256": "8e39f0b1c47abfe5b8528bb6308f362d76a146f30264105d7f7f9bdab5ad4a2d"
+    },
+    {
+      "file": "0065_git_workflow_build_trigger.sql",
+      "sha256": "2665dc854b05fdafe0984659d71d07a38a4251013bb7ce3acc9f0deea899c9a0"
+    },
+    {
+      "file": "0066_platform_hostnames.sql",
+      "sha256": "0d9f6621b27ef242f6fcb97bc1eefd0dfbf0435eee8f7dc9c162c8bde6869c12"
     }
   ]
 }

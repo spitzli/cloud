@@ -15,6 +15,7 @@ pub fn spec() -> RuntimeSpec {
         replicas: 1,
         port: 8080,
         health_path: Some("/".into()),
+        health_host: None,
         volume: None,
         plugin: None,
         mounts: Vec::new(),

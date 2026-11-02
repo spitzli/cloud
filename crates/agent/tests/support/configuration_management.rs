@@ -151,6 +151,7 @@ fn peer() -> Arc<Core> {
         revoked: AtomicBool::new(false),
         fail_complete: AtomicBool::new(false),
         terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: Default::default(),
     })
 }
 fn config(directory: &std::path::Path, socket: std::path::PathBuf, enabled: bool) -> AgentConfig {

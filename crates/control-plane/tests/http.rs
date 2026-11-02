@@ -117,8 +117,34 @@ async fn console_configuration_never_leaks_backend_credentials() {
     let json: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(
         json,
-        serde_json::json!({"apiOrigin":"http://localhost:3130","workspaceApiOrigin":"http://localhost:3130","authOrigin":"http://localhost:3125","enabledFeatures":[],"localePreference":"system"})
+        serde_json::json!({"apiOrigin":"http://localhost:3130","workspaceApiOrigin":"http://localhost:3130","authOrigin":"http://localhost:3125","enabledFeatures":[],"localePreference":"system","databaseOrderingEnabled":false})
     );
+}
+
+#[tokio::test]
+async fn database_order_retirement_does_not_hide_existing_database_access() {
+    for enabled in [false, true] {
+        let config = PlatformConfig::from_map(&HashMap::from([
+            (
+                "WEBDOCK_FEATURES".into(),
+                r#"{"databases":"enabled"}"#.into(),
+            ),
+            (
+                "WEBDOCK_DATABASE_NEW_ORDERS_ENABLED".into(),
+                enabled.to_string(),
+            ),
+        ]))
+        .unwrap();
+        let response = build_app(config, DatabaseConnection::default())
+            .oneshot(request("/console-config.json").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let bytes = response.into_body().collect().await.unwrap().to_bytes();
+        let json: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(json["databaseOrderingEnabled"], enabled);
+        assert_eq!(json["enabledFeatures"], serde_json::json!(["databases"]));
+    }
 }
 
 #[test]
@@ -348,4 +374,44 @@ async fn language_cookie_is_host_only_and_requires_exact_browser_origin() {
     );
     let other = app().oneshot(make("http://localhost:3125")).await.unwrap();
     assert_eq!(other.status(), StatusCode::FORBIDDEN);
+}
+
+#[tokio::test]
+async fn realtime_is_opt_in_and_capabilities_are_not_public_configuration() {
+    let response = app()
+        .oneshot(
+            Request::builder()
+                .uri("/api/console/realtime/capability")
+                .header("host", "localhost:3120")
+                .method("POST")
+                .header("origin", "http://localhost:3120")
+                .header("content-type", "application/json")
+                .body(Body::from(r#"{"topic":"workspace"}"#))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
+    assert_eq!(response.headers()["cache-control"], "no-store");
+}
+
+#[tokio::test]
+async fn public_waitlist_submission_does_not_redirect_to_sign_in() {
+    let response = app()
+        .oneshot(
+            Request::builder()
+                .uri("/api/console/waitlist")
+                .method("POST")
+                .header("host", "localhost:3120")
+                .header("origin", "http://localhost:3120")
+                .header("content-type", "application/json")
+                .body(Body::from(
+                    r#"{"email":"u@example.test","privacyAccepted":true}"#,
+                ))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
+    assert!(!response.headers().contains_key("location"));
 }

@@ -1,24 +1,28 @@
 ---
 title: "Persistent storage"
-description: "Understand application data retention, storage allowances and deletion."
+description: "Keep durable application files and understand retained storage."
 ---
 
-Applications with an approved persistent-storage allocation use a fixed-size volume mounted at `/data`. Keep durable application files there rather than in the container's temporary filesystem.
+Use approved persistent storage for files that must survive application restarts. In the fixed-volume model, the volume is mounted at `/data`; files elsewhere in the container can disappear when it is replaced.
 
-## Capacity and lifecycle
+## Allocate storage
 
-Storage requires a compatible storage agent and enough customer and cluster capacity. The fixed-volume model supports one application replica. Do not assume several replicas can safely share the volume.
+When creating or configuring an application, request capacity within the available workspace and cluster allowance. Persistent storage requires a compatible storage agent. The fixed-volume model supports one application replica.
+
+Do not assume several replicas can share the same volume or that increasing an application allowance resizes existing storage automatically. Review the operation supported for that service.
+
+## Understand retention
 
 | Action | Effect on persistent data |
 | --- | --- |
-| Stop or restart | Retains the volume |
-| Delete application | Retains data and its storage accounting |
+| Stop or restart application | Retains the volume |
+| Delete application | Retains data and storage accounting |
 | Purge retained storage | Permanently destroys the selected data |
 
-Retained data continues to consume capacity. An authorized platform administrator reviews the separate purge action.
+Retained bytes still consume capacity. A platform administrator reviews permanent purge separately. Confirm the exact resource in its deletion preview.
 
-## Backups and availability
+## Arrange backups
 
-A retained volume is not a backup. This storage model does not by itself provide replication, automatic cross-node failover or a restore service. Confirm the backup and recovery arrangements for your application.
+A retained volume is not a backup. This storage model does not by itself provide replication, automatic cross-node failover or a restore service. Confirm your application's backup destination, schedule and recovery procedure with its operator.
 
-<Warning>Export data with an application-consistent procedure before a destructive change. Copying a database file while it is being written may not produce a usable backup.</Warning>
+<Warning>Export data consistently before a destructive change. Copying a database file while it is being written may not produce a usable backup.</Warning>

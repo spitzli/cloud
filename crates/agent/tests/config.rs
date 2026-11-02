@@ -84,3 +84,36 @@ fn plugin_runtime_domain_is_opt_in_and_requires_kubernetes() {
             .is_err()
     );
 }
+
+#[test]
+fn selected_storage_node_is_optional_and_requires_a_socket_and_valid_node_name() {
+    let dir = private();
+    let kubeconfig = dir.path().join("kubeconfig");
+    write(&kubeconfig, &json!({}));
+    let mut value = json!({"version":1,"installation":"test-install","agentId":"test-agent","generation":1,"stateDirectory":dir.path(),"control":{"kind":"unix","path":dir.path().join("core.sock")},"runtime":{"kind":"kubernetes","kubeconfig":kubeconfig,"context":"test","helm":"/usr/bin/helm","chart":"/reviewed/chart","chartSha256":"a".repeat(64)}});
+    serde_json::from_value::<AgentConfig>(value.clone())
+        .unwrap()
+        .validate()
+        .unwrap();
+    value["runtime"]["storageNode"] = "storage-node".into();
+    assert!(
+        serde_json::from_value::<AgentConfig>(value.clone())
+            .unwrap()
+            .validate()
+            .is_err()
+    );
+    value["runtime"]["storageSocket"] = "/run/webdock-storage/control.sock".into();
+    serde_json::from_value::<AgentConfig>(value.clone())
+        .unwrap()
+        .validate()
+        .unwrap();
+    for node in ["", "../storage", "UPPER", "-storage"] {
+        value["runtime"]["storageNode"] = node.into();
+        assert!(
+            serde_json::from_value::<AgentConfig>(value.clone())
+                .unwrap()
+                .validate()
+                .is_err()
+        );
+    }
+}

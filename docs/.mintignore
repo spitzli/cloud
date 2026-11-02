@@ -9,6 +9,13 @@
 /AGENTS.md
 /README.md
 /LICENSE
+/plugin-ideas.md
+/workspace-api.md
+
+# Historical screenshots are not used by the current public guides.
+/images/initial-setup/
+/images/managed-apps/
+/images/managed-registry/
 
 drafts/
 *.draft.mdx

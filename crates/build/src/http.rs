@@ -58,6 +58,87 @@ struct BuildClaim {
     #[serde(default = "legacy_recipes")]
     recipes: Vec<String>,
 }
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesClaim {
+    #[serde(rename = "clusterID")]
+    cluster_id: String,
+    runtime_fingerprint: String,
+    #[serde(default)]
+    storage_profile: Option<String>,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesEnvironment {
+    #[serde(rename = "buildID")]
+    build_id: String,
+    generation: i32,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesStorageIssue {
+    #[serde(rename = "buildID")]
+    build_id: String,
+    generation: i32,
+    action: webdock_agent_protocol::build_storage::BuildStorageAction,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesVolumeBinding {
+    #[serde(rename = "buildID")]
+    build_id: String,
+    generation: i32,
+    handle: webdock_agent_protocol::build_storage::BuildVolumeHandle,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesVolumeRetired {
+    #[serde(rename = "buildID")]
+    build_id: String,
+    generation: i32,
+    epoch: u64,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesCluster {
+    #[serde(rename = "clusterID")]
+    cluster_id: String,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesIntent {
+    #[serde(rename = "buildID")]
+    build_id: String,
+    generation: i32,
+    spec_fingerprint: String,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesJob {
+    #[serde(rename = "buildID")]
+    build_id: String,
+    generation: i32,
+    uid: String,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesRetire {
+    #[serde(rename = "buildID")]
+    build_id: String,
+    generation: i32,
+    uid: Option<String>,
+    infrastructure_failure: Option<String>,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct KubernetesLog {
+    #[serde(rename = "buildID")]
+    build_id: String,
+    generation: i32,
+    entry_key: String,
+    phase: String,
+    text: String,
+}
 fn legacy_recipes() -> Vec<String> {
     vec!["dockerfile".into()]
 }
@@ -224,6 +305,133 @@ async fn dispatch(service: &BuildService, request: Request) -> Result<Response> 
                     job
                 })
                 .unwrap_or(Value::Null)
+        }
+        "kubernetes-log" => {
+            let value: KubernetesLog = parse(input)?;
+            lease(&value.build_id, value.generation)?;
+            service
+                .append_kubernetes_log(
+                    &worker,
+                    &value.build_id,
+                    value.generation,
+                    &value.entry_key,
+                    &value.phase,
+                    &value.text,
+                )
+                .await?
+        }
+        "kubernetes-claim" => {
+            let value: KubernetesClaim = parse(input)?;
+            if value
+                .storage_profile
+                .as_deref()
+                .is_some_and(|p| p != "fixed-ext4-v1")
+            {
+                return Err(error("invalid_build_storage_profile"));
+            }
+            service
+                .claim_kubernetes_build_with_storage(
+                    &worker,
+                    &value.cluster_id,
+                    &value.runtime_fingerprint,
+                    value.storage_profile.is_some(),
+                )
+                .await?
+                .unwrap_or(Value::Null)
+        }
+        "kubernetes-environment" => {
+            let value: KubernetesEnvironment = parse(input)?;
+            lease(&value.build_id, value.generation)?;
+            serde_json::to_value(
+                service
+                    .kubernetes_build_environment(&worker, &value.build_id, value.generation)
+                    .await?,
+            )
+            .map_err(|_| error("invalid_build_environment"))?
+        }
+        "kubernetes-storage" => {
+            let value: KubernetesStorageIssue = parse(input)?;
+            lease(&value.build_id, value.generation)?;
+            serde_json::to_value(
+                service
+                    .issue_kubernetes_storage(
+                        &worker,
+                        &value.build_id,
+                        value.generation,
+                        value.action,
+                    )
+                    .await?,
+            )
+            .map_err(|_| error("invalid_build_storage_authority"))?
+        }
+        "kubernetes-volume" => {
+            let value: KubernetesVolumeBinding = parse(input)?;
+            lease(&value.build_id, value.generation)?;
+            service
+                .record_kubernetes_volume(&worker, &value.build_id, value.generation, value.handle)
+                .await?;
+            json!({"recorded":true})
+        }
+        "kubernetes-volume-retired" => {
+            let value: KubernetesVolumeRetired = parse(input)?;
+            lease(&value.build_id, value.generation)?;
+            service
+                .record_kubernetes_volume_retired(
+                    &worker,
+                    &value.build_id,
+                    value.generation,
+                    value.epoch,
+                )
+                .await?;
+            json!({"retired":true})
+        }
+        "kubernetes-attempts" => {
+            let value: KubernetesCluster = parse(input)?;
+            crate::contracts::id(&value.cluster_id)?;
+            json!({"attempts":service.list_kubernetes_attempts(&worker, &value.cluster_id).await?})
+        }
+        "kubernetes-intent" => {
+            let value: KubernetesIntent = parse(input)?;
+            lease(&value.build_id, value.generation)?;
+            service
+                .record_kubernetes_job_intent(
+                    &worker,
+                    &value.build_id,
+                    value.generation,
+                    &value.spec_fingerprint,
+                )
+                .await?;
+            json!({"recorded":true})
+        }
+        "kubernetes-job" => {
+            let value: KubernetesJob = parse(input)?;
+            lease(&value.build_id, value.generation)?;
+            service
+                .record_kubernetes_job(&worker, &value.build_id, value.generation, &value.uid)
+                .await?;
+            json!({"recorded":true})
+        }
+        "kubernetes-retire" => {
+            let value: KubernetesRetire = parse(input)?;
+            lease(&value.build_id, value.generation)?;
+            if value.infrastructure_failure.as_deref().is_some_and(|code| {
+                !matches!(
+                    code,
+                    "KUBERNETES_API_UNAVAILABLE" | "KUBERNETES_NODE_UNAVAILABLE"
+                )
+            }) {
+                return Err(error("kubernetes_failure_not_retryable"));
+            }
+            let retry = service
+                .retire_kubernetes_attempt_with_retry(
+                    &worker,
+                    &value.build_id,
+                    value.generation,
+                    value.uid.as_deref(),
+                    value.infrastructure_failure.as_deref(),
+                )
+                .await?;
+            json!({"retired":true,"retryScheduled":retry})
         }
         "complete" => {
             let value: Completion = parse(input)?;

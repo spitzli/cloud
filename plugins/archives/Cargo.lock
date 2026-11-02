@@ -6381,6 +6381,7 @@ name = "webdock-agent-protocol"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "ed25519-dalek",
  "hex",
  "prost",
  "serde",
@@ -6486,6 +6487,7 @@ dependencies = [
  "tonic",
  "url",
  "uuid",
+ "webdock-agent-protocol",
  "webdock-browser-session",
  "webdock-export-protocol",
  "webdock-hosting",
@@ -6601,6 +6603,7 @@ dependencies = [
  "hex",
  "hmac 0.12.1",
  "percent-encoding",
+ "reqwest 0.12.28",
  "scrypt",
  "sea-orm",
  "serde",

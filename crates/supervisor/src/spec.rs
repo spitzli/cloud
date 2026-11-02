@@ -24,6 +24,8 @@ pub struct RuntimeSpec {
     pub replicas: u16,
     pub port: u16,
     pub health_path: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub health_host: Option<String>,
     pub volume: Option<RetainedVolume>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plugin: Option<PluginBinding>,
@@ -36,6 +38,22 @@ pub struct RuntimeSpec {
 }
 pub fn image_digest(image: &str) -> bool {
     image.len()<=512 && regex::Regex::new(r"^[a-z0-9]+(?:[.-][a-z0-9]+)*(?::[0-9]{1,5})?/(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*@sha256:[a-f0-9]{64}$").unwrap().is_match(image)
+}
+/// Probe header authority only; it never selects a network destination.
+pub fn valid_health_host(host: &str) -> bool {
+    if host.len() > 259 || !regex::Regex::new(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?::[1-9][0-9]{0,4})?$").unwrap().is_match(host) {
+        return false;
+    }
+    let (hostname, port) = host
+        .split_once(':')
+        .map_or((host, None), |(name, port)| (name, Some(port)));
+    if hostname.len() > 253 || port.is_some_and(|port| port.parse::<u16>().is_err()) {
+        return false;
+    }
+    let origin = format!("https://{host}");
+    webdock_core::config::canonical_origin(&origin, true).is_ok_and(|canonical| {
+        canonical == origin || (port == Some("443") && canonical == format!("https://{hostname}"))
+    })
 }
 impl RuntimeSpec {
     pub fn validate(&self) -> Result<()> {
@@ -73,6 +91,13 @@ impl RuntimeSpec {
         {
             return Err(ExecutionError::Invalid("health path"));
         }
+        if self
+            .health_host
+            .as_deref()
+            .is_some_and(|host| !valid_health_host(host))
+        {
+            return Err(ExecutionError::Invalid("health host"));
+        }
         if let Some(volume) = &self.volume
             && (volume.mount_path != "/data"
                 || self.replicas > 1
@@ -109,6 +134,9 @@ impl RuntimeSpec {
         if let Some(binding) = &self.hosting_binding {
             binding.quota.validate()?;
             binding.final_quota.validate()?;
+            if let Some(route) = &binding.public_route {
+                route.validate()?;
+            }
             if self.plugin.is_some()
                 || !self.mounts.is_empty()
                 || binding
@@ -296,6 +324,8 @@ pub struct TargetObservation {
     pub registry_version: Option<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub service_bindings_version: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub public_routing_version: Option<u8>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -336,8 +366,32 @@ impl ResourceAllowance {
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PublicRoute {
+    pub allocation_id: RecordId,
+    pub hostname: String,
+    pub revision: u64,
+}
+impl PublicRoute {
+    pub fn validate(&self) -> Result<()> {
+        if self.revision == 0
+            || self.revision > 9_007_199_254_740_991
+            || self.hostname.contains(':')
+            || self.hostname.split('.').count() < 3
+            || !valid_health_host(&self.hostname)
+            || self.hostname.parse::<std::net::IpAddr>().is_ok()
+        {
+            return Err(ExecutionError::Invalid("public route"));
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct HostingBinding {
     pub cluster_id: RecordId,
     pub quota: ResourceAllowance,
     pub final_quota: ResourceAllowance,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub public_route: Option<PublicRoute>,
 }

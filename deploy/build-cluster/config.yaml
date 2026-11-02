@@ -1,0 +1,22 @@
+# Standalone build control plane. Never set server: <run-cluster-url>.
+node-name: webdock-build-eu-01
+node-ip: 10.83.0.1
+bind-address: 10.83.0.1
+advertise-address: 10.83.0.1
+tls-san:
+  - 127.0.0.1
+cluster-cidr: 10.84.0.0/16
+service-cidr: 10.85.0.0/16
+cluster-dns: 10.85.0.10
+flannel-iface: eth0
+secrets-encryption: true
+write-kubeconfig-mode: '0600'
+disable:
+  - traefik
+  - servicelb
+  - local-storage
+kubelet-arg:
+  - 'system-reserved=cpu=500m,memory=1Gi,ephemeral-storage=10Gi,pid=1000'
+  - 'kube-reserved=cpu=500m,memory=1Gi,ephemeral-storage=10Gi,pid=1000'
+  - 'pod-max-pids=512'
+  - 'eviction-hard=memory.available<1Gi,nodefs.available<15%,imagefs.available<15%'

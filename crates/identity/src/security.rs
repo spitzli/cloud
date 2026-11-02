@@ -50,7 +50,7 @@ fn totp(secret: &str, email: &str) -> Result<totp_rs::Totp> {
         .with_digits(6)
         .with_skew(1)
         .with_step_duration(30)
-        .with_issuer(Some("Webdock"))
+        .with_issuer(Some("Spitzli Cloud"))
         .with_account_name(email)
         .build()
         .map_err(|_| IdentityError::InvalidEncoding)
@@ -102,7 +102,11 @@ impl IdentityService {
             .ok_or(IdentityError::Unauthorized)?;
         let row = tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT u.id,u.email,u.role,u.\"emailVerified\",u.\"mustChangePassword\",coalesce(u.\"twoFactorEnabled\",false) AS mfa,s.id AS session_id,webdock_rls.identity_has_preview(u.id,s.id) AS preview FROM webdock_auth.\"user\" u JOIN webdock_auth.session s ON s.\"userId\"=u.id WHERE s.token=$1 AND s.\"expiresAt\">statement_timestamp() AND NOT coalesce(u.banned,false) AND u.role IN ('user','operator') FOR UPDATE OF u,s",[token.into()])).await?.ok_or(IdentityError::Unauthorized)?;
         let id: String = row.try_get("", "id")?;
-        if externally_managed(tx, &id).await? {
+        if externally_managed(tx, &id).await?
+            || !self
+                .provider_session_live(tx, &id, &row.try_get::<String>("", "session_id")?)
+                .await?
+        {
             return Err(IdentityError::Unauthorized);
         }
         Ok(Actor {
@@ -178,7 +182,7 @@ impl IdentityService {
             return Err(IdentityError::SecurityState);
         }
         let credential = credential(&tx, &actor.id).await?;
-        let enrollment=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT credential_digest FROM webdock_auth.identity_mfa_enrollment WHERE session_id=$1 AND expires_at>statement_timestamp() FOR UPDATE",[actor.session_id.into()])).await?.ok_or(IdentityError::Unauthorized)?;
+        let enrollment=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT credential_digest FROM webdock_auth.identity_mfa_enrollment WHERE session_id=$1 AND expires_at>statement_timestamp() FOR UPDATE",[actor.session_id.clone().into()])).await?.ok_or(IdentityError::Unauthorized)?;
         if enrollment.try_get::<String>("", "credential_digest")? != digest(&credential) {
             return Err(IdentityError::Unauthorized);
         }
@@ -200,10 +204,16 @@ impl IdentityService {
             tx.commit().await?;
             return Err(IdentityError::InvalidCode);
         }
+        let mut source = self
+            .session_source(&tx, &actor.id, &actor.session_id)
+            .await?;
+        if let Some(source) = &mut source {
+            source.mfa_verified = true;
+        }
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.\"twoFactor\" SET verified=true,\"failedVerificationCount\"=0,\"lockedUntil\"=NULL WHERE \"userId\"=$1",[actor.id.clone().into()])).await?;
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.\"user\" SET \"twoFactorEnabled\"=true,\"updatedAt\"=statement_timestamp() WHERE id=$1",[actor.id.clone().into()])).await?;
         invalidate_sessions(&tx, &actor.id, None).await?;
-        self.issue_session(tx, &actor.id).await
+        self.issue_session_with_source(tx, &actor.id, source).await
     }
     pub async fn complete_mfa(&self, cookie: &str, proof: MfaProof) -> Result<IssuedSession> {
         let token = self
@@ -231,6 +241,7 @@ impl IdentityService {
         {
             return Err(IdentityError::Unauthorized);
         }
+        let mut source = self.pending_neon(&tx, &id, cookie).await?;
         let factor = factor(&tx, &id).await?;
         if factor.try_get::<Option<bool>>("", "verified")? == Some(false) {
             return Err(IdentityError::SecurityState);
@@ -257,7 +268,10 @@ impl IdentityService {
         ))
         .await?;
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.\"twoFactor\" SET \"failedVerificationCount\"=0,\"lockedUntil\"=NULL WHERE \"userId\"=$1",[id.clone().into()])).await?;
-        self.issue_session(tx, &id).await
+        if let Some(source) = &mut source {
+            source.mfa_verified = true;
+        }
+        self.issue_session_with_source(tx, &id, source).await
     }
     async fn verify_factor(
         &self,
@@ -325,6 +339,9 @@ impl IdentityService {
     ) -> Result<IssuedSession> {
         let tx = self.db.begin().await?;
         let actor = self.locked_actor(&tx, cookie).await?;
+        if self.neon_mapping(&tx, &actor.id).await?.is_some() {
+            return Err(IdentityError::SecurityState);
+        }
         if !actor.verified || actor.preview {
             return Err(IdentityError::SecurityState);
         }
@@ -345,8 +362,11 @@ impl IdentityService {
         .map_err(|_| IdentityError::Worker)??;
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.account SET password=$1,\"updatedAt\"=statement_timestamp() WHERE \"userId\"=$2 AND \"providerId\"='credential'",[hash.into(),actor.id.clone().into()])).await?;
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.\"user\" SET \"mustChangePassword\"=false,\"updatedAt\"=statement_timestamp() WHERE id=$1",[actor.id.clone().into()])).await?;
+        let source = self
+            .session_source(&tx, &actor.id, &actor.session_id)
+            .await?;
         invalidate_sessions(&tx, &actor.id, None).await?;
-        self.issue_session(tx, &actor.id).await
+        self.issue_session_with_source(tx, &actor.id, source).await
     }
     pub async fn list_sessions(&self, cookie: &str) -> Result<Vec<SessionSummary>> {
         let tx = self.db.begin().await?;
@@ -436,13 +456,19 @@ impl IdentityService {
         ))
         .await?;
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.\"user\" SET \"twoFactorEnabled\"=false,\"updatedAt\"=statement_timestamp() WHERE id=$1",[actor.id.clone().into()])).await?;
+        let mut source = self
+            .session_source(&tx, &actor.id, &actor.session_id)
+            .await?;
+        if let Some(source) = &mut source {
+            source.mfa_verified = false;
+        }
         invalidate_sessions(&tx, &actor.id, None).await?;
-        self.issue_session(tx, &actor.id).await
+        self.issue_session_with_source(tx, &actor.id, source).await
     }
     pub async fn refresh_session(&self, cookie: &str) -> Result<IssuedSession> {
         let tx = self.db.begin().await?;
         let actor = self.locked_actor(&tx, cookie).await?;
-        let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.session SET \"expiresAt\"=CASE WHEN \"updatedAt\"<=statement_timestamp()-interval '15 minutes' THEN statement_timestamp()+interval '8 hours' ELSE \"expiresAt\" END,\"updatedAt\"=CASE WHEN \"updatedAt\"<=statement_timestamp()-interval '15 minutes' THEN statement_timestamp() ELSE \"updatedAt\" END WHERE id=$1 RETURNING token,greatest(1,extract(epoch FROM (\"expiresAt\"-statement_timestamp()))::bigint) AS age",[actor.session_id.into()])).await?.ok_or(IdentityError::Unauthorized)?;
+        let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.session SET \"expiresAt\"=CASE WHEN \"updatedAt\"<=statement_timestamp()-interval '15 minutes' THEN statement_timestamp()+interval '8 hours' ELSE \"expiresAt\" END,\"updatedAt\"=CASE WHEN \"updatedAt\"<=statement_timestamp()-interval '15 minutes' THEN statement_timestamp() ELSE \"updatedAt\" END WHERE id=$1 RETURNING token,greatest(1,extract(epoch FROM (\"expiresAt\"-statement_timestamp()))::bigint) AS age",[actor.session_id.clone().into()])).await?.ok_or(IdentityError::Unauthorized)?;
         let token: String = row.try_get("", "token")?;
         let age: i64 = row.try_get("", "age")?;
         let set_cookie = self.cookies.header(

@@ -4,7 +4,7 @@ use std::{
     os::unix::fs::PermissionsExt,
     sync::{
         Arc, Mutex,
-        atomic::{AtomicBool, Ordering},
+        atomic::{AtomicBool, AtomicUsize, Ordering},
     },
 };
 use tokio_stream::wrappers::UnixListenerStream;
@@ -26,6 +26,7 @@ struct Core {
     revoked: AtomicBool,
     fail_complete: AtomicBool,
     terminal_guard: AtomicBool,
+    slow_read_guard_calls: AtomicUsize,
 }
 impl Core {
     fn peer<T>(&self, request: &Request<T>) -> std::result::Result<(), Status> {
@@ -99,6 +100,17 @@ impl AgentControl for ControlService {
         r: Request<wire::GuardRequest>,
     ) -> std::result::Result<Response<wire::GuardReply>, Status> {
         self.0.peer(&r)?;
+        if r.get_ref().operation_id == "remote-latency-read"
+            && self.0.slow_read_guard_calls.fetch_add(1, Ordering::SeqCst) > 0
+        {
+            tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        }
+        if r.get_ref().operation_id == "revoke-pending-read"
+            && self.0.slow_read_guard_calls.fetch_add(1, Ordering::SeqCst) > 0
+        {
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+            self.0.allowed.store(false, Ordering::SeqCst);
+        }
         let terminal = self.0.terminal_guard.load(Ordering::SeqCst)
             && self.0.receipts.lock().unwrap().iter().any(|receipt| {
                 receipt.operation_id == r.get_ref().operation_id
@@ -256,6 +268,7 @@ async fn outbound_unix_dispatch_revalidates_reads_and_replays_committed_work_aft
         revoked: AtomicBool::new(false),
         fail_complete: AtomicBool::new(false),
         terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: AtomicUsize::new(0),
     });
     let (tx, rx) = tokio::sync::oneshot::channel();
     let service = core.clone();
@@ -447,6 +460,7 @@ async fn outbound_mtls_rotates_certificates_and_stops_after_live_enrollment_revo
         revoked: AtomicBool::new(false),
         fail_complete: AtomicBool::new(false),
         terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: AtomicUsize::new(0),
     });
     let tls = ServerTlsConfig::new()
         .identity(Identity::from_pem(
@@ -569,6 +583,7 @@ async fn real_docker_executor_obeys_outbound_control_leases_and_reports_observat
         revoked: AtomicBool::new(false),
         fail_complete: AtomicBool::new(false),
         terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: AtomicUsize::new(0),
     });
     let (tx, rx) = tokio::sync::oneshot::channel();
     let service = core.clone();
@@ -662,6 +677,7 @@ async fn lost_terminal_completion_ack_replays_durable_outbox_before_poll_without
         revoked: AtomicBool::new(false),
         fail_complete: AtomicBool::new(true),
         terminal_guard: AtomicBool::new(true),
+        slow_read_guard_calls: AtomicUsize::new(0),
     });
     let (tx, rx) = tokio::sync::oneshot::channel();
     let service = core.clone();
@@ -756,6 +772,7 @@ async fn delayed_mail_guard_reply_cannot_authorize_runtime_after_lease_expiry() 
         revoked: AtomicBool::new(false),
         fail_complete: AtomicBool::new(false),
         terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: AtomicUsize::new(0),
     });
     let material = MailMaterial::Credentials {
         bootstrap_password: Some("owned-fixture-bootstrap".into()),
@@ -862,3 +879,281 @@ mod configuration_management;
 #[cfg(feature = "kubernetes")]
 #[path = "support/plugin_management.rs"]
 mod plugin_management;
+
+struct NetworkDelayedRead;
+#[async_trait::async_trait]
+impl RuntimeAdapter for NetworkDelayedRead {
+    fn capabilities(&self) -> Capabilities {
+        Controlled.capabilities()
+    }
+    async fn reconcile(&self, c: &Command, g: &LeaseGuard) -> Result<ObservedState> {
+        Controlled.reconcile(c, g).await
+    }
+    async fn inspect(&self, s: &RuntimeSpec) -> Result<ObservedState> {
+        Controlled.inspect(s).await
+    }
+    async fn logs(&self, s: &RuntimeSpec, tail: u32) -> Result<String> {
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+        Controlled.logs(s, tail).await
+    }
+}
+#[tokio::test]
+async fn remote_authorization_latency_cannot_starve_a_live_runtime_read() {
+    let dir = tempfile::Builder::new()
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempdir()
+        .unwrap();
+    let socket = dir.path().join("control.sock");
+    let listener = tokio::net::UnixListener::bind(&socket).unwrap();
+    std::fs::set_permissions(&socket, std::fs::Permissions::from_mode(0o600)).unwrap();
+    let core = Arc::new(Core {
+        commands: Mutex::new(VecDeque::from([{
+            let mut value = command(wire::Intent::Logs, "remote-latency-read");
+            value.expected_runtime_id = Some("controlled-test".into());
+            value
+        }])),
+        receipts: Mutex::new(vec![]),
+        sequences: Mutex::new(vec![]),
+        allowed: AtomicBool::new(true),
+        certificate: Mutex::new(None),
+        revoked: AtomicBool::new(false),
+        fail_complete: AtomicBool::new(false),
+        terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: AtomicUsize::new(0),
+    });
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    let service = core.clone();
+    let server = tokio::spawn(async move {
+        tonic::transport::Server::builder()
+            .add_service(AgentControlServer::new(ControlService(service)))
+            .serve_with_incoming_shutdown(UnixListenerStream::new(listener), async {
+                let _ = rx.await;
+            })
+            .await
+            .unwrap()
+    });
+    let config = AgentConfig {
+        database_runtime: None,
+        recovery_runtime: None,
+        mail_configuration_enabled: false,
+        mail_runtime: None,
+        version: 1,
+        installation: "test-install".into(),
+        agent_id: "test-agent".into(),
+        generation: 1,
+        state_directory: dir.path().into(),
+        control: ControlEndpoint::Unix { path: socket },
+        runtime: RuntimeConfiguration::Docker {
+            socket: "/var/run/docker.sock".into(),
+            initializer_image: None,
+            storage_socket: None,
+        },
+        policy: Default::default(),
+        workloads: false,
+        plugin_runtime_enabled: false,
+    };
+
+    let mut daemon = Daemon::with_adapter(config, Arc::new(NetworkDelayedRead)).unwrap();
+    daemon.connect().await.unwrap();
+    tokio::time::timeout(std::time::Duration::from_millis(1700), daemon.cycle())
+        .await
+        .expect("periodic authorization blocked runtime progress")
+        .unwrap();
+    {
+        let receipts = core.receipts.lock().unwrap();
+        assert_eq!(
+            receipts.last().unwrap().outcome,
+            wire::Outcome::Succeeded as i32
+        );
+        assert_eq!(
+            receipts.last().unwrap().result,
+            Some(wire::receipt::Result::LogsUtf8(b"test log\n".to_vec()))
+        );
+    }
+    drop(daemon);
+    let _ = tx.send(());
+    server.await.unwrap();
+}
+
+struct PendingRead(Arc<AtomicBool>);
+#[async_trait::async_trait]
+impl RuntimeAdapter for PendingRead {
+    fn capabilities(&self) -> Capabilities {
+        Controlled.capabilities()
+    }
+    async fn reconcile(&self, c: &Command, g: &LeaseGuard) -> Result<ObservedState> {
+        Controlled.reconcile(c, g).await
+    }
+    async fn inspect(&self, s: &RuntimeSpec) -> Result<ObservedState> {
+        Controlled.inspect(s).await
+    }
+    async fn logs(&self, _: &RuntimeSpec, _: u32) -> Result<String> {
+        self.0.store(true, Ordering::SeqCst);
+        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+        Ok("must-not-escape".into())
+    }
+}
+#[tokio::test]
+async fn periodic_revocation_cancels_pending_runtime_reads_without_releasing_output() {
+    let dir = tempfile::Builder::new()
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempdir()
+        .unwrap();
+    let socket = dir.path().join("control.sock");
+    let listener = tokio::net::UnixListener::bind(&socket).unwrap();
+    std::fs::set_permissions(&socket, std::fs::Permissions::from_mode(0o600)).unwrap();
+    let core = Arc::new(Core {
+        commands: Mutex::new(VecDeque::from([command(
+            wire::Intent::Logs,
+            "revoke-pending-read",
+        )])),
+        receipts: Mutex::new(vec![]),
+        sequences: Mutex::new(vec![]),
+        allowed: AtomicBool::new(true),
+        certificate: Mutex::new(None),
+        revoked: AtomicBool::new(false),
+        fail_complete: AtomicBool::new(false),
+        terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: AtomicUsize::new(0),
+    });
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    let service = core.clone();
+    let server = tokio::spawn(async move {
+        tonic::transport::Server::builder()
+            .add_service(AgentControlServer::new(ControlService(service)))
+            .serve_with_incoming_shutdown(UnixListenerStream::new(listener), async {
+                let _ = rx.await;
+            })
+            .await
+            .unwrap()
+    });
+    let config = AgentConfig {
+        database_runtime: None,
+        recovery_runtime: None,
+        mail_configuration_enabled: false,
+        mail_runtime: None,
+        version: 1,
+        installation: "test-install".into(),
+        agent_id: "test-agent".into(),
+        generation: 1,
+        state_directory: dir.path().into(),
+        control: ControlEndpoint::Unix { path: socket },
+        runtime: RuntimeConfiguration::Docker {
+            socket: "/var/run/docker.sock".into(),
+            initializer_image: None,
+            storage_socket: None,
+        },
+        policy: Default::default(),
+        workloads: false,
+        plugin_runtime_enabled: false,
+    };
+
+    let started = Arc::new(AtomicBool::new(false));
+    let mut daemon = Daemon::with_adapter(config, Arc::new(PendingRead(started.clone()))).unwrap();
+    daemon.connect().await.unwrap();
+    tokio::time::timeout(std::time::Duration::from_secs(1), daemon.cycle())
+        .await
+        .unwrap()
+        .unwrap();
+    assert!(
+        started.load(Ordering::SeqCst),
+        "runtime must have started before revocation"
+    );
+    {
+        let receipts = core.receipts.lock().unwrap();
+        let receipt = receipts.last().unwrap();
+        assert_eq!(receipt.outcome, wire::Outcome::Rejected as i32);
+        assert_eq!(receipt.error_code, "authorization_denied");
+        assert!(receipt.result.is_none());
+    }
+    drop(daemon);
+    let _ = tx.send(());
+    server.await.unwrap();
+}
+
+struct RevokeAfterRead(Arc<Core>);
+#[async_trait::async_trait]
+impl RuntimeAdapter for RevokeAfterRead {
+    fn capabilities(&self) -> Capabilities {
+        Controlled.capabilities()
+    }
+    async fn reconcile(&self, c: &Command, g: &LeaseGuard) -> Result<ObservedState> {
+        Controlled.reconcile(c, g).await
+    }
+    async fn inspect(&self, s: &RuntimeSpec) -> Result<ObservedState> {
+        Controlled.inspect(s).await
+    }
+    async fn logs(&self, _: &RuntimeSpec, _: u32) -> Result<String> {
+        self.0.allowed.store(false, Ordering::SeqCst);
+        Ok("must-not-leave-agent".into())
+    }
+}
+#[tokio::test]
+async fn fresh_final_guard_rejects_output_when_authority_changes_at_read_completion() {
+    let dir = tempfile::Builder::new()
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempdir()
+        .unwrap();
+    let socket = dir.path().join("control.sock");
+    let listener = tokio::net::UnixListener::bind(&socket).unwrap();
+    std::fs::set_permissions(&socket, std::fs::Permissions::from_mode(0o600)).unwrap();
+    let core = Arc::new(Core {
+        commands: Mutex::new(VecDeque::from([command(
+            wire::Intent::Logs,
+            "revoked-after-read",
+        )])),
+        receipts: Mutex::new(vec![]),
+        sequences: Mutex::new(vec![]),
+        allowed: AtomicBool::new(true),
+        certificate: Mutex::new(None),
+        revoked: AtomicBool::new(false),
+        fail_complete: AtomicBool::new(false),
+        terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: AtomicUsize::new(0),
+    });
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    let service = core.clone();
+    let server = tokio::spawn(async move {
+        tonic::transport::Server::builder()
+            .add_service(AgentControlServer::new(ControlService(service)))
+            .serve_with_incoming_shutdown(UnixListenerStream::new(listener), async {
+                let _ = rx.await;
+            })
+            .await
+            .unwrap()
+    });
+    let config = AgentConfig {
+        database_runtime: None,
+        recovery_runtime: None,
+        mail_configuration_enabled: false,
+        mail_runtime: None,
+        version: 1,
+        installation: "test-install".into(),
+        agent_id: "test-agent".into(),
+        generation: 1,
+        state_directory: dir.path().into(),
+        control: ControlEndpoint::Unix { path: socket },
+        runtime: RuntimeConfiguration::Docker {
+            socket: "/var/run/docker.sock".into(),
+            initializer_image: None,
+            storage_socket: None,
+        },
+        policy: Default::default(),
+        workloads: false,
+        plugin_runtime_enabled: false,
+    };
+
+    let mut daemon = Daemon::with_adapter(config, Arc::new(RevokeAfterRead(core.clone()))).unwrap();
+    daemon.connect().await.unwrap();
+    daemon.cycle().await.unwrap();
+    {
+        let receipts = core.receipts.lock().unwrap();
+        let receipt = receipts.last().unwrap();
+        assert_eq!(receipt.outcome, wire::Outcome::Rejected as i32);
+        assert_eq!(receipt.error_code, "authorization_denied");
+        assert!(receipt.result.is_none());
+    }
+    drop(daemon);
+    let _ = tx.send(());
+    server.await.unwrap();
+}

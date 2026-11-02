@@ -974,11 +974,11 @@ async fn command(
                     .map_err(failure)?;
                 data(match change {
                     KeyChange::Created { token, .. } => KeyReply {
-                        message: "Save this Webdock API key now. It is shown only once.",
+                        message: "Save this Spitzli Cloud API key now. It is shown only once.",
                         token: Some(token),
                     },
                     KeyChange::Revoked { .. } => KeyReply {
-                        message: "Webdock API key revoked.",
+                        message: "Spitzli Cloud API key revoked.",
                         token: None,
                     },
                 })

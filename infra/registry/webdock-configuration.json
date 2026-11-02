@@ -30,17 +30,17 @@
   },
   "get_admin_branding": {
     "current": {
-      "name": "Webdock Registry",
+      "name": "Spitzli Cloud Registry",
       "theme": "tabularis",
-      "tagline": "Extensions for your Webdock projects.",
-      "primaryHex": "#B84F18",
-      "accentHex": "#FF9255",
+      "tagline": "Extensions for your Spitzli Cloud projects.",
+      "primaryHex": "#7C3AED",
+      "accentHex": "#A78BFA",
       "successHex": "#10b981",
-      "logoUrl": "https://docs.webdock.dev/logo/dark.svg",
-      "logoLightUrl": "https://docs.webdock.dev/logo/light.svg",
-      "logoStyle": "wordmark",
-      "faviconUrl": "https://docs.webdock.dev/favicon.svg",
-      "footerText": "The plugin registry for Webdock.",
+      "logoUrl": "https://spitzli.cloud/spitzli-logo.png",
+      "logoLightUrl": "https://spitzli.cloud/spitzli-logo.png",
+      "logoStyle": "mark",
+      "faviconUrl": "https://spitzli.cloud/favicon.ico",
+      "footerText": "The extension registry for Spitzli Cloud.",
       "analyticsScript": null,
       "allowIndexing": true,
       "socialLinks": {
@@ -59,10 +59,10 @@
         "videoPosterUrl": null
       },
       "taglineTranslations": {
-        "de": "Erweiterungen f\u00fcr deine Webdock-Projekte."
+        "de": "Erweiterungen f\u00fcr deine Projekte in Spitzli Cloud."
       },
       "footerTextTranslations": {
-        "de": "Die Plugin-Registry f\u00fcr Webdock."
+        "de": "Die Erweiterungs-Registry von Spitzli Cloud."
       }
     },
     "defaults": {
@@ -112,8 +112,8 @@
     "eyebrow": {
       "enabled": true,
       "text": {
-        "en": "Webdock \u00b7 Plugin Registry",
-        "de": "Webdock \u00b7 Plugin-Registry"
+        "en": "Spitzli Cloud \u00b7 Extension Registry",
+        "de": "Spitzli Cloud \u00b7 Erweiterungs-Registry"
       }
     },
     "features": {
@@ -144,15 +144,15 @@
           "de": "Versionierte Releases"
         },
         "body": {
-          "en": "Keep manifest versions, release tags and descriptor assets aligned. Webdock host integration is in development.",
-          "de": "Halte Manifest-Version, Release-Tag und Deskriptor-Datei synchron. Die Webdock-Hostintegration ist in Entwicklung."
+          "en": "Keep manifest versions, release tags and descriptor assets aligned. Spitzli Cloud host integration is in development.",
+          "de": "Halte Manifest-Version, Release-Tag und Deskriptor-Datei synchron. Die Hostintegration f\u00fcr Spitzli Cloud ist in Entwicklung."
         }
       }
     }
   },
   "get_instance_settings": {
     "requireApproval": true,
-    "docsExternalUrl": "https://docs.webdock.dev/",
+    "docsExternalUrl": "https://docs.spitzli.cloud/",
     "rateLimits": [
       {
         "id": "submit",

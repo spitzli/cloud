@@ -1,0 +1,29 @@
+{
+  "ownedNamespace": "wd-675540778968",
+  "ownedPod": "app-675540778969-67c5d87969-djl9s",
+  "podIP": "10.84.0.95",
+  "podRunning": true,
+  "containerArgs": [
+    "bun",
+    "--smol",
+    "-e",
+    "reviewed synthetic Bun.serve8080 handler"
+  ],
+  "observedStartupProbeFailure": "Get http://10.84.0.95:8080/: context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+  "probeFailureCountAtObservation": 24,
+  "loopbackExecExitCode": 0,
+  "syntheticLoopbackResponse": "retained-content:retained-env-value",
+  "hostInputDropRule": {
+    "table": "inet webdock_build_host",
+    "chain": "input",
+    "interface": "cni0",
+    "handle": 13,
+    "packetsBefore": 1101,
+    "packetsAfter": 1141,
+    "intervalSeconds": 5
+  },
+  "otherDropCountersChanged": false,
+  "firewallOrProbeChangesPerformed": false,
+  "fixtureCleanupVerified": true,
+  "promotable": false
+}

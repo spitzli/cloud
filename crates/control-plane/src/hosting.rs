@@ -16,6 +16,8 @@ use webdock_core::features::OperationKind;
 
 pub fn routes() -> Router<Arc<ServiceState>> {
     Router::new()
+        .merge(crate::build_logs::routes())
+        .merge(crate::build_infrastructure::routes())
         .route("/api/console/hosting", post(command))
         .route("/v1/hosting", post(command))
         .route("/api/console/hosting/reads/{id}", get(read))

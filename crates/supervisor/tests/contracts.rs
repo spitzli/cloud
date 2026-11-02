@@ -20,6 +20,7 @@ fn spec() -> RuntimeSpec {
         replicas: 1,
         port: 8080,
         health_path: Some("/".into()),
+        health_host: None,
         volume: None,
         plugin: None,
         mounts: Vec::new(),
@@ -41,6 +42,50 @@ fn command(generation: u64) -> Command {
         action: Action::Apply,
         spec: spec(),
         expected_runtime_id: None,
+    }
+}
+#[test]
+fn optional_probe_host_preserves_old_runtime_bytes_and_rejects_non_authorities() {
+    let old = serde_json::to_value(spec()).unwrap();
+    assert!(old.get("healthHost").is_none());
+    let restored: RuntimeSpec = serde_json::from_value(old.clone()).unwrap();
+    assert_eq!(
+        serde_json::to_vec(&restored).unwrap(),
+        serde_json::to_vec(&spec()).unwrap()
+    );
+    for host in [
+        "api.example.test",
+        "api.example.test:3130",
+        "localhost:3130",
+    ] {
+        let mut value = old.clone();
+        value["healthHost"] = serde_json::json!(host);
+        let runtime: RuntimeSpec =
+            serde_json::from_value(value).expect("optional canonical probe Host");
+        runtime.validate().unwrap();
+        assert_eq!(serde_json::to_value(runtime).unwrap()["healthHost"], host);
+    }
+    for host in [
+        "",
+        "API.example.test",
+        "api.example.test/path",
+        "https://api.example.test",
+        "user@api.example.test",
+        "api.example.test\r\nX-Test: true",
+        "api.example.test:0",
+        "api.example.test:65536",
+        "api.example.test:03130",
+        "api.example.test.",
+        "*.example.test",
+        "-api.example.test",
+    ] {
+        let mut value = old.clone();
+        value["healthHost"] = serde_json::json!(host);
+        assert!(
+            serde_json::from_value::<RuntimeSpec>(value)
+                .map_or(true, |runtime| runtime.validate().is_err()),
+            "{host:?}"
+        );
     }
 }
 fn journal_directory() -> tempfile::TempDir {

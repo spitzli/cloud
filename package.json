@@ -13,12 +13,13 @@
     "adapters/*/*",
     "integrations/*",
     "extensions/*",
-    "apps/console"
+    "apps/console",
+    "apps/realtime-sealer"
   ],
   "scripts": {
     "dev": "tilt up",
     "setup:admin": "cargo run --locked -p webdock-control-plane --bin webdock-bootstrap-operator --",
-    "build": "cargo build --workspace --locked && bun run build:console",
+    "build": "cargo build --workspace --locked && bun run build:console && bun run build:realtime",
     "build:web": "bun run --filter @webdock/web build",
     "lint": "bun run --filter \"*\" lint",
     "test": "bun run quality",
@@ -42,7 +43,8 @@
     "quality:frontend": "cargo run --manifest-path tools/quality/Cargo.toml --locked -- frontend",
     "quality:contracts": "cargo run --manifest-path tools/quality/Cargo.toml --locked -- contracts",
     "dev:web": "bun run --filter @webdock/web dev",
-    "dev:api": "cargo run --locked -p webdock-control-plane"
+    "dev:api": "cargo run --locked -p webdock-control-plane",
+    "build:realtime": "bun run --filter @webdock/realtime-sealer build"
   },
   "overrides": {
     "nodemailer": "10.0.13",
@@ -53,5 +55,9 @@
     "drizzle-orm@0.45.2": "patches/drizzle-orm@0.45.2.patch",
     "@payloadcms/storage-s3@4.0.0-canary.37": "patches/@payloadcms%2Fstorage-s3@4.0.0-canary.37.patch",
     "@payloadcms/plugin-cloud-storage@4.0.0-canary.37": "patches/@payloadcms%2Fplugin-cloud-storage@4.0.0-canary.37.patch"
+  },
+  "dependencies": {
+    "@neon/config": "1.10.0",
+    "@neon/env": "1.6.8"
   }
 }

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {landingDefaults} from '../cms/landing';
 import {localizeLanding} from './landing-copy';
 import {translator} from '@webdock/i18n';
+import legacy from './legacy-landing.json';
 test('known Webdock marketing copy is translated without mutating stored or authored content',()=>{
  const source={...landingDefaults,id:17,heroTitle:'A customer-authored headline',contactEmail:'custom@example.test',faqs:[{id:'custom',question:'My own question',answer:'My own answer'},{id:'default',...landingDefaults.faqs[0]}],useCases:[{id:'case',...landingDefaults.useCases[1]}]};
  const localized=localizeLanding(source,message=>'translated:'+message);
@@ -14,7 +15,7 @@ test('known Webdock marketing copy is translated without mutating stored or auth
 
 test('compiled German catalog translates known hero and FAQ text with English fallback intact',()=>{
  const translated=localizeLanding(landingDefaults,translator('de').t);
- assert.equal(translated.heroTitle,'Dein Projekt.\nGut angedockt.');assert.equal(translated.faqs[0].question,'Was ist Webdock?');
+ assert.equal(translated.heroTitle,'Deine Projekte.\nEin Ort.');assert.equal(translated.faqs[0].question,'Was ist Spitzli Cloud?');
  assert.deepEqual(localizeLanding(landingDefaults,translator('en').t),landingDefaults);
 });
 
@@ -26,4 +27,15 @@ test('retired Studio announcement defaults upgrade only known values and intact 
  assert.deepEqual(current.faqs[0],{id:'known',...landingDefaults.faqs[landingDefaults.faqs.length-1]});assert.deepEqual(current.faqs[1],source.faqs[1]);
  const authored=localizeLanding({...source,outlookTitle:'Custom title',outlookDescription:'Custom copy'},message=>'translated:'+message);
  assert.equal(authored.outlookTitle,'Custom title');assert.equal(authored.outlookDescription,'Custom copy');assert.equal(source.faqs[0].answer,oldAnswer);
+});
+
+test('rebrand upgrades exact old defaults and intact pairs while retaining authored copy and IDs',()=>{
+ const source={...legacy,id:17,contactEmail:'authored@example.test',faqs:[{id:'known',...legacy.faqs[0]},{id:'authored',question:legacy.faqs[0].question,answer:'An individually authored answer'}],useCases:[{id:'case',...legacy.useCases[1]}]};
+ const current=localizeLanding(source,message=>message);
+ assert.equal(current.heroTitle,'Your projects.\nOne place.');
+ assert.equal(current.id,17);assert.equal(current.contactEmail,source.contactEmail);
+ assert.equal(current.faqs[0].question,'What is Spitzli Cloud?');assert.equal(current.faqs[0].id,'known');
+ assert.deepEqual(current.faqs[1],source.faqs[1]);
+ assert.equal(current.useCases[0].id,'case');assert.match(current.useCases[0].description,/spitzli\.site/);
+ assert.equal(source.heroTitle,legacy.heroTitle);assert.equal(source.faqs[0].question,legacy.faqs[0].question);
 });

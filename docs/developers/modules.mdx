@@ -1,130 +1,36 @@
 ---
-title: "Configure installed modules"
-description: "Select optional product modules, assign process ownership and drain retained services safely."
+title: "Configure Core features"
+description: "Control native product admission without changing plugin grants or provider bindings."
 ---
 
-<Note>Implementation preview: these instructions describe locally verified development work that is not yet included in a published Webdock core release. Use them only with the matching implementation; the currently published main branch does not include all commands and paths below.</Note>
+The native Core uses `WEBDOCK_FEATURES` to select built-in feature states. This replaces the retired TypeScript `WEBDOCK_MODULES` and worker-domain setup. Runtime plugins have their own installation, grant and capability controls.
 
-External runtime plugins use the [plugin registry and manifest contract](/developers/plugins). The managed analytics pilot uses the signed host installation workflow; lifecycle operations are currently operator-managed.
+## Configure states
 
-Webdock includes four optional product modules: `mail`, `hosting`, `databases` and `storage`. Billing has been removed; there is no replacement billing plugin. Configuration controls product availability. It does not grant tenant membership, buy a plan, create provider accounts or provision infrastructure.
-
-The core identity, customer/project registry, memberships, plans and usage surfaces remain separate from optional products. Existing resource allowance administration remains available; payment checkout, invoices and provider subscription management are not part of the core. See [self-hosting](/developers/self-hosting) for the container and Helm distribution, and [authentication adapters](/developers/auth-adapters) for browser-provider selection.
-
-## Select modules
-
-Set `WEBDOCK_MODULES` on the API and each worker, with the same configuration across replicas. Console receives the public state from its authenticated API session; there is no independent Console module switch or public build variable.
+Supply a JSON object in Core's private runtime environment:
 
 ```json
 {
-  "configVersion": 1,
-  "modules": {
-    "mail": { "enabled": true },
-    "hosting": { "enabled": true },
-    "databases": { "enabled": true },
-    "storage": { "enabled": true }
-  }
+  "hosting": "enabled",
+  "databases": "enabled",
+  "mail": "draining"
 }
 ```
 
-An absent variable starts with all products disabled. Explicit configuration also disables omitted modules. Before upgrading an existing installation, declare every product whose retained resources require management; startup refuses unsafe disablement. Remove obsolete `billing` and `cms` entries and their API/worker ownership before upgrading. For a fresh core-only installation:
+Supported names are `hosting`, `databases`, `mail`, `storage`, `cms` and `observability`. Omitted features are disabled. An empty object selects no built-in products.
 
-```sh
-WEBDOCK_MODULES='{"configVersion":1,"modules":{}}'
-```
-
-Empty or malformed JSON, unknown module IDs/properties, mixed `enabled` and `state` fields, and unsupported configuration versions fail validation. Helm accepts the same configuration as a structured `modules` object and serializes it for the runtime. Its strict schema is generated from the runtime manifests.
-
-## Assign route and worker ownership
-
-`WEBDOCK_API_DOMAINS` and `WEBDOCK_WORKER_DOMAINS` select process responsibilities independently of module activation. A module is unavailable in Console when the API does not own its domain. Canonical origin, authentication foundation and domain-dependency checks still apply.
-
-| Module | Primary API domain | Dedicated worker domain |
-| --- | --- | --- |
-| `mail` | `mail` | `mail` |
-| `hosting` | `hosting` | `hosting` |
-| `databases` | `databases` | None; gateway and agent execution remain separate |
-| `storage` | `portal` | `storage` |
-
-These are ownership names, not a complete API-domain configuration: enabled routes may also require Auth, Portal, Registry or integration domains. Workers require an explicit supported domain list and reject disabled modules. A core-only installation starts no worker. Enabling a module never supplies provider credentials or grants an agent additional privileges.
-
-## Choose a lifecycle state
-
-Use either `enabled` or `state` per entry.
-
-| State | Behavior |
+| State | Admission |
 | --- | --- |
-| `enabled` | Current identity, permissions, entitlements and provider configuration govern access. |
-| `draining` | Registered provisioning operations are refused while supported existing management and reconciliation continue. |
-| `disabled` | Product routes, navigation and workers are unavailable. Startup checks retained resources and unfinished operations before accepting this state. |
+| `enabled` | Permits supported operations subject to current authorization |
+| `draining` | Permits reads and continuation of accepted work; refuses new provisioning |
+| `disabled` | Refuses the feature's operations |
 
-```json
-{
-  "configVersion": 1,
-  "modules": {
-    "mail": { "state": "draining" }
-  }
-}
-```
+Changing configuration does not provision resources, purchase capacity, grant workspace membership or provide credentials. It does not automatically delete existing resources or move them to another provider.
 
-This example disables the other three modules because they are omitted. On an existing installation, include every module whose resources still need management.
+## Drain retained work
 
-Mail draining blocks new connections, domains, mailboxes and first incoming activation; resuming a retained suspended instance remains allowed. Hosting, database and storage provisioning use their registered operation guards. These settings take effect through restart or rollout, not a distributed live toggle.
+Before disabling a feature, roll out draining consistently and inspect its durable operations, leases and retained resources. Keep the required workers and agents available until accepted work is resolved. Review uncertain provider outcomes rather than retrying them as new work.
 
-## Disable an existing module safely
+Suspension retains data. Deletion is a separate explicit operation. Preserve retained storage and identity, encryption and signing material; outgoing-only Mail does not allocate an incoming Stalwart instance.
 
-<Steps>
-  <Step title="Drain all replicas">
-    Roll out `draining` everywhere and stop older replicas that still admit provisioning. Keep the responsible workers and agents running for accepted work, delivery and reconciliation.
-  </Step>
-  <Step title="Resolve retained resources">
-    Use existing authorized workflows to finish, hand over or explicitly remove resources. Suspension retains data. Resolve uncertain provider writes, pending jobs and active bindings; a configuration change does not perform cleanup.
-  </Step>
-  <Step title="Disable and remove worker ownership">
-    Set the module to `disabled` and remove its worker assignment. Startup refuses retained resource rows, unfinished operations, missing preflight policies and incomplete database checks. Apply the required migrations before changing state.
-  </Step>
-  <Step title="Preserve durable state">
-    Retain encryption/signing keys, schemas, journals and required storage. Re-enabling does not move resources or change their provider/account bindings. Database migration, backup and deletion are separate workflows.
-  </Step>
-</Steps>
-
-Preflight is read-only and does not coordinate old enabled replicas. For Mail, retain incoming-instance storage and encryption keys; outgoing-only use does not allocate Stalwart. System authentication email is independent of customer Mail.
-
-## Develop a module
-
-| Location | Responsibility |
-| --- | --- |
-| `packages/module-sdk` | Manifests, lifecycle configuration, generated schema, public state and navigation contributions |
-| `packages/core` | Stable local identity/session and registry contracts/services |
-| `packages/platform-db` | Existing platform schema mappings and typed persistence handles |
-| `modules/*` | Product behavior and UI, with explicit server dependencies and public DTOs |
-| `adapters/<area>/<provider>` | Concrete identity, provider and PostgreSQL transports |
-| `integrations/tabularis-web` | Native database UI launch and gateway policy contracts |
-| `apps/control-plane` | Authenticated HTTP composition, runtime configuration and service wiring |
-| `apps/console`, `apps/auth` | Filesystem routes, authentication transport and frontend composition |
-| `agents/kubernetes` | Independently deployed, scoped cluster execution |
-
-Modules do not import applications or discover runtime credentials through ambient configuration. API wrappers supply authorization, persistence, encryption and provider ports. Client entrypoints contain public DTOs and presentation; cookies, database credentials and provider secrets stay server-side. Existing server actions remain authenticated boundaries, and tenant/resource keys reset action results when context changes.
-
-These legacy product modules remain known at build time. New runtime plugins use the separate signed manifest, isolated container and capability API; making a module optional does not make it an isolated runtime plugin. Existing compatibility exports, decimal string IDs, OAuth issuer, Studio protocol URLs and MCP audiences remain stable. Better Auth compatibility and explicitly configured Clerk use the same local authorization model; changing browser providers does not migrate identities or entitlements automatically.
-
-## Verify a change
-
-From a configured checkout using [local development](/developers/local-development):
-
-```sh
-bun run test:modules
-bun run --filter @webdock/api test:unit
-bun run --filter @webdock/api check
-bun run --filter @webdock/admin check
-bun tools/release/generate-chart-schema.ts --check
-python3 tools/release/check-charts.py
-```
-
-Workspace names remain compatible: `@webdock/api` runs in `apps/control-plane`, and `@webdock/admin` runs in `apps/console`. Use the owned disposable database fixture and restricted-role suites for permission changes; never run integration tests against customer databases. Existing providers are the current scope. New cloud services, including AWS/GCP additions, are outside this work.
-
-## Provider directory layout
-
-Adapters are grouped by product area and provider: `adapters/hosting/vercel`, `adapters/hosting/github`, `adapters/mail/turbosmtp`, `adapters/databases/postgres`, `adapters/storage/vercel`. Trusted authentication plugins live in `packages/auth-better-auth` and `packages/auth-clerk`; provider configuration lives in `packages/auth-configuration`, outside the core. Kubernetes runtime metadata is in `adapters/hosting/kubernetes`; its Python executor stays in `agents/kubernetes`.
-
-The root workspace pattern is `adapters/*/*`. Area directories do not become packages. Import stable package names such as `@webdock/adapter-hosting-vercel/projects`; the filesystem grouping does not rename npm packages or protocol routes. Product policy belongs in `modules`, shared contracts in `packages`, and provider-specific I/O in these adapter leaves.
+Use the exact environment and deployment contracts for your source revision. Core configuration is in the native environment example (`crates/control-plane/.env.example`), and feature admission is implemented in `crates/core/src/features.rs`. See [Core distribution](/developers/core-distribution) and [plugin development](/developers/plugins).

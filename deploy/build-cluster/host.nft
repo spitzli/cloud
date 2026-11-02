@@ -1,0 +1,42 @@
+# Own table only. K3s retains ownership of forwarding/NAT and namespace policy.
+delete table inet webdock_build_host
+table inet webdock_build_host {
+  # Operator-owned qualification data plane only; never API authority.
+  set qualification_ports {
+    type inet_service
+    flags timeout
+    timeout 30m
+    size 2
+  }
+  set qualification_operator4 {
+    type ipv4_addr
+    flags timeout
+    timeout 30m
+    size 1
+  }
+  chain input {
+    type filter hook input priority -10; policy drop;
+    iifname "lo" accept
+    # Pod addresses, including a reused system-Pod IP, never authorize host APIs.
+    # Apply before conntrack so a stale established session cannot retain access.
+    iifname "cni0" ip saddr 10.84.0.0/16 ip daddr 10.83.0.1 udp dport 53 accept
+    iifname "cni0" ip saddr 10.84.0.0/16 ip daddr 10.83.0.1 tcp dport { 53, 3128 } accept
+    iifname "cni0" ip saddr 10.84.0.0/16 ip daddr 167.86.75.144 tcp dport { 19443, 19444 } tcp dport @qualification_ports accept
+    ip saddr @qualification_operator4 ip daddr 167.86.75.144 tcp dport { 19443, 19444 } tcp dport @qualification_ports accept
+    iifname "cni0" counter drop
+    iifname "flannel.1" counter drop
+    ip saddr 10.84.0.0/16 counter drop
+    ip daddr 167.86.75.144 tcp dport { 19443, 19444 } counter drop
+    ct state established,related accept
+    ct state invalid drop
+    meta l4proto { icmp, ipv6-icmp } accept
+    tcp dport 22 accept
+  }
+  chain forward {
+    type filter hook forward priority -10; policy accept;
+    iifname "cni0" meta nfproto ipv6 counter drop
+    ip saddr 10.84.0.0/16 ip daddr { 213.136.65.22, 79.143.177.157, 169.58.95.66, 167.86.75.144 } counter drop
+    # DNS and the package gateway terminate on the host; no private forwarding.
+    ip saddr 10.84.0.0/16 ip daddr { 0.0.0.0/8, 10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12, 192.0.0.0/24, 192.168.0.0/16, 198.18.0.0/15, 224.0.0.0/4, 240.0.0.0/4 } counter drop
+  }
+}

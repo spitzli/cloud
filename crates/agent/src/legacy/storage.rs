@@ -76,7 +76,27 @@ pub(super) fn verify(
     existing_pv: Option<&PersistentVolume>,
     existing_claim: Option<&PersistentVolumeClaim>,
 ) -> Result<()> {
-    if spec.hosting_binding.as_ref().map(|b| &b.cluster_id) != Some(&config.cluster_id) {
+    verify_objects(
+        spec,
+        &config.cluster_id,
+        &config.root,
+        &config.node,
+        existing_pv,
+        existing_claim,
+    )
+}
+
+/// Pure object checks shared with an independently proved existing attachment.
+/// The local helper still always passes its own fixed node/root above.
+pub(super) fn verify_objects(
+    spec: &RuntimeSpec,
+    cluster_id: &webdock_core::id::RecordId,
+    root: &std::path::Path,
+    node: &str,
+    existing_pv: Option<&PersistentVolume>,
+    existing_claim: Option<&PersistentVolumeClaim>,
+) -> Result<()> {
+    if spec.hosting_binding.as_ref().map(|b| &b.cluster_id) != Some(cluster_id) {
         return Err(ExecutionError::Ownership);
     }
     let bytes = spec
@@ -86,15 +106,12 @@ pub(super) fn verify(
         .ok_or(ExecutionError::Invalid("retained byte size"))?;
     let pv_name = format!("wd-{}-data", spec.resource_id);
     let claim = format!("{}-data", name(spec));
-    let path = config
-        .root
-        .join(spec.resource_id.as_str())
-        .join("mount/data");
+    let path = root.join(spec.resource_id.as_str()).join("mount/data");
     if let Some(pv) = existing_pv {
         owner(&pv.metadata, spec, true)?;
         let p = pv.spec.as_ref().ok_or(ExecutionError::Ownership)?;
         let reference = p.claim_ref.as_ref().ok_or(ExecutionError::Ownership)?;
-        let affinity = json!({"required":{"nodeSelectorTerms":[{"matchExpressions":[{"key":"kubernetes.io/hostname","operator":"In","values":[config.node]}]}]}});
+        let affinity = json!({"required":{"nodeSelectorTerms":[{"matchExpressions":[{"key":"kubernetes.io/hostname","operator":"In","values":[node]}]}]}});
         if p.local.as_ref().map(|s| s.path.as_str()) != path.to_str()
             || p.persistent_volume_reclaim_policy.as_deref() != Some("Retain")
             || !p.storage_class_name.as_deref().unwrap_or("").is_empty()

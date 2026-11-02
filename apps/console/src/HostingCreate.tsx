@@ -7,7 +7,7 @@ import { HostingReceipt } from "./HostingOperation";
 import { ActionFailure } from "./HostingActionState";
 import { HostingEnvironment } from "./HostingEnvironment";
 import * as ui from "./ui";
-export function HostingCreate({ projectID, subscriptionRevision }: { projectID: string; subscriptionRevision: number }) {
+export function HostingCreate({ projectID, subscriptionRevision, publicSitePolicy }: { projectID: string; subscriptionRevision: number; publicSitePolicy?:{domain:string|null;enabled:boolean}|null|undefined }) {
   const [open, setOpen] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [validation, setValidation] = useState<string>();
@@ -40,6 +40,7 @@ export function HostingCreate({ projectID, subscriptionRevision }: { projectID: 
           <span className={ui.hint}>An immutable image reference pinned by digest.</span></label><FieldError message={live.errors.image} />
         <label className={ui.field}>Startup arguments<textarea className={ui.cx(`${ui.input} font-mono text-xs`)} name="args" onInput={(event) => { checkArguments(event.currentTarget); }} aria-label="Startup arguments" rows={3} required defaultValue="[]" />
           <span className={ui.hint}>A JSON list of arguments. Use [] for the image default.</span></label><FieldError message={live.errors.args} />
+        {publicSitePolicy?.enabled && publicSitePolicy.domain ? <label className="flex items-start gap-3 text-sm"><input type="checkbox" name="publicAddress" defaultChecked /><span>Public website or app<span className="mt-1 block text-xs text-muted">Assign an HTTPS address under {publicSitePolicy.domain}. Turn this off for a private service. You can add your own domain separately.</span></span></label>:null}
         <label className={ui.field}>Application port<input className={ui.input} name="port" type="number" min={1024} max={65535} required defaultValue={8080} /></label><FieldError message={live.errors.port} />
         <label className={ui.field}>Health path<input className={ui.input} name="healthPath" pattern={fieldRules.healthPath.pattern} title={fieldRules.healthPath.title} required maxLength={160} defaultValue="/" /></label><FieldError message={live.errors.healthPath} />
         <label className={ui.field}>CPU<input className={ui.input} name="cpuMillicores" pattern={fieldRules.cpuMillicores.pattern} title={fieldRules.cpuMillicores.title} aria-label="CPU" required defaultValue="0.1 cores" /></label><FieldError message={live.errors.cpuMillicores} />

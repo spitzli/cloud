@@ -1,138 +1,45 @@
 ---
 title: "Plugin manifest reference"
-description: "Runtime fields, capabilities and immutable release descriptors."
+description: "Choose the correct protocol and validate exact runtime release descriptors."
 ---
 
-Use `kind: "extension"` and JSON syntax. The registry exposes the [kind-specific schema](https://registry.webdock.dev/manifest.schema.json?kind=extension); the SDK's `parsePluginManifest` adds semantic checks that JSON Schema cannot express.
+Native extensions use JSON with `kind: "extension"` and top-level runtime fields. Their source file is `manifest.json`; release tooling emits identical `tabularium.json` and `<name>-universal.json` assets after resolving the actual image digest.
 
-## Example
+## Choose the validator
 
-<Warning>This is a contract fixture. The example image and digest are placeholders, not a published or installable plugin. Replace them with an actual immutable artifact before publication.</Warning>
-
-```json
-{
-  "name": "project-notes",
-  "version": "1.0.0",
-  "kind": "extension",
-  "description": "Scoped project notes",
-  "protocolVersion": 1,
-  "sdkVersion": 1,
-  "dataProtocolVersion": 1,
-  "coreVersion": ">=0.1.0 <1.0.0",
-  "image": "registry.example.com/plugins/notes@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  "dependencies": [],
-  "capabilities": [
-    "project.read",
-    "plugin.data.read",
-    "plugin.data.write"
-  ],
-  "schemaVersion": 1,
-  "readableSchema": {
-    "min": 1,
-    "max": 1
-  },
-  "migrations": [],
-  "tables": [],
-  "services": {
-    "required": [
-      {
-        "name": "data",
-        "version": 1
-      }
-    ],
-    "optional": []
-  },
-  "configuration": {
-    "type": "object",
-    "properties": {},
-    "additionalProperties": false
-  },
-  "actions": [
-    {
-      "name": "notes.read",
-      "intent": "read",
-      "capabilities": [
-        "plugin.data.read"
-      ]
-    },
-    {
-      "name": "notes.write",
-      "intent": "write",
-      "capabilities": [
-        "plugin.data.write"
-      ]
-    }
-  ],
-  "jobs": [
-    {
-      "name": "notes.maintenance",
-      "intervalSeconds": 60,
-      "capabilities": [
-        "plugin.data.write"
-      ]
-    }
-  ],
-  "navigation": [],
-  "slots": [],
-  "events": [],
-  "secrets": [],
-  "httpBindings": []
-}
-```
-
-## Required runtime fields
-
-All fields below live at the manifest root alongside `name`, `version` and `kind`. Empty arrays are valid where a plugin declares no corresponding feature.
-
-| Field | Contract |
+| Contract | Validator and source |
 | --- | --- |
-| `protocolVersion`, `sdkVersion`, `dataProtocolVersion` | Each is exactly `1`. |
-| `coreVersion` | Valid SemVer range for the Webdock core. |
-| `image` | OCI image reference pinned with `@sha256:` and 64 lowercase hexadecimal characters. Mutable tags are rejected. |
-| `dependencies` | Up to 32 distinct `{id, version}` entries with exact SemVer versions; no self-dependency. |
-| `capabilities` | Explicit names from the capability catalog below; no duplicates. |
-| `schemaVersion` | Positive integer for plugin-owned relational data. |
-| `readableSchema` | `{min, max}` inclusive range containing `schemaVersion`. |
-| `migrations` | Ordered, contiguous, checksummed declarative steps; required through the current version when tables are declared. |
-| `tables` | Declared columns, keys, indexes and foreign keys; at most 32 tables. |
-| `services` | `required` and `optional` arrays of `{name, version: 1}`; no repeated service across either list. |
-| `configuration` | Bounded JSON Schema using the SDK-supported subset. No remote references or executable extensions. |
-| `actions` | Named `read` or `write` operations with declared capabilities and optional input/output schemas. |
-| `jobs` | Named jobs; scheduled jobs have `intervalSeconds` of at least 60. |
-| `navigation` | Named entries with labels and relative `/ui/...` paths. |
-| `slots` | Typed UI contributions, order, relative UI path and capabilities. |
-| `events` | Named versioned schemas with handlers that reference declared jobs. |
-| `secrets`, `httpBindings` | Binding names only; never secret values or arbitrary host destinations. |
+| Native extension v2 | Rust `webdock_plugin_protocol::Manifest::parse` in [cloud-plugin-sdk](https://github.com/spitzli/cloud-plugin-sdk) |
+| Established TypeScript extension v1 | `parsePluginManifest` in the [retained TypeScript SDK](https://github.com/spitzli/cloud/tree/main/packages/plugin-sdk) |
+| Repository or Mail provider | The dedicated provider repository and protocol |
 
-Service names: `project`, `data`, `db`, `cache`, `jobs`, `events`, `storage`, `secrets`, `http`, `audit`, `log`.
+V2 requires `protocolVersion`, `sdkVersion` and `dataProtocolVersion` all set to `2`. V1 keeps all three at `1`. Never migrate by editing version numbers alone. Use [Echo's manifest](https://github.com/spitzli/cloud-plugin-echo-demo/blob/main/manifest.json) as a complete native example and replace any authoring image placeholder through the release workflow.
 
-UI slots: `project.overview.panel`, `project.actions`, `operator.plugin.settings`. Paths cannot contain traversal, query strings or external origins.
+## Runtime fields
 
-## Capabilities
-
-| Area | Names |
+| Field | Meaning |
 | --- | --- |
-| Project | `project.read` |
-| Documents | `plugin.data.read`, `plugin.data.write` |
-| Relational data | `plugin.db.read`, `plugin.db.write` |
-| Cache | `plugin.cache.read`, `plugin.cache.write` |
-| Jobs | `plugin.jobs.read`, `plugin.jobs.enqueue`, `plugin.jobs.cancel` |
-| Events | `plugin.events.emit`, `plugin.events.subscribe` |
-| Objects | `plugin.storage.read`, `plugin.storage.write` |
-| Secret bindings | `plugin.secrets.read` |
-| HTTP bindings | `plugin.http.read`, `plugin.http.request` |
-| Audit | `plugin.audit.emit` |
+| `name`, `version` | Stable lowercase slug and exact SemVer release identity |
+| `coreVersion` | Supported Core SemVer range |
+| `image` | Actual immutable OCI image reference with a SHA-256 digest |
+| `dependencies` | Explicit dependency identities and versions |
+| `capabilities` | Requested host capabilities, never automatic grants |
+| `schemaVersion`, `readableSchema` | Plugin data schema version and compatible reading range |
+| `tables`, `migrations` | Bounded declarative data definitions; availability depends on host support |
+| `services` | Explicit required and optional host service versions |
+| `configuration` | Bounded JSON Schema without external references |
+| `actions` | Named read/write actions with input/output schemas and capability requirements |
+| `jobs` | Declared background handlers; declaration alone does not enable scheduling |
+| `api`, `mcp` | Interfaces referencing declared actions |
+| `secrets`, `httpBindings` | Binding names, never credentials or arbitrary host destinations |
+| `offerings`, `selfService`, `areas` | Native resource offerings, feature policy and UI contributions |
 
-An action, job or UI slot may request only capabilities declared by its plugin. Read actions cannot request mutation capabilities. Capabilities in a manifest are requests, not grants; host authorization still depends on the installation, actor and customer/project scope.
+Keep the `services` object even when no host service is needed: use `"services": { "required": [], "optional": [] }`. Other unused array declarations can use `[]`. The parser rejects unknown or privileged fields, duplicate keys, unsupported schema constructs, mutable images and invalid action/capability relationships. Runtime admission additionally checks installation state, project access, current grants, configuration and available host services.
 
-## Data migrations
+## Release verification
 
-The v1 contract allows `createTable`, `addNullableColumn`, `createIndex` and `addForeignKey`. Checksums are SHA-256 hexadecimal values. Migration versions must start at 1 and remain contiguous; tables must agree with declared key columns and foreign-key targets. Arbitrary SQL, executable migration code, destructive schema changes and backfills are outside this contract.
+Validate with the parser that matches your pinned SDK revision. Registry authoring validation is useful but cannot substitute for semantic validation or host compatibility checks. The hosted registry now admits the complete v1 and v2 contracts. A self-hosted registry still needs the matching admission policy; source support alone does not configure it.
 
-## Validation and trust
+The host bounds manifest and descriptor input to 256 KiB. Registry authoring/publication can impose a smaller 64 KiB bound. Publish final assets only after image resolution and preserve their exact bytes: JSON reformatting changes the signed hash.
 
-The registry schema validates structure and preserves the declared extension. The Webdock SDK additionally checks SemVer ranges, dependency uniqueness, readable-schema compatibility, migration ordering, capability relationships, event handlers and key references. Passing the registry validator is necessary but insufficient for host admission.
-
-The planned host installer verifies the signed release identity, manifest and descriptor hashes, selected asset size and image digest against operator-established trust. The public signing key is at `https://registry.webdock.dev/.well-known/registry-key.json`; fetching that key alone does not establish trust.
-
-Catalog metadata, publication approval and an MCP login do not activate a runtime. See [current implementation status](/developers/plugins).
+See [independent releases](/developers/plugin-releases) for pinned-key verification, preserved v1 signatures and special provider bindings. Source contracts: [native parser](https://github.com/spitzli/cloud-plugin-sdk/blob/8ed57d89c3263b050f126e4c2ba7f6cdebb0daa6/crates/plugin-protocol/src/manifest.rs) and [release verification](https://github.com/spitzli/cloud-plugin-sdk/blob/8ed57d89c3263b050f126e4c2ba7f6cdebb0daa6/crates/plugin-protocol/src/release.rs).

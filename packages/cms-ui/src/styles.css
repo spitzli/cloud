@@ -2,13 +2,13 @@
   color-scheme: light;
   --cms-bg: #f5f7fa;
   --cms-surface: #fff;
-  --cms-ink: #18293c;
+  --cms-ink: #141318;
   --cms-muted: #607084;
   --cms-line: #dce4ed;
-  --cms-accent: #ff975b;
+  --cms-accent: #6515D5;
   --cms-soft: #edf2f7;
-  --cms-nav: #192b40;
-  --cms-nav-ink: #edf2f8;
+  --cms-nav: #141318;
+  --cms-nav-ink: #fff;
   --cms-danger: #ac3342;
   --cms-font: Arial, Helvetica, sans-serif;
   --cms-display: var(--font-space, Arial), Helvetica, sans-serif;
@@ -16,8 +16,8 @@
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --cms-bg: #101d2c;
-    --cms-surface: #19293d;
+    --cms-bg: #141318;
+    --cms-surface: #201e26;
     --cms-ink: #edf3fa;
     --cms-muted: #a3b4c9;
     --cms-line: #33465e;
@@ -129,9 +129,9 @@ button:not(.cms-button) {
 .cms-wordmark {
   text-decoration: none;
   font-family: var(--cms-display);
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: -1.2px;
+  letter-spacing: -0.6px;
   white-space: nowrap;
 }
 .cms-wordmark span {

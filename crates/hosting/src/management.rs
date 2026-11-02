@@ -93,6 +93,8 @@ impl HostingService {
     ) -> Result<(Value, Target)> {
         let action = field(cmd, "action")?;
         match action {
+            "addresses.list" => self.public_addresses(tx, actor, cmd).await,
+            "clusters.publicSites.configure" => self.configure_public_sites(tx, actor, cmd).await,
             "projects.get" => {
                 let id = field(cmd, "projectID")?;
                 let access =
@@ -102,6 +104,7 @@ impl HostingService {
                 value["operator"] = json!(access.operator);
                 value["configured"] = json!(!access.project["provider"].is_null());
                 value["provider"] = access.project["provider"].clone();
+                value["publicSitePolicy"] = Self::public_site_policy(tx, id).await?;
                 Ok((value, Target::project(id, false, false, false)))
             }
             "clusters.get" => {

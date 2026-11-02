@@ -121,6 +121,17 @@ pub(super) async fn namespace_ready(
         .await
         .map_err(api_failure)?
     };
+    if spec
+        .hosting_binding
+        .as_ref()
+        .is_some_and(|b| b.public_route.is_some())
+    {
+        ns.metadata
+            .labels
+            .get_or_insert_default()
+            .insert("webdock.dev/certificate-budget".into(), "1".into());
+        namespaced_object(client.clone(),spec,"NetworkPolicy","webdock-acme-solver",json!({"podSelector":{"matchLabels":{"acme.cert-manager.io/http01-solver":"true"}},"policyTypes":["Ingress"],"ingress":[{"from":[{"namespaceSelector":{"matchLabels":{"kubernetes.io/metadata.name":"kube-system"}},"podSelector":{"matchLabels":{"app.kubernetes.io/name":"traefik"}}}],"ports":[{"protocol":"TCP","port":8089}]}]}),guard).await?;
+    }
     quota(
         client.clone(),
         spec,

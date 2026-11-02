@@ -1,27 +1,27 @@
 ---
 title: "Websites and content"
-description: "Edit through Console while keeping drafts, previews and published pages separate."
+description: "Edit drafts, preview changes and publish an assigned website."
 ---
 
-Each connected website keeps its own Payload CMS, content schema and runtime credentials. Console provides a common entry point without combining customer content into a shared website database.
+Open your assigned website in [Console](https://console.spitzli.cloud). Each connected website keeps its own CMS, schema and content. Access depends on current workspace membership and website grants.
 
 <Steps>
-  <Step title="Select the website">Open an assigned website in Console. Access is checked against your current account, workspace and website grants.</Step>
-  <Step title="Edit supported content">Choose a collection or page available for that website. Fields depend on its schema; connecting a website does not create a generic schema designer.</Step>
-  <Step title="Preview your changes">Inspect the draft. On websites with the canvas integration, preview can show unsaved edits on responsive artboards.</Step>
-  <Step title="Publish deliberately">Save and publish through the supported controls. A preview does not publish changes. Check the public page after publication.</Step>
+  <Step title="Select the website">Check that you are in the correct workspace, then open the intended website.</Step>
+  <Step title="Edit content">Select an available page or collection. The website's schema determines which fields and content types you can edit.</Step>
+  <Step title="Preview the draft">Inspect your changes using the website's supported preview. A preview does not publish content.</Step>
+  <Step title="Publish">Save and publish through the available controls, then check the public page.</Step>
 </Steps>
+
+If another editor saved a newer version, reload and reconcile the conflict before saving. Do not overwrite it just to dismiss the conflict.
 
 ## Canvas-enabled websites
 
-The canvas supports text, images, shapes and buttons, layers, undo, and desktop, tablet and mobile artboards. Draft and published pages are separate. Homepage activation is also separate from editing.
+Where the canvas integration is enabled, it supports text, images, shapes, buttons, layers, undo and desktop, tablet and mobile artboards. Responsive preview can show unsaved edits. Published content and homepage activation remain separate from draft editing.
 
-If another editor changed a page, resolve the version conflict before saving. Do not overwrite a newer version just to dismiss the conflict.
+## Add a website
 
-## Connecting a website
+Ask your operator to configure the website binding and permissions for an existing website. An inventory record alone does not install a CMS, create a database or grant sign-in access.
 
-The optional [Managed CMS plugin](/guides/managed-cms) adds a native editor and an approved provisioning path for new independent CMS instances. Existing website integrations keep their own content model; enabling the plugin does not migrate them into a shared CMS.
+The optional [Managed CMS](/guides/managed-cms) flow can create an independent instance when explicitly activated and accepted for the project. Connecting an existing website retains its own content model; it does not add a general schema designer.
 
-A CMS inventory record describes an existing connection. It does not install Payload, provision a database or establish all SSO permissions. Operators configure the website binding and integration before customers can enter it.
-
-See [website integration](/developers/website-integration) for the developer boundary.
+For implementation details, see [website integration](/developers/website-integration).

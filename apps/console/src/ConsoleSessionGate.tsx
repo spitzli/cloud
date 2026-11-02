@@ -1,4 +1,5 @@
 // The production privacy gate; children are a slot so its real lifecycle can be qualified without router initialization.
+import {LiveUpdates} from "./LiveUpdates";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ApiError, sessionSchema } from "./api";
@@ -45,6 +46,7 @@ export function ConsoleSessionGate({ children }: { children: ReactNode }) {
   if (!session.data.data) return <SignIn />;
   return (
     <SessionContext.Provider value={session.data.data}>
+      <LiveUpdates />
       {children}
     </SessionContext.Provider>
   );

@@ -129,11 +129,11 @@ async fn durable_receipts_are_typed_and_replays_keep_exact_payload_and_idempoten
         assert_eq!(headers["idempotency-key"], "account:123");
         assert_eq!(*body, requests[0].1);
         assert_eq!(body["from"], "Webdock <sender@example.test>");
-        assert_eq!(body["subject"], "Reset your Webdock password");
+        assert_eq!(body["subject"], "Reset your Spitzli Cloud password");
         assert_eq!(
             body["text"],
             format!(
-                "Reset your Webdock password using this link:\n{}\nIf you did not request this, you can ignore this message.",
+                "Reset your Spitzli Cloud password using this link:\n{}\nIf you did not request this, you can ignore this message.",
                 request.url
             )
         );
@@ -218,9 +218,15 @@ async fn only_canonical_kind_bound_account_links_can_enter_mail() {
     sender.deliver(&website).await.unwrap();
     {
         let requests = mail.requests.lock().unwrap();
-        assert_eq!(requests[0].1["subject"], "Set up your Webdock account");
-        assert_eq!(requests[1].1["subject"], "Invitation to Webdock");
-        assert_eq!(requests[2].1["subject"], "Your Webdock website access");
+        assert_eq!(
+            requests[0].1["subject"],
+            "Set up your Spitzli Cloud account"
+        );
+        assert_eq!(requests[1].1["subject"], "Invitation to Spitzli Cloud");
+        assert_eq!(
+            requests[2].1["subject"],
+            "Your Spitzli Cloud website access"
+        );
     }
     for (index, origin) in [
         "http://localhost:3125",
@@ -307,7 +313,7 @@ async fn loopback_smtp_carries_the_activation_link_with_its_invitation() {
     sender.deliver(&activation).await.unwrap();
     let message = caught.await.unwrap();
     assert!(message.contains("To: <recipient@example.test>"));
-    assert!(message.contains("Subject: Set up your Webdock account"));
+    assert!(message.contains("Subject: Set up your Spitzli Cloud account"));
     assert!(message.contains(&activation.url));
     // Only activations may continue into an invitation; resets stay single-purpose.
     let mut reset = activation.clone();

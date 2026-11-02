@@ -1,0 +1,378 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Webdock Builds\n"
+"Language: de\n"
+"PO-Revision-Date: 2026-10-30 00:00+0000\n"
+"Last-Translator: Webdock\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "A newer commit replaced this queued build."
+msgstr "Ein neuerer Commit hat diesen eingeplanten Build ersetzt."
+
+
+msgid "A requested build will appear here once it has been recorded."
+msgstr "Ein angeforderter Build erscheint hier, sobald die Anfrage erfasst wurde."
+
+
+msgid "Allow signed repository pushes to start builds. Publication approval remains separate."
+msgstr "Signierte Repository-Pushes dürfen Builds starten. Die Freigabe zur Veröffentlichung wird unabhängig davon verwaltet."
+
+
+msgid "Approve publication"
+msgstr "Veröffentlichung freigeben"
+
+
+msgid "Automatic"
+msgstr "Automatisch"
+
+
+msgid "Awaiting approval"
+msgstr "Wartet auf Freigabe"
+
+
+msgid "Awaiting publication"
+msgstr "Wartet auf Veröffentlichung"
+
+
+msgid "Build cluster access must be enabled for this project."
+msgstr "Der Build-Cluster muss für dieses Projekt freigeschaltet sein."
+
+
+msgid "Build context"
+msgstr "Build-Kontext"
+
+
+msgid "Build execution"
+msgstr "Build-Ausführung"
+
+
+msgid "Build execution did not complete. Review the retained logs."
+msgstr "Die Build-Ausführung wurde nicht abgeschlossen. Prüfe die gespeicherten Protokolle."
+
+
+msgid "Build execution ended before output was retained."
+msgstr "Die Build-Ausführung endete, bevor ein Ergebnis gespeichert wurde."
+
+
+msgid "Build failed"
+msgstr "Build fehlgeschlagen"
+
+
+msgid "Build history"
+msgstr "Build-Verlauf"
+
+
+msgid "Build logs are unavailable."
+msgstr "Build-Protokolle sind nicht verfügbar."
+
+
+msgid "Build on GitHub pushes"
+msgstr "Builds bei GitHub-Pushes starten"
+
+
+msgid "Build output is retained and awaiting publication. Registry publication has not been confirmed."
+msgstr "Das Build-Ergebnis wurde gespeichert und wartet auf die Veröffentlichung. Die Übertragung in die Registry wurde noch nicht bestätigt."
+
+
+msgid "Build repository commits, review their output, and follow publication separately."
+msgstr "Baue Repository-Commits, prüfe die Ergebnisse und verfolge die Veröffentlichung separat."
+
+
+msgid "Build status"
+msgstr "Build-Status"
+
+
+msgid "Build strategy"
+msgstr "Build-Strategie"
+
+
+msgid "Build succeeded"
+msgstr "Build erfolgreich"
+
+
+msgid "Build success confirms the build output. Deployment has its own status and approval."
+msgstr "Ein erfolgreicher Build bestätigt das Build-Ergebnis. Status und Freigabe der Bereitstellung werden separat geführt."
+
+
+msgid "Build {commit}"
+msgstr "Build {commit}"
+
+
+msgid "Builds are unavailable"
+msgstr "Builds sind nicht verfügbar"
+
+
+msgid "Check the relative context and Dockerfile paths."
+msgstr "Prüfe die relativen Pfade für Build-Kontext und Dockerfile."
+
+
+msgid "Cloning"
+msgstr "Repository wird geklont"
+
+
+msgid "Configure hosting for this project before connecting a repository source."
+msgstr "Richte Hosting für dieses Projekt ein, bevor du ein Repository verbindest."
+
+
+msgid "Connect a repository source to this project before starting a build."
+msgstr "Verbinde ein Repository mit diesem Projekt, bevor du einen Build startest."
+
+
+msgid "Customer preview is read-only. Build history and retained logs remain available."
+msgstr "Die Kundenvorschau ist schreibgeschützt. Build-Verlauf und gespeicherte Protokolle bleiben verfügbar."
+
+
+msgid "Deploying"
+msgstr "Bereitstellung läuft"
+
+
+msgid "Deployment ready"
+msgstr "Bereitgestellt"
+
+
+msgid "Deployment status"
+msgstr "Bereitstellungsstatus"
+
+
+msgid "Dockerfile"
+msgstr "Dockerfile"
+
+
+msgid "Dockerfile path"
+msgstr "Dockerfile-Pfad"
+
+
+msgid "Existing isolated worker"
+msgstr "Bisheriger isolierter Worker"
+
+
+msgid "Hosting is not configured"
+msgstr "Hosting ist nicht eingerichtet"
+
+
+msgid "Hosting is not enabled for this installation."
+msgstr "Hosting ist für diese Installation nicht aktiviert."
+
+
+msgid "Loading build history…"
+msgstr "Build-Verlauf wird geladen…"
+
+
+msgid "Loading build…"
+msgstr "Build wird geladen…"
+
+
+msgid "Loading logs…"
+msgstr "Protokolle werden geladen…"
+
+
+msgid "Loading project…"
+msgstr "Projekt wird geladen…"
+
+
+msgid "Loading publications…"
+msgstr "Veröffentlichungen werden geladen…"
+
+
+msgid "Loading sources…"
+msgstr "Quellen werden geladen…"
+
+
+msgid "Managed build cluster"
+msgstr "Verwalteter Build-Cluster"
+
+
+msgid "No builds yet"
+msgstr "Noch keine Builds"
+
+
+msgid "No log output yet."
+msgstr "Noch keine Protokollausgabe."
+
+
+msgid "No repository source"
+msgstr "Kein Repository verbunden"
+
+
+msgid "No retained build output has been submitted for publication."
+msgstr "Noch kein Build-Ergebnis zur Veröffentlichung eingereicht."
+
+
+msgid "Only the most recent log output is displayed."
+msgstr "Es wird nur die neueste Protokollausgabe angezeigt."
+
+
+msgid "Phase: {phase}"
+msgstr "Phase: {phase}"
+
+
+msgid "Preparing"
+msgstr "Wird vorbereitet"
+
+
+msgid "Preparing build environment"
+msgstr "Build-Umgebung wird vorbereitet"
+
+
+msgid "Publication queued"
+msgstr "Veröffentlichung eingeplant"
+
+
+msgid "Publications"
+msgstr "Veröffentlichungen"
+
+
+msgid "Pushing"
+msgstr "Wird übertragen"
+
+
+msgid "Railpack"
+msgstr "Railpack"
+
+
+msgid "Recording request…"
+msgstr "Anfrage wird erfasst…"
+
+
+msgid "Redeploy this version"
+msgstr "Diese Version erneut bereitstellen"
+
+
+msgid "Reload settings"
+msgstr "Einstellungen neu laden"
+
+
+msgid "Repository provider adapter is unavailable."
+msgstr "Die Anbindung des Repository-Anbieters ist nicht verfügbar."
+
+
+msgid "Repository source"
+msgstr "Repository-Quelle"
+
+
+msgid "Request recorded."
+msgstr "Anfrage erfasst."
+
+
+msgid "Requested"
+msgstr "Angefordert"
+
+
+msgid "Retained logs"
+msgstr "Gespeicherte Protokolle"
+
+
+msgid "Rollout failed"
+msgstr "Bereitstellung fehlgeschlagen"
+
+
+msgid "Rollout operation"
+msgstr "Bereitstellung ansehen"
+
+
+msgid "Save build settings"
+msgstr "Build-Einstellungen speichern"
+
+
+msgid "Selected build"
+msgstr "Ausgewählter Build"
+
+
+msgid "Superseded"
+msgstr "Ersetzt"
+
+
+msgid "The log cursor moved backwards."
+msgstr "Die Protokollposition ist zurückgesprungen."
+
+
+msgid "The log event cursor is invalid."
+msgstr "Die Position des Protokollereignisses ist ungültig."
+
+
+msgid "The source changed before this build completed."
+msgstr "Die Quelle wurde geändert, bevor dieser Build abgeschlossen war."
+
+
+msgid "The source changed. Reload its settings before saving."
+msgstr "Die Quelle wurde geändert. Lade ihre Einstellungen vor dem Speichern neu."
+
+
+msgid "This source uses an external build provider."
+msgstr "Diese Quelle verwendet einen externen Build-Anbieter."
+
+
+msgid "{project} builds"
+msgstr "Builds für {project}"
+
+
+msgid "Attempt"
+msgstr "Versuch"
+
+
+msgid "Not started"
+msgstr "Noch nicht gestartet"
+
+
+msgid "Retries"
+msgstr "Wiederholungen"
+
+
+msgid "{count} of 2"
+msgstr "{count} von 2"
+
+
+msgid "Finished"
+msgstr "Abgeschlossen"
+
+
+msgid "Request to completion"
+msgstr "Von Anfrage bis Abschluss"
+
+
+msgid "{seconds} s"
+msgstr "{seconds} s"
+
+
+msgid "Eligible for retry after {date}"
+msgstr "Erneuter Versuch frühestens ab {date}"
+
+
+msgid "Previous build environment issue: {reason}"
+msgstr "Vorheriges Problem der Build-Umgebung: {reason}"
+
+
+msgid "The build exceeded its time limit."
+msgstr "Der Build hat sein Zeitlimit überschritten."
+
+
+msgid "The build exceeded its memory limit."
+msgstr "Der Build hat sein Arbeitsspeicherlimit überschritten."
+
+
+msgid "The build environment ran out of resources."
+msgstr "In der Build-Umgebung waren nicht genügend Ressourcen verfügbar."
+
+
+msgid "The build node is temporarily unavailable."
+msgstr "Der Build-Knoten ist vorübergehend nicht erreichbar."
+
+
+msgid "The build service is temporarily unavailable."
+msgstr "Der Build-Dienst ist vorübergehend nicht erreichbar."
+
+
+msgid "The build failed. Review the retained logs."
+msgstr "Der Build ist fehlgeschlagen. Prüfe die gespeicherten Protokolle."
+
+
+msgid "Build after GitHub workflow succeeds"
+msgstr "Builds nach erfolgreichem GitHub-Workflow starten"
+
+
+msgid "Only successful push runs of {workflow} may start automatic builds. Publication approval remains separate."
+msgstr "Nur erfolgreiche, durch Push ausgelöste Läufe von {workflow} dürfen automatische Builds starten. Die Freigabe zur Veröffentlichung bleibt davon getrennt."

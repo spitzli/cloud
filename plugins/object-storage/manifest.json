@@ -1147,5 +1147,16 @@
       "description": "Observe exact owned object metadata before preparing a Core download",
       "action": "objects.observe"
     }
-  ]
+  ],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/bucket-controls.png",
+      "caption": "Actual Object Storage panel; synthetic bucket, observed usage and example key. No provider connection.",
+      "alt": "Bucket status, observed usage, retained deactivation and key controls"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-object-storage",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-object-storage/blob/HEAD/README.md"
 }

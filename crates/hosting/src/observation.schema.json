@@ -350,6 +350,7 @@
           ],
           "additionalProperties": false
         },
+        "publicRoutingVersion": {"type":"number","const":1},
         "registryVersion": {
           "type": "number",
           "const": 1

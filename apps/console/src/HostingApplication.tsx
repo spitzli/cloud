@@ -84,6 +84,7 @@ export function HostingApplication({
           Refresh application
         </button>
       </div>
+      {app.data.publicAddress ? <div className="mb-6 flex flex-wrap items-center gap-3 text-sm"><span className={ui.badge(app.data.publicAddress.state==="ready"?"success":app.data.publicAddress.state==="retired"?"neutral":"warning")}>{app.data.publicAddress.state==="ready"?"Public address ready":app.data.publicAddress.state==="retired"?"Public address reserved":"Public address pending"}</span>{app.data.publicAddress.state==="retired"?<span className="break-all">{app.data.publicAddress.hostname}</span>:<a className="break-all" href={app.data.publicAddress.url} target="_blank" rel="noopener noreferrer">{app.data.publicAddress.hostname}</a>}<span className="text-muted">{app.data.publicAddress.state==="retired"?"This application was deleted. Its address remains reserved.":"Your own domain can be added in workspace Domains."}</span></div>:null}
       <nav
         className="mb-8 flex gap-6 overflow-x-auto border-b border-outline"
         aria-label="Application"

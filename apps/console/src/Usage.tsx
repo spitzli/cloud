@@ -1,8 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useI18n } from "@webdock/i18n/react";
+import { allowanceSchema, formatResource, hostingDimensions, hostingLabels } from "@webdock/hosting-contracts";
 import { z } from "zod";
 import { useApi } from "./context";
 import { Empty, Failure, Loading } from "./common";
+import { useHostingCommand } from "./hosting-client";
 import * as ui from "./ui";
 
 const amounts = z.record(z.string(), z.number().nullable());
@@ -38,6 +41,12 @@ const planSchema = z.object({
 });
 type Plan = z.infer<typeof planSchema>;
 const plansSchema = z.object({ plans: z.array(planSchema), meters: z.array(meterSchema) });
+const hostingDemandSchema = allowanceSchema.pipe(z.record(z.enum(hostingDimensions), z.number().int().min(0).max(Number.MAX_SAFE_INTEGER)));
+const hostingUsageSchema = z.object({
+  effective: allowanceSchema.required(),
+  allocated: hostingDemandSchema,
+  reserved: hostingDemandSchema,
+});
 
 /** 1536 MiB → "1.5 GiB", 250 millicores → "0.25 CPU", counts as they are. */
 export function amount(meter: Pick<Meter, "unit">, value: number) {
@@ -65,8 +74,9 @@ function Bar({ used, limit }: { used: number; limit: number }) {
 }
 /** Each meter the plan limits, or that is in use, with what is taken against the limit. */
 function Meters({ usage }: { usage: Usage }) {
+  const { t } = useI18n();
   const rows = usage.meters.filter((m) => usage.limits[m.id] != null || (usage.allocated[m.id] ?? 0) > 0);
-  if (!rows.length) return <p className="text-sm text-muted">Nothing is in use yet.</p>;
+  if (!rows.length) return <p className="text-sm text-muted">{t("No resource reservations have been reported yet.")}</p>;
   return (
     <ul className="grid gap-4 sm:grid-cols-2">
       {rows.map((meter) => {
@@ -77,7 +87,7 @@ function Meters({ usage }: { usage: Usage }) {
             <div className="flex items-baseline justify-between gap-3 text-sm">
               <span className="font-medium">{meter.plugin ? `${meter.label} (${meter.plugin})` : meter.label}</span>
               <span className={used > (limit ?? Infinity) ? "text-danger" : "text-muted"}>
-                {amount(meter, used)} of {limit == null ? "unlimited" : amount(meter, limit)}
+                {limit == null ? <>{amount(meter, used)} {t("reserved · no plan limit")}</> : <>{amount(meter, used)} of {amount(meter, limit)}</>}
               </span>
             </div>
             {limit == null ? <div className="h-1.5 rounded-full bg-soft" aria-hidden /> : <Bar used={used} limit={limit} />}
@@ -169,12 +179,50 @@ function Units({ usage }: { usage: Usage }) {
     </div>
   );
 }
-function planNote(plan: Usage["plan"]) {
-  if (!plan) return "Nothing is limited. Your provider can assign a plan.";
-  return plan.description === "" ? "Limits of this workspace." : plan.description;
+function NativeHostingUsage({ customer }: { customer: string }) {
+  const { t, locale } = useI18n();
+  const call = useHostingCommand();
+  const usage = useQuery({
+    queryKey: ["hosting", "usage", customer],
+    queryFn: ({ signal }) => call({ action: "usage.get", customerID: customer }, hostingUsageSchema, signal),
+    refetchInterval: 60_000,
+    retry: false,
+  });
+  return <section className={ui.card} aria-label={t("Application hosting")}>
+    <div className={ui.cardBody}>
+      <h2 className={ui.sectionTitle}>{t("Application hosting")}</h2>
+      <p className={ui.hint}>{t("Customer-wide hosting allowances. Project or provider limits may be stricter.")}</p>
+      {usage.isPending ? <Loading>{t("Loading hosting reservations…")}</Loading> : usage.isError ? <Failure title={t("Unable to load hosting reservations")} error={usage.error} retry={() => { void usage.refetch(); }} /> : <>
+        <div className={ui.tableFrame}><table className={ui.table}>
+          <thead><tr><th className={ui.th} scope="col">{t("Resource")}</th><th className={ui.th} scope="col">{t("Allocated")}</th><th className={ui.th} scope="col">{t("Pending reservation")}</th><th className={ui.th} scope="col">{t("Customer allowance")}</th></tr></thead>
+          <tbody>{hostingDimensions.map(dimension => <tr key={dimension} className={ui.tr}>
+            <th scope="row" className={ui.td}>{t(hostingLabels[dimension])}</th>
+            <td className={ui.td}>{formatResource(dimension, usage.data.allocated[dimension], locale)}</td>
+            <td className={ui.td}>{formatResource(dimension, usage.data.reserved[dimension], locale)}</td>
+            <td className={ui.td}>{usage.data.effective[dimension] === null ? t("No customer limit") : formatResource(dimension, usage.data.effective[dimension], locale)}</td>
+          </tr>)}</tbody>
+        </table></div>
+        <p className={ui.hint}>{t("Allocated and pending reservations describe configured resources, not live measurements. Replicas per app shows the maximum in each state.")}</p>
+      </>}
+    </div>
+  </section>;
 }
-/** A workspace's plan, what counts against it, and what its services use. */
+
+/** Application hosting and extension usage retain their distinct allowance and measurement scopes. */
 export function PlanUsage({ customer }: { customer: string }) {
+  const api = useApi();
+  const { t } = useI18n();
+  return <div className="grid gap-8">
+    {api.config.enabledFeatures.includes("hosting") ? <NativeHostingUsage customer={customer} /> : null}
+    <section aria-label={t("Extension plan and workload usage")} className="grid gap-4">
+      <div><h2 className={ui.sectionTitle}>{t("Project and extension usage")}</h2><p className={ui.hint}>{t("These plan meters cover projects and extensions. Workload measurements below belong to extensions; application hosting is shown separately.")}</p></div>
+      <ExtensionUsage customer={customer} />
+    </section>
+  </div>;
+}
+
+function ExtensionUsage({ customer }: { customer: string }) {
+  const { t } = useI18n();
   const usage = useUsage(customer);
   if (usage.isPending) return <Loading>Loading usage…</Loading>;
   if (usage.isError) return <Failure error={usage.error} retry={() => void usage.refetch()} />;
@@ -186,7 +234,7 @@ export function PlanUsage({ customer }: { customer: string }) {
           <div>
             <h2 className={ui.sectionTitle}>{data.plan?.name ?? "No plan"}</h2>
             <p className={ui.hint}>
-              {planNote(data.plan)}
+              {data.plan ? data.plan.description || "Limits of this workspace." : t("No workspace plan is assigned. Service-specific limits may still apply.")}
             </p>
           </div>
           <Meters usage={data} />
@@ -204,7 +252,7 @@ export function PlanUsage({ customer }: { customer: string }) {
       </section>
       <section className="grid gap-4">
         <h2 className={ui.sectionTitle}>Services</h2>
-        {data.units.length ? <Units usage={data} /> : <p className="text-sm text-muted">No services are running in this workspace.</p>}
+        {data.units.length ? <Units usage={data} /> : <p className="text-sm text-muted">{t("No service usage has been reported yet.")}</p>}
       </section>
     </div>
   );
@@ -212,12 +260,13 @@ export function PlanUsage({ customer }: { customer: string }) {
 
 /** The usage page of one workspace. */
 export function WorkspaceUsage({ id }: { id: string }) {
+  const { t } = useI18n();
   return (
     <section>
       <div className={ui.pageHeading}>
         <div>
           <h1 className={ui.pageTitle}>Plan and usage</h1>
-          <p className={ui.pageLead}>What this workspace may use, what its services reserve, and what they actually use.</p>
+          <p className={ui.pageLead}>{t("Hosting allowances and reservations, plus project and extension usage.")}</p>
         </div>
       </div>
       <PlanUsage customer={id} />
@@ -274,7 +323,7 @@ export function CustomerPlan({ customer }: { customer: string }) {
         <label className={ui.field}>
           Plan
           <select className={ui.input} value={form.plan} onChange={(e) => { set({ ...form, plan: e.target.value }); }}>
-            <option value="">{fallback ? `Default plan (${fallback.name})` : "No plan: nothing is limited"}</option>
+            <option value="">{fallback ? `Default plan (${fallback.name})` : "No workspace plan"}</option>
             {plans.data.plans.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -460,7 +509,7 @@ export function Plans() {
                     {plans.data.meters
                       .filter((m) => plan.limits[m.id] != null)
                       .map((m) => `${m.label} ${amount(m, plan.limits[m.id] ?? 0)}`)
-                      .join(", ") || "Nothing limited"}
+                      .join(", ") || "No workspace plan limits"}
                   </p>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted">
@@ -471,7 +520,7 @@ export function Plans() {
             ))}
           </div>
         ) : (
-          <Empty title="No plans yet">Without a plan nothing is limited. Create one and mark it as the default to limit new customers.</Empty>
+          <Empty title="No plans yet">No workspace plan limits are configured. Service-specific limits may still apply. Create a default plan for workspaces without an assigned plan.</Empty>
         )
       ) : null}
     </section>

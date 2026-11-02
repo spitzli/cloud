@@ -1,33 +1,45 @@
 ---
-title: "Webdock documentation"
-description: "Manage websites, applications and workspace services, and connect your tools through the Webdock APIs."
+title: "Spitzli Cloud documentation"
+description: "Manage your workspace, connect your providers and run applications and websites with Spitzli Cloud."
 ---
 
-Webdock brings your websites, applications and workspace services into one console. Your account controls which workspaces and resources you can access. Website content stays in the website's own CMS instance.
+Start with your workspace in [Console](https://console.spitzli.cloud). Connect the providers you own, manage the resources assigned to you, and keep account access separate from application credentials.
 
 <Columns cols={2}>
-  <Card title="Get started" icon="rocket" href="/quickstart">Accept your invitation, secure your account and open your workspace.</Card>
-  <Card title="Use Console" icon="browser" href="/guides/console">Find your projects, websites, team and service settings.</Card>
-  <Card title="Connect an integration" icon="plug" href="/developers/overview">Choose between Mail API keys, registry OAuth and Hosting MCP.</Card>
-  <Card title="Develop Webdock" icon="code" href="/developers/local-development">Understand the repository and run isolated development checks.</Card>
+  <Card title="Get started" icon="rocket" href="/quickstart">Sign in, secure your account and find your workspace.</Card>
+  <Card title="Connect Neon" icon="database" href="/guides/byok-neon">Use your own Neon project for new PostgreSQL services.</Card>
+  <Card title="Run an application" icon="server" href="/guides/applications">Understand image requests, operations and rollout health.</Card>
+  <Card title="Manage a website" icon="file-lines" href="/guides/websites">Edit content, preview changes and publish from your website's CMS.</Card>
+  <Card title="Connect your providers" icon="plug" href="/guides/byok">Choose Neon, Vercel, Kubernetes or a supported Mail connection.</Card>
+  <Card title="Build an integration" icon="code" href="/developers/overview">Choose workspace API tokens, OAuth/MCP or plugin contracts.</Card>
 </Columns>
 
-## Your Webdock addresses
+## Find the right place
 
-| Address | Purpose |
+| Address | Use it for |
 | --- | --- |
-| [console.webdock.dev](https://console.webdock.dev) | Workspace and resource management |
-| [auth.webdock.dev](https://auth.webdock.dev) | Sign-in, account security and OAuth consent |
-| [webdock.dev](https://webdock.dev) | Product website |
+| [spitzli.cloud](https://spitzli.cloud) | Product information and access requests |
+| [console.spitzli.cloud](https://console.spitzli.cloud) | Your account, workspace, resources and provider connections |
+| [docs.spitzli.cloud](https://docs.spitzli.cloud) | Guides and developer contracts |
+| [api.spitzli.cloud](https://api.spitzli.cloud) | API requests from authorized integrations |
+| [registry.spitzli.cloud](https://registry.spitzli.cloud) | Plugin discovery and release metadata |
+
+Open **My account** from Console for password, passkey and multi-factor settings. Existing authentication, OAuth and Studio MCP protocol addresses remain compatibility contracts; use the endpoints in the [authentication guide](/developers/authentication).
+
+## Understand your workspace
+
+A **workspace** groups members and resources. A **project** organizes applications and services within that workspace. Website access additionally depends on its CMS binding and your website permissions. Being listed as a customer contact does not grant access.
+
+[Accounts and access](/guides/access) explains membership and security. [Plans and limits](/guides/plans-and-billing) explains why an available product may still have no remaining capacity.
+
+## Connect and deploy with clear expectations
+
+New PostgreSQL work starts with [your own Neon connection](/guides/byok-neon). Existing managed databases remain available for maintenance. A provider connection establishes authorization; it does not automatically create or deploy resources.
+
+Git builds, incoming Mail and plugin activation have their own availability checks. A successful image build is separate from a healthy deployment. A published plugin image is separate from a signed registry release and an installed plugin. Follow the relevant guide and the state shown for your workspace.
 
 <Note>
-Console is the browser application. Existing integrations keep their registered protocol addresses, including the Studio MCP endpoint. See [authentication](/developers/authentication) before changing an integration URL.
+Automatically assigned addresses for enabled public applications and websites use `<project>.spitzli.site`. They are assigned by the platform after admission; an arbitrary subdomain is not automatically active. Existing customer domains remain valid.
 </Note>
 
-## Your own infrastructure
-
-Connect your own [Kubernetes or k3s cluster, Vercel team or turboSMTP account](/guides/byok) with explicitly enabled workspace permissions.
-
-## Availability
-
-Services depend on your workspace's enabled products, permissions and capacity. An API reference describes a contract; it does not mean a service is enabled for every workspace. Check the relevant product guide and the state shown in Console.
+If a workspace, connection or resource is missing, start with [troubleshooting](/guides/troubleshooting).

@@ -63,7 +63,7 @@ export function createMailOnboarding(dependencies: MailOnboardingDependencies) {
   ) {
     const session = await resolveSessionReference(headers);
     if (!session)
-      throw new MailError(401, "session_required", "Sign in to Webdock");
+      throw new MailError(401, "session_required", "Sign in to Spitzli Cloud");
     if (
       await currentTenantPreview({
         userID: session.subject,

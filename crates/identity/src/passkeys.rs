@@ -99,7 +99,7 @@ impl IdentityService {
                 &origin,
             )
             .map_err(|_| IdentityError::Configuration)?
-            .rp_name("Webdock")
+            .rp_name("Spitzli Cloud")
             .timeout(Duration::from_secs(300))
             .build()
             .map_err(|_| IdentityError::Configuration)?,
@@ -326,7 +326,18 @@ impl IdentityService {
             ],
         ))
         .await?;
-        self.issue_session(tx, &user_id).await
+        let mut source = self.pending_neon(&tx, &user_id, cookie).await?;
+        if source.is_some() {
+            let token = self
+                .cookies
+                .read_challenge(cookie)?
+                .ok_or(IdentityError::Unauthorized)?;
+            tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"DELETE FROM webdock_auth.identity_mfa_challenge WHERE token_hash=$1 AND user_id=$2",[digest(&token).into(),user_id.clone().into()])).await?;
+        }
+        if let Some(source) = &mut source {
+            source.mfa_verified = true;
+        }
+        self.issue_session_with_source(tx, &user_id, source).await
     }
     pub async fn list_passkeys(&self, cookie: &str) -> Result<Vec<PasskeySummary>> {
         let tx = self.db.begin().await?;

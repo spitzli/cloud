@@ -18,6 +18,9 @@ spec:
       labels: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: core}
     spec:
       automountServiceAccountToken: false
+      {{- with .Values.databaseHostAliases }}
+      hostAliases: {{ . | toJson }}
+      {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532
@@ -60,7 +63,14 @@ spec:
             failureThreshold: 30
           volumeMounts:
             - {name: tmp, mountPath: /tmp}
+            {{- if .Values.databaseCAConfigMap }}
+            - {name: database-ca, mountPath: /etc/webdock/database-ca, readOnly: true}
+            {{- end }}
       volumes:
+        {{- if .Values.databaseCAConfigMap }}
+        - name: database-ca
+          configMap: {name: {{ .Values.databaseCAConfigMap | quote }}, defaultMode: 0444}
+        {{- end }}
         - name: tmp
           emptyDir: {medium: Memory, sizeLimit: 64Mi}
 ---

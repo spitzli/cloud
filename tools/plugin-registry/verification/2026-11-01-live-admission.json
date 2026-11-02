@@ -1,0 +1,255 @@
+{
+  "positive": [
+    {
+      "slug": "archives",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "echo-demo",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "github-repository",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "hosting",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "lumaserv-compute",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "mail",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "mail-relay",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "object-storage",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "postgres",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "managed-cms",
+      "selectedKind": true,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "archives",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "echo-demo",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "github-repository",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "hosting",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "lumaserv-compute",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "mail",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "mail-relay",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "object-storage",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "postgres",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    },
+    {
+      "slug": "managed-cms",
+      "selectedKind": false,
+      "status": 200,
+      "valid": true
+    }
+  ],
+  "legacy": [
+    {
+      "slug": "project-notes",
+      "version": "0.1.0-alpha.2",
+      "selectedKind": true,
+      "valid": true
+    },
+    {
+      "slug": "managed-analytics",
+      "version": "0.1.0-alpha.3",
+      "selectedKind": true,
+      "valid": true
+    },
+    {
+      "slug": "managed-apps",
+      "version": "0.1.0-alpha.1",
+      "selectedKind": true,
+      "valid": true
+    },
+    {
+      "slug": "lumaserv",
+      "version": "0.1.0-alpha.2",
+      "selectedKind": true,
+      "valid": true
+    },
+    {
+      "slug": "project-notes",
+      "version": "0.1.0-alpha.2",
+      "selectedKind": false,
+      "valid": true
+    },
+    {
+      "slug": "managed-analytics",
+      "version": "0.1.0-alpha.3",
+      "selectedKind": false,
+      "valid": true
+    },
+    {
+      "slug": "managed-apps",
+      "version": "0.1.0-alpha.1",
+      "selectedKind": false,
+      "valid": true
+    },
+    {
+      "slug": "lumaserv",
+      "version": "0.1.0-alpha.2",
+      "selectedKind": false,
+      "valid": true
+    }
+  ],
+  "negative": [
+    {
+      "name": "mixed-protocol",
+      "selectedKind": true,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "unknown-capability",
+      "selectedKind": true,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "privileged-pod-field",
+      "selectedKind": true,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "mutable-image",
+      "selectedKind": true,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "v2-extra-id",
+      "selectedKind": true,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "mixed-protocol",
+      "selectedKind": false,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "unknown-capability",
+      "selectedKind": false,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "privileged-pod-field",
+      "selectedKind": false,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "mutable-image",
+      "selectedKind": false,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "v2-extra-id",
+      "selectedKind": false,
+      "status": 200,
+      "rejected": true
+    },
+    {
+      "name": "provider-as-extension",
+      "status": 200,
+      "rejected": true
+    }
+  ],
+  "keyPreserved": {
+    "kid": "5d8025c66487bb44",
+    "x": "GWCS76Xqurb5NKs_6U4S6l83E9kx-o_GdS0hYhnMug0"
+  },
+  "policyReadback": {
+    "exactSemanticReadback": true,
+    "sha256": "24b0f7d7c4c1226c5dc78a68d4f6392fff7acd10902d3d3b1fd463ff7f7c0211"
+  },
+  "schemaDiscovery": {
+    "status": 200,
+    "globalSchemaBytes": 66951,
+    "definitions": 69
+  },
+  "status": "live-admission-qualified-new-release-hashing-in-progress"
+}

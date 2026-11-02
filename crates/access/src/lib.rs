@@ -8,9 +8,11 @@ pub mod domains;
 mod migration;
 mod projects;
 mod service;
+mod waitlist;
 pub use contracts::*;
 pub use migration::*;
 pub use service::AccessService;
+pub use waitlist::{WaitlistAction, WaitlistDecision, WaitlistSubmission};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -40,6 +42,8 @@ pub enum Error {
     Identity(#[from] webdock_identity::IdentityError),
     #[error("ID allocation is unavailable.")]
     Allocation,
+    #[error("Too many requests. Try again later.")]
+    RateLimited,
     #[error("Access configuration is invalid.")]
     Configuration,
 }
@@ -57,6 +61,7 @@ impl Error {
             | Self::DomainTaken
             | Self::DomainInUse => 409,
             Self::InvalidInput => 400,
+            Self::RateLimited => 429,
             _ => 503,
         }
     }

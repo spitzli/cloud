@@ -7,6 +7,8 @@ The active API lives in `crates/control-plane`. `apps/console` contains the Vite
 
 ## Install and start
 
+<Note>These commands require a native source revision containing `crates/control-plane` and `Tiltfile`. Check the revision after checkout; an older TypeScript branch has different setup commands.</Note>
+
 Use the repository's pinned Rust toolchain and Bun 1.4.3, with Docker, Tilt and `protoc` available:
 
 ```sh
@@ -34,7 +36,7 @@ bun run quality
 bun run test:distribution
 ```
 
-The quality gate covers native contracts, Rust checks, Console checks and browser fixtures. Database and cluster acceptance remain explicitly controlled separate checks. Use disposable local PostgreSQL and Kubernetes fixtures only. Never use customer data, production configuration or real mail in tests; local mail goes only to Mailpit.
+Use the quality gate required by the matching source revision. Its Rust, frontend and contract checks are separate from opt-in browser, database and cluster acceptance. Use disposable local PostgreSQL and Kubernetes fixtures only. Never use customer data, production configuration or real mail in tests; local mail goes only to Mailpit.
 
 ## Repository map
 
@@ -42,9 +44,11 @@ The quality gate covers native contracts, Rust checks, Console checks and browse
 | --- | --- |
 | `crates/` | Native platform, protocol, persistence and executor services |
 | `apps/console` | React Console and canonical account screens |
-| `plugins/` | Independent runtime plugins and their UI contributions |
+| `plugins/` | Compatibility/test/UI snapshots; independent repositories own releases |
 | `apps/website` | Separate public website and CMS |
 | `legacy/` | Retired TypeScript platform and release tooling |
-| `deploy/` | Native deployment candidates and plugin workloads |
+| `deploy/` | Native deployment artifacts and plugin workloads |
 
 Filesystem changes do not alter OAuth issuers, MCP audiences or registered clients.
+
+The loopback bootstrap fixture does not reproduce every hosted Managed Auth, provider or release gate. Current hosted identity is [Neon Managed Auth with Core security](/developers/auth-adapters). Source: `Tiltfile`, [root commands](https://github.com/spitzli/cloud/blob/main/package.json) and native runtime (`crates/control-plane`).

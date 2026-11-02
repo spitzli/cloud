@@ -8,6 +8,15 @@ use std::{
 };
 pub const MAX_SOURCE: u64 = 128 * 1024 * 1024;
 pub const MAX_OUTPUT: u64 = 512 * 1024 * 1024;
+/// One USTAR image.tar header and two end blocks must fit the retained envelope.
+/// The maximum is 512-byte aligned, so rounding any smaller payload still fits.
+pub const MAX_RETAINED_IMAGE: u64 = MAX_OUTPUT - 1536;
+pub fn validate_retained_image_size(bytes: u64) -> Result<()> {
+    if bytes > MAX_RETAINED_IMAGE {
+        return Err(error("artifact_limit"));
+    }
+    Ok(())
+}
 pub const MAX_ENTRIES: usize = 50_000;
 pub const SUPPORTED_FORMATS: &[u8] = &[0, 1, 2];
 pub(crate) fn storage_format(key: &str, digest: &str) -> Result<u8> {
@@ -243,6 +252,45 @@ impl Archive {
                 .map_err(io)?;
             file.write_all(data).map_err(io)?;
         }
+        Ok(())
+    }
+
+    /// Git modes for Docker COPY, behind the attempt's still-private ancestor.
+    /// VM inputs and secret staging continue using extract_private unchanged.
+    #[cfg(feature = "kubernetes-job")]
+    pub(crate) fn extract_build_context(&self, destination: &Path) -> Result<()> {
+        use std::os::unix::fs::PermissionsExt;
+        let parent = destination
+            .parent()
+            .ok_or_else(|| error("private_staging_required"))?;
+        let metadata = parent.symlink_metadata().map_err(io)?;
+        if !metadata.is_dir() || metadata.permissions().mode() & 0o077 != 0 {
+            return Err(error("private_staging_required"));
+        }
+        self.extract_private(destination)?;
+        for name in self.files.keys() {
+            let path = destination.join(name);
+            std::fs::set_permissions(
+                &path,
+                std::fs::Permissions::from_mode(if self.executable.contains(name) {
+                    0o755
+                } else {
+                    0o644
+                }),
+            )
+            .map_err(io)?;
+            let mut directory = path.parent();
+            while let Some(path) = directory {
+                if path == destination {
+                    break;
+                }
+                std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o755))
+                    .map_err(io)?;
+                directory = path.parent();
+            }
+        }
+        std::fs::set_permissions(destination, std::fs::Permissions::from_mode(0o755))
+            .map_err(io)?;
         Ok(())
     }
 }

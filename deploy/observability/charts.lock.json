@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-30",
+  "activationEnabled": false,
+  "namespace": "webdock-observability",
+  "kubernetesRenderVersion": "1.35.0",
+  "helmQualifiedVersion": "v3.21.0",
+  "charts": [
+    {
+      "name": "kube-prometheus-stack",
+      "version": "92.16.1",
+      "appVersion": "v0.94.2",
+      "index": "https://prometheus-community.github.io/helm-charts/index.yaml",
+      "url": "https://github.com/prometheus-community/helm-charts/releases/download/kube-prometheus-stack-92.16.1/kube-prometheus-stack-92.16.1.tgz",
+      "sha256": "d2af1fccbd11fedad9e39ac7fd05d9b87613c801eb86cf3dfa33c4097a7fad97",
+      "values": "metrics-values.yaml"
+    },
+    {
+      "name": "loki",
+      "version": "20.2.0",
+      "appVersion": "3.7.9",
+      "index": "https://grafana-community.github.io/helm-charts/index.yaml",
+      "url": "https://github.com/grafana-community/helm-charts/releases/download/loki-20.2.0/loki-20.2.0.tgz",
+      "sha256": "4886775896b04ff696a7620921a12de761c57b2e3182acc37639088f348e4f6b",
+      "values": "loki-values.yaml"
+    }
+  ],
+  "images": [
+    {
+      "reference": "docker.io/grafana/grafana:13.3.0-distroless",
+      "digest": "sha256:540b8afb775bf34aefce417e4329039daa5d44b6f2fbda6881397b1b247ca7df",
+      "registryManifestURL": "https://registry-1.docker.io/v2/grafana/grafana/manifests/13.3.0-distroless",
+      "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json"
+    },
+    {
+      "reference": "docker.io/grafana/loki:3.7.9",
+      "digest": "sha256:0db216b630ae1f348a1584c67f3cead8b4c1fc839169a39501db664744158e28",
+      "registryManifestURL": "https://registry-1.docker.io/v2/grafana/loki/manifests/3.7.9",
+      "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json"
+    },
+    {
+      "reference": "quay.io/kiwigrid/k8s-sidecar:2.14.1",
+      "digest": "sha256:092dbe0c335fba9af414a27630ca68f34df6185784fa847d9954187e69dbfdd7",
+      "registryManifestURL": "https://quay.io/v2/kiwigrid/k8s-sidecar/manifests/2.14.1",
+      "mediaType": "application/vnd.oci.image.index.v1+json"
+    },
+    {
+      "reference": "quay.io/prometheus-operator/prometheus-operator:v0.94.2",
+      "digest": "sha256:c7edf0379b7271ef1705dce258d2bb73820e299cc95559369e9f6fc3321639ec",
+      "registryManifestURL": "https://quay.io/v2/prometheus-operator/prometheus-operator/manifests/v0.94.2",
+      "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json"
+    },
+    {
+      "reference": "quay.io/prometheus-operator/prometheus-config-reloader:v0.94.2",
+      "digest": "sha256:a1897c67478bc23434534e91ad3855280771196b1daf17144db9dbcb655bef71",
+      "registryManifestURL": "https://quay.io/v2/prometheus-operator/prometheus-config-reloader/manifests/v0.94.2",
+      "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json"
+    },
+    {
+      "reference": "quay.io/prometheus/alertmanager:v0.34.2",
+      "digest": "sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
+      "registryManifestURL": "https://quay.io/v2/prometheus/alertmanager/manifests/v0.34.2",
+      "mediaType": "application/vnd.oci.image.index.v1+json"
+    },
+    {
+      "reference": "quay.io/prometheus/prometheus:v3.15.1-distroless",
+      "digest": "sha256:451a845bae1d51622b41af1780eb2ad911bbb79a9855bc8e9bb67fabbc03f934",
+      "registryManifestURL": "https://quay.io/v2/prometheus/prometheus/manifests/v3.15.1-distroless",
+      "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json"
+    },
+    {
+      "reference": "registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.20.0",
+      "digest": "sha256:42cfe3723a5f058171c627537fb57a3ea0f26e4380fa18555a95cb1a1b4cfc5b",
+      "registryManifestURL": "https://registry.k8s.io/v2/kube-state-metrics/kube-state-metrics/manifests/v2.20.0",
+      "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json"
+    }
+  ]
+}

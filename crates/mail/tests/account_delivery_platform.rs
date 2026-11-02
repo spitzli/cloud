@@ -360,7 +360,7 @@ async fn run(url: &url::Url, name: &str) {
         format!("account:{}", activation.id)
     );
     let message: Value = serde_json::from_slice(&store.get("123", &reference).unwrap()).unwrap();
-    assert_eq!(message["subject"], "Set up your Webdock account");
+    assert_eq!(message["subject"], "Set up your Spitzli Cloud account");
     assert!(message["text"].as_str().unwrap().contains(&activation.url));
     let token = url::Url::parse(&activation.url)
         .unwrap()

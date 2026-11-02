@@ -94,6 +94,20 @@ impl IdentityService {
             return Ok(());
         }
         let email = email.trim().to_lowercase();
+        if self.neon_mapping_email(&email).await?.is_some() {
+            let redirect = self
+                .account_origin
+                .as_ref()
+                .ok_or(IdentityError::Configuration)?
+                .join("/reset-password")
+                .map_err(|_| IdentityError::Configuration)?;
+            self.neon
+                .as_ref()
+                .ok_or(IdentityError::Configuration)?
+                .request_reset(&email, redirect.as_str())
+                .await?;
+            return Ok(());
+        }
         let tx = self.db.begin().await?;
         let rows=tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT id,\"mustChangePassword\",\"emailVerified\" FROM webdock_auth.\"user\" WHERE lower(email)=$1 AND NOT coalesce(banned,false) FOR UPDATE",[email.into()])).await?;
         if rows.len() == 1 {
@@ -226,7 +240,7 @@ impl IdentityService {
             .ok_or(IdentityError::Unauthorized)?;
         let id: String = lookup.try_get("", "user_id")?;
         let user=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT email FROM webdock_auth.\"user\" WHERE id=$1 AND NOT coalesce(banned,false) FOR UPDATE",[id.clone().into()])).await?.ok_or(IdentityError::Unauthorized)?;
-        if externally_managed(&tx, &id).await? {
+        if externally_managed(&tx, &id).await? || self.neon_mapping(&tx, &id).await?.is_some() {
             return Err(IdentityError::Unauthorized);
         }
         let recovery=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT email,credential_digest FROM webdock_auth.identity_recovery_token WHERE token_hash=$1 AND user_id=$2 AND expires_at>statement_timestamp() FOR UPDATE",[hash_token.into(),id.clone().into()])).await?.ok_or(IdentityError::Unauthorized)?;

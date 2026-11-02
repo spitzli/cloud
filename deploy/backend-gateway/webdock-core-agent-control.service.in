@@ -1,0 +1,25 @@
+[Unit]
+Description=Webdock agent mTLS TCP pass-through
+Requires=webdock-core-agent-control.socket
+After=k3s.service
+
+[Service]
+# After an agent-control Pod replacement, restart this pass-through and verify a
+# fresh RUN inspect; Pod readiness alone does not drain existing TCP connections.
+# Replace only @AGENT_CONTROL_CLUSTER_IP@ with the verified private Service IPv4.
+ExecStart=/usr/lib/systemd/systemd-socket-proxyd @AGENT_CONTROL_CLUSTER_IP@:3131
+DynamicUser=true
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_INET AF_UNIX
+CapabilityBoundingSet=
+MemoryMax=64M
+CPUQuota=10%
+TasksMax=32

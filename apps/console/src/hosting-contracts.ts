@@ -49,6 +49,7 @@ export const projectSchema = z.object({
   customerName: z.string(),
   operator: z.boolean(),
   configured: z.boolean(),
+  publicSitePolicy:z.object({domain:z.string().nullable(),enabled:z.boolean()}).nullable().optional(),
   provider: z.string().nullable(),
 });
 export const appsPageSchema = z.object({
@@ -178,6 +179,7 @@ export function createCommand(
     throw new Error("A new application has no variables to remove.");
   const result = commandSchema.parse({
     action: "apps.create",
+    ...(data.get("publicAddress")==="on"?{publicAddress:{}}:{}),
     projectID,
     name: formText(data, "name").trim(),
     spec,

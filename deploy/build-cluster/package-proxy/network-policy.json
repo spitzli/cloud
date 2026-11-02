@@ -1,0 +1,10 @@
+{
+  "apiVersion": "networking.k8s.io/v1",
+  "kind": "NetworkPolicy",
+  "metadata": {"name": "webdock-package-proxy", "namespace": "webdock-build-qualification", "labels": {"webdock.dev/owner": "package-proxy"}},
+  "spec": {
+    "podSelector": {"matchLabels": {"webdock.dev/component": "build-job"}},
+    "policyTypes": ["Egress"],
+    "egress": [{"to": [{"ipBlock": {"cidr": "10.83.0.1/32"}}], "ports": [{"protocol": "TCP", "port": 3128}]}]
+  }
+}

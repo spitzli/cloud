@@ -1,5 +1,43 @@
 # Native database authority
 
+## Retired new orders
+
+Core now defaults `WEBDOCK_DATABASE_NEW_ORDERS_ENABLED` to `false` (also when absent).
+Only the exact lowercase `true` re-enables the retained shared/self-hosted PostgreSQL
+new-order flow for migration or owned legacy fixtures; any other configured value
+except `false` fails startup. This setting is independent of `WEBDOCK_FEATURES` and
+`WEBDOCK_DATABASE_PUBLIC_ENABLED`. Keep the `databases` feature enabled to retain
+viewer, credentials, bindings, exports/backups and maintenance access. The public
+ordering flag alone cannot override retirement.
+
+Core applies the setting to its database domain service and publishes the explicit
+`databaseOrderingEnabled` boolean in `/console-config.json`. Console hides the new
+order action and any open new-order form when false, while retaining existing
+database management and upgrade controls. Its notice directs customers to create a
+project in their own Neon account; it does not claim that Neon connection setup is
+already available in Console. Older standalone Console fixtures without this new
+runtime field keep their previous behavior.
+
+`DatabaseService::with_new_orders_enabled(false)` rejects fresh ordinary quotes
+(`databases.offers.create` without `databaseID`) and acceptance of an unaccepted
+ordinary create offer with `409`, after current scope/RLS authorization. An old
+unaccepted quote cannot bypass retirement. Previously persisted quote receipts can
+still replay, and accepted orders replay both their original receipt and a new
+idempotency key without allocating again. `databases.create` only resolves an
+already accepted matching order. Existing-database upgrade offers and acceptance,
+queued or running jobs, database browser access, backup/export and maintenance
+remain on their existing paths. Trusted operator pool/installation repair remains
+available. No storage, credentials or persisted customer records are changed by
+this setting. The library constructor keeps ordering enabled for compatibility;
+Core explicitly supplies its fail-closed startup setting. The export-only plugin
+service has no management/order entrypoint.
+
+Both Console and `/v1/databases` invoke the same service admission. Native MCP
+currently exposes database **read** commands only; quote/accept are outside its
+schema. This change does not activate MCP writes or recovery/provisioning paths.
+No production deployment or configuration activation is implied by this source
+change, and the Neon alternative must be integrated before the policy rollout.
+
 `DatabaseService` owns retained registered database bindings, explicit user grants, immutable runtime ownership, and registered/managed gateway launches. SeaORM uses three separate restricted pools: `webdock_auth_runtime` for signed current-user business transactions, `webdock_auth_bootstrap` for canonical identity/session revalidation, and `webdock_worker_runtime` for the signed `database-gateway` purpose. The private allocator uses its own pool and supplies every new canonical ID.
 
 The constructor accepts those pools, `Arc<IdentityService>`, optional `Arc<BrowserSessions>`, `Arc<IdAllocator>`, the retained RLS secret, retained application encryption secret, and gateway origin. It verifies pool roles. Public operations are:

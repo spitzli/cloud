@@ -855,7 +855,7 @@ function CMSAppContent(props: CMSAppProps) {
             className="cms-wordmark"
             onClick={() => void navigate(manifest?.modules[0]?.slug || "")}
           >
-            {"webdock"}
+            {"Spitzli Cloud"}
             <span>.</span> <strong>{"CMS"}</strong>
           </button>
         ) : (
@@ -867,7 +867,7 @@ function CMSAppContent(props: CMSAppProps) {
               if (await leave()) window.location.assign("/cms");
             }}
           >
-            {"webdock"}
+            {"Spitzli Cloud"}
             <span>.</span> <strong>{"CMS"}</strong>
           </a>
         )}
@@ -1329,7 +1329,7 @@ function CMSAppContent(props: CMSAppProps) {
             ))
           )}
         </main>
-        <footer className="cms-footer">{t("CMS by Webdock")} <span>{t("Content and access, kept in your control.")}</span>
+        <footer className="cms-footer">{t("CMS by Spitzli Cloud")} <span>{t("Content and access, kept in your control.")}</span>
         </footer>
       </div>
     </div>

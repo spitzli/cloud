@@ -16,6 +16,7 @@ serde_json.workspace = true
 chrono.workspace = true
 hex = "0.4"
 uuid = "1"
+ed25519-dalek = "2"
 
 [build-dependencies]
 tonic-prost-build = "0.14.6"

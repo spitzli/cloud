@@ -51,7 +51,12 @@ ed25519-dalek="2"
 webdock-repository-protocol={path="../repository-protocol"}
 webdock-plugin-host={path="../plugin-host"}
 axum.workspace = true
-webdock-build = { path = "../build", features = ["local-registry-test"] }
+webdock-build = { path = "../build", features = ["local-registry-test", "kubernetes-job"] }
+kube = { version = "4.2.0", default-features = false, features = ["client", "config", "rustls-tls", "ring"] }
+k8s-openapi = { version = "0.28", features = ["v1_32"] }
+flate2 = "1"
+tar = "0.4"
+libc = "0.2"
 webdock-agent-control = { path = "../agent-control" }
 webdock-agent-protocol = { path = "../agent-protocol" }
 webdock-plugin-runtime = { path = "../plugin-runtime" }

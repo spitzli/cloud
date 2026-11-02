@@ -5,6 +5,7 @@ use webdock_supervisor::*;
 fn spec() -> RuntimeSpec {
     let mut spec = support::spec();
     spec.hosting_binding = Some(HostingBinding {
+        public_route: None,
         cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
         quota: allowance(),
         final_quota: allowance(),
@@ -24,6 +25,44 @@ fn allowance() -> ResourceAllowance {
 }
 fn existing(spec: &RuntimeSpec) -> k8s_openapi::api::apps::v1::Deployment {
     serde_json::from_value(serde_json::json!({"metadata":{"name":name(spec),"namespace":namespace(spec),"uid":"retained-uid","resourceVersion":"10","labels":owner_labels(spec,true).unwrap(),"annotations":{"webdock.dev/revision":"1"}},"spec":{"replicas":1,"selector":{"matchLabels":{"webdock.dev/app-id":"456"}},"template":{"metadata":{"labels":owner_labels(spec,true).unwrap()},"spec":{"containers":[{"name":"app","image":spec.image,"env":[{"name":"DATABASE_URL","valueFrom":{"secretKeyRef":{"name":"app-456-services-1","key":"url"}}}],"volumeMounts":[{"name":"data","mountPath":"/data"}]}],"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"app-456-data"}}],"imagePullSecrets":[{"name":"retained-registry"}]}}}})).unwrap()
+}
+#[test]
+fn retained_probe_host_is_only_a_header_for_its_own_container() {
+    for host in [None, Some("api.example.test:3130")] {
+        let mut spec = spec();
+        spec.health_host = host.map(str::to_owned);
+        let mut command = Command {
+            operation_id: "probe-host".into(),
+            generation: 1,
+            lease_until: timestamp().unwrap() + 60,
+            authorization: "test".into(),
+            material: None,
+            action: Action::Apply,
+            spec: spec.clone(),
+            expected_runtime_id: None,
+        };
+        let (created, _) = webdock_agent::legacy::new_workload(&command).unwrap();
+        command.expected_runtime_id = Some("retained-uid".into());
+        let updated = deployment_update(existing(&spec), &command).unwrap();
+        for deployment in [created, updated] {
+            let app = &deployment.spec.unwrap().template.spec.unwrap().containers[0];
+            for probe in [
+                &app.readiness_probe,
+                &app.liveness_probe,
+                &app.startup_probe,
+            ] {
+                let get = probe.as_ref().unwrap().http_get.as_ref().unwrap();
+                assert!(get.host.is_none());
+                assert_eq!(
+                    get.http_headers.as_ref().map(|headers| headers
+                        .iter()
+                        .map(|header| (header.name.as_str(), header.value.as_str()))
+                        .collect::<Vec<_>>()),
+                    host.map(|host| vec![("Host", host)])
+                );
+            }
+        }
+    }
 }
 #[test]
 fn retained_update_preserves_uid_storage_secret_refs_and_original_layout() {
@@ -356,6 +395,7 @@ async fn existing_kubernetes_uid_local_volume_data_and_secret_references_survive
 fn new_legacy_objects_use_original_names_and_restricted_retained_claim() {
     let mut spec = support::spec();
     spec.hosting_binding = Some(webdock_supervisor::HostingBinding {
+        public_route: None,
         cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
         quota: allowance(),
         final_quota: allowance(),

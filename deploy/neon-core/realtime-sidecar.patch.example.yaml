@@ -1,0 +1,48 @@
+# Strategic merge example; replace the immutable image placeholder after qualification.
+# Secret webdock-core-realtime: NEON_REALTIME_URL, NEON_REALTIME_SECRET (provision outside Git).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webdock-core
+  namespace: webdock-core
+spec:
+  template:
+    spec:
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: core
+          env:
+            - name: NEON_REALTIME_URL
+              valueFrom: {secretKeyRef: {name: webdock-core-realtime, key: NEON_REALTIME_URL}}
+            - {name: WEBDOCK_REALTIME_SOCKET, value: /run/webdock-live/private/sdk.sock}
+          volumeMounts:
+            - {name: realtime-socket, mountPath: /run/webdock-live}
+        - name: realtime-sealer
+          image: webdock.local/core/realtime-sealer@sha256:REPLACE_WITH_QUALIFIED_DIGEST
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          env:
+            - {name: WEBDOCK_REALTIME_SOCKET, value: /run/webdock-live/private/sdk.sock}
+            - {name: WEBDOCK_REALTIME_DATABASE, value: neondb}
+            - name: NEON_REALTIME_SECRET
+              valueFrom: {secretKeyRef: {name: webdock-core-realtime, key: NEON_REALTIME_SECRET}}
+          volumeMounts:
+            - {name: realtime-socket, mountPath: /run/webdock-live}
+          resources:
+            requests: {cpu: 25m, memory: 64Mi}
+            limits: {cpu: 250m, memory: 192Mi}
+          readinessProbe:
+            exec: {command: [/bin/sh, -c, 'test -S /run/webdock-live/private/sdk.sock']}
+            initialDelaySeconds: 1
+            periodSeconds: 5
+      volumes:
+        - name: realtime-socket
+          emptyDir: {medium: Memory, sizeLimit: 4Mi}

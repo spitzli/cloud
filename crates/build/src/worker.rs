@@ -147,6 +147,16 @@ impl ControlClient {
         if ![
             "capabilities",
             "claim",
+            "kubernetes-log",
+            "kubernetes-claim",
+            "kubernetes-attempts",
+            "kubernetes-storage",
+            "kubernetes-environment",
+            "kubernetes-volume",
+            "kubernetes-volume-retired",
+            "kubernetes-intent",
+            "kubernetes-job",
+            "kubernetes-retire",
             "complete",
             "release-claim",
             "release-prepare",
@@ -264,6 +274,130 @@ impl Outbox {
             .sync_all()
             .map_err(io)?;
         Ok(())
+    }
+    /// Caller must hold its worker-directory lock, retain the abandoned attempt receipt,
+    /// and prove authoritative cancellation/lease loss before discarding this exact request.
+    /// A transport failure alone never authorizes dropping a pending completion.
+    pub fn discard_exact(&self, endpoint: &str, body: &Value) -> Result<()> {
+        let path = self.root.join("pending.json");
+        let file = match std::fs::OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NOFOLLOW)
+            .open(&path)
+        {
+            Ok(file) => file,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+            Err(e) => return Err(io(e)),
+        };
+        let meta = file.metadata().map_err(io)?;
+        // SAFETY: geteuid takes no arguments and has no preconditions.
+        let current_uid = unsafe { libc::geteuid() };
+        if !meta.is_file()
+            || meta.nlink() != 1
+            || meta.mode() & 0o077 != 0
+            || meta.uid() != current_uid
+            || meta.len() > 400000
+        {
+            return Err(error("invalid_outbox"));
+        }
+        let mut bytes = Vec::new();
+        file.take(400001).read_to_end(&mut bytes).map_err(io)?;
+        if bytes.len() > 400000 {
+            return Err(error("invalid_outbox"));
+        }
+        let pending: Pending =
+            serde_json::from_slice(&bytes).map_err(|_| error("invalid_outbox"))?;
+        if pending.version != 1
+            || pending.endpoint != endpoint
+            || pending.body != *body
+            || !["complete", "container-publish", "release-complete"].contains(&endpoint)
+        {
+            return Err(error("completion_conflict"));
+        }
+        std::fs::remove_file(path).map_err(io)?;
+        std::fs::File::open(&self.root)
+            .map_err(io)?
+            .sync_all()
+            .map_err(io)
+    }
+    fn pending_publication(&self) -> Result<Option<(String, Value)>> {
+        let path = self.root.join("pending.json");
+        let file = match std::fs::OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NOFOLLOW)
+            .open(path)
+        {
+            Ok(file) => file,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+            Err(e) => return Err(io(e)),
+        };
+        let meta = file.metadata().map_err(io)?;
+        if !meta.is_file() || meta.mode() & 0o077 != 0 || meta.nlink() != 1 || meta.len() > 400000 {
+            return Err(error("invalid_outbox"));
+        }
+        let mut bytes = Vec::new();
+        file.take(400001).read_to_end(&mut bytes).map_err(io)?;
+        let pending: Pending =
+            serde_json::from_slice(&bytes).map_err(|_| error("invalid_outbox"))?;
+        if pending.version != 1
+            || !["container-publish", "release-complete"].contains(&pending.endpoint.as_str())
+        {
+            return Err(error("pending_completion"));
+        }
+        Ok(Some((pending.endpoint, pending.body)))
+    }
+    fn record_abandoned_publication(
+        &self,
+        endpoint: &str,
+        body: &Value,
+        reason: &str,
+    ) -> Result<()> {
+        let bytes = serde_json::to_vec(
+            &json!({"version":1,"endpoint":endpoint,"body":body,"reason":reason}),
+        )
+        .map_err(|_| error("invalid_outbox"))?;
+        if bytes.len() > 400000 {
+            return Err(error("invalid_outbox"));
+        }
+        let key = hex::encode(Sha256::digest(
+            serde_json::to_vec(&json!([endpoint, body])).map_err(|_| error("invalid_outbox"))?,
+        ));
+        let path = self.root.join(format!("abandoned-publication-{key}.json"));
+        if path.exists() {
+            let file = std::fs::OpenOptions::new()
+                .read(true)
+                .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
+                .open(&path)
+                .map_err(io)?;
+            let meta = file.metadata().map_err(io)?;
+            if !meta.is_file()
+                || meta.nlink() != 1
+                || meta.mode() & 0o077 != 0
+                || meta.len() > 400000
+            {
+                return Err(error("invalid_outbox"));
+            }
+            let mut old = Vec::new();
+            file.take(400001).read_to_end(&mut old).map_err(io)?;
+            let previous: Value =
+                serde_json::from_slice(&old).map_err(|_| error("invalid_outbox"))?;
+            if previous["endpoint"] != endpoint || previous["body"] != *body {
+                return Err(error("completion_conflict"));
+            }
+            return Ok(());
+        }
+        let mut file = tempfile::NamedTempFile::new_in(&self.root).map_err(io)?;
+        file.as_file()
+            .set_permissions(std::fs::Permissions::from_mode(0o600))
+            .map_err(io)?;
+        file.write_all(&bytes).map_err(io)?;
+        file.as_file().sync_all().map_err(io)?;
+        file.persist_noclobber(path)
+            .map_err(|_| error("pending_completion"))?;
+        std::fs::File::open(&self.root)
+            .map_err(io)?
+            .sync_all()
+            .map_err(io)
     }
     pub async fn flush(&self, client: &ControlClient) -> Result<Option<Value>> {
         let path = self.root.join("pending.json");
@@ -571,127 +705,14 @@ impl Worker {
         Ok(true)
     }
     pub async fn publish_once(&self) -> Result<bool> {
-        self.outbox.flush(&self.control).await?;
-        let bindings: Vec<_> = self.remote_stores.keys().collect();
-        let projects: BTreeMap<_, _> = self
-            .publishers
-            .iter()
-            .map(|(project, (repository, _))| (project, repository))
-            .collect();
-        let release = self
-            .control
-            .post(
-                "release-claim",
-                &json!({"artifactStoreBindings":bindings,"publicationProjects":projects,"artifactFormats":crate::artifact::SUPPORTED_FORMATS}),
-            )
-            .await?;
-        if release.is_null() {
-            return Ok(false);
-        }
-        let id = string(&release, "releaseID")?.to_owned();
-        let generation = generation(&release)?;
-        let base = json!({"releaseID":id,"generation":generation});
-        let publish = async {
-            let prepared = self.control.post("release-prepare", &base).await?;
-            if prepared["kind"] != "oci" {
-                return Err(error("publication_kind_unavailable"));
-            }
-            let project = string(&release, "projectID")?;
-            let customer = string(&release, "customerID")?;
-            let (policy, publisher) = self
-                .publishers
-                .get(project)
-                .ok_or_else(|| error("registry_policy_unavailable"))?;
-            if policy != string(&prepared, "repository")? {
-                return Err(error("registry_scope_mismatch"));
-            }
-            let record = &release["artifact"];
-            let size = record["sizeBytes"]
-                .as_u64()
-                .filter(|s| *s <= MAX_OUTPUT)
-                .ok_or_else(|| error("invalid_artifact"))?;
-            let key = string(record, "storageKey")?.to_owned();
-            let digest = string(record, "digest")?.to_owned();
-            let image_digest = string(record, "imageDigest")?.to_owned();
-            let artifact = if record["remoteStorage"].is_null() {
-                self.store.load(key, digest, size, image_digest)?
-            } else {
-                let remote: webdock_object_storage::ObjectReceipt =
-                    serde_json::from_value(record["remoteStorage"].clone())
-                        .map_err(|_| error("invalid_artifact"))?;
-                let backend = self
-                    .remote_stores
-                    .get(&remote.binding)
-                    .ok_or_else(|| error("artifact_backend_mismatch"))?;
-                let artifact = crate::artifact::StoredArtifact {
-                    key,
-                    digest,
-                    size,
-                    image_digest,
-                    remote: Some(remote),
-                };
-                self.control.guard_release(&id, generation).await?;
-                self.transfer_with_lease(
-                    "releases",
-                    &id,
-                    generation,
-                    backend.restore(&self.store, &artifact),
-                )
-                .await?
-            };
-            struct Guard<'a> {
-                client: &'a ControlClient,
-                id: &'a str,
-                generation: i32,
-            }
-            #[async_trait::async_trait]
-            impl PublicationGuard for Guard<'_> {
-                async fn check(&self) -> Result<()> {
-                    self.client.guard_release(self.id, self.generation).await
-                }
-            }
-            let image = publisher
-                .publish(
-                    customer,
-                    project,
-                    &id,
-                    &self.store,
-                    &artifact,
-                    &Guard {
-                        client: &self.control,
-                        id: &id,
-                        generation,
-                    },
-                )
-                .await?;
-            self.outbox.put(
-                "container-publish",
-                json!({"releaseID":id,"generation":generation,"image":image}),
-            )?;
-            self.outbox.flush(&self.control).await?;
-            let expires = deadline(&release)?.saturating_sub(30);
-            while chrono::Utc::now().timestamp() < expires {
-                let observed = self.control.post("observe", &base).await?;
-                if observed["status"] != "deploying" {
-                    return Ok::<(), crate::Error>(());
-                }
-                tokio::time::sleep(Duration::from_secs(5)).await;
-            }
-            Err(error("publication_uncertain"))
-        }
-        .await;
-        if let Err(e) = publish {
-            if self.outbox.has_pending() {
-                return Err(e);
-            }
-            self.outbox.put(
-                "release-complete",
-                json!({"releaseID":id,"generation":generation,"status":"needs-reconciliation"}),
-            )?;
-            self.outbox.flush(&self.control).await?;
-            return Err(e);
-        }
-        Ok(true)
+        publish_once_without_builder(
+            &self.control,
+            &self.store,
+            &self.outbox,
+            &self.publishers,
+            &self.remote_stores,
+        )
+        .await
     }
     pub async fn turn(&self, prefer_release: bool) -> Result<bool> {
         self.outbox.flush(&self.control).await?;
@@ -1173,5 +1194,407 @@ mod file_tests {
         assert!(configured_file_as(&link, 256, true, owner).is_err());
         std::fs::hard_link(&path, directory.path().join("hardlink")).unwrap();
         assert!(configured_file_as(&path, 256, true, owner).is_err());
+    }
+}
+
+#[cfg(test)]
+mod discarded_outbox_tests {
+    use super::*;
+    #[test]
+    fn only_exact_abandoned_completion_can_be_removed() {
+        let root = tempfile::tempdir().unwrap();
+        std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let outbox = Outbox::open(root.path().to_path_buf()).unwrap();
+        let body = json!({"buildID":"123","generation":1,"status":"failed","failureCode":"CANCELLED","logs":"owned"});
+        outbox.put("complete", body.clone()).unwrap();
+        assert!(
+            outbox
+                .discard_exact("complete", &json!({"buildID":"124"}))
+                .is_err()
+        );
+        assert!(outbox.has_pending());
+        assert!(outbox.discard_exact("release-complete", &body).is_err());
+        assert!(outbox.has_pending());
+        outbox.discard_exact("complete", &body).unwrap();
+        assert!(!outbox.has_pending());
+        outbox.discard_exact("complete", &body).unwrap();
+    }
+}
+
+#[cfg(all(test, feature = "local-registry-test"))]
+mod publication_only_tests {
+    use super::*;
+    #[tokio::test]
+    async fn publication_idle_needs_no_vm_or_build_executor() {
+        use axum::{Json, Router, routing::post};
+        let app = Router::new().route("/release-claim", post(|| async { Json(Value::Null) }));
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let task = tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
+        let root = tempfile::tempdir().unwrap();
+        let out = tempfile::tempdir().unwrap();
+        for path in [root.path(), out.path()] {
+            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700)).unwrap();
+        }
+        let store = ArtifactStore::open(root.path().to_path_buf(), MAX_OUTPUT).unwrap();
+        let outbox = Outbox::open(out.path().to_path_buf()).unwrap();
+        let client =
+            ControlClient::loopback_test(&format!("http://{address}"), "a".repeat(43)).unwrap();
+        assert!(
+            !publish_once_without_builder(
+                &client,
+                &store,
+                &outbox,
+                &BTreeMap::new(),
+                &BTreeMap::new()
+            )
+            .await
+            .unwrap()
+        );
+        task.abort();
+    }
+}
+
+/// Registry publication and Hosting rollout observation without any VM/build execution dependency.
+pub async fn publish_once_without_builder(
+    control: &ControlClient,
+    store: &ArtifactStore,
+    outbox: &Outbox,
+    publishers: &BTreeMap<String, (String, Arc<RegistryPublisher>)>,
+    remote_stores: &BTreeMap<String, crate::remote::RemoteArtifacts>,
+) -> Result<bool> {
+    PublicationContext {
+        control,
+        store,
+        outbox,
+        publishers,
+        remote_stores,
+    }
+    .publish_once()
+    .await
+}
+struct PublicationContext<'a> {
+    control: &'a ControlClient,
+    store: &'a ArtifactStore,
+    outbox: &'a Outbox,
+    publishers: &'a BTreeMap<String, (String, Arc<RegistryPublisher>)>,
+    remote_stores: &'a BTreeMap<String, crate::remote::RemoteArtifacts>,
+}
+impl PublicationContext<'_> {
+    async fn transfer_with_lease<T>(
+        &self,
+        kind: &str,
+        id: &str,
+        generation: i32,
+        transfer: impl std::future::Future<Output = Result<T>>,
+    ) -> Result<T> {
+        tokio::pin!(transfer);
+        let mut interval = tokio::time::interval(Duration::from_secs(2));
+        loop {
+            tokio::select! {result=&mut transfer=>{self.control.guard(kind,id,generation).await?;return result;},_=interval.tick()=>self.control.guard(kind,id,generation).await?}
+        }
+    }
+    async fn flush_publication(&self) -> Result<Option<Value>> {
+        match self.outbox.flush(self.control).await {
+            Ok(value) => Ok(value),
+            Err(failure) if matches!(failure.code, "lease_changed" | "worker_revoked") => {
+                let Some((endpoint, body)) = self.outbox.pending_publication()? else {
+                    return Err(failure);
+                };
+                let id = string(&body, "releaseID")?;
+                let generation = generation(&body)?;
+                let guard = self.control.guard_release(id, generation).await;
+                let Err(fence) = guard else {
+                    return Err(failure);
+                };
+                if !matches!(fence.code, "lease_changed" | "worker_revoked") {
+                    return Err(fence);
+                }
+                // This is authoritative loss of promotion authority, not a transport retry.
+                self.outbox
+                    .record_abandoned_publication(&endpoint, &body, fence.code)?;
+                self.outbox.discard_exact(&endpoint, &body)?;
+                if fence.code == "worker_revoked" {
+                    return Err(fence);
+                }
+                Ok(Some(json!({"abandoned":true})))
+            }
+            Err(failure) => Err(failure),
+        }
+    }
+    pub async fn publish_once(&self) -> Result<bool> {
+        self.flush_publication().await?;
+        let bindings: Vec<_> = self.remote_stores.keys().collect();
+        let projects: BTreeMap<_, _> = self
+            .publishers
+            .iter()
+            .map(|(project, (repository, _))| (project, repository))
+            .collect();
+        let release = self
+            .control
+            .post(
+                "release-claim",
+                &json!({"artifactStoreBindings":bindings,"publicationProjects":projects,"artifactFormats":crate::artifact::SUPPORTED_FORMATS}),
+            )
+            .await?;
+        if release.is_null() {
+            return Ok(false);
+        }
+        let id = string(&release, "releaseID")?.to_owned();
+        let generation = generation(&release)?;
+        let base = json!({"releaseID":id,"generation":generation});
+        let publish = async {
+            let prepared = self.control.post("release-prepare", &base).await?;
+            if prepared["kind"] != "oci" {
+                return Err(error("publication_kind_unavailable"));
+            }
+            let project = string(&release, "projectID")?;
+            let customer = string(&release, "customerID")?;
+            let (policy, publisher) = self
+                .publishers
+                .get(project)
+                .ok_or_else(|| error("registry_policy_unavailable"))?;
+            if policy != string(&prepared, "repository")? {
+                return Err(error("registry_scope_mismatch"));
+            }
+            let record = &release["artifact"];
+            let size = record["sizeBytes"]
+                .as_u64()
+                .filter(|s| *s <= MAX_OUTPUT)
+                .ok_or_else(|| error("invalid_artifact"))?;
+            let key = string(record, "storageKey")?.to_owned();
+            let digest = string(record, "digest")?.to_owned();
+            let image_digest = string(record, "imageDigest")?.to_owned();
+            let artifact = if record["remoteStorage"].is_null() {
+                self.store.load(key, digest, size, image_digest)?
+            } else {
+                let remote: webdock_object_storage::ObjectReceipt =
+                    serde_json::from_value(record["remoteStorage"].clone())
+                        .map_err(|_| error("invalid_artifact"))?;
+                let backend = self
+                    .remote_stores
+                    .get(&remote.binding)
+                    .ok_or_else(|| error("artifact_backend_mismatch"))?;
+                let artifact = crate::artifact::StoredArtifact {
+                    key,
+                    digest,
+                    size,
+                    image_digest,
+                    remote: Some(remote),
+                };
+                self.control.guard_release(&id, generation).await?;
+                self.transfer_with_lease(
+                    "releases",
+                    &id,
+                    generation,
+                    backend.restore(self.store, &artifact),
+                )
+                .await?
+            };
+            struct Guard<'a> {
+                client: &'a ControlClient,
+                id: &'a str,
+                generation: i32,
+            }
+            #[async_trait::async_trait]
+            impl PublicationGuard for Guard<'_> {
+                async fn check(&self) -> Result<()> {
+                    self.client.guard_release(self.id, self.generation).await
+                }
+            }
+            let image = publisher
+                .publish(
+                    customer,
+                    project,
+                    &id,
+                    self.store,
+                    &artifact,
+                    &Guard {
+                        client: self.control,
+                        id: &id,
+                        generation,
+                    },
+                )
+                .await?;
+            self.outbox.put(
+                "container-publish",
+                json!({"releaseID":id,"generation":generation,"image":image}),
+            )?;
+            if self
+                .flush_publication()
+                .await?
+                .is_some_and(|v| v["abandoned"] == true)
+            {
+                return Ok::<(), crate::Error>(());
+            }
+            let expires = deadline(&release)?.saturating_sub(30);
+            while chrono::Utc::now().timestamp() < expires {
+                let observed = self.control.post("observe", &base).await?;
+                if observed["status"] != "deploying" {
+                    return Ok::<(), crate::Error>(());
+                }
+                tokio::time::sleep(Duration::from_secs(5)).await;
+            }
+            Err(error("publication_uncertain"))
+        }
+        .await;
+        if let Err(e) = publish {
+            if self.outbox.has_pending() {
+                return Err(e);
+            }
+            self.outbox.put(
+                "release-complete",
+                json!({"releaseID":id,"generation":generation,"status":"needs-reconciliation"}),
+            )?;
+            self.flush_publication().await?;
+            return Err(e);
+        }
+        Ok(true)
+    }
+}
+
+#[cfg(all(test, feature = "local-registry-test"))]
+mod fenced_publication_tests {
+    use super::*;
+    #[tokio::test]
+    async fn authoritative_cancel_does_not_poison_other_projects_publisher() {
+        use axum::{
+            Json, Router,
+            http::StatusCode,
+            routing::{get, post},
+        };
+        let app = Router::new()
+            .route(
+                "/container-publish",
+                post(|| async {
+                    (
+                        StatusCode::CONFLICT,
+                        Json(json!({"error":"build_publication_cancelled"})),
+                    )
+                }),
+            )
+            .route(
+                "/releases/123/lease",
+                get(|| async {
+                    (
+                        StatusCode::CONFLICT,
+                        Json(json!({"error":"build_publication_cancelled"})),
+                    )
+                }),
+            )
+            .route("/release-claim", post(|| async { Json(Value::Null) }));
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        let task = tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
+        let root = tempfile::tempdir().unwrap();
+        let out = tempfile::tempdir().unwrap();
+        for path in [root.path(), out.path()] {
+            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700)).unwrap();
+        }
+        let store = ArtifactStore::open(root.path().into(), MAX_OUTPUT).unwrap();
+        let outbox = Outbox::open(out.path().into()).unwrap();
+        outbox.put("container-publish",json!({"releaseID":"123","generation":1,"image":format!("registry.example/owned@sha256:{}","a".repeat(64))})).unwrap();
+        let control =
+            ControlClient::loopback_test(&format!("http://{addr}"), "a".repeat(43)).unwrap();
+        assert!(
+            !publish_once_without_builder(
+                &control,
+                &store,
+                &outbox,
+                &BTreeMap::new(),
+                &BTreeMap::new()
+            )
+            .await
+            .unwrap()
+        );
+        assert!(!outbox.has_pending());
+        assert!(std::fs::read_dir(out.path()).unwrap().any(|p| {
+            p.unwrap()
+                .file_name()
+                .to_string_lossy()
+                .starts_with("abandoned-publication-")
+        }));
+        task.abort();
+    }
+    #[tokio::test]
+    async fn transport_uncertainty_keeps_exact_callback_until_accepted() {
+        use axum::{Json, Router, http::StatusCode, routing::post};
+        use std::sync::{
+            Mutex,
+            atomic::{AtomicBool, Ordering},
+        };
+        fn callback_reply(
+            body: Value,
+            first: &AtomicBool,
+            seen: &Mutex<Vec<Value>>,
+        ) -> (StatusCode, Json<Value>) {
+            seen.lock().unwrap().push(body);
+            if first.swap(false, Ordering::SeqCst) {
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error":"uncertain"})),
+                );
+            }
+            (
+                StatusCode::OK,
+                Json(json!({"replayed":true,"operationID":"321"})),
+            )
+        }
+        let first = Arc::new(AtomicBool::new(true));
+        let seen = Arc::new(Mutex::new(Vec::new()));
+        let app = Router::new()
+            .route(
+                "/container-publish",
+                post({
+                    let first = first.clone();
+                    let seen = seen.clone();
+                    move |Json(body): Json<Value>| {
+                        let first = first.clone();
+                        let seen = seen.clone();
+                        async move { callback_reply(body, &first, &seen) }
+                    }
+                }),
+            )
+            .route("/release-claim", post(|| async { Json(Value::Null) }));
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
+        let root = tempfile::tempdir().unwrap();
+        let out = tempfile::tempdir().unwrap();
+        for path in [root.path(), out.path()] {
+            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700)).unwrap();
+        }
+        let store = ArtifactStore::open(root.path().into(), MAX_OUTPUT).unwrap();
+        let outbox = Outbox::open(out.path().into()).unwrap();
+        let body = json!({"releaseID":"123","generation":1,"image":format!("registry.example/owned@sha256:{}","a".repeat(64))});
+        outbox.put("container-publish", body.clone()).unwrap();
+        let control =
+            ControlClient::loopback_test(&format!("http://{address}"), "a".repeat(43)).unwrap();
+        assert!(
+            publish_once_without_builder(
+                &control,
+                &store,
+                &outbox,
+                &BTreeMap::new(),
+                &BTreeMap::new()
+            )
+            .await
+            .is_err()
+        );
+        assert!(outbox.has_pending());
+        assert!(
+            !publish_once_without_builder(
+                &control,
+                &store,
+                &outbox,
+                &BTreeMap::new(),
+                &BTreeMap::new()
+            )
+            .await
+            .unwrap()
+        );
+        assert!(!outbox.has_pending());
+        assert_eq!(*seen.lock().unwrap(), vec![body.clone(), body]);
+        server.abort();
     }
 }

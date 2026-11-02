@@ -37,6 +37,7 @@ pub struct HostingService {
     ids: Arc<IdAllocator>,
     browser_authority: Option<Arc<browser_authority::BrowserVerifier>>,
     recovery_signer: Option<crate::RecoverySigner>,
+    public_site_origins: Vec<String>,
 }
 // Internal actor is either a live browser principal or a persisted, validated Git release.
 struct HostingActor {
@@ -221,6 +222,7 @@ impl HostingService {
             ids,
             browser_authority: None,
             recovery_signer: None,
+            public_site_origins: Vec::new(),
         })
     }
     async fn id(&self) -> Result<String> {
@@ -500,6 +502,8 @@ mod apps;
 mod capacity;
 #[path = "management.rs"]
 mod management;
+#[path = "public_address.rs"]
+mod public_address;
 #[path = "runtime.rs"]
 mod runtime;
 

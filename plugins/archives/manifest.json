@@ -440,5 +440,16 @@
       "description": "List current authorized managed database, immutable repository and observed report sources",
       "action": "archives.sources"
     }
-  ]
+  ],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/archive-status.png",
+      "caption": "Actual Archives panel; synthetic completed report and job. No export was generated or downloaded.",
+      "alt": "Protected report status, expiry, checksum and download control"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-archives",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-archives/blob/HEAD/README.md"
 }

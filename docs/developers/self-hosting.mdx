@@ -1,11 +1,11 @@
 ---
-title: "Self-host Webdock"
-description: "Prepare the native Rust deployment candidate with restricted PostgreSQL roles and HTTPS ingress."
+title: "Operate a Core installation"
+description: "Review native deployment artifacts, restricted roles and retained-state requirements."
 ---
 
-<Note>The current source branch is the native Rust platform candidate. Historical alpha images run the retired TypeScript platform. This guide does not establish a published native release or a production cutover.</Note>
+<Note>This is an operator guide for the matching source revision. It is not a customer database order flow: shared and self-hosted PostgreSQL products are maintenance-only; new database connections use Neon BYOK.</Note>
 
-Core serves the API, Console and account UI from one native runtime on their configured hosts. It needs external PostgreSQL, verified database TLS, canonical HTTPS origins and private runtime configuration. Managed product workloads use the existing Kubernetes cluster; local Docker is an isolated test backend.
+Core is a standalone native backend. It can serve the built Console and account UI, or use separately configured frontends, on their exact canonical hosts. It needs external PostgreSQL, verified database TLS, canonical HTTPS origins and private runtime configuration. Managed product workloads use the existing Kubernetes cluster; local Docker is an isolated test backend.
 
 ## Build and configure
 
@@ -21,7 +21,7 @@ docker build -f deploy/docker/Dockerfile --target migrate -t webdock-migrate:loc
 
 Use the variable names in `crates/control-plane/.env.example`. Supply private restricted-role database credentials, the existing identity/RLS keys and exact Auth, Console and Studio protocol origins through the runtime environment. Never put offline migration credentials into Core. Configure ingress to preserve those canonical hosts and terminate HTTPS.
 
-For an isolated single-host candidate, `deploy/compose/compose.yaml` runs only Core. Supply a reviewed immutable image through `WEBDOCK_CORE_IMAGE` and a private `core.env` beside the Compose file. It binds to loopback port 3130; ingress is independently managed. `deploy/helm/webdock` is the native Kubernetes candidate and requires a digest-pinned image, an existing private runtime Secret and `apiHost` matching the hostname and optional port of `WEBDOCK_API_ORIGIN`. HTTP probes use that authority to pass Core's host boundary. Plugins and execution listeners need their own explicitly configured processes and private transports.
+For an isolated single-host installation, `deploy/compose/compose.yaml` runs only Core. Supply a reviewed immutable image through `WEBDOCK_CORE_IMAGE` and a private `core.env` beside the Compose file. It binds to loopback port 3130; ingress is independently managed. `deploy/helm/webdock` contains the native Kubernetes deployment contract and requires a digest-pinned image, an existing private runtime Secret and `apiHost` matching the hostname and optional port of `WEBDOCK_API_ORIGIN`. HTTP probes use that authority to pass Core's host boundary. Plugins and execution listeners need their own explicitly configured processes and private transports.
 
 ## Offline schema setup
 
@@ -37,4 +37,6 @@ Continue with [initial operator setup](/developers/initial-setup). Preserve reta
 
 ## Rollout acceptance
 
-Before rollout, verify backups and restore, retained schema/history, exact ingress routing, authentication, private listener enrollment, enabled products and rollback after new writes. Stop the old writers before transferring ownership. The repository's local checks do not establish these production properties. The retained parity inventory records remaining native Mail, Hosting and distribution acceptance work.
+Before rollout, verify backups and restore, retained schema/history, exact ingress routing, authentication, private listener enrollment, enabled products and rollback after new writes. Stop the old writers before transferring ownership. The repository's local checks do not establish these production properties. Check the current product-specific release gates; older migration inventories are not a current rollout guarantee.
+
+Source: runtime configuration (`crates/control-plane/.env.example`), [Compose](https://github.com/spitzli/cloud/tree/main/deploy/compose) and [Core Helm chart](https://github.com/spitzli/cloud/tree/main/deploy/helm/webdock). Hosted authentication uses [Neon Managed Auth and Core security](/developers/auth-adapters); a local bootstrap account is not a substitute for a production managed-identity binding.

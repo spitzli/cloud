@@ -207,7 +207,7 @@ pub(crate) async fn handle(
         let hook:Hook=serde_json::from_slice(&raw).map_err(|_|crate::send_control::ControlError::invalid())?;
         if hook.context.stage!="data" {return Err(crate::send_control::ControlError::invalid());}
         let proofs=hook.message.headers.iter().filter(|(name,_)|name.eq_ignore_ascii_case("x-webdock-submission")).collect::<Vec<_>>();
-        let rejected=json!({"action":"reject","response":{"status":550,"enhanced_status":"5.7.1","message":"Webdock submission is not authorized."}});
+        let rejected=json!({"action":"reject","response":{"status":550,"enhanced_status":"5.7.1","message":"Spitzli Cloud submission is not authorized."}});
         if proofs.len()!=1 {return Ok(rejected);}
         let Some((id,proof))=proofs[0].1.trim().split_once('.') else {return Ok(rejected);};
         let digest=crate::proof::hook_digest(&hook.message.headers,&hook.message.contents,hook.message.size).map_err(|_|crate::send_control::ControlError::invalid())?;

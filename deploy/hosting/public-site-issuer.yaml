@@ -1,0 +1,31 @@
+# Reference for the existing RUN issuer, not an instruction to replace it.
+# No Cloudflare credential is required: Traefik answers the HTTP01 challenge.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: webdock-cms-acme
+spec:
+  acme:
+    email: dominik@spitzli.dev
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: webdock-cms-acme-account
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: traefik
+            serviceType: ClusterIP
+            podTemplate:
+              metadata:
+                labels:
+                  security.webdock.dev/ingress: 'true'
+              spec:
+                resources:
+                  requests:
+                    cpu: 25m
+                    memory: 32Mi
+                    ephemeral-storage: 8Mi
+                  limits:
+                    cpu: 200m
+                    memory: 64Mi
+                    ephemeral-storage: 64Mi

@@ -357,7 +357,7 @@ export function mailOpenAPI() {
   return {
     openapi: "3.1.0",
     info: {
-      title: "Webdock Mail API",
+      title: "Spitzli Cloud Mail API",
       version: "1.0.0",
       description:
         "Transactional Mail. Accepted means provider acceptance, not delivery. JSON limit 4,000,000 bytes; text+HTML 512 KiB. Requests 120/minute/tenant. Unknown handoffs must never be resent with a new key. Webhooks: HMAC-SHA256 over id.timestamp.rawBody, at-least-once.",

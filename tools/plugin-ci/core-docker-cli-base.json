@@ -1,0 +1,14 @@
+{
+  "image": "docker.io/library/docker:29.9.2-cli@sha256:5e6baf67325a79f64ed3bed6863954d5e05d0f3d4e57cbdb14809346814bbfdb",
+  "indexDigest": "sha256:5e6baf67325a79f64ed3bed6863954d5e05d0f3d4e57cbdb14809346814bbfdb",
+  "linuxAMD64Child": "sha256:98776017a505b6d89c0adff8c63b0d8701ca10280c41315dbb0638fe3b5cf6e5",
+  "officialRegistryContentChainVerified": true,
+  "toolVersionEnvironment": {
+    "DOCKER_VERSION": "29.9.2",
+    "DOCKER_BUILDX_VERSION": "0.38.1",
+    "DOCKER_COMPOSE_VERSION": "5.6.1"
+  },
+  "runtimeToolingAssertionExecuted": true,
+  "discoveredViaOfficialCLIStableTag": true,
+  "qualificationReceipt": "tools/plugin-ci/core-tooling-qualification-2026-11-01.json"
+}

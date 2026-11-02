@@ -7,11 +7,13 @@ license.workspace = true
 
 [features]
 default = ["service"]
-service = ["dep:webdock-export-protocol","dep:webdock-browser-session","dep:sea-orm", "dep:tokio", "dep:webdock-identity", "dep:webdock-persistence", "dep:webdock-hosting", "dep:hmac", "dep:subtle", "dep:oci-client", "dep:rustls", "dep:getrandom", "dep:base64", "dep:axum", "dep:reqwest", "dep:url", "dep:webdock-repository-protocol", "dep:webdock-plugin-host", "dep:webdock-plugin-runtime", "dep:tonic", "dep:uuid"]
+service = ["dep:webdock-agent-protocol","dep:webdock-export-protocol","dep:webdock-browser-session","dep:sea-orm", "dep:tokio", "dep:webdock-identity", "dep:webdock-persistence", "dep:webdock-hosting", "dep:hmac", "dep:subtle", "dep:oci-client", "dep:rustls", "dep:getrandom", "dep:base64", "dep:axum", "dep:reqwest", "dep:url", "dep:webdock-repository-protocol", "dep:webdock-plugin-host", "dep:webdock-plugin-runtime", "dep:tonic", "dep:uuid"]
 worker = ["dep:tokio", "dep:reqwest", "dep:url", "dep:oci-client", "dep:rustls", "dep:base64"]
+kubernetes-job = ["dep:kube", "dep:k8s-openapi", "dep:futures-util", "dep:tokio", "dep:webdock-agent-protocol"]
 local-registry-test = ["service", "worker"]
 
 [dependencies]
+webdock-agent-protocol={path="../agent-protocol",optional=true}
 webdock-export-protocol={path="../export-protocol",optional=true}
 webdock-browser-session={path="../browser-session",optional=true}
 webdock-object-storage = { path = "../object-storage" }
@@ -47,17 +49,33 @@ webdock-plugin-runtime={path="../plugin-runtime",optional=true}
 ed25519-dalek="2"
 tonic={version="0.14.6",default-features=false,features=["codegen","transport","tls-ring"],optional=true}
 uuid={version="1",features=["v4"],optional=true}
+kube = { version = "4.2.0", optional = true, default-features = false, features = ["client", "rustls-tls", "ring"] }
+k8s-openapi = { version = "0.28", optional = true, features = ["v1_32"] }
+futures-util = { version = "0.3", optional = true, features = ["io"] }
 
 [dev-dependencies]
 jsonschema = { version = "0.59", default-features = false }
 webdock-object-storage = { path = "../object-storage", features = ["local-test"] }
 url.workspace = true
 webdock-ids = { path = "../ids" }
+tower = { version = "0.5", features = ["util"] }
+http = "1"
+http-body-util = "0.1"
 
 [[bin]]
 name="webdock-build-worker"
 path="src/bin/webdock-build-worker.rs"
 required-features=["worker"]
+
+[[bin]]
+name="webdock-build-runner"
+path="src/bin/webdock-build-container-runner.rs"
+required-features=["worker","kubernetes-job"]
+
+[[bin]]
+name="webdock-kubernetes-build-worker"
+path="src/bin/webdock-kubernetes-build-worker.rs"
+required-features=["worker","kubernetes-job"]
 
 [lints]
 workspace = true

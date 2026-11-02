@@ -44,12 +44,37 @@ function fixture(override?: (command: Command, init?: RequestInit) => Response |
     setSessionStatus(status: number) { sessionStatus = status; },
     async logout() { actor = null; await act(async () => { await client.invalidateQueries({ queryKey: ["session"] }); }); },
     setApiOrigin(origin: string) { api.config = { ...api.config, apiOrigin: origin }; },
+    setOrderingEnabled(enabled: boolean) { api.config = { ...api.config, databaseOrderingEnabled: enabled }; },
     setDatabase(value: unknown) { current = databaseViewSchema.parse(value); }, setHistory(value: unknown) { data = databaseBackupPolicyViewSchema.parse(value); }, setPermission(value: typeof permission) { permission = value; },
     async render(current = session, projectID = "2", projectIDs = [projectID]) { actor = current; await flush(() => { root.render(<I18nProvider locale="en" preference="en"><QueryClientProvider client={client}><ApiContext.Provider value={api}><DatabaseBackupIntentProvider>{realGate ? <ConsoleSessionGate><GateDatabaseView projectIDs={projectIDs} duplicateViews={duplicateViews} /></ConsoleSessionGate> : <SessionContext.Provider value={current}>{observeIntent ? <IntentWitness observe={observeIntent} /> : null}<ManagedDatabases customerID="10" projects={projectIDs.map(id => ({ id, name: `Project ${id}` }))} operator={current.user.role === "operator"} />{duplicateViews ? <ManagedDatabases customerID="10" projects={projectIDs.map(id => ({ id, name: `Project ${id}` }))} operator={current.user.role === "operator"} /> : null}</SessionContext.Provider>}</DatabaseBackupIntentProvider></ApiContext.Provider></QueryClientProvider></I18nProvider>); }); if (realGate) await act(async () => { await client.invalidateQueries({ queryKey: ["session"] }); }); },
     async open() { await until(() => host.textContent.includes("Manage database")); await flush(() => { const button = [...host.querySelectorAll("button")].find(b => b.textContent === "Manage database"); assert(button); button.click(); }); await until(() => host.querySelector(".database-details") !== null); },
     async close() { await flush(() => { root.unmount(); }); client.clear(); await browser.happyDOM.abort(); },
   };
 }
+await test("retired ordering hides new choices while existing database and backup maintenance remain available", async () => {
+  const view = fixture(); view.setOrderingEnabled(false);
+  try {
+    await view.render(); await view.open();
+    assert(![...view.host.querySelectorAll("button")].some(b => b.textContent === "Order database"));
+    assert.match(view.host.textContent, /New shared and self-hosted PostgreSQL orders are retired/);
+    assert.match(view.host.textContent, /Connect your Neon account in Connections/);
+    assert.equal(view.host.querySelector('a[href="https://console.neon.tech"]')?.textContent, "Open Neon Console");
+    await until(() => view.host.querySelector('form[aria-label="Backup policy settings"]') !== null);
+    assert(button(view.host, "Upgrade database"));
+    assert(!view.calls.some(c => ["databases.offers.create", "databases.acceptOrder"].includes(c.action)));
+  } finally { await view.close(); }
+});
+await test("a stale open new-order form is retired when ordering is disabled", async () => {
+  const view = fixture(); view.setOrderingEnabled(true);
+  try {
+    await view.render(); await until(() => [...view.host.querySelectorAll("button")].some(b => b.textContent === "Order database"));
+    await flush(() => { button(view.host, "Order database").click(); });
+    await until(() => view.host.querySelector(".database-order") !== null);
+    view.setOrderingEnabled(false); await view.render();
+    assert.equal(view.host.querySelector(".database-order"), null);
+    assert(!view.calls.some(c => ["databases.offers.create", "databases.acceptOrder"].includes(c.action)));
+  } finally { await view.close(); }
+});
 await test("current backup observation is rendered without rewriting the historical offer", async () => {
   const view = fixture();
   try { await view.render(); await view.open(); await until(() => view.host.textContent.includes("Backup configuration observed")); assert.match(view.host.textContent, /Historical last completed backup/); assert.match(view.host.textContent, /production-qualification-required/); const restore = [...view.host.querySelectorAll("button")].find(b => b.textContent === "Restore database"); assert(restore?.disabled); assert.doesNotMatch(view.host.querySelector(".database-details")?.textContent ?? "", /Backups are not configured/); }

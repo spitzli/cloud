@@ -475,6 +475,7 @@ async fn owned_kind_uses_project_pull_secret_and_private_registry_ca() {
         concurrent_deployments: 1,
     };
     spec.hosting_binding = Some(HostingBinding {
+        public_route: None,
         cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
         quota: quota.clone(),
         final_quota: quota,

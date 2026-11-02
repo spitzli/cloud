@@ -12,7 +12,7 @@ const stepLabels:Record<string,string>={application:"Prepare the CMS",database:"
 const stateLabels:Record<string,string>={pending:"Waiting",running:"In progress",succeeded:"Done",skipped:"Not needed",blocked:"Needs attention",failed:"Failed"};
 function openChannel(onReady:(call:Call)=>void,onError:(error:string)=>void){
  const nonce=location.hash.slice(1),pending=new Map<string,{resolve:(value:any)=>void;reject:(error:Error)=>void;timeout:ReturnType<typeof setTimeout>}>();let port:MessagePort|undefined;
- const timeout=setTimeout(()=>onError("Open CMS from your Webdock project to connect."),10000);
+ const timeout=setTimeout(()=>onError("Open CMS from your Spitzli Cloud project to connect."),10000);
  const receive=(event:MessageEvent)=>{
   if(port||event.source!==parent||event.data?.type!=="webdock:init"||!nonce||event.data.nonce!==nonce||event.ports.length!==1)return;
   clearTimeout(timeout);port=event.ports[0];port.onmessage=(event)=>{
@@ -57,7 +57,7 @@ function App(){
  if(site&&transport)return <CMSApp embedded siteName={site.name} siteURL={site.origin} accountURL={site.origin} accessURL={site.origin} transport={transport} uiLocale={navigator.language.startsWith("de")?"de":"en"}/>;
  return <main className="managed-cms-setup">
   <p className="eyebrow">PROJECT CONTENT</p><h1>Your website’s CMS</h1>
-  <p className="intro">Create pages, manage media and publish from Webdock. Each project gets its own CMS, database and media storage.</p>
+  <p className="intro">Create pages, manage media and publish from Spitzli Cloud. Each project gets its own CMS, database and media storage.</p>
   {error&&<p className="error" role="alert">{error}</p>}
   {!loaded&&!error&&<p role="status">Connecting to your project…</p>}
   {loaded&&!instance&&<form onSubmit={create}>

@@ -50,6 +50,21 @@ const VIEW: &str = "jsonb_build_object('id',id,'domain',domain,'verified',verifi
     'record',jsonb_build_object('type','TXT','name','_webdock-challenge.'||domain,'value',token),\
     'usedBy',webdock_rls.domain_users(customer_id,domain)) AS data";
 
+async fn reject_platform_domain(tx: &sea_orm::DatabaseTransaction, domain: &str) -> Result<()> {
+    let row = tx
+        .query_one_raw(Statement::from_sql_and_values(
+            DbBackend::Postgres,
+            "SELECT webdock_rls.platform_host_reserved($1) AS reserved",
+            [domain.into()],
+        ))
+        .await?
+        .ok_or(Error::Forbidden)?;
+    if row.try_get::<bool>("", "reserved")? {
+        return Err(Error::Forbidden);
+    }
+    Ok(())
+}
+
 impl AccessService {
     pub async fn list_domains_as(&self, actor: &Principal, customer: &str) -> Result<Vec<Value>> {
         let actor = self.current_actor(actor).await?;
@@ -73,6 +88,7 @@ impl AccessService {
     ) -> Result<Value> {
         let (actor, tx) = self.domain_writer(actor, customer).await?;
         let domain = domain_name(raw)?;
+        reject_platform_domain(&tx, &domain).await?;
         let row_id = self.next_id().await?;
         let mut token = [0u8; 16];
         getrandom::getrandom(&mut token).map_err(|_| Error::Allocation)?;
@@ -101,6 +117,7 @@ impl AccessService {
     ) -> Result<Value> {
         let (actor, tx) = self.domain_writer(actor, customer).await?;
         let domain = domain_name(domain)?;
+        reject_platform_domain(&tx, &domain).await?;
         let row = self.domain_row(&tx, customer, &domain).await?;
         let token: String = tx
             .query_one_raw(Statement::from_sql_and_values(

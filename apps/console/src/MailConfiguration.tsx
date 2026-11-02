@@ -304,7 +304,7 @@ function RevokeAccess({ value, disabled, submit }: WriteProps) {
         Confirm access revocation
       </label>
       <p className={ui.hint}>
-        After the server accepts revocation, the Webdock gateway denies this
+        After the server accepts revocation, the Spitzli Cloud gateway denies this
         access immediately. Remote configuration is applied separately.
         Revocation stays available while provisioning is blocked.
       </p>

@@ -144,6 +144,7 @@ async fn main() -> Result<(), Error> {
                 ids.clone(),
                 &key,
                 &authority,
+                config.database_new_orders_enabled,
             )
             .await?,
         )
@@ -173,6 +174,7 @@ async fn main() -> Result<(), Error> {
                 oauth: authority.oauth.clone(),
                 ids,
                 rls_secret: required("DATABASE_RLS_SECRET")?,
+                database_new_orders_enabled: config.database_new_orders_enabled,
             },
             plugin_config
                 .as_ref()
@@ -269,6 +271,7 @@ async fn database_domain(
     ids: Arc<webdock_persistence::IdAllocator>,
     encryption_key: &str,
     authority: &webdock_control_plane::plugin_config::AuthorityServices,
+    new_orders_enabled: bool,
 ) -> Result<Arc<webdock_databases::DatabaseService>, Error> {
     let lease_secret = std::env::var("BETTER_AUTH_SECRET")
         .or_else(|_| std::env::var("WEBDOCK_AUTH_SECRET"))
@@ -286,6 +289,7 @@ async fn database_domain(
             &required("WEBDOCK_DATABASE_GATEWAY_ORIGIN")?,
         )
         .await?
+        .with_new_orders_enabled(new_orders_enabled)
         .with_management(webdock_databases::ManagementConfig {
             cluster_id: std::env::var("WEBDOCK_DATABASE_CLUSTER_ID").ok(),
             endpoint_domain: std::env::var("WEBDOCK_DATABASE_DOMAIN").ok(),

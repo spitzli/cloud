@@ -107,6 +107,15 @@ impl Hooks for WebdockApp {
                 .map_err(|_| {
                     loco_rs::Error::Message("Invalid native identity configuration".into())
                 })?;
+            let service = if let Ok(base) = std::env::var("NEON_AUTH_BASE_URL") {
+                service.with_neon_auth(
+                    webdock_identity::NeonAuthClient::new(&base, &config.auth_origin).map_err(
+                        |_| loco_rs::Error::Message("Invalid Managed identity endpoint".into()),
+                    )?,
+                )
+            } else {
+                service
+            };
             match &account_mail {
                 Some(mail) => service.with_delivery(mail.clone()),
                 None => service,
@@ -203,9 +212,23 @@ impl Hooks for WebdockApp {
         let session_db =
             crate::db::connect_runtime(&session_url, "webdock_auth_runtime", config.production)
                 .await?;
+        // Existing Core/session database and retained platform encryption key only.
+        let neon_connections = Some(std::sync::Arc::new(
+            crate::neon_connections::NeonConnections::new(
+                session_db.clone(),
+                ctx.db.clone(),
+                identity.clone(),
+                browser.clone(),
+                &rls_secret,
+                &std::env::var("WEBDOCK_HOSTING_ENCRYPTION_KEY")
+                    .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
+                    .unwrap_or_else(|_| secret.clone()),
+            )
+            .map_err(|_| loco_rs::Error::Message("Neon connection initialization failed".into()))?,
+        ));
         let access = std::sync::Arc::new(
             webdock_access::AccessService::new(
-                session_db,
+                session_db.clone(),
                 ctx.db.clone(),
                 identity.clone(),
                 ids.clone(),
@@ -277,6 +300,13 @@ impl Hooks for WebdockApp {
                 )
                 .await
                 .map_err(|_| loco_rs::Error::Message("Hosting initialization failed".into()))?
+                .with_public_site_origins(&[
+                    config.api_origin.clone(),
+                    config.auth_origin.clone(),
+                    config.studio_origin.clone(),
+                    config.console_origin().to_owned(),
+                ])
+                .map_err(|_| loco_rs::Error::Message("Invalid public site control origins".into()))?
                 .with_session_authority(identity.clone(), browser.clone())
                 .with_recovery_signer_configuration(
                     std::env::var_os("WEBDOCK_RECOVERY_SIGNER_KEY").map(std::path::PathBuf::from),
@@ -322,6 +352,7 @@ impl Hooks for WebdockApp {
                         oauth: oauth.clone(),
                         ids: ids.clone(),
                         rls_secret: rls_secret.clone(),
+                        database_new_orders_enabled: config.database_new_orders_enabled,
                     },
                     plugin_config,
                 )
@@ -390,8 +421,24 @@ impl Hooks for WebdockApp {
                 .and_then(|plugins| plugins.repository.clone())
             {
                 service = service.with_repository_provider(std::sync::Arc::new(
-                    webdock_build::PluginRepositoryProvider::new(repository),
+                    webdock_build::PluginRepositoryProvider::new(repository.clone()),
                 ));
+                if let Some(path) = std::env::var_os("WEBDOCK_GITHUB_BUILD_WEBHOOK_SECRET_FILE") {
+                    let plugin =
+                        std::env::var("WEBDOCK_GITHUB_REPOSITORY_PLUGIN_ID").map_err(|_| {
+                            loco_rs::Error::Message(
+                                "Missing GitHub repository plugin binding".into(),
+                            )
+                        })?;
+                    let verifier = webdock_build::GithubWebhookVerifier::from_private_file(
+                        std::path::Path::new(&path),
+                        plugin,
+                    )
+                    .map_err(|_| {
+                        loco_rs::Error::Message("Invalid GitHub webhook secret reference".into())
+                    })?;
+                    service = service.with_github_webhooks(verifier, repository);
+                }
             }
             Some(std::sync::Arc::new(service))
         } else {
@@ -436,6 +483,7 @@ impl Hooks for WebdockApp {
             )
             .await
             .map_err(|_| loco_rs::Error::Message("Database initialization failed".into()))?
+            .with_new_orders_enabled(config.database_new_orders_enabled)
             .with_management(webdock_databases::ManagementConfig {
                 cluster_id: std::env::var("WEBDOCK_DATABASE_CLUSTER_ID").ok(),
                 endpoint_domain: std::env::var("WEBDOCK_DATABASE_DOMAIN").ok(),
@@ -588,6 +636,8 @@ impl Hooks for WebdockApp {
         } else {
             None
         };
+        let realtime = crate::realtime::Realtime::from_map(&std::env::vars().collect())
+            .map_err(|e| loco_rs::Error::Message(e.into()))?;
         let ui = crate::ui::UiAssets::from_map(&std::env::vars().collect(), config.production)
             .map_err(|e| loco_rs::Error::Message(e.into()))?
             .map(std::sync::Arc::new);
@@ -600,7 +650,14 @@ impl Hooks for WebdockApp {
                 .as_deref()
                 .and_then(crate::mail::MailEndpoints::gateway_origin)
                 .map(str::to_owned);
-            for origin in database_gateway.iter().chain(&mail_gateway) {
+            let realtime_origin = realtime
+                .as_ref()
+                .map(|value| value.url.replacen("wss://", "https://", 1));
+            for origin in database_gateway
+                .iter()
+                .chain(&mail_gateway)
+                .chain(&realtime_origin)
+            {
                 ui.require_connect(origin)
                     .map_err(|e| loco_rs::Error::Message(e.into()))?;
             }
@@ -609,6 +666,7 @@ impl Hooks for WebdockApp {
             config,
             ctx.db.clone(),
             Services {
+                realtime,
                 resource_client: crate::resource_auth::ResourceClientConfig::from_environment()
                     .map_err(|message| loco_rs::Error::Message(message.into()))?,
                 identity: Some(identity),
@@ -619,6 +677,7 @@ impl Hooks for WebdockApp {
                 plugins,
                 databases,
                 mail,
+                neon_connections,
                 browser,
                 access: Some(access),
                 ui,

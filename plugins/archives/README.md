@@ -1,4 +1,40 @@
-# Protected archives
+# Protected Archives
+
+![Protected Archives icon](assets/icon.svg)
+
+Create private, short-lived exports from resources you already have permission to use.
+
+## What you can do
+
+Committed source archives, observed project reports, dedicated PostgreSQL logical exports, stored completed build logs and submitted diagnostic snapshots.
+
+## Setup and access
+
+An operator must install the native runtime and grant Archives access in your project. Choose an authorized source, create the export, generate it, then download it before its access lifetime ends.
+
+## Data and security
+
+Exports use Core authority, private storage and authenticated transfers. Access expiry blocks downloads; deletion is a separate action. Build logs may contain sensitive or truncated output.
+
+## Status and limits
+
+Beta. Most output is limited to 32 MiB and at most 24 hours of access. Build logs have a 24,000-byte source / 64 KiB compressed limit. PostgreSQL export is not point-in-time recovery; source archives exclude Git history and runtime volumes.
+
+Catalog publication does not activate the plugin, enable public signup or grant
+access to any customer resource. A new presentation release must use a new version;
+previously signed releases and their assets stay immutable.
+
+## Gallery
+
+Actual Archives panel; synthetic completed report and job. No export was generated or downloaded.
+
+![Protected report status, expiry, checksum and download control](screenshots/archive-status.png)
+
+## Technical reference
+
+The retained implementation notes below include platform integration procedures.
+Commands referring to Core, `tools/` or `apps/console` require the [platform source
+checkout](https://github.com/spitzli/webdock); they are not standalone setup steps.
 
 Native, opt-in exports using existing Core resources, durable immediate jobs and
 opaque authenticated binary downloads. No second user, queue or permission ledger.
@@ -43,10 +79,10 @@ producer epoch before exact-key removal/absence acknowledgment, with explicit re
 if provider deletion is uncertain. Expiry blocks access and is distinct from deletion.
 
 ```bash
-CARGO_TARGET_DIR=target cargo test --manifest-path plugins/archives/Cargo.toml --locked --features local-test -j 2
+CARGO_TARGET_DIR=target cargo test --manifest-path Cargo.toml --locked --features local-test -j 2
 python3 tools/tests/archives-storage.py
-CARGO_TARGET_DIR=target cargo test --manifest-path plugins/archives/Cargo.toml --locked --test repository -- --include-ignored
-CARGO_TARGET_DIR=target cargo test --manifest-path plugins/archives/Cargo.toml --locked --test reports -- --include-ignored
+CARGO_TARGET_DIR=target cargo test --manifest-path Cargo.toml --locked --test repository -- --include-ignored
+CARGO_TARGET_DIR=target cargo test --manifest-path Cargo.toml --locked --test reports -- --include-ignored
 bun test --tsconfig-override apps/console/tsconfig.json plugins/archives/tests/ui.test.tsx
 ```
 
@@ -63,8 +99,8 @@ no versioning and bounded object/multipart lifecycle. Native qualification uses 
 explicit MinIO ACL/multipart capability exceptions are absent from production default.
 No image is signed, registered or activated merely by building it.
 
-See `docs/operations/protected-archives.md` for operator configuration and exact limits,
-and `docs/verification/2026-10-25-completed-buildlogs-r4.md` for current buildlog/native evidence
+See `docs/operations/protected-archives.md` in the platform source checkout for operator configuration and exact limits,
+and `docs/verification/2026-10-25-completed-buildlogs-r4.md` in the platform source checkout for current buildlog/native evidence
 (r2/r3 retain the earlier product and review-fix qualifications).
 Nonempty legacy `databaseSources` configuration is rejected, including in fixture-feature
 executables. Every PostgreSQL export requires a live managed Core `source_id` and current

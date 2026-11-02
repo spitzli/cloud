@@ -1,0 +1,95 @@
+{{- $a := .Values.agentControl -}}
+{{- if $a.enabled -}}
+{{- $secret := required "agentControl.existingEnvSecret required: dedicated least-privilege environment" $a.existingEnvSecret -}}
+{{- if eq $secret .Values.existingSecret -}}{{- fail "agentControl must not inherit Core HTTP's environment Secret" -}}{{- end -}}
+{{- $pvc := required "agentControl.existingPrivatePVC required: preprovisioned private UID65532 files" $a.existingPrivatePVC -}}
+{{- $policy := required "agentControl.networkAdmissionExistingPolicy required" $a.networkAdmissionExistingPolicy -}}
+{{- if not $a.privateMTLSReviewed -}}{{- fail "agentControl requires reviewed private mTLS configuration on port3131" -}}{{- end -}}
+{{- if not $a.privateSourceIPv4 -}}{{- fail "agentControl.privateSourceIPv4 requires exact private agent source hosts" -}}{{- end -}}
+{{- range $a.privateSourceIPv4 -}}
+{{- if not (or (hasPrefix "10." .) (hasPrefix "192.168." .) (and (hasPrefix "172." .) (ge (int (index (splitList "." .) 1)) 16) (le (int (index (splitList "." .) 1)) 31))) -}}
+{{- fail "agentControl sources must be literal RFC1918 IPv4 hosts" -}}
+{{- end -}}
+{{- end -}}
+{{- $name := printf "%s-agent-control" .Release.Name -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  annotations:
+    webdock.dev/existing-network-admission: {{ $policy | quote }}
+    webdock.dev/listener-contract: private-mtls-3131
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: agent-control}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: agent-control}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      {{- with .Values.databaseHostAliases }}
+      hostAliases: {{ . | toJson }}
+      {{- end }}
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: agent-control
+          image: {{ .Values.image | quote }}
+          imagePullPolicy: IfNotPresent
+          command: [/usr/local/bin/webdock-agent-control]
+          args: [--config, /private/agent-control.json]
+          envFrom:
+            - secretRef: {name: {{ $secret | quote }}}
+          ports: [{name: mtls, containerPort: 3131, protocol: TCP}]
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi, ephemeral-storage: 64Mi}
+            limits: {cpu: '1', memory: 1Gi, ephemeral-storage: 256Mi}
+          volumeMounts:
+            - {name: private, mountPath: /private, readOnly: true}
+            {{- if .Values.databaseCAConfigMap }}
+            - {name: database-ca, mountPath: /etc/webdock/database-ca, readOnly: true}
+            {{- end }}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        {{- if .Values.databaseCAConfigMap }}
+        - name: database-ca
+          configMap: {name: {{ .Values.databaseCAConfigMap | quote }}, defaultMode: 0444}
+        {{- end }}
+        - name: private
+          persistentVolumeClaim: {claimName: {{ $pvc | quote }}, readOnly: true}
+        - name: tmp
+          emptyDir: {medium: Memory, sizeLimit: 64Mi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: {{ $name }}}
+spec:
+  type: ClusterIP
+  selector: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: agent-control}
+  ports: [{name: mtls, port: 3131, targetPort: mtls, protocol: TCP}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: {{ $name }}-private-ingress}
+spec:
+  podSelector:
+    matchLabels: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: agent-control}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+{{- range $a.privateSourceIPv4 }}
+        - ipBlock: {cidr: {{ printf "%s/32" . | quote }}}
+{{- end }}
+      ports: [{protocol: TCP, port: 3131}]
+{{- end }}

@@ -60,9 +60,9 @@ export function statusTone(status: string | undefined): keyof typeof tones {
 }
 export const notice = "rounded-lg border border-outline bg-subtle px-4 py-3 text-[13px]";
 export const mono = "font-mono text-xs";
-/** The Webdock "w" mark used in every header. */
+/** Keep the owned white/violet mark legible in both themes. */
 export const brandMark =
-  "inline-flex size-7 shrink-0 items-center justify-center rounded-[7px] bg-brand pr-0.5 pb-[3px] text-[21px] font-bold tracking-[-2px] text-white";
+  "inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-logo p-1";
 export const backLink = "mb-3 inline-flex items-center gap-1.5 text-[13px] text-muted hover:text-foreground hover:no-underline";
 export const legend = "px-0 pb-2 text-sm font-semibold";
 /** Underlined inline action, e.g. "Use a recovery code instead". */

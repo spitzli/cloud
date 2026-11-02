@@ -801,7 +801,7 @@ async fn restore_inner(
         let endpoint = match record.role {
             crate::storage::recovery_pool::RecoveryVolumeRole::CoreLedgerPostgres {} => Some(core),
             crate::storage::recovery_pool::RecoveryVolumeRole::PrivateMailPostgres {} => {
-                Some(metadata)
+                Some(metadata.as_ref())
             }
             crate::storage::recovery_pool::RecoveryVolumeRole::IncomingCe { .. } => None,
         };

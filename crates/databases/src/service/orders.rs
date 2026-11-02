@@ -233,6 +233,9 @@ impl DatabaseService {
             return Ok(value);
         }
         if let Some(previous)=optional(tx,"SELECT jsonb_build_object('orderID',o.id,'databaseID',d.id,'operationID',d.operation_id) AS value FROM webdock_auth.hosting_database_order o JOIN webdock_auth.hosting_database d ON d.id=o.database_id WHERE o.offer_id=$1",vec![text(&offer,"id")?.into()]).await?{self.record_control(tx,actor,cmd,&hash,&previous,ReceiptScope{customer:Some(customer),project:Some(project),cluster:Some(cluster)}).await?;return Ok(previous)}
+        if kind == OrdinaryOfferKind::Create {
+            self.require_new_orders()?;
+        }
         let plan=one(tx,"SELECT to_jsonb(p) AS value FROM webdock_auth.hosting_database_plan p WHERE id=$1 FOR SHARE",vec![text(&offer,"plan_revision_id")?.into()]).await?;
         self.plan_available(&plan, customer, access["operator"] == true)?;
         if chrono::DateTime::parse_from_rfc3339(text(&offer, "expires_at")?)

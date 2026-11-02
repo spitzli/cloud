@@ -10,3 +10,25 @@
 **/.spitzli-source.json
 **/test-results/**
 **/playwright-report/**
+# Local runtime credentials, customer backups and native build output are never deployment source.
+**/.runtime-test/**
+**/target/**
+**/.cache/**
+**/.dev-local/**
+**/.core-build/**
+**/__pycache__/**
+**/*.private*
+**/*.pem
+**/*.key
+**/*.dump
+**/*.dump.age
+/output/**
+# Exclude the directories themselves as well as their contents.
+**/.runtime-test
+**/.superpowers
+**/.worktrees
+**/.worktrees/**
+**/.agents
+**/target
+/graphify-out/**
+/apps/console/dist/**

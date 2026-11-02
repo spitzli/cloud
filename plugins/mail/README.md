@@ -1,4 +1,40 @@
-# Mail plugin
+# Mail
+
+![Mail icon](assets/icon.svg)
+
+Manage project mail resources and inspect durable outgoing submissions from native Spitzli Cloud surfaces.
+
+## What you can do
+
+Mail domains, relay connections, explicitly enabled incoming mailboxes, retained suspension and API submission/outbox contracts.
+
+## Setup and access
+
+An operator installs the runtime, private delivery configuration and gateway bindings. Incoming Mail needs explicit customer activation; outgoing-only use does not provision Stalwart. Provider or domain setup is not automatic.
+
+## Data and security
+
+Core owns customer/project authority. Credentials are sealed, private payloads remain server-side and uncertain sends must be reconciled before resubmission. Incoming deactivation retains volumes, keys and mailbox records; deletion is separate.
+
+## Status and limits
+
+Beta. A queued receipt means custody, not delivery. Public reception, recipient-aware routing, Stalwart-to-Turbo integration and full native Webmail remain release gates. One isolated Stalwart Community Edition instance serves each explicitly enabled customer. Existing incoming reservations fail closed for unproven outgoing transitions.
+
+Catalog publication does not activate the plugin, enable public signup or grant
+access to any customer resource. A new presentation release must use a new version;
+previously signed releases and their assets stay immutable.
+
+## Gallery
+
+Actual Mail mailbox panel; synthetic settings. No public reception, delivery or Webmail is demonstrated.
+
+![Mailbox client settings with hidden password and synthetic addresses](screenshots/mailbox-settings.png)
+
+## Technical reference
+
+The retained implementation notes below include platform integration procedures.
+Commands referring to Core, `tools/` or `apps/console` require the [platform source
+checkout](https://github.com/spitzli/webdock); they are not standalone setup steps.
 
 Outgoing mail as a Webdock plugin:
 
@@ -47,12 +83,12 @@ A domain is unique per project; across projects only one may verify it, and the 
 Not yet here: DKIM signing for API sends, inbound mail from the internet or Webmail UI. Core remains the authority for durable send states and recipient allowance.
 
 ```sh
-cargo test --manifest-path plugins/mail/Cargo.toml
+cargo test --manifest-path Cargo.toml
 # Disposable loopback PostgreSQL for plugin storage; SMTP and turboSMTP are in-test stand-ins.
 # Mailboxes test two isolated customer engines, cross-project reuse, retained suspend/resume and restart reconciliation
 # against real Stalwart CE on local dev k3s, applied by an in-test stand-in for Core:
 WEBDOCK_MAIL_PLUGIN_TEST_ADMIN_URL=postgres://… WEBDOCK_WORKLOAD_TEST_KUBECONFIG=$PWD/.dev-local/k3s/kubeconfig.yaml \
-  cargo test --manifest-path plugins/mail/Cargo.toml -- --include-ignored
+  cargo test --manifest-path Cargo.toml -- --include-ignored
 ```
 
 

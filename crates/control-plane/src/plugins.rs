@@ -936,6 +936,7 @@ pub struct PluginDependencies {
     pub oauth: Arc<webdock_oauth::OAuthService>,
     pub ids: Arc<webdock_persistence::IdAllocator>,
     pub rls_secret: String,
+    pub database_new_orders_enabled: bool,
 }
 impl PluginEndpoints {
     pub async fn initialize(
@@ -993,6 +994,7 @@ impl PluginEndpoints {
             crate::plugin_config::signing_key(&config.invocation_signing_key)?,
         )
         .await?
+        .with_new_database_orders_enabled(dependencies.database_new_orders_enabled)
         .with_session_authority(
             dependencies.auth.clone(),
             dependencies.identity.clone(),

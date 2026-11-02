@@ -187,8 +187,8 @@ export function createNativeSending(dependencies: NativeSendingDependencies) {
       );
       return {
         message: result.token
-          ? "Save this Webdock API key now. It is shown only once."
-          : "Webdock API key revoked.",
+          ? "Save this Spitzli Cloud API key now. It is shown only once."
+          : "Spitzli Cloud API key revoked.",
         ...("token" in result ? { token: result.token } : {}),
       };
     });

@@ -6,6 +6,7 @@ pub use services::objects as service_binding_objects;
 mod lifecycle;
 pub use lifecycle::inspect_completed;
 mod storage;
+mod storage_attachment;
 pub use bootstrap::new_workload;
 use k8s_openapi::{
     api::{
@@ -97,6 +98,12 @@ fn resources(spec: &RuntimeSpec) -> ResourceRequirements {
 fn probe(spec: &RuntimeSpec) -> Result<Probe> {
     Ok(Probe {
         http_get: Some(HTTPGetAction {
+            http_headers: spec.health_host.as_ref().map(|host| {
+                vec![k8s_openapi::api::core::v1::HTTPHeader {
+                    name: "Host".into(),
+                    value: host.clone(),
+                }]
+            }),
             path: Some(spec.health_path.clone().ok_or(ExecutionError::Unsupported(
                 "retained app HTTP health probe",
             ))?),
@@ -109,6 +116,46 @@ fn probe(spec: &RuntimeSpec) -> Result<Probe> {
         ..Default::default()
     })
 }
+fn retained_pod_profile(pod: &k8s_openapi::api::core::v1::PodSpec) -> Result<()> {
+    if pod.containers.len() != 1
+        || pod.containers[0].name != "app"
+        || pod.init_containers.as_ref().is_some_and(|v| !v.is_empty())
+        || pod
+            .ephemeral_containers
+            .as_ref()
+            .is_some_and(|v| !v.is_empty())
+        || pod
+            .service_account_name
+            .as_deref()
+            .is_some_and(|v| v != "default")
+        || pod
+            .service_account
+            .as_deref()
+            .is_some_and(|v| v != "default")
+        || pod.automount_service_account_token == Some(true)
+        || pod.host_network == Some(true)
+        || pod.host_pid == Some(true)
+        || pod.host_ipc == Some(true)
+        || pod
+            .volumes
+            .as_ref()
+            .is_some_and(|v| v.iter().any(|v| v.host_path.is_some()))
+        || pod.volumes.as_ref().is_some_and(|v| {
+            v.iter().any(|v| {
+                v.projected
+                    .as_ref()
+                    .and_then(|p| p.sources.as_ref())
+                    .is_some_and(|s| s.iter().any(|s| s.service_account_token.is_some()))
+            })
+        })
+    {
+        return Err(ExecutionError::Unsupported(
+            "unexpected retained pod layout",
+        ));
+    }
+    Ok(())
+}
+
 /// ResourceVersion/UID are retained, so Kubernetes replace performs the ownership CAS.
 pub fn deployment_update(mut existing: Deployment, command: &Command) -> Result<Deployment> {
     command.validate()?;
@@ -138,20 +185,7 @@ pub fn deployment_update(mut existing: Deployment, command: &Command) -> Result<
         .spec
         .as_mut()
         .ok_or(ExecutionError::Ownership)?;
-    if pod.containers.len() != 1
-        || pod.containers[0].name != "app"
-        || pod.host_network == Some(true)
-        || pod.host_pid == Some(true)
-        || pod.host_ipc == Some(true)
-        || pod
-            .volumes
-            .as_ref()
-            .is_some_and(|v| v.iter().any(|v| v.host_path.is_some()))
-    {
-        return Err(ExecutionError::Unsupported(
-            "unexpected retained pod layout",
-        ));
-    }
+    retained_pod_profile(pod)?;
     pod.automount_service_account_token = Some(false);
     pod.security_context = Some(PodSecurityContext {
         run_as_non_root: Some(true),
@@ -462,11 +496,6 @@ pub(crate) async fn reconcile_with_registry(
             "retained allocation requires verified storage helper",
         ));
     }
-    let namespace_object = if initial {
-        bootstrap::namespace_ready(client.clone(), command, guard).await?
-    } else {
-        retained_namespace(client.clone(), spec).await?
-    };
     let mut desired = if let Some(deployment) = current.clone() {
         retained_storage(client.clone(), spec, &deployment).await?;
         let mut bound = command.clone();
@@ -500,7 +529,20 @@ pub(crate) async fn reconcile_with_registry(
         }
     }
 
-    if let Some(storage) = storage {
+    let attachment = if let (Some((_, config)), Some(deployment)) = (storage, &current) {
+        storage_attachment::reuse(client.clone(), command, config, deployment).await?
+    } else {
+        None
+    };
+    guard.check_for(command).await?;
+    let namespace_object = if initial || binding.public_route.is_some() {
+        bootstrap::namespace_ready(client.clone(), command, guard).await?
+    } else {
+        retained_namespace(client.clone(), spec).await?
+    };
+    if attachment.is_none()
+        && let Some(storage) = storage
+    {
         storage::prepare(client.clone(), command, guard, storage, initial).await?;
     }
     let services: Api<Service> = Api::namespaced(client.clone(), &namespace(spec));
@@ -535,6 +577,11 @@ pub(crate) async fn reconcile_with_registry(
     ports[0].target_port = Some(IntOrString::Int(i32::from(spec.port)));
     annotations(&mut service.metadata, command);
     service.status = None;
+    if let (Some(proof), Some((_, config))) = (&attachment, storage) {
+        guard.check_for(command).await?;
+        storage_attachment::recheck(client.clone(), command, config, proof).await?;
+        guard.check_for(command).await?;
+    }
     quota(
         client.clone(),
         spec,
@@ -543,8 +590,12 @@ pub(crate) async fn reconcile_with_registry(
         guard,
     )
     .await?;
-    environment::cleanup(client.clone(), spec, guard).await?;
-    services::cleanup(client.clone(), spec, guard).await?;
+    // A rejected attachment proof must not remove existing environment material.
+    // Successful readiness below still performs the ordinary referenced-secret cleanup.
+    if attachment.is_none() {
+        environment::cleanup(client.clone(), spec, guard).await?;
+        services::cleanup(client.clone(), spec, guard).await?;
+    }
     environment::prepare(client.clone(), command, guard).await?;
     services::prepare(client.clone(), command, guard).await?;
     let deployments: Api<Deployment> = Api::namespaced(client.clone(), &namespace(spec));
@@ -552,7 +603,11 @@ pub(crate) async fn reconcile_with_registry(
         field_manager: Some("webdock".into()),
         ..Default::default()
     };
-    guard.check().await?;
+    guard.check_for(command).await?;
+    if let (Some(proof), Some((_, config))) = (&attachment, storage) {
+        storage_attachment::recheck(client.clone(), command, config, proof).await?;
+        guard.check_for(command).await?;
+    }
     if current.is_some() {
         deployments
             .replace(&name(spec), &params, &desired)
@@ -579,9 +634,16 @@ pub(crate) async fn reconcile_with_registry(
     let deadline = tokio::time::Instant::now() + Duration::from_secs(120);
     loop {
         guard.check().await?;
-        let observed = inspect(client.clone(), spec).await?;
+        let mut observed = inspect(client.clone(), spec).await?;
         let stopped = command.action == Action::Stop || spec.replicas == 0;
         if (stopped && observed.phase == Phase::Stopped) || (!stopped && observed.ready) {
+            if attachment.is_some() {
+                observed.conditions.push(Condition {
+                    kind: "StorageAttachment".into(),
+                    satisfied: true,
+                    reason: "ExistingVerifiedAttachment".into(),
+                });
+            }
             environment::cleanup(client.clone(), spec, guard).await?;
             services::cleanup(client.clone(), spec, guard).await?;
             quota(

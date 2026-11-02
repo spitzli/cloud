@@ -1,51 +1,65 @@
 use sea_orm::{Database, DatabaseConnection};
 use std::{collections::BTreeMap, process::Command};
+#[path = "local_postgres.rs"]
+mod local_postgres;
 fn docker() -> Command {
     let mut command = Command::new("docker");
     command.args(["--host", "unix:///var/run/docker.sock"]);
     command
 }
 pub struct DatabaseFixture {
-    name: String,
+    name: Option<String>,
     pub url: url::Url,
     passwords: BTreeMap<String, String>,
+    local: Option<local_postgres::LocalPostgres>,
 }
 impl Drop for DatabaseFixture {
     fn drop(&mut self) {
-        let _ = docker().args(["rm", "-f", &self.name]).output();
+        if let Some(name) = &self.name {
+            let _ = docker().args(["rm", "-f", name]).output();
+        }
     }
 }
 impl DatabaseFixture {
     pub async fn start() -> Self {
-        let name = format!("wd-plugin-jobs-{}", uuid::Uuid::new_v4().simple());
-        assert!(
-            docker()
-                .args([
-                    "run",
-                    "-d",
-                    "--rm",
-                    "--name",
-                    &name,
-                    "-e",
-                    "POSTGRES_HOST_AUTH_METHOD=trust",
-                    "-e",
-                    "POSTGRES_DB=webdock_jobs_test",
-                    "-p",
-                    "127.0.0.1::5432",
-                    "postgres:18-alpine"
-                ])
-                .output()
-                .unwrap()
-                .status
-                .success()
-        );
-        let output = docker().args(["port", &name, "5432/tcp"]).output().unwrap();
-        let endpoint = String::from_utf8(output.stdout).unwrap();
-        let endpoint = endpoint.trim();
-        let url = url::Url::parse(&format!(
-            "postgres://postgres@{endpoint}/webdock_jobs_test?sslmode=disable"
-        ))
-        .unwrap();
+        let local = std::env::var_os("WEBDOCK_PLUGIN_TEST_LOCAL_POSTGRES").map(|value| {
+            assert_eq!(value, "1", "local PostgreSQL fixture switch accepts only 1");
+            local_postgres::LocalPostgres::start()
+        });
+        let (name, url) = if let Some(local) = &local {
+            (None, local.url.clone())
+        } else {
+            let name = format!("wd-plugin-jobs-{}", uuid::Uuid::new_v4().simple());
+            assert!(
+                docker()
+                    .args([
+                        "run",
+                        "-d",
+                        "--rm",
+                        "--name",
+                        &name,
+                        "-e",
+                        "POSTGRES_HOST_AUTH_METHOD=trust",
+                        "-e",
+                        "POSTGRES_DB=webdock_jobs_test",
+                        "-p",
+                        "127.0.0.1::5432",
+                        "postgres:18-alpine"
+                    ])
+                    .output()
+                    .unwrap()
+                    .status
+                    .success()
+            );
+            let output = docker().args(["port", &name, "5432/tcp"]).output().unwrap();
+            let endpoint = String::from_utf8(output.stdout).unwrap();
+            let endpoint = endpoint.trim();
+            let url = url::Url::parse(&format!(
+                "postgres://postgres@{endpoint}/webdock_jobs_test?sslmode=disable"
+            ))
+            .unwrap();
+            (Some(name), url)
+        };
         let passwords = webdock_persistence::roles::LOGIN_ROLES
             .iter()
             .copied()
@@ -61,6 +75,7 @@ impl DatabaseFixture {
             name,
             url,
             passwords,
+            local,
         };
         let db = tokio::time::timeout(std::time::Duration::from_secs(30), async {
             loop {
@@ -72,12 +87,16 @@ impl DatabaseFixture {
         })
         .await
         .expect("owned PostgreSQL connection readiness");
-        webdock_persistence::roles::provision_roles(&db, "webdock_jobs_test", &fixture.passwords)
+        if let Some(local) = &fixture.local {
+            local.verify(&db).await;
+        }
+        let database = fixture.url.path().trim_start_matches('/');
+        webdock_persistence::roles::provision_roles(&db, database, &fixture.passwords)
             .await
             .unwrap();
         webdock_persistence::migrations::bootstrap(
             &db,
-            "webdock_jobs_test",
+            database,
             "owned-plugin-jobs-rls-secret-32bytes",
         )
         .await

@@ -156,6 +156,7 @@ async fn database_checkpoint_and_completion_replay_exactly_after_daemon_restart(
         revoked: AtomicBool::new(false),
         fail_complete: AtomicBool::new(false),
         terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: Default::default(),
     });
     let core = Arc::new(DatabaseCore {
         peer: peer.clone(),
@@ -284,6 +285,7 @@ async fn delayed_database_guard_cannot_enter_runtime_after_lease_expiry() {
         revoked: AtomicBool::new(false),
         fail_complete: AtomicBool::new(false),
         terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: Default::default(),
     });
     let mut command = database_command(DatabaseExecutionPhase::Apply);
     command.lease_until = timestamp().unwrap() + 2;

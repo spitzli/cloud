@@ -72,6 +72,32 @@ fn canonical_origins_reject_credentials_paths_and_untrusted_http() {
 }
 
 #[test]
+fn retired_database_ordering_is_disabled_unless_explicitly_enabled() {
+    assert!(
+        !PlatformConfig::from_map(&HashMap::new())
+            .unwrap()
+            .database_new_orders_enabled
+    );
+    for (raw, enabled) in [("true", true), ("false", false)] {
+        let config = PlatformConfig::from_map(&HashMap::from([(
+            "WEBDOCK_DATABASE_NEW_ORDERS_ENABLED".into(),
+            raw.into(),
+        )]))
+        .unwrap();
+        assert_eq!(config.database_new_orders_enabled, enabled);
+    }
+    for invalid in ["TRUE", "1", "", " true", "false "] {
+        assert!(
+            PlatformConfig::from_map(&HashMap::from([(
+                "WEBDOCK_DATABASE_NEW_ORDERS_ENABLED".into(),
+                invalid.into()
+            )]))
+            .is_err()
+        );
+    }
+}
+
+#[test]
 fn production_requires_explicit_secure_distinct_origins_and_valid_ports() {
     assert!(
         PlatformConfig::from_map(&HashMap::from([("NODE_ENV".into(), "production".into())]))

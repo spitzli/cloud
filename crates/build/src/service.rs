@@ -27,6 +27,9 @@ pub struct RepositoryRef<'a> {
 }
 #[derive(Clone)]
 pub(crate) enum RepositoryContext<'a> {
+    SourceTrigger {
+        tx: &'a DatabaseTransaction,
+    },
     PluginJob {
         proof: Box<webdock_plugin_host::ExportJob>,
     },
@@ -101,6 +104,10 @@ pub struct BuildService {
     repository_configured: bool,
     registry: String,
     authority: Option<Arc<session::SessionVerifier>>,
+    github_webhooks: Option<(
+        github_webhook::GithubWebhookVerifier,
+        Arc<repository::RepositoryAdmission>,
+    )>,
 }
 fn db_error(_: sea_orm::DbErr) -> crate::Error {
     error("build_database_unavailable")
@@ -177,12 +184,37 @@ impl BuildService {
             repository_configured: false,
             registry,
             authority: None,
+            github_webhooks: None,
         })
     }
     pub fn with_repository_provider(mut self, provider: Arc<dyn RepositoryProvider>) -> Self {
         self.provider = provider;
         self.repository_configured = true;
         self
+    }
+    pub fn with_github_webhooks(
+        mut self,
+        verifier: github_webhook::GithubWebhookVerifier,
+        admission: Arc<repository::RepositoryAdmission>,
+    ) -> Self {
+        self.github_webhooks = Some((verifier, admission));
+        self
+    }
+    pub async fn receive_github_webhook(
+        &self,
+        raw: &[u8],
+        signature: &str,
+        delivery: &str,
+        event: &str,
+        allow_new: bool,
+    ) -> Result<Value> {
+        let (verifier, admission) = self
+            .github_webhooks
+            .as_ref()
+            .ok_or_else(|| error("github_webhook_unavailable"))?;
+        let event = verifier.verify(raw, signature, delivery, event)?;
+        self.ingest_github_webhook_with_admission(&event, admission, allow_new)
+            .await
     }
     async fn id(&self) -> Result<String> {
         Ok(self
@@ -344,6 +376,20 @@ impl BuildService {
         let manage = matches!(command, BuildCommand::SourceConfigure { .. });
         let write = command.write();
         let authority_guard = self.begin_authority(principal, authority, write).await?;
+        if let BuildCommand::SourceWebhook {
+            source_id,
+            revision,
+            enabled,
+            ..
+        } = &command
+        {
+            let value = self
+                .configure_github_build_trigger(principal, &project, source_id, *revision, *enabled)
+                .await?;
+            session::verify(&authority_guard).await?;
+            session::commit(authority_guard).await?;
+            return Ok(value);
+        }
         let tx = self
             .signer
             .begin(&self.db, principal)
@@ -353,6 +399,7 @@ impl BuildService {
         let access = Self::authorize(&tx, principal, &project, write, manage).await?;
         let customer = field(&access["project"], "customer_id")?.to_owned();
         let result = match command {
+            BuildCommand::SourceWebhook { .. } => return Err(error("invalid_command")),
             BuildCommand::SourceGet { target_id, .. } => {
                 let source = match Self::select_source(&tx, &project, target_id.as_deref()).await {
                     Ok(id) => {
@@ -363,7 +410,17 @@ impl BuildService {
                     Err(e) => return Err(e),
                 };
                 let targets=rows(&tx,"SELECT jsonb_build_object('id',id,'name',name) AS value FROM webdock_auth.hosting_app WHERE project_id=$1 AND status<>'deleted' ORDER BY name,id",vec![project.clone().into()]).await?;
-                json!({"source":source,"targets":targets,"canBindPlatform":false,"blockers":if self.repository_configured{vec![]}else{vec!["Repository provider adapter is unavailable."]}})
+                let write_allowed =
+                    !principal.in_read_only_preview() && authority.is_none_or(|a| !a.read_only());
+                let can_build = write_allowed
+                    && Self::authorize(&tx, principal, &project, true, false)
+                        .await
+                        .is_ok();
+                let can_configure = write_allowed
+                    && Self::authorize(&tx, principal, &project, true, true)
+                        .await
+                        .is_ok();
+                json!({"source":source,"targets":targets,"canBuild":can_build,"canConfigure":can_configure,"canApprove":can_build,"canBindPlatform":false,"blockers":if self.repository_configured{vec![]}else{vec!["Repository provider adapter is unavailable."]}})
             }
             BuildCommand::SourcesList { .. } => {
                 let records=rows(&tx,"SELECT to_jsonb(s) AS value FROM webdock_auth.git_source s WHERE project_id=$1 ORDER BY created_at,id",vec![project.clone().into()]).await?;
@@ -385,7 +442,10 @@ impl BuildService {
                 auto_publish,
                 health_path,
                 build_provider: _,
+                execution_backend,
+                container_build,
                 workflow_path,
+                webhook_trigger,
                 artifact_prefix,
                 build_environment,
                 ..
@@ -416,13 +476,43 @@ impl BuildService {
                 {
                     return Err(error("source_revision_conflict"));
                 }
+                if execution_backend == "kubernetes" {
+                    Self::kubernetes_source_allowed(&tx, &customer, &project).await?;
+                }
+                let container_build = container_build
+                    .map(|c| serde_json::to_value(c).unwrap())
+                    .or_else(|| prior.as_ref().map(|v| v["container_build"].clone()))
+                    .unwrap_or_else(|| {
+                        serde_json::to_value(crate::contracts::ContainerSettings::default())
+                            .unwrap()
+                    });
+                let webhook_trigger = webhook_trigger
+                    .map(|mode| mode.as_str().to_owned())
+                    .unwrap_or_else(|| {
+                        prior
+                            .as_ref()
+                            .and_then(|s| s["webhook_trigger"].as_str())
+                            .unwrap_or("push")
+                            .to_owned()
+                    });
+                let workflow_path = workflow_path
+                    .or_else(|| {
+                        prior
+                            .as_ref()
+                            .and_then(|s| s["workflow_path"].as_str())
+                            .map(str::to_owned)
+                    })
+                    .unwrap_or_else(crate::contracts::workflow);
+                if webhook_trigger == "workflow_run" && execution_backend != "kubernetes" {
+                    return Err(error("invalid_webhook_trigger"));
+                }
                 let id = if let Some(row) = prior {
                     field(&row, "id")?.to_owned()
                 } else {
                     self.id().await?
                 };
-                execute(&tx,"INSERT INTO webdock_auth.git_source(id,customer_id,project_id,connection_id,repository_id,branch,root_directory,recipe,target_id,revision,enabled,auto_publish,policy_subject,policy_revision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$10) ON CONFLICT(id) DO UPDATE SET connection_id=excluded.connection_id,repository_id=excluded.repository_id,branch=excluded.branch,root_directory=excluded.root_directory,recipe=excluded.recipe,revision=excluded.revision,enabled=excluded.enabled,auto_publish=excluded.auto_publish,policy_subject=excluded.policy_subject,policy_revision=excluded.policy_revision,latest_build_id=NULL",vec![id.clone().into(),customer.clone().into(),project.clone().into(),connection_id.into(),repository_id.into(),branch.into(),root_directory.into(),recipe.into(),target_id.into(),(revision+1).into(),enabled.into(),auto_publish.into(),principal.user_id.clone().into()]).await?;
-                execute(&tx,"UPDATE webdock_auth.git_source SET health_path=$2,workflow_path=$3,artifact_prefix=$4 WHERE id=$1",vec![id.clone().into(),health_path.into(),workflow_path.into(),artifact_prefix.into()]).await?;
+                execute(&tx,"INSERT INTO webdock_auth.git_source(id,customer_id,project_id,connection_id,repository_id,branch,root_directory,recipe,target_id,revision,enabled,auto_publish,policy_subject,policy_revision,execution_backend,container_build,webhook_trigger,workflow_path) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$10,$14,$15,$16,$17) ON CONFLICT(id) DO UPDATE SET connection_id=excluded.connection_id,repository_id=excluded.repository_id,branch=excluded.branch,root_directory=excluded.root_directory,recipe=excluded.recipe,revision=excluded.revision,enabled=excluded.enabled,auto_publish=excluded.auto_publish,policy_subject=excluded.policy_subject,policy_revision=excluded.policy_revision,execution_backend=excluded.execution_backend,container_build=excluded.container_build,webhook_trigger=excluded.webhook_trigger,workflow_path=excluded.workflow_path,latest_build_id=NULL",vec![id.clone().into(),customer.clone().into(),project.clone().into(),connection_id.into(),repository_id.into(),branch.into(),root_directory.into(),recipe.into(),target_id.into(),(revision+1).into(),enabled.into(),auto_publish.into(),principal.user_id.clone().into(),execution_backend.into(),container_build.into(),webhook_trigger.into(),workflow_path.into()]).await?;
+                execute(&tx,"UPDATE webdock_auth.git_source SET health_path=$2,artifact_prefix=$3 WHERE id=$1",vec![id.clone().into(),health_path.into(),artifact_prefix.into()]).await?;
                 if let Some(patch) = build_environment {
                     self.hosting
                         .patch_git_build_environment(&tx, &id, &patch)
@@ -485,7 +575,7 @@ impl BuildService {
                         vec![],
                     )
                     .await?;
-                    let active=rows(&tx,"SELECT to_jsonb(b) AS value FROM webdock_auth.git_build b WHERE project_id=$1 AND status IN ('queued','running')",vec![project.clone().into()]).await?;
+                    let active=rows(&tx,"SELECT to_jsonb(b) AS value FROM webdock_auth.git_build b WHERE project_id=$1 AND status IN ('queued','running','artifact-ready')",vec![project.clone().into()]).await?;
                     if active.len() >= 10 {
                         return Err(error("build_queue_limit"));
                     }
@@ -527,7 +617,7 @@ impl BuildService {
                 build_view(&Self::build(&tx, &build_id, &project).await?)
             }
             BuildCommand::BuildCancel { build_id, .. } => {
-                if execute(&tx,"UPDATE webdock_auth.git_build SET status='cancelled',generation=generation+1,lease_until=NULL,finished_at=now() WHERE id=$1 AND project_id=$2 AND status IN ('queued','running')",vec![build_id.clone().into(),project.clone().into()]).await?!=1{return Err(error("build_not_cancellable"));}
+                if execute(&tx,"UPDATE webdock_auth.git_build SET status='cancelled',phase='cancelled',generation=generation+1,lease_until=NULL,finished_at=now() WHERE id=$1 AND project_id=$2 AND status IN ('queued','running','artifact-ready')",vec![build_id.clone().into(),project.clone().into()]).await?!=1{return Err(error("build_not_cancellable"));}
                 Self::check(&tx, &build_id, "completed", Some("cancelled")).await?;
                 self.audit(
                     &tx,
@@ -539,6 +629,12 @@ impl BuildService {
                 .await?;
                 build_view(&Self::build(&tx, &build_id, &project).await?)
             }
+            BuildCommand::BuildLogs {
+                build_id,
+                after,
+                limit,
+                ..
+            } => Self::log_page(&tx, &project, &build_id, &after, limit).await?,
             BuildCommand::BuildsList {
                 source_id,
                 page,
@@ -705,7 +801,7 @@ impl BuildService {
             tx.commit().await.map_err(db_error)?;
             return Ok(None);
         }
-        let build=rows(&tx,"SELECT to_jsonb(b) AS value FROM webdock_auth.git_build b JOIN webdock_auth.git_source s ON s.id=b.source_id JOIN webdock_auth.git_connection c ON c.id=s.connection_id WHERE (b.status='queued' OR b.status='running' AND b.lease_until<now()) AND s.enabled AND $1::jsonb ? s.recipe AND s.build_provider='isolated' AND c.state='active' AND b.source_revision=s.revision AND b.connection_generation=c.generation ORDER BY b.created_at,b.id FOR UPDATE OF b SKIP LOCKED LIMIT 1",vec![json!(recipes).into()]).await?.pop();
+        let build=rows(&tx,"SELECT to_jsonb(b) AS value FROM webdock_auth.git_build b JOIN webdock_auth.git_source s ON s.id=b.source_id JOIN webdock_auth.git_connection c ON c.id=s.connection_id WHERE (b.status='queued' OR b.status='running' AND b.lease_until<now()) AND s.enabled AND $1::jsonb ? s.recipe AND s.build_provider='isolated' AND b.execution_backend='microvm' AND s.execution_backend='microvm' AND c.state='active' AND b.source_revision=s.revision AND b.connection_generation=c.generation ORDER BY b.created_at,b.id FOR UPDATE OF b SKIP LOCKED LIMIT 1",vec![json!(recipes).into()]).await?.pop();
         let Some(build) = build else {
             tx.commit().await.map_err(db_error)?;
             return Ok(None);
@@ -764,7 +860,9 @@ impl BuildService {
         generation: i32,
     ) -> Result<Value> {
         Self::verify(tx, worker).await?;
-        rows(tx,"SELECT to_jsonb(b) AS value FROM webdock_auth.git_build b JOIN webdock_auth.git_source s ON s.id=b.source_id JOIN webdock_auth.git_connection c ON c.id=s.connection_id WHERE b.id=$1 AND b.worker_id=$2 AND b.worker_generation=$3 AND b.generation=$4 AND b.status='running' AND b.lease_until>now() AND s.enabled AND s.revision=b.source_revision AND s.environment_revision=b.environment_revision AND c.state='active' AND c.generation=b.connection_generation FOR UPDATE OF b",vec![build_id.into(),worker.id.clone().into(),worker.generation.into(),generation.into()]).await?.pop().ok_or_else(||error("build_lease_lost"))
+        let build = rows(tx,"SELECT to_jsonb(b) AS value FROM webdock_auth.git_build b JOIN webdock_auth.git_source s ON s.id=b.source_id JOIN webdock_auth.git_connection c ON c.id=s.connection_id WHERE b.id=$1 AND b.worker_id=$2 AND b.worker_generation=$3 AND b.generation=$4 AND b.status='running' AND b.lease_until>now() AND s.enabled AND s.revision=b.source_revision AND s.environment_revision=b.environment_revision AND c.state='active' AND c.generation=b.connection_generation FOR UPDATE OF b",vec![build_id.into(),worker.id.clone().into(),worker.generation.into(),generation.into()]).await?.pop().ok_or_else(||error("build_lease_lost"))?;
+        Self::guard_kubernetes_lease(tx, worker, &build, false).await?;
+        Ok(build)
     }
     pub async fn guard_build(
         &self,
@@ -838,7 +936,10 @@ impl BuildService {
         }
         let receipt = hex::encode(Sha256::digest(serde_json::to_vec(&completion).unwrap()));
         let prior=rows(&tx,"SELECT to_jsonb(b) AS value FROM webdock_auth.git_build b WHERE id=$1 AND worker_id=$2 AND worker_generation=$3 AND generation=$4 FOR UPDATE",vec![build_id.into(),worker.id.clone().into(),worker.generation.into(),generation.into()]).await?.pop().ok_or_else(||error("build_lease_lost"))?;
-        if matches!(prior["status"].as_str(), Some("succeeded" | "failed")) {
+        if matches!(
+            prior["status"].as_str(),
+            Some("succeeded" | "failed" | "artifact-ready")
+        ) {
             if prior["completion_hash"] != receipt {
                 return Err(error("completion_conflict"));
             }
@@ -847,6 +948,7 @@ impl BuildService {
             return Ok(json!({"id":build_id,"status":prior["status"],"release":release}));
         }
         let b = Self::lease(&tx, worker, build_id, generation).await?;
+        Self::guard_kubernetes_lease(&tx, worker, &b, true).await?;
         let s = Self::source(&tx, field(&b, "source_id")?, field(&b, "project_id")?).await?;
         let environment = self
             .hosting
@@ -914,12 +1016,14 @@ impl BuildService {
             .await?
             .pop();
         }
-        let status = if artifact.is_some() {
+        let status = if artifact.is_some() && b["execution_backend"] == "kubernetes" {
+            "artifact-ready"
+        } else if artifact.is_some() {
             "succeeded"
         } else {
             "failed"
         };
-        execute(&tx,"UPDATE webdock_auth.git_build SET status=$2,logs=$3,failure_code=$4,finished_at=now(),lease_until=NULL,completion_hash=$5 WHERE id=$1",vec![build_id.into(),status.into(),logs.into(),failure.into(),receipt.into()]).await?;
+        execute(&tx,"UPDATE webdock_auth.git_build SET status=$2,phase=CASE WHEN $2='artifact-ready' THEN 'awaiting-approval' ELSE $2 END,logs=$3,failure_code=$4,finished_at=CASE WHEN $2='artifact-ready' THEN NULL ELSE now() END,lease_until=NULL,completion_hash=$5 WHERE id=$1",vec![build_id.into(),status.into(),logs.into(),failure.into(),receipt.into()]).await?;
         Self::check(
             &tx,
             build_id,
@@ -1011,6 +1115,9 @@ impl BuildService {
         let tx = self.worker_tx().await?;
         Self::verify(&tx, worker).await?;
         execute(&tx,"UPDATE webdock_auth.git_release SET status='needs-reconciliation',revision=revision+1 WHERE status='deploying' AND lease_until<now()",vec![]).await?;
+        // A canceled Kubernetes build can never have staged an operation: the same
+        // build row is fenced atomically with staging. Retain bytes, retire only intent.
+        execute(&tx,"UPDATE webdock_auth.git_release r SET status='superseded',revision=r.revision+1,lease_until=NULL FROM webdock_auth.git_artifact a JOIN webdock_auth.git_build b ON b.id=a.build_id WHERE r.artifact_id=a.id AND r.customer_id=b.customer_id AND r.project_id=b.project_id AND b.execution_backend='kubernetes' AND b.status IN ('cancelled','failed') AND r.operation_id IS NULL AND r.status IN ('queued','deploying','needs-reconciliation')",vec![]).await?;
         let release=rows(&tx,"SELECT to_jsonb(r)||jsonb_build_object('storage_key',a.storage_key,'digest',a.digest,'image_digest',a.image_digest,'size_bytes',a.size_bytes,'build_id',a.build_id,'remote_storage',a.remote_storage) AS value FROM webdock_auth.git_release r JOIN webdock_auth.git_artifact a ON a.id=r.artifact_id JOIN webdock_auth.git_build b ON b.id=a.build_id JOIN webdock_auth.git_source s ON s.id=r.source_id JOIN webdock_auth.git_connection c ON c.id=s.connection_id WHERE r.status='queued' AND a.retained AND a.kind='oci' AND a.image_digest IS NOT NULL AND (($6::bool AND a.storage_key ~ '/[a-f0-9]{64}[.]tar$') OR ($7::bool AND a.storage_key ~ '/[a-f0-9]{64}[.]e1[.]tar$') OR ($8::bool AND a.storage_key ~ '/[a-f0-9]{64}[.]e2[.]tar$')) AND ((a.remote_storage IS NULL AND b.worker_id=$1 AND b.worker_generation=$2) OR (a.remote_storage IS NOT NULL AND $3::jsonb ? (a.remote_storage->>'binding'))) AND ($4::jsonb IS NULL OR ($4::jsonb->>r.project_id)=($5::text||'/customers/'||r.customer_id||'/projects/'||r.project_id)) AND s.enabled AND s.desired_release_id=r.id AND s.revision=r.source_revision AND s.environment_revision=r.environment_revision AND c.generation=r.connection_generation AND c.state='active' AND NOT EXISTS(SELECT 1 FROM webdock_auth.git_release busy WHERE busy.source_id=r.source_id AND busy.status IN ('deploying','needs-reconciliation')) ORDER BY r.created_at,r.id FOR UPDATE OF r,s SKIP LOCKED LIMIT 1",vec![worker.id.clone().into(),worker.generation.into(),json!(bindings).into(),publication_projects.map(|p|json!(p)).into(),self.registry.clone().into(),formats.contains(&0).into(),formats.contains(&1).into(),formats.contains(&2).into()]).await?.pop();
         let Some(mut r) = release else {
             tx.commit().await.map_err(db_error)?;
@@ -1079,6 +1186,7 @@ impl BuildService {
     ) -> Result<Value> {
         Self::verify(tx, worker).await?;
         let r=rows(tx,"SELECT to_jsonb(r)||jsonb_build_object('image_digest',a.image_digest,'build_id',a.build_id,'storage_key',a.storage_key,'digest',a.digest,'size_bytes',a.size_bytes,'remote_storage',a.remote_storage) AS value FROM webdock_auth.git_release r JOIN webdock_auth.git_artifact a ON a.id=r.artifact_id WHERE r.id=$1 AND r.worker_id=$2 AND r.worker_generation=$3 AND r.generation=$4 AND r.status='deploying' AND r.lease_until>now() AND a.retained FOR UPDATE OF r",vec![id.into(),worker.id.clone().into(),worker.generation.into(),generation.into()]).await?.pop().ok_or_else(||error("release_lease_lost"))?;
+        Self::guard_kubernetes_publication(tx, &r).await?;
         let authority = rows(
             tx,
             "SELECT coalesce(webdock_rls.git_release_authority($1),'null'::jsonb) AS value",
@@ -1121,6 +1229,7 @@ impl BuildService {
             field(&r, "customer_id")?,
             field(&r, "project_id")?
         );
+        execute(&tx,"UPDATE webdock_auth.git_build SET phase='pushing' WHERE id=(SELECT build_id FROM webdock_auth.git_artifact WHERE id=$1) AND execution_backend='kubernetes' AND status='artifact-ready'",vec![field(&r,"artifact_id")?.into()]).await?;
         execute(&tx,"UPDATE webdock_auth.git_release SET publication_started_at=coalesce(publication_started_at,now()),publication_target=coalesce(publication_target,'{}')||jsonb_build_object('imageRepository',$2::text) WHERE id=$1",vec![id.into(),repository.clone().into()]).await?;
         session::verify(&authority_guard).await?;
         tx.commit().await.map_err(db_error)?;
@@ -1137,6 +1246,15 @@ impl BuildService {
         image: &str,
     ) -> Result<Value> {
         let replay = self.worker_tx().await?;
+        Self::verify(&replay, worker).await?;
+        // An accepted immutable operation is a receipt, not fresh promotion authority.
+        // A lost callback response must remain replayable after rollout or lease expiry.
+        if let Some(accepted)=rows(&replay,"SELECT to_jsonb(r)||jsonb_build_object('accepted_image',o.desired->'spec'->>'image') AS value FROM webdock_auth.git_release r JOIN webdock_auth.hosting_operation o ON o.id=r.operation_id AND o.git_release_id=r.id AND o.project_id=r.project_id WHERE r.id=$1 AND r.worker_id=$2 AND r.worker_generation=$3 AND r.generation=$4",vec![id.into(),worker.id.clone().into(),worker.generation.into(),generation.into()]).await?.pop() {
+            if accepted["accepted_image"]!=image {return Err(error("publication_image_conflict"));}
+            Self::guard_kubernetes_publication(&replay,&accepted).await?;
+            let result=json!({"releaseID":id,"operationID":accepted["operation_id"],"status":accepted["status"],"replayed":true});
+            replay.commit().await.map_err(db_error)?;return Ok(result);
+        }
         let prior = Self::release_lease(&replay, worker, id, generation).await?;
         let prior_authority = self.release_authority(&prior).await?;
         if prior["operation_id"].as_str().is_some() {
@@ -1155,6 +1273,7 @@ impl BuildService {
                 )
                 .await
                 .map_err(hosting)?;
+            Self::mark_kubernetes_published(&replay, &prior).await?;
             session::verify(&prior_authority).await?;
             replay.commit().await.map_err(db_error)?;
             session::commit(prior_authority).await?;
@@ -1182,6 +1301,7 @@ impl BuildService {
             )
             .await
             .map_err(hosting)?;
+        Self::mark_kubernetes_published(&tx, &row).await?;
         Self::verify(&tx, worker).await?;
         session::verify(&authority_guard).await?;
         tx.commit().await.map_err(db_error)?;
@@ -1276,7 +1396,7 @@ impl BuildService {
             .await
             .map_err(hosting)?;
         Ok(
-            json!({"id":s["id"],"customerID":s["customer_id"],"projectID":s["project_id"],"connectionID":s["connection_id"],"repositoryID":s["repository_id"],"repositoryName":s["metadata"]["fullName"],"branch":s["branch"],"rootDirectory":s["root_directory"],"recipe":s["recipe"],"buildProvider":s["build_provider"],"workflowPath":s["workflow_path"],"artifactPrefix":s["artifact_prefix"],"healthPath":s["health_path"],"targetID":s["target_id"],"revision":s["revision"],"enabled":s["enabled"],"autoPublish":s["auto_publish"],"buildEnvironmentNames":environment.keys().collect::<Vec<_>>()}),
+            json!({"id":s["id"],"customerID":s["customer_id"],"projectID":s["project_id"],"connectionID":s["connection_id"],"repositoryID":s["repository_id"],"repositoryName":s["metadata"]["fullName"],"branch":s["branch"],"rootDirectory":s["root_directory"],"recipe":s["recipe"],"buildProvider":s["build_provider"],"executionBackend":s["execution_backend"],"containerBuild":s["container_build"],"environmentName":s["environment_name"],"workflowPath":s["workflow_path"],"webhookTrigger":s["webhook_trigger"],"artifactPrefix":s["artifact_prefix"],"healthPath":s["health_path"],"targetID":s["target_id"],"revision":s["revision"],"enabled":s["enabled"],"autoPublish":s["auto_publish"],"webhookEnabled":s["webhook_enabled"]==true && s["webhook_revision"]==s["revision"] && s["webhook_connection_generation"]==s["connection_generation"] && s["webhook_environment_revision"]==s["environment_revision"],"buildEnvironmentNames":environment.keys().collect::<Vec<_>>()}),
         )
     }
     async fn revalidate_repository(
@@ -1365,7 +1485,7 @@ fn date(value: &Value) -> Value {
         .unwrap_or(Value::Null)
 }
 fn build_view(r: &Value) -> Value {
-    json!({"id":r["id"],"projectID":r["project_id"],"sourceID":r["source_id"],"targetID":r["target_id"],"sourceSHA":r["source_sha"],"status":r["status"],"revision":r["source_revision"],"generation":r["generation"],"createdAt":date(&r["created_at"]),"finishedAt":date(&r["finished_at"]),"logs":r["logs"],"failureCode":r["failure_code"],"actionsRunURL":null})
+    json!({"id":r["id"],"projectID":r["project_id"],"sourceID":r["source_id"],"targetID":r["target_id"],"sourceSHA":r["source_sha"],"status":r["status"],"revision":r["source_revision"],"generation":r["generation"],"createdAt":date(&r["created_at"]),"finishedAt":date(&r["finished_at"]),"logs":r["logs"],"failureCode":r["failure_code"],"actionsRunURL":null,"executionBackend":r["execution_backend"],"environmentName":r["environment_name"],"phase":r["phase"],"registryVerifiedAt":date(&r["registry_verified_at"]),"retryCount":r["retry_count"],"nextEligibleAt":date(&r["next_eligible_at"]),"lastInfrastructureFailure":r["last_infrastructure_failure"]})
 }
 fn release_view(r: &Value) -> Value {
     json!({"id":r["id"],"projectID":r["project_id"],"sourceID":r["source_id"],"targetID":r.get("target_id").unwrap_or(&r["publication_target"]["targetID"]),"artifactID":r["artifact_id"],"buildID":r["build_id"],"status":r["status"],"revision":r["revision"],"approvedBy":r["approved_by"],"operationID":r["operation_id"],"providerDeploymentID":r["provider_deployment_id"],"createdAt":date(&r["created_at"])})
@@ -1390,6 +1510,7 @@ impl BuildService {
         authority: Option<&webdock_browser_session::StoredAuthority>,
     ) -> Result<Value> {
         let release=rows(tx,"SELECT to_jsonb(r)||jsonb_build_object('build_id',a.build_id) AS value FROM webdock_auth.git_release r JOIN webdock_auth.git_artifact a ON a.id=r.artifact_id AND a.retained WHERE r.id=$1 AND r.project_id=$2 FOR UPDATE OF r",vec![id.into(),project.into()]).await?.pop().ok_or_else(||error("release_unavailable"))?;
+        Self::guard_kubernetes_publication(tx, &release).await?;
         let source = Self::source(tx, field(&release, "source_id")?, project).await?;
         Self::active(&source)?;
         if let Some(prior)=rows(tx,"SELECT to_jsonb(r) AS value FROM webdock_auth.git_release r WHERE project_id=$1 AND idempotency_key=$2",vec![project.into(),key.into()]).await?.pop(){if prior["source_id"]!=release["source_id"]{return Err(error("idempotency_conflict"));}return Ok(release_view(&prior));}
@@ -1608,3 +1729,18 @@ mod session;
 
 #[path = "export.rs"]
 mod export;
+
+#[path = "service/kubernetes.rs"]
+pub mod kubernetes;
+
+#[path = "service/logs.rs"]
+mod logs;
+
+#[path = "service/github_webhook.rs"]
+pub mod github_webhook;
+
+#[path = "service/infrastructure.rs"]
+mod infrastructure;
+
+#[path = "service/volumes.rs"]
+mod volumes;

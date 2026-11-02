@@ -1,0 +1,40 @@
+{
+ admin off
+ persist_config off
+ email dominik@spitzli.dev
+ acme_ca https://acme-v02.api.letsencrypt.org/directory
+ servers {
+  protocols h1 h2
+ }
+}
+
+grafana.spitzli.cloud, grafana.webdock.dev {
+ header {
+  Strict-Transport-Security "max-age=31536000"
+  X-Content-Type-Options nosniff
+  -Server
+ }
+ # Native Grafana login; no trusted-header authentication.
+ reverse_proxy 10.93.123.214:80 {
+  header_up -X-WEBAUTH-USER
+  header_up -X-Forwarded-User
+ }
+}
+
+prometheus.spitzli.cloud, prometheus.webdock.dev {
+ header {
+  Strict-Transport-Security "max-age=31536000"
+  X-Content-Type-Options nosniff
+  -Server
+ }
+ route {
+  basic_auth {
+   webdock-operator {$WEBDOCK_OBS_OPERATOR_HASH}
+  }
+  @admin path /-/quit /-/reload /api/v1/admin/* /api/v1/write /api/v1/otlp/* /debug/*
+  respond @admin 404
+  reverse_proxy 10.93.19.229:9090 {
+   header_up -Authorization
+  }
+ }
+}

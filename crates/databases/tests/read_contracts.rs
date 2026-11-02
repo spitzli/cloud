@@ -22,6 +22,8 @@ fn safe_operation_read_uses_strict_managed_contract() {
 fn read_boundary_rejects_writes_secrets_authority_and_unbounded_queries() {
     use webdock_databases::DatabaseReadCommand;
     for input in [
+        json!({"action":"databases.offers.create","projectID":"101","planRevisionID":"202","name":"Stale new database","idempotencyKey":"read-must-not-quote"}),
+        json!({"action":"databases.acceptOrder","projectID":"101","offerID":"202","idempotencyKey":"read-must-not-accept"}),
         json!({"action":"databases.backup","databaseID":"101","revision":1,"idempotencyKey":"read-must-not-write"}),
         json!({"action":"databases.credentials","databaseID":"101"}),
         json!({"action":"databases.restore","databaseID":"101"}),

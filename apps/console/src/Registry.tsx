@@ -1,3 +1,4 @@
+import { useI18n } from "@webdock/i18n/react";
 import { CustomerScopeStart } from "./CustomerScope";
 import { CustomerSelfService } from "./plugins/CustomerSelfService";
 import { CustomerPlan } from "./Usage";
@@ -251,6 +252,7 @@ export function RegistryDetail({
   id: string;
 }) {
   const api = useApi();
+  const { t } = useI18n();
   const created = useRouterState({ select: (state) => state.location.state.created });
   const navigate = useNavigate();
   const record = useQuery({
@@ -307,6 +309,10 @@ export function RegistryDetail({
             search={{ customer: id }}
           >
             View customer projects
+            <ArrowRightIcon />
+          </Link>
+          <Link to="/workspaces/$id/connections" params={{ id }}>
+            {t("Customer connections")}
             <ArrowRightIcon />
           </Link>
           {api.config.enabledFeatures.includes("hosting") ? (
@@ -509,7 +515,7 @@ function RegistryForm({
             disabled={write.isPending}
           />
         </label>
-        {live.errors.name ? <FieldError message={live.errors.name} /> : <span className={ui.cx(`${ui.hint} -mt-3`)}>How this {collection === "customers" ? "customer" : "project"} appears across Webdock.</span>}
+        {live.errors.name ? <FieldError message={live.errors.name} /> : <span className={ui.cx(`${ui.hint} -mt-3`)}>How this {collection === "customers" ? "customer" : "project"} appears across Spitzli Cloud.</span>}
         {collection === "customers" ? (
           <CustomerFields record={record} pending={write.isPending} errors={live.errors} />
         ) : (

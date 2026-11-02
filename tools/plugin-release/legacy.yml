@@ -1,0 +1,128 @@
+# Execution stays disabled until the operator records Blacksmith qualification.
+# See webdock/tools/plugin-ci/BLACKSMITH.md; runner labels alone do not select a region.
+name: Plugin Blacksmith build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      publish_image:
+        description: Push a checked candidate image without replacing versioned registry releases
+        required: false
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: legacy-plugin-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  check:
+    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != '' && vars.WEBDOCK_BLACKSMITH_BUILDER_READY == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 20
+    env:
+      WEBDOCK_OCI_BACKEND: blacksmith-buildx
+      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+    steps:
+      - name: Require reviewed Blacksmith execution
+        shell: bash
+        env:
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+        run: |
+          set -euo pipefail
+          case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac
+          test "$BLACKSMITH_REGION" = "$QUALIFIED_BLACKSMITH_REGION"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Reject unexpected existing BuildKit before provider setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e buildkitd.toml
+          python3 scripts/plugin-release/build_oci.py --before-blacksmith-setup
+      - name: Set up the managed Blacksmith builder
+        uses: useblacksmith/setup-docker-builder@19215110ab936351210feebdfa5b440b4493e184 # reviewed v2
+        with:
+          cache-key: Dockerfile
+          nofallback: true
+          buildx-version: v0.23.0
+          platforms: linux/amd64
+      - name: Verify provider builder and keep generated configuration outside source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/plugin-release/build_oci.py --assert-blacksmith-builder
+          mv -- buildkitd.toml "$RUNNER_TEMP/blacksmith-buildkitd.toml"
+      - name: Check and test the independent locked source in qualified Blacksmith BuildKit
+        shell: bash
+        run: |
+          set -euo pipefail
+          export IMAGE_REPOSITORY="ghcr.io/${GITHUB_REPOSITORY,,}"
+          python3 scripts/plugin-release/build_oci.py --check < /dev/null
+  image:
+    needs: check
+    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != '' && vars.WEBDOCK_BLACKSMITH_BUILDER_READY == 'true' && (github.event_name == 'workflow_dispatch' && inputs.publish_image)
+    environment: plugin-image-candidate
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    env:
+      WEBDOCK_OCI_BACKEND: blacksmith-buildx
+      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+    steps:
+      - name: Require reviewed Blacksmith execution
+        shell: bash
+        env:
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+        run: |
+          set -euo pipefail
+          case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac
+          test "$BLACKSMITH_REGION" = "$QUALIFIED_BLACKSMITH_REGION"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Reject unexpected existing BuildKit before provider setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e buildkitd.toml
+          python3 scripts/plugin-release/build_oci.py --before-blacksmith-setup
+      - name: Set up the managed Blacksmith builder
+        uses: useblacksmith/setup-docker-builder@19215110ab936351210feebdfa5b440b4493e184 # reviewed v2
+        with:
+          cache-key: Dockerfile
+          nofallback: true
+          buildx-version: v0.23.0
+          platforms: linux/amd64
+      - name: Verify provider builder and keep generated configuration outside source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/plugin-release/build_oci.py --assert-blacksmith-builder
+          mv -- buildkitd.toml "$RUNNER_TEMP/blacksmith-buildkitd.toml"
+      - name: Build and push this checked source image
+        id: image
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export IMAGE_REPOSITORY="ghcr.io/${GITHUB_REPOSITORY,,}"
+          printf '%s' "$GH_TOKEN" | python3 scripts/plugin-release/build_oci.py
+      - name: Record the candidate without changing published registry versions
+        env:
+          IMAGE: ${{ steps.image.outputs.image }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -c 'import json,os; print(json.dumps({"image":os.environ["IMAGE"],"sourceCommit":os.environ["GITHUB_SHA"],"registryRelease":"unchanged"}))' > candidate-image.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: checked-image-${{ github.sha }}
+          path: candidate-image.json
+          if-no-files-found: error
+          retention-days: 30

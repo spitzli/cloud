@@ -1,0 +1,111 @@
+{
+  "checkedAt": "2026-11-01T14:28:14.068516+00:00",
+  "status": "blocked",
+  "blacksmithInstalled": true,
+  "organizationInstallationCount": 10,
+  "qualifiedRegion": "us-west",
+  "regionProof": "https://github.com/spitzli/cloud/actions/runs/41319592763/job/124886768224",
+  "repositories": [
+    "spitzli/cloud",
+    "spitzli/cloud-plugin-archives",
+    "spitzli/cloud-plugin-echo-demo",
+    "spitzli/cloud-plugin-github-repository",
+    "spitzli/cloud-plugin-hosting",
+    "spitzli/cloud-plugin-lumaserv-compute",
+    "spitzli/cloud-plugin-mail",
+    "spitzli/cloud-plugin-mail-relay",
+    "spitzli/cloud-plugin-managed-cms",
+    "spitzli/cloud-plugin-object-storage",
+    "spitzli/cloud-plugin-postgres",
+    "spitzli/cloud-plugin-sdk",
+    "spitzli/webdock-extension-lumaserv",
+    "spitzli/webdock-extension-managed-analytics",
+    "spitzli/webdock-extension-managed-apps",
+    "spitzli/webdock-extension-project-notes"
+  ],
+  "successfulChecks": [],
+  "blockers": [
+    "The isolated maintainer runner/build probe passed; actual application/plugin/SDK source checks for all16 repositories remain pending.",
+    "Prepared regular Blacksmith source workflows and all16 source checks are pending. All17 old-provider workflow definitions were disabled and read back; source/main and former host remain unchanged.",
+    "Registry publication credentials and actual production push qualification remain separate; the probe deliberately did not push an image."
+  ],
+  "inspection": {
+    "organizationVariableCount": 1,
+    "rootRepositoryVariableCount": 0,
+    "siblingQualificationVariablesPresent": false,
+    "apiMethods": [
+      "GET",
+      "POST (selected organization region variable only)"
+    ],
+    "secretValuesRead": false,
+    "workflowRunsStarted": 1
+  },
+  "officialSources": [
+    "https://docs.blacksmith.sh/blacksmith-runners/overview",
+    "https://docs.blacksmith.sh/blacksmith-administration/github-app",
+    "https://docs.blacksmith.sh/blacksmith-caching/docker-builds",
+    "https://github.com/useblacksmith/setup-docker-builder/tree/19215110ab936351210feebdfa5b440b4493e184",
+    "https://docs.blacksmith.sh/blacksmith-caching/machine-definitions"
+  ],
+  "scope": "Spitzli-owned trusted-maintainer GitHub CI on Blacksmith only",
+  "regionRestrictionWaived": true,
+  "appliesToCustomerBuildsOrOtherServices": false,
+  "ownerException": {
+    "date": "2026-11-01",
+    "instruction": "EU-only is not important for our own Blacksmith GitHub CI; record the actual provider region.",
+    "alternativeRunnerFallbackAuthorized": false
+  },
+  "builder": {
+    "qualified": true,
+    "backend": "blacksmith-managed",
+    "fallbackDisabled": true,
+    "proof": "https://github.com/spitzli/cloud/actions/runs/41319592763/job/124886768224",
+    "adapterImplemented": true,
+    "sourceDisablesFallback": true
+  },
+  "installationInspectionHistorical": false,
+  "updatedAt": "2026-11-01T15:11:31.753177+00:00",
+  "installation": {
+    "id": 177526508,
+    "repositorySelection": "selected",
+    "narrowingTo16RepositoriesPendingOwnerConfirmation": false,
+    "repositoryCount": 16,
+    "exactSelectedSetVerified": true
+  },
+  "configuredRegion": "us-west",
+  "configuredRegionProof": ".runtime-test/waitlist-release-ready-20261101/blacksmith-account-setup.json",
+  "observedRunnerRegion": "us-west",
+  "regionVariable": {
+    "name": "WEBDOCK_BLACKSMITH_REGION",
+    "recordedValue": "us-west",
+    "visibility": "selected",
+    "repositoryCount": 16,
+    "writeAndReadbackVerified": true
+  },
+  "qualificationProbe": {
+    "checkedAt": "2026-11-01T15:11:07.841370+00:00",
+    "sourceSha": "5f106958766166824708e8bc1a19d0e9bacb0a43",
+    "runUrl": "https://github.com/spitzli/cloud/actions/runs/41319592763",
+    "jobUrl": "https://github.com/spitzli/cloud/actions/runs/41319592763/job/124886768224",
+    "conclusion": "success",
+    "observedRegion": "us-west",
+    "runnerName": "blacksmith-01m6btdbtb171kwaws4r0nbtyv-4vcpu",
+    "builder": "blacksmith-mvxys0ip",
+    "fallbackDisabled": true,
+    "qualificationReceiptSHA256": "61f0437d538c009e24b3740cc0a3a317100fe63ab3d0c7c68e15ed08b1ed00d7",
+    "imageDigest": "sha256:917197d2e688fc54f98bbbefdd17c5dc0114edd338c80ec51dd08063d32e7eca",
+    "actualUncachedRunAndOciExport": true,
+    "imagePushPerformed": false,
+    "applicationSourceChecksQualified": false,
+    "mainChanged": false
+  },
+  "legacyWorkflow": {
+    "path": ".github/workflows/distribution.yml",
+    "state": "disabled_manually",
+    "hostRetired": false,
+    "rootQualityState": "disabled_manually",
+    "siblingLegacyDefinitionsDisabled": 15,
+    "totalLegacyDefinitionsDisabled": 17,
+    "postDisableReadback": ".runtime-test/waitlist-release-ready-20261101/blacksmith-workflow-post-disable-readback.json"
+  }
+}

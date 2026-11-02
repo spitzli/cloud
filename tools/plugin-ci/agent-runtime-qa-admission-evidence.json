@@ -1,0 +1,72 @@
+{
+  "namespace": "wd-977937693893",
+  "namespaceUID": "9d02b2ba-d260-4540-83f9-445ba17e2974",
+  "namespaceLabels": {
+    "kubernetes.io/metadata.name": "wd-977937693893",
+    "pod-security.kubernetes.io/enforce": "restricted",
+    "pod-security.kubernetes.io/enforce-version": "latest",
+    "security.webdock.dev/managed-by": "webdock",
+    "tests.webdock.dev/owner": "02496816-baea-4113-bcc1-59ccbd59f73a",
+    "webdock.dev/cluster-id": "789",
+    "webdock.dev/project-id": "977937693893"
+  },
+  "capturedBeforeCleanup": true,
+  "resourcequotas": [],
+  "limitranges": [],
+  "networkpolicies": [
+    {
+      "name": "fixture-deny",
+      "uid": "a72d4ddb-4a07-4ed6-afea-46335e3aa585",
+      "spec": {
+        "podSelector": {},
+        "policyTypes": [
+          "Ingress",
+          "Egress"
+        ]
+      }
+    }
+  ],
+  "pods": [],
+  "warnings": [
+    {
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"app-977937693894-6d7b5f7498-f67k7\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    },
+    {
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"app-977937693894-6d7b5f7498-87gmq\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    },
+    {
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"app-977937693894-6d7b5f7498-gj6fh\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    },
+    {
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"app-977937693894-6d7b5f7498-sgrnh\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    },
+    {
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"app-977937693894-6d7b5f7498-znsj7\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    },
+    {
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"app-977937693894-6d7b5f7498-ljsx2\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    },
+    {
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"app-977937693894-6d7b5f7498-szkns\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    },
+    {
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"app-977937693894-6d7b5f7498-22f2z\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    },
+    {
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"app-977937693894-6d7b5f7498-9rxd8\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    },
+    {
+      "reason": "FailedCreate",
+      "message": "(combined from similar events): Error creating: pods \"app-977937693894-6d7b5f7498-d992t\" is forbidden: ValidatingAdmissionPolicy 'webdock-application-safety' with binding 'webdock-application-safety' denied request: Webdock: namespace requires resource quotas, network policies and Restricted Pod Security before workloads can start."
+    }
+  ]
+}

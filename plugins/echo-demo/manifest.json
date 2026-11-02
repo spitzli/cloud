@@ -198,5 +198,16 @@
       "description": "Echo a message within the project",
       "action": "demo.echo"
     }
-  ]
+  ],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/demo-note-panel.png",
+      "caption": "Actual Console declarative renderer using the demo note response; synthetic data and disabled actions.",
+      "alt": "Echo demo note panel with disabled reveal and delete controls"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-echo-demo",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-echo-demo/blob/HEAD/README.md"
 }

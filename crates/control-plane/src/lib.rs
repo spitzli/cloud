@@ -21,6 +21,9 @@ pub mod locale;
 pub mod mail;
 
 pub mod build;
+mod build_infrastructure;
+mod build_logs;
+mod build_webhook;
 
 pub mod plugin_config;
 
@@ -36,3 +39,9 @@ mod resource_registry;
 mod first_party_mcp;
 
 pub mod plugin_exports;
+
+pub mod realtime;
+
+pub mod waitlist;
+
+pub mod neon_connections;

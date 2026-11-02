@@ -8,6 +8,7 @@ arguments: []
 replicas: 1
 port: 3443
 healthPath: null
+healthHost: null
 ephemeralBytes: 16777216
 resources:
   requests:

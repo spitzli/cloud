@@ -7,7 +7,7 @@
     "build": "bun --bun next build",
     "start": "bun --bun next start",
     "lint": "eslint",
-    "test": "bun test --isolate ./tests/*.test.mjs",
+    "test": "bun test --isolate ./tests",
     "payload": "bun --env-file=.env.instance ../../node_modules/payload/bin.js --disable-transpile",
     "cms:types": "bun run payload generate:types",
     "cms:migrate": "PAYLOAD_MIGRATING=true bun run payload migrate",
@@ -33,6 +33,7 @@
     "@webdock/cms-bridge": "*"
   },
   "devDependencies": {
+    "@types/bun": "1.4.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

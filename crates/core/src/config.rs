@@ -12,6 +12,7 @@ pub struct PlatformConfig {
     pub port: u16,
     pub production: bool,
     pub features: FeatureSet,
+    pub database_new_orders_enabled: bool,
 }
 impl PlatformConfig {
     pub fn from_map(env: &HashMap<String, String>) -> Result<Self, ContractError> {
@@ -64,6 +65,18 @@ impl PlatformConfig {
                 .map(String::as_str)
                 .unwrap_or("{}"),
         )?;
+        let database_new_orders_enabled = match env
+            .get("WEBDOCK_DATABASE_NEW_ORDERS_ENABLED")
+            .map(String::as_str)
+        {
+            None | Some("false") => false,
+            Some("true") => true,
+            Some(_) => {
+                return Err(ContractError(
+                    "Invalid WEBDOCK_DATABASE_NEW_ORDERS_ENABLED".into(),
+                ));
+            }
+        };
         Ok(Self {
             api_origin,
             auth_origin,
@@ -72,6 +85,7 @@ impl PlatformConfig {
             port,
             production,
             features,
+            database_new_orders_enabled,
         })
     }
 

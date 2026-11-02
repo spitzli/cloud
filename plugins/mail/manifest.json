@@ -619,5 +619,16 @@
       "action": "mail.history",
       "description": "List the latest twenty durable sends on an owned sending domain"
     }
-  ]
+  ],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/mailbox-settings.png",
+      "caption": "Actual Mail mailbox panel; synthetic settings. No public reception, delivery or Webmail is demonstrated.",
+      "alt": "Mailbox client settings with hidden password and synthetic addresses"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-mail",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-mail/blob/HEAD/README.md"
 }

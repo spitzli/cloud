@@ -17,6 +17,11 @@ use std::{
 };
 use webdock_core::id::RecordId;
 use webdock_supervisor::{ExecutionError, Result};
+pub mod build;
+#[cfg(feature = "kubernetes")]
+pub mod build_kubernetes;
+#[cfg(feature = "kubernetes")]
+pub mod build_queue;
 pub mod database;
 pub mod recovery;
 pub mod recovery_io;
@@ -324,15 +329,89 @@ fn path_str(path: &Path) -> Result<&str> {
 pub enum StorageKind {
     Apps,
     Database,
+    Builds,
 }
 impl StorageKind {
     fn uid(self) -> u32 {
         match self {
             Self::Apps => 65532,
             Self::Database => 26,
+            Self::Builds => 1000,
+        }
+    }
+    fn mount_options(self) -> &'static str {
+        match self {
+            Self::Builds => "loop,nodev,nosuid",
+            Self::Apps | Self::Database => "loop,nodev,nosuid,noexec",
         }
     }
 }
+// A missing directory is recoverable only before allocation, after exact global absence proof.
+fn uncreated_build_loop_devices(
+    directory: &Path,
+    uuid: &str,
+    mounts: &serde_json::Value,
+    loops: &serde_json::Value,
+) -> Result<Vec<String>> {
+    if !directory.is_absolute() || !valid_uuid(uuid) {
+        return Err(ExecutionError::Ownership);
+    }
+    let filesystems = mounts["filesystems"]
+        .as_array()
+        .ok_or(ExecutionError::Ownership)?;
+    if !filesystems.iter().any(|mount| mount["target"] == "/") {
+        return Err(ExecutionError::Ownership);
+    }
+    for mount in filesystems {
+        let target = mount["target"].as_str().ok_or(ExecutionError::Ownership)?;
+        let target = Path::new(target.strip_suffix(" (deleted)").unwrap_or(target));
+        let filesystem = mount["fstype"].as_str().ok_or(ExecutionError::Ownership)?;
+        if !target.is_absolute()
+            || target
+                .components()
+                .any(|part| matches!(part, std::path::Component::ParentDir))
+            || mount.get("children").is_some()
+            || filesystem.is_empty()
+            || target.starts_with(directory)
+            || mount["uuid"]
+                .as_str()
+                .is_some_and(|value| value.eq_ignore_ascii_case(uuid))
+            || (filesystem == "ext4"
+                && mount["uuid"]
+                    .as_str()
+                    .is_none_or(|value| !valid_uuid(value)))
+        {
+            return Err(ExecutionError::Ownership);
+        }
+    }
+    let mut devices = Vec::new();
+    let mut seen = std::collections::BTreeSet::new();
+    for device in loops["loopdevices"]
+        .as_array()
+        .ok_or(ExecutionError::Ownership)?
+    {
+        let name = device["name"].as_str().ok_or(ExecutionError::Ownership)?;
+        let backing = device["back-file"]
+            .as_str()
+            .ok_or(ExecutionError::Ownership)?;
+        let backing = Path::new(backing.strip_suffix(" (deleted)").unwrap_or(backing));
+        if !seen.insert(name)
+            || !name
+                .strip_prefix("/dev/loop")
+                .is_some_and(|id| !id.is_empty() && id.bytes().all(|v| v.is_ascii_digit()))
+            || !backing.is_absolute()
+            || backing.starts_with(directory)
+            || backing
+                .components()
+                .any(|part| matches!(part, std::path::Component::ParentDir))
+        {
+            return Err(ExecutionError::Ownership);
+        }
+        devices.push(name.into());
+    }
+    Ok(devices)
+}
+
 pub struct StoragePool {
     kind: StorageKind,
     config: StorageConfig,
@@ -469,7 +548,7 @@ impl StoragePool {
                 "--mountpoint",
                 path_str(&target)?,
                 "-o",
-                "SOURCE,TARGET,FSTYPE",
+                "SOURCE,TARGET,FSTYPE,OPTIONS,UUID",
             ],
             guard,
             10,
@@ -487,6 +566,9 @@ impl StoragePool {
             .ok_or(ExecutionError::Runtime)?;
         if mounts.len() != 1 || mounts[0]["fstype"] != "ext4" {
             return Err(ExecutionError::Ownership);
+        }
+        if self.kind == StorageKind::Builds {
+            build::validate_mount(&mounts[0], directory, guard)?;
         }
         let source = mounts[0]["source"]
             .as_str()
@@ -563,7 +645,7 @@ impl StoragePool {
                     "-t",
                     "ext4",
                     "-o",
-                    "loop,nodev,nosuid,noexec",
+                    self.kind.mount_options(),
                     path_str(&image)?,
                     path_str(&target)?,
                 ],
@@ -590,6 +672,9 @@ impl StoragePool {
         packet: &StoragePacket,
         guard: &StorageGuard,
     ) -> Result<(StorageConfig, PathBuf)> {
+        if self.kind == StorageKind::Builds {
+            return Err(ExecutionError::Denied);
+        }
         self.ensure_reserved(packet, guard, 0)
     }
     pub(super) fn ensure_reserved(
@@ -687,7 +772,7 @@ impl StoragePool {
                 "-t",
                 "ext4",
                 "-o",
-                "loop,nodev,nosuid,noexec",
+                self.kind.mount_options(),
                 path_str(&image)?,
                 path_str(&target)?,
             ],
@@ -721,6 +806,12 @@ impl StoragePool {
         ))
     }
     pub fn retained(&self, packet: &StoragePacket) -> Result<()> {
+        if self.kind == StorageKind::Builds {
+            return Err(ExecutionError::Denied);
+        }
+        self.retained_inner(packet)
+    }
+    fn retained_inner(&self, packet: &StoragePacket) -> Result<()> {
         packet.validate()?;
         if packet.cluster_id != self.config.cluster_id
             || (self.kind == StorageKind::Database && packet.app_id != packet.project_id)
@@ -738,7 +829,17 @@ impl StoragePool {
         packet: &StoragePacket,
         guard: &StorageGuard,
     ) -> Result<VolumeState> {
-        self.retained(packet)?;
+        if self.kind == StorageKind::Builds {
+            return Err(ExecutionError::Denied);
+        }
+        self.volume_state_inner(packet, guard)
+    }
+    fn volume_state_inner(
+        &self,
+        packet: &StoragePacket,
+        guard: &StorageGuard,
+    ) -> Result<VolumeState> {
+        self.retained_inner(packet)?;
         guard.check()?;
         let record = self
             .record(&packet.app_id)?
@@ -771,7 +872,13 @@ impl StoragePool {
         Ok(record.state)
     }
     pub fn purge(&mut self, packet: &StoragePacket, guard: &StorageGuard) -> Result<()> {
-        self.retained(packet)?;
+        if self.kind == StorageKind::Builds {
+            return Err(ExecutionError::Denied);
+        }
+        self.purge_record(packet, guard)
+    }
+    fn purge_record(&mut self, packet: &StoragePacket, guard: &StorageGuard) -> Result<()> {
+        self.retained_inner(packet)?;
         guard.check()?;
         let Some(mut record) = self.record(&packet.app_id)? else {
             return Ok(());
@@ -780,6 +887,53 @@ impl StoragePool {
             return Ok(());
         }
         let directory = self.config.root.join(packet.app_id.as_str());
+        if self.kind == StorageKind::Builds
+            && record.state == VolumeState::Initializing
+            && std::fs::symlink_metadata(&directory)
+                .is_err_and(|error| error.kind() == std::io::ErrorKind::NotFound)
+        {
+            private(&self.config.root, true)?;
+            let mounts = checked(
+                "/usr/bin/findmnt",
+                &["--json", "--list", "-o", "TARGET,FSTYPE,UUID"],
+                guard,
+                10,
+            )?;
+            let loops = checked(
+                "/usr/sbin/losetup",
+                &["--json", "--list", "--output", "NAME,BACK-FILE"],
+                guard,
+                10,
+            )?;
+            let mounts = serde_json::from_str(&mounts).map_err(|_| ExecutionError::Runtime)?;
+            let loops = serde_json::from_str(&loops).map_err(|_| ExecutionError::Runtime)?;
+            for device in uncreated_build_loop_devices(&directory, &record.uuid, &mounts, &loops)? {
+                // Unmounted or renamed/deleted backing files still retain a UUID through their loop.
+                let uuid = checked(
+                    "/usr/sbin/blkid",
+                    &["-p", "-s", "UUID", "-o", "value", &device],
+                    guard,
+                    10,
+                )?;
+                if !valid_uuid(&uuid) || uuid.eq_ignore_ascii_case(&record.uuid) {
+                    return Err(ExecutionError::Ownership);
+                }
+            }
+            let current = self
+                .record(&packet.app_id)?
+                .ok_or(ExecutionError::Ownership)?;
+            current.authorize(packet)?;
+            if current.uuid != record.uuid
+                || current.state != VolumeState::Initializing
+                || !std::fs::symlink_metadata(&directory)
+                    .is_err_and(|error| error.kind() == std::io::ErrorKind::NotFound)
+            {
+                return Err(ExecutionError::Ownership);
+            }
+            guard.check()?;
+            record.state = VolumeState::Purged;
+            return self.persist(record);
+        }
         private(&directory, true)?;
         for entry in io(std::fs::read_dir(&directory))? {
             let name = io(entry)?.file_name();
@@ -836,6 +990,11 @@ impl StoragePool {
         self.persist(record)
     }
     pub fn restore(&self) -> Result<()> {
+        // A build allocation needs fresh signed authority and node/PVC reconciliation.
+        // Never remount canceled or expired attempts through the legacy restore path.
+        if self.kind == StorageKind::Builds {
+            return Ok(());
+        }
         let guard = StorageGuard::maintenance();
         for record in self.state()?.volumes.values() {
             if record.state == VolumeState::Ready
@@ -898,6 +1057,11 @@ fn dispatch(
     request: RpcRequest,
     cancelled: Arc<AtomicBool>,
 ) -> Result<serde_json::Value> {
+    if pool.kind == StorageKind::Builds {
+        return Err(ExecutionError::Unsupported(
+            "builds require signed storage authority",
+        ));
+    }
     if pool.kind == StorageKind::Database {
         return database::dispatch(pool, request, cancelled);
     }
@@ -1444,5 +1608,333 @@ impl StorageClient {
             serde_json::to_value(packet).map_err(|_| ExecutionError::Invalid("storage packet"))?,
         )
         .await
+    }
+}
+
+#[cfg(test)]
+mod initializing_build_retirement_tests {
+    use super::*;
+
+    fn owned_pool(kind: StorageKind) -> (tempfile::TempDir, PathBuf, StoragePool, StoragePacket) {
+        require_root().expect("owned user/mount namespace required");
+        let base = tempfile::Builder::new()
+            .prefix("webdock-initializing-retirement-")
+            .tempdir()
+            .unwrap();
+        std::fs::set_permissions(base.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let root = base.path().join("volumes");
+        mkdir(&root).unwrap();
+        let config = StorageConfig {
+            root,
+            node: "owned-node".into(),
+            cluster_id: RecordId::parse("3").unwrap(),
+            pool_id: "123e4567-e89b-42d3-a456-426614174000".into(),
+            capacity_bytes: 4 * MIN,
+            reserve_bytes: MIN,
+        };
+        let path = base.path().join("config.json");
+        let mut output = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(&path)
+            .unwrap();
+        output
+            .write_all(&serde_json::to_vec(&config).unwrap())
+            .unwrap();
+        drop(output);
+        StoragePool::initialize(&path).unwrap();
+        let pool = StoragePool::open_kind(&path, kind).unwrap();
+        let packet = StoragePacket::new(
+            "1",
+            if kind == StorageKind::Database {
+                "1"
+            } else {
+                "2"
+            },
+            "3",
+            1,
+            MIN,
+            (Utc::now() + chrono::Duration::minutes(5)).timestamp() as u64,
+        )
+        .unwrap();
+        (base, path, pool, packet)
+    }
+    fn journal_initializing(pool: &mut StoragePool, packet: &StoragePacket, state: VolumeState) {
+        pool.persist(VolumeRecord {
+            app_id: packet.app_id.clone(),
+            project_id: packet.project_id.clone(),
+            cluster_id: packet.cluster_id.clone(),
+            bytes: packet.spec.volume_bytes,
+            uuid: uuid::Uuid::new_v4().to_string(),
+            state,
+        })
+        .unwrap();
+    }
+    fn charged(pool: &StoragePool) -> u64 {
+        pool.state()
+            .unwrap()
+            .volumes
+            .values()
+            .filter(|record| record.state != VolumeState::Purged)
+            .map(|record| record.bytes)
+            .sum()
+    }
+    #[test]
+    #[ignore = "owned local user/mount namespace only; no loop or mount mutations"]
+    fn journal_before_mkdir_cancellation_survives_restart_and_retires_only_builds() {
+        let (_base, path, mut pool, packet) = owned_pool(StorageKind::Builds);
+        let key = ed25519_dalek::SigningKey::from_bytes(&[71; 32]);
+        let reservation = webdock_agent_protocol::build_storage::BuildStorageReservation {
+            version: 1,
+            audience: "webdock-build-storage-v1".into(),
+            volume_id: "1".into(),
+            customer_id: "10".into(),
+            project_id: "2".into(),
+            build_id: "9".into(),
+            generation: 1,
+            target: webdock_agent_protocol::build_storage::BuildStorageTarget {
+                cluster_id: "3".into(),
+                node: pool.config.node.clone(),
+                pool_id: pool.config.pool_id.clone(),
+            },
+            volume_bytes: MIN,
+            action: webdock_agent_protocol::build_storage::BuildStorageAction::Reserve,
+            epoch: 1,
+            expires_at: Utc::now() + chrono::Duration::minutes(5),
+        };
+        let signed = webdock_agent_protocol::build_storage::SignedBuildStorageReservation::sign(
+            reservation.clone(),
+            &key,
+        )
+        .unwrap();
+        signed
+            .verify(&key.verifying_key(), &reservation.target, Utc::now())
+            .unwrap();
+        let mut ledger = build::BuildStorageLedger::default();
+        ledger.apply_verified(&reservation).unwrap();
+        let mut output = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(pool.config.root.join("_pool/builds.json"))
+            .unwrap();
+        output
+            .write_all(&serde_json::to_vec(&ledger).unwrap())
+            .unwrap();
+        output.sync_all().unwrap();
+        drop(output);
+        sync_directory(&pool.config.root.join("_pool")).unwrap();
+        // Exactly the journal/check boundary in ensure_reserved; cancellation prevents mkdir.
+        journal_initializing(&mut pool, &packet, VolumeState::Initializing);
+        let cancelled = Arc::new(AtomicBool::new(true));
+        assert!(
+            StorageGuard::new(Utc::now() + chrono::Duration::minutes(1), cancelled)
+                .check()
+                .is_err()
+        );
+        assert!(!pool.config.root.join("1").exists());
+        assert_eq!(charged(&pool), MIN);
+        drop(pool);
+        let mut restarted = StoragePool::open_kind(&path, StorageKind::Builds).unwrap();
+        let guard = StorageGuard::maintenance();
+        assert!(restarted.ensure_reserved(&packet, &guard, 0).is_err());
+        let mut retirement = reservation.clone();
+        retirement.action = webdock_agent_protocol::build_storage::BuildStorageAction::Retire;
+        retirement.epoch = 2;
+        let trust = build::BuildStorageTrust {
+            version: 1,
+            target: retirement.target.clone(),
+            public_key: key
+                .verifying_key()
+                .to_bytes()
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect(),
+        };
+        let retired = restarted
+            .apply_build_storage(
+                &webdock_agent_protocol::build_storage::SignedBuildStorageReservation::sign(
+                    retirement, &key,
+                )
+                .unwrap(),
+                &trust,
+                &guard,
+            )
+            .unwrap();
+        assert_eq!(retired.phase, build::BuildStoragePhase::Retired);
+        assert!(
+            restarted
+                .apply_build_storage(&signed, &trust, &guard)
+                .is_err()
+        );
+        restarted.purge_record(&packet,&guard).expect("authenticated retirement after exact consumer absence must recover pre-mkdir build allocation");
+        assert_eq!(charged(&restarted), 0);
+        assert_eq!(
+            restarted.record(&packet.app_id).unwrap().unwrap().state,
+            VolumeState::Purged
+        );
+        assert!(!restarted.config.root.join("1").exists());
+        restarted.purge_record(&packet, &guard).unwrap();
+        drop(restarted);
+        let restarted = StoragePool::open_kind(&path, StorageKind::Builds).unwrap();
+        assert_eq!(charged(&restarted), 0);
+    }
+    #[test]
+    fn missing_initialization_inventory_rejects_own_uuid_targets_orphans_and_uncertainty() {
+        let directory = Path::new("/owned-pool/1");
+        let uuid = "123e4567-e89b-42d3-a456-426614174000";
+        let base = serde_json::json!({"filesystems":[{"target":"/","fstype":"tmpfs","uuid":null}]});
+        let empty = serde_json::json!({"loopdevices":[]});
+        assert!(
+            uncreated_build_loop_devices(directory, uuid, &base, &empty)
+                .unwrap()
+                .is_empty()
+        );
+        for mount in [
+            serde_json::json!({"target":"/unrelated","fstype":"ext4","uuid":uuid}),
+            serde_json::json!({"target":"/owned-pool/1","fstype":"tmpfs","uuid":null}),
+            serde_json::json!({"target":"/owned-pool/1/mount (deleted)","fstype":"tmpfs","uuid":null}),
+            serde_json::json!({"target":"/elsewhere/../owned-pool/1/mount","fstype":"tmpfs","uuid":null}),
+            serde_json::json!({"target":"/unrelated","fstype":"ext4","uuid":null}),
+            serde_json::json!({"target":"/unrelated","fstype":"tmpfs","uuid":null,"children":[]}),
+            serde_json::json!({"target":null,"fstype":"tmpfs","uuid":null}),
+        ] {
+            let mut mounts = base.clone();
+            mounts["filesystems"].as_array_mut().unwrap().push(mount);
+            assert!(uncreated_build_loop_devices(directory, uuid, &mounts, &empty).is_err());
+        }
+        for loop_device in [
+            serde_json::json!({"name":"/dev/loop1","back-file":"/owned-pool/1/volume.ext4"}),
+            serde_json::json!({"name":"/dev/loop1","back-file":"/owned-pool/1/volume.ext4 (deleted)"}),
+            serde_json::json!({"name":"/dev/loop1","back-file":null}),
+            serde_json::json!({"name":"/dev/loop1","back-file":"/other/../owned-pool/1/volume.ext4"}),
+            serde_json::json!({"name":"not-a-loop","back-file":"/unrelated/volume.ext4"}),
+        ] {
+            assert!(
+                uncreated_build_loop_devices(
+                    directory,
+                    uuid,
+                    &base,
+                    &serde_json::json!({"loopdevices":[loop_device]})
+                )
+                .is_err()
+            );
+        }
+        assert!(
+            uncreated_build_loop_devices(
+                directory,
+                uuid,
+                &serde_json::json!({"filesystems":[]}),
+                &empty
+            )
+            .is_err()
+        );
+        assert!(
+            uncreated_build_loop_devices(
+                directory,
+                uuid,
+                &base,
+                &serde_json::json!({"loopdevices":null})
+            )
+            .is_err()
+        );
+        let unrelated = serde_json::json!({"loopdevices":[{"name":"/dev/loop12","back-file":"/owned-pool/11/volume.ext4"}]});
+        assert_eq!(
+            uncreated_build_loop_devices(directory, uuid, &base, &unrelated).unwrap(),
+            vec!["/dev/loop12"]
+        );
+    }
+    #[test]
+    #[ignore = "owned local user/mount namespace only; no loop or mount mutations"]
+    fn missing_ready_purging_apps_database_and_symlink_keep_charge() {
+        for (kind, state) in [
+            (StorageKind::Builds, VolumeState::Ready),
+            (StorageKind::Builds, VolumeState::Purging),
+            (StorageKind::Apps, VolumeState::Initializing),
+            (StorageKind::Database, VolumeState::Initializing),
+        ] {
+            let (_base, _path, mut pool, packet) = owned_pool(kind);
+            journal_initializing(&mut pool, &packet, state);
+            assert!(
+                pool.purge_record(&packet, &StorageGuard::maintenance())
+                    .is_err()
+            );
+            assert_eq!(charged(&pool), MIN);
+            assert_eq!(pool.record(&packet.app_id).unwrap().unwrap().state, state);
+        }
+        let (base, _path, mut pool, packet) = owned_pool(StorageKind::Builds);
+        journal_initializing(&mut pool, &packet, VolumeState::Initializing);
+        let foreign = base.path().join("foreign");
+        mkdir(&foreign).unwrap();
+        std::os::unix::fs::symlink(&foreign, pool.config.root.join("1")).unwrap();
+        assert!(
+            pool.purge_record(&packet, &StorageGuard::maintenance())
+                .is_err()
+        );
+        assert_eq!(charged(&pool), MIN);
+        assert!(foreign.is_dir());
+    }
+    #[test]
+    #[ignore = "owned local user/mount namespace only; no loop or mount mutations"]
+    fn cancelled_or_foreign_retirement_keeps_initializing_charge_and_existing_parent_is_retained() {
+        let (_base, _path, mut pool, packet) = owned_pool(StorageKind::Builds);
+        journal_initializing(&mut pool, &packet, VolumeState::Initializing);
+        let cancelled = StorageGuard::new(
+            Utc::now() + chrono::Duration::minutes(1),
+            Arc::new(AtomicBool::new(true)),
+        );
+        assert!(pool.purge_record(&packet, &cancelled).is_err());
+        assert_eq!(charged(&pool), MIN);
+        let mut foreign = packet.clone();
+        foreign.project_id = RecordId::parse("99").unwrap();
+        assert!(
+            pool.purge_record(&foreign, &StorageGuard::maintenance())
+                .is_err()
+        );
+        assert_eq!(charged(&pool), MIN);
+        assert!(pool.purge(&packet, &StorageGuard::maintenance()).is_err());
+        assert_eq!(charged(&pool), MIN);
+        let directory = pool.config.root.join("1");
+        mkdir(&directory).unwrap();
+        pool.purge_record(&packet, &StorageGuard::maintenance())
+            .unwrap();
+        assert_eq!(charged(&pool), 0);
+        assert!(
+            directory.is_dir(),
+            "normal purge must retain the allocation parent"
+        );
+    }
+    #[test]
+    #[ignore = "owned local user/mount namespace only; no loop or mount mutations"]
+    fn an_active_mounted_filesystem_uuid_keeps_the_missing_build_charged() {
+        let (_base, _path, mut pool, packet) = owned_pool(StorageKind::Builds);
+        journal_initializing(&mut pool, &packet, VolumeState::Initializing);
+        let mounts = checked(
+            "/usr/bin/findmnt",
+            &["--json", "--list", "-o", "TARGET,FSTYPE,UUID"],
+            &StorageGuard::maintenance(),
+            10,
+        )
+        .unwrap();
+        let mounts: serde_json::Value = serde_json::from_str(&mounts).unwrap();
+        let uuid = mounts["filesystems"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find_map(|mount| mount["uuid"].as_str().filter(|value| valid_uuid(value)))
+            .expect("owned local fixture needs one visible filesystem UUID");
+        let mut record = pool.record(&packet.app_id).unwrap().unwrap();
+        record.uuid = uuid.into();
+        pool.persist(record).unwrap();
+        assert!(
+            pool.purge_record(&packet, &StorageGuard::maintenance())
+                .is_err()
+        );
+        assert_eq!(charged(&pool), MIN);
+        assert_eq!(
+            pool.record(&packet.app_id).unwrap().unwrap().state,
+            VolumeState::Initializing
+        );
     }
 }

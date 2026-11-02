@@ -339,5 +339,16 @@
   "secrets": [],
   "httpBindings": [],
   "api": [],
-  "mcp": []
+  "mcp": [],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/hosting-resource.png",
+      "caption": "Actual Hosting resource panel; synthetic project, app and logs. No cluster operations.",
+      "alt": "Hosting status, memory, deployment and domain controls with synthetic data"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-hosting",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-hosting/blob/HEAD/README.md"
 }

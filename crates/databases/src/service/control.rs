@@ -1,5 +1,21 @@
 use super::*;
 impl DatabaseService {
+    /// Core disables retired offerings at startup; library callers retain their existing default.
+    /// This affects new allocations only, never accepted-order replay or worker execution.
+    pub fn with_new_orders_enabled(mut self, enabled: bool) -> Self {
+        self.new_orders_enabled = enabled;
+        self
+    }
+
+    pub(super) fn require_new_orders(&self) -> Result<()> {
+        if !self.new_orders_enabled {
+            return Err(conflict(
+                "New shared and self-hosted PostgreSQL orders are retired. Use your own Neon account for a new database; existing databases remain available.",
+            ));
+        }
+        Ok(())
+    }
+
     pub fn with_management(mut self, config: ManagementConfig) -> Result<Self> {
         for id in [&config.cluster_id, &config.protected_database_id]
             .into_iter()
@@ -231,6 +247,9 @@ impl DatabaseService {
                 let (hash, prior) = self.replay_control(tx, actor, cmd).await?;
                 if let Some(value) = prior {
                     return Ok(value);
+                }
+                if cmd.get("databaseID").is_none() {
+                    self.require_new_orders()?;
                 }
                 let plan=optional(tx,"SELECT to_jsonb(p) AS value FROM webdock_auth.hosting_database_plan p WHERE id=$1 FOR SHARE",vec![text(cmd,"planRevisionID")?.into()]).await?.ok_or_else(||conflict("This database plan is not available."))?;
                 self.plan_available(&plan, customer, access["operator"] == true)?;

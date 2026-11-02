@@ -74,6 +74,8 @@ await test("settings preserve retained storage and never substitute secret value
   assert.equal(command.spec.cpuMillicores, 250);
   assert.equal(command.revision, 7);
   assert.equal("environment" in command, false);
+  const withHost = appSchema.parse({ ...app, spec: { ...app.spec, healthHost: "api.example.test:3130" } });
+  assert.equal(settingsCommand(withHost, data, "probe-host-settings-preserved").spec.healthHost, "api.example.test:3130");
   data.set("replicas", "2.5");
   assert.throws(() => settingsCommand(app, data, "test-request-identity-3"));
 });
@@ -167,4 +169,10 @@ await test("deletion requires the exact typed name and the reviewed plan hash", 
   assert.throws(() => deleteCommand(app, plan, "application", "delete-request-identity-2"));
   const stale = deletionPlanSchema.parse({ ...plan, plan: { ...plan.plan, name: "Renamed" } });
   assert.throws(() => deleteCommand(app, stale, "Application", "delete-request-identity-3"));
+});
+
+await test('public address requests are explicit and do not alter existing private app forms',()=>{
+ const input=createForm({publicAddress:'on'});
+ assert.deepEqual(createCommand('201',3,input,'public-address-request-01').publicAddress,{});
+ assert.equal(createCommand('201',3,createForm(),'public-address-request-02').publicAddress,undefined);
 });

@@ -50,7 +50,7 @@ fn registry_tools(write: bool) -> Vec<Value> {
     let id = json!({"type":"string","pattern":"^[1-9][0-9]{0,18}$"});
     let collection = json!({"enum":["customers","projects","audit-events"]});
     let mut tools = vec![
-        json!({"name":"list_records","description":"List Webdock customers, projects and audit activity. Search, sort and paginate; no secrets or identity accounts.","inputSchema":schemas["filters"],"annotations":{"readOnlyHint":true,"openWorldHint":false}}),
+        json!({"name":"list_records","description":"List Spitzli Cloud customers, projects and audit activity. Search, sort and paginate; no secrets or identity accounts.","inputSchema":schemas["filters"],"annotations":{"readOnlyHint":true,"openWorldHint":false}}),
         json!({"name":"get_record","description":"Read a registry record by its string ID.","inputSchema":{"type":"object","properties":{"collection":collection,"id":id},"required":["collection","id"],"additionalProperties":false},"annotations":{"readOnlyHint":true,"openWorldHint":false}}),
     ];
     if !write {
@@ -163,6 +163,8 @@ mod database_discovery_tests {
     use super::*;
     fn state(features: &str) -> ServiceState {
         ServiceState {
+            neon_connections: None,
+            realtime: None,
             config: webdock_core::config::PlatformConfig::from_map(
                 &std::collections::HashMap::from([("WEBDOCK_FEATURES".into(), features.into())]),
             )

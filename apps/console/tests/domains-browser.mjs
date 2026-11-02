@@ -40,7 +40,7 @@ const errors = [];
 try {
   let session = await open(browser, 'owner');
   await session.page.goto(previewOrigin + '/workspaces/101/domains');
-  await session.page.getByText('No domains yet.').waitFor();
+  await session.page.getByText('No custom domains yet.', { exact: false }).waitFor();
   await session.page.getByRole('textbox', { name: 'Domain' }).fill('Shop.Example.test');
   await session.page.getByRole('button', { name: 'Add domain' }).click();
   await session.page.getByText('_webdock-challenge.shop.example.test').waitFor();

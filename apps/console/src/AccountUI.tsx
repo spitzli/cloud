@@ -173,14 +173,14 @@ function AccountSignIn({ onSuccess }: { onSuccess: () => void }) {
       <section className={authPanel}>
         <h1>
           {mode === "password"
-            ? "Sign in to Webdock"
+            ? "Sign in to Spitzli Cloud"
             : mode === "reset"
               ? "Reset your password"
               : "Verify your identity"}
         </h1>
         <p>
           {mode === "password"
-            ? "One account for your workspaces and services."
+            ? "One account for your workspaces and services. First time signing in? Use Forgot password to set your password."
             : mode === "reset"
               ? "Enter your account email to request a reset link."
               : mode === "totp"
@@ -282,6 +282,9 @@ function AccountSignIn({ onSuccess }: { onSuccess: () => void }) {
           </button>
         ) : (
           <div className="flex flex-col">
+          <button className={ui.textButton} disabled={busy || !browserSupportsWebAuthn()} onClick={() => { passkey.mutate(); }}>
+            {passkey.isPending ? "Waiting for your passkey…" : "Verify with a passkey"}
+          </button>
           <button
             className={ui.textButton}
             disabled={busy}
@@ -314,10 +317,11 @@ function PasswordReset() {
         "/api/auth/reset-password",
         "POST",
         { token, newPassword: data.get("password") },
-        z.object({ email: z.string() }),
+        z.object({ email: z.string().optional() }),
         true,
       );
       if (!invitation) return;
+      if(!result.email){location.assign(`/login?${new URLSearchParams({returnTo:`/invitation?id=${encodeURIComponent(invitation)}`})}`);return;}
       const signIn = await api.write(
         "/api/auth/sign-in/email",
         "POST",
@@ -376,7 +380,7 @@ function RecoveryCodes({ codes, account, done }: { codes: string[]; account: str
   // Confirmation stays unavailable until the codes have left this page at least once.
   const [kept, setKept] = useState(false);
   const [status, setStatus] = useState("");
-  const text = `Webdock recovery codes for ${account}\nCreated ${new Date().toISOString().slice(0, 10)}. Each code works once.\n\n${codes.join("\n")}\n`;
+  const text = `Spitzli Cloud recovery codes for ${account}\nCreated ${new Date().toISOString().slice(0, 10)}. Each code works once.\n\n${codes.join("\n")}\n`;
   const copy = () => {
     void navigator.clipboard.writeText(text).then(() => {
       setKept(true);
@@ -389,11 +393,11 @@ function RecoveryCodes({ codes, account, done }: { codes: string[]; account: str
     const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "webdock-recovery-codes.txt";
+    anchor.download = "spitzli-cloud-recovery-codes.txt";
     anchor.click();
     setTimeout(() => { URL.revokeObjectURL(url); }, 1000);
     setKept(true);
-    setStatus("Downloaded webdock-recovery-codes.txt.");
+    setStatus("Downloaded spitzli-cloud-recovery-codes.txt.");
   };
   return (
     <Modal title="Save your recovery codes" close={() => undefined} dismissible={false}>
@@ -1187,7 +1191,7 @@ function LogoutPage({ session }: { session: Session }) {
   });
   return (
     <section className={authPanel}>
-      <h1>Sign out of Webdock?</h1>
+      <h1>Sign out of Spitzli Cloud?</h1>
       <p>You are signed in as {session.user.email}.</p>
       <p>
         This ends the current account session and connected application access.
@@ -1227,7 +1231,7 @@ const roleText: Record<string, string> = {
   member: "Members work in the projects they are given access to.",
 };
 function WorkspaceAvatar({ name, size = "size-9 text-sm" }: { name: string; size?: string }) {
-  return <span aria-hidden className={`grid shrink-0 place-items-center rounded-lg bg-linear-135 from-[#ff9a5a] via-brand to-[#8f2d00] font-semibold text-white ${size}`}>{name.slice(0, 1).toUpperCase()}</span>;
+  return <span aria-hidden className={`grid shrink-0 place-items-center rounded-lg bg-accent font-semibold text-on-accent ${size}`}>{name.slice(0, 1).toUpperCase()}</span>;
 }
 /** The organizations this account belongs to; their projects, apps, databases and sites live in Console. */
 function WorkspacesPage() {
@@ -1315,7 +1319,7 @@ function OnboardingProgress({ steps, current, account }: { steps: OnboardingStep
         return (
           <li key={step} data-state={state} aria-current={state === "current" ? "step" : undefined} className={`flex items-center gap-2 ${state === "pending" ? "text-muted" : "text-foreground"}`}>
             {index > 0 ? <span aria-hidden className={`h-px w-6 ${state === "pending" ? "bg-outline-strong" : "bg-success"}`} /> : null}
-            <span aria-hidden className={`grid size-5 place-items-center rounded-full text-[11px] font-semibold ${{ done: "bg-success text-white", current: "bg-accent text-on-accent", pending: "border border-outline-strong" }[state]}`}>{state === "done" ? "✓" : index + 1}</span>
+            <span aria-hidden className={`grid size-5 place-items-center rounded-full text-[11px] font-semibold ${{ done: "bg-success text-on-accent", current: "bg-accent text-on-accent", pending: "border border-outline-strong" }[state]}`}>{state === "done" ? "✓" : index + 1}</span>
             <span className={state === "current" ? "font-medium" : undefined}>{label(step)}</span>
           </li>
         );

@@ -604,6 +604,7 @@ mod tests {
             manifest_sha256: "a".repeat(64),
             launch_links: vec![],
             features: vec![],
+            blocked_create_actions: vec![],
             resources: vec![],
             manifest: json!({"name":"notes-fixture","actions":[{"name":"notes.read","intent":"read"},{"name":"notes.write","intent":"write","destructive":true}],"api":[{"method":"GET","path":"/notes","action":"notes.read"}],"mcp":[{"name":"read","action":"notes.read","description":"Read notes"},{"name":"write","action":"notes.write","description":"Write notes"}]}),
         }

@@ -108,6 +108,17 @@ impl HostingService {
                 return Err(error(503, "Native environment capability unavailable."));
             }
         }
+        Self::verify_public_route(tx, op).await?;
+        if desired.get("publicRoute").is_some()
+            && (!legacy
+                || Self::verify_agent(tx, agent).await?["observation"]["capabilities"]["publicRoutingVersion"]
+                    != 1)
+        {
+            return Err(error(
+                503,
+                "Qualified public routing capability unavailable.",
+            ));
+        }
         let spec = &desired["spec"];
         let volume_bytes = spec
             .get("volumeBytes")
@@ -131,12 +142,20 @@ impl HostingService {
             replicas: amount(&spec["replicas"])? as u16,
             port: amount(&spec["port"])? as u16,
             health_path: Some(field(spec, "healthPath")?.into()),
+            health_host: spec["healthHost"].as_str().map(str::to_owned),
             volume: (volume_bytes > 0).then_some(webdock_supervisor::RetainedVolume {
                 mount_path: "/data".into(),
                 size_bytes: Some(volume_bytes),
             }),
             hosting_binding: if legacy {
                 Some(webdock_supervisor::HostingBinding {
+                    public_route: desired
+                        .get("publicRoute")
+                        .map(|route| {
+                            serde_json::from_value(route.clone())
+                                .map_err(|_| error(503, "Invalid persisted public route."))
+                        })
+                        .transpose()?,
                     cluster_id: webdock_core::id::RecordId::parse(&agent.cluster)
                         .map_err(|_| error(400, "Invalid cluster."))?,
                     quota: serde_json::from_value(desired["quota"].clone())
@@ -450,6 +469,21 @@ impl HostingService {
                 "Application has not converged to requested state.",
             ));
         }
+        let public_route = command
+            .spec
+            .hosting_binding
+            .as_ref()
+            .and_then(|b| b.public_route.as_ref());
+        if public_route.is_some()
+            && !deleting
+            && !stopped
+            && !observed
+                .conditions
+                .iter()
+                .any(|c| c.kind == "PublicHttpsReady" && c.satisfied)
+        {
+            return Err(error(409, "Public address HTTPS has not converged."));
+        }
         let mut proof = json!({"appID":command.spec.resource_id.to_string(),"revision":command.spec.revision,"namespace":format!("wd-{}",command.spec.project_id),"uid":observed.runtime_id,"ready":true,"deleted":deleting,"replicas":if deleting{0}else{command.spec.replicas}});
         if let Some(volume) = &command.spec.volume {
             let expected = if command.action == Action::PurgeStorage {
@@ -478,6 +512,9 @@ impl HostingService {
         }
         let result=self.complete_with_runtime(&tx,agent,&json!({"id":command.operation_id,"generation":command.generation,"outcome":"succeeded","proof":proof}),true,browser_guard.as_ref()).await?;
         execute(&tx,"UPDATE webdock_auth.hosting_operation SET result=coalesce(result,'{}')||jsonb_build_object('nativeRuntimeReceipt',$2::jsonb) WHERE id=$1",vec![command.operation_id.clone().into(),receipt.into()]).await?;
+        if let Some(route) = public_route {
+            execute(&tx,"UPDATE webdock_auth.platform_hostname SET state=$2 WHERE id=$1 AND state<>'retired'",vec![route.allocation_id.to_string().into(),if deleting {"retired"} else if stopped {"allocated"} else {"ready"}.into()]).await?;
+        }
         Self::verify_agent(&tx, agent).await?;
         browser_authority::verify(&browser_guard).await?;
         self.record_accepted_delivery(

@@ -15,6 +15,8 @@ pub use identity::{
     CertificateIdentity, TransportIdentity, certificate_identity, transport_identity,
 };
 
+/// Signed, attempt-scoped build storage authority, independent of cluster clients.
+pub mod build_storage;
 /// Independent database execution contracts; no persistence or provider implementations.
 pub mod database;
 pub mod mail;

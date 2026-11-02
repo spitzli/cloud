@@ -6,7 +6,7 @@ import { mailOpenAPI } from '../../legacy/control-plane/src/modules/mail/product
 const target = new URL('../openapi/mail.json', import.meta.url);
 const spec = mailOpenAPI();
 // Hosted docs use the canonical API host; runtime specs stay relative for local testing.
-spec.servers = [{ url: 'https://api.webdock.dev/api/mail/v1' }];
+spec.servers = [{ url: 'https://api.spitzli.cloud/api/mail/v1' }];
 const titles: Record<string, string> = {
   emails_list: 'List emails', emails_send: 'Send an email',
   emails_batch: 'Send a batch', emails_get: 'Retrieve an email',

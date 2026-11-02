@@ -1,9 +1,9 @@
 ---
 title: "Website integration"
-description: "Connect an independent CMS to Webdock without exposing administrative credentials."
+description: "Connect an independent CMS to Spitzli Cloud without exposing administrative credentials."
 ---
 
-A Webdock website keeps its own Payload schema and runtime. Central identity and Console provide access to that site through configured SSO and protected server-side bridges.
+A Spitzli Cloud website keeps its own Payload schema and runtime. Central identity and Console provide access to that site through configured SSO and protected server-side bridges.
 
 ## Identity and inventory
 
@@ -23,4 +23,6 @@ Keep draft, preview and published state separate. Do not publish unsaved preview
 
 <Warning>Administrative bridge secrets belong only in the server environment. Never put them in browser code, mobile clients, public examples or content fields.</Warning>
 
-Source guides: [Payload SSO](https://github.com/spitzli/webdock/tree/main/packages/payload-sso) and [CMS UI](https://github.com/spitzli/webdock/tree/main/packages/cms-ui).
+Source guides: [Payload SSO](https://github.com/spitzli/cloud/tree/main/packages/payload-sso) and [CMS UI](https://github.com/spitzli/cloud/tree/main/packages/cms-ui).
+
+Managed CMS releases independently from [cloud-plugin-managed-cms](https://github.com/spitzli/cloud-plugin-managed-cms), with separate plugin and CMS-instance images. Its published protocol-v1 artifacts do not establish registry admission or customer activation. See [release status](/developers/plugin-releases).

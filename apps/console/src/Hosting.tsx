@@ -206,6 +206,7 @@ export function HostingProject({ projectID }: { projectID: string }) {
           </Link>
           <h1 className={ui.pageTitle}>{project.data.name}</h1>
           <p className={ui.pageLead}>Applications in this project.</p>
+          <Link className="mt-2 inline-block text-sm underline" to="/hosting/projects/$projectID/builds" params={{projectID}}>Git builds and releases</Link>
         </div>
         <button
           className={ui.button()}
@@ -229,6 +230,7 @@ export function HostingProject({ projectID }: { projectID: string }) {
             <HostingCreate
               projectID={projectID}
               subscriptionRevision={apps.data.subscriptionRevision}
+              publicSitePolicy={project.data.publicSitePolicy}
             />
           ) : null}
           <HostingSearch

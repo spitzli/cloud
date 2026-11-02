@@ -14,7 +14,9 @@ function usable(who) {
   if (who.member !== 'owner') return [];
   return state.mode === 'everyone' || (state.mode === 'selected' && state.customers.includes('101')) ? ['create-notes'] : [];
 }
-async function open(browser, label) {
+async function open(browser, label, secretCase = false) {
+  const viewManifest = structuredClone(manifest);
+  if (secretCase) viewManifest.actions.find(a => a.name === "notes.create").input.properties.api_key = { type: "string", maxLength: 2048 };
   const who = people[label];
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await context.newPage();
@@ -27,10 +29,11 @@ async function open(browser, label) {
   await page.route(path('/api/console/tenants'), json([{ id: '101', name: 'Demo customer', status: 'active', role: who.member ?? null }]));
   await page.route(path('/api/console/tenant/101/projects'), json([{ id: '201', name: 'Demo project', status: 'active' }]));
   await page.route(path('/api/console/project/201'), json({ id: '201', name: 'Demo project', customer: { id: '101', name: 'Demo customer' }, role: who.role === 'operator' ? 'operator' : who.member }));
-  await page.route(path('/api/console/plugins'), (route) => route.fulfill({ json: [{ state: 'enabled', runtime: 'ready', manifest, generation: 1, manifestSha256: 'a'.repeat(64), launchLinks: [], features: usable(who), resources: state.resources }] }));
+  await page.route(path('/api/console/plugins'), (route) => route.fulfill({ json: [{ state: 'enabled', runtime: 'ready', manifest: viewManifest, generation: 1, manifestSha256: 'a'.repeat(64), launchLinks: [], features: usable(who), resources: state.resources }] }));
   await page.route(path('/api/console/plugins/invoke'), (route) => {
     const body = route.request().postDataJSON();
     if (body.action === 'notes.create') {
+      if (secretCase) { assert.equal(body.input.api_key, 'owned-test-key'); return route.fulfill({ status: 503, json: { error: { message: 'Owned failure' } } }); }
       if (!usable(who).length) return route.fulfill({ status: 403, json: { error: 'permission_denied' } });
       const id = `0000000${state.resources.length + 1}-0000-4000-8000-000000000000`;
       state.resources.push({ id, offering: 'note', name: body.input.name, createdVia: who.role === 'operator' ? 'operator' : 'self-service' });
@@ -119,6 +122,24 @@ try {
   assert.equal(await session.page.getByText('Add', { exact: true }).count(), 0);
   await session.page.setViewportSize({ width: 390, height: 844 });
   assert.ok(await session.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'no horizontal scroll at phone width');
+  errors.push(...session.errors);
+  await session.context.close();
+
+  // API credentials never appear as plain text or remain in a failed create form.
+  session = await open(browser, 'owner', true);
+  session.page.setDefaultTimeout(5000);
+  await session.page.goto(previewOrigin + '/workspaces/101/projects/201');
+  await session.page.getByText('Add', { exact: true }).click();
+  await session.page.getByRole('button', { name: 'Create notes' }).click();
+  const credential = session.page.getByLabel('Api key', { exact: true });
+  assert.equal(await credential.getAttribute('type'), 'password');
+  assert.equal(await credential.getAttribute('autocomplete'), 'new-password');
+  await session.page.getByRole('textbox', { name: 'Note name', exact: true }).fill('Retained draft');
+  await credential.fill('owned-test-key');
+  await session.page.getByRole('button', { name: 'Create', exact: true }).click();
+  await session.page.getByRole('alert').waitFor();
+  assert.equal(await credential.inputValue(), '');
+  assert.equal(await session.page.getByRole('textbox', { name: 'Note name', exact: true }).inputValue(), 'Retained draft');
   errors.push(...session.errors);
   await session.context.close();
 

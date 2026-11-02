@@ -9,6 +9,12 @@ import {
   appDemand,
   resolveAppSpec,
 } from "./index";
+test("probe Host is optional and accepts only canonical HTTP authorities",()=>{
+ const base={template:'custom',image:'registry.example/app@sha256:'+'a'.repeat(64),args:[],port:3130,healthPath:'/readyz',cpuMillicores:100,memoryBytes:67108864,ephemeralBytes:67108864,replicas:1};
+ assert.equal('healthHost' in resolveAppSpec(base),false);
+ for(const healthHost of ['api.example.test','api.example.test:3130'])assert.equal(resolveAppSpec({...base,healthHost}).healthHost,healthHost);
+ for(const healthHost of ['', 'API.test','user@api.test','api.test/path','api.test\r\nX-Test: yes','api.test:0','api.test:65536','api.test:03130','api.test.','*.api.test'])assert.throws(()=>resolveAppSpec({...base,healthHost}));
+});
 test("hosting is denied by default and unlimited is explicit", () => {
   assert.equal(normalizeHostingAllowances(undefined).apps, 0);
   assert.equal(normalizeHostingAllowances({ apps: null }).apps, null);

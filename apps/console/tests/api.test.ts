@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   ApiClient,
+  ApiError,
   runtimeConfigSchema,
   sessionSchema,
   recordSchema,
@@ -12,6 +13,11 @@ const config = {
   authOrigin: "https://auth.example",
   enabledFeatures: [],
 };
+await test("rate limits tell people to wait without exposing the server response", async () => {
+  const api = new ApiClient(config, () => Promise.resolve(new Response("internal limiter details", { status: 429 })));
+  await assert.rejects(api.get("/api/console/waitlist", sessionSchema), error =>
+    error instanceof ApiError && error.status === 429 && error.message === "Too many requests. Please wait before trying again.");
+});
 await test("runtime configuration rejects credentials and non-origin paths", () => {
   assert.deepEqual(runtimeConfigSchema.parse(config), config);
   for (const apiOrigin of [
@@ -20,6 +26,13 @@ await test("runtime configuration rejects credentials and non-origin paths", () 
     "javascript:alert(1)",
   ])
     assert.throws(() => runtimeConfigSchema.parse({ ...config, apiOrigin }));
+});
+await test("runtime configuration carries explicit database order retirement without disabling database access", () => {
+  for (const databaseOrderingEnabled of [false, true]) {
+    const value = { ...config, enabledFeatures: ["databases"], databaseOrderingEnabled };
+    assert.deepEqual(runtimeConfigSchema.parse(value), value);
+  }
+  assert.throws(() => runtimeConfigSchema.parse({ ...config, databaseOrderingEnabled: "false" }));
 });
 await test("registry direct envelope and session data envelope remain distinct", async () => {
   const calls: [string, RequestInit | undefined][] = [];

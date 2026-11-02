@@ -3,13 +3,13 @@ title: "Managed Apps"
 description: "Operate a dedicated application while configuring its features in the application's own administration."
 ---
 
-Managed Apps operates dedicated applications assigned to a Webdock project. **Tabularium is an app in Managed Apps**, not a separate registry-management plugin. Each customer gets their own Tabularium instance and manages its registry through that instance.
+Managed Apps operates dedicated applications assigned to a Spitzli Cloud project. **Tabularium is an app in Managed Apps**, not a separate registry-management plugin. Each customer gets their own Tabularium instance and manages its registry through that instance.
 
 <Note>
-The initial Managed Apps integration operates existing applications provisioned through Hosting. It does not yet provision a new instance, database or domain from the plugin. The host adapter and plugin must be installed together; catalog publication alone does not activate them. On 18 October 2026, the production host adapter, database policy and developer alpha were deployed together, and the existing Webdock Tabularium app was assigned to its existing project. Other projects still require an explicit installation grant and app binding.
+The initial Managed Apps integration operates existing applications provisioned through Hosting. It does not yet provision a new instance, database or domain from the plugin. The host adapter and plugin must be installed together; catalog publication alone does not activate them. On 18 October 2026, the production host adapter, database policy and developer alpha were deployed together, and the existing Spitzli Cloud Tabularium app was assigned to its existing project. Other projects still require an explicit installation grant and app binding.
 </Note>
 
-## Operate the app in Webdock
+## Operate the app in Spitzli Cloud
 
 - See the assigned application, deployment status and current operation.
 - Start, stop or restart the existing application through Hosting.
@@ -18,23 +18,13 @@ The initial Managed Apps integration operates existing applications provisioned 
 
 Stopping an application uses Hosting's existing lifecycle and retains its data. Start, stop and restart require current application and subscription revisions and a write-capable project session. The plugin cannot select another customer's project, pass arbitrary hosting commands or obtain database, cluster or registry credentials.
 
-## Production Console
+## Recorded protocol-v1 pilot
 
-The production Console shows the existing Tabularium app and its trusted app/Hosting links. The signed read action was verified with an authenticated operator session; the same app read from a different project was denied. No stop or restart was performed on the live registry during verification.
-
-![Production Console with the existing Tabularium app ready in Managed Apps](/images/managed-apps/managed-apps-production.png)
-
-## Panel preview
-
-These captures show a fictional Harbor project in the local UI fixture. Start and stop are simulated here; the images are not evidence of a production installation. The production Console supplies trusted app and Hosting links above the panel.
-
-![Managed Apps panel showing a dedicated Tabularium app in the running state](/images/managed-apps/managed-apps-running.png)
-
-![The same dedicated app shown as stopped after refreshing its status](/images/managed-apps/managed-apps-stopped.png)
+The October 2026 protocol-v1 pilot recorded the existing Tabularium app and its trusted app/Hosting links. The signed read action was verified with an authenticated operator session; the same app read from a different project was denied. No stop or restart was performed on the live registry during verification.
 
 ## Configure the registry in Tabularium
 
-Use the dedicated Tabularium administration for registry branding, kinds, manifest fields, submissions, providers and users. Webdock does not duplicate those screens or request a Tabularium administrator token for Managed Apps.
+Use the dedicated Tabularium administration for registry branding, kinds, manifest fields, submissions, providers and users. Spitzli Cloud does not duplicate those screens or request a Tabularium administrator token for Managed Apps.
 
 The operator binds each managed app to its actual project and verified HTTPS origin. A plugin installation does not grant access to unassigned apps. Existing registry data and settings stay in place when an already deployed Tabularium app is connected.
 
@@ -58,7 +48,7 @@ Mutations carry `app_id`, `revision` and `subscription_revision`; the host deriv
 
 ## Withdrawn registry-admin alpha
 
-The former `managed-registry` version `0.1.0-alpha.1` is withdrawn and must not be installed. It mirrored registry administration into Webdock, which is not the Managed Apps product boundary. Its source and immutable release artifacts are retained for traceability; it was not installed in production.
+The former `managed-registry` version `0.1.0-alpha.1` is withdrawn and must not be installed. It mirrored registry administration into Spitzli Cloud, which is not the Managed Apps product boundary. Its source and immutable release artifacts are retained for traceability; it was not installed in production.
 
 ## Source and release
 
@@ -66,4 +56,6 @@ The former `managed-registry` version `0.1.0-alpha.1` is withdrawn and must not 
 - [Developer alpha 0.1.0-alpha.1](https://github.com/spitzli/webdock-extension-managed-apps/releases/tag/v0.1.0-alpha.1)
 - [Registry entry](https://registry.webdock.dev/plugins/managed-apps)
 
-The public container can be pulled anonymously by the manifest's immutable digest. The release descriptor matches the registry's signed manifest. Production activation additionally verified the private runtime's TLS certificate, plugin identity, version and generation. The public plugin endpoint exposes only the UI; application actions pass through the authenticated Webdock host.
+This is an established protocol-v1 release. Its signed manifest and immutable image remain preserved; newer native releases do not replace its transport or binding automatically. Current availability depends on the installed host adapter, runtime and project binding. See [release boundaries](/developers/plugin-releases).
+
+The current host boundary is implemented in native app host services (`crates/plugin-host`). A historical pilot is not current acceptance for every customer installation.

@@ -1,0 +1,58 @@
+{
+  "seoTitle": "Webdock — Project previews & client websites by Spitzli",
+  "seoDescription": "Your project. Well docked. A home for project previews and client websites by Spitzli Development — on a Webdock subdomain or your own domain.",
+  "contactEmail": "dominik@spitzli.dev",
+  "heroTitle": "Your project.\nWell docked.",
+  "heroDescription": "From the first preview to the finished website. Webdock gives your project a place to call home.",
+  "heroButton": "Let’s get you docked",
+  "heroNote": "Your subdomain. Or your own domain.",
+  "conceptTitle": "From “take a look”\nto “we’re live”.",
+  "conceptDescription": "Some projects need a link to get started. Others need a lasting home. Webdock is here for both.",
+  "useCases": [
+    {
+      "title": "Share it before you ship it.",
+      "description": "A dedicated address for your work in progress. Review it together, share feedback and make the next version better."
+    },
+    {
+      "title": "Your website. Your place.",
+      "description": "No domain of your own? Your project can live on a Webdock subdomain. Easy to share, easy to find again."
+    },
+    {
+      "title": "Ready for what comes next.",
+      "description": "When you’re ready for your own domain, we’ll work out the connection. The setup grows with your project."
+    }
+  ],
+  "aboutTitle": "A home online.\nA human on your side.",
+  "aboutDescription": "Webdock is run by Dominik at Spitzli Development. From the first idea to deployment, you work directly with the person building your project.",
+  "faqTitle": "Good questions.\nStraight answers.",
+  "faqs": [
+    {
+      "question": "What is Webdock?",
+      "answer": "Webdock is the project home of Spitzli Development. It gives project previews and client websites their own address under webdock.dev. Development and personal support are handled by Spitzli."
+    },
+    {
+      "question": "Do I need my own domain?",
+      "answer": "No. Your project can live on a subdomain such as your-project.webdock.dev. If you would like to use your own domain, we will work out the right setup for your project."
+    },
+    {
+      "question": "How do I get a Webdock subdomain?",
+      "answer": "Contact Dominik at Spitzli Development with your project idea. We will agree on the name, technical setup and deployment together. Automated registration is not available at this stage."
+    },
+    {
+      "question": "Are project previews public?",
+      "answer": "That depends on how each project is configured. A subdomain alone does not restrict access. If a preview needs to stay private, access protection is arranged separately."
+    },
+    {
+      "question": "Does every project run on Vercel?",
+      "answer": "Most projects currently run on Vercel, but Webdock is not tied to a single hosting provider. The technical environment is chosen to suit each project."
+    },
+    {
+      "question": "How do I access Webdock Studio?",
+      "answer": "Webdock Studio brings websites, content, appointments and design together. Access is by invitation."
+    }
+  ],
+  "outlookTitle": "Your projects. One workspace.",
+  "outlookDescription": "Webdock Studio brings websites, content, appointments and design together. Access is by invitation.",
+  "closingTitle": "There’s a place\nfor your next idea.",
+  "closingButton": "Let’s talk about it"
+}

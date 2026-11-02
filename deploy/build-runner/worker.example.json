@@ -1,0 +1,50 @@
+{
+  "enabled": false,
+  "controlURL": "https://controller.invalid/api/hosting/git/worker",
+  "credentialFile": "/etc/webdock-build/worker-token",
+  "kubeconfigFile": "/etc/webdock-build/build.kubeconfig",
+  "kubeContext": "dedicated-build",
+  "apiEndpoint": "https://10.83.0.1:6443",
+  "caSHA256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "buildClusterID": "1",
+  "runnerImage": "registry.invalid/webdock/runner@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "trustedProjects": [],
+  "stateRoot": "/var/lib/webdock-build/state",
+  "artifactRoot": "/var/lib/webdock-build/artifacts",
+  "stagingRoot": "/var/lib/webdock-build/staging",
+  "transferPolicyFile": "/etc/webdock-build/transfer-policy.json",
+  "stagingStorage": {
+    "storage": {
+      "endpoint": "https://staging.invalid",
+      "region": "eu-owned",
+      "bucket": "owned-build-staging",
+      "namespace": "webdock-builds",
+      "id": "owned-build-staging"
+    },
+    "credentialFile": "/etc/webdock-build/staging-credentials.json"
+  },
+  "trustedPilotOnly": false,
+  "storage": {
+    "target": {
+      "clusterID": "1",
+      "node": "qualified-build-node.invalid",
+      "poolID": "00000000-0000-0000-0000-000000000000"
+    },
+    "signingKeyFile": "/etc/webdock-build/storage-signing-key",
+    "requestsNamespace": "webdock-build-storage-requests",
+    "receiptsNamespace": "webdock-build-storage-receipts"
+  },
+  "uploadGateway": {
+    "root": "/var/lib/webdock-build-upload",
+    "filesystemCeilingBytes": 2147483648,
+    "origin": "https://build-upload.invalid",
+    "listen": "127.0.0.1:3188",
+    "timeoutSeconds": 120
+  },
+  "ownedTokenFile": "/var/lib/webdock-build-controller/identity/token",
+  "identity": {
+    "serviceAccountUID": "replace-with-recorded-controller-service-account-uid",
+    "revocationSecretUID": "replace-with-recorded-controller-revocation-secret-uid",
+    "audience": "https://kubernetes.default.svc.cluster.local"
+  }
+}

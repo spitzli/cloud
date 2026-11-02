@@ -39,6 +39,16 @@ pub fn command_document() -> Value {
         serde_json::from_str(include_str!("legacy-command.schema.json")).unwrap();
     fn extend(value: &mut Value) {
         if let Some(map) = value.as_object_mut() {
+            if let Some(properties) = map.get_mut("properties").and_then(Value::as_object_mut)
+                && properties.contains_key("healthPath")
+            {
+                let schema: Value =
+                    serde_json::from_str(include_str!("app-spec.schema.json")).unwrap();
+                properties.insert(
+                    "healthHost".into(),
+                    schema["properties"]["healthHost"].clone(),
+                );
+            }
             if map.get("enum") == Some(&json!(["k3s", "vercel"])) {
                 map.insert("enum".into(), json!(["k3s", "vercel", "docker"]));
             }
@@ -157,6 +167,7 @@ pub fn parse_command(mut value: Value) -> Result<Value> {
         value["confirmSharedImages"] = json!(false);
     }
     if let Some(spec) = value.get("spec") {
+        validate_health_host(spec)?;
         if spec["args"].as_array().is_some_and(|args| {
             args.iter().any(|a| {
                 a.as_str()
@@ -192,6 +203,7 @@ pub fn resolve_spec(mut value: Value) -> Result<Value> {
     {
         return Err(error(400, "Invalid application specification."));
     }
+    validate_health_host(&value)?;
     if let Some(volume) = value.get("volumeBytes") {
         let volume = amount(volume)?;
         if (volume > 0 && volume < 67108864) || (volume > 0 && amount(&value["replicas"])? > 1) {
@@ -214,6 +226,15 @@ pub fn resolve_spec(mut value: Value) -> Result<Value> {
         value["healthPath"] = json!("/ping");
     }
     Ok(value)
+}
+fn validate_health_host(value: &Value) -> Result<()> {
+    if value.get("healthHost").is_some_and(|host| {
+        host.as_str()
+            .is_none_or(|host| !webdock_supervisor::valid_health_host(host))
+    }) {
+        return Err(error(400, "Invalid probe Host authority."));
+    }
+    Ok(())
 }
 pub fn app_demand(spec: &Value, deleted: bool) -> Result<Value> {
     let replicas = if deleted {

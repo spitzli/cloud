@@ -7,8 +7,11 @@ struct Arguments {
     #[arg(long)]
     config: PathBuf,
     /// Serve a separate PostgreSQL installation pool (UID/GID 26).
-    #[arg(long)]
+    #[arg(long, conflicts_with = "builds")]
     database: bool,
+    /// Dedicated build pool (UID/GID 1000); legacy unsigned RPC is disabled.
+    #[arg(long, conflicts_with = "recovery_trust")]
+    builds: bool,
     /// Root-installed public signer/profile trust for isolated recovery, disabled by default.
     #[arg(long)]
     recovery_trust: Option<PathBuf>,
@@ -19,6 +22,13 @@ struct Arguments {
 enum Action {
     Initialize,
     Restore,
+    /// Verify a root-installed public trust and short-lived signed attempt request.
+    BuildApply {
+        #[arg(long)]
+        request: PathBuf,
+        #[arg(long)]
+        trust: PathBuf,
+    },
     Serve {
         #[arg(long)]
         socket: PathBuf,
@@ -33,6 +43,8 @@ async fn main() -> std::process::ExitCode {
     let arguments = Arguments::parse();
     let kind = if arguments.database {
         StorageKind::Database
+    } else if arguments.builds {
+        StorageKind::Builds
     } else {
         StorageKind::Apps
     };
@@ -41,6 +53,25 @@ async fn main() -> std::process::ExitCode {
             .and_then(|()| StoragePool::open_kind(&arguments.config, kind).map(|_| ())),
         Action::Restore => {
             StoragePool::open_kind(&arguments.config, kind).and_then(|pool| pool.restore())
+        }
+        Action::BuildApply { request, trust } => {
+            if kind != StorageKind::Builds {
+                Err(webdock_supervisor::ExecutionError::Denied)
+            } else {
+                StoragePool::open_kind(&arguments.config, kind).and_then(|mut pool| {
+                    let guard = webdock_agent::storage::StorageGuard::new(
+                        chrono::Utc::now() + chrono::Duration::seconds(120),
+                        std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),
+                    );
+                    let result = pool.apply_build_files(&request, &trust, &guard)?;
+                    println!(
+                        "{}",
+                        serde_json::to_string(&result)
+                            .map_err(|_| webdock_supervisor::ExecutionError::Runtime)?
+                    );
+                    Ok(())
+                })
+            }
         }
         Action::Serve { socket } => {
             let mut terminate =

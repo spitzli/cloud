@@ -1,0 +1,88 @@
+{
+  "version": "v2.11.7 h1:yj0Y4fYZGPkSvibBJ1sTWE33xC0fxztVyXEW5iIdUT4=",
+  "binarySHA256": "678ade3bfc088749c81a681adc603333ee0bb023b6a6cfe3c0f58bef8ff854e9",
+  "officialArchiveSHA256": "727b91701a392de6ebc5027509f548bf39979e5216340d0faed8fa5e69c84f8b",
+  "nonrootUID": 1000,
+  "bindScope": "loopback only",
+  "runtime": {
+    "kind": "pinned official Caddy binary mounted into cached local qualification-only Alpine base",
+    "uid": 10001,
+    "readOnlyRootFilesystem": true,
+    "capabilitiesDropped": [
+      "ALL"
+    ],
+    "noNewPrivileges": true,
+    "memoryBytes": 134217728,
+    "pidsLimit": 64,
+    "temporaryFilesystemBytes": 8388608,
+    "baseImageID": "sha256:74d077c5981eeaaf88688deca6dfece7e21d3e1627264d1c2183750380683833",
+    "network": "host network for local loopback-only test, not production Pod networking"
+  },
+  "CaddyProfileSHA256": "6f2c0c6d88774467217ad115a1cdf13a5afd10a0b70363d6d7ba8b6e0c4eeb4d",
+  "checks": [
+    "strict-peer-forwarded-rejection",
+    "canonical-console-bootstrap-and-forwarded-sanitization",
+    "canonical-studio-bootstrap-and-forwarded-sanitization",
+    "canonical-account-bootstrap-and-forwarded-sanitization",
+    "canonical-workspace-bootstrap-and-forwarded-sanitization",
+    "raw-query-binary-body-cookie-authorization-origin-cursor-preserved",
+    "chunked-body-preserved-with-valid-new-hop-framing",
+    "foreign-origin-remains-denied",
+    "callback-location-status-and-two-set-cookies-preserved",
+    "unknown-prefix-private-worker-and-admin-paths-never-forwarded",
+    "raw-traversal-encoded-separators-and-double-encoding-denied-before-normalization",
+    "technical-gateway-host-is-fixed",
+    "sse-first-event-flushed-before-second-event"
+  ],
+  "sseFirstEventSeconds": 0.0408,
+  "sseSecondEventSeconds": 0.7504,
+  "cleanup": "exact owned process terminated, controlled peer closed, temporary config/log/state removed",
+  "limits": [
+    "actual Core/Ingress/Vercel was not deployed/contacted",
+    "official Caddy container image digest and RUN admission/networking remain unqualified; read-only constraints were tested only when the explicit local container option is selected",
+    "Vercel external proxy/body/SSE/cache behavior remains a separate owned preview gate"
+  ],
+  "verifiedAt": "2026-10-30T13:32:24.333243+00:00",
+  "applied": false,
+  "runtimeImagePin": "operator required; official Caddy image not cached/pulled/qualified here",
+  "scope": {
+    "actualCoreChangedOrDeployed": false,
+    "CoreHostCORSAuthRelaxed": false,
+    "RUNOrBUILDHostTouched": false,
+    "VercelProjectOrDNSTouched": false,
+    "sourceJobsOrRelayChanged": false,
+    "newPaidResources": false
+  },
+  "offlineTests": {
+    "command": "python3 -B -m unittest discover -s deploy/backend-gateway/tests -v",
+    "passed": 5,
+    "failed": 0,
+    "defaultDisabledRenders": {
+      "enabled": false,
+      "resources": []
+    }
+  },
+  "primarySources": [
+    "https://github.com/caddyserver/caddy/releases/tag/v2.11.7",
+    "https://caddyserver.com/docs/caddyfile/directives/reverse_proxy",
+    "https://caddyserver.com/docs/caddyfile/directives/uri",
+    "https://vercel.com/docs/routing/rewrites",
+    "https://vercel.com/docs/limits",
+    "https://vercel.com/docs/build-output-api/primitives"
+  ],
+  "staticDiscoveryRecommendation": {
+    "status": "documented bounded direction only; no authoritative Core JSON supplied/exported",
+    "source": "actual Core authoritative public discovery/metadata JSON with issuer/endpoints validated against canonical configuration",
+    "liveJwksPointer": "<gatewayOrigin>/__account/api/auth/jwks",
+    "privateOrStaticKeysCopied": false,
+    "protectedResourceProducer": "challenge URL present but no matching Core JSON route found; do not invent metadata",
+    "requiresOwnedVercelPreviewProof": true
+  },
+  "sourceSHA256": {
+    "deploy/backend-gateway/render.py": "0eba9cea6fe7d4241ca925537b0cc855cbae60a05942f602e754aed6560e9491",
+    "deploy/backend-gateway/qualify.py": "04e18e36f422d18127ba0a6c92ada697a1ad68e918ed08e1dbf38a89560e9a6d",
+    "deploy/backend-gateway/profile.example.json": "cf1c9dce2c600da05adcc539743f1de2dbe8fe7d9003e2c00108852d2fa9148d",
+    "deploy/backend-gateway/tests/test_profile.py": "6a6bda241a10d5870a6e0a9ced6d2279c6f9691c83c2515b9b9888af00a92089",
+    "docs/operations/backend-vercel-gateway.md": "415cc1fa26ca90de91ac054ccd29e85ecb0f09656bbde9a6be66c1372b5f951b"
+  }
+}

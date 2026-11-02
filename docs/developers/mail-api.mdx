@@ -3,13 +3,13 @@ title: "Mail API behavior"
 description: "Understand the generated reference, credentials, limits and safe retries."
 ---
 
-The Mail API base is `https://api.webdock.dev/api/mail/v1`. The **Mail API reference** tab is generated from the same OpenAPI builder as the application, covering messages, batches, domains, keys, webhooks, suppressions, logs and analytics.
+The Mail API base is `https://api.spitzli.cloud/api/mail/v1`. The **Mail API reference** tab preserves the existing TypeScript OpenAPI contract for messages, batches, domains, keys, webhooks, suppressions, logs and analytics. The native Mail runtime and each enabled connection have separate acceptance gates.
 
-<Info>The reference documents the implementation contract. Individual connections and production workers have separate enablement gates. The public documentation does not send authenticated requests from an embedded playground.</Info>
+<Info>The reference is a retained compatibility contract; generation alone does not establish native endpoint parity or production enablement. The public documentation does not send authenticated requests from an embedded playground.</Info>
 
 ## Authorization
 
-Send `Authorization: Bearer YOUR_KEY`. Use a Webdock Mail key, not a provider key or Console cookie. Sending endpoints accept `sending_access`; reading or managing other resources requires `full_access`, within the key's resource restrictions.
+Send `Authorization: Bearer YOUR_KEY`. Use a Spitzli Cloud Mail key, not a provider key or Console cookie. Sending endpoints accept `sending_access`; reading or managing other resources requires `full_access`, within the key's resource restrictions.
 
 ## Request limits
 
@@ -38,4 +38,6 @@ The currently verified Turbo transport may provide HTML without a separate text 
 
 ## Contract source
 
-The reference snapshot is exported from [the Mail OpenAPI builder](https://github.com/spitzli/webdock/blob/main/modules/mail/src/server/product-openapi.ts). Download the [OpenAPI JSON](https://raw.githubusercontent.com/spitzli/webdock/main/docs/openapi/mail.json) for client tooling. Refresh it whenever the source contract changes; see [documentation maintenance](/developers/documentation).
+The reference snapshot is exported from the Mail OpenAPI builder (`legacy/control-plane/src/modules/mail/product/openapi.ts`). Download the [OpenAPI JSON](https://raw.githubusercontent.com/spitzli/cloud/main/docs/openapi/mail.json) for client tooling. Refresh it whenever the source contract changes; see [documentation maintenance](/developers/documentation).
+
+The [export script](https://github.com/spitzli/cloud/blob/main/docs/scripts/export-mail-openapi.ts) deliberately reads that retained contract. Check the native Mail implementation (`crates/mail`) and the enabled connection before relying on endpoint availability.

@@ -32,7 +32,7 @@ function usage() {
     history: [0, 1, 2, 4, 5].map((h) => ({ hour: new Date(hour - (5 - h) * 3600_000).toISOString(), cpu: 20 + h * 10, memory: 300 + h * 40 })),
   };
 }
-async function open(browser, label) {
+async function open(browser, label, locale = 'en') {
   const who = people[label];
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await context.newPage();
@@ -40,7 +40,7 @@ async function open(browser, label) {
   page.on('pageerror', (error) => errors.push(error.message));
   const json = (body) => (route) => route.fulfill({ json: typeof body === 'function' ? body() : body });
   const path = (p) => (url) => url.pathname === p;
-  await page.route(path('/console-config.json'), json({ apiOrigin: previewOrigin, authOrigin: previewOrigin, enabledFeatures: [] }));
+  await page.route(path('/console-config.json'), json({ apiOrigin: previewOrigin, authOrigin: previewOrigin, enabledFeatures: [], localePreference: locale }));
   await page.route(path('/v1/auth/session'), json({ data: { user: { id: who.id, name: who.name, email: `${label}@example.test`, role: who.role, emailVerified: true }, session: { id: `s-${label}`, userId: who.id, expiresAt: '2026-12-01T10:00:00Z' } } }));
   await page.route(path('/api/console/tenants'), json([{ id: '101', name: 'Demo customer', status: 'active', role: who.member ?? null }]));
   await page.route(path('/api/console/tenant/101/projects'), json([{ id: '201', name: 'Demo project', status: 'active' }]));
@@ -109,6 +109,29 @@ try {
   assert.equal(await session.page.locator('svg[aria-label="Memory used over the last 7 days"] path').count(), 2, 'a gap in the samples splits the line');
   await session.page.setViewportSize({ width: 390, height: 844 });
   assert.ok(await session.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'no horizontal scroll at phone width');
+  errors.push(...session.errors);
+  await session.context.close();
+
+  // No telemetry is not evidence that a workspace has no running services.
+  session = await open(browser, 'owner');
+  await session.page.route(url => url.pathname === '/api/console/customers/101/usage', route => route.fulfill({ json: {
+    plan: null, overrides: {}, limits: {}, allocated: { projects: 1 }, meters, units: [], history: [],
+  } }));
+  await session.page.goto(previewOrigin + '/workspaces/101/usage');
+  await session.page.getByText('No workspace plan is assigned. Service-specific limits may still apply.').waitFor({ timeout: 1500 });
+  await session.page.getByText('No service usage has been reported yet.').waitFor();
+  assert.doesNotMatch(await session.page.locator('main').innerText(), /Nothing is limited|No services are running/);
+  errors.push(...session.errors);
+  await session.context.close();
+
+  session = await open(browser, 'owner', 'de');
+  await session.page.route(url => url.pathname === '/api/console/customers/101/usage', route => route.fulfill({ json: {
+    plan: null, overrides: {}, limits: {}, allocated: {}, meters, units: [], history: [],
+  } }));
+  await session.page.goto(previewOrigin + '/workspaces/101/usage');
+  await session.page.getByText('Diesem Arbeitsbereich ist kein Tarif zugewiesen. Für einzelne Dienste können weiterhin Limits gelten.').waitFor();
+  await session.page.getByText('Es wurden noch keine Nutzungsdaten der Dienste gemeldet.').waitFor();
+  await session.page.getByText('Es wurden noch keine reservierten Ressourcen gemeldet.').waitFor();
   errors.push(...session.errors);
   await session.context.close();
 

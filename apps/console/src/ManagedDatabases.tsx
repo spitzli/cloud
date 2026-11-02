@@ -90,6 +90,7 @@ function ScopedManagedDatabases({
   scope,
 }: ManagedProps & { scope: string }) {
   const { t } = useI18n();
+  const newOrdersEnabled = useApi().config.databaseOrderingEnabled !== false;
   const call = useManagedCommand();
   const client = useQueryClient();
   const retireBackupResource = useRetireBackupResource();
@@ -157,7 +158,7 @@ function ScopedManagedDatabases({
     <section className="database-management mt-8 grid gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className={ui.sectionTitle}>{t("Managed databases")}</h2>
-        {canWrite ? (
+        {canWrite && newOrdersEnabled ? (
           <button
             className={ui.button(ordering ? "secondary" : "primary")}
             onClick={() => {
@@ -168,6 +169,13 @@ function ScopedManagedDatabases({
           </button>
         ) : null}
       </div>
+      {!newOrdersEnabled ? (
+        <p role="status" className={ui.notice}>
+          {t("New shared and self-hosted PostgreSQL orders are retired. For a new database, create a project in your own Neon account. Connect your Neon account in Connections. Existing databases remain available below.")}{" "}
+          <a href={`/workspaces/${customerID}/connections`}>{t("Open connections")}</a>{" · "}
+          <a href="https://console.neon.tech" target="_blank" rel="noopener noreferrer">{t("Open Neon Console")}</a>
+        </p>
+      ) : null}
       <label className={ui.cx(`${ui.field} max-w-[420px]`)}>
         {t("Project")}
         <select className={ui.input}
@@ -203,7 +211,7 @@ function ScopedManagedDatabases({
           )}
         </p>
       ) : null}
-      {ordering && canWrite && plans.data ? (
+      {ordering && canWrite && newOrdersEnabled && plans.data ? (
         <DatabaseOrder
           key={projectID}
           projectID={projectID}

@@ -1,36 +1,29 @@
 ---
-title: "Bring your own infrastructure"
-description: "Connect your own Kubernetes cluster, Vercel team or turboSMTP account to Webdock."
+title: "Bring your own accounts"
+description: "Connect Neon, turboSMTP, Vercel or an approved Kubernetes cluster."
 ---
 
-BYOK connects infrastructure or provider accounts you control to your Webdock workspace. Your provider continues to bill you directly. Webdock's permissions determine which resources it can inspect or manage; connecting an account does not transfer ownership to Webdock.
+Connect accounts and infrastructure you control to a Spitzli Cloud workspace. Your provider continues to bill you directly and apply its own quotas. The connection's permissions determine what Spitzli Cloud can inspect or manage.
 
 <Columns cols={2}>
-  <Card title="Kubernetes and k3s" icon="server" href="/guides/byok-kubernetes">Connect an existing cluster and manage permitted workloads.</Card>
-  <Card title="Vercel" icon="cloud" href="/guides/byok-vercel">Authorize a team and choose the projects available to Webdock.</Card>
-  <Card title="turboSMTP" icon="envelope" href="/guides/byok-mail">Use your own sending account with workspace-scoped Mail keys.</Card>
-  <Card title="Automate with MCP" icon="plug" href="/developers/byok">Discover BYOK tools, revision checks and recovery behavior.</Card>
+  <Card title="Neon" icon="database" href="/guides/byok-neon">Connect an API key and view authorized Neon projects.</Card>
+  <Card title="turboSMTP" icon="envelope" href="/guides/byok-mail">Connect your sending account and create separate Mail API keys.</Card>
+  <Card title="Vercel" icon="cloud" href="/guides/byok-vercel">Authorize a team and select projects where the integration is activated.</Card>
+  <Card title="Kubernetes and k3s" icon="server" href="/guides/byok-kubernetes">Enroll an approved existing cluster and manage permitted workloads.</Card>
 </Columns>
 
-## Permissions before connection
+## Choose an available connection
 
-A platform operator enables each provider separately in the customer's **Your infrastructure → Selfservice permissions** controls. All provider switches are disabled by default. Workspace owners and administrators can use enabled connections; they cannot grant themselves platform privileges.
+Neon uses the workspace's **Connections** page and requires an owner, administrator or authorized operator. It currently provides key management and read-only project inventory.
 
-| Control | What it allows |
-| --- | --- |
-| Own Kubernetes clusters | Register clusters within the configured maximum |
-| Allowed namespaces | Limit visible namespaced inventory and workload operations |
-| Manage existing applications | Permit the supported workload actions in allowed namespaces |
-| Own Vercel team | Connect a verified customer team and select projects |
-| Own turboSMTP account | Connect a customer sending account |
-| Maximum sender domains | Limit new registrations through Webdock; existing domains and provider sending limits remain separate |
+Turbo, Vercel and cluster flows depend on separate operator enablement and provider configuration. A documented integration is not a promise that it is activated for every workspace. Ask your operator to confirm the available flow if its controls are missing.
 
-Read-only customer preview cannot make these changes. A provider grant, workspace membership or hosting scope alone is insufficient: Webdock rechecks the current combination on each action.
+Workspace membership does not grant provider access by itself. Provider grants, service permissions, current role and resource scope are checked for each action. Read-only customer preview cannot change connections.
 
-## Connection lifecycle
+## Keep ownership and billing clear
 
-A registration record is not a working connection. Complete agent enrollment or provider authorization, then inspect the last verification and inventory timestamps. Refresh stale data before making changes.
+Connecting an account does not deploy an application, transfer ownership or allocate a platform free quota. Review provider charges, available capacity and workload regions separately.
 
-Disabling a permission blocks further use through Webdock. Disconnecting or revoking a connection does not delete provider resources. Keep provider-side access and backups under your control; revoke provider credentials separately when they should no longer work outside Webdock.
+Disconnecting generally removes Spitzli Cloud's access without deleting provider resources. Follow the provider-specific guide for retained history and credentials, and revoke keys or installations at the provider when access must end there too.
 
-<Note>BYOK does not provide a blanket availability, backup or data-residency guarantee. Supply location evidence for clusters and verify actual deployment regions. A provider's global management services remain distinct from its workload location.</Note>
+For supported cluster, Vercel and Mail automation, see [BYOK automation](/developers/byok). Neon Connections uses its own Console workflow.

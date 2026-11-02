@@ -83,6 +83,8 @@ pub enum PasswordAuthentication {
     Authenticated(IssuedSession),
 }
 pub struct IdentityService {
+    pub(crate) neon: Option<crate::NeonAuthClient>,
+    pub(crate) neon_gate: tokio::sync::OnceCell<bool>,
     pub(crate) db: DatabaseConnection,
     pub(crate) cookies: CookiePolicy,
     pub(crate) password_workers: Arc<Semaphore>,
@@ -95,6 +97,8 @@ pub struct IdentityService {
 impl IdentityService {
     pub fn new(db: DatabaseConnection, cookies: CookiePolicy) -> Self {
         Self {
+            neon: None,
+            neon_gate: tokio::sync::OnceCell::new(),
             db,
             cookies,
             password_workers: Arc::new(Semaphore::new(4)),
@@ -146,7 +150,11 @@ impl IdentityService {
             "SELECT u.id,u.name,u.email,u.role,u.\"emailVerified\",u.\"mustChangePassword\",coalesce(u.\"twoFactorEnabled\",false) AS \"twoFactorEnabled\",s.id AS session_id,s.\"expiresAt\",webdock_rls.identity_has_preview(u.id,s.id) AS preview,webdock_rls.identity_is_acting(u.id,s.id) AS acting,webdock_rls.identity_customer_scope(u.id,s.id) AS customer_scope FROM webdock_auth.\"user\" u JOIN webdock_auth.session s ON s.\"userId\"=u.id WHERE s.token=$1 AND s.\"expiresAt\">statement_timestamp() AND NOT coalesce(u.banned,false)", [token.into()])).await?;
         let principal = if let Some(row) = row {
             let p = principal(&row)?;
-            if externally_managed(&tx, &p.user_id).await? {
+            if externally_managed(&tx, &p.user_id).await?
+                || !self
+                    .provider_session_live(&tx, &p.user_id, &p.session_id)
+                    .await?
+            {
                 None
             } else {
                 Some(p)
@@ -177,7 +185,11 @@ impl IdentityService {
             "SELECT u.id,u.name,u.email,u.role,u.\"emailVerified\",u.\"mustChangePassword\",coalesce(u.\"twoFactorEnabled\",false) AS \"twoFactorEnabled\",s.id AS session_id,s.\"expiresAt\",webdock_rls.identity_has_preview(u.id,s.id) AS preview,webdock_rls.identity_is_acting(u.id,s.id) AS acting,webdock_rls.identity_customer_scope(u.id,s.id) AS customer_scope FROM webdock_auth.\"user\" u JOIN webdock_auth.session s ON s.\"userId\"=u.id WHERE u.id=$1 AND s.id=$2 AND s.\"expiresAt\">statement_timestamp() AND NOT coalesce(u.banned,false) FOR SHARE OF u,s",[subject.into(),session_id.into()])).await?;
         let Some(row) = row else { return Ok(None) };
         let current = principal(&row)?;
-        if externally_managed(tx, &current.user_id).await? {
+        if externally_managed(tx, &current.user_id).await?
+            || !self
+                .provider_session_live(tx, &current.user_id, &current.session_id)
+                .await?
+        {
             return Ok(None);
         }
         Ok(Some(current))
@@ -200,6 +212,11 @@ impl IdentityService {
         if rate.try_get::<i32>("", "count")? > 10 {
             return Err(IdentityError::RateLimited);
         }
+        if let Some(mapping) = self.neon_mapping_email(&email).await? {
+            return self
+                .authenticate_neon_password(&email, password, mapping)
+                .await;
+        }
         let rows = self.db.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,
             "SELECT a.password FROM webdock_auth.\"user\" u JOIN webdock_auth.account a ON a.\"userId\"=u.id AND a.\"providerId\"='credential' WHERE lower(u.email)=$1 LIMIT 2", [email.clone().into()])).await?;
         let hash = if rows.len() == 1 {
@@ -209,7 +226,7 @@ impl IdentityService {
         };
         // Equal-cost missing-account verification avoids a cheap account-existence oracle.
         let candidate = hash.clone().unwrap_or_else(|| "000102030405060708090a0b0c0d0e0f:c7877280641a617ec087f9365d3ad7facccc9681e2af94d0a148b29a67b413ab0e08c7f08f9bd6232c369f5bbd3eec03acc2a170c24fd179aecc67c282756d12".to_owned());
-        let password = password.to_owned();
+        let password_to_verify = password.to_owned();
         let permit = self
             .password_workers
             .clone()
@@ -218,7 +235,7 @@ impl IdentityService {
             .map_err(|_| IdentityError::Worker)?;
         let valid = tokio::task::spawn_blocking(move || {
             let _permit = permit;
-            verify_password(&password, &candidate)
+            verify_password(&password_to_verify, &candidate)
         })
         .await
         .map_err(|_| IdentityError::Worker)??;
@@ -228,7 +245,7 @@ impl IdentityService {
         let tx = self.db.begin().await?;
         // Recheck the credential under locks so reset/ban cannot race session issuance.
         let rows = tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,
-            "SELECT u.id,u.\"emailVerified\",u.\"mustChangePassword\",coalesce(u.\"twoFactorEnabled\",false) AS mfa,u.role FROM webdock_auth.\"user\" u JOIN webdock_auth.account a ON a.\"userId\"=u.id AND a.\"providerId\"='credential' WHERE lower(u.email)=$1 AND a.password=$2 AND NOT coalesce(u.banned,false) LIMIT 2 FOR SHARE OF u,a", [email.into(),hash.clone().unwrap().into()])).await?;
+            "SELECT u.id,u.\"emailVerified\",u.\"mustChangePassword\",coalesce(u.\"twoFactorEnabled\",false) AS mfa,u.role FROM webdock_auth.\"user\" u JOIN webdock_auth.account a ON a.\"userId\"=u.id AND a.\"providerId\"='credential' WHERE lower(u.email)=$1 AND a.password=$2 AND NOT coalesce(u.banned,false) LIMIT 2 FOR UPDATE OF u,a", [email.clone().into(),hash.clone().unwrap().into()])).await?;
         if rows.len() != 1 {
             return Ok(PasswordAuthentication::Invalid);
         }
@@ -250,6 +267,9 @@ impl IdentityService {
         }
         if ![Some("user"), Some("operator")].contains(&role.as_deref()) {
             return Ok(PasswordAuthentication::Invalid);
+        }
+        if self.neon_required(&tx).await? {
+            return self.enroll_neon_password(tx, &id, &email, password).await;
         }
         if mfa {
             let set_cookie = self
@@ -276,9 +296,35 @@ impl IdentityService {
         tx: DatabaseTransaction,
         id: &str,
     ) -> Result<IssuedSession> {
+        self.issue_session_with_source(tx, id, None).await
+    }
+    pub(crate) async fn issue_session_with_source(
+        &self,
+        tx: DatabaseTransaction,
+        id: &str,
+        source: Option<crate::neon::NeonSource>,
+    ) -> Result<IssuedSession> {
+        if source.is_none()
+            && (self.neon_mapping(&tx, id).await?.is_some() || self.neon_required(&tx).await?)
+        {
+            return Err(IdentityError::SecurityState);
+        }
+        if source.as_ref().is_some_and(|s| s.user != id) {
+            return Err(IdentityError::Unauthorized);
+        }
+        if let Some(source) = &source {
+            let required=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT coalesce(\"twoFactorEnabled\",false) AS required FROM webdock_auth.\"user\" WHERE id=$1",[id.into()])).await?.ok_or(IdentityError::Unauthorized)?.try_get::<bool>("","required")?;
+            if required && !source.mfa_verified {
+                return Err(IdentityError::SecurityState);
+            }
+        }
+        let session_id = self.allocate_id(&tx).await?;
         let token = hex::encode(random::<32>()?);
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,
-            "INSERT INTO webdock_auth.session(id,token,\"userId\",\"expiresAt\",\"updatedAt\") VALUES($3,$1,$2,statement_timestamp()+interval '8 hours',statement_timestamp())", [token.clone().into(), id.into(),self.allocate_id(&tx).await?.into()])).await?;
+            "INSERT INTO webdock_auth.session(id,token,\"userId\",\"expiresAt\",\"updatedAt\") VALUES($3,$1,$2,statement_timestamp()+interval '8 hours',statement_timestamp())", [token.clone().into(), id.into(),session_id.clone().into()])).await?;
+        if let Some(source) = &source {
+            self.store_neon_source(&tx, &session_id, source).await?;
+        }
         let set_cookie = self.cookies.header(&token, 28800)?;
         tx.commit().await?;
         let principal = self

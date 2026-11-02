@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useHostingCommand } from "./hosting-client";
+import { publicAddressViewSchema } from "@webdock/hosting-contracts";
 import { useState } from "react";
 import { z } from "zod";
 import { useApi, useSession } from "./context";
@@ -74,6 +76,14 @@ function Row({ customer, domain, writable }: { customer: string; domain: Domain;
     </li>
   );
 }
+function AssignedAddresses({id}:{id:string}) {
+  const call=useHostingCommand();
+  const query=useQuery({queryKey:["hosting","addresses",id],queryFn:({signal})=>call({action:"addresses.list",customerID:id,page:1,limit:50},z.object({docs:z.array(publicAddressViewSchema.extend({projectName:z.string(),appName:z.string()})),totalDocs:z.number()}),signal)});
+  if(query.isPending)return <Loading>Loading assigned addresses…</Loading>;
+  if(query.error)return <Failure error={query.error} retry={()=>void query.refetch()}/>;
+  if(!query.data.docs.length)return null;
+  return <section className="mb-6" aria-label="Assigned addresses"><h2 className={ui.sectionTitle}>Assigned addresses</h2><ul className={ui.cx(ui.card,"mt-3")}>{query.data.docs.map(address=><li key={address.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-outline px-6 py-4 first:border-t-0"><div className="min-w-0"><a className="break-all" href={address.url} target="_blank" rel="noopener noreferrer">{address.hostname}</a><p className="text-xs text-muted">{address.projectName} · {address.appName}</p></div><span className={ui.badge(address.state==="ready"?"success":"warning")}>{address.state==="ready"?"Ready":"Pending"}</span></li>)}</ul>{query.data.totalDocs>50?<p className="mt-2 text-xs text-muted">Open the project applications to see all assigned addresses.</p>:null}</section>;
+}
 /** A workspace's own domains: added, proven with a TXT record, then usable by its apps. */
 export function WorkspaceDomains({ id }: { id: string }) {
   const api = useApi();
@@ -102,6 +112,7 @@ export function WorkspaceDomains({ id }: { id: string }) {
           <p className={ui.pageLead}>Prove a domain is yours once, then use it and its subdomains for your apps. Certificates are issued automatically.</p>
         </div>
       </div>
+      {api.config.enabledFeatures.includes("hosting") ? <AssignedAddresses id={id}/>:null}
       {writable ? (
         <form
           className={ui.cx(ui.card, "mb-6")}
@@ -128,7 +139,7 @@ export function WorkspaceDomains({ id }: { id: string }) {
             {domains.data.map((d) => <Row key={d.id} customer={id} domain={d} writable={writable} />)}
           </ul>
         ) : (
-          <p className="text-sm text-muted">No domains yet. Apps answer on their own address until you add one.</p>
+          <p className="text-sm text-muted">No custom domains yet. Public apps can use an assigned address when public hosting is enabled.</p>
         )
       ) : null}
     </section>

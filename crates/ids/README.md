@@ -1,8 +1,8 @@
 # Private Webdock IDs
 
-`webdock-ids` is a non-published compatibility and policy wrapper around the local
-`maylily` library at `/home/newt/Projekte/Personal/maylily-rs`, consumed through a
-direct Cargo path dependency with its `parse` feature. Maylily performs all bit
+`webdock-ids` is a non-published compatibility and policy wrapper around the exact
+`maylily` library snapshot in `vendor/maylily`, consumed through a repository-relative
+Cargo path dependency with its `parse` feature. Maylily performs all bit
 packing and decoding through `Options::pack_at` and `Options::parse`. This wrapper
 retains explicit identities, bounded signed-64-bit output, decimal-string JSON,
 and durable checkpoint policy required by existing callers.
@@ -104,3 +104,31 @@ cluster crash-safety test; integration tests must verify the actual store.
 `bun crates/ids/tests/fixtures/packing.mjs --check` verifies the committed decimal
 fixtures against an independent JavaScript BigInt arithmetic oracle. Rust checks
 those same fixtures, including the `i64::MAX` boundary.
+
+## Portable dependency provenance
+
+The public upstream revision `ad61b82beedda46cf7006c331a3dac84499b53ff` contains
+only a README. The library previously consumed through the absolute local path
+was uncommitted: its manifest, MIT license, source and tests were untracked, and
+its README was modified. The vendor copy preserves those exact files without
+source or manifest edits; it does not claim an upstream release or Git source pin.
+`vendor/maylily/UPSTREAM.json` records the verified public repository aliases, this
+status and SHA-256 hashes for every copied file plus the complete snapshot. Keep
+the MIT notice with redistributed binaries as well as source distributions.
+
+The old ignored/excluded `crates/maylily` path is absent and remains untouched.
+The vendor retains its original standalone workspace manifest; `vendor/maylily`
+is explicitly excluded from automatic Webdock workspace membership. Root Cargo.lock does not encode a path dependency location, so
+changing this path does not require changing its existing locked versions.
+
+Verify provenance, all repository Cargo paths, locked metadata and an actual
+locked IDs build from a fresh repository-contained source packaging context:
+
+```sh
+python3 -B -m unittest tools.tests.test_portable_maylily
+cargo test --locked -p webdock-ids
+```
+
+For an upstream update, review and record new source hashes explicitly. Do not
+replace this snapshot with the README-only Git revision or recapture local edits
+silently. No ID layout, generator API or durable checkpoint policy changes here.

@@ -1,0 +1,62 @@
+name: Blacksmith maintainer qualification
+
+# First actual backend probe; normal source/release gates remain closed until reviewed.
+on:
+  push:
+    branches:
+      - ci/blacksmith-qualification
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: blacksmith-maintainer-qualification
+  cancel-in-progress: false
+jobs:
+  qualification:
+    if: github.repository == 'spitzli/cloud' && vars.WEBDOCK_BLACKSMITH_REGION != '' && ((github.event_name == 'push' && github.ref == 'refs/heads/ci/blacksmith-qualification') || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/ci/blacksmith-qualification')))
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 15
+    env:
+      WEBDOCK_OCI_BACKEND: blacksmith-buildx
+      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+    steps:
+      - name: Require reviewed Blacksmith execution
+        shell: bash
+        env:
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+        run: |
+          set -euo pipefail
+          case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac
+          test "$BLACKSMITH_REGION" = "$QUALIFIED_BLACKSMITH_REGION"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Reject unexpected existing BuildKit before provider setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e buildkitd.toml
+          python3 tools/plugin-release/build_oci.py --before-blacksmith-setup
+      - name: Set up the managed Blacksmith builder
+        uses: useblacksmith/setup-docker-builder@19215110ab936351210feebdfa5b440b4493e184 # reviewed v2
+        with:
+          cache-key: maintainer-qualification-probe
+          nofallback: true
+          buildx-version: v0.23.0
+          platforms: linux/amd64
+      - name: Verify provider builder and keep generated configuration outside source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/plugin-release/build_oci.py --assert-blacksmith-builder
+          mv -- buildkitd.toml "$RUNNER_TEMP/blacksmith-buildkitd.toml"
+      - name: Run pinned check target and verify a bounded OCI export without publishing
+        run: python3 tools/plugin-ci/qualify_blacksmith.py
+      - name: Retain public qualification metadata only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: blacksmith-maintainer-qualification-${{ github.sha }}
+          path: ${{ runner.temp }}/blacksmith-qualification.json
+          if-no-files-found: error
+          retention-days: 7

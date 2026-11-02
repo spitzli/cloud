@@ -6,6 +6,104 @@
       "properties": {
         "action": {
           "type": "string",
+          "const": "addresses.list"
+        },
+        "customerID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "sort": {
+          "type": "string",
+          "enum": [
+            "name",
+            "-name"
+          ]
+        },
+        "page": {
+          "default": 1,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "limit": {
+          "default": 20,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "search": {
+          "default": "",
+          "type": "string",
+          "maxLength": 160
+        }
+      },
+      "required": [
+        "action",
+        "customerID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "clusters.publicSites.configure"
+        },
+        "clusterID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "domain": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 189,
+          "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "tenantDailyLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "globalDailyLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "trustedCustomerIDs": {
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$"
+          }
+        }
+      },
+      "required": [
+        "action",
+        "clusterID",
+        "domain",
+        "enabled",
+        "policyRevision",
+        "tenantDailyLimit",
+        "globalDailyLimit",
+        "trustedCustomerIDs"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
           "const": "clusters.activate"
         },
         "clusterID": {
@@ -189,6 +287,18 @@
           "type": "string",
           "const": "apps.prepare"
         },
+        "publicAddress": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 63,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+            }
+          },
+          "additionalProperties": false
+        },
         "projectID": {
           "type": "string",
           "pattern": "^[1-9][0-9]{0,18}$"
@@ -218,6 +328,11 @@
               "type": "string",
               "maxLength": 160,
               "pattern": "^\\/[a-zA-Z0-9/_-]*$"
+            },
+            "healthHost": {
+              "type": "string",
+              "maxLength": 259,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?::[1-9][0-9]{0,4})?$"
             },
             "cpuMillicores": {
               "type": "integer",
@@ -310,6 +425,18 @@
           "type": "string",
           "const": "apps.deploy"
         },
+        "publicAddress": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 63,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+            }
+          },
+          "additionalProperties": false
+        },
         "appID": {
           "type": "string",
           "pattern": "^[1-9][0-9]{0,18}$"
@@ -346,6 +473,11 @@
               "type": "string",
               "maxLength": 160,
               "pattern": "^\\/[a-zA-Z0-9/_-]*$"
+            },
+            "healthHost": {
+              "type": "string",
+              "maxLength": 259,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?::[1-9][0-9]{0,4})?$"
             },
             "cpuMillicores": {
               "type": "integer",
@@ -445,6 +577,18 @@
           "type": "string",
           "const": "apps.create"
         },
+        "publicAddress": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 63,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+            }
+          },
+          "additionalProperties": false
+        },
         "environment": {
           "maxItems": 32,
           "type": "array",
@@ -511,6 +655,11 @@
               "type": "string",
               "maxLength": 160,
               "pattern": "^\\/[a-zA-Z0-9/_-]*$"
+            },
+            "healthHost": {
+              "type": "string",
+              "maxLength": 259,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?::[1-9][0-9]{0,4})?$"
             },
             "cpuMillicores": {
               "type": "integer",
@@ -580,6 +729,18 @@
           "type": "string",
           "const": "apps.update"
         },
+        "publicAddress": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 63,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+            }
+          },
+          "additionalProperties": false
+        },
         "environment": {
           "maxItems": 32,
           "type": "array",
@@ -641,6 +802,11 @@
               "type": "string",
               "maxLength": 160,
               "pattern": "^\\/[a-zA-Z0-9/_-]*$"
+            },
+            "healthHost": {
+              "type": "string",
+              "maxLength": 259,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?::[1-9][0-9]{0,4})?$"
             },
             "cpuMillicores": {
               "type": "integer",

@@ -77,12 +77,14 @@ impl HostingService {
             replicas: amount(&spec["replicas"])? as u16,
             port: amount(&spec["port"])? as u16,
             health_path: Some(field(spec, "healthPath")?.into()),
+            health_host: spec["healthHost"].as_str().map(str::to_owned),
             volume: (volume > 0).then_some(RetainedVolume {
                 mount_path: "/data".into(),
                 size_bytes: Some(volume),
             }),
             hosting_binding: if legacy {
                 Some(HostingBinding {
+                    public_route: None,
                     cluster_id: webdock_core::id::RecordId::parse(&agent.cluster)
                         .map_err(|_| error(400, "Invalid cluster."))?,
                     quota: serde_json::from_value(claim["desired"]["quota"].clone())

@@ -39,12 +39,16 @@ const navItem = (selected: boolean) =>
 const destinations = [
   { collection: "projects", label: "Projects", icon: FolderSimpleIcon },
   { collection: "customers", label: "Customers", icon: BuildingsIcon },
+  { collection: "access-requests", label: "Waitlist", icon: EnvelopeIcon },
   {
     collection: "audit-events",
     label: "Audit trail",
     icon: ClockCounterClockwiseIcon,
   },
 ];
+const operatorDestination = (collection: string) => collection === "access-requests"
+  ? { to: "/access-requests" as const }
+  : { to: "/$collection" as const, params: { collection } };
 export function Shell() {
   const session = useSession();
   const navigationCopy = session.user.role === "operator"
@@ -198,8 +202,7 @@ export function Shell() {
           destinations.map(({ collection, label, icon: Icon }) => (
             <Link
               key={collection}
-              to="/$collection"
-              params={{ collection }}
+              {...operatorDestination(collection)}
               search={collection === "projects" ? { customer: customerId } : {}}
               className={navItem(pathname.startsWith(`/${collection}`))}
               aria-current={
@@ -291,9 +294,9 @@ export function Shell() {
         Skip to content
       </a>
       <header className="sticky top-0 z-10 col-span-full flex items-center gap-1 border-b border-outline bg-page px-3 md:gap-3 md:px-4">
-        <Link to="/" className="shrink-0 hover:no-underline" aria-label="Webdock Console home">
+        <Link to="/" className="shrink-0 hover:no-underline" aria-label="Spitzli Cloud Console home">
           <span className={ui.brandMark} aria-hidden>
-            w
+            <img src="/spitzli-logo.png" alt="" width={24} height={24} />
           </span>
         </Link>
         <nav className="flex min-w-0 items-center gap-0.5 text-sm text-muted [&>span:last-child]:font-medium [&>span:last-child]:text-foreground" aria-label="Breadcrumb">
@@ -307,7 +310,7 @@ export function Shell() {
             }}
             aria-label={navigationCopy.switch}
           >
-            <span className="grid size-[22px] shrink-0 place-items-center rounded-full bg-linear-135 from-[#ff9a5a] via-brand to-[#8f2d00] text-[11px] font-semibold text-white" aria-hidden>
+            <span className="grid size-[22px] shrink-0 place-items-center rounded-full bg-accent text-[11px] font-semibold text-on-accent" aria-hidden>
               {workspace.label.slice(0, 1).toUpperCase()}
             </span>
             <span className="min-w-0 truncate">{identity.label}</span>
@@ -519,10 +522,7 @@ function CommandPalette({ close }: { close: () => void }) {
                     key={item.collection}
                     className={paletteItem}
                     onClick={() => {
-                      void navigate({
-                        to: "/$collection",
-                        params: { collection: item.collection },
-                      });
+                      void navigate(operatorDestination(item.collection));
                       close();
                     }}
                   >

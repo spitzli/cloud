@@ -62,12 +62,12 @@ pub struct RecoveryProfileConfig {
 #[serde(tag = "kind", rename_all = "lowercase", deny_unknown_fields)]
 pub enum RecoverySource {
     Ntfy {
-        runtime: RuntimeSpec,
+        runtime: Box<RuntimeSpec>,
         #[serde(rename = "runtimeID")]
         runtime_id: String,
     },
     Mail {
-        core: PostgresEndpoint,
+        core: Box<PostgresEndpoint>,
         metadata: PostgresEndpoint,
         #[serde(rename = "runtimeLabels")]
         runtime_labels: BTreeMap<String, String>,
@@ -91,11 +91,11 @@ pub struct RecoveryTarget {
 #[serde(tag = "kind", rename_all = "lowercase", deny_unknown_fields)]
 pub enum TargetConfiguration {
     Ntfy {
-        runtime: RuntimeSpec,
+        runtime: Box<RuntimeSpec>,
     },
     Mail {
         core: PostgresEndpoint,
-        metadata: PostgresEndpoint,
+        metadata: Box<PostgresEndpoint>,
         #[serde(rename = "ceImage")]
         ce_image: String,
         #[serde(default, rename = "volumePlan")]
@@ -396,6 +396,80 @@ pub fn authorize_target(
 #[cfg(test)]
 mod binding_tests {
     use super::*;
+    #[test]
+    fn target_indirection_preserves_inline_bytes_and_signed_fingerprints() {
+        #[derive(Serialize, Deserialize)]
+        struct InlineNtfy {
+            kind: String,
+            runtime: RuntimeSpec,
+        }
+        #[derive(Serialize, Deserialize)]
+        struct InlineMail {
+            kind: String,
+            core: PostgresEndpoint,
+            metadata: PostgresEndpoint,
+            #[serde(rename = "ceImage")]
+            ce_image: String,
+            #[serde(default, rename = "volumePlan")]
+            volume_plan: BTreeMap<String, crate::storage::recovery_pool::ApprovedRecoveryVolume>,
+        }
+        let runtime = serde_json::json!({"version":1,"installation":"wire-test","projectId":"123","resourceId":"124","revision":1,"image":format!("registry.invalid/ntfy@sha256:{}","a".repeat(64)),"arguments":["serve"],"cpuMillicores":100,"memoryBytes":67108864,"ephemeralBytes":1048576,"replicas":1,"port":8080,"healthPath":"/health","volume":{"mountPath":"/data","sizeBytes":67108864}});
+        let endpoint = serde_json::json!({"hostAddress":"127.0.0.1","serverName":"localhost","port":5432,"database":"owned","username":"recovery","passwordFile":"/owned/secret-reference","authority":"/owned/ca-reference"});
+        for value in [
+            serde_json::json!({"kind":"ntfy","runtime":runtime}),
+            serde_json::json!({"kind":"mail","core":endpoint,"metadata":endpoint,"ceImage":format!("registry.invalid/mail@sha256:{}","b".repeat(64))}),
+        ] {
+            let current: TargetConfiguration = serde_json::from_value(value.clone()).unwrap();
+            let before = if value["kind"] == "ntfy" {
+                serde_json::to_vec(&serde_json::from_value::<InlineNtfy>(value).unwrap()).unwrap()
+            } else {
+                serde_json::to_vec(&serde_json::from_value::<InlineMail>(value).unwrap()).unwrap()
+            };
+            assert_eq!(serde_json::to_vec(&current).unwrap(), before);
+            assert_eq!(
+                fingerprint(&current).unwrap(),
+                format!("{:x}", Sha256::digest(before))
+            );
+        }
+    }
+    #[test]
+    fn source_indirection_preserves_inline_profile_bytes_and_signed_fingerprints() {
+        #[derive(Serialize, Deserialize)]
+        struct InlineNtfy {
+            kind: String,
+            runtime: RuntimeSpec,
+            #[serde(rename = "runtimeID")]
+            runtime_id: String,
+        }
+        #[derive(Serialize, Deserialize)]
+        struct InlineMail {
+            kind: String,
+            core: PostgresEndpoint,
+            metadata: PostgresEndpoint,
+            #[serde(rename = "runtimeLabels")]
+            runtime_labels: BTreeMap<String, String>,
+            #[serde(rename = "ceLabels")]
+            ce_labels: BTreeMap<String, String>,
+        }
+        let runtime = serde_json::json!({"version":1,"installation":"wire-test","projectId":"123","resourceId":"124","revision":1,"image":format!("registry.invalid/ntfy@sha256:{}","a".repeat(64)),"arguments":["serve"],"cpuMillicores":100,"memoryBytes":67108864,"ephemeralBytes":1048576,"replicas":1,"port":8080,"healthPath":"/health","volume":{"mountPath":"/data","sizeBytes":67108864}});
+        let endpoint = serde_json::json!({"hostAddress":"127.0.0.1","serverName":"localhost","port":5432,"database":"owned","username":"recovery","passwordFile":"/owned/secret-reference","authority":"/owned/ca-reference"});
+        for value in [
+            serde_json::json!({"kind":"ntfy","runtime":runtime,"runtimeID":"a".repeat(64)}),
+            serde_json::json!({"kind":"mail","core":endpoint,"metadata":endpoint,"runtimeLabels":{"owned":"runtime"},"ceLabels":{"owned":"mail"}}),
+        ] {
+            let current: RecoverySource = serde_json::from_value(value.clone()).unwrap();
+            let before = if value["kind"] == "ntfy" {
+                serde_json::to_vec(&serde_json::from_value::<InlineNtfy>(value).unwrap()).unwrap()
+            } else {
+                serde_json::to_vec(&serde_json::from_value::<InlineMail>(value).unwrap()).unwrap()
+            };
+            assert_eq!(serde_json::to_vec(&current).unwrap(), before);
+            assert_eq!(
+                fingerprint(&current).unwrap(),
+                format!("{:x}", Sha256::digest(before))
+            );
+        }
+    }
     fn target() -> RecoveryTarget {
         serde_json::from_value(serde_json::json!({"id":"fresh","profile":"mail-installation-v1","capacityBytes":67108864,"nonce":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","configuration":{"kind":"mail","core":{"hostAddress":"127.0.0.1","serverName":"localhost","port":5432,"database":"core","username":"recovery","passwordFile":"/independent/pw","authority":"/independent/ca"},"metadata":{"hostAddress":"127.0.0.1","serverName":"localhost","port":5433,"database":"private","username":"recovery","passwordFile":"/independent/pw","authority":"/independent/ca"},"ceImage":format!("example.test/ce@sha256:{}","a".repeat(64))},"tlsCertificate":"/independent/cert","tlsKey":"/independent/key","gatewayImage":format!("example.test/gateway@sha256:{}","b".repeat(64))})).unwrap()
     }
@@ -421,7 +495,7 @@ mod binding_tests {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "local-recovery-fixture"))]
 mod readonly_tests {
     use super::*;
     #[test]

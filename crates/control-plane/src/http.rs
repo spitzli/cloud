@@ -13,6 +13,7 @@ use tower_http::cors::CorsLayer;
 use webdock_core::config::PlatformConfig;
 
 pub struct ServiceState {
+    pub realtime: Option<crate::realtime::Realtime>,
     pub resource_client: Option<crate::resource_auth::ResourceClientConfig>,
     pub config: PlatformConfig,
     pub db: DatabaseConnection,
@@ -24,6 +25,7 @@ pub struct ServiceState {
     pub plugins: Option<Arc<crate::plugins::PluginEndpoints>>,
     pub databases: Option<Arc<crate::databases::DatabaseEndpoints>>,
     pub mail: Option<Arc<crate::mail::MailEndpoints>>,
+    pub neon_connections: Option<Arc<crate::neon_connections::NeonConnections>>,
     pub browser: Option<Arc<webdock_browser_session::BrowserSessions>>,
     pub access: Option<Arc<webdock_access::AccessService>>,
     pub ui: Option<Arc<crate::ui::UiAssets>>,
@@ -32,6 +34,7 @@ pub struct ServiceState {
 
 #[derive(Default)]
 pub struct Services {
+    pub realtime: Option<crate::realtime::Realtime>,
     pub resource_client: Option<crate::resource_auth::ResourceClientConfig>,
     pub identity: Option<Arc<webdock_identity::IdentityService>>,
     pub registry: Option<Arc<webdock_registry::RegistryService>>,
@@ -41,6 +44,7 @@ pub struct Services {
     pub plugins: Option<Arc<crate::plugins::PluginEndpoints>>,
     pub databases: Option<Arc<crate::databases::DatabaseEndpoints>>,
     pub mail: Option<Arc<crate::mail::MailEndpoints>>,
+    pub neon_connections: Option<Arc<crate::neon_connections::NeonConnections>>,
     pub browser: Option<Arc<webdock_browser_session::BrowserSessions>>,
     pub access: Option<Arc<webdock_access::AccessService>>,
     pub ui: Option<Arc<crate::ui::UiAssets>>,
@@ -99,6 +103,7 @@ pub fn build_app_with_domains(
     let worker_routes =
         crate::build::worker_routes(services.build.clone(), config.features.clone());
     let state = Arc::new(ServiceState {
+        realtime: services.realtime,
         resource_client: services.resource_client,
         config,
         db,
@@ -110,6 +115,7 @@ pub fn build_app_with_domains(
         plugins: services.plugins,
         databases: services.databases,
         mail: services.mail,
+        neon_connections: services.neon_connections,
         browser: services.browser,
         access: services.access,
         ui: services.ui,
@@ -120,17 +126,21 @@ pub fn build_app_with_domains(
     });
     Router::new()
         .merge(crate::auth::routes())
+        .merge(crate::realtime::routes())
         .merge(crate::oauth::routes())
         .merge(crate::browser::routes())
         .merge(crate::access::routes())
+        .merge(crate::waitlist::routes())
         .merge(crate::registry::routes())
         .merge(crate::resource_registry::routes())
         .merge(crate::resource_hosting::routes())
         .merge(crate::hosting::routes())
+        .merge(crate::build_webhook::routes())
         .merge(crate::plugins::routes())
         .merge(worker_routes)
         .merge(crate::databases::routes())
         .merge(crate::mail::routes())
+        .merge(crate::neon_connections::routes())
         .merge(crate::locale::routes())
         .route("/healthz", get(|| async { Json(json!({"status":"ok"})) }))
         .route("/readyz", get(ready))
@@ -153,6 +163,7 @@ pub fn build_app_with_domains(
                     header::CONTENT_TYPE,
                     header::AUTHORIZATION,
                     header::HeaderName::from_static("idempotency-key"),
+                    header::HeaderName::from_static("last-event-id"),
                 ]),
         )
         .layer(middleware::from_fn_with_state(state.clone(), boundary))
@@ -198,10 +209,13 @@ async fn ready(State(state): State<Arc<ServiceState>>) -> Response {
 #[derive(serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 struct PublicConsoleConfiguration {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    realtime_url: Option<String>,
     api_origin: String,
     workspace_api_origin: String,
     auth_origin: String,
     enabled_features: Vec<String>,
+    database_ordering_enabled: bool,
     locale_preference: &'static str,
     #[serde(skip_serializing_if = "Option::is_none")]
     console_origin: Option<String>,
@@ -222,10 +236,12 @@ fn public_console_configuration(
     locale_preference: &'static str,
 ) -> PublicConsoleConfiguration {
     let mut result = PublicConsoleConfiguration {
+        realtime_url: None,
         api_origin: config.api_origin.clone(),
         workspace_api_origin: config.api_origin.clone(),
         auth_origin: config.auth_origin.clone(),
         enabled_features: config.features.visible(),
+        database_ordering_enabled: config.database_new_orders_enabled,
         locale_preference,
         console_origin: None,
         surface: None,
@@ -264,7 +280,7 @@ async fn console_config(
     State(state): State<Arc<ServiceState>>,
     headers: axum::http::HeaderMap,
 ) -> Json<PublicConsoleConfiguration> {
-    Json(public_console_configuration(
+    let mut config = public_console_configuration(
         &state.config,
         headers
             .get(header::HOST)
@@ -275,7 +291,11 @@ async fn console_config(
             .as_deref()
             .and_then(crate::mail::MailEndpoints::gateway_origin),
         crate::locale::preference(&headers),
-    ))
+    );
+    if config.surface != Some("account") {
+        config.realtime_url = state.realtime.as_ref().map(|r| r.url.clone());
+    }
+    Json(config)
 }
 
 #[derive(Clone)]
@@ -395,6 +415,7 @@ fn admit_request(config: &PlatformConfig, ui: bool, request: &Request) -> Result
     let credential_endpoint = crate::oauth::credential_endpoint(path)
         || crate::resource_auth::protocol_path(path)
         || crate::build::credential_endpoint(path)
+        || path == crate::build_webhook::PATH
         || crate::plugins::credential_endpoint(path)
         || crate::plugins::api::credential_endpoint(path)
         || ["/api/databases/gateway", "/api/mail/gateway"].contains(&path);

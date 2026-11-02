@@ -1,0 +1,233 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Spitzli Cloud\n"
+"PO-Revision-Date: 2026-10-31 00:00+0000\n"
+"Last-Translator: Spitzli Development\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "A new public website or application without its own domain gets an available project address. The address belongs to that project; other customers cannot claim it."
+msgstr "Eine neue öffentliche Website oder Anwendung ohne eigene Domain bekommt eine verfügbare Projektadresse. Die Adresse gehört zu diesem Projekt und kann nicht von anderen Kunden beansprucht werden."
+
+msgid "Are hosted websites public?"
+msgstr "Sind gehostete Websites öffentlich?"
+
+msgid "Arrange an export of needed data before the service ends. We coordinate return or deletion under the service and data-processing agreements and applicable law. Deactivation or suspension is not deletion; retained data remains protected. Removing a Spitzli Cloud connection does not automatically cancel or revoke your account with a third-party provider."
+msgstr "Vereinbare vor dem Vertragsende den Export benötigter Daten. Rückgabe oder Löschung stimmen wir nach Leistungs- und Auftragsverarbeitungsvertrag sowie geltendem Recht ab. Deaktivierung oder Sperrung ist keine Löschung; zurückbehaltene Daten bleiben geschützt. Das Entfernen einer Spitzli Cloud-Verbindung kündigt oder widerruft nicht automatisch dein Konto bei einem Drittanbieter."
+
+msgid "Bring your projects, their services and their public addresses together in one workspace."
+msgstr "Bringe deine Projekte, ihre Dienste und ihre öffentlichen Adressen in einem Workspace zusammen."
+
+msgid "CMS — Spitzli Cloud"
+msgstr "CMS — Spitzli Cloud"
+
+msgid "Connect a domain you own when your project is ready. Your application and its data stay in place."
+msgstr "Verbinde deine eigene Domain, wenn dein Projekt bereit ist. Deine Anwendung und ihre Daten bleiben erhalten."
+
+msgid "Connect selected Vercel projects to Spitzli Cloud Studio with read-only access."
+msgstr "Verbinde ausgewählte Vercel-Projekte mit Spitzli Cloud Studio über einen Lesezugriff."
+
+msgid "Disconnect in Studio to delete its stored access token. Also uninstall Spitzli Cloud Studio in your Vercel team’s integration settings to revoke permission at Vercel. Project mappings and audit records remain; contact us if you need them removed."
+msgstr "Trenne die Verbindung in Studio, um den dort gespeicherten Zugriffstoken zu löschen. Deinstalliere Spitzli Cloud Studio zusätzlich in den Integrationseinstellungen deines Vercel-Teams, um die Berechtigung bei Vercel zu widerrufen. Projektzuordnungen und Prüfprotokolle bleiben erhalten. Kontaktiere uns, wenn sie entfernt werden sollen."
+
+msgid "Discuss your project"
+msgstr "Über dein Projekt sprechen"
+
+msgid "Explore Spitzli Cloud"
+msgstr "Spitzli Cloud entdecken"
+
+msgid "From your idea\nto your application."
+msgstr "Von deiner Idee\nzu deiner Anwendung."
+
+msgid "How Spitzli Cloud processes personal data, uses service providers and protects your rights."
+msgstr "Wie Spitzli Cloud personenbezogene Daten verarbeitet, Dienstleister einsetzt und deine Rechte wahrt."
+
+msgid "How do I access Spitzli Cloud?"
+msgstr "Wie bekomme ich Zugang zu Spitzli Cloud?"
+
+msgid "How does a spitzli.site address work?"
+msgstr "Wie funktioniert eine Adresse auf spitzli.site?"
+
+msgid "Illustration: a workspace, an application and its domain connected through Spitzli Cloud."
+msgstr "Illustration: Ein Workspace, eine Anwendung und ihre Domain — verbunden über Spitzli Cloud."
+
+msgid "Keep your projects connected."
+msgstr "Deine Projekte bleiben verbunden."
+
+msgid "Legal notice — Spitzli Cloud"
+msgstr "Impressum — Spitzli Cloud"
+
+msgid "Manage your websites, applications and the services they use from one place."
+msgstr "Verwalte deine Websites, Anwendungen und die zugehörigen Dienste an einem Ort."
+
+msgid "My project with Spitzli Cloud"
+msgstr "Mein Projekt mit Spitzli Cloud"
+
+msgid "No domain of your own? Your public project gets an address on spitzli.site. Easy to share, easy to find again."
+msgstr "Noch keine eigene Domain? Dein öffentliches Projekt bekommt eine Adresse auf spitzli.site. Einfach zu teilen und wiederzufinden."
+
+msgid "No. A public project can use an address such as your-project.spitzli.site. You can also connect a domain you own."
+msgstr "Nein. Ein öffentliches Projekt kann eine Adresse wie dein-projekt.spitzli.site nutzen. Du kannst auch deine eigene Domain verbinden."
+
+msgid "No. Spitzli Cloud uses supported hosting environments to suit each project. Your public address does not decide where the application runs."
+msgstr "Nein. Spitzli Cloud nutzt passende unterstützte Hosting-Umgebungen für das jeweilige Projekt. Deine öffentliche Adresse bestimmt nicht, wo die Anwendung läuft."
+
+msgid "Optional Vercel and GitHub connections provide authorisation data and information about selected projects or repositories, deployments, domains, branches and commits. Enabled build and deployment workflows also process the source code, build artefacts and configuration needed for those workflows. Access is limited by the connected account’s permissions and the selected function. Disconnecting in Spitzli Cloud and revoking access at the provider are separate actions."
+msgstr "Optionale Vercel- und GitHub-Verbindungen liefern Berechtigungsdaten und Informationen über ausgewählte Projekte oder Repositories, Deployments, Domains, Branches und Commits. Aktivierte Build- und Deployment-Abläufe verarbeiten außerdem den dafür benötigten Quellcode, Build-Artefakte und Konfigurationen. Der Zugriff richtet sich nach den Berechtigungen des verbundenen Kontos und der gewählten Funktion. Das Trennen in Spitzli Cloud und der Widerruf des Zugriffs beim Anbieter sind getrennte Vorgänge."
+
+msgid "Privacy — Spitzli Cloud"
+msgstr "Datenschutz — Spitzli Cloud"
+
+msgid "Provider of Spitzli Cloud pursuant to Section 5 DDG:"
+msgstr "Anbieter von Spitzli Cloud gemäß § 5 DDG:"
+
+msgid "Sign in to Spitzli Cloud"
+msgstr "Bei Spitzli Cloud anmelden"
+
+msgid "Sign in with Spitzli Cloud"
+msgstr "Mit Spitzli Cloud anmelden"
+
+msgid "Sign out of Spitzli Cloud?"
+msgstr "Von Spitzli Cloud abmelden?"
+
+msgid "Spitzli Cloud Console brings your projects, applications and services together. Access is by invitation."
+msgstr "Die Spitzli Cloud Console bringt deine Projekte, Anwendungen und Dienste zusammen. Der Zugang erfolgt auf Einladung."
+
+msgid "Spitzli Cloud Studio"
+msgstr "Spitzli Cloud Studio"
+
+msgid "Spitzli Cloud Studio · Integration guide"
+msgstr "Spitzli Cloud Studio · Integrationsanleitung"
+
+msgid "Spitzli Cloud and Spitzli Development"
+msgstr "Spitzli Cloud und Spitzli Development"
+
+msgid "Spitzli Cloud brings websites, applications and their services together. It is operated by Spitzli Development, with a direct connection to the person building your project."
+msgstr "Spitzli Cloud bringt Websites, Anwendungen und ihre Dienste zusammen. Betrieben von Spitzli Development — mit direktem Kontakt zum Entwickler deines Projekts."
+
+msgid "Spitzli Cloud could not be reached. Check your connection and try again."
+msgstr "Spitzli Cloud ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut."
+
+msgid "Spitzli Cloud home"
+msgstr "Spitzli Cloud-Startseite"
+
+msgid "Spitzli Cloud is a service of Spitzli Development. These provider details apply to Spitzli Cloud’s own website and services. Independently operated customer websites are the responsibility of their respective providers."
+msgstr "Spitzli Cloud ist ein Angebot von Spitzli Development. Diese Anbieterangaben gelten für die eigene Spitzli Cloud-Website und die Spitzli Cloud-Dienste. Für eigenständig betriebene Kundenwebsites sind deren jeweilige Anbieter verantwortlich."
+
+msgid "Spitzli Cloud is run by Dominik at Spitzli Development. From your application to its infrastructure, you work directly with the person building it."
+msgstr "Hinter Spitzli Cloud steht Dominik von Spitzli Development. Von deiner Anwendung bis zur Infrastruktur arbeitest du direkt mit dem Entwickler zusammen."
+
+msgid "Spitzli Cloud project "
+msgstr "Spitzli Cloud-Projekt "
+
+msgid "Spitzli Cloud provider and contact details for Spitzli Development."
+msgstr "Anbieter- und Kontaktangaben zu Spitzli Cloud von Spitzli Development."
+
+msgid "Spitzli Cloud · Updated {date}"
+msgstr "Spitzli Cloud · Stand: {date}"
+
+msgid "Spitzli Cloud — Project previews & client websites by Spitzli"
+msgstr "Spitzli Cloud — Projektvorschauen und Kundenwebsites von Spitzli"
+
+msgid "Spitzli Cloud — Websites, applications and cloud services"
+msgstr "Spitzli Cloud — Websites, Anwendungen und Cloud-Dienste"
+
+msgid "Spitzli Cloud — Your projects. One place."
+msgstr "Spitzli Cloud — Deine Projekte. Ein Ort."
+
+msgid "Terms and conditions — Spitzli Cloud"
+msgstr "AGB — Spitzli Cloud"
+
+msgid "Terms for Spitzli Cloud services, including consumer cancellation and withdrawal rights."
+msgstr "Bedingungen für Spitzli Cloud-Leistungen einschließlich Kündigung und Widerrufsrecht für Verbraucher."
+
+msgid "These terms apply to Spitzli Cloud services for consumers and businesses, including agreed website development, project management, hosting, databases and Mail. A consumer acts mainly outside their trade or profession. Individually agreed terms take precedence; mandatory consumer rights remain unaffected."
+msgstr "Diese AGB gelten für Spitzli Cloud-Leistungen gegenüber Privat- und Geschäftskunden, insbesondere vereinbarte Website-Entwicklung, Projektverwaltung, Hosting, Datenbanken und Mail. Verbraucher handeln überwiegend außerhalb ihrer gewerblichen oder selbstständigen beruflichen Tätigkeit. Individuelle Vereinbarungen gehen vor; zwingende Verbraucherrechte bleiben unberührt."
+
+msgid "This notice explains how we process personal data on Spitzli Cloud’s website and in its account, Studio, hosting, database and Mail services. Customer-operated websites and applications have their own controllers and privacy notices."
+msgstr "Diese Erklärung beschreibt, wie wir personenbezogene Daten auf der Spitzli Cloud-Website und in unseren Konto-, Studio-, Hosting-, Datenbank- und Mail-Diensten verarbeiten. Für eigenständig betriebene Kundenwebsites und Anwendungen gelten deren eigene Verantwortlichkeiten und Datenschutzhinweise."
+
+msgid "Vercel integration — Spitzli Cloud Studio"
+msgstr "Vercel-Integration — Spitzli Cloud Studio"
+
+msgid "View hosting information alongside your Spitzli Cloud project records: current production release, recent deployments, Git branch and commit, runtime settings, and domain verification."
+msgstr "Sieh Hostinginformationen zusammen mit deinen Spitzli Cloud-Projektdaten: aktuelle Produktionsversion, letzte Deployments, Git-Branch und Commit, Laufzeiteinstellungen und Domainprüfung."
+
+msgid "Websites, applications and cloud services by Spitzli Development."
+msgstr "Websites, Anwendungen und Cloud-Dienste von Spitzli Development."
+
+msgid "Websites, applications and the services behind them — connected in Spitzli Cloud."
+msgstr "Websites, Anwendungen und die Dienste dahinter — verbunden in Spitzli Cloud."
+
+msgid "What is Spitzli Cloud?"
+msgstr "Was ist Spitzli Cloud?"
+
+msgid "When you visit Spitzli Cloud, we and our hosting providers process technical request data, including IP address, requested URL, time, browser and operating-system information, to deliver the site, diagnose errors and prevent misuse. This is based on our legitimate interest in secure, reliable operation (Article 6(1)(f) GDPR). Fonts are served locally."
+msgstr "Beim Besuch von Spitzli Cloud verarbeiten wir und unsere Hostinganbieter technische Anfragedaten wie IP-Adresse, aufgerufene URL, Zeitpunkt sowie Browser- und Betriebssysteminformationen. Das dient der Auslieferung, Fehleranalyse und Missbrauchsabwehr. Grundlage ist unser berechtigtes Interesse an einem sicheren, zuverlässigen Betrieb (Art. 6 Abs. 1 lit. f DSGVO). Schriftarten werden lokal ausgeliefert."
+
+msgid "Your address on spitzli.site. Or your own domain."
+msgstr "Deine Adresse auf spitzli.site. Oder deine eigene Domain."
+
+msgid "Your application"
+msgstr "Deine Anwendung"
+
+msgid "Your project's access settings decide who can reach it. A hostname alone does not protect private content."
+msgstr "Die Zugriffseinstellungen deines Projekts bestimmen, wer es erreichen kann. Ein Hostname allein schützt keine privaten Inhalte."
+
+msgid "Your project. Well docked. A home for project previews and client websites by Spitzli Development — on a Spitzli Cloud subdomain or your own domain."
+msgstr "Dein Projekt. Gut angedockt. Ein Zuhause für Projektvorschauen und Kundenwebsites von Spitzli Development – auf einer Spitzli Cloud-Subdomain oder deiner eigenen Domain."
+
+msgid "Your projects in one place. Websites and applications by Spitzli — on spitzli.site or your own domain."
+msgstr "Deine Projekte an einem Ort. Websites und Anwendungen von Spitzli — auf spitzli.site oder deiner eigenen Domain."
+
+msgid "Your projects.\nA direct connection."
+msgstr "Deine Projekte.\nEin direkter Draht."
+
+msgid "Your projects.\nOne place."
+msgstr "Deine Projekte.\nEin Ort."
+
+msgid "Your projects. Connected."
+msgstr "Deine Projekte. Verbunden."
+
+msgid "Your workspace"
+msgstr "Dein Workspace"
+
+msgid "Public website or app"
+msgstr "Öffentliche Website oder App"
+
+msgid "Assign an HTTPS address under"
+msgstr "Eine HTTPS-Adresse vergeben unter"
+
+msgid "Turn this off for a private service. You can add your own domain separately."
+msgstr "Für einen privaten Dienst ausschalten. Eine eigene Domain kannst du separat hinzufügen."
+
+msgid "Public address ready"
+msgstr "Öffentliche Adresse bereit"
+
+msgid "Public address pending"
+msgstr "Öffentliche Adresse ausstehend"
+
+msgid "Your own domain can be added in workspace Domains."
+msgstr "Eine eigene Domain kannst du unter Workspace → Domains hinzufügen."
+
+msgid "Loading assigned addresses…"
+msgstr "Zugewiesene Adressen werden geladen…"
+
+msgid "Assigned addresses"
+msgstr "Zugewiesene Adressen"
+
+msgid "Open the project applications to see all assigned addresses."
+msgstr "Öffne die Projektanwendungen, um alle zugewiesenen Adressen zu sehen."
+
+msgid "No custom domains yet. Public apps can use an assigned address when public hosting is enabled."
+msgstr "Noch keine eigenen Domains. Öffentliche Apps können bei aktiviertem öffentlichem Hosting eine zugewiesene Adresse verwenden."
+
+msgid "Public address reserved"
+msgstr "Öffentliche Adresse reserviert"
+
+msgid "This application was deleted. Its address remains reserved."
+msgstr "Diese Anwendung wurde gelöscht. Ihre Adresse bleibt reserviert."

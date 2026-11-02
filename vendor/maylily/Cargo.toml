@@ -1,0 +1,84 @@
+[package]
+name = "maylily"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.94"
+license = "MIT"
+description = "Configurable Snowflake-style IDs with arbitrary-precision output"
+publish = ["crates-io"]
+repository = "https://github.com/itohatweb/maylily-rs"
+readme = "README.md"
+keywords = ["snowflake", "id", "generator", "async"]
+categories = ["data-structures", "asynchronous"]
+include = ["src/**", "tests/**", "benches/**", "benchmarks/**", "Cargo.toml", "Cargo.lock", "README.md", "LICENSE*", "CHANGELOG.md"]
+
+[features]
+default = []
+serde = ["dep:serde"]
+async = ["dep:tokio"]
+parse = []
+
+[dependencies]
+num-bigint = "0.5.1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"], optional = true }
+tokio = { version = "1", default-features = false, features = ["time"], optional = true }
+
+[dev-dependencies]
+serde_json = "1"
+tokio = { version = "1", default-features = false, features = ["macros", "rt", "time", "test-util"] }
+
+[[bench]]
+name = "throughput"
+harness = false
+
+[workspace]
+resolver = "3"
+
+[lints]
+workspace = true
+
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+unused_must_use = "deny"
+unfulfilled_lint_expectations = "deny"
+
+[workspace.lints.clippy]
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
+complexity = { level = "deny", priority = -1 }
+perf = { level = "deny", priority = -1 }
+style = { level = "deny", priority = -1 }
+allow_attributes_without_reason = "deny"
+as_ptr_cast_mut = "deny"
+await_holding_lock = "deny"
+await_holding_refcell_ref = "deny"
+cast_lossless = "deny"
+checked_conversions = "deny"
+dbg_macro = "deny"
+excessive_nesting = "deny"
+exit = "deny"
+fallible_impl_from = "deny"
+implicit_clone = "deny"
+let_underscore_future = "deny"
+lossy_float_literal = "deny"
+manual_assert = "deny"
+manual_let_else = "deny"
+match_wildcard_for_single_variants = "deny"
+mem_forget = "deny"
+mut_mut = "deny"
+needless_continue = "deny"
+needless_pass_by_ref_mut = "deny"
+option_option = "deny"
+rc_mutex = "deny"
+redundant_else = "deny"
+ref_option_ref = "deny"
+todo = "deny"
+unchecked_time_subtraction = "deny"
+undocumented_unsafe_blocks = "deny"
+unimplemented = "deny"
+unnecessary_box_returns = "deny"
+unnecessary_safety_comment = "deny"
+unnecessary_safety_doc = "deny"
+unnested_or_patterns = "deny"
+

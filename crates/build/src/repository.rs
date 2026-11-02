@@ -244,6 +244,38 @@ impl RepositoryAdmission {
     }
     async fn domain(&self, source: &RepositoryRef<'_>) -> Result<Domain> {
         match &source.authority {
+            RepositoryContext::SourceTrigger { tx } => {
+                let row = BuildService::source(tx, &source.source_id, &source.project_id).await?;
+                if row["revision"] != source.source_revision
+                    || row["connection_generation"] != source.connection_generation
+                    || row["webhook_trigger"] != "workflow_run"
+                    || row["execution_backend"] != "kubernetes"
+                {
+                    return Err(error("repository_scope_changed"));
+                }
+                let actor = rows(*tx, "SELECT coalesce(webdock_rls.git_source_build_trigger_authority($1,$2),'null'::jsonb) AS value", vec![source.source_id.clone().into(),source.source_revision.into()])
+                    .await?.pop().unwrap_or(Value::Null);
+                if actor.is_null() {
+                    return Err(error("repository_authority_revoked"));
+                }
+                Ok(Domain {
+                    kind: "source-trigger",
+                    subject: field(&actor, "subject")?.into(),
+                    session: None,
+                    id: Some(source.source_id.clone()),
+                    generation: Some(
+                        row["environment_revision"]
+                            .as_i64()
+                            .ok_or_else(|| error("invalid_source"))? as i32,
+                    ),
+                    worker: None,
+                    worker_generation: None,
+                    worker_hash: None,
+                    actor_authority: None,
+                    archive_authority: None,
+                    deadline: None,
+                })
+            }
             RepositoryContext::PluginJob { proof } => {
                 let proof = self
                     .host

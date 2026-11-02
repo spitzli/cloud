@@ -1,57 +1,52 @@
 ---
-title: "Plugin API and MCP tools"
-description: "Expose external plugin actions through authenticated HTTP routes and MCP tools."
+title: "Workspace API and plugin MCP tools"
+description: "Call installed actions with workspace tokens or the existing OAuth resource."
 ---
 
-External plugins can declare API routes and MCP tools alongside their actions. The same host admission checks apply to Console, HTTP and MCP calls: the current session, project membership, explicit project grant, approved capabilities and runtime generation.
+Core exposes a workspace API for server automation and an OAuth-protected plugin surface for registered integrations. Mail keys, workspace API tokens and OAuth access tokens are separate credentials.
 
-<Note>
-This is an operator-managed pilot. The general registry installation UI, automated lifecycle controller and all SDK services are not yet available. Declaring an interface does not install or authorize a plugin.
-</Note>
+## Workspace API
 
-## Declare the interfaces
+Workspace owners and administrators can create a workspace API token in Console under **API tokens**, with read-only or read-and-change access and a lifetime from 30 days to one year. The `wdk_…` token is shown once; Core retains its hash. It acts within that workspace with the current authority of the member who created it. The token is not a platform-operator credential. Revocation and current membership still apply.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/v1/api/projects` | List accessible workspace projects |
+| GET | `/v1/api/projects/{projectID}/plugins` | Discover installed plugins and actions |
+| POST | `/v1/api/projects/{projectID}/actions` | Invoke an installed action |
+| GET | `/v1/api/usage` | Read workspace usage |
+
+Send `Authorization: Bearer <workspace-token>` from your server. These endpoints reject browser cookies and Origin headers. Use the API origin configured for your installation.
+
+An action body uses the discovered plugin and action names:
 
 ```json
 {
-  "api": [
-    { "method": "GET", "path": "/configuration", "action": "analytics.configuration" },
-    { "method": "POST", "path": "/site", "action": "analytics.provision" }
-  ],
-  "mcp": [
-    { "name": "configuration", "description": "Get project tracking configuration", "action": "analytics.configuration" },
-    { "name": "provision", "description": "Enable analytics for a project", "action": "analytics.provision" }
-  ]
+  "plugin": "echo-demo",
+  "action": "notes.create",
+  "input": { "name": "My first note" },
+  "idempotencyKey": "create-note-42"
 }
 ```
 
-Each reference must name a declared action. Routes are exact local paths; dynamic path parameters are not supported in this pilot. GET routes must reference read actions. The host owns the prefix:
+This example requires an installed and granted Echo release, a read-and-change workspace token, and an enabled `note` offering with the `create-notes` feature and available capacity. The action must appear in the project's permitted discovery result. Echo's `demo.echo` action is operator-only and cannot be invoked with a customer workspace token. Preserve the same explicit idempotency key when retrying unchanged intent, especially for writes.
+
+## Declared OAuth routes
+
+A manifest can reference actions in `api` and `mcp` entries. Exact local API paths appear under:
 
 ```text
 /v1/plugins/{pluginID}/projects/{projectID}/api/{local-path}
 ```
 
-GET inputs use an `input` JSON query parameter. Other methods accept JSON bodies. Write actions require an `Idempotency-Key` header. Current external HTTP access uses the existing operator API bearer authentication; this does not imply customer API-key provisioning is available.
+This existing surface uses the [registered OAuth resource](/developers/authentication) and registry scope family. GET routes reference read actions and accept one optional `input` JSON query parameter. Other methods accept JSON bodies; write actions require `Idempotency-Key`. Workspace API tokens use the workspace routes above, not this OAuth adapter.
 
-MCP names are prefixed, for example `plugin__managed_analytics__configuration`. Arguments include `projectID` and the action's schema-validated `input`. Write tools additionally require an idempotency key. Read-only credentials do not receive write tools and cannot invoke write actions, including while plugin metadata changes. Tools are rediscovered on each MCP request; disabled or unhealthy plugins do not expose new work.
+MCP tools use names such as `plugin__managed_analytics__configuration`. Arguments include `projectID` and the declared action input. Write tools require an idempotency key. Discovery and invocation check current scopes, project permissions, plugin state and capabilities; a tool name is not an access grant.
 
-## Elysia runtime
+## Runtime and host services
 
-A plugin may run its own ElysiaJS server outside the Control Plane. The host calls the action handler over private HTTPS with a generation-specific workload credential and a signed invocation valid for at most 60 seconds. The SDK verifier checks the host signature, plugin, generation, action identity and expiry. The runtime must also match the requested action to the signed action.
+Core revalidates the actor, configuration, project grant and exact runtime generation. Native plugins use private gRPC with enrolled Unix or mutual-TLS peers. Existing Elysia protocol-v1 extensions retain separately enrolled private HTTPS handlers. Tokens and runtime credentials stay outside UI frames.
 
-The Managed Analytics example uses an Elysia backend and a separately exposed static UI listener. Backend handlers are not served through the public UI listener.
+Named HTTP bindings are operator-owned and project-scoped. Core controls origin, pinned addresses, method, paths, query keys and credentials. Redirects are refused, exchanges have a ten-second deadline, and bodies are bounded to 1 MiB. The host checks live authority before and after a provider call. A revoked permission cannot undo an effect already accepted by a remote provider.
 
-## Named HTTP access
-
-`ctx.http.request()` selects an operator-configured binding by name. The host controls the origin, pinned addresses, allowed exact paths and query keys, HTTP methods and provider credentials. Bindings are scoped per plugin and project. Plugins cannot supply headers or arbitrary destinations. Redirects are refused, responses are bounded to 1 MiB and requests have a 10-second deadline.
-
-```typescript
-const response = await ctx.http.request({
-  binding: "analytics",
-  method: "GET",
-  path: "/api/websites/PROJECT_OWNED_ID/stats?startAt=0&endAt=1000",
-});
-```
-
-GET requires `plugin.http.read`; mutations require `plugin.http.request` and a write invocation. Grant/session/runtime checks run before and after the provider request. A completed remote effect cannot be undone by a later revocation, so plugin provisioning must remain retry-safe.
-
-See [the manifest contract](/developers/plugin-manifest) and [plugin development](/developers/plugins).
+Source: workspace API (`crates/control-plane/src/api.rs`), OAuth plugin exposure (`crates/control-plane/src/plugin_exposure.rs`) and host service boundary (`crates/plugin-host`). See [release status](/developers/plugin-releases) before treating a published image as available to customers.

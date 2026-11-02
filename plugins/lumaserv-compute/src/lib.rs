@@ -137,7 +137,7 @@ impl ActionHandler for Compute {
                 }
                 let rows = self.list(token, project, page.page).await?;
                 if claims.action == "servers.panel" {
-                    Ok(json!({"version":1,"title":"Cloud servers","blocks":[
+                    Ok(json!({"version":2,"title":"Cloud servers","blocks":[
                         {"kind":"table","title":"Servers","columns":[{"key":"name","label":"Name"},{"key":"state","label":"State"},{"key":"id","label":"ID"}],"rows":rows},
                         {"kind":"form","title":"Page","fields":[{"name":"page","label":"Page","type":"number","required":true}],"action":{"id":"servers.panel","label":"Load page"}},
                         {"kind":"actions","actions":[{"id":"servers.panel","label":"Refresh"}]}

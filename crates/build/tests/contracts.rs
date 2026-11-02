@@ -87,3 +87,99 @@ fn readonly_ceiling_is_an_explicit_allowlist() {
         .is_err()
     );
 }
+
+#[test]
+fn kubernetes_backend_selection_is_explicit_and_bounded() {
+    let base = json!({"action":"git.source.configure","projectID":"123","targetID":"456","connectionID":"789","repositoryID":"999","branch":"main","rootDirectory":".","recipe":"dockerfile","revision":0});
+    assert!(BuildCommand::parse(base.clone()).is_ok());
+    let mut explicit = base.clone();
+    explicit["executionBackend"] = json!("kubernetes");
+    assert!(BuildCommand::parse(explicit).is_ok());
+    for backend in [
+        json!("privileged"),
+        json!("docker"),
+        json!(""),
+        serde_json::Value::Null,
+    ] {
+        let mut invalid = base.clone();
+        invalid["executionBackend"] = backend;
+        assert!(BuildCommand::parse(invalid).is_err());
+    }
+}
+
+#[test]
+fn log_cursors_are_read_only_and_finite() {
+    let base = json!({"action":"git.builds.logs","projectID":"123","buildID":"456","after":"0","limit":20});
+    assert!(BuildCommand::parse(base.clone()).is_ok());
+    assert!(
+        webdock_build::BuildCeiling {
+            read: true,
+            write: false
+        }
+        .require("git.builds.logs")
+        .is_ok()
+    );
+    for (key, value) in [
+        ("after", json!("-1")),
+        ("after", json!("9223372036854775808")),
+        ("after", json!(3)),
+        ("limit", json!(0)),
+        ("limit", json!(101)),
+    ] {
+        let mut bad = base.clone();
+        bad[key] = value;
+        assert!(BuildCommand::parse(bad).is_err());
+    }
+}
+
+#[test]
+fn container_strategy_overrides_are_explicit_and_never_change_legacy_recipes() {
+    let base = json!({"action":"git.source.configure","projectID":"123","targetID":"456","connectionID":"789","repositoryID":"999","branch":"main","rootDirectory":".","recipe":"dockerfile","revision":0,"executionBackend":"kubernetes","containerBuild":{"strategy":"railpack","contextDirectory":".","dockerfile":"Dockerfile","buildArgs":{"PUBLIC_NAME":"demo"}}});
+    assert!(BuildCommand::parse(base.clone()).is_ok());
+    for (field, value) in [
+        ("strategy", json!("shell")),
+        ("dockerfile", json!("../Dockerfile")),
+        ("contextDirectory", json!("/host")),
+        ("buildArgs", json!({"BUILDKIT_HOST":"other"})),
+        ("buildArgs", json!({"HTTP_PROXY":"http://private"})),
+    ] {
+        let mut bad = base.clone();
+        bad["containerBuild"][field] = value;
+        assert!(BuildCommand::parse(bad).is_err());
+    }
+    let mut legacy = base;
+    legacy["executionBackend"] = json!("microvm");
+    assert!(BuildCommand::parse(legacy).is_err());
+}
+
+#[test]
+fn mvp_environment_is_explicitly_production_and_never_creates_a_preview() {
+    let base = json!({"action":"git.builds.request","projectID":"123","targetID":"456","idempotencyKey":"owned-production-build","environmentName":"production"});
+    assert!(BuildCommand::parse(base.clone()).is_ok());
+    for value in [
+        json!("preview"),
+        json!("preview-pr-1"),
+        json!(""),
+        serde_json::Value::Null,
+    ] {
+        let mut bad = base.clone();
+        bad["environmentName"] = value;
+        assert!(BuildCommand::parse(bad).is_err());
+    }
+}
+
+#[test]
+fn workflow_run_trigger_is_opt_in_native_only_and_omission_stays_distinct() {
+    let value = json!({"action":"git.source.configure","projectID":"123","targetID":"456","connectionID":"789","repositoryID":"55","branch":"release","rootDirectory":".","recipe":"dockerfile","revision":0,"executionBackend":"kubernetes","webhookTrigger":"workflow_run","workflowPath":".github/workflows/quality.yml"});
+    assert!(BuildCommand::parse(value.clone()).is_ok());
+    let mut wrong = value.clone();
+    wrong["executionBackend"] = json!("microvm");
+    assert!(BuildCommand::parse(wrong).is_err());
+    let mut wrong = value.clone();
+    wrong["webhookTrigger"] = json!("check_suite");
+    assert!(BuildCommand::parse(wrong).is_err());
+    let mut omitted = value;
+    omitted.as_object_mut().unwrap().remove("webhookTrigger");
+    omitted.as_object_mut().unwrap().remove("workflowPath");
+    assert!(BuildCommand::parse(omitted).is_ok());
+}

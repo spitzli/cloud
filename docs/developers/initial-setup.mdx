@@ -3,7 +3,7 @@ title: "Initial operator setup"
 description: "Create the first native operator and registered Console client through the offline Rust CLI."
 ---
 
-After native migrations complete, create the first operator with `webdock-bootstrap-operator`. This explicit offline operation uses a dedicated non-superuser migration login and refuses existing identity, client, signing-key or audit state. It never changes an existing operator password.
+For a new empty operator-owned installation, after native migrations complete, create the first operator with `webdock-bootstrap-operator`. This explicit offline operation uses a dedicated non-superuser migration login and refuses existing identity, client, signing-key or audit state. It never changes an existing operator password.
 
 ## Prepare private input
 
@@ -22,3 +22,7 @@ The target must exactly match the connected database. The CLI creates the operat
 The private output supplies the registered Console client and cookie configuration for Core. Complete password replacement and real MFA on the canonical account surface before operator work. Existing installations use reviewed account/client adoption instead of first-install bootstrap.
 
 See `crates/control-plane/README.md` for the complete native environment and bootstrap contract. The old temporary TypeScript setup server is archived with the retired platform and is not part of the native startup path.
+
+Hosted Spitzli Cloud already uses Neon Managed Auth for all users with Core MFA. Do not run empty-install bootstrap against an existing installation or treat a locally created account as a managed-auth bypass. Existing identity adoption and provider binding require their reviewed workflow.
+
+Source: offline bootstrap (`crates/control-plane/src/bin`) and [browser identity boundary](/developers/auth-adapters).

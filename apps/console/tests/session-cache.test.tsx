@@ -547,7 +547,7 @@ await test("reauthentication proof cannot remove a different principal's prompt 
         </QueryClientProvider>,
       );
     });
-    assert.match(fixture.host.textContent, /Sign in to Webdock/);
+    assert.match(fixture.host.textContent, /Sign in to Spitzli Cloud/);
     const form = fixture.host.querySelector<HTMLFormElement>("form");
     assert.ok(form);
     for (const input of form.querySelectorAll<HTMLInputElement>("input"))
@@ -567,7 +567,7 @@ await test("reauthentication proof cannot remove a different principal's prompt 
       /* Commit the new principal's authority barrier. */
     });
     assert.deepEqual(redirects, ["/api/auth/oauth2/authorize?client_id=test"]);
-    assert.match(fixture.host.textContent, /Sign in to Webdock/);
+    assert.match(fixture.host.textContent, /Sign in to Spitzli Cloud/);
   } finally {
     await fixture.close();
   }
@@ -914,7 +914,7 @@ async function forcedSetup(
     await flush(() => {
       /* A different session cannot reuse the explicit setup proof. */
     });
-    assert.match(fixture.host.textContent, /Sign in to Webdock/);
+    assert.match(fixture.host.textContent, /Sign in to Spitzli Cloud/);
     assert.equal(redirects.length, 1);
   } finally {
     await fixture.close();

@@ -40,6 +40,7 @@ pub struct DatabaseService {
     cipher: SecretCipher,
     gateway_origin: String,
     management: Option<crate::management::ManagementConfig>,
+    new_orders_enabled: bool,
 }
 impl DatabaseService {
     #[expect(
@@ -79,6 +80,7 @@ impl DatabaseService {
             cipher: SecretCipher::new(encryption_secret).map_err(|_| unavailable())?,
             gateway_origin: normalize_origin(gateway_origin)?,
             management: None,
+            new_orders_enabled: true,
         })
     }
     async fn id(&self) -> Result<String> {

@@ -307,34 +307,34 @@ impl MailDelivery {
         }
         let (subject, text) = match request.kind {
             DeliveryKind::Activation => (
-                "Set up your Webdock account",
+                "Set up your Spitzli Cloud account",
                 format!(
-                    "Your Webdock administrator has invited you. Choose your password to set up your account:\n{}\nIf you were not expecting an invitation, you can ignore this message.",
+                    "Your Spitzli Cloud administrator has invited you. Choose your password to set up your account:\n{}\nIf you were not expecting an invitation, you can ignore this message.",
                     request.url
                 ),
             ),
             DeliveryKind::Reset => (
-                "Reset your Webdock password",
+                "Reset your Spitzli Cloud password",
                 format!(
-                    "Reset your Webdock password using this link:\n{}\nIf you did not request this, you can ignore this message.",
+                    "Reset your Spitzli Cloud password using this link:\n{}\nIf you did not request this, you can ignore this message.",
                     request.url
                 ),
             ),
             DeliveryKind::Invitation => (
-                "Invitation to Webdock",
-                format!("You have been invited to Webdock.\n{}", request.url),
+                "Invitation to Spitzli Cloud",
+                format!("You have been invited to Spitzli Cloud.\n{}", request.url),
             ),
             DeliveryKind::Notice => (
-                "A service in your Webdock workspace needs attention",
+                "A service in your Spitzli Cloud workspace needs attention",
                 format!(
-                    "A service in one of your Webdock workspaces has needed attention for a few minutes, for example because it keeps stopping or its image cannot be pulled. Sign in to see which one and why:\n{}",
+                    "A service in one of your Spitzli Cloud workspaces has needed attention for a few minutes, for example because it keeps stopping or its image cannot be pulled. Sign in to see which one and why:\n{}",
                     request.url
                 ),
             ),
             DeliveryKind::WebsiteAccess => (
-                "Your Webdock website access",
+                "Your Spitzli Cloud website access",
                 format!(
-                    "Your administrator has granted you website access on Webdock.\n{}",
+                    "Your administrator has granted you website access on Spitzli Cloud.\n{}",
                     request.url
                 ),
             ),

@@ -7,7 +7,7 @@ license.workspace = true
 publish = false
 
 [dependencies]
-maylily = { path = "/home/newt/Projekte/Personal/maylily-rs", features = ["parse"] }
+maylily = { path = "../../vendor/maylily", features = ["parse"] }
 serde.workspace = true
 thiserror.workspace = true
 

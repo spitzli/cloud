@@ -1,3 +1,4 @@
+import {readSse} from "./sse";
 import { z } from "zod";
 import { binaryGuard, checkedTransfer, hashStorageBlob, UploadUncertainError, type BinaryTransferOptions, type TransferDescriptor } from "./plugins/storage";
 const origin = z.url().refine((value) => {
@@ -15,8 +16,10 @@ export const runtimeConfigSchema = z
   .object({
     apiOrigin: origin,
     workspaceApiOrigin: origin.optional(),
+    realtimeUrl: z.url().refine(value=>{const u=new URL(value);return u.protocol==="wss:"&&u.hostname.endsWith(".neon.tech")&&!u.username&&!u.password&&!u.port&&u.pathname==="/"&&!u.search&&!u.hash},"Expected an exact Neon realtime origin").optional(),
     authOrigin: origin,
     enabledFeatures: z.array(z.string().max(80)).max(64),
+    databaseOrderingEnabled: z.boolean().optional(),
     browserFacade: z.boolean().optional(),
     consoleOrigin: origin.optional(),
     surface: z.enum(["account", "console"]).optional(),
@@ -142,6 +145,24 @@ export class ApiClient {
     if (url.origin !== base.origin || url.pathname !== descriptor.path || url.search || url.hash) throw new Error("Invalid binary API path.");
     return url;
   }
+  async stream<T>(path:string,schema:z.ZodType<T>,onEvent:(value:T,cursor:string)=>void|Promise<void>,options:{signal:AbortSignal;lastEventID?:string}):Promise<void> {
+    if(!path.startsWith("/")||path.startsWith("//")||path.includes("\\"))throw new Error("Invalid API path");
+    if(this.config.browserFacade)path=facadePath(path,false);
+    const base=new URL(this.config.apiOrigin),url=new URL(path,base);
+    if(url.origin!==base.origin)throw new Error("Invalid API path");
+    const headers=new Headers({Accept:"text/event-stream"});
+    if(options.lastEventID!==undefined){if(options.lastEventID.length>128)throw new Error("Invalid event cursor.");headers.set("Last-Event-ID",options.lastEventID);}
+    const fetcher=this.fetcher;
+    const response=await fetcher(url,{method:"GET",credentials:"include",cache:"no-store",redirect:"error",signal:options.signal,headers});
+    if(!response.ok)throw new ApiError(response.status,errorMessage(response.status,false));
+    if(response.headers.get("content-type")?.split(";")[0]?.trim()!=="text/event-stream"||!response.body)throw new Error("Unsupported build log stream.");
+    await readSse(response.body,async event=>{
+      if(event.event==="unavailable")throw new ApiError(403,"Build log access is no longer available.");
+      if(event.event!=="logs")return;
+      let value:T;try{value=schema.parse(JSON.parse(event.data));}catch{throw new Error("The service returned an unsupported log event.");}
+      await onEvent(value,event.id);
+    },options.signal);
+  }
   async request<T>(
     path: string,
     schema: z.ZodType<T>,
@@ -260,6 +281,8 @@ function errorMessage(status: number, auth: boolean): string {
     case 400:
     case 422:
       return "Check the entered values and try again.";
+    case 429:
+      return "Too many requests. Please wait before trying again.";
     default:
       return "The service could not complete this request. Try again.";
   }

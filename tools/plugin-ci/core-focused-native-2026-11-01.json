@@ -1,0 +1,119 @@
+{
+  "sourceArchiveSHA256": "1f2a5be3d78eb4b6c8dfeb0069c7e1bd4f912c388305c8b26919f1f365c83187",
+  "sourceArchiveBytes": 42270720,
+  "frozenSourceRef": "waitlist-release-focused-20261101-r2",
+  "sourceFileCount": 3949,
+  "builderImage": "docker.io/library/rust:1.98.1-slim-bookworm@sha256:ff521445a372125ed4f76e1453a1f8098f2d05332d1601d30db1c1f62757e730",
+  "bunImage": "docker.io/oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288",
+  "cargoJobs": 3,
+  "testThreads": 3,
+  "guestUID": 1001,
+  "manualEUQualificationOnly": true,
+  "githubWorkflowTriggered": false,
+  "productionActivationPerformed": false,
+  "harnessSHA256": {
+    "core_quality.py": "2803a483c290e9b56fd6ebd9f615f402c028a55ddfb625ecca70570b2ccf19a2",
+    "agent_build.py": "8f6b993432e09c4ff773085d3e951a2b3c3d6cadb62676393350c232310c7235",
+    "Dockerfile": "792cffda5eb27fa6f8113132c2b73cfe56981ebd8eea75815efde3acb4e94d07"
+  },
+  "mode": "focused",
+  "checks": [
+    {
+      "id": "waitlist-access",
+      "args": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "webdock-access",
+        "--lib",
+        "waitlist"
+      ],
+      "requiredTests": [
+        "public_input_cannot_set_status_or_skip_consent",
+        "public_contact_names_reject_controls_before_database_intake"
+      ],
+      "exitCode": 0,
+      "logSHA256": "1de7e96b11e600386fe42a371f63b2e1c3e6734294df9b6b85fca9362afa4e75",
+      "testCounts": {
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "id": "waitlist-http",
+      "args": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "webdock-control-plane",
+        "--lib",
+        "waitlist"
+      ],
+      "requiredTests": [
+        "public_intake_requires_json_with_explicit_consent_and_no_admission_fields",
+        "waitlist_writes_reject_foreign_or_missing_browser_origins",
+        "public_intake_bounds_untrusted_request_bodies_before_service_access"
+      ],
+      "exitCode": 0,
+      "logSHA256": "633e94849f41cf820790e830e390d468a2c8a9f32483405d5752814ae79e73df",
+      "testCounts": {
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "id": "compute-process",
+      "args": [
+        "cargo",
+        "test",
+        "--manifest-path",
+        "plugins/lumaserv-compute/Cargo.toml",
+        "--locked",
+        "--test",
+        "process"
+      ],
+      "requiredTests": [
+        "standalone_private_rpc_scoped_https_redaction_and_revocation"
+      ],
+      "exitCode": 0,
+      "logSHA256": "be5a2ed4dc002b1d1d83239ae8409beb60bdd0878d64d87cae8eaf71e647b50a",
+      "testCounts": {
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      }
+    }
+  ],
+  "computePanelEvidenceExported": false,
+  "allPlannedChecksPassed": true,
+  "liveServiceCredentialsUsed": false,
+  "binaryArtifacts": [
+    {
+      "path": "/quality-target/debug/deps/process-a56f3a3ebd333386",
+      "sha256": "3ddbb65ce95bf2024114a5accf0eb79343a1ae5f7db98cf20dda1b6827caf6cd",
+      "bytes": 182257384
+    },
+    {
+      "path": "/quality-target/debug/deps/webdock_access-f8acd0557aaf6c85",
+      "sha256": "152b4c9a1c8a1a2913058295897407c494c68fc3733a6c0817d1703a8467d24c",
+      "bytes": 103900832
+    },
+    {
+      "path": "/quality-target/debug/deps/webdock_control_plane-8c1cd6962bbb8396",
+      "sha256": "a69235c2c9b3399644f373876aed9b68a8c63949da1430c55ecd73006979f9d1",
+      "bytes": 773282280
+    },
+    {
+      "path": "/quality-target/debug/webdock-lumaserv-compute",
+      "sha256": "4f45e95e3163edfd514540b27777db87a3923e14c6f22aa677b1cab77f29f08f",
+      "bytes": 178150696
+    }
+  ],
+  "binaryEvidenceMethod": "Read-only checksum observation of exact frozen active harness private cache after successful compute test; no source modification",
+  "artifactExportPermissionErrorCorrected": true,
+  "privateArtifact": ".runtime-test/waitlist-release-ready-20261101/focused-native-artifact"
+}

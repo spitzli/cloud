@@ -11,6 +11,68 @@ fn chart() -> PathBuf {
     .unwrap()
 }
 #[test]
+fn real_helm_probe_host_is_a_literal_header_only_when_requested() {
+    for host in [None, Some("api.example.test:3130")] {
+        let mut value = serde_json::to_value(support::spec()).unwrap();
+        if let Some(host) = host {
+            value["healthHost"] = serde_json::json!(host);
+        }
+        let spec: webdock_supervisor::RuntimeSpec = serde_json::from_value(value).unwrap();
+        let values = helm_values(&spec, 1, false).unwrap();
+        let mut file = tempfile::NamedTempFile::new().unwrap();
+        file.write_all(&serde_json::to_vec(&values).unwrap())
+            .unwrap();
+        let output = std::process::Command::new("helm")
+            .args(["template", "test-runtime"])
+            .arg(chart())
+            .arg("--values")
+            .arg(file.path())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let objects: Vec<Value> = serde_saphyr::from_slice_multiple(&output.stdout).unwrap();
+        let deployment = objects.iter().find(|v| v["kind"] == "Deployment").unwrap();
+        let probe =
+            &deployment["spec"]["template"]["spec"]["containers"][0]["readinessProbe"]["httpGet"];
+        assert!(
+            probe.get("host").is_none(),
+            "probe destination must remain its own Pod"
+        );
+        assert_eq!(
+            probe["httpHeaders"],
+            host.map(|host| serde_json::json!([{"name":"Host","value":host}]))
+                .unwrap_or(Value::Null)
+        );
+    }
+}
+#[test]
+fn real_helm_rejects_probe_header_injection_and_invalid_ports() {
+    for host in [
+        "api.example.test\r\nX-Test: injected",
+        "user@api.test",
+        "api.test/path",
+        "api.test:65536",
+    ] {
+        let mut values = helm_values(&support::spec(), 1, false).unwrap();
+        values["healthHost"] = serde_json::json!(host);
+        let mut file = tempfile::NamedTempFile::new().unwrap();
+        file.write_all(&serde_json::to_vec(&values).unwrap())
+            .unwrap();
+        let output = std::process::Command::new("helm")
+            .args(["template", "test-runtime"])
+            .arg(chart())
+            .arg("--values")
+            .arg(file.path())
+            .output()
+            .unwrap();
+        assert!(!output.status.success(), "{host:?}");
+    }
+}
+#[test]
 fn approved_chart_rejects_changed_files_and_symlinks() {
     let directory = tempfile::tempdir().unwrap();
     std::fs::write(directory.path().join("Chart.yaml"), "name: test").unwrap();

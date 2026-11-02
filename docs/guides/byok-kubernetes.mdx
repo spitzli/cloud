@@ -1,32 +1,32 @@
 ---
-title: "Your Kubernetes or k3s cluster"
-description: "Register an existing cluster, enroll its agent and manage permitted workloads."
+title: "Connect your Kubernetes cluster"
+description: "Enroll an existing approved cluster and manage permitted workloads."
 ---
 
-You need control of an existing Kubernetes or k3s cluster, an enabled Kubernetes BYOK permission, a free cluster slot and an approved namespace list. Cluster registration does not install Kubernetes or migrate workloads.
+This integration requires operator enablement, an available cluster slot and approved namespaces. You must control the existing Kubernetes or k3s cluster. Registration does not install Kubernetes or migrate workloads.
 
 <Steps>
-  <Step title="Enable the permitted scope">Ask a platform operator to enable own clusters, set the maximum cluster count and list the allowed namespaces. Managing existing applications is a separate switch.</Step>
-  <Step title="Register the cluster">In **Your infrastructure**, choose **Connect own cluster**. Supply its name, Kubernetes or k3s type, EU location and provider location evidence. A location declaration alone is not verification.</Step>
-  <Step title="Enroll the agent">Open the cluster's protected enrollment flow in Console and follow its generated setup instructions on the intended cluster. Enrollment is short-lived; create a fresh enrollment if it expires. Do not share setup credentials in chat or source control.</Step>
-  <Step title="Inspect inventory">Wait for the agent to connect and report inventory. Check observation time, completeness and unavailable resource types before relying on the result.</Step>
+  <Step title="Confirm permission">Ask your operator to confirm cluster access, the cluster-count limit and allowed namespaces. Permission to manage existing applications is separate.</Step>
+  <Step title="Register the cluster">Where enabled, open **Your infrastructure → Connect own cluster**. Enter the requested name, cluster type, location and location evidence. A declared region alone is not verification.</Step>
+  <Step title="Enroll its agent">Open the protected enrollment flow and follow the generated instructions on the intended cluster. If enrollment expires, request a new one. Keep setup credentials out of chat and source control.</Step>
+  <Step title="Check inventory">Wait for the agent to connect. Review the observation time, completeness and unavailable resource types before acting on the inventory.</Step>
 </Steps>
 
-## Supported workload actions
+## Workload actions
 
-| Resource | Supported actions when authorized |
+| Resource | Actions available when authorized |
 | --- | --- |
 | Deployment, StatefulSet | Scale, stop, start, restart and logs |
 | DaemonSet | Restart and logs |
 | Pod, Job | Logs |
 | CronJob | Suspend and resume |
 
-Start restores a previously recorded replica count after a Webdock stop. Writes to controller-managed resources can be blocked; unsupported resource/action combinations are rejected. This interface does not provide arbitrary manifest editing, a shell or blanket cluster-administrator access.
+Start restores the replica count recorded by a previous Spitzli Cloud stop. Controller-managed resources or unsupported action combinations can be blocked. The integration does not expose arbitrary manifest editing or a shell.
 
-System namespaces stay protected. Workload operations are fenced by resource UID and version, allowed namespace, current policy and a fresh inventory observation. Inventory older than three minutes cannot authorize a workload change. Refresh and review the new state before resubmitting a stale request.
+System namespaces remain protected. Changes require a fresh inventory observation and current resource identity. If the state is stale, refresh it and review the workload before retrying.
 
-## Operations and recovery
+## Follow operations and disconnect
 
-Use the returned operation ID to follow execution. Preserve the same idempotency key when retrying the same intent. A busy or uncertain operation blocks a second write to the same workload. A platform operator must reconcile uncertain writes against fresh inventory before new actions proceed.
+Follow the returned operation to its final result. A busy or uncertain operation can block another write to that workload; an operator must reconcile uncertain results before changes resume.
 
-Revoking the agent invalidates its enrollment and access through Webdock. It does not delete the cluster or stop its independently running workloads. Keep application backups and recovery procedures with the infrastructure owner.
+Revoking the agent ends access through Spitzli Cloud. It does not delete the cluster or stop independently running workloads. Keep provider access, backups and recovery procedures with the infrastructure owner.

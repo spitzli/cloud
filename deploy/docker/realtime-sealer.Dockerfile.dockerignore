@@ -1,0 +1,7 @@
+**
+!apps/
+!apps/realtime-sealer/
+!apps/realtime-sealer/dist/
+!apps/realtime-sealer/dist/server.js
+!apps/realtime-sealer/dist/licenses/
+!apps/realtime-sealer/dist/licenses/**

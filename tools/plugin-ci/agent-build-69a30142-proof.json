@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "sourceRef": "sha256:69a30142893179ca00745d5d34748ab7b6fb848f6334060a4724cd6f9a1c5e5d",
+  "sourceArchiveSHA256": "69a30142893179ca00745d5d34748ab7b6fb848f6334060a4724cd6f9a1c5e5d",
+  "sourceRootsSelected": [
+    ".cargo",
+    "agents",
+    "crates",
+    "deploy",
+    "infra",
+    "migrations",
+    "proto",
+    "vendor"
+  ],
+  "sourceAdditionalPathsSelected": [
+    "legacy/control-plane/drizzle/",
+    "tools/tests/",
+    "tools/migrations/baseline.sha256"
+  ],
+  "parentCheckpointRef": "refs/checkpoints/plugin-agent-bound-fixture-20261101@8afe7a7c9735db79fab56f13822d709c12a4f102",
+  "buildMode": "fixture-refresh",
+  "promotable": false,
+  "independentReviewRequiredBeforeActivation": true,
+  "builderImage": "docker.io/library/rust:1.98.1-slim-bookworm@sha256:ff521445a372125ed4f76e1453a1f8098f2d05332d1601d30db1c1f62757e730",
+  "features": [
+    "kubernetes"
+  ],
+  "defaultFeatures": false,
+  "cargoJobs": 3,
+  "testExecutionUID": 65534,
+  "harnessSHA256": {
+    "agent_build.py": "ab114287f4b3db4ff71a18b636b1f2a6813eb0e4c3478972a238e874d34c63dd",
+    "agent_elf.py": "2598db5baa1dbf81c8e3d679101e2862a27ac70380561d184fa5096deb9c670a",
+    "Dockerfile": "3f26e88d5f4b3b406eafd474b6717474ea2639d5cb3613a1273713f02731acf8"
+  },
+  "productionActivationPerformed": false,
+  "reusedSoftwareProof": {
+    "sourceRef": "sha256:1e2c510717acd4fb9a0042c546ab57f603f164479d8815585d571dba6302cb85",
+    "artifactSHA256": "785cb77477644b1cba3fd4622809d20d810a12de6d7e3c2485d00d1fe6123a39",
+    "testTranscripts": {
+      "storage-attachment-tests.log": {
+        "passed": 58,
+        "ignored": 7,
+        "sha256": "40ab2f7b79c6c8d228b5a40e4f677e3df4f39ea5183d0423023c456f32b7a430"
+      },
+      "management-tests.log": {
+        "passed": 16,
+        "ignored": 0,
+        "sha256": "41ed06ff55512a5fd4972c4f0a16d99f10092c7c903a30abf6ef820ced48edde"
+      },
+      "full-agent-tests.log": {
+        "passed": 137,
+        "ignored": 25,
+        "sha256": "605ec82485d424020f6779593d7df069693a8d302b910ad1687ae01f3f470014"
+      }
+    },
+    "sourceComparison": {
+      "changedFiles": [
+        "crates/agent/tests/legacy_attachment.rs"
+      ],
+      "allOtherSourceFilesUnchanged": true,
+      "unchangedSourceFileCount": 4554
+    }
+  },
+  "artifactSHA256": "785cb77477644b1cba3fd4622809d20d810a12de6d7e3c2485d00d1fe6123a39",
+  "ubuntu24ABI": {
+    "sha256": "785cb77477644b1cba3fd4622809d20d810a12de6d7e3c2485d00d1fe6123a39",
+    "bytes": 33334392,
+    "requiredGLIBC": [
+      "2.2.5",
+      "2.3",
+      "2.3.2",
+      "2.3.4",
+      "2.4",
+      "2.7",
+      "2.9",
+      "2.14",
+      "2.15",
+      "2.16",
+      "2.17",
+      "2.18",
+      "2.25",
+      "2.28",
+      "2.29",
+      "2.30",
+      "2.32",
+      "2.33",
+      "2.34"
+    ],
+    "maximumRequiredGLIBC": "2.34",
+    "maximumAllowedGLIBC": "2.39",
+    "neededLibraries": [
+      "ld-linux-x86-64.so.2",
+      "libc.so.6",
+      "libgcc_s.so.1",
+      "libm.so.6"
+    ],
+    "resolvedLibraries": [
+      "\tlinux-vdso.so.1 (0x00007fff23fc8000)",
+      "\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007a915b8d0000)",
+      "\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007a915b7e7000)",
+      "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007a9159c00000)",
+      "\t/lib64/ld-linux-x86-64.so.2 (0x00007a915b906000)"
+    ],
+    "probeHostLibc": "glibc 2.39",
+    "productionActivationPerformed": false,
+    "helpExitCode": 0,
+    "helpSHA256": "6896fe35932e858368d402468c6a605d392f1c05a19aa40ca9efe22d7c7a708e",
+    "helpProbeUID": 1001,
+    "runtimeConfigRead": false
+  },
+  "testTranscripts": {
+    "storage-attachment-tests.log": {
+      "passed": 58,
+      "ignored": 7,
+      "sha256": "40ab2f7b79c6c8d228b5a40e4f677e3df4f39ea5183d0423023c456f32b7a430",
+      "reusedFromSourceRef": "sha256:1e2c510717acd4fb9a0042c546ab57f603f164479d8815585d571dba6302cb85"
+    },
+    "management-tests.log": {
+      "passed": 16,
+      "ignored": 0,
+      "sha256": "41ed06ff55512a5fd4972c4f0a16d99f10092c7c903a30abf6ef820ced48edde",
+      "reusedFromSourceRef": "sha256:1e2c510717acd4fb9a0042c546ab57f603f164479d8815585d571dba6302cb85"
+    },
+    "full-agent-tests.log": {
+      "passed": 137,
+      "ignored": 25,
+      "sha256": "605ec82485d424020f6779593d7df069693a8d302b910ad1687ae01f3f470014",
+      "reusedFromSourceRef": "sha256:1e2c510717acd4fb9a0042c546ab57f603f164479d8815585d571dba6302cb85"
+    }
+  },
+  "compiledIntegrationFixture": {
+    "sha256": "91ceb61828bd9c901d982dd505244d00bc35d9e068c783e855d580c48d4c87b5",
+    "bytes": 349430168,
+    "requiredGLIBC": [
+      "2.2.5",
+      "2.3",
+      "2.3.2",
+      "2.3.4",
+      "2.4",
+      "2.7",
+      "2.9",
+      "2.14",
+      "2.15",
+      "2.16",
+      "2.17",
+      "2.18",
+      "2.25",
+      "2.28",
+      "2.29",
+      "2.30",
+      "2.32",
+      "2.33",
+      "2.34"
+    ],
+    "maximumRequiredGLIBC": "2.34",
+    "maximumAllowedGLIBC": "2.39",
+    "neededLibraries": [
+      "ld-linux-x86-64.so.2",
+      "libc.so.6",
+      "libgcc_s.so.1",
+      "libm.so.6"
+    ],
+    "resolvedLibraries": [
+      "\tlinux-vdso.so.1 (0x00007fff82189000)",
+      "\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x0000748df7afd000)",
+      "\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x0000748df7a14000)",
+      "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x0000748df5400000)",
+      "\t/lib64/ld-linux-x86-64.so.2 (0x0000748df7b33000)"
+    ],
+    "probeHostLibc": "glibc 2.39",
+    "productionActivationPerformed": false,
+    "binary": "/home/spitzli-plugin-ci/agent-candidates/bound-69a30142-artifact/legacy-attachment-test",
+    "liveKubernetesFixtureExecuted": false
+  },
+  "reviewRequiredBeforePromotion": true
+}

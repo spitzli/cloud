@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "enabled": false,
+  "buildHostName": "webdock-build-eu-01",
+  "buildPublicIPv4": "167.86.75.144",
+  "controllerHostName": null,
+  "controllerPublicIPv4": null,
+  "controllerTunnelIPv4": null,
+  "buildPublicKey": null,
+  "controllerPublicKey": null,
+  "buildPrivateKeyFile": "/etc/wireguard/webdock-build-controller.key",
+  "controllerPrivateKeyFile": "/etc/wireguard/webdock-build-controller.key",
+  "buildPort": 51820,
+  "controllerPort": 51820,
+  "apiEndpoint": "https://10.83.0.1:6443",
+  "buildCAFile": "/etc/webdock-build-controller/build-ca.crt",
+  "buildCASHA256": null,
+  "serviceAccountUID": null,
+  "revocationSecretUID": null,
+  "audience": null,
+  "bearerFile": "/var/lib/webdock-build-controller/identity/token",
+  "kubeconfigFile": "/var/lib/webdock-build-controller/identity/client.json"
+}

@@ -263,7 +263,11 @@ async fn durable_app_create_claim_complete_controls_quotas_and_revocation() {
     let fixture = Arc::new(Fixture::new("kubernetes").await);
     let f = fixture.clone();
     let outcome=tokio::spawn(async move{
- f.configure("k3s").await;let hash=hex::encode(Sha256::digest("a".repeat(43)));assert!(f.service.authenticate_enrolled_agent(&f.cluster,1,&hash).await.is_ok());assert!(f.service.authenticate_enrolled_agent(&f.cluster,2,&hash).await.is_err());assert!(f.service.authenticate_enrolled_agent(&f.cluster,1,&"0".repeat(64)).await.is_err());let command=json!({"action":"apps.create","projectID":f.pid,"name":"fixture-app","spec":spec(),"environment":[{"name":"TOKEN","value":"very-secret-value"}],"subscriptionRevision":1,"idempotencyKey":"create-app-request-1"});let created=f.service.execute(&f.principal,command.clone()).await.unwrap();assert_eq!(created["status"],"queued");assert_eq!(f.service.execute(&f.principal,command).await.unwrap(),created);let app=created["appID"].as_str().unwrap();
+ f.configure("k3s").await;
+ let project=f.service.execute(&f.principal,json!({"action":"projects.get","projectID":f.pid})).await.unwrap();
+ assert_eq!(project["configured"],true);
+ assert_eq!(project["publicSitePolicy"],Value::Null,"a project without an eligible public domain policy must still open");
+ let hash=hex::encode(Sha256::digest("a".repeat(43)));assert!(f.service.authenticate_enrolled_agent(&f.cluster,1,&hash).await.is_ok());assert!(f.service.authenticate_enrolled_agent(&f.cluster,2,&hash).await.is_err());assert!(f.service.authenticate_enrolled_agent(&f.cluster,1,&"0".repeat(64)).await.is_err());let command=json!({"action":"apps.create","projectID":f.pid,"name":"fixture-app","spec":spec(),"environment":[{"name":"TOKEN","value":"very-secret-value"}],"subscriptionRevision":1,"idempotencyKey":"create-app-request-1"});let created=f.service.execute(&f.principal,command.clone()).await.unwrap();assert_eq!(created["status"],"queued");assert_eq!(f.service.execute(&f.principal,command).await.unwrap(),created);let app=created["appID"].as_str().unwrap();
  assert!(f.service.execute(&f.principal,json!({"action":"apps.stop","appID":app,"revision":1,"subscriptionRevision":1,"idempotencyKey":"stop-while-busy-1"})).await.is_err());
  let claim=f.service.agent_request(&f.agent,"claim",json!({})).await.unwrap();assert_eq!(claim["id"],created["id"]);assert_eq!(claim["desired"]["environment"]["TOKEN"],"very-secret-value");assert!(claim["desired"].get("environmentEncrypted").is_none());assert_eq!(claim["desired"]["quota"]["apps"],1);
  assert!(f.service.agent_request(&f.agent,"guard",json!({"id":claim["id"],"generation":99})).await.is_err());f.service.agent_request(&f.agent,"guard",json!({"id":claim["id"],"generation":claim["generation"]})).await.unwrap();
@@ -646,3 +650,19 @@ mod delivery;
 
 #[path = "support/completion_deadline.rs"]
 mod completion_deadline;
+
+#[path = "../../build/tests/support/kubernetes_admission.rs"]
+mod build_kubernetes_admission;
+#[path = "../../build/tests/support/kubernetes_fair_retry.rs"]
+mod build_kubernetes_fair_retry;
+#[path = "../../build/tests/support/kubernetes_volumes.rs"]
+mod build_kubernetes_volumes;
+
+#[path = "../../build/tests/support/kubernetes_publication.rs"]
+mod build_kubernetes_publication;
+
+#[path = "../../build/tests/support/github_webhook.rs"]
+mod build_github_webhook;
+
+#[path = "../../build/tests/support/kubernetes_live.rs"]
+mod build_kubernetes_live;

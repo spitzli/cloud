@@ -1,0 +1,11 @@
+{
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/repository-catalog.png",
+      "caption": "Actual public catalog v0.1.0, captured before this presentation release. Catalog-only; explicit runtime binding required, no customer UI.",
+      "alt": "GitHub Repository catalog entry stating required Core descriptor and transport binding"
+    }
+  ]
+}

@@ -4,11 +4,11 @@ use crate::entities::app;
 use sea_orm::{ActiveModelTrait, EntityTrait, IntoActiveModel, QuerySelect, Set};
 impl HostingService {
     pub(super) async fn app(tx: &DatabaseTransaction, id: &str) -> Result<Value> {
-        rows(tx,"SELECT to_jsonb(a)||jsonb_build_object('customer_id',h.customer_id,'cluster_id',h.cluster_id,'namespace',h.namespace,'own_images',h.own_images) AS value FROM webdock_auth.hosting_app a JOIN webdock_auth.hosting_project h ON h.project_id=a.project_id WHERE a.id=$1",vec![id.into()]).await?.pop().ok_or_else(||error(404,"Application is unavailable."))
+        rows(tx,"SELECT to_jsonb(a)||jsonb_build_object('public_address',(SELECT jsonb_build_object('id',d.id,'hostname',d.hostname,'url','https://'||d.hostname,'state',d.state,'revision',d.revision) FROM webdock_auth.platform_hostname d WHERE d.app_id=a.id AND d.state<>'retired'),'customer_id',h.customer_id,'cluster_id',h.cluster_id,'namespace',h.namespace,'own_images',h.own_images) AS value FROM webdock_auth.hosting_app a JOIN webdock_auth.hosting_project h ON h.project_id=a.project_id WHERE a.id=$1",vec![id.into()]).await?.pop().ok_or_else(||error(404,"Application is unavailable."))
     }
     fn safe_app(&self, row: &Value) -> Result<Value> {
         Ok(
-            json!({"id":row["id"],"lifecycle":row["lifecycle"],"name":row["name"],"projectID":row["project_id"],"revision":row["revision"],"observedRevision":row["observed_revision"],"status":row["status"],"spec":row["spec"],"environmentNames":self.environment.open(field(row,"id")?,row["environment_encrypted"].as_str())?.keys().collect::<Vec<_>>(),"operationID":row["operation_id"],"lastError":row["last_error"],"logs":row["logs"]}),
+            json!({"id":row["id"],"lifecycle":row["lifecycle"],"name":row["name"],"projectID":row["project_id"],"revision":row["revision"],"observedRevision":row["observed_revision"],"status":row["status"],"spec":row["spec"],"environmentNames":self.environment.open(field(row,"id")?,row["environment_encrypted"].as_str())?.keys().collect::<Vec<_>>(),"operationID":row["operation_id"],"lastError":row["last_error"],"logs":row["logs"],"publicAddress":row["public_address"]}),
         )
     }
     fn deletion(row: &Value, purge: bool) -> Result<Value> {
@@ -27,7 +27,7 @@ impl HostingService {
             let project = field(cmd, "projectID")?;
             let access =
                 Self::authorize(tx, actor, Some(project), None, false, false, false).await?;
-            let app_rows=rows(tx,"SELECT to_jsonb(a) AS value FROM webdock_auth.hosting_app a WHERE project_id=$1 AND (status<>'deleted' OR COALESCE((spec->>'volumeBytes')::bigint,0)>0) ORDER BY name,id",vec![project.into()]).await?;
+            let app_rows=rows(tx,"SELECT to_jsonb(a)||jsonb_build_object('public_address',(SELECT jsonb_build_object('id',d.id,'hostname',d.hostname,'url','https://'||d.hostname,'state',d.state,'revision',d.revision) FROM webdock_auth.platform_hostname d WHERE d.app_id=a.id AND d.state<>'retired')) AS value FROM webdock_auth.hosting_app a WHERE project_id=$1 AND (status<>'deleted' OR COALESCE((spec->>'volumeBytes')::bigint,0)>0) ORDER BY name,id",vec![project.into()]).await?;
             let mut page = search_page(app_rows, cmd, &["name"])?;
             page["docs"] = Value::Array(
                 page["docs"]
@@ -202,6 +202,7 @@ impl HostingService {
             .insert(tx)
             .await
             .map_err(db_error)?;
+            self.requested_public_route(tx, cmd, &id, &cluster).await?;
             let result = json!({"appID":id,"revision":1,"lifecycle":"draft","status":"draft"});
             self.record_result(tx, actor, cmd, (hash, &result), &access, Some(&cluster))
                 .await?;
@@ -507,8 +508,15 @@ impl HostingService {
             }
         }
         let row = row.as_ref().unwrap();
+        let public_route = self
+            .requested_public_route(tx, cmd, field(row, "id")?, &cluster)
+            .await?;
         let mut desired = json!({"appID":row["id"],"projectID":project,"clusterID":cluster,"namespace":access.project.get("namespace").cloned().unwrap_or(json!(format!("wd-{project}"))),"name":row["name"],"spec":spec,"revision":row["revision"],"action":if logging{match action{"apps.inspect"=>"inspect","apps.metrics"=>"metrics",_=>"logs"}}else if purging{"purge-storage"}else if deleting{"delete"}else{"apply"},"expectedUID":row["observed_uid"]});
         desired["customerScope"] = json!(actor.customer_scope);
+        if let Some(route) = public_route.filter(|_| !logging) {
+            desired["publicRoute"] = json!(route);
+            desired["publicRoutingVersion"] = json!(1);
+        }
         if storage {
             desired["storageVersion"] = json!(1);
         }

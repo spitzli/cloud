@@ -73,6 +73,12 @@ pub(crate) fn credential_endpoint(path: &str) -> bool {
             matches!(
                 tail,
                 "claim"
+                    | "kubernetes-log"
+                    | "kubernetes-claim"
+                    | "kubernetes-attempts"
+                    | "kubernetes-intent"
+                    | "kubernetes-job"
+                    | "kubernetes-retire"
                     | "complete"
                     | "release-claim"
                     | "release-prepare"

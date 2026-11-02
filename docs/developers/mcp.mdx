@@ -1,12 +1,12 @@
 ---
 title: "MCP integration"
-description: "Connect an OAuth-capable client to Webdock registry or hosting tools."
+description: "Connect an OAuth-capable client to Spitzli Cloud registry or hosting tools."
 ---
 
-Webdock uses stateless Streamable HTTP with JSON responses at `https://studio.webdock.dev/api/mcp`.
+Spitzli Cloud uses stateless Streamable HTTP with JSON responses at `https://studio.webdock.dev/api/mcp`.
 
 <Steps>
-  <Step title="Register the client">Open [Connections](https://auth.webdock.dev/connections) with an eligible account and completed security setup. Register the exact callback used by your MCP client.</Step>
+  <Step title="Prepare the client">Use an operator-registered OAuth client with the exact callback used by your MCP client. Complete the account security setup before authorizing.</Step>
   <Step title="Choose permissions">Select registry or hosting access. Request read access first and add write access only when required.</Step>
   <Step title="Connect and authorize">Configure the endpoint below, complete OAuth consent, and request the exact registered MCP resource audience.</Step>
   <Step title="Discover tools">Use your client's tool discovery after login. Tools depend on granted scopes and current permissions; a tool's presence does not bypass resource authorization.</Step>
@@ -15,7 +15,7 @@ Webdock uses stateless Streamable HTTP with JSON responses at `https://studio.we
 ```json
 {
   "mcpServers": {
-    "Webdock": {
+    "Spitzli Cloud": {
       "url": "https://studio.webdock.dev/api/mcp"
     }
   }
@@ -26,8 +26,8 @@ Webdock uses stateless Streamable HTTP with JSON responses at `https://studio.we
 
 | Scope | Access |
 | --- | --- |
-| `webdock:read` | Operator registry reads and permitted catalog reads |
-| `webdock:write` | Registry/catalog changes in addition to read access |
+| `webdock:read` | Operator Registry reads and admitted installed-plugin reads |
+| `webdock:write` | Registry and admitted plugin writes in addition to read access |
 | `hosting:read` | Hosting reads within current customer permissions |
 | `hosting:write` | Authorized hosting changes in addition to read access |
 | `offline_access` | Renewal only for clients explicitly granted it |
@@ -38,10 +38,12 @@ Keep registry and hosting scope families separate. Hosting access does not grant
 
 Registry tools include `list_records` and `get_record`. Hosting tools include `list_hosting_apps`, `get_hosting_app`, `get_hosting_logs` and `get_hosting_operation`. Write-capable hosting tools enqueue operations: inspect their result and final resource state.
 
-Creating a CMS connection records inventory, not provisioning. Deletion and retained-storage purge require current platform administrator permissions and their explicit confirmation inputs. Read the tool schema rather than guessing arguments.
+Deletion and retained-storage purge require current platform administrator permissions and their explicit confirmation inputs. Read the tool schema rather than guessing arguments.
 
-<Note>This is the Webdock MCP server. The Mintlify management MCP server manages documentation and uses a different account and authorization flow.</Note>
+<Note>This is the Spitzli Cloud MCP server. The Mintlify management MCP server manages documentation and uses a different account and authorization flow.</Note>
 
 ## BYOK tools
 
-See [BYOK automation](/developers/byok) for provider-specific tools, current revisions and workload resource-version checks.
+Use discovery for currently wired tools; older provider command lists are not a promise of native availability. See [BYOK boundaries](/developers/byok) for provider credentials and revisions, and [plugin API and MCP](/developers/plugin-api-mcp) for installed extension tools.
+
+Source: native tool discovery (`crates/control-plane/src/first_party_mcp.rs`), Hosting tools (`crates/control-plane/src/resource_hosting.rs`) and OAuth authority (`crates/oauth/src/mcp_authority.rs`).

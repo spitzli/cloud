@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
+import { useI18n } from "@webdock/i18n/react";
 import { HouseIcon } from "@phosphor-icons/react/dist/csr/House";
 import { UsersIcon } from "@phosphor-icons/react/dist/csr/Users";
 import { GaugeIcon } from "@phosphor-icons/react/dist/csr/Gauge";
@@ -26,21 +27,24 @@ function section(pathname: string): string {
   if (pathname.startsWith("/tenants/")) return "Members";
   if (pathname.endsWith("/usage")) return "Plan and usage";
   if (pathname.endsWith("/domains")) return "Domains";
+  if (pathname.endsWith("/connections")) return "Connections";
   if (pathname.endsWith("/api-tokens")) return "API tokens";
   return "Overview";
 }
 /** Inside a customer workspace the header names it and the section, like the sidebar does. */
 export function useWorkspaceHeader(pathname: string) {
+  const { t } = useI18n();
   const tenants = useTenants();
   const customer = workspaceOf(pathname) ?? /^\/tenants\/([1-9][0-9]{0,18})$/.exec(pathname)?.[1];
   if (!customer) return null;
   const tenant = tenants.data?.find((t) => t.id === customer);
   const name = tenant?.name ?? "Workspace";
-  return { customer, label: name, detail: tenant?.role ?? "Customer workspace", crumbs: [name, section(pathname)] };
+  return { customer, label: name, detail: tenant?.role ?? "Customer workspace", crumbs: [name, pathname.endsWith("/connections") ? t("Connections") : section(pathname)] };
 }
 
 /** Sidebar of one workspace: overview, one entry per product the viewer can see, members. */
 export function WorkspaceNav({ customer, item }: { customer: string; item: (active: boolean) => string }) {
+  const { t } = useI18n();
   const session = useSession();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const tenants = useTenants();
@@ -70,6 +74,10 @@ export function WorkspaceNav({ customer, item }: { customer: string; item: (acti
       <Link to="/workspaces/$id/domains" params={{ id: customer }} className={item(pathname === `/workspaces/${customer}/domains`)} aria-current={pathname === `/workspaces/${customer}/domains` ? "page" : undefined}>
         <GlobeIcon size={18} />
         Domains
+      </Link>
+      <Link to="/workspaces/$id/connections" params={{ id: customer }} className={item(pathname === `/workspaces/${customer}/connections`)} aria-current={pathname === `/workspaces/${customer}/connections` ? "page" : undefined}>
+        <KeyIcon size={18} />
+        {t("Connections")}
       </Link>
       <Link to="/workspaces/$id/usage" params={{ id: customer }} className={item(pathname === `/workspaces/${customer}/usage`)} aria-current={pathname === `/workspaces/${customer}/usage` ? "page" : undefined}>
         <GaugeIcon size={18} />

@@ -56,6 +56,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
         concurrent_deployments: 1,
     };
     spec.hosting_binding = Some(HostingBinding {
+        public_route: None,
         cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
         quota: allowance.clone(),
         final_quota: allowance,

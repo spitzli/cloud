@@ -1,0 +1,88 @@
+{
+  "dmiUUID": "91961f5a-b06b-44d1-9684-3f07ae5ca5bc",
+  "removedFiles": [
+    {
+      "path": "/opt/webdock-agent-qualification/fixture-bin/source-38a9d13a-_hz7ylf8/legacy-attachment-test",
+      "sha256": "239c46b0b568b60a88ebb79b8f52ae5698639a66d27b651eaa3ef22336fd0f47",
+      "bytes": 349606376,
+      "device": 2049,
+      "inode": 5816032
+    },
+    {
+      "path": "/opt/webdock-agent-qualification/legacy-attachment-test",
+      "sha256": "239c46b0b568b60a88ebb79b8f52ae5698639a66d27b651eaa3ef22336fd0f47",
+      "bytes": 349606376,
+      "device": 2049,
+      "inode": 5816027
+    },
+    {
+      "path": "/opt/webdock-agent-qualification/fixture-bin/source-2479fc24-gndnm11v/legacy-attachment-test",
+      "sha256": "2365c5d97b52529464cffd3a9edb6cc3d4d16d54fee59a82d4323932e5c757dc",
+      "bytes": 350501072,
+      "device": 2049,
+      "inode": 5816039
+    },
+    {
+      "path": "/opt/webdock-agent-qualification/incoming-2365c5d9-test",
+      "sha256": "2365c5d97b52529464cffd3a9edb6cc3d4d16d54fee59a82d4323932e5c757dc",
+      "bytes": 350501072,
+      "device": 2049,
+      "inode": 5816037
+    },
+    {
+      "path": "/opt/webdock-agent-qualification/fixture-bin/source-17662f55-rqmhd9h6/legacy-attachment-test",
+      "sha256": "087b91e9ac9ef6b27f62d2c7fa41354d440c4c04f47d8503115009041a76d632",
+      "bytes": 356180960,
+      "device": 2049,
+      "inode": 5816046
+    },
+    {
+      "path": "/opt/webdock-agent-qualification/incoming-087b91e9-test",
+      "sha256": "087b91e9ac9ef6b27f62d2c7fa41354d440c4c04f47d8503115009041a76d632",
+      "bytes": 356180960,
+      "device": 2049,
+      "inode": 5816044
+    }
+  ],
+  "removedBytes": 2112576816,
+  "retainedPrivateProofs": [
+    {
+      "path": "/opt/webdock-agent-qualification/fixture-bin/source-38a9d13a-_hz7ylf8/fixture-proof.json",
+      "sha256": "443f649862d8561dbbe099e7ac83cd9bcee24c7c1a082c486a44c9509822eaf6",
+      "fixtureLogRetained": true,
+      "ownedPodDiagnosticsRetained": true
+    },
+    {
+      "path": "/opt/webdock-agent-qualification/fixture-bin/source-2479fc24-gndnm11v/fixture-proof.json",
+      "sha256": "dc614bc2fd22f74bfedb853cc6f5622196a8be52dedc7e9ec2b49a37d2657710",
+      "fixtureLogRetained": true,
+      "ownedPodDiagnosticsRetained": true
+    },
+    {
+      "path": "/opt/webdock-agent-qualification/fixture-bin/source-17662f55-rqmhd9h6/fixture-proof.json",
+      "sha256": "b886d8524a8a33dc21ea30e6ea2162b7f95f2bbdea10d13bc358cd86ba5f21d5",
+      "fixtureLogRetained": true,
+      "ownedPodDiagnosticsRetained": true
+    }
+  ],
+  "before": {
+    "knownOwnedNamespacesAbsent": true,
+    "ownedQualificationPersistentVolumesAbsent": true,
+    "allThreeUUIDRootsAbsent": true,
+    "qualificationRootBaseEmpty": true
+  },
+  "after": {
+    "knownOwnedNamespacesAbsent": true,
+    "ownedQualificationPersistentVolumesAbsent": true,
+    "allThreeUUIDRootsAbsent": true,
+    "qualificationRootBaseEmpty": true
+  },
+  "localAndBUILDCopiesVerifiedBeforeRemoval": true,
+  "activeProcessUsingTestBinaryFound": false,
+  "productionAgentPathsTouched": false,
+  "kubernetesWritesPerformed": false,
+  "recursiveDeletionPerformed": false,
+  "onlyScope": "/opt/webdock-agent-qualification",
+  "createdUTC": "2026-11-01T13:50:37Z",
+  "retainedProofLogsAndDriversReverifiedAfterCleanup": true
+}

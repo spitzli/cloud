@@ -181,6 +181,25 @@ def retained(packet):
     if packet['appID'] in pool(config)['volumes']:identity(packet,read_record(directory))
 
 
+def state(packet):
+    """Inspect existing storage without mounting, repairing, or allocating it."""
+    config=configuration()
+    if packet['clusterID']!=config['clusterID']:raise StorageError('Wrong storage cluster')
+    directory=Path(config['root'])/packet['appID']
+    record=read_record(directory);identity(packet,record)
+    private(directory,directory=True)
+    if record['state']=='ready':
+        verify_image(directory,record)
+        if not mounted(directory):raise StorageError('Volume is not mounted')
+        data=os.lstat(directory/'mount'/'data')
+        if not stat.S_ISDIR(data.st_mode) or data.st_uid!=65532 or data.st_gid!=65532:
+            raise StorageError('Volume data ownership changed')
+    elif record['state']=='purged':
+        if any(directory.iterdir()):raise StorageError('Purged volume contains data')
+    else:raise StorageError('Volume needs operator reconciliation')
+    return record['state']
+
+
 def purge(packet):
     config=configuration()
     if packet['clusterID']!=config['clusterID']:raise StorageError('Wrong storage cluster')
@@ -221,6 +240,7 @@ def capability(node_names):
         config=configuration()
         if node_names!=[config['node']]:return None
         for directory,record in records(config):
+            if record['state'] not in ['ready','purged']:return None
             if record['state']=='ready':
                 verify_image(directory,record)
                 if not mounted(directory):return None

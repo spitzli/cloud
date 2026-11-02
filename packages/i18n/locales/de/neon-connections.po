@@ -1,0 +1,143 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Webdock\n"
+"PO-Revision-Date: 2026-11-01 00:00+0000\n"
+"Last-Translator: Webdock\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "API key scope"
+msgstr "Geltungsbereich des API-Schlüssels"
+
+msgid "An owner, administrator or authorized operator manages Neon connections."
+msgstr "Eigentümer, Administratoren oder berechtigte Plattformbetreiber verwalten Neon-Verbindungen."
+
+msgid "Confirm Neon disconnection"
+msgstr "Trennung von Neon bestätigen"
+
+msgid "Confirm disconnect"
+msgstr "Trennung bestätigen"
+
+msgid "Connect Neon"
+msgstr "Neon verbinden"
+
+msgid "Connect your own Neon account to this customer workspace."
+msgstr "Verbinde dein eigenes Neon-Konto mit diesem Kundenarbeitsbereich."
+
+msgid "Connection revision"
+msgstr "Verbindungsrevision"
+
+msgid "Create a key in your Neon account. The key is stored encrypted on the server and is never shown again. It is cleared from this form on every submission."
+msgstr "Erstelle einen Schlüssel in deinem Neon-Konto. Er wird auf dem Server verschlüsselt gespeichert und nicht erneut angezeigt. Bei jedem Absenden wird er aus diesem Formular entfernt."
+
+msgid "Disconnect Neon"
+msgstr "Neon trennen"
+
+msgid "Do not upload credentials.json or share a login callback URL or code. Spitzli does not run the CLI for you."
+msgstr "Lade keine credentials.json hoch und teile weder die Rückleitungsadresse noch den Anmeldecode. Spitzli führt die CLI nicht für dich aus."
+
+msgid "Loading connections…"
+msgstr "Verbindungen werden geladen…"
+
+msgid "Neon API key"
+msgstr "Neon-API-Schlüssel"
+
+msgid "Neon bills your own account and applies its own quotas. This connection does not use the platform's free database allowance."
+msgstr "Neon rechnet über dein eigenes Konto ab und wendet eigene Kontingente an. Diese Verbindung nutzt nicht das kostenlose Datenbankkontingent der Plattform."
+
+msgid "Neon connected. Refresh projects to read your Neon inventory."
+msgstr "Neon ist verbunden. Aktualisiere die Projekte, um deine Neon-Projekte abzurufen."
+
+msgid "Neon disconnected. Your Neon projects and data are unchanged."
+msgstr "Neon ist getrennt. Deine Neon-Projekte und Daten bleiben unverändert."
+
+msgid "Neon inventory is unavailable. The key may be invalid or revoked, or Neon may be unavailable. Check the key and refresh; no fallback is used."
+msgstr "Die Neon-Projektübersicht ist nicht verfügbar. Der Schlüssel könnte ungültig oder widerrufen sein oder Neon ist nicht erreichbar. Prüfe den Schlüssel und aktualisiere die Übersicht; es wird kein Ersatzanbieter verwendet."
+
+msgid "Neon project inventory"
+msgstr "Neon-Projektübersicht"
+
+msgid "Neon projects (read only)"
+msgstr "Neon-Projekte (schreibgeschützt)"
+
+msgid "Neon rejected this request or access is unavailable. Check your API key, Neon project ID and permissions. No alternative provider was used."
+msgstr "Neon hat diese Anfrage abgelehnt oder der Zugriff ist nicht verfügbar. Prüfe deinen API-Schlüssel, die Neon-Projekt-ID und deine Berechtigungen. Es wurde kein anderer Anbieter verwendet."
+
+msgid "New shared and self-hosted PostgreSQL orders are retired. For a new database, create a project in your own Neon account. Connect your Neon account in Connections. Existing databases remain available below."
+msgstr "Neue Bestellungen für geteiltes und selbst gehostetes PostgreSQL sind eingestellt. Erstelle für eine neue Datenbank ein Projekt in deinem eigenen Neon-Konto. Verbinde dein Neon-Konto unter Verbindungen. Bestehende Datenbanken sind unten weiterhin verfügbar."
+
+msgid "Next project page"
+msgstr "Nächste Projektseite"
+
+msgid "No Neon projects are available to this key."
+msgstr "Für diesen Schlüssel sind keine Neon-Projekte verfügbar."
+
+msgid "Open Neon Console"
+msgstr "Neon-Konsole öffnen"
+
+msgid "Open connections"
+msgstr "Verbindungen öffnen"
+
+msgid "Optional: create a project key with the Neon CLI"
+msgstr "Optional: Projektschlüssel mit der Neon-CLI erstellen"
+
+msgid "Organization"
+msgstr "Organisation"
+
+msgid "Organization ID (optional)"
+msgstr "Organisations-ID (optional)"
+
+msgid "Re-enter the same API key and keep the original organization and Neon project IDs to retry the uncertain request."
+msgstr "Gib denselben API-Schlüssel erneut ein und behalte die ursprüngliche Organisations- und Neon-Projekt-ID bei, um die Anfrage mit ungewissem Ergebnis zu wiederholen."
+
+msgid "Read-only view. Connection changes and provider inventory refresh are disabled."
+msgstr "Schreibgeschützte Ansicht. Änderungen an Verbindungen und das Aktualisieren der Anbieterprojekte sind deaktiviert."
+
+msgid "Reading Neon projects…"
+msgstr "Neon-Projekte werden abgerufen…"
+
+msgid "Refresh projects"
+msgstr "Projekte aktualisieren"
+
+msgid "Refresh to read projects available to this key. No database resources are provisioned by connecting."
+msgstr "Aktualisiere die Übersicht, um die für diesen Schlüssel verfügbaren Projekte abzurufen. Beim Verbinden werden keine Datenbankressourcen bereitgestellt."
+
+msgid "Remove only the Spitzli connection and stored API key? Your Neon projects and data remain intact."
+msgstr "Nur die Spitzli-Verbindung und den gespeicherten API-Schlüssel entfernen? Deine Neon-Projekte und Daten bleiben erhalten."
+
+msgid "Replace connection key"
+msgstr "Verbindungsschlüssel ersetzen"
+
+msgid "Retry same connection"
+msgstr "Dieselbe Verbindung erneut versuchen"
+
+msgid "Retry same disconnection"
+msgstr "Dieselbe Trennung erneut versuchen"
+
+msgid "Run the official Neon CLI on your own computer. The localhost login callback belongs to that same computer. Use that same project ID in the Neon project ID field above, then paste only the project API key into the form."
+msgstr "Führe die offizielle Neon-CLI auf deinem eigenen Computer aus. Die lokale Anmelde-Rückleitung gehört zu diesem Computer. Trage dieselbe Projekt-ID in das Feld für die Neon-Projekt-ID oben ein und füge dann nur den Projekt-API-Schlüssel in das Formular ein."
+
+msgid "The API key could not be prepared. Enter it again to retry."
+msgstr "Der API-Schlüssel konnte nicht vorbereitet werden. Gib ihn erneut ein, um es noch einmal zu versuchen."
+
+msgid "The connection changed. Review the refreshed status before submitting a new request."
+msgstr "Die Verbindung wurde geändert. Prüfe den aktualisierten Status, bevor du eine neue Anfrage sendest."
+
+msgid "The result is uncertain. Retry the same request. For a connection, re-enter the same API key; the original revision and request ID are retained."
+msgstr "Das Ergebnis ist ungewiss. Wiederhole dieselbe Anfrage. Gib zum Verbinden denselben API-Schlüssel erneut ein; die ursprüngliche Revision und Anfrage-ID bleiben erhalten."
+
+msgid "Workspace administrator access required"
+msgstr "Administratorzugriff auf den Arbeitsbereich erforderlich"
+
+msgid "Neon project ID (optional)"
+msgstr "Neon-Projekt-ID (optional)"
+
+msgid "Neon project scope"
+msgstr "Neon-Projektbindung"
+
+msgid "Recommended for project-scoped API keys: enter the exact Neon project ID. Leave blank for account or organization keys to list their available projects."
+msgstr "Für projektgebundene API-Schlüssel empfohlen: Gib die genaue Neon-Projekt-ID ein. Lasse das Feld bei Konto- oder Organisationsschlüsseln leer, um deren verfügbare Projekte aufzulisten."

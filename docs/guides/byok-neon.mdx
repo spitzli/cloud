@@ -1,0 +1,38 @@
+---
+title: "Connect Neon"
+description: "Connect your own Neon API key and view authorized projects in Console."
+---
+
+Use your own Neon account for new PostgreSQL projects. Neon bills you directly and applies its own quotas. The Spitzli Cloud connection currently manages your key and lists available projects; it does not provision databases, run SQL or bind an application automatically.
+
+You need workspace owner or administrator access, or authorized platform operator access. Read-only customer preview cannot change the connection or refresh provider inventory.
+
+<Steps>
+  <Step title="Create a Neon project and key">In your Neon account, create or select the project you need. Create a dedicated API key with the narrowest suitable scope. For a project-scoped key, keep its exact Neon project ID.</Step>
+  <Step title="Open Connections">In [Console](https://console.spitzli.cloud), select the workspace and open **Connections**.</Step>
+  <Step title="Connect the key">Enter the key in **Neon API key**. For a project-scoped key, also fill **Neon project ID (optional)** with that project's exact ID. Account or organization keys can leave the project ID blank to list their available projects. Fill **Organization ID (optional)** if you need to restrict that inventory to an organization. Select **Connect Neon**.</Step>
+  <Step title="Read your inventory">Select **Refresh projects**. Check the project name, ID and region. Use **Next project page** if available. Seeing a project here confirms inventory access, not database deployment or application readiness.</Step>
+</Steps>
+
+The key is stored encrypted on the server and is never displayed again. The form clears it after every submission. Enter provider credentials only in the protected form.
+
+## Optional: use the Neon CLI
+
+You can create a project key with the official Neon CLI on your own computer:
+
+```bash
+neon login
+neon api-keys create --project-id <selected-id> --name Spitzli-Cloud
+```
+
+The localhost login callback belongs to that same computer. Use the same project ID in Console and paste only the resulting project API key into the protected form. Do not upload `credentials.json` or share login callback URLs or codes. Spitzli Cloud does not run this login for you or provide a hosted Neon OAuth connection.
+
+## Replace a key or recover a failed request
+
+Use **Replace connection key** to submit a replacement. If Console reports an uncertain result, follow **Retry same connection** with the same key and project scope. If another administrator changed the connection, review the refreshed status first.
+
+An invalid or revoked key, insufficient scope or Neon outage can prevent inventory access. Check the key and project ID, then refresh. Spitzli Cloud does not fall back to a platform provider key or allocate paid capacity automatically.
+
+## Disconnect
+
+Select **Disconnect Neon**, review the confirmation and select **Confirm disconnect**. This removes the Spitzli Cloud connection's stored key. Your Neon projects and data remain intact. Revoke the key separately in Neon when it should no longer work elsewhere.

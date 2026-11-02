@@ -1,10 +1,46 @@
-# Managed Object Storage plugin foundation
+# Object Storage
+
+![Object Storage icon](assets/icon.svg)
+
+Manage private application buckets and authenticated browser transfers within your project.
+
+## What you can do
+
+Create buckets, inspect status and observed usage, manage restricted application keys, versioning and lifecycle, upload/download objects, deactivate while retaining data, and explicitly purge/delete.
+
+## Setup and access
+
+Requires an installed native runtime, private PostgreSQL metadata, an approved S3/IAM provider connection and a project grant. Create a bucket for an environment, then create an application key only when needed.
+
+## Data and security
+
+Credentials are sealed and revealed only on request. Core checks current authority for byte transfers. Deactivation removes access and retains completed objects/versions. Rotation overlaps keys until the old key is explicitly revoked.
+
+## Status and limits
+
+Beta; provider and production installation qualification are explicit gates. Usage is observed and soft, not a hard quota. Unknown upload outcomes require reconciliation. ETags and composite checksums are not full SHA-256 values; incomplete multipart cleanup follows provider policy.
+
+Catalog publication does not activate the plugin, enable public signup or grant
+access to any customer resource. A new presentation release must use a new version;
+previously signed releases and their assets stay immutable.
+
+## Gallery
+
+Actual Object Storage panel; synthetic bucket, observed usage and example key. No provider connection.
+
+![Bucket status, observed usage, retained deactivation and key controls](screenshots/bucket-controls.png)
+
+## Technical reference
+
+The retained implementation notes below include platform integration procedures.
+Commands referring to Core, `tools/` or `apps/console` require the [platform source
+checkout](https://github.com/spitzli/webdock); they are not standalone setup steps.
 
 Standalone native plugin. Build and test from the repository root:
 
 ```sh
-cargo test --manifest-path plugins/object-storage/Cargo.toml --locked
-cargo build --manifest-path plugins/object-storage/Cargo.toml --locked
+cargo test --manifest-path Cargo.toml --locked
+cargo build --manifest-path Cargo.toml --locked
 python3 plugins/object-storage/fixtures/fresh.py
 ```
 
@@ -27,7 +63,7 @@ bun test --tsconfig-override apps/console/tsconfig.json ./plugins/object-storage
 The existing `crates/object-storage` byte
 adapter is unchanged and not duplicated here.
 
-Read [the internal operations guide](../../docs/operations/managed-object-storage.md)
+Read `docs/operations/managed-object-storage.md` in the platform source checkout
 for private configuration, invariants, local acceptance, recovery and integration
 requirements. Installation remains an explicit operator action; local verification
 does not imply a production installation or provider qualification.
@@ -60,5 +96,5 @@ an already-running explicitly authorized MinIO. They create only named owned
 local clusters and PostgreSQL services, preserve private evidence, and remove
 resources by recorded identities. Their native fixture image/profile is separate
 from production, with a pinned mc and verified fixture CA. See the dated
-`docs/verification/*object-storage-native*` records for qualified scope; those
+[platform source documentation](https://github.com/spitzli/webdock/tree/HEAD/docs/verification) records for qualified scope; those
 historical records are not rewritten for newer releases.

@@ -14,7 +14,7 @@ export function hostingLocation(path: string): {
 } {
   if (path === "/hosting") return { kind: "directory", id: undefined };
   if (!path.startsWith("/hosting/")) return { kind: "none", id: undefined };
-  const project = /^\/hosting\/projects\/([1-9][0-9]{0,18})$/.exec(path)?.[1];
+  const project = /^\/hosting\/projects\/([1-9][0-9]{0,18})(?:\/builds)?$/.exec(path)?.[1];
   if (project) return { kind: "project", id: project };
   const app =
     /^\/hosting\/apps\/([1-9][0-9]{0,18})(?:\/(?:settings|logs))?$/.exec(
@@ -117,6 +117,7 @@ function hostingArea(
   path: string,
   kind: ReturnType<typeof hostingLocation>["kind"],
 ) {
+  if (path.endsWith("/builds")) return "Builds";
   if (path.endsWith("/settings")) return "Settings";
   if (path.endsWith("/logs")) return "Logs";
   if (kind === "operation") return "Operation";

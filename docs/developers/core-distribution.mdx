@@ -1,31 +1,30 @@
 ---
-title: "Run the core distribution"
-description: "Build the native Rust Core with its React Console and account UI."
+title: "Core distribution"
+description: "Understand native Core artifacts and the separate product release boundary."
 ---
 
-The current source branch uses one Rust Core to serve the API and the built React Console and account UI. The previous Bun API and Next.js distribution are archived under `legacy/`. Historical published releases describe that retired runtime, not the native candidate.
+The current Core is a standalone native Rust service. It composes identity, OAuth, registry, authorization and product boundaries; the previous Bun API and TypeScript platform applications are archived under `legacy/`. The browser Console and account screens use React. Their hosting can be composed with Core's static artifact or configured separately while retaining exact canonical origins.
 
-## Build
+## Source and artifacts
 
-```sh
-bun install --frozen-lockfile
-bun run build:api
-bun run build:console
-bun run quality
-bun run test:distribution
-```
+Use [spitzli/cloud](https://github.com/spitzli/cloud) and its pinned toolchains. Root `package.json` supplies the current commands; `Cargo.toml` defines the native workspace. `apps/console/dist` is the built browser artifact, selected through `WEBDOCK_UI_DIST` for Core's static serving mode.
 
-The browser artifact is `apps/console/dist`. Set `WEBDOCK_UI_DIST` to that immutable directory when starting Core outside the container. Console, account and protocol surfaces retain their independently configured canonical origins.
+[deploy/docker/Dockerfile](https://github.com/spitzli/cloud/blob/main/deploy/docker/Dockerfile) has separate `core`, `migrate`, `bootstrap-operator`, `agent-control`, `plugin-control` and `plugin-controller` targets. The backend Dockerfile (`deploy/docker/backend.Dockerfile`) packages the backend separately from the frontend. Match the artifact and source revision to the deployment being changed.
 
-```sh
-docker build -f deploy/docker/Dockerfile --target core -t webdock-core:local .
-docker build -f deploy/docker/Dockerfile --target migrate -t webdock-migrate:local .
-```
+Product runtime images release independently. Publishing a new Core image does not upgrade plugin installations or change customer provider bindings. See [independent plugin releases](/developers/plugin-releases).
 
-Additional image targets package `bootstrap-operator`, `agent-control`, `plugin-control` and `plugin-controller` as separately supervised native processes. Product plugin images are built independently with their own Dockerfiles.
+## Runtime configuration
 
-## Configure and initialize
+Core uses restricted PostgreSQL roles, verified database TLS, explicit canonical origins and private identity/encryption material. The hosted Core database and encrypted BYOK metadata are on Neon. Neon Managed Auth supplies all users' first factor; Core retains MFA and local authorization.
 
-Follow [native self-hosting](/developers/self-hosting) and [initial operator setup](/developers/initial-setup). Runtime PostgreSQL credentials are restricted and separate from the offline migrator. Core does not initialize schema at startup. Enable products explicitly; enabling outgoing Mail does not provision an incoming instance.
+Do not put migration credentials into runtime processes. Core does not initialize or migrate schemas at startup. Identity keys, RLS keys, encryption keys and retained storage must survive replacement of an image or process.
 
-The current branch provides deployment candidates, not a published native release or production cutover. Retained-data migration, rollback after new writes and outstanding product acceptance must be verified separately.
+Use [feature configuration](/developers/modules) for native product admission. Provider credentials, runtime enrollment, worker/listener configuration and project grants remain separate requirements. Outgoing-only Mail never provisions an incoming Stalwart instance.
+
+## Verification and rollout
+
+Follow the matching source revision's checks and qualified build workflow. A passing compile, image publication or health probe is not acceptance for a new customer flow. Verify migrations, readiness, canonical routing, identity/MFA, tenant access, runtime bindings, retained data and rollback after new writes for the actual change.
+
+Blacksmith is the selected provider for Spitzli's own GitHub CI. Its GitHub App is installed, and an isolated runner/build probe passed in `us-west`. Full application/plugin/SDK source checks and regular workflow migration remain pending. EU-only placement is not required for this CI scope. Trusted maintainer CI does not qualify arbitrary customer build source or change the other services' regional requirements.
+
+See [local development](/developers/local-development), [operator deployment](/developers/self-hosting) and [initial setup](/developers/initial-setup). Native runtime contracts live in `crates/control-plane`; some README migration notes describe earlier intermediate states.

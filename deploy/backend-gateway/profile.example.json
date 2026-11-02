@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "enabled": false,
+  "namespace": null,
+  "caddyImage": null,
+  "gatewayOrigin": null,
+  "coreUpstream": null,
+  "consoleOrigin": null,
+  "studioOrigin": null,
+  "authOrigin": null,
+  "apiOrigin": null,
+  "listenPort": 8080,
+  "tlsSecretName": null,
+  "ingressClassName": null,
+  "ingressControllerNamespace": null,
+  "ingressControllerPodLabels": null,
+  "coreNamespace": null,
+  "corePodLabels": null
+}

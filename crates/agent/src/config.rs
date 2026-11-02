@@ -49,6 +49,38 @@ pub enum ControlEndpoint {
     },
 }
 #[derive(Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct PublicRoutingConfig {
+    pub domain: String,
+    pub ingress_class: String,
+    pub cluster_issuer: String,
+}
+impl PublicRoutingConfig {
+    pub fn validate(&self) -> Result<()> {
+        fn name(v: &str) -> bool {
+            !v.is_empty()
+                && v.len() <= 253
+                && v.split('.').all(|l| {
+                    !l.is_empty()
+                        && l.len() <= 63
+                        && !l.starts_with('-')
+                        && !l.ends_with('-')
+                        && l.bytes()
+                            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+                })
+        }
+        if !name(&self.domain)
+            || !self.domain.contains('.')
+            || self.domain.parse::<std::net::IpAddr>().is_ok()
+            || !name(&self.ingress_class)
+            || !name(&self.cluster_issuer)
+        {
+            return Err(AgentError::Configuration("Invalid public routing policy"));
+        }
+        Ok(())
+    }
+}
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(
     tag = "kind",
     rename_all = "snake_case",
@@ -70,6 +102,10 @@ pub enum RuntimeConfiguration {
         chart_sha256: String,
         #[serde(default)]
         storage_socket: Option<PathBuf>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        storage_node: Option<String>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        public_routing: Option<PublicRoutingConfig>,
     },
 }
 impl AgentConfig {
@@ -124,8 +160,32 @@ impl AgentConfig {
                 }
             }
         }
-        if let RuntimeConfiguration::Kubernetes { kubeconfig, .. } = &self.runtime {
+        if let RuntimeConfiguration::Kubernetes {
+            kubeconfig,
+            storage_socket,
+            storage_node,
+            public_routing,
+            ..
+        } = &self.runtime
+        {
             read_private(kubeconfig, 1024 * 1024)?;
+            if let Some(config) = public_routing {
+                config.validate()?;
+            }
+            if let Some(node) = storage_node
+                && (storage_socket.is_none()
+                    || node.is_empty()
+                    || node.len() > 253
+                    || !node.as_bytes()[0].is_ascii_lowercase()
+                        && !node.as_bytes()[0].is_ascii_digit()
+                    || !node.bytes().all(|b| {
+                        b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'.' || b == b'-'
+                    }))
+            {
+                return Err(AgentError::Configuration(
+                    "Selected local storage requires a socket and valid node name",
+                ));
+            }
         }
         if let Some(path) = &self.database_runtime {
             if !matches!(self.runtime, RuntimeConfiguration::Kubernetes { .. }) {

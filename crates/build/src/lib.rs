@@ -7,6 +7,8 @@ pub use contracts::BuildCeiling;
 #[cfg(feature = "service")]
 mod service;
 #[cfg(feature = "service")]
+pub use service::kubernetes::KubernetesStoragePolicy;
+#[cfg(feature = "service")]
 pub use service::repository::{
     FileRepositoryBindings, PluginRepositoryProvider, RepositoryAdmission, RepositoryAuthorityRpc,
     RepositoryBinding, RepositoryBindings, RepositoryTransport,
@@ -15,9 +17,23 @@ pub use service::repository::{
 pub use service::{
     BuildService, RepositoryProvider, RepositoryRef, VerifiedCommit, WorkerIdentity,
 };
+#[cfg(all(feature = "kubernetes-job", feature = "worker"))]
+pub mod build_storage;
+#[cfg(feature = "kubernetes-job")]
+pub mod container_runner;
 pub mod execution;
 #[cfg(feature = "service")]
 pub mod http;
+#[cfg(feature = "kubernetes-job")]
+pub mod kubernetes;
+#[cfg(all(feature = "kubernetes-job", feature = "worker"))]
+pub mod kubernetes_dispatcher;
+#[cfg(all(feature = "kubernetes-job", feature = "worker"))]
+pub mod kubernetes_identity;
+#[cfg(all(feature = "kubernetes-job", feature = "worker"))]
+pub mod kubernetes_transfer;
+#[cfg(all(feature = "kubernetes-job", feature = "worker"))]
+pub mod kubernetes_worker;
 #[cfg(any(feature = "service", feature = "worker"))]
 pub mod publisher;
 #[cfg(any(feature = "service", feature = "worker"))]
@@ -57,7 +73,7 @@ impl Error {
             | "build_unavailable"
             | "release_unavailable"
             | "repository_unavailable" => 404,
-            "select_source_target" | "build_not_cancellable" => 409,
+            "select_source_target" | "build_not_cancellable" | "build_publication_cancelled" => 409,
             code if code.ends_with("_conflict")
                 || code.ends_with("_changed")
                 || code.ends_with("_lost") =>
@@ -114,3 +130,13 @@ mod tests {
         }
     }
 }
+
+#[cfg(feature = "service")]
+pub use service::github_webhook::{
+    GithubWebhookVerifier, MAX_GITHUB_WEBHOOK_BODY, VerifiedGithubEvent,
+};
+
+#[cfg(all(feature = "kubernetes-job", feature = "worker"))]
+pub mod kubernetes_staging;
+#[cfg(all(feature = "kubernetes-job", feature = "worker"))]
+pub mod kubernetes_upload;

@@ -221,6 +221,8 @@ async fn persisted_launch_rechecks_grants_membership_and_session() {
         .await
         .unwrap()
         .unwrap();
+    let operator_mapping = ids.allocate().await.unwrap().to_string();
+    run(&owner,"INSERT INTO webdock_admin.users(id,name,email,role,auth_subject) VALUES($1,'Database operator',$2,'operator',$3)",vec![operator_mapping.clone().into(),operator_email.into(),operator_id.clone().into()]).await;
     let authority = StoredAuthority::LocalSession {};
     management_catalog(
         &owner,
@@ -386,6 +388,12 @@ async fn persisted_launch_rechecks_grants_membership_and_session() {
         &auth,
         "DELETE FROM webdock_auth.\"user\" WHERE id=$1",
         vec![operator_id.into()],
+    )
+    .await;
+    run(
+        &owner,
+        "DELETE FROM webdock_admin.users WHERE id=$1",
+        vec![operator_mapping.into()],
     )
     .await;
     let directory = service
@@ -768,12 +776,47 @@ async fn management_catalog(
             .any(|p| p["poolID"] == pool_id && p["registered"] == true)
     );
     let accepted_command = json!({"action":"databases.acceptOrder","offerID":offer["id"],"projectID":project,"idempotencyKey":format!("accept-fixture-{project}")});
+    let retired = retired_order_service(cluster).await;
+    let mut new_quote = unavailable_offer.clone();
+    new_quote["idempotencyKey"] = json!(format!("retired-offer-{project}"));
+    for command in [new_quote, accepted_command.clone()] {
+        let error = retired
+            .execute_managed(operator, authority, command)
+            .await
+            .unwrap_err();
+        assert_eq!(error.status, 409);
+        assert!(error.message.contains("own Neon account"));
+    }
+    // A quote made before retirement can be read again, but cannot be newly accepted.
+    assert_eq!(
+        retired
+            .execute_managed(operator, authority, unavailable_offer.clone())
+            .await
+            .unwrap(),
+        offer
+    );
     allocation_enqueue_failure_rolls_back(owner, operator, authority, &accepted_command, cluster)
         .await;
     let accepted = service
         .execute_managed(operator, authority, accepted_command.clone())
         .await
         .unwrap();
+    assert_eq!(
+        retired
+            .execute_managed(operator, authority, accepted_command.clone())
+            .await
+            .unwrap(),
+        accepted
+    );
+    let mut replay = accepted_command.clone();
+    replay["idempotencyKey"] = json!(format!("retired-accepted-replay-{project}"));
+    assert_eq!(
+        retired
+            .execute_managed(operator, authority, replay)
+            .await
+            .unwrap(),
+        accepted
+    );
     assert_eq!(
         service
             .execute_managed(operator, authority, accepted_command.clone())
@@ -785,7 +828,7 @@ async fn management_catalog(
     let database = accepted["databaseID"].as_str().unwrap();
     let order = accepted["orderID"].as_str().unwrap();
     let operation = accepted["operationID"].as_str().unwrap();
-    let pending = service
+    let pending = retired
         .execute_managed(
             operator,
             authority,
@@ -799,7 +842,7 @@ async fn management_catalog(
     assert_eq!(service.execute_managed(operator,authority,json!({"action":"databases.backup","databaseID":database,"revision":1,"idempotencyKey":format!("backup-fixture-{project}")})).await.unwrap_err().status,409);
     agent_lifecycle(
         owner,
-        service,
+        &retired,
         hosting,
         operator,
         authority,
@@ -811,10 +854,10 @@ async fn management_catalog(
     )
     .await;
     upgrade_admission(
-        owner, service, hosting, operator, authority, database, project, &plan,
+        owner, &retired, hosting, operator, authority, database, project, &plan,
     )
     .await;
-    maintenance_admission(owner, service, operator, member, authority, database).await;
+    maintenance_admission(owner, &retired, operator, member, authority, database).await;
     let backend_row = owner
         .query_one_raw(Statement::from_sql_and_values(
             DbBackend::Postgres,
@@ -899,6 +942,7 @@ async fn management_catalog(
     }
     for key in [
         format!("accept-fixture-{project}"),
+        format!("retired-accepted-replay-{project}"),
         format!("pool-fixture-{project}"),
     ] {
         run(
@@ -2374,6 +2418,48 @@ async fn callback_lock_order(
             .unwrap();
     }
     callback.rollback().await.unwrap();
+}
+
+async fn retired_order_service(cluster: &str) -> DatabaseService {
+    let auth_url = guarded("AUTH_DATABASE_URL");
+    let auth = Database::connect(auth_url.clone()).await.unwrap();
+    let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
+    let ids = Arc::new(
+        webdock_persistence::IdAllocator::connect(
+            &auth_url,
+            webdock_ids::Identity::platform(0, 2).unwrap(),
+        )
+        .await
+        .unwrap(),
+    );
+    let identity = Arc::new(IdentityService::new(
+        auth.clone(),
+        CookiePolicy::new(false, secret.clone()).unwrap(),
+    ));
+    DatabaseService::new(
+        Database::connect(guarded("DATABASE_URL")).await.unwrap(),
+        auth,
+        Database::connect(guarded("WEBDOCK_PLUGIN_WORKER_DATABASE_URL"))
+            .await
+            .unwrap(),
+        identity,
+        None,
+        ids,
+        std::env::var("DATABASE_RLS_SECRET").unwrap(),
+        &secret,
+        "http://127.0.0.1:3150",
+    )
+    .await
+    .unwrap()
+    .with_new_orders_enabled(false)
+    .with_management(webdock_databases::ManagementConfig {
+        cluster_id: Some(cluster.into()),
+        endpoint_domain: Some("database.example.invalid".into()),
+        public_ordering: false,
+        protected_database_id: None,
+        lease_secret: Some(secret),
+    })
+    .unwrap()
 }
 
 async fn saturated_order_and_agent_pools(

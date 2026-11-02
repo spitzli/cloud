@@ -103,6 +103,7 @@ fn core() -> Arc<Core> {
         revoked: AtomicBool::new(false),
         fail_complete: AtomicBool::new(false),
         terminal_guard: AtomicBool::new(false),
+        slow_read_guard_calls: Default::default(),
     })
 }
 fn config(dir: &std::path::Path, path: std::path::PathBuf) -> AgentConfig {
@@ -123,6 +124,8 @@ fn config(dir: &std::path::Path, path: std::path::PathBuf) -> AgentConfig {
             chart: "/unused".into(),
             chart_sha256: "a".repeat(64),
             storage_socket: None,
+            storage_node: None,
+            public_routing: None,
         },
         database_runtime: None,
         mail_runtime: None,
@@ -296,6 +299,7 @@ impl RuntimeAdapter for ObservedControlled {
             environment: false,
             registry_version: None,
             service_bindings_version: None,
+            public_routing_version: None,
         }))
     }
     async fn reconcile(&self, c: &Command, g: &LeaseGuard) -> Result<ObservedState> {

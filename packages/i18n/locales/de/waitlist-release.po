@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Spitzli Cloud\n"
+"PO-Revision-Date: 2026-11-01 16:00+0100\n"
+"Last-Translator: Spitzli Development\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "By invitation"
+msgstr "Auf Einladung"
+
+msgid "Open Console"
+msgstr "Console öffnen"
+
+msgid "This notice explains how we process personal data on Spitzli Cloud’s website and in its account, Console, hosting, database and Mail services. Customer-operated websites and applications have their own controllers and privacy notices."
+msgstr "Diese Erklärung beschreibt, wie wir personenbezogene Daten auf der Website von Spitzli Cloud und in unseren Konto-, Console-, Hosting-, Datenbank- und Mail-Diensten verarbeiten. Für eigenständig betriebene Kundenwebsites und Anwendungen gelten deren eigene Verantwortlichkeiten und Datenschutzhinweise."
+
+msgid "We process your email address, optional name, privacy acknowledgement and request/review timestamps when you request early access. Operators review requests manually. Saving a waitlist request does not verify your email, create an account or grant access. We use these details to handle your access request, not to subscribe you to a marketing newsletter. You can withdraw your request by contacting us."
+msgstr "Wenn du frühen Zugang anfragst, verarbeiten wir deine E-Mail-Adresse, deinen optionalen Namen, die Datenschutzbestätigung sowie die Zeitpunkte der Anfrage und Prüfung. Betreiber prüfen Anfragen manuell. Das Speichern einer Wartelistenanfrage bestätigt weder deine E-Mail-Adresse noch erstellt es ein Konto oder gewährt Zugang. Wir verwenden diese Angaben zur Bearbeitung deiner Zugangsanfrage und nicht zur Anmeldung für einen Marketing-Newsletter. Du kannst deine Anfrage zurückziehen, indem du uns kontaktierst."
+
+msgid "Account invitations and security emails use the configured authentication provider or sending connection. When Mail is enabled for a customer, we process account and domain details, sender and recipient addresses, message contents and attachments, delivery events, usage and suppression records. Enabled incoming mail uses a separate Stalwart instance for that customer; outgoing-only service does not require one. Mailbox contents and forwarding are processed only for the enabled service."
+msgstr "Kontoeinladungen und Sicherheits-E-Mails verwenden den eingerichteten Authentifizierungsanbieter oder die Versandverbindung. Bei aktiviertem Mail-Dienst verarbeiten wir Konto- und Domainangaben, Absender- und Empfängeradressen, Nachrichteninhalte und Anhänge, Zustellereignisse, Nutzung und Sperrlisten. Aktivierter E-Mail-Empfang verwendet eine eigene Stalwart-Instanz für den jeweiligen Kunden; reiner Versand benötigt keine. Postfachinhalte und Weiterleitungen werden nur für den aktivierten Dienst verarbeitet."
+
+msgid "Optional website analytics are disabled for this waitlist release. We do not load an analytics tracker, record sessions or create heatmaps on this website. Necessary service and security logs remain separate."
+msgstr "Optionale Website-Analysen sind für diesen Wartelisten-Release deaktiviert. Wir laden auf dieser Website keinen Analyse-Tracker und erstellen weder Sitzungsaufzeichnungen noch Heatmaps. Notwendige Betriebs- und Sicherheitsprotokolle sind davon getrennt."
+
+msgid "We use Neon for the platform database and managed sign-in, Vercel for web application hosting, Contabo for server infrastructure, turboSMTP for configured email delivery, and Cloudflare for DNS services. Core retains workspace authorisation and its additional account-security controls. GitHub and other customer-selected providers are involved when their integrations are enabled. Retained migration copies remain subject to the retention rules below until deleted. Providers receive only the data needed for their role. We also disclose data where legally required, for example to tax advisers or competent authorities."
+msgstr "Wir verwenden Neon für die Plattformdatenbank und die verwaltete Anmeldung, Vercel für das Hosting der Webanwendungen, Contabo für Server-Infrastruktur, turboSMTP für eingerichteten E-Mail-Versand und Cloudflare für DNS-Dienste. Core verwaltet weiterhin die Berechtigungen der Arbeitsbereiche und die zusätzlichen Kontosicherheitskontrollen. GitHub und weitere vom Kunden ausgewählte Anbieter kommen bei aktivierten Anbindungen hinzu. Verbliebene Migrationskopien unterliegen bis zur Löschung den unten beschriebenen Aufbewahrungsregeln. Dienstleister erhalten die für ihre Aufgabe benötigten Daten. Daneben geben wir Daten weiter, soweit dies rechtlich erforderlich ist, etwa an Steuerberater oder zuständige Behörden."

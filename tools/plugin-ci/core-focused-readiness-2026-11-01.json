@@ -1,0 +1,150 @@
+{
+  "state": "FOCUSED_NATIVE_AND_CONSUMER_PASS_AWAIT_FINAL_FREEZE",
+  "sourceArchiveSHA256": "1f2a5be3d78eb4b6c8dfeb0069c7e1bd4f912c388305c8b26919f1f365c83187",
+  "sourceRef": "waitlist-release-focused-20261101-r2",
+  "nativeChecks": [
+    {
+      "id": "waitlist-access",
+      "exitCode": 0,
+      "testCounts": {
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      "logSHA256": "1de7e96b11e600386fe42a371f63b2e1c3e6734294df9b6b85fca9362afa4e75"
+    },
+    {
+      "id": "waitlist-http",
+      "exitCode": 0,
+      "testCounts": {
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      },
+      "logSHA256": "633e94849f41cf820790e830e390d468a2c8a9f32483405d5752814ae79e73df"
+    },
+    {
+      "id": "compute-process",
+      "exitCode": 0,
+      "testCounts": {
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      "logSHA256": "be5a2ed4dc002b1d1d83239ae8409beb60bdd0878d64d87cae8eaf71e647b50a"
+    }
+  ],
+  "consumerChecks": [
+    {
+      "id": "compute-console-consumer",
+      "args": [
+        "bun",
+        "--no-env-file",
+        "test",
+        "plugins/lumaserv-compute/tests/ui.test.ts"
+      ],
+      "testFormat": "bun",
+      "requiredTests": [
+        "the exact compute subprocess panel conforms to the current Console contract"
+      ],
+      "exitCode": 0,
+      "logSHA256": "b8c866e462d55c272c92294d3a6111c8b5690c3118299a38c617890312400cb1",
+      "testCounts": {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      }
+    }
+  ],
+  "consumerProof": {
+    "sourceArchiveSHA256": "1f2a5be3d78eb4b6c8dfeb0069c7e1bd4f912c388305c8b26919f1f365c83187",
+    "sourceArchiveBytes": 42270720,
+    "frozenSourceRef": "waitlist-release-focused-20261101-r2",
+    "sourceFileCount": 3949,
+    "builderImage": "docker.io/library/rust:1.98.1-slim-bookworm@sha256:ff521445a372125ed4f76e1453a1f8098f2d05332d1601d30db1c1f62757e730",
+    "bunImage": "docker.io/oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288",
+    "postgresFixtureImage": "docker.io/library/postgres:18-bookworm@sha256:5c4783a8cc3f0074912164f94dfa1be4e043438f0f707cf968d7af9a0d31a2c8",
+    "cargoJobs": 3,
+    "testThreads": 3,
+    "guestUID": 1001,
+    "manualEUQualificationOnly": true,
+    "githubWorkflowTriggered": false,
+    "productionActivationPerformed": false,
+    "harnessSHA256": {
+      "Dockerfile": "8082f5a9a7a402e2d5a2c4a2b713744a3d1e09467958c02a095ec73de44033c3",
+      "agent_build.py": "8f6b993432e09c4ff773085d3e951a2b3c3d6cadb62676393350c232310c7235",
+      "core_local_fixtures.py": "41f1bca4ef5177ceed3894e03bfab97064c07a175cb47a557aa28e386a86cb43",
+      "core_quality.py": "6f28347aaabdb2314d16cbe63c9b6d371df790a945186e325c799810060f9492",
+      "website_fixture_seed.ts": "d32c55f5df8051b8296e1b21054efeb818bfc8c62e676012a21b2f054478fcc5"
+    },
+    "mode": "consumer",
+    "checks": [
+      {
+        "id": "compute-console-consumer",
+        "args": [
+          "bun",
+          "--no-env-file",
+          "test",
+          "plugins/lumaserv-compute/tests/ui.test.ts"
+        ],
+        "testFormat": "bun",
+        "requiredTests": [
+          "the exact compute subprocess panel conforms to the current Console contract"
+        ],
+        "exitCode": 0,
+        "logSHA256": "b8c866e462d55c272c92294d3a6111c8b5690c3118299a38c617890312400cb1",
+        "testCounts": {
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      }
+    ],
+    "computePanelEvidenceExported": false,
+    "allPlannedChecksPassed": true,
+    "liveServiceCredentialsUsed": false
+  },
+  "frozenContractFilesSHA256": {
+    "plugins/lumaserv-compute/tests/fixtures/servers-panel.json": "bddc632b2fcafb892a265ddeb79970dece146651c079eb6ce57adb6b5ce990c0",
+    "plugins/lumaserv-compute/tests/process.rs": "7954e4cd08997e004c63a08b65570d9eca7de6b9d7a877ec0f4b286398df5338",
+    "plugins/lumaserv-compute/tests/ui.test.ts": "7f81542e72669a3b1947a54490f47246743ea97727b45e3f7034b460cde11f45",
+    "apps/console/src/plugins/contracts.ts": "60126a41987fb593c45f3b166daf46e6b4bce67c8dba39fd73c207e9a619cc78"
+  },
+  "actualComputeBackendGoldenJSONEqualityPassed": true,
+  "actualConsoleConsumerSchemaParsePassed": true,
+  "backendJSONWasExported": false,
+  "compiledBinariesObserved": [
+    {
+      "path": "/quality-target/debug/deps/process-a56f3a3ebd333386",
+      "sha256": "3ddbb65ce95bf2024114a5accf0eb79343a1ae5f7db98cf20dda1b6827caf6cd",
+      "bytes": 182257384
+    },
+    {
+      "path": "/quality-target/debug/deps/webdock_access-f8acd0557aaf6c85",
+      "sha256": "152b4c9a1c8a1a2913058295897407c494c68fc3733a6c0817d1703a8467d24c",
+      "bytes": 103900832
+    },
+    {
+      "path": "/quality-target/debug/deps/webdock_control_plane-8c1cd6962bbb8396",
+      "sha256": "a69235c2c9b3399644f373876aed9b68a8c63949da1430c55ecd73006979f9d1",
+      "bytes": 773282280
+    },
+    {
+      "path": "/quality-target/debug/webdock-lumaserv-compute",
+      "sha256": "4f45e95e3163edfd514540b27777db87a3923e14c6f22aa677b1cab77f29f08f",
+      "bytes": 178150696
+    }
+  ],
+  "privateNativeArtifact": ".runtime-test/waitlist-release-ready-20261101/focused-native-artifact",
+  "privateConsumerArtifact": ".runtime-test/waitlist-release-ready-20261101/focused-consumer-artifact",
+  "sourcePlatformFilesModified": false,
+  "globalQualityExecuted": false,
+  "rootBuildExecuted": false,
+  "websiteAcceptanceExecuted": false,
+  "migration0073AcceptanceExecuted": false,
+  "additionalWebsiteMigrationHarnessPrepared": true,
+  "sourceHarnessTestsPassed": 9,
+  "githubWorkflowTriggered": false,
+  "productionAccessPerformed": false,
+  "productionActivationPerformed": false
+}

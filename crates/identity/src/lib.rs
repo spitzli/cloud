@@ -2,6 +2,9 @@
 //! Account recovery and passkey ceremonies use maintained cryptographic libraries.
 //! OAuth/OIDC and external identity cutover remain separate unfinished ports.
 mod crypto;
+mod neon;
+mod neon_client;
+pub use neon_client::NeonAuthClient;
 mod passkeys;
 mod recovery;
 mod scope;

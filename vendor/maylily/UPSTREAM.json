@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "package": "maylily",
+  "packageVersion": "0.1.0",
+  "license": "MIT",
+  "upstreamOrigin": "https://github.com/NewtTheWolf/maylily-rs.git",
+  "manifestRepository": "https://github.com/itohatweb/maylily-rs",
+  "baseCommit": "ad61b82beedda46cf7006c331a3dac84499b53ff",
+  "baseCommitContainsLibrary": false,
+  "snapshotState": "uncommitted-local-library",
+  "capturedAt": "2026-10-30T13:37:05.395159+00:00",
+  "sourceChanges": "The consumed manifest, LICENSE, source and tests are untracked in the original checkout; README.md is modified. Public main at both verified repository aliases contains README.md only. This snapshot does not claim to be an upstream release or committed source revision.",
+  "modifications": [],
+  "filesSHA256": {
+    "Cargo.toml": "68f62d86909ee3fb344603739da35ba8a888a95fe13176cf8e86d793cdabf835",
+    "Cargo.lock": "ebf7f4622b2cac835eb0ad929b7b080cd2d0ff02b000bd03263b35637963d6f0",
+    "LICENSE": "00ba54e54e516570d42da57a74785b20268ab32435f5ed0ee83221814d94ee5b",
+    "README.md": "7a4f3395d9feecc3b584e9af8f3ce6e62fcf73af63e0e117238d05cc3d5c3eac",
+    "CHANGELOG.md": "c31bfac53bf245adbab3ea132a69a6371903af0f04d86b6766ca9bb58cfffcf4",
+    "benches/throughput.rs": "0e2cddb0ebc90113ce924b9b262b60beff6ff621e286cbe7f91be10d2f3b8b1e",
+    "benchmarks/throughput-2026-10-27.json": "e3961aa8dfee55f566ba86791ac45b434d8b544c0268b6c8c8307c4fa6382e83",
+    "src/lib.rs": "a28388d031897649fcce751105d731969828b449af690262f3eafc66a5726e2b",
+    "src/parse.rs": "08384c153afc5678b6fafc90f48bcf680f9035f75bdeefd8a2823bb5211b2ab4",
+    "src/tests.rs": "04d8271569de0f1939c96cac1416cfccdaaa1b26a377328e0c4dc91369c7993b",
+    "tests/maylily.rs": "75dd46d10e60ee9456a252c161c6159fa5b9b71c37ff0c9ab6f3e212d5a27d1f",
+    "tests/parse.rs": "0ce442bf2cd8ebec4b2a8bb9fda0cce1a3075538fec8eeb51bace0e2f28dadd6",
+    "tests/serde.rs": "4459b3b31b307d48751559d806ae464fe93cb1173a9ffb32f223baa4c77e8a46"
+  },
+  "snapshotSHA256": "89e2cd430a95d6863440d42c4de71d1548bd0ee0e78ad4b2e0da1b19a04d04ee"
+}

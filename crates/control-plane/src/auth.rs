@@ -455,16 +455,7 @@ async fn perform(
         }
         "sign-out" => {
             parse::<serde_json::Map<String, Value>>(body)?;
-            if let Some(actor) = identity
-                .authenticate_cookie(&cookie)
-                .await
-                .map_err(failure)?
-            {
-                identity
-                    .revoke_session(&actor.user_id, &actor.session_id)
-                    .await
-                    .map_err(failure)?;
-            }
+            identity.logout(&cookie).await.map_err(failure)?;
             let mut response = Json(json!({"success":true})).into_response();
             for value in [identity.clear_cookie(), identity.clear_mfa_cookie()] {
                 response.headers_mut().append(
@@ -480,9 +471,27 @@ async fn perform(
             }
             Ok(response)
         }
+        "link-neon" => {
+            let input: Password = parse(body)?;
+            identity
+                .link_neon_identity(&cookie, &input.password)
+                .await
+                .map_err(failure)?;
+            Ok(Json(json!({"status":true})).into_response())
+        }
         "change-password" => {
             let input: PasswordChange = parse(body)?;
             let _ = input.revoke_other_sessions;
+            if identity
+                .change_managed_password(&cookie, &input.current_password, &input.new_password)
+                .await
+                .map_err(failure)?
+            {
+                return with_cookie(
+                    json!({"status":true,"requiresSignIn":true}),
+                    identity.clear_cookie(),
+                );
+            }
             Ok(issued(
                 identity
                     .change_password(&cookie, &input.current_password, &input.new_password)
@@ -579,11 +588,24 @@ async fn perform(
         }
         "reset-password" => {
             let input: ResetPassword = parse(body)?;
-            let email = identity
+            match identity
                 .complete_password_reset(&input.token, &input.new_password)
                 .await
-                .map_err(failure)?;
-            Ok(Json(json!({"status":true,"email":email})).into_response())
+            {
+                Ok(email) => Ok(Json(json!({"status":true,"email":email})).into_response()),
+                Err(IdentityError::Unauthorized) => {
+                    if identity
+                        .reset_managed_password(&input.token, &input.new_password)
+                        .await
+                        .map_err(failure)?
+                    {
+                        Ok(Json(json!({"status":true})).into_response())
+                    } else {
+                        Err(failure(IdentityError::Unauthorized))
+                    }
+                }
+                Err(error) => Err(failure(error)),
+            }
         }
         "passkey/verify-registration" => {
             let input: PasskeyRegistration = parse(body)?;

@@ -115,6 +115,7 @@ pub struct Store {
     binding: String,
     namespace: String,
     inner: Arc<dyn ObjectStore>,
+    signer: Option<Arc<dyn object_store::signer::Signer>>,
 }
 impl fmt::Debug for Store {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -156,13 +157,22 @@ impl object_store::client::HttpConnector for Transport {
 
 impl Store {
     pub fn s3(config: S3Config, credentials: Credentials) -> Result<Self> {
-        Self::configured(config, credentials, false)
+        Self::configured(config, credentials, false, None)
     }
     #[cfg(feature = "local-test")]
     pub fn loopback_test(config: S3Config, credentials: Credentials) -> Result<Self> {
-        Self::configured(config, credentials, true)
+        Self::configured(config, credentials, true, None)
     }
-    fn configured(config: S3Config, credentials: Credentials, loopback: bool) -> Result<Self> {
+    /// Operator-supplied private CA supplements normal TLS validation; insecure TLS is never enabled.
+    pub fn s3_with_ca(config: S3Config, credentials: Credentials, pem: &[u8]) -> Result<Self> {
+        Self::configured(config, credentials, false, Some(pem))
+    }
+    fn configured(
+        config: S3Config,
+        credentials: Credentials,
+        loopback: bool,
+        ca: Option<&[u8]>,
+    ) -> Result<Self> {
         path(&config.id)?;
         path(&config.namespace)?;
         let endpoint = url::Url::parse(&config.endpoint).map_err(|_| Error::Configuration)?;
@@ -206,7 +216,31 @@ impl Store {
         if rustls::crypto::CryptoProvider::get_default().is_none() {
             let _ = rustls::crypto::ring::default_provider().install_default();
         }
-        let client = reqwest::Client::builder()
+        let mut client = reqwest::Client::builder();
+        if let Some(pem) = ca {
+            use rustls::pki_types::pem::PemObject;
+            if pem.is_empty() || pem.len() > 65536 {
+                return Err(Error::Configuration);
+            }
+            let mut roots = rustls::RootCertStore::empty();
+            let mut count = 0;
+            for certificate in rustls::pki_types::CertificateDer::pem_slice_iter(pem) {
+                roots
+                    .add(certificate.map_err(|_| Error::Configuration)?)
+                    .map_err(|_| Error::Configuration)?;
+                count += 1;
+                if count > 8 {
+                    return Err(Error::Configuration);
+                }
+            }
+            if count == 0 {
+                return Err(Error::Configuration);
+            }
+            client = client.add_root_certificate(
+                reqwest::Certificate::from_pem(pem).map_err(|_| Error::Configuration)?,
+            );
+        }
+        let client = client
             .no_proxy()
             .redirect(reqwest::redirect::Policy::none())
             .https_only(!loopback)
@@ -233,7 +267,8 @@ impl Store {
             id: config.id,
             binding,
             namespace: config.namespace,
-            inner: Arc::new(store),
+            inner: Arc::new(store.clone()),
+            signer: Some(Arc::new(store)),
         })
     }
     #[cfg(feature = "local-test")]
@@ -245,6 +280,7 @@ impl Store {
             binding: binding(&["memory", id, namespace]),
             namespace: namespace.into(),
             inner: Arc::new(object_store::memory::InMemory::new()),
+            signer: None,
         })
     }
     pub fn id(&self) -> &str {
@@ -393,3 +429,6 @@ impl Store {
         Ok(())
     }
 }
+
+mod staging;
+pub use staging::StagingMethod;

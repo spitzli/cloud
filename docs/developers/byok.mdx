@@ -1,34 +1,26 @@
 ---
-title: "BYOK automation"
-description: "Use Hosting MCP with current permissions, resource versions and operation IDs."
+title: "BYOK integration boundaries"
+description: "Keep provider connections in Core and use the currently exposed automation contract."
 ---
 
-BYOK uses the existing [Hosting MCP connection](/developers/mcp). Request `hosting:read` and, for authorized mutations, `hosting:write`. Do not combine these with registry `webdock:*` scopes. Each call still checks current workspace, role, policy and resource ownership.
+Core owns customer provider connections and encrypted credentials in its existing database on Neon. Plugin images, build pods and public API results do not receive those credentials. Connecting a provider does not grant unrestricted access to its cloud account.
 
-## Discover the available tools
+## Neon connections
 
-BYOK command names map to MCP tool names by replacing dots with underscores. For example, `byok.inventory` is exposed as `byok_inventory`. Use the connected client's tool schemas for current fields and enum values.
+The supported default is a Neon API key entered in the protected Console connection form. Use a least-privilege project key with its exact Neon project ID when possible; account/organization keys can expose paged project inventory within their scope.
 
-| Area | Commands |
-| --- | --- |
-| Policy and connections | `byok.policy.get`, `byok.policy.set`, `byok.list` |
-| Cluster lifecycle | `byok.register`, `byok.cluster`, `byok.enrollment`, `byok.revoke` |
-| Inventory and workload operations | `byok.inventory`, `byok.scan`, `byok.workload`, `byok.reconcile` |
-| Vercel | `byok.vercel.projects`, `byok.vercel.select`, `byok.vercel.resources`, `byok.vercel.region`, `byok.vercel.cancel`, `byok.vercel.disconnect` |
-| Own Mail | `byok.mail.get`, `byok.mail.refresh`, `byok.mail.domain`, `byok.mail.review`, `byok.mail.disconnect` |
+Customers' owners/administrators and authorized operators can manage their connections. Read-only preview can inspect safe connection metadata but cannot connect, disconnect or enumerate management inventory. Connect and disconnect use current revisions and stable idempotency keys. Disconnect removes the stored credential while retaining revision history; it does not revoke the provider key or delete Neon data.
 
-Policy updates and uncertain-operation review require platform operator authority. An enrollment call returns a protected setup reference, not an agent credential. Vercel's interactive authorization must be completed in Console. `byok.mail.connect` is deliberately not exposed as an MCP tool: enter provider secrets in the protected Console form.
+Local Neon CLI authorization is an optional way for the customer to create a suitable project key. Its personal OAuth flow is not Spitzli Cloud's hosted OAuth integration. Do not extract arbitrary credentials from CLI profiles, paste callback codes into chat or reuse Neon's public CLI client as a Spitzli callback client. Any future hosted callback requires its own registered client, state and PKCE validation.
 
-## Concurrency and retries
+The same-origin Console endpoint is `/api/console/byok/neon`; it accepts strict `get`, `connect`, `projects` and `disconnect` commands. It is a protected browser integration boundary, not a public token-exchange endpoint. Provider responses are reduced to safe metadata, and keys remain encrypted in Core.
 
-Keep customer, cluster and operation IDs as decimal strings. Use the current `revision` for policy, connection and revoke operations. Refresh a conflicting revision instead of overwriting another administrator's change.
+## Hosting automation
 
-For a workload action, send the exact current `uid` and `resourceVersion` from an authorized inventory read. Preserve the same `idempotencyKey` for the same intent. A different action needs its own key. Inventory freshness and namespace policy are rechecked when an operation is claimed.
+Use [MCP](/developers/mcp) discovery for the currently exposed Hosting tools and request `hosting:read`, adding `hosting:write` only where required. Do not assume historical `byok_*` commands remain public tools: native discovery lists the operations actually wired into the host.
 
-Poll `get_hosting_operation` with the returned operation ID. A queued response is not proof that the workload changed. If the operation needs reconciliation, refresh inventory and let an authorized operator review the uncertain state before another write.
+Keep platform IDs as decimal strings. For workload changes, use fresh inventory and the exact resource identity/version required by the tool schema. Preserve the same idempotency key for unchanged intent and inspect the returned operation through `get_hosting_operation`. A queued response is not a completed provider change.
 
-## Scope of access
+Current workspace, role, policy, tenant ownership and connection restrictions are checked again during execution. Uncertain provider outcomes require reconciliation before another write. Kubernetes access remains scoped to enrolled clusters/namespaces; Vercel and Mail remain bound to their configured account/project/connection.
 
-Provider connection does not expose credentials or grant arbitrary cloud API access. Namespaced inventory and workload actions remain namespace-limited, Vercel requests remain team/project-limited, and Mail remains customer/connection-limited. A read-only customer preview cannot be used to perform writes.
-
-Source contract: [BYOK commands](https://github.com/spitzli/webdock/blob/main/packages/hosting-contracts/src/byok.ts).
+Source: Core provider connections (`crates/provider-connections`), Neon Console route (`crates/control-plane/src/neon_connections.rs`) and native Hosting resource tools (`crates/control-plane/src/resource_hosting.rs`).

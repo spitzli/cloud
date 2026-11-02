@@ -1,0 +1,10 @@
+[Unit]
+Description=Trusted CI UID private/platform egress guard (own nftables table only)
+After=nftables.service network-pre.target
+Before=spitzli-plugin-buildkit.service spitzli-plugin-runner.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/spitzli-plugin-ci/egress.py --apply
+RemainAfterExit=yes
+[Install]
+WantedBy=multi-user.target

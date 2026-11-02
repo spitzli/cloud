@@ -78,6 +78,11 @@ spec:
             httpGet:
               path: {{ .Values.healthPath | quote }}
               port: runtime
+              {{- if .Values.healthHost }}
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.healthHost | quote }}
+              {{- end }}
             timeoutSeconds: 2
             periodSeconds: 5
             failureThreshold: 3

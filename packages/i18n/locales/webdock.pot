@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webdock\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 19:33+0100\n"
+"POT-Creation-Date: 2026-11-01 17:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,7 +45,8 @@ msgstr ""
 msgid "This page is not available. Check the address or return to the homepage."
 msgstr ""
 
-#: apps/cms/src/app/not-found.tsx:4 apps/website/src/app/global-not-found.tsx:4
+#: apps/cms/src/app/not-found.tsx:4 apps/console/src/Waitlist.tsx:27
+#: apps/website/src/app/global-not-found.tsx:4
 #: legacy/auth/src/app/not-found.tsx:4
 #: legacy/console/src/app/(console)/waitlist/confirmed/page.tsx:7
 #: legacy/console/src/app/global-not-found.tsx:4
@@ -84,34 +85,1596 @@ msgstr ""
 msgid "All accessible sites"
 msgstr ""
 
+#: apps/console/src/Connections.tsx:64 apps/console/src/Connections.tsx:102
+msgid "The connection changed. Review the refreshed status before submitting a new request."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:91
+msgid "Neon connected. Refresh projects to read your Neon inventory."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:91
+msgid "Neon disconnected. Your Neon projects and data are unchanged."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:99
+msgid "The result is uncertain. Retry the same request. For a connection, re-enter the same API key; the original revision and request ID are retained."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:102
+msgid "Neon rejected this request or access is unavailable. Check your API key, Neon project ID and permissions. No alternative provider was used."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:124
+msgid "Re-enter the same API key and keep the original organization and Neon project IDs to retry the uncertain request."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:130
+msgid "The API key could not be prepared. Enter it again to retry."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:138
+msgid "Loading connections…"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:140
+msgid "Workspace administrator access required"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:140
+msgid "An owner, administrator or authorized operator manages Neon connections."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:143 apps/console/src/WorkspaceNav.tsx:42
+#: apps/console/src/WorkspaceNav.tsx:80
+#: legacy/console/src/components/navigation.tsx:52
+#: legacy/console/src/lib/console-search-server.ts:47
+msgid "Connections"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:143
+msgid "Connect your own Neon account to this customer workspace."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:146
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:37
+#: modules/hosting/src/ui/application-services.tsx:64
+#: modules/hosting/src/ui/own-infrastructure.tsx:238
+#: modules/hosting/src/ui/project-overview.tsx:19
+msgid "Connected"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:146
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:40
+#: modules/hosting/src/ui/project-overview.tsx:22
+#: modules/mail/src/ui/product-page.tsx:97
+msgid "Disconnected"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:147
+msgid "Neon bills your own account and applies its own quotas. This connection does not use the platform's free database allowance."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:148
+msgid "Organization"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:148
+msgid "API key scope"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:148
+msgid "Connection revision"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:149
+msgid "Neon project scope"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:150
+msgid "Read-only view. Connection changes and provider inventory refresh are disabled."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:153 apps/console/src/Connections.tsx:159
+msgid "Connect Neon"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:154
+msgid "Neon API key"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:155
+msgid "Create a key in your Neon account. The key is stored encrypted on the server and is never shown again. It is cleared from this form on every submission."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:156
+msgid "Organization ID (optional)"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:157
+msgid "Neon project ID (optional)"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:158
+msgid "Recommended for project-scoped API keys: enter the exact Neon project ID. Leave blank for account or organization keys to list their available projects."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:159
+#: modules/hosting/src/ui/setup-wizard.tsx:467
+msgid "Connecting…"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:159
+msgid "Retry same connection"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:159
+msgid "Replace connection key"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:161
+msgid "Optional: create a project key with the Neon CLI"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:161
+msgid "Run the official Neon CLI on your own computer. The localhost login callback belongs to that same computer. Use that same project ID in the Neon project ID field above, then paste only the project API key into the form."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:161
+msgid "Do not upload credentials.json or share a login callback URL or code. Spitzli does not run the CLI for you."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:165
+#: apps/console/src/ManagedDatabases.tsx:176
+msgid "Open Neon Console"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:166
+msgid "Disconnect Neon"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:166
+msgid "Confirm Neon disconnection"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:166
+msgid "Remove only the Spitzli connection and stored API key? Your Neon projects and data remain intact."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:166
+msgid "Retry same disconnection"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:166
+msgid "Confirm disconnect"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:166
+#: apps/console/src/ManagedDatabases.tsx:792
+#: legacy/auth/src/components/passkeys.tsx:93 packages/cms-ui/src/client.tsx:79
+msgid "Cancel"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:175
+msgid "Neon project inventory"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:176
+msgid "Neon projects (read only)"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:176
+msgid "Refresh projects"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:177
+msgid "Refresh to read projects available to this key. No database resources are provisioned by connecting."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:177
+msgid "Reading Neon projects…"
+msgstr ""
+
+#: apps/console/src/Connections.tsx:177
+msgid "Neon inventory is unavailable. The key may be invalid or revoked, or Neon may be unavailable. Check the key and refresh; no fallback is used."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:178
+msgid "No Neon projects are available to this key."
+msgstr ""
+
+#: apps/console/src/Connections.tsx:179
+msgid "Next project page"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:21
+msgid "Backup policy settings"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:24
+#: apps/console/src/DatabaseBackups.tsx:79
+msgid "Registered destination ID"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:25
+#: apps/console/src/DatabaseBackups.tsx:70
+#: apps/console/src/DatabaseBackups.tsx:71
+msgid "Daily schedule"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:25
+msgid "Six fields: 0 minute hour * * *. Provider schedule timezone applies."
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:26
+#: apps/console/src/DatabaseBackups.tsx:70
+#: apps/console/src/DatabaseBackups.tsx:71
+msgid "Retention days"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:27
+msgid "Suspend scheduled backups"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:27
+msgid "Allow WAL archiving"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:27
+msgid "A new grant enables the daily schedule and WAL archiving."
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:28
+msgid "Allow deletion under the retention policy"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:29
+msgid "Schedule suspension, WAL archiving and retention deletion are independent. Stop the schedule before disabling WAL."
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:34
+#: apps/console/src/DatabaseBackups.tsx:61
+msgid "Back up now"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:35
+msgid "Revoke the backup grant? Recurrence stops only after agent observation. WAL and retention deletion permissions are unchanged."
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:35
+msgid "Revoke backup grant"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:56
+#: apps/console/src/DatabaseBackupControls.tsx:57
+msgid "Register backup destination"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:59
+msgid "Provide separate writer and read-only recovery credentials. Credentials are sent once and cleared from this form. A recovery key reference does not establish key escrow."
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:60
+msgid "HTTPS S3 endpoint"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:60
+msgid "S3 region"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:60
+msgid "Private bucket"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:60
+msgid "Retained recovery key reference"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:61
+msgid "Writer access key"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:61
+msgid "Writer secret key"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:61
+msgid "Recovery access key"
+msgstr ""
+
+#: apps/console/src/DatabaseBackupControls.tsx:61
+msgid "Recovery secret key"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:14
+msgid "Backups are not configured"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:15
+msgid "Backup configuration pending observation"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:16
+msgid "Backup configuration observed"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:17
+msgid "Backup suspension pending observation"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:18
+msgid "Backup schedule suspension observed"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:50
+#: apps/console/src/DatabaseBackups.tsx:51
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:180
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:67
+msgid "Backups"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:52
+msgid "Backup observation unavailable. Refresh before making changes."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:52
+msgid "Backup request accepted. Waiting for agent observation."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:53
+msgid "Public recovery is unavailable. No recovery window or RPO/RTO commitment is included."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:54
+msgid "Restore database"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:55
+msgid "Operator restore requires a separately reviewed recovery order. This Console flow is not available yet."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:56
+msgid "Shared PostgreSQL backup, restore and clone are unavailable."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:57
+msgid "Previous observations — not current confirmation"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:59
+msgid "Retry same request"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:60
+msgid "Refresh backup status"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:69
+msgid "Historical last completed backup"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:70
+msgid "Desired controls"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:70
+#: apps/console/src/DatabaseBackups.tsx:71
+msgid "WAL archiving"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:70
+#: apps/console/src/DatabaseBackups.tsx:71
+msgid "Retention deletion permission"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:71
+msgid "No agent observation is available."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:72
+msgid "Historical completed backups"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:72
+msgid "Restore point"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:72
+msgid "The latest 100 recorded completions are shown. A completed backup alone does not establish a recovery window."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:78
+msgid "Request reference"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:79
+msgid "Accepted operation"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:79
+msgid "Backup policy"
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:80
+msgid "Check the backup request fields. Refresh before trying again."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:80
+msgid "Retry the original unchanged request. Re-enter the identical credentials for a destination registration."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:80
+msgid "Backup request conflicts with current state. Refresh before trying again."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:80
+msgid "Backup authority is no longer available. Sign in again or request current operator access."
+msgstr ""
+
+#: apps/console/src/DatabaseBackups.tsx:80
+msgid "The response was lost. The request may have been accepted. Retry only the identical request with its retained reference."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:47 apps/console/src/HostingBuilds.tsx:150
+msgid "Builds are unavailable"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:47
+msgid "Hosting is not enabled for this installation."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:49
+msgid "Loading project…"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:50
+msgid "Hosting is not configured"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:50
+msgid "Configure hosting for this project before connecting a repository source."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:53
+msgid "Loading sources…"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:56
+#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/layout.tsx:13
+#: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:84
+#: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:125
+#: legacy/console/src/app/(console)/(portal)/hosting/operations/[operationID]/page.tsx:28
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/page.tsx:40
+#: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:22
+#: legacy/console/src/components/console-controls.tsx:80
+#: legacy/console/src/components/navigation.tsx:142
+#: legacy/console/src/distribution/full/context.ts:61
+#: legacy/console/src/distribution/full/context.ts:66
+#: legacy/console/src/lib/console-context.ts:62
+#: legacy/console/src/lib/console-search-server.ts:40
+#: modules/hosting/src/ui/project-applications.tsx:41
+#: modules/hosting/src/ui/project-applications.tsx:52
+#: modules/hosting/src/ui/project-context.tsx:46
+#: modules/hosting/src/ui/project-overview.tsx:76
+msgid "Applications"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:57
+msgid "{project} builds"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:58
+msgid "Build repository commits, review their output, and follow publication separately."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:59
+#: apps/console/src/ManagedDatabases.tsx:1094
+#: modules/hosting/src/ui/setup-wizard.tsx:444
+msgid "Refresh"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:60
+msgid "Customer preview is read-only. Build history and retained logs remain available."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:62
+msgid "Request recorded."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:64
+msgid "Repository source"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:64 apps/console/src/HostingBuilds.tsx:117
+#: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:82
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:290
+#: modules/hosting/src/ui/setup-source-fields.tsx:120
+msgid "Repository"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:65
+msgid "Recording request…"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:65
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:454
+msgid "Build latest commit"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:66
+msgid "No repository source"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:66
+msgid "Project managers can connect an authorized repository below. Your provider must enable new GitHub account access."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:71
+msgid "Build history"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:72
+msgid "Loading build history…"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:73
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:470
+msgid "Commit"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:73
+msgid "Build status"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:73 apps/console/src/HostingBuilds.tsx:139
+#: apps/console/src/HostingBuilds.tsx:175
+#: apps/console/src/HostingBuilds.tsx:176
+#: apps/console/src/HostingBuilds.tsx:179
+msgid "Not recorded"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:75
+msgid "No builds yet"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:75
+msgid "A requested build will appear here once it has been recorded."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:87
+msgid "Repository setup is unavailable"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:87
+msgid "This hosting provider does not support repository source setup here."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:102
+msgid "Loading GitHub connections…"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:104
+msgid "No active GitHub connection"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:104
+msgid "Ask your provider to connect your GitHub account and authorize repositories for this workspace."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:104
+msgid "Refresh connections"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:105
+msgid "No application target"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:105
+msgid "Create an application in this project before connecting a repository."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:112
+#: apps/console/src/HostingBuilds.tsx:113
+msgid "Connect a repository"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:114
+msgid "Select a repository already authorized for this workspace. Build access and publication are approved separately."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:115
+#: legacy/auth/src/app/consent/page.tsx:33
+#: legacy/auth/src/lib/i18n-messages.ts:286
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:69
+#: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:25
+#: modules/hosting/src/ui/project-overview.tsx:103
+#: modules/hosting/src/ui/service-bindings.tsx:65
+#: modules/hosting/src/ui/setup-review.tsx:41
+#: modules/hosting/src/ui/setup-wizard.tsx:37
+msgid "Application"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:115
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:72
+msgid "Select an application"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:116
+#: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:56
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:164
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:248
+#: modules/hosting/src/ui/setup-source-fields.tsx:98
+msgid "GitHub account"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:116
+msgid "Select a GitHub account"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:117
+#: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:85
+msgid "Select a repository"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:117
+msgid "Authorized repository"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:118
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:304
+#: modules/hosting/src/ui/setup-source-fields.tsx:143
+msgid "Branch"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:119
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:317
+#: modules/hosting/src/ui/setup-source-fields.tsx:154
+msgid "Root directory"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:120
+#: apps/console/src/HostingBuilds.tsx:255
+msgid "Build strategy"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:120
+#: apps/console/src/HostingBuilds.tsx:255
+msgid "Automatic"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:120
+#: apps/console/src/HostingBuilds.tsx:255
+msgid "Dockerfile"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:120
+#: apps/console/src/HostingBuilds.tsx:255
+msgid "Railpack"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:121
+msgid "Loading repositories…"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:121
+msgid "No repositories are authorized for this account. Ask your provider to update its repository access."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:121
+msgid "Refresh repositories"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:122
+msgid "Check the branch and relative root directory."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:123
+#: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:95
+msgid "Connect repository"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:137
+msgid "Publications"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:137
+msgid "Build success confirms the build output. Deployment has its own status and approval."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:138
+msgid "Loading publications…"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:139
+#: apps/console/src/HostingBuilds.tsx:175
+msgid "Requested"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:139
+msgid "Deployment status"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:139
+#: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:233
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:167
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:479
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:529
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:72
+#: legacy/console/src/app/(console)/(portal)/hosting/vercel/[customerID]/page.tsx:133
+msgid "Actions"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:140
+msgid "Rollout operation"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:141
+msgid "Approve publication"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:142
+msgid "Redeploy this version"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:144
+msgid "No retained build output has been submitted for publication."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+#: apps/console/src/build-contracts.ts:123
+#: legacy/console/src/lib/ui-labels.ts:7
+msgid "Queued"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+msgid "Preparing build environment"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+msgid "Cloning"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+msgid "Preparing"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+#: apps/console/src/build-contracts.ts:123
+#: legacy/console/src/lib/ui-labels.ts:7
+msgid "Building"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+msgid "Pushing"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+#: apps/console/src/HostingBuilds.tsx:161
+msgid "Awaiting approval"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+#: apps/console/src/build-contracts.ts:123
+msgid "Build succeeded"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+#: apps/console/src/build-contracts.ts:123
+msgid "Build failed"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:149
+#: apps/console/src/build-contracts.ts:123 legacy/auth/src/lib/i18n-labels.ts:4
+#: legacy/console/src/lib/ui-labels.ts:6 legacy/console/src/lib/ui-labels.ts:7
+msgid "Cancelled"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:150
+msgid "Repository provider adapter is unavailable."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "The source changed before this build completed."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "A newer commit replaced this queued build."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "Build execution ended before output was retained."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "The build exceeded its time limit."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "The build exceeded its memory limit."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "The build environment ran out of resources."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "The build node is temporarily unavailable."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "The build service is temporarily unavailable."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "The build failed. Review the retained logs."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:151
+msgid "Build execution did not complete. Review the retained logs."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:161
+msgid "Publication queued"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:161
+msgid "Deploying"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:161
+msgid "Deployment ready"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:161
+msgid "Rollout failed"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:161
+msgid "Superseded"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:161
+#: modules/mail/src/ui/product-page.tsx:96
+msgid "Needs review"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:167
+msgid "Loading build…"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:170
+msgid "Selected build"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:170
+msgid "Build {commit}"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:171
+msgid "Phase: {phase}"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:171
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:488
+msgid "Cancel build"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:173
+msgid "Attempt"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:173
+msgid "Not started"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:174
+msgid "Retries"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:174
+msgid "{count} of 2"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:176
+msgid "Finished"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:177
+msgid "Request to completion"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:177
+msgid "{seconds} s"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:179
+msgid "Eligible for retry after {date}"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:180
+msgid "Previous build environment issue: {reason}"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:181
+msgid "Build output is retained and awaiting publication. Registry publication has not been confirmed."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:219
+msgid "The log event cursor is invalid."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:224
+#: apps/console/src/HostingBuilds.tsx:231
+msgid "Build logs are unavailable."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:233
+msgid "Retained logs"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:233
+#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:197
+msgid "Refresh logs"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:234
+msgid "Loading logs…"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:234
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/builds/[buildID]/page.tsx:26
+#: modules/hosting/src/ui/setup-progress.tsx:95
+msgid "Build logs"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:234
+msgid "No log output yet."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:235
+msgid "Only the most recent log output is displayed."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:250
+msgid "This source uses an external build provider."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:251
+#: modules/hosting/src/ui/setup-source-fields.tsx:184
+msgid "Build settings"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:252
+msgid "The source changed. Reload its settings before saving."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:252
+msgid "Reload settings"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:253
+msgid "Build after GitHub workflow succeeds"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:253
+msgid "Build on GitHub pushes"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:253
+msgid "Only successful push runs of {workflow} may start automatic builds. Publication approval remains separate."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:253
+msgid "Allow signed repository pushes to start builds. Publication approval remains separate."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:254
+msgid "Build execution"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:254
+msgid "Existing isolated worker"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:254
+msgid "Managed build cluster"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:254
+msgid "Build cluster access must be enabled for this project."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:255
+msgid "Build context"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:255
+msgid "Dockerfile path"
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:256
+msgid "Check the relative context and Dockerfile paths."
+msgstr ""
+
+#: apps/console/src/HostingBuilds.tsx:256
+msgid "Save build settings"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:160
+msgid "Managed databases"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:174
+msgid "New shared and self-hosted PostgreSQL orders are retired. For a new database, create a project in your own Neon account. Connect your Neon account in Connections. Existing databases remain available below."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:175
+msgid "Open connections"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:180
+#: legacy/console/src/app/(console)/(portal)/tenants/[customerID]/managed-databases/page.tsx:43
+#: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:27
+#: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:36
+#: legacy/console/src/lib/ui-labels.ts:10
+#: legacy/console/src/lib/ui-labels.ts:15 modules/databases/src/ui/forms.tsx:43
+#: modules/hosting/src/ui/customer.tsx:117
+#: modules/hosting/src/ui/customer.tsx:198
+#: modules/hosting/src/ui/customer.tsx:257
+msgid "Project"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:210
+msgid "Some database plans are unavailable because their configuration is invalid."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:254
+#: modules/databases/src/ui/managed-rows.tsx:22
+msgid "Manage database"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:260
+msgid "No databases available."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:348
+#: apps/console/src/ManagedDatabases.tsx:892 apps/console/src/Waitlist.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:34
+#: legacy/auth/src/components/auth-forms.tsx:689
+#: legacy/auth/src/components/plan-fields.tsx:29
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:56
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/page.tsx:74
+#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/page.tsx:70
+#: legacy/console/src/app/(console)/(workspace)/infrastructure/page.tsx:112
+#: legacy/console/src/lib/ui-labels.ts:15
+#: modules/databases/src/ui/databases.tsx:66
+#: modules/databases/src/ui/databases.tsx:174
+#: modules/databases/src/ui/forms.tsx:60
+#: modules/hosting/src/ui/own-infrastructure.tsx:166
+#: packages/cms-ui/src/schema.ts:20
+msgid "Name"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:358
+#: apps/console/src/ManagedDatabases.tsx:359
+#: modules/databases/src/ui/databases.tsx:76
+#: modules/hosting/src/ui/setup-service-fields.tsx:94
+msgid "Database plan"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:363
+#: apps/console/src/ManagedDatabases.tsx:396
+#: modules/databases/src/ui/databases.tsx:81
+#: modules/databases/src/ui/databases.tsx:99
+#: modules/hosting/src/ui/setup-review.tsx:139
+#: modules/hosting/src/ui/setup-service-fields.tsx:108
+msgid "net / month"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:373
+#: modules/databases/src/ui/databases.tsx:87
+msgid "Review paid order"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:378
+#: modules/databases/src/ui/databases.tsx:91
+#: modules/hosting/src/ui/setup-service-fields.tsx:164
+msgid "No database plans are available yet."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:401
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:185
+#: modules/databases/src/ui/databases.tsx:117
+#: modules/hosting/src/ui/setup-review.tsx:143
+msgid "Backups are not configured. No recovery window is included."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:405
+#: modules/databases/src/ui/databases.tsx:121
+msgid "Billing starts after confirmed provisioning. Pausing does not reduce the monthly price."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:410
+#: modules/databases/src/ui/databases.tsx:134
+#: modules/hosting/src/ui/setup-review.tsx:159
+msgid "I accept this monthly price and the displayed terms."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:421
+#: modules/databases/src/ui/databases.tsx:147
+msgid "I agree to interrupt database connections for this upgrade now."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:567
+#: legacy/console/src/components/console-controls.tsx:108
+msgid "Close"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:572
+#: modules/databases/src/ui/database-details.tsx:34
+#: modules/hosting/src/ui/service-bindings.tsx:96
+#: modules/hosting/src/ui/setup-service-fields.tsx:40
+msgid "Database"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:578
+msgid "Storage"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:589
+msgid "Usage"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:600
+#: modules/databases/src/ui/database-details.tsx:30
+msgid "Host"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:622
+msgid "Pause"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:633
+msgid "Resume"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:644
+msgid "Restart this database and interrupt current connections?"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:651
+#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:124
+msgid "Restart"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:663
+msgid "Rotate database credentials? Existing connection passwords will stop working."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:670
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:85
+msgid "Rotate credentials"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:689
+msgid "Request cancellation of this database order?"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:695
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:95
+msgid "Request cancellation"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:698
+msgid "Cancellation requested"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:709
+msgid "Delete database"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:719
+#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:82
+#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/storage-delete/page.tsx:26
+#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/storage-delete/page.tsx:44
+msgid "Permanently delete retained data"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:730
+msgid "Reconcile"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:768
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/deletion/page.tsx:60
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/sources/[migrationID]/page.tsx:38
+msgid "Retained until"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:773
+msgid "Confirm database name"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:783
+msgid "Confirm deletion"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:849
+msgid "Database plans"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:860
+#: apps/console/src/ManagedDatabases.tsx:862
+#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:201
+msgid "Availability"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:875
+#: legacy/auth/src/app/connections/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:54
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
+#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:203
+#: legacy/console/src/lib/ui-labels.ts:6
+#: packages/hosting-contracts/src/resource-field.tsx:46
+msgid "Disabled"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:876
+msgid "Private pilot"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:877
+msgid "Public"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:890
+#: apps/console/src/ManagedDatabases.tsx:964
+#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:212
+#: modules/databases/src/ui/databases.tsx:203
+msgid "Create disabled plan"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:896
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:116
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:62
+#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:100
+#: modules/databases/src/ui/databases.tsx:178
+msgid "Database kind"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:904
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:118
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/layout.tsx:31
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:64
+#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:104
+#: modules/databases/src/ui/databases.tsx:181
+msgid "Dedicated instance"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:905
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:118
+#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/layout.tsx:31
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:64
+#: modules/databases/src/ui/databases.tsx:180
+msgid "Shared"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:909
+#: modules/databases/src/ui/databases.tsx:185
+msgid "Monthly net price (EUR)"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:935
+msgid "CPU (millicores)"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:946
+msgid "Memory (GiB)"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:959
+#: modules/databases/src/ui/databases.tsx:194
+msgid "Contract terms"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:967
+#: modules/databases/src/ui/databases.tsx:207
+msgid "Database plan saved as disabled."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:1051
+msgid "Database infrastructure"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:1066
+#: apps/console/src/ManagedDatabases.tsx:1068
+#: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:170
+#: legacy/console/src/app/(console)/(workspace)/infrastructure/page.tsx:64
+#: modules/hosting/src/ui/customer.tsx:130
+#: modules/hosting/src/ui/customer.tsx:216
+#: modules/hosting/src/ui/setup-hosting.tsx:52
+msgid "Cluster"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:1102
+msgid "available"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:1114
+msgid "Create a shared PostgreSQL installation on this qualified storage pool?"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:1147
+msgid "No qualified database volume pool is available."
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:1169
+msgid "Revision"
+msgstr ""
+
+#: apps/console/src/ManagedDatabases.tsx:1177
+msgid "No database clusters are available."
+msgstr ""
+
+#: apps/console/src/Registry.tsx:315
+msgid "Customer connections"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:79
+msgid "No resource reservations have been reported yet."
+msgstr ""
+
+#: apps/console/src/Usage.tsx:90
+msgid "reserved · no plan limit"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:191 apps/console/src/Usage.tsx:193
+msgid "Application hosting"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:194
+msgid "Customer-wide hosting allowances. Project or provider limits may be stricter."
+msgstr ""
+
+#: apps/console/src/Usage.tsx:195
+msgid "Loading hosting reservations…"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:195
+msgid "Unable to load hosting reservations"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:197 modules/hosting/src/ui/customer.tsx:152
+msgid "Resource"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:197 modules/hosting/src/ui/customer.tsx:165
+msgid "Allocated"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:197
+msgid "Pending reservation"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:197
+msgid "Customer allowance"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:202
+msgid "No customer limit"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:205
+msgid "Allocated and pending reservations describe configured resources, not live measurements. Replicas per app shows the maximum in each state."
+msgstr ""
+
+#: apps/console/src/Usage.tsx:217
+msgid "Extension plan and workload usage"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:218
+msgid "Project and extension usage"
+msgstr ""
+
+#: apps/console/src/Usage.tsx:218
+msgid "These plan meters cover projects and extensions. Workload measurements below belong to extensions; application hosting is shown separately."
+msgstr ""
+
+#: apps/console/src/Usage.tsx:237
+msgid "No workspace plan is assigned. Service-specific limits may still apply."
+msgstr ""
+
+#: apps/console/src/Usage.tsx:255
+msgid "No service usage has been reported yet."
+msgstr ""
+
+#: apps/console/src/Usage.tsx:269
+msgid "Hosting allowances and reservations, plus project and extension usage."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:23
+msgid "You're on the waitlist"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:23
+msgid "Get early access"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:25
+msgid "Your request has been saved. We will review it before inviting you to Spitzli Cloud."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:26
+msgid "Spitzli Cloud is currently invitation-only. Leave your contact details to request access."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:37
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:34
+msgid "Email"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:38
+msgid "(optional)"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:41
+msgid "I agree to the"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:41
+msgid "privacy policy"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:41
+msgid "for processing my access request."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:44
+msgid "Enter a valid email and accept the privacy policy."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:46 legacy/auth/src/app/admin/form.tsx:43
+#: legacy/auth/src/app/admin/form.tsx:57
+#: legacy/auth/src/app/admin/plans/form.tsx:12
+#: legacy/auth/src/app/people/form.tsx:32
+#: legacy/auth/src/app/tenants/form.tsx:15
+#: legacy/console/src/app/(console)/(portal)/tenants/[customerID]/mail/mailboxes/forms.tsx:11
+#: modules/databases/src/ui/forms.tsx:29 modules/hosting/src/ui/form.tsx:96
+#: modules/hosting/src/ui/setup-wizard.tsx:465
+#: packages/cms-ui/src/client.tsx:1115
+msgid "Saving…"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:46 apps/website/src/app/(frontend)/page.tsx:39
+msgid "Join the waitlist"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:50
+msgid "Already invited?"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:50 legacy/auth/src/app/invitation/page.tsx:21
+#: legacy/auth/src/app/sign-in/page.tsx:5
+#: legacy/auth/src/components/auth-forms.tsx:116
+#: legacy/auth/src/components/auth-forms.tsx:289
+#: legacy/auth/src/components/auth-forms.tsx:612
+msgid "Sign in"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:77 legacy/auth/src/lib/i18n-labels.ts:4
+#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:36
+#: legacy/console/src/lib/ui-labels.ts:6
+#: modules/hosting/src/ui/application-services.tsx:67
+#: modules/hosting/src/ui/own-mail.tsx:161
+#: modules/hosting/src/ui/project-overview.tsx:18
+#: modules/hosting/src/ui/setup-progress.tsx:20
+#: modules/mail/src/ui/product-page.tsx:93
+msgid "Pending"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:77
+msgid "Approved"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:77
+msgid "Rejected"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:79 apps/website/src/app/(frontend)/page.tsx:32
+#: legacy/console/src/components/console-auth-shell.tsx:16
+msgid "Waitlist"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:80
+msgid "Review access requests. Approval permits onboarding; workspace access is assigned separately."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:82
+msgid "Request approved. Invite this contact from workspace member management to grant access."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:83
+msgid "Request rejected."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:84
+msgid "Unable to review request"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:85
+msgid "Loading access requests…"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:87
+msgid "No access requests"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:87
+msgid "New requests will appear here."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:95
+msgid "Approving…"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:95
+msgid "Approve"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:96
+msgid "Rejecting…"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:96
+msgid "Reject"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:101
+msgid "Newest requests"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:102
+msgid "Older requests"
+msgstr ""
+
+#: apps/console/src/build-contracts.ts:78
+msgid "The log cursor moved backwards."
+msgstr ""
+
+#: apps/console/src/build-contracts.ts:123
+msgid "Awaiting publication"
+msgstr ""
+
 #: apps/website/src/app/(cms)/layout.tsx:8
-msgid "CMS — Webdock"
+msgid "CMS — Spitzli Cloud"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:7
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:10
-msgid "Legal notice — Webdock"
+msgid "Legal notice — Spitzli Cloud"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:8
-msgid "Webdock provider and contact details for Spitzli Development."
+msgid "Spitzli Cloud provider and contact details for Spitzli Development."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:17
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:17
 #: apps/website/src/app/(frontend)/(legal)/terms/page.tsx:17
-msgid "Webdock · Updated {date}"
+msgid "Spitzli Cloud · Updated {date}"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:18
 #: apps/website/src/app/(frontend)/(legal)/layout.tsx:15
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:22
-#: apps/website/src/app/(frontend)/page.tsx:53
+#: apps/website/src/app/(frontend)/page.tsx:54
 msgid "Legal notice"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:19
-msgid "Provider of Webdock pursuant to Section 5 DDG:"
+msgid "Provider of Spitzli Cloud pursuant to Section 5 DDG:"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:20
@@ -143,11 +1706,11 @@ msgid "VAT identification number pursuant to Section 27a of the German VAT Act: 
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:26
-msgid "Webdock and Spitzli Development"
+msgid "Spitzli Cloud and Spitzli Development"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:27
-msgid "Webdock is a service of Spitzli Development. These provider details apply to Webdock’s own website and services. Independently operated customer websites are the responsibility of their respective providers."
+msgid "Spitzli Cloud is a service of Spitzli Development. These provider details apply to Spitzli Cloud’s own website and services. Independently operated customer websites are the responsibility of their respective providers."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/imprint/page.tsx:28
@@ -156,15 +1719,15 @@ msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/integrations/vercel/page.tsx:5
 #: apps/website/src/app/(frontend)/(legal)/integrations/vercel/page.tsx:8
-msgid "Vercel integration — Webdock Studio"
+msgid "Vercel integration — Spitzli Cloud Studio"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/integrations/vercel/page.tsx:6
-msgid "Connect selected Vercel projects to Webdock Studio with read-only access."
+msgid "Connect selected Vercel projects to Spitzli Cloud Studio with read-only access."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/integrations/vercel/page.tsx:14
-msgid "Webdock Studio · Integration guide"
+msgid "Spitzli Cloud Studio · Integration guide"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/integrations/vercel/page.tsx:15
@@ -172,7 +1735,7 @@ msgid "Vercel, in Studio."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/integrations/vercel/page.tsx:16
-msgid "View hosting information alongside your Webdock project records: current production release, recent deployments, Git branch and commit, runtime settings, and domain verification."
+msgid "View hosting information alongside your Spitzli Cloud project records: current production release, recent deployments, Git branch and commit, runtime settings, and domain verification."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/integrations/vercel/page.tsx:17
@@ -220,7 +1783,7 @@ msgid "Disconnect"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/integrations/vercel/page.tsx:28
-msgid "Disconnect in Studio to delete its stored access token. Also uninstall Webdock Studio in your Vercel team’s integration settings to revoke permission at Vercel. Project mappings and audit records remain; contact us if you need them removed."
+msgid "Disconnect in Studio to delete its stored access token. Also uninstall Spitzli Cloud Studio in your Vercel team’s integration settings to revoke permission at Vercel. Project mappings and audit records remain; contact us if you need them removed."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/integrations/vercel/page.tsx:29
@@ -257,7 +1820,7 @@ msgid "before connecting."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/layout.tsx:9
-#: apps/website/src/app/(frontend)/page.tsx:28
+#: apps/website/src/app/(frontend)/page.tsx:29
 #: legacy/auth/src/app/layout.tsx:31
 #: legacy/console/src/app/(console)/layout.tsx:41
 #: packages/cms-ui/src/client.tsx:849
@@ -265,24 +1828,23 @@ msgid "Skip to content"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/layout.tsx:11
-#: apps/website/src/app/(frontend)/page.tsx:30
-#: apps/website/src/app/(frontend)/page.tsx:53
-#: legacy/console/src/components/console-auth-shell.tsx:10
-msgid "Webdock home"
+#: apps/website/src/app/(frontend)/page.tsx:31
+#: apps/website/src/app/(frontend)/page.tsx:54
+msgid "Spitzli Cloud home"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/layout.tsx:15
-#: apps/website/src/app/(frontend)/page.tsx:53
+#: apps/website/src/app/(frontend)/page.tsx:54
 msgid "Legal"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/layout.tsx:15
-#: apps/website/src/app/(frontend)/page.tsx:53
+#: apps/website/src/app/(frontend)/page.tsx:54
 msgid "Terms"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/layout.tsx:15
-#: apps/website/src/app/(frontend)/page.tsx:53
+#: apps/website/src/app/(frontend)/page.tsx:54
 #: legacy/auth/src/app/layout.tsx:46
 #: legacy/console/src/components/console-auth-shell.tsx:16
 msgid "Privacy"
@@ -290,11 +1852,11 @@ msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:7
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:10
-msgid "Privacy — Webdock"
+msgid "Privacy — Spitzli Cloud"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:8
-msgid "How Webdock processes personal data, uses service providers and protects your rights."
+msgid "How Spitzli Cloud processes personal data, uses service providers and protects your rights."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:18
@@ -302,7 +1864,7 @@ msgid "Privacy notice"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:19
-msgid "This notice explains how we process personal data on Webdock’s website and in its account, Studio, hosting, database and Mail services. Customer-operated websites and applications have their own controllers and privacy notices."
+msgid "This notice explains how we process personal data on Spitzli Cloud’s website and in its account, Console, hosting, database and Mail services. Customer-operated websites and applications have their own controllers and privacy notices."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:20
@@ -327,7 +1889,7 @@ msgid "2. Data, purposes and legal bases"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:25
-msgid "When you visit Webdock, we and our hosting providers process technical request data, including IP address, requested URL, time, browser and operating-system information, to deliver the site, diagnose errors and prevent misuse. This is based on our legitimate interest in secure, reliable operation (Article 6(1)(f) GDPR). Fonts are served locally."
+msgid "When you visit Spitzli Cloud, we and our hosting providers process technical request data, including IP address, requested URL, time, browser and operating-system information, to deliver the site, diagnose errors and prevent misuse. This is based on our legitimate interest in secure, reliable operation (Article 6(1)(f) GDPR). Fonts are served locally."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:26
@@ -343,43 +1905,43 @@ msgid "The data required for account access and contracted services must be prov
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:29
-msgid "3. Projects, hosting and connected services"
+msgid "We process your email address, optional name, privacy acknowledgement and request/review timestamps when you request early access. Operators review requests manually. Saving a waitlist request does not verify your email, create an account or grant access. We use these details to handle your access request, not to subscribe you to a marketing newsletter. You can withdraw your request by contacting us."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:30
-msgid "Depending on the services enabled, we process project content, files, database contents, domains, configuration, access credentials, deployment and usage data, and operational logs. Authorised team members see data according to their roles. Operators access it where needed to provide support, maintain the service or investigate security incidents. Customer content is processed on the customer’s instructions; service administration relies on contract performance and our legitimate security interests."
+msgid "3. Projects, hosting and connected services"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:31
-msgid "Optional Vercel and GitHub connections provide authorisation data and information about selected projects or repositories, deployments, domains, branches and commits. Enabled build and deployment workflows also process the source code, build artefacts and configuration needed for those workflows. Access is limited by the connected account’s permissions and the selected function. Disconnecting in Webdock and revoking access at the provider are separate actions."
+msgid "Depending on the services enabled, we process project content, files, database contents, domains, configuration, access credentials, deployment and usage data, and operational logs. Authorised team members see data according to their roles. Operators access it where needed to provide support, maintain the service or investigate security incidents. Customer content is processed on the customer’s instructions; service administration relies on contract performance and our legitimate security interests."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:32
-msgid "4. Mail"
+msgid "Optional Vercel and GitHub connections provide authorisation data and information about selected projects or repositories, deployments, domains, branches and commits. Enabled build and deployment workflows also process the source code, build artefacts and configuration needed for those workflows. Access is limited by the connected account’s permissions and the selected function. Disconnecting in Spitzli Cloud and revoking access at the provider are separate actions."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:33
-msgid "Account invitations and security emails are sent through turboSMTP. When Mail is enabled for a customer, we process account and domain details, sender and recipient addresses, message contents and attachments, delivery events, usage and suppression records. Enabled incoming mail uses a separate Stalwart instance for that customer; outgoing-only service does not require one. Mailbox contents and forwarding are processed only for the enabled service."
+msgid "4. Mail"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:34
-msgid "For managed sending, the relay provider receives the account details needed for provisioning and the data needed to deliver messages. Customer-supplied relay accounts use the selected provider. Domain verification sends the domain name to Cloudflare’s DNS resolver. Configured customer webhooks receive delivery event data. Optional email open and click tracking is controlled by the customer administrator, who is responsible for the required recipient information and legal basis. It is separate from website analytics."
+msgid "Account invitations and security emails use the configured authentication provider or sending connection. When Mail is enabled for a customer, we process account and domain details, sender and recipient addresses, message contents and attachments, delivery events, usage and suppression records. Enabled incoming mail uses a separate Stalwart instance for that customer; outgoing-only service does not require one. Mailbox contents and forwarding are processed only for the enabled service."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:35
-msgid "5. Cookies, preferences and website analytics"
+msgid "For managed sending, the relay provider receives the account details needed for provisioning and the data needed to deliver messages. Customer-supplied relay accounts use the selected provider. Domain verification sends the domain name to Cloudflare’s DNS resolver. Configured customer webhooks receive delivery event data. Optional email open and click tracking is controlled by the customer administrator, who is responsible for the required recipient information and legal basis. It is separate from website analytics."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:36
-msgid "Login and connection cookies maintain sessions and protect authentication flows. Authentication sessions normally expire after eight hours; the Vercel connection cookie lasts up to ten minutes. A language preference explicitly selected by you is stored in a cookie for up to one year; a selected colour theme remains in local storage until removed. These functions use Article 6(1)(b) or (f) GDPR and, where strictly necessary to provide a service you request, Section 25(2)(2) TDDDG. You can remove them through your browser settings; this may sign you out or reset preferences."
+msgid "5. Cookies, preferences and website analytics"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:37
-msgid "We use self-hosted Umami at moon.webdock.dev to measure page views, referral sources and aggregated device and country statistics. The tracker does not use cookies or identify signed-in accounts. Query strings and URL fragments are excluded, and the browser’s Do Not Track preference is respected. Session replay and heatmaps are not enabled for this website."
+msgid "Login and connection cookies maintain sessions and protect authentication flows. Authentication sessions normally expire after eight hours; the Vercel connection cookie lasts up to ten minutes. A language preference explicitly selected by you is stored in a cookie for up to one year; a selected colour theme remains in local storage until removed. These functions use Article 6(1)(b) or (f) GDPR and, where strictly necessary to provide a service you request, Section 25(2)(2) TDDDG. You can remove them through your browser settings; this may sign you out or reset preferences."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:38
-msgid "How Plausible processes visitor data"
+msgid "Optional website analytics are disabled for this waitlist release. We do not load an analytics tracker, record sessions or create heatmaps on this website. Necessary service and security logs remain separate."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:39
@@ -387,7 +1949,7 @@ msgid "6. Providers and international transfers"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:40
-msgid "We use Vercel for web application hosting, Contabo for managed server, database and incoming-mail infrastructure, turboSMTP for email delivery, and Cloudflare for DNS services. GitHub and other customer-selected providers are involved when their integrations are enabled. Neon was the previous platform database provider; retained migration copies remain subject to the retention rules below until deleted. Providers receive only the data needed for their role. We also disclose data where legally required, for example to tax advisers or competent authorities."
+msgid "We use Neon for the platform database and managed sign-in, Vercel for web application hosting, Contabo for server infrastructure, turboSMTP for configured email delivery, and Cloudflare for DNS services. Core retains workspace authorisation and its additional account-security controls. GitHub and other customer-selected providers are involved when their integrations are enabled. Retained migration copies remain subject to the retention rules below until deleted. Providers receive only the data needed for their role. We also disclose data where legally required, for example to tax advisers or competent authorities."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/privacy/page.tsx:41
@@ -424,11 +1986,11 @@ msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/terms/page.tsx:7
 #: apps/website/src/app/(frontend)/(legal)/terms/page.tsx:10
-msgid "Terms and conditions — Webdock"
+msgid "Terms and conditions — Spitzli Cloud"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/terms/page.tsx:8
-msgid "Terms for Webdock services, including consumer cancellation and withdrawal rights."
+msgid "Terms for Spitzli Cloud services, including consumer cancellation and withdrawal rights."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/terms/page.tsx:18
@@ -436,7 +1998,7 @@ msgid "Terms and conditions"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/terms/page.tsx:19
-msgid "These terms apply to Webdock services for consumers and businesses, including agreed website development, project management, hosting, databases and Mail. A consumer acts mainly outside their trade or profession. Individually agreed terms take precedence; mandatory consumer rights remain unaffected."
+msgid "These terms apply to Spitzli Cloud services for consumers and businesses, including agreed website development, project management, hosting, databases and Mail. A consumer acts mainly outside their trade or profession. Individually agreed terms take precedence; mandatory consumer rights remain unaffected."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/terms/page.tsx:20
@@ -508,7 +2070,7 @@ msgid "We may restrict access where proportionate and necessary because of unlaw
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/terms/page.tsx:37
-msgid "Arrange an export of needed data before the service ends. We coordinate return or deletion under the service and data-processing agreements and applicable law. Deactivation or suspension is not deletion; retained data remains protected. Removing a Webdock connection does not automatically cancel or revoke your account with a third-party provider."
+msgid "Arrange an export of needed data before the service ends. We coordinate return or deletion under the service and data-processing agreements and applicable law. Deactivation or suspension is not deletion; retained data remains protected. Removing a Spitzli Cloud connection does not automatically cancel or revoke your account with a third-party provider."
 msgstr ""
 
 #: apps/website/src/app/(frontend)/(legal)/terms/page.tsx:38
@@ -570,132 +2132,121 @@ msgstr ""
 msgid "German law applies. For consumers, this choice does not remove mandatory protections of the country in which they habitually reside. Statutory jurisdiction rules apply. Changes to these terms do not automatically amend an existing contract; amendments require a valid agreement or legal basis. We inform you about relevant changes in advance."
 msgstr ""
 
-#: apps/website/src/app/(frontend)/layout.tsx:12
-#: apps/website/src/cms/landing.ts:7
-msgid "Webdock — Project previews & client websites by Spitzli"
-msgstr ""
-
 #: apps/website/src/app/(frontend)/layout.tsx:13
+#: apps/website/src/cms/landing.ts:7
+msgid "Spitzli Cloud — Websites, applications and cloud services"
+msgstr ""
+
+#: apps/website/src/app/(frontend)/layout.tsx:14
 #: apps/website/src/cms/landing.ts:8
-msgid "Your project. Well docked. A home for project previews and client websites by Spitzli Development — on a Webdock subdomain or your own domain."
+msgid "Your projects in one place. Websites and applications by Spitzli — on spitzli.site or your own domain."
 msgstr ""
 
-#: apps/website/src/app/(frontend)/layout.tsx:16
-msgid "Webdock — Your project. Well docked."
+#: apps/website/src/app/(frontend)/layout.tsx:17
+msgid "Spitzli Cloud — Your projects. One place."
 msgstr ""
 
-#: apps/website/src/app/(frontend)/layout.tsx:16
-msgid "A place on the web. Project previews and client websites by Spitzli Development."
+#: apps/website/src/app/(frontend)/layout.tsx:17
+msgid "Websites, applications and cloud services by Spitzli Development."
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:20
-msgid "My project with Webdock"
+#: apps/website/src/app/(frontend)/page.tsx:21
+msgid "My project with Spitzli Cloud"
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:31
+#: apps/website/src/app/(frontend)/page.tsx:32
 msgid "Main navigation"
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:31
+#: apps/website/src/app/(frontend)/page.tsx:32
 msgid "The idea"
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:31
+#: apps/website/src/app/(frontend)/page.tsx:32
 #: apps/website/src/cms/landing.ts:45
 msgid "FAQ"
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:31
+#: apps/website/src/app/(frontend)/page.tsx:32
 #: legacy/console/src/components/console-auth-shell.tsx:16
 msgid "Login"
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:31
-#: apps/website/src/app/(frontend)/page.tsx:40
+#: apps/website/src/app/(frontend)/page.tsx:32
+#: apps/website/src/app/(frontend)/page.tsx:41
 msgid "Access by invitation only."
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:31
-#: apps/website/src/app/(frontend)/page.tsx:40
-#: legacy/console/src/components/console-auth-shell.tsx:16
-msgid "Waitlist"
-msgstr ""
-
-#: apps/website/src/app/(frontend)/page.tsx:35
+#: apps/website/src/app/(frontend)/page.tsx:36
 msgid "A home for projects by Spitzli"
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:38
-msgid "Explore Webdock"
-msgstr ""
-
-#: apps/website/src/app/(frontend)/page.tsx:44
+#: apps/website/src/app/(frontend)/page.tsx:45
 msgid "Every idea needs a place."
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:46
+#: apps/website/src/app/(frontend)/page.tsx:47
 msgid "Built by Spitzli"
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:49
+#: apps/website/src/app/(frontend)/page.tsx:50
 msgid "Something else on your mind?"
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:49
+#: apps/website/src/app/(frontend)/page.tsx:50
 msgid "Just ask."
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:50
-#: legacy/auth/src/app/layout.tsx:39
-msgid "Open Studio"
-msgstr ""
-
-#: apps/website/src/app/(frontend)/page.tsx:50
-msgid "Available"
+#: apps/website/src/app/(frontend)/page.tsx:51
+msgid "Open Console"
 msgstr ""
 
 #: apps/website/src/app/(frontend)/page.tsx:51
+msgid "By invitation"
+msgstr ""
+
+#: apps/website/src/app/(frontend)/page.tsx:52
 msgid "Got something in mind?"
 msgstr ""
 
-#: apps/website/src/app/(frontend)/page.tsx:53
+#: apps/website/src/app/(frontend)/page.tsx:54
 msgid "A project by"
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:10
 msgid ""
-"Your project.\n"
-"Well docked."
+"Your projects.\n"
+"One place."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:11
-msgid "From the first preview to the finished website. Webdock gives your project a place to call home."
+msgid "Websites, applications and the services behind them — connected in Spitzli Cloud."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:12
-msgid "Let’s get you docked"
+msgid "Discuss your project"
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:13
-msgid "Your subdomain. Or your own domain."
+msgid "Your address on spitzli.site. Or your own domain."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:14
 msgid ""
-"From “take a look”\n"
-"to “we’re live”."
+"From your idea\n"
+"to your application."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:15
-msgid "Some projects need a link to get started. Others need a lasting home. Webdock is here for both."
+msgid "Bring your projects, their services and their public addresses together in one workspace."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:17
-msgid "Share it before you ship it."
+msgid "Keep your projects connected."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:17
-msgid "A dedicated address for your work in progress. Review it together, share feedback and make the next version better."
+msgid "Manage your websites, applications and the services they use from one place."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:18
@@ -703,7 +2254,7 @@ msgid "Your website. Your place."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:18
-msgid "No domain of your own? Your project can live on a Webdock subdomain. Easy to share, easy to find again."
+msgid "No domain of your own? Your public project gets an address on spitzli.site. Easy to share, easy to find again."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:19
@@ -711,17 +2262,17 @@ msgid "Ready for what comes next."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:19
-msgid "When you’re ready for your own domain, we’ll work out the connection. The setup grows with your project."
+msgid "Connect a domain you own when your project is ready. Your application and its data stay in place."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:21
 msgid ""
-"A home online.\n"
-"A human on your side."
+"Your projects.\n"
+"A direct connection."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:22
-msgid "Webdock is run by Dominik at Spitzli Development. From the first idea to deployment, you work directly with the person building your project."
+msgid "Spitzli Cloud is run by Dominik at Spitzli Development. From your application to its infrastructure, you work directly with the person building it."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:23
@@ -735,7 +2286,7 @@ msgid "Your projects. One workspace."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:26 apps/website/src/lib/content.ts:8
-msgid "Webdock Studio brings websites, content, appointments and design together. Access is by invitation."
+msgid "Spitzli Cloud Console brings your projects, applications and services together. Access is by invitation."
 msgstr ""
 
 #: apps/website/src/cms/landing.ts:27
@@ -812,42 +2363,28 @@ msgstr ""
 msgid "Closing heading"
 msgstr ""
 
-#: apps/website/src/components/dock.tsx:4
-msgid "Illustration: a preview, a website and a custom domain connected to Webdock."
-msgstr ""
-
 #: apps/website/src/components/dock.tsx:5
-msgid "A place for your next project."
+msgid "Illustration: a workspace, an application and its domain connected through Spitzli Cloud."
 msgstr ""
 
-#: apps/website/src/components/dock.tsx:7
-msgid "Room for ideas"
-msgstr ""
-
-#: apps/website/src/components/dock.tsx:7
-#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:51
-#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
-#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
-#: legacy/auth/src/lib/i18n-labels.ts:6
-msgid "Preview"
+#: apps/website/src/components/dock.tsx:6
+msgid "Your projects. Connected."
 msgstr ""
 
 #: apps/website/src/components/dock.tsx:8
-msgid "Ready for the world"
+msgid "Your workspace"
 msgstr ""
 
-#: apps/website/src/components/dock.tsx:8
-#: legacy/auth/src/app/people/page.tsx:63
-#: legacy/console/src/app/(console)/(portal)/hosting/vercel/[customerID]/page.tsx:124
-msgid "Website"
+#: apps/website/src/components/dock.tsx:9
+msgid "Your application"
 msgstr ""
 
-#: apps/website/src/components/dock.tsx:11
+#: apps/website/src/components/dock.tsx:12
 msgid "Example addresses. Your project gets a place of its own."
 msgstr ""
 
 #: apps/website/src/components/sso-login.tsx:7
-msgid "Sign in with Webdock"
+msgid "Sign in with Spitzli Cloud"
 msgstr ""
 
 #: apps/website/src/components/theme-picker.tsx:14
@@ -876,11 +2413,11 @@ msgid "Edit your homepage, contact details and search appearance."
 msgstr ""
 
 #: apps/website/src/lib/content.ts:3
-msgid "What is Webdock?"
+msgid "What is Spitzli Cloud?"
 msgstr ""
 
 #: apps/website/src/lib/content.ts:3
-msgid "Webdock is the project home of Spitzli Development. It gives project previews and client websites their own address under webdock.dev. Development and personal support are handled by Spitzli."
+msgid "Spitzli Cloud brings websites, applications and their services together. It is operated by Spitzli Development, with a direct connection to the person building your project."
 msgstr ""
 
 #: apps/website/src/lib/content.ts:4
@@ -888,23 +2425,23 @@ msgid "Do I need my own domain?"
 msgstr ""
 
 #: apps/website/src/lib/content.ts:4
-msgid "No. Your project can live on a subdomain such as your-project.webdock.dev. If you would like to use your own domain, we will work out the right setup for your project."
+msgid "No. A public project can use an address such as your-project.spitzli.site. You can also connect a domain you own."
 msgstr ""
 
 #: apps/website/src/lib/content.ts:5
-msgid "How do I get a Webdock subdomain?"
+msgid "How does a spitzli.site address work?"
 msgstr ""
 
 #: apps/website/src/lib/content.ts:5
-msgid "Contact Dominik at Spitzli Development with your project idea. We will agree on the name, technical setup and deployment together. Automated registration is not available at this stage."
+msgid "A new public website or application without its own domain gets an available project address. The address belongs to that project; other customers cannot claim it."
 msgstr ""
 
 #: apps/website/src/lib/content.ts:6
-msgid "Are project previews public?"
+msgid "Are hosted websites public?"
 msgstr ""
 
 #: apps/website/src/lib/content.ts:6
-msgid "That depends on how each project is configured. A subdomain alone does not restrict access. If a preview needs to stay private, access protection is arranged separately."
+msgid "Your project's access settings decide who can reach it. A hostname alone does not protect private content."
 msgstr ""
 
 #: apps/website/src/lib/content.ts:7
@@ -912,11 +2449,11 @@ msgid "Does every project run on Vercel?"
 msgstr ""
 
 #: apps/website/src/lib/content.ts:7
-msgid "Most projects currently run on Vercel, but Webdock is not tied to a single hosting provider. The technical environment is chosen to suit each project."
+msgid "No. Spitzli Cloud uses supported hosting environments to suit each project. Your public address does not decide where the application runs."
 msgstr ""
 
 #: apps/website/src/lib/content.ts:8
-msgid "How do I access Webdock Studio?"
+msgid "How do I access Spitzli Cloud?"
 msgstr ""
 
 #: legacy/auth/src/app/account/page.tsx:5
@@ -991,17 +2528,6 @@ msgstr ""
 #: legacy/auth/src/app/admin/form.tsx:41
 #: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:40
 msgid "Global"
-msgstr ""
-
-#: legacy/auth/src/app/admin/form.tsx:43 legacy/auth/src/app/admin/form.tsx:57
-#: legacy/auth/src/app/admin/plans/form.tsx:12
-#: legacy/auth/src/app/people/form.tsx:32
-#: legacy/auth/src/app/tenants/form.tsx:15
-#: legacy/console/src/app/(console)/(portal)/tenants/[customerID]/mail/mailboxes/forms.tsx:11
-#: modules/databases/src/ui/forms.tsx:29 modules/hosting/src/ui/form.tsx:96
-#: modules/hosting/src/ui/setup-wizard.tsx:465
-#: packages/cms-ui/src/client.tsx:1115
-msgid "Saving…"
 msgstr ""
 
 #: legacy/auth/src/app/admin/form.tsx:43
@@ -1237,18 +2763,6 @@ msgid "MCP client"
 msgstr ""
 
 #: legacy/auth/src/app/connections/page.tsx:20
-#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:43
-#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:54
-#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
-#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
-#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
-#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:203
-#: legacy/console/src/lib/ui-labels.ts:6
-#: packages/hosting-contracts/src/resource-field.tsx:46
-msgid "Disabled"
-msgstr ""
-
-#: legacy/auth/src/app/connections/page.tsx:20
 #: legacy/auth/src/app/people/page.tsx:147
 #: legacy/auth/src/app/tenants/[customerID]/page.tsx:37
 #: legacy/auth/src/lib/i18n-labels.ts:4 legacy/console/src/lib/ui-labels.ts:6
@@ -1280,17 +2794,6 @@ msgstr ""
 msgid "This authorization request is invalid or has expired. Return to the application and start signing in again."
 msgstr ""
 
-#: legacy/auth/src/app/consent/page.tsx:33
-#: legacy/auth/src/lib/i18n-messages.ts:286
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:69
-#: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:25
-#: modules/hosting/src/ui/project-overview.tsx:103
-#: modules/hosting/src/ui/service-bindings.tsx:65
-#: modules/hosting/src/ui/setup-review.tsx:41
-#: modules/hosting/src/ui/setup-wizard.tsx:37
-msgid "Application"
-msgstr ""
-
 #: legacy/auth/src/app/forgot-password/page.tsx:5
 #: legacy/auth/src/components/auth-forms.tsx:549
 msgid "Reset your password"
@@ -1315,14 +2818,6 @@ msgstr ""
 
 #: legacy/auth/src/app/invitation/page.tsx:20
 msgid "Sign in with your existing Webdock account, then review this invitation."
-msgstr ""
-
-#: legacy/auth/src/app/invitation/page.tsx:21
-#: legacy/auth/src/app/sign-in/page.tsx:5
-#: legacy/auth/src/components/auth-forms.tsx:116
-#: legacy/auth/src/components/auth-forms.tsx:289
-#: legacy/auth/src/components/auth-forms.tsx:612
-msgid "Sign in"
 msgstr ""
 
 #: legacy/auth/src/app/invitation/page.tsx:22
@@ -1355,6 +2850,10 @@ msgstr ""
 
 #: legacy/auth/src/app/layout.tsx:38
 msgid "Connected apps"
+msgstr ""
+
+#: legacy/auth/src/app/layout.tsx:39
+msgid "Open Studio"
 msgstr ""
 
 #: legacy/auth/src/app/layout.tsx:44
@@ -1510,6 +3009,11 @@ msgstr ""
 #: legacy/auth/src/components/auth-forms.tsx:682
 #: legacy/auth/src/components/auth-forms.tsx:689
 msgid "Email address"
+msgstr ""
+
+#: legacy/auth/src/app/people/page.tsx:63
+#: legacy/console/src/app/(console)/(portal)/hosting/vercel/[customerID]/page.tsx:124
+msgid "Website"
 msgstr ""
 
 #: legacy/auth/src/app/people/page.tsx:65
@@ -2488,26 +3992,6 @@ msgstr ""
 msgid "Send invitation"
 msgstr ""
 
-#: legacy/auth/src/app/tenants/[customerID]/page.tsx:34
-#: legacy/auth/src/components/auth-forms.tsx:689
-#: legacy/auth/src/components/plan-fields.tsx:29
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:56
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/page.tsx:74
-#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/page.tsx:70
-#: legacy/console/src/app/(console)/(workspace)/infrastructure/page.tsx:112
-#: legacy/console/src/lib/ui-labels.ts:15
-#: modules/databases/src/ui/databases.tsx:66
-#: modules/databases/src/ui/databases.tsx:174
-#: modules/databases/src/ui/forms.tsx:60
-#: modules/hosting/src/ui/own-infrastructure.tsx:166
-#: packages/cms-ui/src/schema.ts:20
-msgid "Name"
-msgstr ""
-
-#: legacy/auth/src/app/tenants/[customerID]/page.tsx:34
-msgid "Email"
-msgstr ""
-
 #: legacy/auth/src/app/tenants/[customerID]/page.tsx:36
 msgid "People"
 msgstr ""
@@ -2672,6 +4156,13 @@ msgstr ""
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/viewer/page.tsx:20
 #: modules/databases/src/ui/forms.tsx:66
 msgid "Production"
+msgstr ""
+
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:51
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/lib/i18n-labels.ts:6
+msgid "Preview"
 msgstr ""
 
 #: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:52
@@ -3321,10 +4812,6 @@ msgstr ""
 msgid "Confirm removal"
 msgstr ""
 
-#: legacy/auth/src/components/passkeys.tsx:93 packages/cms-ui/src/client.tsx:79
-msgid "Cancel"
-msgstr ""
-
 #: legacy/auth/src/components/passkeys.tsx:99
 msgid "passkey"
 msgstr ""
@@ -3407,17 +4894,6 @@ msgstr ""
 msgid "Editor"
 msgstr ""
 
-#: legacy/auth/src/lib/i18n-labels.ts:4
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:36
-#: legacy/console/src/lib/ui-labels.ts:6
-#: modules/hosting/src/ui/application-services.tsx:67
-#: modules/hosting/src/ui/own-mail.tsx:161
-#: modules/hosting/src/ui/project-overview.tsx:18
-#: modules/hosting/src/ui/setup-progress.tsx:20
-#: modules/mail/src/ui/product-page.tsx:93
-msgid "Pending"
-msgstr ""
-
 #: legacy/auth/src/lib/i18n-labels.ts:4 legacy/console/src/lib/ui-labels.ts:6
 #: modules/mail/src/ui/product-page.tsx:86
 #: modules/mail/src/ui/product-page.tsx:98
@@ -3426,11 +4902,6 @@ msgstr ""
 
 #: legacy/auth/src/lib/i18n-labels.ts:4
 msgid "Declined"
-msgstr ""
-
-#: legacy/auth/src/lib/i18n-labels.ts:4 legacy/console/src/lib/ui-labels.ts:6
-#: legacy/console/src/lib/ui-labels.ts:7
-msgid "Cancelled"
 msgstr ""
 
 #: legacy/auth/src/lib/i18n-labels.ts:4
@@ -4864,12 +6335,6 @@ msgstr ""
 msgid "Data is stored at /data and remains after application deletion."
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:82
-#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/storage-delete/page.tsx:26
-#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/storage-delete/page.tsx:44
-msgid "Permanently delete retained data"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:99
 msgid "Configure deployment source"
 msgstr ""
@@ -4884,10 +6349,6 @@ msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:123
 msgid "Stop"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:124
-msgid "Restart"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:125
@@ -4906,10 +6367,6 @@ msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:189
 msgid "Application logs"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:197
-msgid "Refresh logs"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/application.tsx:200
@@ -4949,25 +6406,6 @@ msgstr ""
 #: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/layout.tsx:13
 #: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:29
 msgid "Applied revision"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/layout.tsx:13
-#: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:84
-#: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:125
-#: legacy/console/src/app/(console)/(portal)/hosting/operations/[operationID]/page.tsx:28
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/page.tsx:40
-#: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:22
-#: legacy/console/src/components/console-controls.tsx:80
-#: legacy/console/src/components/navigation.tsx:142
-#: legacy/console/src/distribution/full/context.ts:61
-#: legacy/console/src/distribution/full/context.ts:66
-#: legacy/console/src/lib/console-context.ts:62
-#: legacy/console/src/lib/console-search-server.ts:40
-#: modules/hosting/src/ui/project-applications.tsx:41
-#: modules/hosting/src/ui/project-applications.tsx:52
-#: modules/hosting/src/ui/project-context.tsx:46
-#: modules/hosting/src/ui/project-overview.tsx:76
-msgid "Applications"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/apps/[appID]/layout.tsx:16
@@ -5105,14 +6543,6 @@ msgstr ""
 msgid "Application / resource"
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:170
-#: legacy/console/src/app/(console)/(workspace)/infrastructure/page.tsx:64
-#: modules/hosting/src/ui/customer.tsx:130
-#: modules/hosting/src/ui/customer.tsx:216
-#: modules/hosting/src/ui/setup-hosting.tsx:52
-msgid "Cluster"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:176
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:108
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:66
@@ -5156,15 +6586,6 @@ msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:220
 msgid "Actual usage"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:233
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:167
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:479
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:529
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:72
-#: legacy/console/src/app/(console)/(portal)/hosting/vercel/[customerID]/page.tsx:133
-msgid "Actions"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/clusters/[clusterID]/page.tsx:237
@@ -5231,20 +6652,12 @@ msgstr ""
 msgid "Pause instance"
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:85
-msgid "Rotate credentials"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:88
 msgid "Restart instance"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:91
 msgid "Resume database"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:95
-msgid "Request cancellation"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:98
@@ -5260,28 +6673,6 @@ msgstr ""
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:151
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:164
 msgid "Unknown or stale"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:116
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:62
-#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:100
-#: modules/databases/src/ui/databases.tsx:178
-msgid "Database kind"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:118
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/layout.tsx:31
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:64
-#: modules/databases/src/ui/databases.tsx:180
-msgid "Shared"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:118
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/layout.tsx:31
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:64
-#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:104
-#: modules/databases/src/ui/databases.tsx:181
-msgid "Dedicated instance"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:125
@@ -5313,20 +6704,9 @@ msgstr ""
 msgid "Last observation"
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:180
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:67
-msgid "Backups"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:181
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/databases/page.tsx:67
 msgid "Not configured"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:185
-#: modules/databases/src/ui/databases.tsx:117
-#: modules/hosting/src/ui/setup-review.tsx:143
-msgid "Backups are not configured. No recovery window is included."
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/database-workspace.tsx:191
@@ -5389,11 +6769,6 @@ msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/deletion/page.tsx:55
 msgid "Backups are not configured. Permanent deletion cannot be undone."
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/deletion/page.tsx:60
-#: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/sources/[migrationID]/page.tsx:38
-msgid "Retained until"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/databases/[databaseID]/deletion/page.tsx:68
@@ -5535,33 +6910,12 @@ msgstr ""
 msgid "Install or update GitHub access"
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:56
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:164
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:248
-#: modules/hosting/src/ui/setup-source-fields.tsx:98
-msgid "GitHub account"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:63
 msgid "Select an installation"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:72
 msgid "Load repositories"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:82
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:290
-#: modules/hosting/src/ui/setup-source-fields.tsx:120
-msgid "Repository"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:85
-msgid "Select a repository"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:95
-msgid "Connect repository"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/git/connect/page.tsx:99
@@ -5630,11 +6984,6 @@ msgstr ""
 msgid "Git deployments"
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/builds/[buildID]/page.tsx:26
-#: modules/hosting/src/ui/setup-progress.tsx:95
-msgid "Build logs"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/builds/[buildID]/page.tsx:35
 msgid "Build failed. Review the logs and setup requirements."
 msgstr ""
@@ -5645,10 +6994,6 @@ msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/builds/[buildID]/page.tsx:58
 msgid "No build output yet."
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:72
-msgid "Select an application"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:133
@@ -5724,16 +7069,6 @@ msgstr ""
 msgid "Save deployment source"
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:304
-#: modules/hosting/src/ui/setup-source-fields.tsx:143
-msgid "Branch"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:317
-#: modules/hosting/src/ui/setup-source-fields.tsx:154
-msgid "Root directory"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:326
 msgid "Vercel healthcheck path"
 msgstr ""
@@ -5794,24 +7129,12 @@ msgstr ""
 msgid "Builds"
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:454
-msgid "Build latest commit"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:460
 msgid "Push to the configured branch or start a new workflow in GitHub Actions. Re-running an existing run is not supported."
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:467
 msgid "No builds yet."
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:470
-msgid "Commit"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:488
-msgid "Cancel build"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/git/deployments.tsx:495
@@ -5868,13 +7191,6 @@ msgstr ""
 msgid "No applications deployed yet."
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:37
-#: modules/hosting/src/ui/application-services.tsx:64
-#: modules/hosting/src/ui/own-infrastructure.tsx:238
-#: modules/hosting/src/ui/project-overview.tsx:19
-msgid "Connected"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:38
 #: modules/hosting/src/ui/application-services.tsx:66
 #: modules/hosting/src/ui/project-overview.tsx:20
@@ -5886,12 +7202,6 @@ msgstr ""
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:39
 #: modules/hosting/src/ui/project-overview.tsx:21
 msgid "Disconnecting"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:40
-#: modules/hosting/src/ui/project-overview.tsx:22
-#: modules/mail/src/ui/product-page.tsx:97
-msgid "Disconnected"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(portal)/hosting/projects/[projectID]/services/page.tsx:52
@@ -6178,17 +7488,6 @@ msgstr ""
 msgid "No active projects."
 msgstr ""
 
-#: legacy/console/src/app/(console)/(portal)/tenants/[customerID]/managed-databases/page.tsx:43
-#: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:27
-#: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:36
-#: legacy/console/src/lib/ui-labels.ts:10
-#: legacy/console/src/lib/ui-labels.ts:15 modules/databases/src/ui/forms.tsx:43
-#: modules/hosting/src/ui/customer.tsx:117
-#: modules/hosting/src/ui/customer.tsx:198
-#: modules/hosting/src/ui/customer.tsx:257
-msgid "Project"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:58
 #: legacy/console/src/app/(console)/(workspace)/infrastructure/page.tsx:41
 #: legacy/console/src/app/(console)/(workspace)/operations/page.tsx:18
@@ -6253,21 +7552,12 @@ msgstr ""
 msgid "Set plan availability"
 msgstr ""
 
-#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:201
-msgid "Availability"
-msgstr ""
-
 #: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:204
 msgid "Operator pilot"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:205
 msgid "Customer self-service"
-msgstr ""
-
-#: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:212
-#: modules/databases/src/ui/databases.tsx:203
-msgid "Create disabled plan"
 msgstr ""
 
 #: legacy/console/src/app/(console)/(workspace)/infrastructure/[clusterID]/databases/page.tsx:218
@@ -6541,6 +7831,10 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
+#: legacy/console/src/components/console-auth-shell.tsx:10
+msgid "Webdock home"
+msgstr ""
+
 #: legacy/console/src/components/console-auth-shell.tsx:15
 msgid "Account navigation"
 msgstr ""
@@ -6639,10 +7933,6 @@ msgstr ""
 msgid "Navigate"
 msgstr ""
 
-#: legacy/console/src/components/console-controls.tsx:108
-msgid "Close"
-msgstr ""
-
 #: legacy/console/src/components/console-controls.tsx:111
 msgid "Close workspace selector"
 msgstr ""
@@ -6724,11 +8014,6 @@ msgstr ""
 #: legacy/console/src/components/navigation.tsx:50
 #: legacy/console/src/lib/console-search-server.ts:47
 msgid "Studio accounts"
-msgstr ""
-
-#: legacy/console/src/components/navigation.tsx:52
-#: legacy/console/src/lib/console-search-server.ts:47
-msgid "Connections"
 msgstr ""
 
 #: legacy/console/src/components/navigation.tsx:53
@@ -7911,14 +9196,6 @@ msgid "Retired"
 msgstr ""
 
 #: legacy/console/src/lib/ui-labels.ts:7
-msgid "Building"
-msgstr ""
-
-#: legacy/console/src/lib/ui-labels.ts:7
-msgid "Queued"
-msgstr ""
-
-#: legacy/console/src/lib/ui-labels.ts:7
 msgid "Initializing"
 msgstr ""
 
@@ -8209,16 +9486,6 @@ msgstr ""
 msgid "Application schema"
 msgstr ""
 
-#: modules/databases/src/ui/database-details.tsx:30
-msgid "Host"
-msgstr ""
-
-#: modules/databases/src/ui/database-details.tsx:34
-#: modules/hosting/src/ui/service-bindings.tsx:96
-#: modules/hosting/src/ui/setup-service-fields.tsx:40
-msgid "Database"
-msgstr ""
-
 #: modules/databases/src/ui/database-details.tsx:38
 msgid "Direct / pooled port"
 msgstr ""
@@ -8256,27 +9523,6 @@ msgstr ""
 msgid "Reveal credentials"
 msgstr ""
 
-#: modules/databases/src/ui/databases.tsx:76
-#: modules/hosting/src/ui/setup-service-fields.tsx:94
-msgid "Database plan"
-msgstr ""
-
-#: modules/databases/src/ui/databases.tsx:81
-#: modules/databases/src/ui/databases.tsx:99
-#: modules/hosting/src/ui/setup-review.tsx:139
-#: modules/hosting/src/ui/setup-service-fields.tsx:108
-msgid "net / month"
-msgstr ""
-
-#: modules/databases/src/ui/databases.tsx:87
-msgid "Review paid order"
-msgstr ""
-
-#: modules/databases/src/ui/databases.tsx:91
-#: modules/hosting/src/ui/setup-service-fields.tsx:164
-msgid "No database plans are available yet."
-msgstr ""
-
 #: modules/databases/src/ui/databases.tsx:105
 msgid "Shared CPU and memory; measured logical storage allowance."
 msgstr ""
@@ -8285,37 +9531,12 @@ msgstr ""
 msgid "Dedicated PostgreSQL process and bounded database filesystem."
 msgstr ""
 
-#: modules/databases/src/ui/databases.tsx:121
-msgid "Billing starts after confirmed provisioning. Pausing does not reduce the monthly price."
-msgstr ""
-
-#: modules/databases/src/ui/databases.tsx:134
-#: modules/hosting/src/ui/setup-review.tsx:159
-msgid "I accept this monthly price and the displayed terms."
-msgstr ""
-
-#: modules/databases/src/ui/databases.tsx:147
-msgid "I agree to interrupt database connections for this upgrade now."
-msgstr ""
-
 #: modules/databases/src/ui/databases.tsx:155
 msgid "Ordering…"
 msgstr ""
 
 #: modules/databases/src/ui/databases.tsx:156
 msgid "Order database with payment obligation"
-msgstr ""
-
-#: modules/databases/src/ui/databases.tsx:185
-msgid "Monthly net price (EUR)"
-msgstr ""
-
-#: modules/databases/src/ui/databases.tsx:194
-msgid "Contract terms"
-msgstr ""
-
-#: modules/databases/src/ui/databases.tsx:207
-msgid "Database plan saved as disabled."
 msgstr ""
 
 #: modules/databases/src/ui/forms.tsx:39 modules/databases/src/ui/forms.tsx:40
@@ -8381,10 +9602,6 @@ msgstr ""
 #: modules/databases/src/ui/forms.tsx:160
 #: modules/databases/src/ui/forms.tsx:161
 msgid "Revoke access"
-msgstr ""
-
-#: modules/databases/src/ui/managed-rows.tsx:22
-msgid "Manage database"
 msgstr ""
 
 #: modules/databases/src/ui/tenant-database-navigation.tsx:18
@@ -8533,10 +9750,6 @@ msgstr ""
 msgid "Existing allocations exceed the current limit. New allocations are blocked; existing workloads remain intact."
 msgstr ""
 
-#: modules/hosting/src/ui/customer.tsx:152
-msgid "Resource"
-msgstr ""
-
 #: modules/hosting/src/ui/customer.tsx:154
 #: packages/hosting-contracts/src/resource-field.tsx:41
 msgid "Limit"
@@ -8544,10 +9757,6 @@ msgstr ""
 
 #: modules/hosting/src/ui/customer.tsx:161
 msgid "Reserved"
-msgstr ""
-
-#: modules/hosting/src/ui/customer.tsx:165
-msgid "Allocated"
 msgstr ""
 
 #: modules/hosting/src/ui/customer.tsx:172
@@ -9256,10 +10465,6 @@ msgstr ""
 msgid "Inspect repository"
 msgstr ""
 
-#: modules/hosting/src/ui/setup-source-fields.tsx:184
-msgid "Build settings"
-msgstr ""
-
 #: modules/hosting/src/ui/setup-source-fields.tsx:228
 msgid "The workflow must already produce the Webdock artifact for the exact commit."
 msgstr ""
@@ -9332,17 +10537,9 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: modules/hosting/src/ui/setup-wizard.tsx:444
-msgid "Refresh"
-msgstr ""
-
 #: modules/hosting/src/ui/setup-wizard.tsx:453
 #: packages/cms-ui/src/client.tsx:1117
 msgid "Save draft"
-msgstr ""
-
-#: modules/hosting/src/ui/setup-wizard.tsx:467
-msgid "Connecting…"
 msgstr ""
 
 #: modules/hosting/src/ui/setup-wizard.tsx:470
@@ -9430,10 +10627,6 @@ msgstr ""
 
 #: modules/mail/src/ui/product-page.tsx:95
 msgid "Paused"
-msgstr ""
-
-#: modules/mail/src/ui/product-page.tsx:96
-msgid "Needs review"
 msgstr ""
 
 #: modules/mail/src/ui/product-page.tsx:103
@@ -9767,7 +10960,7 @@ msgid "Content pages"
 msgstr ""
 
 #: packages/cms-ui/src/client.tsx:1332
-msgid "CMS by Webdock"
+msgid "CMS by Spitzli Cloud"
 msgstr ""
 
 #: packages/cms-ui/src/client.tsx:1332

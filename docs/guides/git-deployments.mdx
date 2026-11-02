@@ -1,0 +1,41 @@
+---
+title: "Git builds and deployments"
+description: "Follow build output and application publication for explicitly activated projects."
+---
+
+<Info>Git self-service is not generally available. Interactive GitHub onboarding and permanent repository, registry and build-service activation remain release work. Arbitrary public customer builds are not admitted. Use this guide only for a project explicitly activated by your operator.</Info>
+
+## Check the prerequisites
+
+Your project needs configured Hosting, an authorized repository source, a permitted branch and target, build capacity and a registry destination. A saved URL or visible Builds page does not satisfy those requirements. New GitHub account access and repository authorization still require your provider.
+
+If you can manage the project and Console shows **No repository source**, use
+**Connect a repository** to select an already authorized GitHub account,
+repository and existing application target. Review the branch, relative root
+directory and strategy, then select **Connect repository**. Saving a source does
+not start a build or approve publication. Read-only views cannot save it. If no
+account or repository is available, ask your provider to update access and refresh
+the list; an application must exist in the project first.
+
+Where source settings are available, review the branch, relative build context and build strategy. Supported strategies can include automatic detection, Dockerfile or Railpack. Use the controls offered for the activated source; availability differs by build backend.
+
+## Build a commit
+
+1. Open the project's **Builds** view and select the **Repository source**.
+2. Resolve the displayed blockers before selecting **Build latest commit**.
+3. Select the commit in **Build history** to inspect its status, phase and retained logs.
+4. If the build fails, read the error and logs before requesting another build. Use **Cancel build** only while it is available.
+
+A queued request has not started execution. A successful build confirms output was retained; deployment has its own status.
+
+## Follow publication
+
+Review **Publications** below the build history. When approval is required and you have permission, use **Approve publication**. Follow **Rollout operation** for deployment progress and check the application endpoint after **Deployment ready**.
+
+Build success does not prove application health, successful data migrations or zero downtime. Existing applications can keep serving while a build is blocked; application rollout has separate availability implications.
+
+## Redeploy or recover
+
+For an eligible retained version, **Redeploy this version** starts a new deployment of that version. It does not restore application data or reverse a database migration.
+
+When a request has an uncertain outcome, use the existing request's retry or ask the operator to reconcile it. Do not submit multiple independent requests to force progress. Keep the build, publication and operation IDs when [reporting a problem](/guides/troubleshooting).

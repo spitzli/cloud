@@ -1,3 +1,4 @@
+import { PublicWaitlist,WaitlistReview } from "./Waitlist";
 import { useState, lazy, Suspense, type ReactNode } from "react";
 import {
   QueryClient,
@@ -39,6 +40,7 @@ const Webmail = lazy(() =>
 const HostingDirectory = lazy(() =>
   import("./Hosting").then((module) => ({ default: module.HostingDirectory })),
 );
+const HostingBuilds = lazy(() => import("./HostingBuilds").then((module) => ({default:module.HostingBuilds})));
 const HostingProject = lazy(() =>
   import("./Hosting").then((module) => ({ default: module.HostingProject })),
 );
@@ -75,6 +77,7 @@ import { ProductPage } from "./plugins/ProductPage";
 import { Plans, WorkspaceUsage } from "./Usage";
 import { WorkspaceDomains } from "./Domains";
 import { WorkspaceApiTokens } from "./ApiTokens";
+const WorkspaceConnections = lazy(() => import("./Connections").then(module => ({ default: module.WorkspaceConnections })));
 import { Clusters } from "./Placement";
 import { ProjectPage } from "./ProjectPage";
 const ExtensionOperation = lazy(() =>
@@ -167,6 +170,7 @@ const rootRoute = createRootRoute({
     />
   ),
 });
+const waitlistReviewRoute=createRoute({getParentRoute:()=>rootRoute,path:"/access-requests",component:()=> <OperatorOnly><WaitlistReview /></OperatorOnly>});
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
@@ -276,6 +280,11 @@ const hostingProjectRoute = createRoute({
     );
   },
 });
+const hostingBuildsRoute=createRoute({
+  getParentRoute:()=>rootRoute,
+  path:"/hosting/projects/$projectID/builds",
+  component:()=>{const {projectID}=hostingBuildsRoute.useParams();return <Suspense fallback={<Loading>Loading builds…</Loading>}><HostingBuilds key={projectID} projectID={projectID}/></Suspense>;},
+});
 const hostingAppRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/hosting/apps/$appID",
@@ -370,6 +379,14 @@ const apiTokensRoute = createRoute({
   component: () => {
     const { id } = apiTokensRoute.useParams();
     return <WorkspaceApiTokens key={id} id={id} />;
+  },
+});
+const connectionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/workspaces/$id/connections",
+  component: () => {
+    const { id } = connectionsRoute.useParams();
+    return <Suspense fallback={<Loading>Loading connections…</Loading>}><WorkspaceConnections key={id} id={id} /></Suspense>;
   },
 });
 const workspaceRoute = createRoute({
@@ -474,6 +491,7 @@ const router = createRouter({
   parseSearch: parseConsoleSearch,
   routeTree: rootRoute.addChildren([
     indexRoute,
+    waitlistReviewRoute,
     accountRoute,
     extensionsRoute,
     installExtensionRoute,
@@ -485,6 +503,7 @@ const router = createRouter({
     usageRoute,
     domainsRoute,
     apiTokensRoute,
+    connectionsRoute,
     workspaceRoute,
     projectRoute,
     productRoute,
@@ -493,6 +512,7 @@ const router = createRouter({
     inboxRoute,
     hostingRoute,
     hostingProjectRoute,
+    hostingBuildsRoute,
     hostingAppRoute,
     hostingSettingsRoute,
     hostingLogsRoute,
@@ -519,11 +539,11 @@ function Bootstrap() {
     staleTime: Infinity,
     retry: false,
   });
-  if (config.isPending) return <PageProgress>Connecting to Webdock…</PageProgress>;
+  if (config.isPending) return <PageProgress>Connecting to Spitzli Cloud…</PageProgress>;
   if (config.isError)
     return (
       <PageFailure
-        title="Webdock unavailable"
+        title="Spitzli Cloud unavailable"
         error={config.error}
         retry={() => {
           setAttempt(attempt + 1);
@@ -533,7 +553,9 @@ function Bootstrap() {
   return (
     <ApiContext.Provider value={new ApiClient(config.data)}>
       <LocaleProvider preference={config.data.localePreference ?? "system"}>
-        {config.data.surface === "account" ? (
+        {window.location.pathname === "/waitlist" || window.location.pathname === "/waitlist/confirmed" ? (
+          <PublicWaitlist confirmed={window.location.pathname === "/waitlist/confirmed"}/>
+        ) : config.data.surface === "account" ? (
           <Suspense fallback={<PageProgress product="Account">Opening your account…</PageProgress>}>
             <AccountApp />
           </Suspense>

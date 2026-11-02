@@ -4,19 +4,19 @@ import type { Metadata } from 'next';
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getRequestI18n();
   return {
-    title: t("Terms and conditions — Webdock"),
-    description: t("Terms for Webdock services, including consumer cancellation and withdrawal rights."),
+    title: t("Terms and conditions — Spitzli Cloud"),
+    description: t("Terms for Spitzli Cloud services, including consumer cancellation and withdrawal rights."),
     alternates: { canonical: '/terms' },
-    openGraph: { title: t("Terms and conditions — Webdock"), url: '/terms' },
+    openGraph: { title: t("Terms and conditions — Spitzli Cloud"), url: '/terms' },
   };
 }
 
 export default async function Terms() {
   const { t, date } = await getRequestI18n();
   return <article>
-    <p className="subtle-label">{t("Webdock · Updated {date}", { date: date("2026-10-14T12:00:00Z", { dateStyle: "long" }) })}</p>
+    <p className="subtle-label">{t("Spitzli Cloud · Updated {date}", { date: date("2026-10-14T12:00:00Z", { dateStyle: "long" }) })}</p>
     <h1>{t("Terms and conditions")}</h1>
-    <p>{t("These terms apply to Webdock services for consumers and businesses, including agreed website development, project management, hosting, databases and Mail. A consumer acts mainly outside their trade or profession. Individually agreed terms take precedence; mandatory consumer rights remain unaffected.")}</p>
+    <p>{t("These terms apply to Spitzli Cloud services for consumers and businesses, including agreed website development, project management, hosting, databases and Mail. A consumer acts mainly outside their trade or profession. Individually agreed terms take precedence; mandatory consumer rights remain unaffected.")}</p>
     <h2>{t("1. Provider and contract")}</h2>
     <p>{t("Dominik Spitzli, trading as Spitzli Development, Emsoldstrasse 40, 26180 Rastede, Germany.")}</p>
     <p><a href="mailto:dominik@spitzli.dev">dominik@spitzli.dev</a> · <a href="tel:+4915679657952">+49 1567 9657952</a> · <a href="/imprint">{t("Full provider details")}</a></p>
@@ -34,7 +34,7 @@ export default async function Terms() {
     <h2>{t("6. Term, cancellation and suspension")}</h2>
     <p>{t("The offer specifies the term and notice period. If no term is agreed for an ongoing service, it runs indefinitely and can be cancelled at any time with one month’s notice. For consumers, any tacit renewal after an initial term is indefinite and cancellable with no more than one month’s notice. Statutory rights to cancel earlier or for good cause remain unaffected. You can give notice by email to the contact above; any legally required online cancellation facility remains an additional option.")}</p>
     <p>{t("We may restrict access where proportionate and necessary because of unlawful use, a concrete security risk or a substantial contractual breach. Where feasible, we first explain the reason and allow a reasonable opportunity to remedy it; urgent protective measures may be immediate. We restore access when the reason ends. Payment-related suspension requires the statutory prerequisites.")}</p>
-    <p>{t("Arrange an export of needed data before the service ends. We coordinate return or deletion under the service and data-processing agreements and applicable law. Deactivation or suspension is not deletion; retained data remains protected. Removing a Webdock connection does not automatically cancel or revoke your account with a third-party provider.")}</p>
+    <p>{t("Arrange an export of needed data before the service ends. We coordinate return or deletion under the service and data-processing agreements and applicable law. Deactivation or suspension is not deletion; retained data remains protected. Removing a Spitzli Cloud connection does not automatically cancel or revoke your account with a third-party provider.")}</p>
     <h2>{t("7. Defects and liability")}</h2>
     <p>{t("Statutory rights concerning defects and statutory liability apply. Please report faults with enough information for us to investigate; this does not restrict your rights. Nothing in these terms excludes liability for intent, gross negligence, injury to life, body or health, or other mandatory liability. No general exclusion of liability or blanket transfer of third-party claims to you is agreed.")}</p>
     <h2 id="withdrawal">{t("8. Consumer right of withdrawal")}</h2>

@@ -52,6 +52,7 @@ async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets
         concurrent_deployments: 1,
     };
     spec.hosting_binding = Some(HostingBinding {
+        public_route: None,
         cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
         quota: allowance.clone(),
         final_quota: allowance,

@@ -89,6 +89,200 @@ async fn resource_count(f: &fixture::JobFixture) -> i64 {
         .unwrap()
 }
 
+async fn postgres_fixture(f: &fixture::JobFixture) {
+    use sha2::{Digest, Sha256};
+    let manifest: Value =
+        serde_json::from_str(include_str!("../../../plugins/postgres/manifest.json")).unwrap();
+    let raw = manifest.to_string();
+    sql(&f.owner, "INSERT INTO webdock_auth.plugin_installation(id,kind,state,desired_state,version,runtime,current_generation) VALUES('postgres','external','enabled','enabled','0.1.0','ready',1)", vec![]).await;
+    sql(&f.owner, "INSERT INTO webdock_auth.plugin_release(plugin_id,version,manifest_bytes,manifest_sha256,image,registry_url,signer_key_id) VALUES('postgres','0.1.0',$1,$2,$3,'https://registry.invalid','fixture')", vec![raw.clone().into(),hex::encode(Sha256::digest(raw.as_bytes())).into(),manifest["image"].as_str().unwrap().into()]).await;
+    sql(&f.owner, "INSERT INTO webdock_auth.plugin_configuration(plugin_id,approved_capabilities,configuration) VALUES('postgres',$1,'{}')", vec![manifest["capabilities"].clone().into()]).await;
+    sql(&f.owner, "INSERT INTO webdock_auth.plugin_runtime(plugin_id,generation,version,image,status,configuration_revision,credential_hash,namespace,service_name) VALUES('postgres',1,'0.1.0',$1,'ready',0,$2,'fixtures','fixture-plugin')", vec![manifest["image"].as_str().unwrap().into(),"a".repeat(64).into()]).await;
+    for feature in ["create-shared", "create-dedicated"] {
+        sql(&f.owner, "INSERT INTO webdock_auth.plugin_feature_policy(plugin_id,feature_id,mode,updated_by) VALUES('postgres',$1,'selected','operator')", vec![feature.into()]).await;
+        sql(&f.owner, "INSERT INTO webdock_auth.plugin_feature_customer(plugin_id,feature_id,customer_id,added_by) VALUES('postgres',$1,'123','operator')", vec![feature.into()]).await;
+    }
+    let path = f.directory.path().join("bindings.json");
+    let mut bindings: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    bindings["runtimes"]["postgres"] = bindings["runtimes"]["job-fixture"].clone();
+    std::fs::write(path, bindings.to_string()).unwrap();
+}
+
+#[tokio::test]
+#[ignore = "owns disposable PostgreSQL18; local-process switch or Docker; no provider I/O"]
+async fn retired_postgres_stale_grants_cannot_create_but_retained_work_and_maintenance_survive() {
+    let f = fixture::JobFixture::start_with_connections(4).await;
+    postgres_fixture(&f).await;
+    let enabled = HostService::new(
+        f.database
+            .role_with_connections("webdock_auth_runtime", 4)
+            .await,
+        f.database
+            .role_with_connections("webdock_worker_runtime", 4)
+            .await,
+        "owned-plugin-jobs-rls-secret-32bytes".into(),
+        Arc::new(
+            webdock_persistence::IdAllocator::connect(
+                f.database.url.as_str(),
+                webdock_ids::Identity::platform(0, 2).unwrap(),
+            )
+            .await
+            .unwrap(),
+        ),
+        Arc::new(FileBindings::new(f.directory.path().join("bindings.json"))),
+        ed25519_dalek::SigningKey::from_bytes(&[19; 32]),
+    )
+    .await
+    .unwrap()
+    .with_new_database_orders_enabled(true)
+    .with_session_authority(f.auth.clone(), f.identity.clone(), None)
+    .await
+    .unwrap();
+    let tx = f.auth.begin().await.unwrap();
+    let owner = f
+        .identity
+        .authenticate_session_in(&tx, "member", "member-session")
+        .await
+        .unwrap()
+        .unwrap();
+    tx.commit().await.unwrap();
+    let proof = webdock_browser_session::StoredAuthority::local_session(&owner);
+    let command = |action: &str, input: Value, key: &str| {
+        serde_json::from_value::<AdmissionInput>(json!({"pluginID":"postgres","projectID":"124","action":action,"input":input,"idempotencyKey":key})).unwrap()
+    };
+    for (action, resource, input) in [
+        (
+            "databases.create",
+            "retained-shared",
+            json!({"name":"Shared"}),
+        ),
+        (
+            "instances.create",
+            "retained-dedicated",
+            json!({"name":"Dedicated","version":"18"}),
+        ),
+    ] {
+        let accepted = enabled
+            .admit_with_authority(
+                &owner,
+                command(action, input.clone(), resource),
+                true,
+                &proof,
+            )
+            .await
+            .unwrap();
+        let count = || async {
+            f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres, "SELECT count(*) AS count FROM webdock_auth.plugin_invocation WHERE plugin_id='postgres'")).await.unwrap().unwrap().try_get::<i64>("", "count").unwrap()
+        };
+        let before = count().await;
+        for actor in [&owner, &f.actor] {
+            let denied = f
+                .host
+                .admit_with_authority(
+                    actor,
+                    command(action, input.clone(), "fresh-after-retirement"),
+                    true,
+                    &webdock_browser_session::StoredAuthority::local_session(actor),
+                )
+                .await;
+            assert_eq!(
+                denied.err().unwrap().code,
+                webdock_plugin_protocol::ErrorCode::Conflict
+            );
+        }
+        assert_eq!(
+            count().await,
+            before,
+            "refused fresh requests leave no invocation or resource reservation"
+        );
+        assert!(
+            f.host
+                .admit_with_authority(
+                    &owner,
+                    command(action, input.clone(), resource),
+                    true,
+                    &proof
+                )
+                .await
+                .is_err(),
+            "uncertain pending work must not be redispatched"
+        );
+        let handle = f.host.authenticate(peer(), &accepted.token).await.unwrap();
+        let output = json!({"resource":{"id":resource,"name":input["name"]}});
+        f.host.record_resource(&handle, &output).await.unwrap();
+        let replay = f
+            .host
+            .admit_with_authority(
+                &owner,
+                command(action, input.clone(), resource),
+                true,
+                &proof,
+            )
+            .await
+            .unwrap();
+        assert_eq!(replay.replay_result, Some(output));
+        let mut changed = input.clone();
+        changed["name"] = json!("Changed");
+        assert!(
+            f.host
+                .admit_with_authority(&owner, command(action, changed, resource), true, &proof)
+                .await
+                .is_err(),
+            "retirement cannot relax existing idempotency validation"
+        );
+    }
+    for (action, resource) in [
+        ("databases.view", "retained-shared"),
+        ("databases.credentials", "retained-shared"),
+        ("databases.rotate", "retained-shared"),
+        ("databases.delete", "retained-shared"),
+        ("instances.delete", "retained-dedicated"),
+    ] {
+        assert!(
+            f.host
+                .admit_with_authority(
+                    &owner,
+                    command(action, json!({"resource_id":resource}), action),
+                    true,
+                    &proof
+                )
+                .await
+                .is_ok(),
+            "retirement denied maintenance {action}"
+        );
+        assert!(
+            f.host
+                .admit_with_authority(
+                    &owner,
+                    command(action, json!({"resource_id":"foreign-resource"}), "foreign"),
+                    true,
+                    &proof
+                )
+                .await
+                .is_err(),
+            "maintenance still requires resource ownership"
+        );
+    }
+    let views = f
+        .host
+        .project_plugins_with_authority(&owner, "124", &proof)
+        .await
+        .unwrap();
+    let view = views
+        .iter()
+        .find(|view| view.manifest["name"] == "postgres")
+        .unwrap();
+    let projected = serde_json::to_value(view).unwrap();
+    assert_eq!(
+        projected["blockedCreateActions"],
+        json!(["databases.create", "instances.create"])
+    );
+    assert_eq!(view.features, ["create-shared", "create-dedicated"]);
+    assert_eq!(view.resources.len(), 2);
+    let grants = f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres, "SELECT count(*) AS count FROM webdock_auth.plugin_feature_customer WHERE plugin_id='postgres' AND customer_id='123'")).await.unwrap().unwrap().try_get::<i64>("", "count").unwrap();
+    assert_eq!(grants, 2, "retirement must not delete retained grants");
+}
+
 #[tokio::test]
 #[ignore = "owns a disposable PostgreSQL18 container"]
 async fn concurrent_last_slot_creates_count_before_either_plugin_returns() {
