@@ -42,6 +42,14 @@ class Gateway(unittest.TestCase):
         self.assertIn('/.well-known/*',block)
         self.assertNotIn('reverse_proxy',block)
         self.assertIn('respond 404',block)
+    def test_legacy_service_navigation_can_point_forward_to_spitzli(self):
+        c=config();c['coreUpstream']='http://10.90.0.20:3130'
+        text=self.module().native_https(c,navigation_aliases={'https://docs.webdock.dev':'https://docs.spitzli.cloud'})
+        block=text.split('docs.webdock.dev {',1)[1]
+        self.assertIn('redir https://docs.spitzli.cloud{uri} 307',block)
+        self.assertIn('method GET HEAD',block)
+        self.assertNotIn('reverse_proxy',block)
+
     def test_navigation_aliases_require_reviewed_destinations_and_explicit_activation(self):
         c=config();c['coreUpstream']='http://10.90.0.20:3130'
         for mapping in [{'https://docs.spitzli.cloud':'https://unexpected.example.test'}, {'https://api.example.test':'https://docs.webdock.dev'}]:
@@ -84,6 +92,46 @@ class Gateway(unittest.TestCase):
         self.assertEqual(rules[1]['headers']['Location'],'https://auth.example.test/$1')
         for alias in ['https://auth.example.test','https://console.example.test','https://*.spitzli.cloud','https://auth.spitzli.cloud/evil','https://auth.spitzli.cloud\\x']:
             with self.subTest(alias=alias),self.assertRaises(ValueError):m.vercel_output(c,'account',navigation_aliases=[alias])
+    def test_legacy_account_navigation_uses_new_origin_without_redirecting_protocol_posts(self):
+        m=self.module();c=config();old=c['authOrigin'];c['authOrigin']='https://auth.spitzli.cloud'
+        result=m.vercel_output(c,'account',compatibility_aliases=[old])
+        rules=[r for r in result['routes'] if r.get('has')==[{'type':'host','value':{'eq':'auth.example.test'}}]]
+        self.assertEqual(len(rules),2)
+        policy=result['routes'][0]['headers']['content-security-policy']
+        self.assertIn('https://auth.example.test',policy)
+        self.assertIn('https://auth.spitzli.cloud',policy)
+        for rule in rules:
+            self.assertEqual(rule['methods'],['GET','HEAD'])
+            self.assertEqual(rule['status'],307)
+            self.assertEqual(rule['headers']['Location'],'https://auth.spitzli.cloud/$1')
+        self.assertEqual(rules[0]['src'],'^/(api/auth/oauth2/authorize)$')
+        import re
+        for path in ['api/auth/oauth2/token','api/auth/get-session','.well-known/openid-configuration','.well-known/webauthn','v1/auth/session','assets/worker.js']:
+            self.assertIsNone(re.fullmatch(rules[1]['src'],'/'+path))
+        self.assertTrue(any(r.get('dest','').startswith('https://edge.example.test/__account/api/auth/') for r in result['routes']))
+
+    def test_legacy_studio_navigation_keeps_mcp_authority_and_rejects_alias_overlap(self):
+        m=self.module();c=config()
+        result=m.vercel_output(c,'console',compatibility_aliases=[c['studioOrigin']])
+        nav=next(r for r in result['routes'] if r.get('status')==307)
+        self.assertEqual(nav['headers']['Location'],'https://console.example.test/$1')
+        self.assertEqual(nav['methods'],['GET','HEAD'])
+        self.assertTrue(any(r.get('dest')=='https://edge.example.test/__studio/api/mcp' for r in result['routes']))
+        for bad in [c['consoleOrigin'],c['apiOrigin'],c['authOrigin'],c['gatewayOrigin'],'https://*.example.test','http://old.example.test','https://old.example.test/path']:
+            with self.subTest(bad=bad),self.assertRaises(ValueError):m.vercel_output(c,'console',compatibility_aliases=[bad])
+        with self.assertRaises(ValueError):m.vercel_output(c,'console',navigation_aliases=['https://old.example.test'],compatibility_aliases=['https://old.example.test'])
+
+    def test_api_root_navigation_can_use_an_explicit_alias_without_moving_protocol_paths(self):
+        c=config();c['coreUpstream']='http://10.90.0.20:3130'
+        text=self.module().native_https(c,api_aliases=['https://api.spitzli.cloud'],api_navigation_target='https://api.spitzli.cloud')
+        old=text.split('api.example.test {',1)[1].split('api.spitzli.cloud {',1)[0]
+        new=text.split('api.spitzli.cloud {',1)[1]
+        self.assertIn('path /',old);self.assertIn('method GET HEAD',old)
+        self.assertIn('redir @root_navigation https://api.spitzli.cloud{uri} 307',old)
+        self.assertNotIn('root_navigation',new)
+        self.assertIn('/v1/*',old)
+        with self.assertRaises(ValueError):self.module().native_https(c,api_navigation_target='https://unreviewed.example.test')
+
     def test_public_api_alias_preserves_original_authority_and_worker_denial(self):
         m=self.module();c=config()
         text=m.native_https(c,api_aliases=['https://api.spitzli.cloud'])

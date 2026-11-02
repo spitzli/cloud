@@ -6,8 +6,8 @@ grafana:
     passwordKey: admin-password
   grafana.ini:
     server:
-      domain: grafana.webdock.dev
-      root_url: https://grafana.webdock.dev
+      domain: grafana.spitzli.cloud
+      root_url: https://grafana.spitzli.cloud
     security:
       cookie_secure: true
     auth:
@@ -31,7 +31,7 @@ alertmanager:
           storageClassName: webdock-obs-alertmanager-v1
 prometheus:
   prometheusSpec:
-    externalUrl: https://prometheus.webdock.dev
+    externalUrl: https://prometheus.spitzli.cloud
     storageSpec:
       volumeClaimTemplate:
         spec:

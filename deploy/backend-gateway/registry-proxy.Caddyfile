@@ -1,0 +1,26 @@
+# Canonical registry UI, with the retained API issuer and GitHub callback identity.
+# Fixed owned RUN ingress; TLS stays verified against its existing certificate.
+(registry_backend_proxy) {
+ reverse_proxy https://79.143.177.157 {
+  header_up Host registry.webdock.dev
+  # Routing hint only: the legacy ingress still enforces all app authentication.
+  header_up X-Spitzli-Registry-Proxy canonical
+  header_up -Forwarded
+  header_up -X-Forwarded-*
+  header_up -X-Vercel-*
+  header_up -X-Real-IP
+  header_up -Via
+  header_up -X-Original-URL
+  header_up -X-Original-URI
+  header_up -X-Rewrite-URL
+  flush_interval -1
+  transport http {
+   tls_server_name registry.webdock.dev
+   response_header_timeout 30s
+  }
+ }
+}
+
+registry.spitzli.cloud {
+ import registry_backend_proxy
+}
