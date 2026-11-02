@@ -286,3 +286,16 @@ test("website-scoped actions declare exactly one HTTP alias and no extra authori
       parsePluginManifest({ ...m, actions: [{ ...m.actions[0], ...patch }] }),
     );
 });
+
+test("schema fields support camelCase while action names and prototype paths stay fenced", () => {
+  const m = fixture();
+  m.actions[0].output = {type:"object",properties:{expiresAt:{type:"integer"},exactBytes:{type:"integer"}},required:["expiresAt","exactBytes"]};
+  assert.doesNotThrow(() => parsePluginManifest(m));
+  for (const key of ["constructor","prototype","__proto__","ExpiresAt","a.constructor","a.__proto__.b"]) {
+    const bad = structuredClone(m);
+    bad.actions[0].output = JSON.parse(JSON.stringify({type:"object",properties:{[key]:{type:"string"}}}));
+    assert.throws(() => parsePluginManifest(bad));
+  }
+  m.actions[0].name="downloadObject";
+  assert.throws(() => parsePluginManifest(m));
+});

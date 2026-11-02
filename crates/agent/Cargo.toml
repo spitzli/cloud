@@ -1,0 +1,87 @@
+[package]
+name = "webdock-agent"
+default-run = "webdock-agent"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.94"
+license = "AGPL-3.0-only"
+
+[features]
+default = ["docker", "kubernetes"]
+docker = ["dep:bollard", "dep:reqwest", "dep:futures-util", "dep:rustls", "dep:tokio-rustls", "dep:rcgen", "dep:rustls-pemfile"]
+local-recovery-fixture = ["webdock-object-storage/local-test"]
+kubernetes = ["dep:reqwest", "dep:tokio-rustls", "dep:rcgen", "dep:kube", "dep:k8s-openapi", "dep:rust_decimal", "dep:serde-saphyr", "dep:ipnet", "dep:oci-spec", "dep:futures-util", "dep:humantime", "dep:tokio-postgres", "dep:tokio-postgres-rustls", "dep:rustls", "dep:rustls-pemfile"]
+
+[dependencies]
+webdock-object-storage={path="../object-storage"}
+webdock-mail-runtime={path="../mail-runtime"}
+webdock-plugin-kit={path="../plugin-kit"}
+url="2"
+tar="0.4"
+axum="0.8"
+hyper={version="1",features=["server","http1"]}
+hyper-util={version="0.1",features=["server","tokio","service"]}
+webdock-export-protocol={path="../export-protocol"}
+webdock-supervisor = { path = "../supervisor" }
+webdock-core = { path = "../core" }
+webdock-agent-protocol = { path = "../agent-protocol" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "net", "io-util", "time", "sync", "signal"] }
+async-trait = "0.1"
+bollard = { version = "0.21.1", optional = true }
+kube = { version = "4.2.0", optional = true, default-features = false, features = ["client", "config", "rustls-tls", "ring", "ws"] }
+k8s-openapi = { version = "0.28", optional = true, features = ["v1_32"] }
+futures-util = { version = "0.3", optional = true, features = ["io"] }
+reqwest = { version = "0.12", optional = true, default-features = false, features = ["json", "stream", "rustls-tls"] }
+tokio-rustls = { version = "0.26", optional = true, default-features = false, features = ["ring", "tls12"] }
+rcgen = { version = "0.14", optional = true }
+sha2 = "0.10"
+tempfile = "3"
+tracing = "0.1"
+
+webdock-plugin-protocol = { path = "../plugin-protocol" }
+tonic = { version = "0.14.6", features = ["transport", "tls-ring"] }
+tonic-prost = "0.14.6"
+prost = "0.14"
+clap = { version = "4", features = ["derive"] }
+x509-parser = "0.18"
+rustix = { version = "1", features = ["fs", "process"] }
+thiserror = "2"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+chrono = { version = "0.4", features = ["clock", "serde"] }
+rust_decimal = { version = "1", optional = true }
+
+base64 = "0.22"
+ed25519-dalek = "2"
+fs2 = "0.4"
+uuid = { version = "1", features = ["v4", "serde"] }
+serde-saphyr = { version = "0.0.29", optional = true }
+
+ipnet = { version = "2", optional = true }
+
+oci-spec = { version = "0.10", default-features = false, features = ["distribution"], optional = true }
+
+humantime = { version = "2", optional = true }
+
+tokio-postgres = { version = "0.7", optional = true }
+tokio-postgres-rustls = { version = "0.14", features = ["ring"], optional = true }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"], optional = true }
+rustls-pemfile = { version = "2", optional = true }
+
+[dev-dependencies]
+webdock-build = { path = "../build", default-features = false, features = ["local-registry-test"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+rcgen = "0.14"
+tokio-stream = { version = "0.1", features = ["net"] }
+serde-saphyr = "0.0.29"
+
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "webdock-build-storage-node"
+path = "src/bin/webdock-build-storage-node.rs"
+required-features = ["kubernetes"]

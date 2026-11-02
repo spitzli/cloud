@@ -1,40 +1,39 @@
 ---
-title: "Your turboSMTP account"
-description: "Connect provider credentials securely and issue separate Webdock Mail API keys."
+title: "Connect your turboSMTP account"
+description: "Connect your sending provider and create separate Spitzli Cloud Mail API keys."
 ---
 
-With Mail BYOK, turboSMTP bills your own account directly. Webdock manages the enabled connection, domains and Mail API access for the workspace.
+turboSMTP bills your own account and applies its own sending limits. Spitzli Cloud manages the enabled workspace connection, sender domains and Mail API access.
 
-## Three different credentials
+<Info>Turbo BYOK requires separate operator activation, provider configuration and a ready sending path. Native activation remains separate release work. A connection form or verified provider key alone does not establish production sending availability.</Info>
 
-| Credential | Where it belongs |
+## Prepare the credentials
+
+| Credential | Where to use it |
 | --- | --- |
-| turboSMTP Consumer Key and Consumer Secret | The protected connection setup form |
-| Webdock Mail API key | Your server-side application calling the Mail API |
-| Webhook signing secret | Your event receiver, for signature verification |
+| turboSMTP Consumer Key and Consumer Secret | Protected provider connection form |
+| Spitzli Cloud Mail API key | Your server-side application |
+| Webhook signing secret | Your event receiver |
 
-Provider credentials are not bearer keys for the Webdock Mail API. Webdock stores provider secrets encrypted and displays only identifying metadata or a key suffix afterward.
+Provider credentials cannot be used as Spitzli Cloud Mail bearer keys. Use a dedicated customer account because its sender-domain inventory is visible through the connection. Create a Consumer key with `SEND_API` and `APIS` permissions.
 
 <Steps>
-  <Step title="Enable own sending">A platform operator enables own turboSMTP and configures the sender-domain allowance for the customer.</Step>
-  <Step title="Prepare a dedicated account">Create a Consumer key with both `SEND_API` and `APIS` permissions. Use a dedicated customer account: its sender-domain inventory is visible to this connection. Do not reuse the platform master credential.</Step>
-  <Step title="Connect in Mail settings">In the workspace's **Mail settings → Mail API**, use **Connect your turboSMTP account** and choose **Verify and save account**. This verifies the provider account identity and creates the Mail API connection. Enter credentials only in this protected form.</Step>
-  <Step title="Verify a sender domain">Register or select the intended domain, configure its exact DNS records and refresh verification. Provider account limits and Webdock's allowance are separate.</Step>
-  <Step title="Create an application key">Select the ready Mail connection and create a Webdock sending key, restricted to the needed domain. Follow the [Mail quickstart](/developers/mail-quickstart) using `https://api.webdock.dev/api/mail/v1`.</Step>
+  <Step title="Confirm access">Ask your operator to confirm own-account sending, the sender-domain allowance and production dispatch availability.</Step>
+  <Step title="Connect the account">Where activated, open **Mail settings → Mail API → Connect your turboSMTP account**. Enter the provider credentials and select **Verify and save account**. Credentials are stored encrypted.</Step>
+  <Step title="Verify the sender">Add or select the intended sender domain. Publish the exact DNS records shown and refresh verification.</Step>
+  <Step title="Create an application key">Choose the ready Mail connection and create a Spitzli Cloud sending key restricted to the needed domain. Follow the [Mail quickstart](/developers/mail-quickstart).</Step>
 </Steps>
 
-<Note>The older **Own sending connection** form manages the provider account and sender-domain inventory. That form alone does not create a selectable Mail API connection; use **Connect your turboSMTP account** for API sending.</Note>
+The older **Own sending connection** form manages the provider account and sender-domain inventory. It does not by itself create a selectable Mail API connection.
 
-## State and lifecycle
+## Pause, recover and disconnect
 
-Pausing a sending connection blocks new sends while retaining history and accepted work. Credential replacement must preserve the verified account identity; a changed or uncertain connection can require review before sending resumes.
+Pausing blocks new sends while retaining history and accepted work. If domain registration times out, refresh the existing registration before trying again. An uncertain registration or changed account identity can require operator review.
 
-If domain registration times out, refresh and reconcile the existing registration. Do not retry blindly or replace credentials to bypass an unknown result. Pending registration can block disconnect until reviewed by an operator.
+Disconnecting through own-account setup removes its stored credential. Separately retained Mail connection credentials and history can remain. Your turboSMTP account and domains are not deleted. Revoke the provider key at turboSMTP when all use of that key must end.
 
-Disconnecting in the own-account setup removes its stored credential, but does not erase separately retained Mail connection credentials or history. It does not delete your turboSMTP account or domains. Revoke the provider key at turboSMTP when all access using that key must end.
+## Incoming Mail is separate
 
-## Sending and incoming Mail
+Sending-only does not require a mailbox server. Incoming mailboxes or forwarding require explicit activation. Workspaces with native incoming Mail need a compatible native sending path; do not assume the expanded Mail API sends through the mailbox server.
 
-A verified provider connection does not itself enable every sending worker or callback. Check **Mail API**, dispatch, sending credentials and provider callback readiness in Console. Incoming Mail remains a separate service. Workspaces with native incoming Mail require the supported native sending path; the expanded Mail API must not be assumed to submit through Stalwart.
-
-The configured sending endpoints use the provider's EU service. That does not establish that every provider management or control-plane service is EU-only.
+Check dispatch and callback readiness for the selected connection. Provider acceptance is not delivery. EU sending endpoints do not establish that every provider control-plane service is EU-only.

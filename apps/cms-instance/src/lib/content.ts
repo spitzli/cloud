@@ -5,6 +5,7 @@ import type {
   AuthStrategy,
 } from "payload";
 import { APIError } from "payload";
+import { createHash } from "node:crypto";
 import { msgid } from "@webdock/i18n";
 import {
   protectContent,
@@ -105,20 +106,21 @@ export const media = (directory: string): CollectionConfig =>
     slug: "media",
     trash: true,
     hooks: {
-      beforeOperation: [
-        ({ operation, args, req }) => {
+      beforeValidate: [
+        ({ data }) => ({ ...data, prefix: "", _objectKey: null }),
+      ],
+      beforeChange: [
+        ({ data, originalDoc, req }) => {
           if (
-            operation === "update" &&
-            Object.prototype.hasOwnProperty.call(
-              args.data ?? {},
-              "deletedAt",
-            ) &&
+            Object.prototype.hasOwnProperty.call(data ?? {}, "deletedAt") &&
+            (data.deletedAt ?? null) !== (originalDoc?.deletedAt ?? null) &&
             !canManageUsers({ req })
           )
             throw new APIError(
               msgid("An administrator is required to remove or restore media."),
               403,
             );
+          return data;
         },
       ],
     },
@@ -131,6 +133,21 @@ export const media = (directory: string): CollectionConfig =>
       filesRequiredOnCreate: true,
     },
     fields: [
+      {
+        name: "contentSha256",
+        type: "text",
+        hidden: true,
+        admin: { hidden: true },
+        access: { create: () => false, update: () => false },
+        hooks: {
+          beforeChange: [
+            ({ req, originalDoc }) =>
+              req.file
+                ? createHash("sha256").update(req.file.data).digest("hex")
+                : (originalDoc?.contentSha256 ?? null),
+          ],
+        },
+      },
       {
         name: "alt",
         type: "text",

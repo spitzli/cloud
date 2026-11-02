@@ -1,0 +1,96 @@
+{
+  "status": "qualified-for-owner-controlled-rollout",
+  "source": {
+    "repository": "https://github.com/spitzli/tabularium",
+    "branch": "spitzli-native-plugin-admission",
+    "revision": "14e0b4f35a97d6af4d859b1351eb36aa0f4e47e8",
+    "githubVerifiedSignature": true,
+    "publicSourceArchiveSha256": "c0ffd37338f18e4bc59d88f5e0646f9840e509d33e08ae9362dbbb51697c5e9e"
+  },
+  "build": {
+    "region": "EU",
+    "method": "existing rootless BuildKit v0.34.1 with full process sandbox",
+    "platform": "linux/amd64",
+    "maintainedDockerfile": true,
+    "frozenDependencyInstall": true,
+    "productionFrontendBuild": true,
+    "manifestTypeScriptBuild": true,
+    "manifestTests": 69,
+    "manifestAssertions": 200,
+    "apiTypecheck": true,
+    "apiTests": 163,
+    "apiAssertions": 345,
+    "apiTestFiles": 16
+  },
+  "oci": {
+    "sourceRevision": "14e0b4f35a97d6af4d859b1351eb36aa0f4e47e8",
+    "imageSource": "https://github.com/spitzli/tabularium",
+    "imageManifestDigest": "sha256:4627facbbdf045716949195b115c7ab5d823e8c2d810d8e3dda93eeaafd9e78f",
+    "configDigest": "sha256:11dad0d1261c33091a28594b0753c44db1dd6530909e49499681ed569d20ef24",
+    "layerCount": 22,
+    "archiveSha256": "35e59639b932475597b1a4ca7cb2c3d9cb0e2c41b0c5c5905e45f49c4f0664b4",
+    "archiveBytes": 53884416,
+    "runtimeUser": "app",
+    "runtimeCommand": [
+      "bun",
+      "--smol",
+      "src/index.ts"
+    ],
+    "architecture": "amd64",
+    "os": "linux",
+    "allLayerDigestsVerified": true
+  },
+  "runtimeBudget": {
+    "actualHttpApi": true,
+    "normalModeFixture": true,
+    "preparedExtensionAndProviderSchemas": true,
+    "validManifests": 13,
+    "invalidManifests": 5,
+    "repetitions": 3,
+    "requestsChecked": 115,
+    "schemaDefinitionCount": 44,
+    "effectiveSchemaBytes": 46637,
+    "uid": 65532,
+    "noNewPrivileges": true,
+    "defaultSeccompFilter": true,
+    "allCapabilitiesDropped": true,
+    "readOnlyRoot": true,
+    "privateDataAndTmpWritable": true,
+    "validatorCacheFormsExercised": 4,
+    "authoringSelectorMismatchRejected": true,
+    "elapsedMs": 55857,
+    "maximumResponseMs": 2089,
+    "memoryMode": "--smol",
+    "jit": false,
+    "bun": "1.3.14",
+    "status": "passed-exact-image",
+    "sourceRevision": "14e0b4f35a97d6af4d859b1351eb36aa0f4e47e8",
+    "imageManifestDigest": "sha256:4627facbbdf045716949195b115c7ab5d823e8c2d810d8e3dda93eeaafd9e78f",
+    "compiledDistOverride": false,
+    "memoryLimitBytes": 536870912,
+    "memoryPeakBytes": 277217280,
+    "memoryCurrentBytes": 188366848,
+    "memoryEvents": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "swapLimit": "0",
+    "cpuMax": "100000 100000",
+    "isolatedNetworkNamespace": true,
+    "dataVolumeLimitBytes": 1073741824,
+    "tmpVolumeLimitBytes": 268435456
+  },
+  "scope": {
+    "productionRegistryApiWrites": false,
+    "productionDeploymentsChanged": false,
+    "productionDatabaseOrKeysUsed": false
+  },
+  "testedPolicyHashes": {
+    "extensionSchema": "e96a4cbf790446962aeb5a7047d3a144a198438dd01725e7a51360cfd0edf2b2",
+    "providerKind": "dec931ae0cf21dd010dc7ac169d3c734adcf85c941b782832c802f51b3ffa7bf"
+  }
+}

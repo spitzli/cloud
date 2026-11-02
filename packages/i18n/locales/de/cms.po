@@ -66,8 +66,8 @@ msgstr "Wähle eine unterstützte Sprache."
 msgid "Choose…"
 msgstr "Auswählen …"
 
-msgid "CMS by Webdock"
-msgstr "CMS von Webdock"
+msgid "CMS by Spitzli Cloud"
+msgstr "CMS von Spitzli Cloud"
 
 msgid "Contact email"
 msgstr "Kontakt-E-Mail"

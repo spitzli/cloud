@@ -1,20 +1,13 @@
-# Default-deny context. Named Dockerfiles additionally use their adjacent ignore files.
+# Only Rust workspace inputs and licenses; never send runtime fixtures or environment files.
 **
-!package.json
-!package-lock.json
-!apps/**
-!agents/**
-!packages/**
-!modules/**
-!adapters/**
-!integrations/**
-!vendor/**
-!scripts/**
-!tools/migrations/**
-!infra/mail/**
-**/node_modules
-**/.next
-**/dist
+!Cargo.toml
+!Cargo.lock
+!rust-toolchain.toml
+!crates/**
+!LICENSE
+!COMMERCIAL-LICENSING.md
+!NOTICE
+**/target
 **/.git
 **/.env*
 **/*.env
@@ -24,12 +17,9 @@
 **/*credentials*.json
 **/*secrets*.json
 **/*private*.json
-**/*.sql.dump
 **/*.dump
 **/*.sqlite*
 **/*.db
-**/.api-fixture.json
-**/.rls-fixture.json
 **/*kubeconfig*
 **/.npmrc
 **/.netrc

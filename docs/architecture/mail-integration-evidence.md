@@ -2,7 +2,7 @@
 
 Date: 2026-10-10. Status: **private CE provisioning foundation deployed and live-tested on Contabo; public delivery and the complete Mail product remain unfinished.**
 
-Owner decision: [CE per customer with activated email](mail-deployment-decision.md). Reproduction: `npm run test:integration -w @webdock/mail` on the documented local Linux/Node 24 environment.
+Owner decision: [CE per customer with activated email](mail-deployment-decision.md). Reproduction: `bun run --filter @webdock/mail test:integration` on the documented local Linux environment with Bun.
 
 Initial verification: unit tests, real CE integration and TypeScript passed. Current agent verification is recorded below. An independent review identified Docker context precedence as a local-only guard bypass; two regression tests failed before the fix and now pass. Setup, child tests and cleanup all use the resolved, pinned local daemon.
 

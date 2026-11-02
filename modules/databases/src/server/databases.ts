@@ -89,6 +89,11 @@ export function createHostingDatabases(dependencies: Dependencies) {
           : null,
       backup: {
         status: "not-configured",
+        observedControls: null,
+        publicRecoveryAvailable: false,
+        disabledReason: "production-qualification-required",
+        rpoSeconds: null,
+        rtoSeconds: null,
         lastSuccessAt: null,
         recoverableUntil: null,
         lastRestoreTestAt: null,

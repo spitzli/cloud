@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-01",
+  "repository": "https://github.com/spitzli/cloud-plugin-managed-cms",
+  "releaseURL": "https://github.com/spitzli/cloud-plugin-managed-cms/releases/tag/v0.1.0-alpha.1",
+  "tag": "v0.1.0-alpha.1",
+  "sourceSHA": "cb245e8fc6eead8f3b375388948b32347971567a",
+  "tagSignatureVerified": true,
+  "workflowRun": "https://github.com/spitzli/cloud-plugin-managed-cms/actions/runs/41292848324",
+  "protocolVersion": 1,
+  "registryPublication": "pending",
+  "customerActivationPerformed": false,
+  "images": [
+    {
+      "image": "ghcr.io/spitzli/cloud-plugin-managed-cms@sha256:9fffb3662a4d4e87c5a54c43bea9070dd7162822708480997dded12467b1b025",
+      "anonymousPullVerified": true,
+      "sourceRepository": "https://github.com/spitzli/cloud-plugin-managed-cms",
+      "sourceSHA": "cb245e8fc6eead8f3b375388948b32347971567a",
+      "user": "65532:65532",
+      "command": [
+        "bun",
+        "runtime.js"
+      ]
+    },
+    {
+      "image": "ghcr.io/spitzli/cloud-plugin-managed-cms-instance@sha256:65ba9df31623cfc2891cff00b0d6604138b6a9138a747aa625762f6e2bec4279",
+      "anonymousPullVerified": true,
+      "sourceRepository": "https://github.com/spitzli/cloud-plugin-managed-cms",
+      "sourceSHA": "cb245e8fc6eead8f3b375388948b32347971567a",
+      "user": "65532:65532",
+      "command": [
+        "bun",
+        "apps/cms-instance/server.js"
+      ]
+    }
+  ],
+  "assets": {
+    "cms-instance-image.json": {
+      "bytes": 417,
+      "sha256": "3b89ba2c1fdefabeb0aaf81ca8fd53a6be980ac9ef0c0f1dd0c8bba7b8474edc"
+    },
+    "managed-cms-universal.json": {
+      "bytes": 4492,
+      "sha256": "5594657e1e45be12a3e56cd6b63cb40c18f52a3938b5acbd51391e5e4640098a"
+    },
+    "release-lock.json": {
+      "bytes": 781,
+      "sha256": "d0c642373daf8a29a5dda74e9e8322ebbd91470d9eb8b3f3c942ddd871e83406"
+    },
+    "SHA256SUMS": {
+      "bytes": 349,
+      "sha256": "73d7d5b6102190da4cff5443667b78bc92a7f6165a2fd79caa490470f0a0a950"
+    },
+    "tabularium.json": {
+      "bytes": 4492,
+      "sha256": "5594657e1e45be12a3e56cd6b63cb40c18f52a3938b5acbd51391e5e4640098a"
+    }
+  },
+  "tests": {
+    "passed": 55,
+    "skipped": 9,
+    "failed": 0,
+    "scope": "real EU typecheck, component unit tests, both production builds; DB/image acceptance opt-in checks skipped"
+  }
+}

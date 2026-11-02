@@ -1,0 +1,81 @@
+[package]
+name="webdock-github-repository"
+version="0.1.0"
+edition="2024"
+rust-version="1.94"
+license="AGPL-3.0-only"
+
+[workspace]
+
+[features]
+local-provider-test=[]
+
+[dependencies]
+webdock-plugin-runtime={path="../../crates/plugin-runtime"}
+webdock-repository-protocol={path="../../crates/repository-protocol"}
+async-trait="0.1"
+serde={version="1",features=["derive"]}
+serde_json="1"
+tokio={version="1",features=["macros","rt-multi-thread","signal","fs"]}
+reqwest={version="0.13",default-features=false,features=["rustls-no-provider","json","stream"]}
+rustls={version="0.23",default-features=false,features=["ring","std","tls12"]}
+octocrab={version="=0.54.5",default-features=false,features=["jwt-rust-crypto"]}
+chrono="0.4"
+url="2"
+flate2="1"
+tar="0.4"
+hex="0.4"
+base64="0.22"
+ed25519-dalek="2"
+libc="0.2"
+tonic={version="0.14.6",default-features=false,features=["transport","tls-ring"]}
+
+[dev-dependencies]
+axum="0.8"
+tempfile="3"
+jsonwebtoken={version="10",default-features=false,features=["rust_crypto"]}
+
+# Mirrors the root workspace policy; checked by tools/quality.
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+unused_must_use = "deny"
+unfulfilled_lint_expectations = "deny"
+
+[lints.clippy]
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
+complexity = { level = "deny", priority = -1 }
+perf = { level = "deny", priority = -1 }
+style = { level = "deny", priority = -1 }
+allow_attributes_without_reason = "deny"
+as_ptr_cast_mut = "deny"
+await_holding_lock = "deny"
+await_holding_refcell_ref = "deny"
+cast_lossless = "deny"
+checked_conversions = "deny"
+dbg_macro = "deny"
+excessive_nesting = "deny"
+exit = "deny"
+fallible_impl_from = "deny"
+implicit_clone = "deny"
+let_underscore_future = "deny"
+lossy_float_literal = "deny"
+manual_assert = "deny"
+manual_let_else = "deny"
+match_wildcard_for_single_variants = "deny"
+mem_forget = "deny"
+mut_mut = "deny"
+needless_continue = "deny"
+needless_pass_by_ref_mut = "deny"
+option_option = "deny"
+rc_mutex = "deny"
+redundant_else = "deny"
+ref_option_ref = "deny"
+todo = "deny"
+unchecked_time_subtraction = "deny"
+undocumented_unsafe_blocks = "deny"
+unimplemented = "deny"
+unnecessary_box_returns = "deny"
+unnecessary_safety_comment = "deny"
+unnecessary_safety_doc = "deny"
+unnested_or_patterns = "deny"

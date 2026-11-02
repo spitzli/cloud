@@ -1,0 +1,26 @@
+{
+  "status": "Compensation cleanup independently rechecked; original aca overallFAIL retained; new execution still held for cleanup code review",
+  "verifiedUTC": "2026-10-26T01:46:47.077288+00:00",
+  "originalIncident": "docs/verification/2026-10-26-recovery-fixture-cleanup-integrity.json",
+  "ownerCleanupRecord": ".runtime-test/recovery-admission-aca7967d86be/cleanup-recovery.json",
+  "ownerCleanupRecordSHA256": "8ad25df734fe1bd9e4886207c710bf801bc78260b2072c55bf8aed83ca65d4f5",
+  "ownPauseReferenceAbsent": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17",
+  "recordedCachedReferencesStillMatch": {
+    "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe": "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe",
+    "rancher/k3s@sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb": "sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb",
+    "binwiederhier/ntfy@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da": "sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da",
+    "postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911": "sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911"
+  },
+  "ntfyCurrentTagsDigestsEqualRootPriorInspection": true,
+  "rootImageMutations": 0,
+  "limits": [
+    "Not proof of no transient mutation before first readonly inspection",
+    "Original failed command stderr unavailable",
+    "Functional0 plus cleanup failure remains overallFAIL; compensation closure is separate"
+  ],
+  "guardSourceHashesAtReview": {
+    "tools/tests/recovery_fixture_custody.py": "c5742ea136e08ae95ef48e5ffa0da07783cf4ed0a7e58ec9860dea79ad82ccdd",
+    "tools/tests/test_recovery_fixture_custody.py": "1e86182bbdc62ed469f04c745f26faea930cda7bf5dd9bc33143b46fc6c621cb",
+    "tools/tests/recovery-admission-component.py": "113b63e3781ef117a8ce95de6edd2da2d24763a3d65dfb1eccfbbbc055c52f8d"
+  }
+}

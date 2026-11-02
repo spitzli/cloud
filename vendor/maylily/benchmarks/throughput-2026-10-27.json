@@ -1,0 +1,490 @@
+{
+  "measured_at": "2026-10-27T09:32:48.301503+01:00",
+  "cpu": "AMD Ryzen 7 9800X3D 8-Core Processor",
+  "architecture": "x86_64",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "profile": "cargo bench / optimized",
+  "measurement": "wall time, sequential allocation, median of 9 samples after one warmup, 10000 operations per sample",
+  "runs": [
+    {
+      "configuration": "none",
+      "async_runtime": null,
+      "benchmark": "maylily-throughput",
+      "features": {
+        "async": false,
+        "serde": false
+      },
+      "operations_per_sample": 10000,
+      "results": [
+        {
+          "case": "direct_8bit",
+          "max_ms": 0.592015,
+          "median_ms": 0.569504,
+          "median_ns_per_operation": 56.9504,
+          "min_ms": 0.564844,
+          "operations_per_sample": 10000,
+          "operations_per_second": 17559139.180760805,
+          "sample_ms": [
+            0.564844,
+            0.565374,
+            0.566514,
+            0.567104,
+            0.569504,
+            0.5713050000000001,
+            0.578854,
+            0.5891740000000001,
+            0.592015
+          ],
+          "samples": 9
+        },
+        {
+          "case": "sync_16bit",
+          "max_ms": 1.277949,
+          "median_ms": 1.2753599999999998,
+          "median_ns_per_operation": 127.536,
+          "min_ms": 1.27243,
+          "operations_per_sample": 10000,
+          "operations_per_second": 7840923.347133359,
+          "sample_ms": [
+            1.27243,
+            1.273349,
+            1.273609,
+            1.2738800000000001,
+            1.2753599999999998,
+            1.275439,
+            1.276519,
+            1.277829,
+            1.277949
+          ],
+          "samples": 9
+        },
+        {
+          "case": "sync_8bit",
+          "max_ms": 42.001257,
+          "median_ms": 40.903090000000006,
+          "median_ns_per_operation": 4090.309,
+          "min_ms": 38.706333,
+          "operations_per_sample": 10000,
+          "operations_per_second": 244480.30698903187,
+          "sample_ms": [
+            38.706333,
+            39.856122,
+            39.862432000000005,
+            39.867232,
+            40.903090000000006,
+            40.94779,
+            41.945757,
+            41.982418,
+            42.001257
+          ],
+          "samples": 9
+        }
+      ],
+      "samples_per_case": 9,
+      "setup_timed": false,
+      "warmup_samples": 1
+    },
+    {
+      "configuration": "serde",
+      "async_runtime": null,
+      "benchmark": "maylily-throughput",
+      "features": {
+        "async": false,
+        "serde": true
+      },
+      "operations_per_sample": 10000,
+      "results": [
+        {
+          "case": "direct_8bit",
+          "max_ms": 0.549944,
+          "median_ms": 0.476374,
+          "median_ns_per_operation": 47.6374,
+          "min_ms": 0.466283,
+          "operations_per_sample": 10000,
+          "operations_per_second": 20991909.717994686,
+          "sample_ms": [
+            0.466283,
+            0.46791299999999997,
+            0.473293,
+            0.474673,
+            0.476374,
+            0.478784,
+            0.486704,
+            0.536694,
+            0.549944
+          ],
+          "samples": 9
+        },
+        {
+          "case": "id_json_encode",
+          "max_ms": 0.120211,
+          "median_ms": 0.118171,
+          "median_ns_per_operation": 11.8171,
+          "min_ms": 0.11672099999999999,
+          "operations_per_sample": 10000,
+          "operations_per_second": 84623130.88659655,
+          "sample_ms": [
+            0.11672099999999999,
+            0.118111,
+            0.118121,
+            0.11815,
+            0.118171,
+            0.11819099999999999,
+            0.118211,
+            0.118281,
+            0.120211
+          ],
+          "samples": 9
+        },
+        {
+          "case": "options_json_roundtrip",
+          "max_ms": 1.6940220000000001,
+          "median_ms": 1.6826320000000001,
+          "median_ns_per_operation": 168.2632,
+          "min_ms": 1.633822,
+          "operations_per_sample": 10000,
+          "operations_per_second": 5943070.142491049,
+          "sample_ms": [
+            1.633822,
+            1.634762,
+            1.657072,
+            1.6774229999999999,
+            1.6826320000000001,
+            1.684822,
+            1.690292,
+            1.692113,
+            1.6940220000000001
+          ],
+          "samples": 9
+        },
+        {
+          "case": "sync_16bit",
+          "max_ms": 1.29508,
+          "median_ms": 1.288139,
+          "median_ns_per_operation": 128.8139,
+          "min_ms": 1.2841790000000002,
+          "operations_per_sample": 10000,
+          "operations_per_second": 7763137.363281447,
+          "sample_ms": [
+            1.2841790000000002,
+            1.2847089999999999,
+            1.28547,
+            1.2867899999999999,
+            1.288139,
+            1.292309,
+            1.29372,
+            1.2944790000000002,
+            1.29508
+          ],
+          "samples": 9
+        },
+        {
+          "case": "sync_8bit",
+          "max_ms": 41.975907,
+          "median_ms": 40.907469,
+          "median_ns_per_operation": 4090.7469,
+          "min_ms": 39.835622,
+          "operations_per_sample": 10000,
+          "operations_per_second": 244454.13623609906,
+          "sample_ms": [
+            39.835622,
+            39.853512,
+            39.915102,
+            39.965473,
+            40.907469,
+            40.96751,
+            40.972190999999995,
+            41.843277,
+            41.975907
+          ],
+          "samples": 9
+        }
+      ],
+      "samples_per_case": 9,
+      "setup_timed": false,
+      "warmup_samples": 1
+    },
+    {
+      "configuration": "async",
+      "async_runtime": "Tokio current-thread; runtime construction excluded",
+      "benchmark": "maylily-throughput",
+      "features": {
+        "async": true,
+        "serde": false
+      },
+      "operations_per_sample": 10000,
+      "results": [
+        {
+          "case": "async_16bit",
+          "max_ms": 1.489231,
+          "median_ms": 1.38178,
+          "median_ns_per_operation": 138.178,
+          "min_ms": 1.37873,
+          "operations_per_sample": 10000,
+          "operations_per_second": 7237042.076162631,
+          "sample_ms": [
+            1.37873,
+            1.37919,
+            1.37969,
+            1.379791,
+            1.38178,
+            1.42915,
+            1.45342,
+            1.471991,
+            1.489231
+          ],
+          "samples": 9
+        },
+        {
+          "case": "async_8bit",
+          "max_ms": 80.934013,
+          "median_ms": 78.947779,
+          "median_ns_per_operation": 7894.7779,
+          "min_ms": 76.859233,
+          "operations_per_sample": 10000,
+          "operations_per_second": 126666.00791898149,
+          "sample_ms": [
+            76.859233,
+            76.876244,
+            76.971095,
+            78.926038,
+            78.947779,
+            78.981889,
+            79.005199,
+            80.017736,
+            80.934013
+          ],
+          "samples": 9
+        },
+        {
+          "case": "direct_8bit",
+          "max_ms": 0.49418400000000007,
+          "median_ms": 0.46960399999999997,
+          "median_ns_per_operation": 46.9604,
+          "min_ms": 0.465283,
+          "operations_per_sample": 10000,
+          "operations_per_second": 21294537.52523403,
+          "sample_ms": [
+            0.465283,
+            0.467383,
+            0.468694,
+            0.46952400000000005,
+            0.46960399999999997,
+            0.469863,
+            0.48052300000000003,
+            0.48950299999999997,
+            0.49418400000000007
+          ],
+          "samples": 9
+        },
+        {
+          "case": "sync_16bit",
+          "max_ms": 1.2844289999999998,
+          "median_ms": 1.2793800000000002,
+          "median_ns_per_operation": 127.938,
+          "min_ms": 1.2777489999999998,
+          "operations_per_sample": 10000,
+          "operations_per_second": 7816286.013537806,
+          "sample_ms": [
+            1.2777489999999998,
+            1.2783289999999998,
+            1.278719,
+            1.27936,
+            1.2793800000000002,
+            1.2794889999999999,
+            1.28042,
+            1.280689,
+            1.2844289999999998
+          ],
+          "samples": 9
+        },
+        {
+          "case": "sync_8bit",
+          "max_ms": 40.93807,
+          "median_ms": 39.899922,
+          "median_ns_per_operation": 3989.9922,
+          "min_ms": 39.769192000000004,
+          "operations_per_sample": 10000,
+          "operations_per_second": 250627.0563636691,
+          "sample_ms": [
+            39.769192000000004,
+            39.835932,
+            39.862572,
+            39.868682,
+            39.899922,
+            39.911012,
+            40.866379,
+            40.876709999999996,
+            40.93807
+          ],
+          "samples": 9
+        }
+      ],
+      "samples_per_case": 9,
+      "setup_timed": false,
+      "warmup_samples": 1
+    },
+    {
+      "configuration": "serde+async",
+      "async_runtime": "Tokio current-thread; runtime construction excluded",
+      "benchmark": "maylily-throughput",
+      "features": {
+        "async": true,
+        "serde": true
+      },
+      "operations_per_sample": 10000,
+      "results": [
+        {
+          "case": "async_16bit",
+          "max_ms": 1.3522390000000002,
+          "median_ms": 1.2278390000000001,
+          "median_ns_per_operation": 122.7839,
+          "min_ms": 1.214239,
+          "operations_per_sample": 10000,
+          "operations_per_second": 8144390.266150529,
+          "sample_ms": [
+            1.214239,
+            1.215389,
+            1.221149,
+            1.224859,
+            1.2278390000000001,
+            1.234819,
+            1.2357200000000002,
+            1.3185499999999999,
+            1.3522390000000002
+          ],
+          "samples": 9
+        },
+        {
+          "case": "async_8bit",
+          "max_ms": 81.106735,
+          "median_ms": 77.955022,
+          "median_ns_per_operation": 7795.5022,
+          "min_ms": 74.804108,
+          "operations_per_sample": 10000,
+          "operations_per_second": 128279.09919645716,
+          "sample_ms": [
+            74.804108,
+            74.889489,
+            76.755083,
+            76.819743,
+            77.955022,
+            78.88771899999999,
+            81.004884,
+            81.095535,
+            81.106735
+          ],
+          "samples": 9
+        },
+        {
+          "case": "direct_8bit",
+          "max_ms": 0.632655,
+          "median_ms": 0.565174,
+          "median_ns_per_operation": 56.5174,
+          "min_ms": 0.542764,
+          "operations_per_sample": 10000,
+          "operations_per_second": 17693666.021437645,
+          "sample_ms": [
+            0.542764,
+            0.545474,
+            0.547004,
+            0.5503739999999999,
+            0.565174,
+            0.587064,
+            0.5960749999999999,
+            0.602294,
+            0.632655
+          ],
+          "samples": 9
+        },
+        {
+          "case": "id_json_encode",
+          "max_ms": 0.13542099999999999,
+          "median_ms": 0.118171,
+          "median_ns_per_operation": 11.8171,
+          "min_ms": 0.116441,
+          "operations_per_sample": 10000,
+          "operations_per_second": 84623130.88659655,
+          "sample_ms": [
+            0.116441,
+            0.116481,
+            0.11653,
+            0.116841,
+            0.118171,
+            0.118211,
+            0.118301,
+            0.118791,
+            0.13542099999999999
+          ],
+          "samples": 9
+        },
+        {
+          "case": "options_json_roundtrip",
+          "max_ms": 1.882314,
+          "median_ms": 1.831163,
+          "median_ns_per_operation": 183.1163,
+          "min_ms": 1.649702,
+          "operations_per_sample": 10000,
+          "operations_per_second": 5461010.297827119,
+          "sample_ms": [
+            1.649702,
+            1.779643,
+            1.812654,
+            1.8266440000000002,
+            1.831163,
+            1.835854,
+            1.840593,
+            1.855303,
+            1.882314
+          ],
+          "samples": 9
+        },
+        {
+          "case": "sync_16bit",
+          "max_ms": 1.28713,
+          "median_ms": 1.2782390000000001,
+          "median_ns_per_operation": 127.8239,
+          "min_ms": 1.274019,
+          "operations_per_sample": 10000,
+          "operations_per_second": 7823263.098684988,
+          "sample_ms": [
+            1.274019,
+            1.27524,
+            1.275879,
+            1.27648,
+            1.2782390000000001,
+            1.279009,
+            1.280219,
+            1.2869190000000001,
+            1.28713
+          ],
+          "samples": 9
+        },
+        {
+          "case": "sync_8bit",
+          "max_ms": 42.029938,
+          "median_ms": 40.91053,
+          "median_ns_per_operation": 4091.053,
+          "min_ms": 39.771322,
+          "operations_per_sample": 10000,
+          "operations_per_second": 244435.84573458225,
+          "sample_ms": [
+            39.771322,
+            39.854651999999994,
+            39.863062,
+            40.768629000000004,
+            40.91053,
+            40.93444,
+            41.879127000000004,
+            41.975428,
+            42.029938
+          ],
+          "samples": 9
+        }
+      ],
+      "samples_per_case": 9,
+      "setup_timed": false,
+      "warmup_samples": 1
+    }
+  ]
+}

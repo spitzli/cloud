@@ -1,0 +1,20 @@
+{
+  "scope": "Matched Mail cold trust producer/consumer contract; full restore pending",
+  "actualCase": "8a5bf27d99f3",
+  "originalReportSHA256": "26e4e26114349b26f8db05b7ab897f472b4afd44e00ab8d2b0357f9e2fff8757",
+  "independentClosureSHA256": "7392ddb39693cb6d57426eb7029bb8834f6a3d0a1e7867f332f6d0691b77ed06",
+  "actualHelperExit": 1,
+  "actualStaticError": "ownership_mismatch_reported",
+  "actualReadOnlyCurrentTrustValidation": false,
+  "allObservedTrustFilesRootPrivateAndCanonical": true,
+  "helperStageActualUIDGID": 65532,
+  "producerImageBefore": "postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+  "consumer": "Existing webdock_supervisor::image_digest requires registry/repository@sha256; no policy widening",
+  "producerImageAfter": "docker.io/library/postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+  "regression": "Actual Mail fixture literal against real privileged consumer: old RED, canonical GREEN; shorthand still denied",
+  "preCoreGate": "Read-only canonical Docker image inspection must return the exact imported pinned root; no pull or tag mutation",
+  "historicalDiagnosticCorrection": "imageDigest in the earlier safe metadata row meant exact known fixture image equality, not a call to the real privileged image policy; subsequent field is named imageExactlyKnown",
+  "wholeMailQualified": false,
+  "MinioStoppedAfterClosure": true,
+  "noObligations": true
+}

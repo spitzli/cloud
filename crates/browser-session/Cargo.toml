@@ -1,0 +1,35 @@
+[package]
+name = "webdock-browser-session"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+webdock-identity = { path = "../identity" }
+webdock-oauth = { path = "../oauth" }
+webdock-persistence = { path = "../persistence" }
+sea-orm.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+chrono.workspace = true
+url.workspace = true
+thiserror.workspace = true
+openidconnect = { version = "=4.0.1", default-features = false }
+# Only the bounded read-side compatibility bridge uses retained Fe26.2 seals.
+iron-webcrypto-rs = "=0.0.1"
+cookie = { version = "0.18", features = ["signed", "key-expansion"] }
+sha2 = "0.10"
+hex = "0.4"
+subtle = "2.6"
+percent-encoding = "2"
+
+[dev-dependencies]
+webdock-ids = { path = "../ids" }
+webdock-access = { path = "../access" }
+totp-rs = { version = "=6.0.0", features = ["otpauth"] }
+
+[lints]
+workspace = true

@@ -1,9 +1,1 @@
-node_modules/
-.next/
-.vercel/
-.env*
-!.env.example
-*.tsbuildinfo
-next-env.d.ts
-.backups/
-.agents/
+dist/

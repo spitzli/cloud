@@ -4,9 +4,10 @@ import {buildConfig,getPayload} from 'payload';import {postgresAdapter} from '@p
 import {protectContent,protectUsers} from '../../instance-kit/src/index';
 import {handleCMSRequest} from './server';
 import {editorData} from './schema';
-const db=new URL(process.env.DATABASE_URL!);if(db.hostname!=='127.0.0.1')throw Error('Disposable local DB only');db.pathname='/webdock_cms_test';
+// Runs only against a disposable local database; without DATABASE_URL the test is skipped.
+const db=new URL(process.env.DATABASE_URL??'postgres://127.0.0.1/unset');if(db.hostname!=='127.0.0.1')throw Error('Disposable local DB only');db.pathname='/webdock_cms_test';
 const options={siteName:'CMS fixture',siteURL:'http://localhost:3199',modules:[{slug:'pages',kind:'collection' as const,label:'Pages',titleField:'title'},{slug:'settings',kind:'global' as const,label:'Settings'}]};
-test('Real CMS edits retain drafts, permissions, versions and stale-write protection',async()=>{
+test('Real CMS edits retain drafts, permissions, versions and stale-write protection',{skip:!process.env.DATABASE_URL},async()=>{
  const p=await getPayload({config:buildConfig({secret:randomBytes(32).toString('hex'),typescript:{autoGenerate:false},admin:{disable:true},db:postgresAdapter({pool:{connectionString:db.toString()},schemaName:'cms_ui_test',push:true}),collections:[protectUsers({slug:'users',auth:true,fields:[{name:'name',type:'text'}]},'operator@example.invalid'),protectContent({slug:'pages',access:{read:({req})=>Boolean(req.user),readVersions:({req})=>Boolean(req.user)},versions:{drafts:true},fields:[{name:'title',type:'text',required:true},{name:'slug',type:'text',required:true},{name:'items',type:'array',fields:[{name:'text',type:'textarea'},{name:'internal',type:'text',admin:{readOnly:true}},{name:'private',type:'text',admin:{hidden:true}}]}]})],globals:[protectContent({slug:'settings',fields:[{name:'name',type:'text'}]})]})});
  try{
   await p.db.pool.query('TRUNCATE cms_ui_test.users,cms_ui_test.pages,cms_ui_test._pages_v CASCADE');

@@ -1,0 +1,51 @@
+{
+  "status": "Cleanup integrity incident: failed foreign-tag removal attempted; READONLY Root verification sees recorded cached references present and same IDs. Overall fixture still cleanup-failed until owner completes exact custody.",
+  "checkedUTC": "2026-10-26T01:32:47.145390+00:00",
+  "run": "aca7967d86be",
+  "failedCommand": [
+    "docker",
+    "image",
+    "rm",
+    "binwiederhier/ntfy:latest"
+  ],
+  "failedCommandRawStderr": "Not retained by old helper; unavailable, not invented",
+  "beforePinSHA256": "8a88ccfe0972cebaf60791377155b2dd3c0bb5fdeaf396e69bea67f2f032a972",
+  "recordedOriginalImages": {
+    "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe": {
+      "recordedId": "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe",
+      "currentId": "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe",
+      "matches": true
+    },
+    "rancher/k3s@sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb": {
+      "recordedId": "sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb",
+      "currentId": "sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb",
+      "matches": true
+    },
+    "binwiederhier/ntfy@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da": {
+      "recordedId": "sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da",
+      "currentId": "sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da",
+      "matches": true
+    },
+    "postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911": {
+      "recordedId": "sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+      "currentId": "sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+      "matches": true
+    }
+  },
+  "currentNtfyLatest": {
+    "id": "sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da",
+    "tags": [
+      "binwiederhier/ntfy:latest"
+    ],
+    "digests": [
+      "binwiederhier/ntfy@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da"
+    ]
+  },
+  "limits": [
+    "No proof of no transient tag mutation from present-state inspection alone",
+    "Original beforePin records IDs, not a complete RepoTags history",
+    "Root did not mutate/remove/restore/repull any image or tag",
+    "Owner reports exact own derivative removed before STOP; own pause cleanup still pending under verified guard",
+    "No Core/PG server/Agent executed in this import-only fixture"
+  ]
+}

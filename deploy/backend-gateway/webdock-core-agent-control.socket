@@ -1,0 +1,14 @@
+[Unit]
+Description=Webdock private RUN-to-Core agent mTLS transport
+Wants=network-online.target
+After=network-online.target webdock-management-firewall.service
+
+[Socket]
+# Owned Core RUN-network interface; no public or wildcard bind.
+ListenStream=10.0.0.4:3131
+BindToDevice=eth2
+NoDelay=true
+Backlog=64
+
+[Install]
+WantedBy=sockets.target

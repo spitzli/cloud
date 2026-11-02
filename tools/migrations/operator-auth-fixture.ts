@@ -8,10 +8,10 @@ if (
   target.pathname !== "/webdock_operator_test"
 )
   throw Error("Only the isolated operator fixture is allowed");
-const { auth } = await import("../../apps/control-plane/src/modules/auth/auth");
-const { databasePools } = await import("../../apps/control-plane/src/db/runtime");
+const { auth } = await import("../../legacy/control-plane/src/modules/auth/auth");
+const { databasePools } = await import("../../legacy/control-plane/src/db/runtime");
 const { currentClaims } =
-  await import("../../apps/control-plane/src/modules/auth/authorization");
+  await import("../../legacy/control-plane/src/modules/auth/authorization");
 const origin = process.env.BETTER_AUTH_URL!,
   clientID = process.env.WEBDOCK_STUDIO_CLIENT_ID!,
   clientSecret = process.env.WEBDOCK_SSO_CLIENT_SECRET!,
@@ -27,20 +27,20 @@ globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   }
   return auth.handler(request);
 }) as typeof globalThis.fetch;
-const { readConfig } = await import("../../apps/control-plane/src/config");
-const { createApp } = await import("../../apps/control-plane/src/app");
-const { authProtocol } = await import("../../apps/control-plane/src/protocols/auth");
-const { portalProtocols } = await import("../../apps/control-plane/src/protocols/portal");
+const { readConfig } = await import("../../legacy/control-plane/src/config");
+const { createApp } = await import("../../legacy/control-plane/src/app");
+const { authProtocol } = await import("../../legacy/control-plane/src/protocols/auth");
+const { portalProtocols } = await import("../../legacy/control-plane/src/protocols/portal");
 const { registryProtocol } =
-  await import("../../apps/control-plane/src/protocols/registry");
+  await import("../../legacy/control-plane/src/protocols/registry");
 const { registryService, closeRegistry } =
-  await import("../../apps/control-plane/src/modules/registry/context");
+  await import("../../legacy/control-plane/src/modules/registry/context");
 const { verifyDatabaseReadiness } =
-  await import("../../apps/control-plane/src/db/readiness");
+  await import("../../legacy/control-plane/src/db/readiness");
 const { verifyModuleShutdown } =
-  await import("../../apps/control-plane/src/module-preflight");
+  await import("../../legacy/control-plane/src/module-preflight");
 const { handleConsoleOrigin } =
-  await import("../../apps/control-plane/src/console-origin");
+  await import("../../legacy/control-plane/src/console-origin");
 const config = readConfig(process.env);
 assert.deepEqual(config.modules!.modules, {});
 await verifyModuleShutdown();
@@ -291,7 +291,7 @@ try {
   assert.equal(storage.status, 400);
   assert.equal((await storage.json()).error.message, "Invalid Studio request.");
   // Explicit full composition restores product command admission and its existing DB authorization.
-  const { configureFullProducts } = await import("../../apps/control-plane/src/full-products");
+  const { configureFullProducts } = await import("../../legacy/control-plane/src/full-products");
   configureFullProducts();
   // Managed DB commands keep their legacy wire name without owning Hosting routes.
   process.env.WEBDOCK_MODULES = JSON.stringify({ configVersion: 1, modules: { databases: { enabled: true } } });

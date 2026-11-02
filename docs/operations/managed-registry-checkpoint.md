@@ -1,6 +1,6 @@
 # Managed Registry checkpoint — 2026-10-18
 
-Admin setup is implemented and locally verified. Start from `npm run setup:admin -- host:port/database new-private-output.json`; follow `docs/developers/initial-setup.mdx`. Existing production operators were not changed.
+Admin setup is implemented and locally verified. Start from `bun run setup:admin -- host:port/database new-private-output.json`; follow `docs/developers/initial-setup.mdx`. Existing production operators were not changed.
 
 The new external plugin source is `/home/newt/Projekte/Personal/spitzli/webdock-extension-managed-registry`, separate from the core. It manages an operator-provisioned dedicated Tabularium instance (branding, settings, kinds, manifest fields, provider readiness) through11 declared API/MCP actions. It does not yet provision new hosting resources or domains.
 

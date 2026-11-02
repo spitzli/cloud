@@ -5,7 +5,12 @@ import { modules } from "./content.ts";
 import { loadCMSConfig } from "./config.ts";
 import { validateRaster } from "./media.ts";
 import { MEDIA_BYTES, METADATA_BYTES } from "@webdock/cms-bridge/types";
-export const getCMS = (): Promise<Payload> => getPayload({ config });
+import { verifyMediaBinding } from "./media-storage.ts";
+export const getCMS = async (): Promise<Payload> => {
+  // Payload skips onInit on cached retries, including after failed initialization.
+  await verifyMediaBinding(loadCMSConfig());
+  return getPayload({ config });
+};
 export const cmsOptions = () => {
   const environment = loadCMSConfig();
   return {

@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: foundation-smoke
+  namespace: webdock-builds
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 120
+  template:
+    spec:
+      serviceAccountName: webdock-build-job
+      automountServiceAccountToken: false
+      activeDeadlineSeconds: 120
+      restartPolicy: Never
+      containers:
+        - name: smoke
+          image: docker.io/library/busybox:1.37.0@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+          command: [sh, -ec]
+          args:
+            - |
+              test "$(id -u)" = 1000
+              test ! -e /var/run/secrets/kubernetes.io/serviceaccount/token
+              test ! -e /var/run/docker.sock
+              test ! -e /host
+              nslookup kubernetes.default.svc.cluster.local
+              nc -z -w 2 10.85.0.10 53 # Positive control: same TCP probe must work for DNS.
+              for endpoint in 10.83.0.1:6443 10.83.0.1:10250 169.254.169.254:80 213.136.65.22:6443 79.143.177.157:6443 169.58.95.66:6443 213.136.65.22:5432 1.1.1.1:443; do
+                host=${endpoint%:*}; port=${endpoint##*:}
+                if nc -z -w 2 "$host" "$port"; then echo "UNEXPECTED egress: $endpoint"; exit 1; fi
+              done
+              echo 'PASS: nonroot, tokenless, DNS works, private/metadata/public egress blocked'
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 32Mi
+              ephemeral-storage: 16Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi
+              ephemeral-storage: 32Mi

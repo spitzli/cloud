@@ -1,5 +1,5 @@
 /** Read-only cutover check; never rewrites exports or logs content/credentials.
- * node --env-file=.env.local --import tsx scripts/verify-instance-source.mjs
+ * bun --env-file=.env.local scripts/verify-instance-source.mjs
  */
 import fs from 'node:fs'
 import path from 'node:path'

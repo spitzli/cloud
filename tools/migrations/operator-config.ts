@@ -1,6 +1,6 @@
 import { constants } from "node:fs";
 import { open } from "node:fs/promises";
-import { databaseURL } from "../../apps/control-plane/src/db/client";
+import { databaseURL } from "../../legacy/control-plane/src/db/client";
 export class OperatorSetupError extends Error {}
 const fail = (message: string): never => {
   throw new OperatorSetupError(message);

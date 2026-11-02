@@ -1,0 +1,25 @@
+{
+  "scope": "Actual local Mail signed-action prerequisite; whole recovery remains pending",
+  "actualRun": "0887bd941477",
+  "originalReportSHA256": "aebda01619aef96c2b0d201325cea4b3baba2feb54a94a7d6eda7df5309fa46c",
+  "independentClosureSHA256": "e65aabfe69d34fa6c66407d3362f5d4a65dc4c02af37732d1eed3975fb272fe8",
+  "operatorAdoption": {
+    "realAuthenticatedAuthority": true,
+    "normalCustomerRLSAndAudit": true,
+    "twoRealRegistryCustomers": true,
+    "repeatIsStateIdempotent": true,
+    "credentialSource": "Trusted server-only configured transport; local SMTP has no provider password",
+    "externalProviderCredentialIssuanceQualified": false
+  },
+  "actualCompletedSignedRoles": ["outgoing_domain", "send_known", "send_uncertain", "incoming_domain", "incoming_activate"],
+  "actualFailure": {"role": "mailbox_create", "httpStatus": 503, "tonicStatus": 4, "handlerEntered": true, "handlerCompletionRetained": false},
+  "runtime": {"sameOwnedPodRunningReady": true, "restarts": 0, "snapshotter": "overlayfs"},
+  "sourceBackedNextCorrection": "CE provisioning intentionally recreates its Pod for setup, bootstrap and permanent credentials. The fixture's Pod-pinned management port-forward cannot represent a stable Service across those transitions. Use the exact owned ClusterIP Service and wait for actual signed incoming state before creating the mailbox.",
+  "nextCorrectionActualRuntimeQualified": false,
+  "cleanupComplete": true,
+  "obligations": [],
+  "MinioStopped": true,
+  "wholeMailQualified": false,
+  "backupQualified": false,
+  "coldRestoreQualified": false
+}

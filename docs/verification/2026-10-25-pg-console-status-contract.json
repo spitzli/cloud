@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-25",
+  "scope": "First Console contract/command correction, not complete backup UI or REST/MCP parity",
+  "status": "Captured native backup status rejected RED then accepted GREEN",
+  "checks": [
+    {
+      "command": "bun --no-env-file test packages/hosting-contracts/src/database-backup.test.ts",
+      "before": "1 failed,1 passed; current no-policy object rejected by strict old schema",
+      "after": "Both regressions pass; captured configured/pending and controlled remaining states accepted, security commitments stay closed"
+    },
+    {
+      "command": "bun --no-env-file test packages/hosting-contracts/src",
+      "result": "26 passed across7files"
+    },
+    {
+      "command": "bun run --filter @webdock/console typecheck",
+      "result": "exit0"
+    },
+    {
+      "command": "bun --bun eslint -c apps/console/eslint.config.mjs <four changed contract/legacy files> --max-warnings 0",
+      "result": "Ad-hoc probe refused out-of-project contract files and reported pre-existing legacy-server lint errors; not a configured project lint result. Standard Console lint is run separately."
+    },
+    {
+      "command": "bun run --filter @webdock/console lint",
+      "result": "exit0, zero warnings (configured project lint)"
+    },
+    {
+      "command": "bun --no-env-file test packages/hosting-contracts/src/database-backup.test.ts",
+      "before": "2 passed,1 failed; existing native backupPolicies.get unsupported in old TS union",
+      "after": "Five current policy/destination actions accepted with every native required field enforced; restore requires targetTime/timeline/credentialRevision/verificationSHA256"
+    },
+    {
+      "command": "bun --no-env-file test packages/hosting-contracts/src",
+      "result": "27 passed across7files after command parity; explicit clone union preserved"
+    },
+    {
+      "command": "bun run --filter @webdock/console typecheck",
+      "result": "exit0 after command parity"
+    }
+  ],
+  "sourceEvidence": "2026-10-25-native-postgresql-backup-transitions.json connectedEvidence.observationFailure before/after",
+  "changes": [
+    "Strict current BACKUP_STATUS_SCHEMA mirrored in typed client, including observed controls and offset date-time values",
+    "publicRecoveryAvailable must remain false, exact disabled reason and null recovery commitments required",
+    "Legacy TypeScript view producer emits matching disabled observation fields; immutable offers unchanged",
+    "Existing Rust policy/destination actions and exact required restore fields mirrored; policy read classified read-only; no backend permission or public UI activation"
+  ],
+  "remaining": [
+    "Observed Console presentation/operator controls and browser acceptance",
+    "Atomic restore target admission",
+    "Bearer REST and MCP authority parity",
+    "Final whole-root quality"
+  ],
+  "limits": [
+    "No new native/PostgreSQL/Wasabi/provider/production operations",
+    "No Rust, migration, protocol or dependency changes for this contract correction"
+  ],
+  "sha256": {
+    "packages/hosting-contracts/src/databases.ts": "1a0968755313bd13a7b76c64cba98475d1e608bdd03c346b60bcba646af83b06",
+    "packages/hosting-contracts/src/databases.test.ts": "cb0f3e32e6bb8b2400836d48971242ac0611329ada3d83aaa358c60a06c3ace9",
+    "packages/hosting-contracts/src/database-backup.test.ts": "766bd0be882b286bea64094f49fdc7809c2fa327dae83c95518eb5268933c563",
+    "modules/databases/src/server/databases.ts": "fbe94edbd807a22d59503a5dc806c8145ae783b875df00f94a16b523e9a2a3f0"
+  }
+}

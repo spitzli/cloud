@@ -25,7 +25,7 @@ Owners and administrators of an active mapped customer tenant receive CMS admini
 Apply the admin Payload migration `20261004_081809_customer_profile` before deploying code that reads the new fields. Then run the offline bridge migration with an owner credential file and a JSON object of existing customer-ID to organization-ID mappings:
 
 ```
-node --import tsx apps/auth/scripts/migrate-tenants.ts /secure/owner.env /secure/existing-mappings.json
+bun apps/auth/scripts/migrate-tenants.ts /secure/owner.env /secure/existing-mappings.json
 ```
 
 The runner refuses conflicting mappings and ambiguous unmapped existing organization names. Owner credentials remain local and are never added to deployed apps. The runtime role granted public profile access is `webdock_auth_runtime`. The migration is transactional and repeatable; keep the additive schema in place when rolling back application code.

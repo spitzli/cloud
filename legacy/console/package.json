@@ -1,0 +1,55 @@
+{
+  "name": "@webdock/admin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "bun": ">=1.4.3"
+  },
+  "scripts": {
+    "dev": "bun --bun next dev --port 3120",
+    "build": "bun ../../scripts/check-tabularis-vendor.mjs && bun --bun next build",
+    "start": "bun --bun next start",
+    "lint": "eslint",
+    "check": "tsc --noEmit",
+    "test": "bun test --isolate ./tests/*.test.ts"
+  },
+  "dependencies": {
+    "@clerk/localizations": "^4.23.0",
+    "@clerk/nextjs": "7.9.16",
+    "@tabularis/web-ui": "file:../../vendor/tabularis-web-ui-fdd6c0a6-startup.tgz",
+    "@webdock/api-client": "*",
+    "@webdock/database-contracts": "*",
+    "@webdock/hosting-contracts": "*",
+    "@webdock/i18n": "*",
+    "@webdock/mail-contracts": "*",
+    "@webdock/mail-core": "*",
+    "@webdock/page-builder": "*",
+    "@webdock/payload-sso": "*",
+    "@webdock/search": "*",
+    "dompurify": "^3.4.16",
+    "next": "16.3.8",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sharp": "0.35.5",
+    "zod": "4.6.5",
+    "@webdock/module-sdk": "*",
+    "@webdock/module-mail": "*",
+    "@webdock/module-hosting": "*",
+    "@webdock/module-databases": "*",
+    "@webdock/module-cms": "*",
+    "@webdock/module-storage": "*",
+    "@webdock/core": "*",
+    "@webdock/console-kit": "*",
+    "@webdock/auth-configuration": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.8",
+    "happy-dom": "20.14.5",
+    "typescript": "^5"
+  }
+}

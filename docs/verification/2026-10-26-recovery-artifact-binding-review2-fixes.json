@@ -1,0 +1,87 @@
+{
+  "status": "SOURCE_STABLE_FOR_NEW_INDEPENDENT_BINDING_REVIEW3; runtime STOP",
+  "scope": "Only finite runner import binding, artifact tests, and private input overlay; no custody guard implementation/finalizer/Rust/SQL/Cargo/lock/runtime/image changes.",
+  "priorReview2": {
+    "runnerSHA256": "b8c76a74bebcf12fa25d180fad4050e3a43be900f2f1fe787bea3ddf1fdbab50",
+    "testsSHA256": "5c0023690fc77c50f29c2a98f805205b663157ac40e187c4014ae35afb477d38",
+    "evidenceSHA256": "1ce04ec5e2e8a8effbb62b01a7d1ad24130d14cc405e30fe06ab918e189047cb",
+    "overlaySHA256": "4d7e319eccd87a376400765a923685b1496e00e0ba06fa5e81a67d80d9beee0a",
+    "unchangedHistorical": true
+  },
+  "base6223": {
+    "pin": ".runtime-test/recovery-current-source-component-6223d3e8baf0/pin.json",
+    "sha256": "1bbbdd07c56540bff34faa1a8a7dd0ef97493061f9005f0b2cb5d5e54426e11e",
+    "publicSourceArchiveSHA256": "c00ef395c5fd51359c7915665623c4eca1b2f529deff71419470cc7754fe4bdb",
+    "all13CopiedELFsRehashedUnchanged": true
+  },
+  "overlay": ".runtime-test/recovery-source-input-overlay-543c2a17880f/overlay.json",
+  "overlaySHA256": "543c2a17880f9487bc2d84decc95044974ff0d8a79fd76a3da24f5f6d989fdd2",
+  "overlayFiles": {
+    "agents/kubernetes/ntfy_recovery.py": "8e128954a3be894ebdf84166d25d7f48ebe20c75879d271dd495c78ab926baf1",
+    "deploy/helm/webdock-agent/Chart.yaml": "cf2da66338d5d397e1ea6894994b517c64b62075f83e0c27a214ea7c4c7f6d96",
+    "deploy/helm/webdock-agent/templates/agent.yaml": "e0ba67444f120602c3cd67cd77d083bb9db20cd9a39a3ee55c5debfe5f84ef24",
+    "deploy/helm/webdock-agent/values.schema.json": "981ab5e0eab751b7b75cd32798377a13f8cc76fbaa98a8db1c700d1894d0735a",
+    "deploy/helm/webdock-agent/values.yaml": "b25430e9e9394f140cf81d02e14c747f71d36e5524c674ba22f5e7ea109a4fbf",
+    "tools/tests/mail-application-recovery.py": "5247a1c471a296e2c34428c51f7829864d77105240fe9d5eb084e3293d0ce23a",
+    "tools/tests/recovery-admission-component.py": "746eaf90c81da977c16666f263bb361756af24403f0a65661b28dc2b2799be5a",
+    "tools/tests/recovery_fixture_custody.py": "4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c"
+  },
+  "sourceSHA256": {
+    "tools/tests/recovery-admission-component.py": "746eaf90c81da977c16666f263bb361756af24403f0a65661b28dc2b2799be5a",
+    "tools/tests/test_recovery_fixture_artifacts.py": "7999c6e993a8f3cea1602155c6ba3f444158ef22417c2c83da561001714783f7",
+    "tools/tests/recovery_fixture_custody.py": "4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c",
+    "tools/tests/test_recovery_fixture_runner.py": "d672c7fea60a641d56fb3e99a0a10ba51e17b9d9304d125b417b47222c455778",
+    "tools/tests/test_recovery_fixture_custody.py": "1e86182bbdc62ed469f04c745f26faea930cda7bf5dd9bc33143b46fc6c621cb"
+  },
+  "reviewResponses": [
+    {
+      "finding": 1,
+      "red": "Timestamp-valid altered .pyc beside byte-identical approved4313 source and an already-cached custody module each supplied a protected-image delete selector in all three modes. No selector executed. Additional marker probes proved pre-admission execution/cache consumption on historical b8c76 runner.",
+      "fix": "Remove top-level custody import. Capture custody source bytes at verified whole admission and require fixed4313 SHA; preflight/import-check read the same fixed source via verified descriptor. Finite loader compiles exactly those bytes, bypasses module/pyc import, and main binds its existing exports before any resource code. Temporary dataclass module registration is fresh and restored.",
+      "green": "No unverified top-level marker executes/cache attribute is consumed; whole/preflight/import-check all use approved4313 component_delete and deny the protected-image case. All subprocesses forbidden."
+    },
+    {
+      "finding": 2,
+      "red": "Replacing selected live fixture path by symlink to nonexistent checkout made verified loaded fixture ROOT/cwd point to that different checkout.",
+      "fix": "After executing verified helper definitions, bind fixture.ROOT directly to the admitted checkout path; no mutable-file-derived value is used as command cwd.",
+      "green": "Postselect live symlink still loads original verified fixture, actual Fixture.command globals use admitted ROOT, and selected ELF copy stays exact."
+    }
+  ],
+  "checks": {
+    "command": "PYTHONPATH=tools/tests python3 -m unittest tools/tests/test_recovery_fixture_artifacts.py tools/tests/test_recovery_fixture_runner.py tools/tests/test_recovery_fixture_custody.py",
+    "passed": 47,
+    "failed": 0,
+    "prior44Preserved": true,
+    "oldArtifactTestMethodASTUnchanged": true,
+    "testSetupChange": "Temporary custody source now uses actual approved4313 bytes so new fixed custody identity check is exercised.",
+    "custodySourceSHA256Unchanged": "4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c",
+    "reviewedFinalizerASTUnchanged": true,
+    "syntax": "python3 -m py_compile tools/tests/recovery-admission-component.py tools/tests/test_recovery_fixture_artifacts.py PASS",
+    "pureRealSourceModuleLoadSmoke": true,
+    "redLogSHA256": "287f9790b0ffd4b336859fe49c619a46ade1ba06cdd5aacdc75b817cabf8bd36",
+    "historicalImportMarkerRedSHA256": "d026aebfceb7faf48ae5c277d3b9ad6b66c71c5c5b5327b81cb9118a247fcff4",
+    "greenLogSHA256": "1007952e22abe5516907c80355e9d0ed5194e303f7e3d0f8486940d60f77c89d",
+    "runnerDiffSHA256": "58476286e943246fb681e2bcb50b7c04a62019deee621512baada64340e2076f",
+    "testsDiffSHA256": "9c2991263dd85961ca429f5d9558b46fab274500974d8324438bf9c91a4a6185"
+  },
+  "currentRootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+  "current54SHA256": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+  "frozen55SHA256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+  "runtime": {
+    "dockerCommands": 0,
+    "imageActions": 0,
+    "actualSubprocesses": 0,
+    "providerCalls": 0,
+    "runtimeStarts": 0,
+    "newBuilds": 0,
+    "newRuntimeCleanupObligations": 0
+  },
+  "limits": [
+    "Runtime STOP until NEW independent binding review3 and Root shared-window release.",
+    "No full Core/native source/admission/recovery/CE/SMTP/ntfy qualification or final54 freeze."
+  ],
+  "budgetFreeBytes": {
+    "home": 10034139136,
+    "tmp": 5678153728
+  }
+}

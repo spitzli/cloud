@@ -1,0 +1,45 @@
+{
+  "status": "Approved local database->oauth dependency edge resolved offline; no registry additions/upgrades/features",
+  "verifiedUTC": "2026-10-26T01:09:35.814030+00:00",
+  "manifest": "crates/databases/Cargo.toml",
+  "edge": "webdock-oauth = { path = \"../oauth\" }",
+  "rootAndStandaloneLocks": {
+    "Cargo.lock": {
+      "beforeSHA256": "c6f2848cdeeeb1f63ebf38bf9c8faba12cbb9247b336c1b999427e643901a576",
+      "afterSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+      "registryCount": 804,
+      "allVersionSourceChecksumTuplesUnchanged": true,
+      "changedPackageRecords": [
+        "webdock-databases"
+      ]
+    },
+    "plugins/archives/Cargo.lock": {
+      "beforeSHA256": "eac4f2738cc98e0180f75ef7c5adb7c8fc275467b64d433337b9d7e264ce8e99",
+      "afterSHA256": "7129686b2bfe088f1e145697f86f742745283201d1804472f765b7b67aae1466",
+      "registryCount": 620,
+      "allVersionSourceChecksumTuplesUnchanged": true,
+      "changedPackageRecords": [
+        "webdock-databases"
+      ]
+    },
+    "plugins/archives/runtime/Cargo.lock": {
+      "beforeSHA256": "c757029ec3fcb72bccb46cde471f2b6885fb03bec5622237c78f78e72163b32f",
+      "afterSHA256": "c757029ec3fcb72bccb46cde471f2b6885fb03bec5622237c78f78e72163b32f",
+      "registryCount": 400,
+      "allVersionSourceChecksumTuplesUnchanged": true,
+      "changedPackageRecords": []
+    }
+  },
+  "checks": [
+    "Root cargo metadata --offline --locked --all-features --format-version1 exited0",
+    "Archives owner offline metadata update then locked metadata exited0",
+    "Runtime offline locked metadata exited0; lock byte-identical"
+  ],
+  "archivesOwnerTask": "archives-offline-database-oauth-lock-edge-20261026",
+  "scope": [
+    "Only local webdock-databases package dependencies gained webdock-oauth in Root and Archives lock",
+    "Runtime has no databases/oauth edge and remains unchanged",
+    "No rootpackage.json/bun.lock, provider/production/SQL changes"
+  ],
+  "snapshot": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/pg-oauth-edge-dc2832f487b8/before.json"
+}

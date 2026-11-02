@@ -1,0 +1,40 @@
+[Unit]
+Description=Webdock trusted Kubernetes build controller
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=webdock-build-controller
+Group=webdock-build-controller
+UMask=0077
+ExecStart=/usr/local/bin/webdock-kubernetes-build-worker --config /etc/webdock-build/worker.json
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=35
+StateDirectory=webdock-build
+StateDirectoryMode=0700
+ReadWritePaths=/var/lib/webdock-build
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+TasksMax=128
+# Measured maximum gateway + publisher overlap: 4.561 GiB; keep controller process separate from Core.
+MemoryMax=6G
+MemorySwapMax=0
+
+[Install]
+WantedBy=multi-user.target

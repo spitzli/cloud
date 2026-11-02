@@ -1,0 +1,261 @@
+{
+  "runID": "d7a8429f1c60",
+  "producerRustVersion": "1.94.0",
+  "coreBuildRustVersion": "1.98.1",
+  "sourceSha256": {
+    "apps/console/src/api.ts": "e97bc3aa0ffd309d86ec7e37af533509182ed0c3ebe4451d144ed1b18ed5e185",
+    "apps/console/src/plugins/storage.ts": "ebf81aec38dfb4fdea39966263daa12994e382c77e28b6a8aef4ebbca23a9bc0",
+    "apps/console/src/plugins/sdk.ts": "009a7a0b437931dcb5a190988d64acd74195050c8da29f5d1dc18db4c2aaf432",
+    "plugins/object-storage/ui/index.tsx": "057f802786dd7d512961ab774ac93c46ac07db97bd06bae418f411542f98cbe9",
+    "plugins/object-storage/src/data.rs": "7ea36ae06ab8409ccc3797debccbc16463ebe573e45f72a5c6e3656d2bb6bf67",
+    "plugins/object-storage/src/provider.rs": "3fb5371f1afb6354f43f05c972443f0cc28e5973105bd8162293510a797f51fa",
+    "plugins/object-storage/src/sdk.rs": "529b38603ecfcf1a8021f4e8ed4f02c3a4f44545ebef9d6ab1e72eced83d4f25",
+    "plugins/object-storage/src/engine.rs": "6b3db0fa4e09cc564ee830d006346a82830e31b473d965ec714ca704e3de5077",
+    "plugins/object-storage/manifest.json": "7e55cbe1ce8ddd3e109550a81f86c1e17e662360b178f264c7ce5c6c508b2346",
+    "crates/plugin-protocol/src/storage.rs": "759a412f74f8a7436e9a87b6d0f2e1e68151c0d37fa6a483aea5467b943f45e9",
+    "plugins/object-storage/tests/ui.test.tsx": "f6c555f831ba9c34746bf4d1c91373942b31c92b75d34caff4ee37445e79c031",
+    "plugins/object-storage/fixtures/Dockerfile.native": "4ee5b75ec20c66f1c5db314b049c6556f311fd185651ebac24abe1ab3a40dcc1",
+    "tools/tests/native-object-storage-fixture.mjs": "1f0af594c4409acff549b77ab425e84157d0a72fc1a9cadd18cd70033fd33589",
+    "tools/tests/native-object-storage-checksum-proof.mjs": "4ca9997d6fb07f8f1f8fc1f6844a8a8404e6f310b9245e0765486b4ac9da6cb4",
+    "tools/tests/native-object-storage-evidence.mjs": "79e7e27a08730bfddd23246388c7de6511745f0d3efa0a150a084492f4d5529e",
+    "plugins/object-storage/README.md": "02f85b91006615d3c1cf1530ff12674b5fb384eb6ee875dfc3a5ad902b36713d"
+  },
+  "focusedClientTests": 28,
+  "allConsoleTests": 101,
+  "producerDefault": true,
+  "producerNativeFixtureFeature": true,
+  "noDefaultCheck": true,
+  "ownedEpochTests": 1,
+  "typecheck": true,
+  "scopedEslint": true,
+  "scopedRustfmt": true,
+  "fixtureTests": 4,
+  "proxyPolicyTests": 1,
+  "checksumRedGreen": {
+    "red": "FULL_OBJECT omitted caller hash unexpectedly admitted",
+    "green": "omitted and mismatched denied; identical admitted; composite and unlabelled unknown",
+    "boundary": "real AWS SDK local HTTP fixture; not local MinIO claim"
+  },
+  "scopeCancellation": {
+    "tests": 2,
+    "baselinePassed": true,
+    "abortRemovalMutationFailedBoth": true,
+    "restoredPassed": true,
+    "lateSuccessDiscarded": true
+  },
+  "logs": [
+    {
+      "name": "checksum-red",
+      "sha256": "fc49535bc537b7aba2e44c43c933995b68d4b0163eaaf860207aeb48ad9af227"
+    },
+    {
+      "name": "checksum-green",
+      "sha256": "3a2e4f404dc94888e63a0a0ce6d0aaa73a6476a93f05c73e36e5f72fb7044f94"
+    },
+    {
+      "name": "scope-baseline",
+      "sha256": "c90b307e1d92e1eedb5b754fae065def8035b47b7b3ad5a489229a70a796eb8b"
+    },
+    {
+      "name": "scope-mutation-red",
+      "sha256": "f2ae254f8ab9e6664da60e8f6184b166162ce11b7a13d211c8b7dce7713d64f0"
+    },
+    {
+      "name": "client-green",
+      "sha256": "8b0a93d986ea78fe68616637bbb64d478e29c2312462e0b825317a07c6d8b8d6"
+    },
+    {
+      "name": "console-suite",
+      "sha256": "3ed4c7ff15177b376b154ffe306dfb32accb192ef6716c67d303944cf2c0f4c5"
+    },
+    {
+      "name": "producer-default",
+      "sha256": "d5c0ea479164ddd0e52ea67dd0a650d2e1906a3bebe623f1d99bb0b4957caaec"
+    },
+    {
+      "name": "producer-fixture",
+      "sha256": "bf0f46eccabe6e8387cc94bbb16be997ef793cc19115ef51c1481ece7052fe53"
+    },
+    {
+      "name": "no-default",
+      "sha256": "db79fb7ca521f2c7a755996c75483a73809aeeee9aab663ddf61c3ac661e8977"
+    },
+    {
+      "name": "metadata-epoch",
+      "sha256": "84b94c9a0d2e1cdccdef54370cd8765bff93bd0b0c3c77577307689f665b340b"
+    },
+    {
+      "name": "typecheck",
+      "sha256": "daab981844fa7f33281e2a184953a4fa46c535d8815393a7ce98c5879da37258"
+    },
+    {
+      "name": "lint",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fixture-final-tests",
+      "sha256": "e937f9ef537a5cdf1cdb1e8e87db1b4e67ef0fec7308874f23d77a258a2f07ef"
+    },
+    {
+      "name": "proxy-tests",
+      "sha256": "6c5063183acedbfa26b8ce9a51777e0a960e2cdf82fd480a4be83eb0d61c2c62"
+    },
+    {
+      "name": "proxy-tests-corrected",
+      "sha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5"
+    },
+    {
+      "name": "core-build",
+      "sha256": "f890d1fe5c276cb1dfe124ba91bf28e05d3818a4c2f9c4d73391c163adc6d1e7",
+      "privateLog": "review-test-evidence/core-build.log"
+    },
+    {
+      "name": "pin",
+      "sha256": "6ff5e9d93f4adc92bcdda5cb23e8cda41c7e38022c120bbfa4e1085f9be17d64",
+      "privateLog": "review-test-evidence/pin.log"
+    },
+    {
+      "name": "bootstrap",
+      "sha256": "ae008efb46f2b9120732e80c809717e1e5cbb16738de3c3be3b7c7379df308d7",
+      "privateLog": "review-test-evidence/bootstrap.log"
+    },
+    {
+      "name": "start",
+      "sha256": "b5ae1dc378ccaddc5eeeda77245cabeacfbfe0c22f5903169e75bedce8b2921d",
+      "privateLog": "review-test-evidence/start.log"
+    },
+    {
+      "name": "setup",
+      "sha256": "a663e396df724e153689bcbafee993eb79f96bd3e2b8421d2da51575fc45ea67",
+      "privateLog": "review-test-evidence/setup.log"
+    },
+    {
+      "name": "start-native",
+      "sha256": "dd0b9ac7053c676220f76ba0a09b296aede57ec99102c1457ca8bc4119c419ce",
+      "privateLog": "review-test-evidence/start-native.log"
+    },
+    {
+      "name": "install",
+      "sha256": "22ec000cd28e0dfcea922593860b6f2efb271224f3b0f1c80e8e92b2ca74bb82",
+      "privateLog": "review-test-evidence/install.log"
+    },
+    {
+      "name": "reimport-after-pressure",
+      "sha256": "f400cc0fef0d7ef619c14bda739d63d16f8051d49c27f8b70877082d8aa222dc",
+      "privateLog": "review-test-evidence/reimport-after-pressure.log"
+    },
+    {
+      "name": "binary-browser",
+      "sha256": "fa8ba8c458732c65309d9acf678b3669ab699f83161c6f83bae2be214f4c904f",
+      "privateLog": "review-test-evidence/binary-browser.log"
+    },
+    {
+      "name": "reader-browser",
+      "sha256": "2dacb2d04b3d67d62812ad01b46761551ef481cd3878b0ce18c26fb7683875e9",
+      "privateLog": "review-test-evidence/reader-browser.log"
+    },
+    {
+      "name": "checksum-native",
+      "sha256": "a5341575dac5d2c893691e0ce94d48a966e07cd51acca232800e724f4cb16b1d",
+      "privateLog": "review-test-evidence/checksum-native.log"
+    },
+    {
+      "name": "cleanup-resource",
+      "sha256": "fa811c939ba24913c19b3515a8838d79d8ca383f0f8cd8ca0c42fb812e234302",
+      "privateLog": "review-test-evidence/cleanup-resource.log"
+    },
+    {
+      "name": "cleanup-fixture",
+      "sha256": "686d444d22008c7252319642543763d4f3daebb9c749b08caa4e03ad7a431d30",
+      "privateLog": "review-test-evidence/cleanup-fixture.log"
+    },
+    {
+      "name": "fixture-final",
+      "sha256": "96fd3d425e2e04ee4c018d85b6b94d7c7fe7737a1b5179c42e09f7363e312ed6",
+      "privateLog": "review-test-evidence/fixture-final.log"
+    },
+    {
+      "name": "evidence",
+      "sha256": "638bf0dcb5e6411e29c2fc38a6331970222f7f57445e8d0a147e338284c47eba",
+      "privateLog": "review-test-evidence/evidence.log"
+    },
+    {
+      "name": "fixture-final-restored",
+      "sha256": "4e843a83a0e9ada9cefaa285cef40f8b5a8740560ced7fbbb9559ca4bb966921",
+      "privateLog": "review-test-evidence/fixture-final-restored.log"
+    }
+  ],
+  "installRecovery": {
+    "originalOperationID": "107867872000221184",
+    "originalStatus": "blocked",
+    "originalCondition": "needs_reconciliation",
+    "retryOperationID": "107868882722627584",
+    "retrySucceeded": true,
+    "originalReceiptPreserved": true,
+    "approvedReleaseUnchanged": true,
+    "sixObjectUIDsRetained": true,
+    "privateStorageAndSealerRetained": true
+  },
+  "checksumNative": {
+    "actualSignedNativeProducer": true,
+    "providerFullObjectKnown": false,
+    "omittedHashAdmissionStatus": 200,
+    "knownFullObjectOmissionDenied": null,
+    "unknownChecksumOmissionPreserved": true,
+    "exactVersionAndETagBound": true,
+    "coreDownloadBytes": 35,
+    "coreDownloadSha256": "4ab61b5b0876cbc514e0366ac2942c0e72a49df7ebb345cf3cd02bf65acf7ef1",
+    "suppliedCorrectShaEnforced": true,
+    "suppliedWrongShaDenied": true,
+    "wrongAdmissionStatus": 200,
+    "wrongDeliveryStatus": 400,
+    "fullObjectLabelRegressionBoundary": "actual-aws-sdk-local-http-fixture-only"
+  },
+  "realMemberID": "107870557277528064",
+  "resourceCleanup": {
+    "privateDeleted": true,
+    "pendingNull": true,
+    "executingFalse": true,
+    "credentials": 0,
+    "coreResourceCount": 0,
+    "remoteBucketAbsent": true,
+    "remoteUserAbsent": true,
+    "remotePolicyAbsent": true,
+    "mcExtractionVerifiedAbsent": true,
+    "noSqlRepair": true
+  },
+  "allRecordedCustodyRemoved": true,
+  "anonymousVolumesVerifiedAbsent": true,
+  "mcExtractionReceiptRemoved": true,
+  "minio": {
+    "id": "c6afce009fceb7b83dc98451e0f4fd594b1e981d82e5bdb42240b873b44a4e67",
+    "identityRetained": true,
+    "running": true
+  },
+  "existingKindNodes": [
+    {
+      "name": "webdock-rust-native-3c8064-control-plane",
+      "id": "6c1603f267dd21e01c942ed66af2cabf906327c6097a8728a0bb450891982e6c",
+      "identityRetained": true,
+      "running": true
+    },
+    {
+      "name": "webdock-git-e2e-control-plane",
+      "id": "8855b015cc725f7ce4be9e8fb29051944c6083a3a99610c437fc60c7f0be4708",
+      "identityRetained": true,
+      "running": true
+    }
+  ],
+  "acceptedImageIdentitiesNeverRewritten": true,
+  "earlierFailedReceiptsPreserved": true,
+  "noProductionActions": true,
+  "noRoleOrMembershipSqlRepair": true,
+  "noCoreOrPublicTransferAbiChange": true,
+  "setupCorrections": [
+    "proxy test first invocation used wrong unittest module syntax; corrected direct file passed",
+    "Rust1.94 rustfmt component unavailable; installed rustfmt checked touched file",
+    "evidence-copy readPrivate correctly refused public0644 record; used ordinary readFile",
+    "remote absence helper used case-sensitive No such match; corrected to case-insensitive actual docker error and verified exact ID absence"
+  ],
+  "ownedNodeDiskFloorWasExplicitRunRecoveryOnly": true
+}

@@ -1,0 +1,31 @@
+# Explicit disposable native fixture profile; production Dockerfile never enables it.
+FROM docker.io/library/rust:1.94.0-slim-trixie@sha256:f7bf1c266d9e48c8d724733fd97ba60464c44b743eb4f46f935577d3242d81d0 AS build
+ARG PROTOBUF_VERSION=3.21.12-11+deb13u1
+RUN test -n "$PROTOBUF_VERSION" && apt-get update && apt-get install -y --no-install-recommends protobuf-compiler="$PROTOBUF_VERSION" && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY Cargo.toml /src/Cargo.toml
+COPY crates/plugin-kit /src/crates/plugin-kit
+COPY crates/plugin-protocol /src/crates/plugin-protocol
+COPY crates/plugin-runtime /src/crates/plugin-runtime
+COPY crates/object-storage /src/crates/object-storage
+COPY crates/export-protocol /src/crates/export-protocol
+COPY proto/webdock/plugin/v1/plugin.proto /src/proto/webdock/plugin/v1/plugin.proto
+COPY proto/webdock/export/v1/export.proto /src/proto/webdock/export/v1/export.proto
+COPY plugins/archives/runtime /src/plugins/archives/runtime
+COPY plugins/archives/src /src/plugins/archives/src
+COPY plugins/archives/manifest.json /src/plugins/archives/manifest.json
+COPY plugins/archives/migrations /src/plugins/archives/migrations
+RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/plugins/archives/runtime/target \
+    cargo build --manifest-path plugins/archives/runtime/Cargo.toml --locked --release --features local-native-fixture -j 2 \
+    && cp plugins/archives/runtime/target/release/webdock-archives /webdock-archives
+
+# Official PostgreSQL 18.6 client/server image. Only pg_dump is invoked by the archive executable.
+FROM docker.io/library/postgres:18-trixie@sha256:edb0c08dc33befd0262ab3b5cf1c4f3f8cfd8b09e88c05b45adee29d6761ddb6 AS runtime
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=build --chown=65532:65532 --chmod=0500 /webdock-archives /usr/local/bin/webdock-archives
+COPY --from=fixture --chmod=0444 /ca.crt /usr/local/share/ca-certificates/native-archives.crt
+USER 0
+RUN chmod 0755 /usr/local/share/ca-certificates && chmod 0444 /usr/local/share/ca-certificates/native-archives.crt && cat /usr/local/share/ca-certificates/native-archives.crt >> /etc/ssl/certs/ca-certificates.crt
+ENV HOME=/tmp
+USER 65532:65532
+ENTRYPOINT ["/usr/local/bin/webdock-archives"]

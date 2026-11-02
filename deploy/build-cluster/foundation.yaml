@@ -1,0 +1,273 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webdock-builds
+  labels:
+    webdock.dev/role: isolated-builds
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: v1.35
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: webdock-build-job
+  namespace: webdock-builds
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: webdock-build-dispatcher
+  namespace: webdock-builds
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: webdock-build-dispatcher
+  namespace: webdock-builds
+rules:
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - delete
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ''
+  resources:
+  - pods/log
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: webdock-build-dispatcher
+  namespace: webdock-builds
+subjects:
+- kind: ServiceAccount
+  name: webdock-build-dispatcher
+  namespace: webdock-builds
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: webdock-build-dispatcher
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: build-budget
+  namespace: webdock-builds
+spec:
+  hard:
+    requests.cpu: '4'
+    limits.cpu: '4'
+    requests.memory: 6Gi
+    limits.memory: 6Gi
+    requests.ephemeral-storage: 40Gi
+    limits.ephemeral-storage: 40Gi
+    pods: '4'
+    count/jobs.batch: '8'
+    persistentvolumeclaims: '0'
+    services: '0'
+    secrets: '0'
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: build-limits
+  namespace: webdock-builds
+spec:
+  limits:
+  - type: Container
+    defaultRequest:
+      cpu: '1'
+      memory: 1Gi
+      ephemeral-storage: 4Gi
+    default:
+      cpu: '2'
+      memory: 4Gi
+      ephemeral-storage: 20Gi
+    max:
+      cpu: '4'
+      memory: 6Gi
+      ephemeral-storage: 40Gi
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: webdock-builds
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cluster-dns-only
+  namespace: webdock-builds
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: webdock-build-template
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    namespaceSelector:
+      matchLabels:
+        webdock.dev/role: isolated-builds
+    resourceRules:
+    - apiGroups:
+      - ''
+      - batch
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+      - pods/ephemeralcontainers
+      - jobs
+  variables:
+  - name: deletionCleanup
+    expression: 'request.operation == ''UPDATE'' && has(object.metadata.deletionTimestamp) && has(dyn(oldObject).metadata.deletionTimestamp) && object.metadata.uid
+      == dyn(oldObject).metadata.uid && object.spec == dyn(oldObject).spec && (has(object.metadata.labels) ? object.metadata.labels : {}) == (has(dyn(oldObject).metadata.labels)
+      ? dyn(oldObject).metadata.labels : {}) && (has(object.metadata.annotations) ? object.metadata.annotations : {}) == (has(dyn(oldObject).metadata.annotations)
+      ? dyn(oldObject).metadata.annotations : {}) && (has(object.metadata.ownerReferences) ? object.metadata.ownerReferences : []) == (has(dyn(oldObject).metadata.ownerReferences)
+      ? dyn(oldObject).metadata.ownerReferences : []) && (!has(object.metadata.finalizers) || object.metadata.finalizers.all(f, has(dyn(oldObject).metadata.finalizers)
+      && f in dyn(oldObject).metadata.finalizers))'
+  - name: p
+    expression: 'request.kind.kind == ''Job'' ? object.spec.template.spec : object.spec'
+  - name: mappingHelper
+    expression: namespaceObject.metadata.name == 'webdock-build-qualification' && has(namespaceObject.metadata.labels) && 'webdock.dev/profile' in namespaceObject.metadata.labels
+      && namespaceObject.metadata.labels['webdock.dev/profile'] == 'rootless-idmap-sandbox' && has(variables.p.runtimeClassName) && variables.p.runtimeClassName
+      == 'webdock-build-sandbox'
+  - name: containers
+    expression: 'variables.p.containers + (has(variables.p.initContainers) ? variables.p.initContainers : [])'
+  - name: approvedRunner
+    expression: 'has(namespaceObject.metadata.annotations) && ''webdock.dev/runner-image'' in namespaceObject.metadata.annotations ? namespaceObject.metadata.annotations[''webdock.dev/runner-image'']
+      : '''''
+  - name: jobName
+    expression: 'request.kind.kind == ''Job'' ? object.metadata.name : (has(object.metadata.labels) && ''batch.kubernetes.io/job-name'' in object.metadata.labels
+      ? object.metadata.labels[''batch.kubernetes.io/job-name''] : '''')'
+  - name: handoffName
+    expression: 'variables.jobName.startsWith(''wd-build-'') ? ''wd-input-'' + variables.jobName.substring(9) : ''invalid'''
+  validations:
+  - expression: variables.deletionCleanup || (has(variables.p.automountServiceAccountToken) && variables.p.automountServiceAccountToken == false && variables.p.serviceAccountName
+      == 'webdock-build-job')
+    message: Build pods must use the tokenless build identity.
+  - expression: variables.deletionCleanup || ((!has(variables.p.hostNetwork) || !variables.p.hostNetwork) && (!has(variables.p.hostPID) || !variables.p.hostPID)
+      && (!has(variables.p.hostIPC) || !variables.p.hostIPC))
+    message: Host namespaces are forbidden.
+  - expression: variables.deletionCleanup || (!has(variables.p.ephemeralContainers) || size(variables.p.ephemeralContainers) == 0)
+    message: Ephemeral debugging containers are forbidden.
+  - expression: variables.deletionCleanup || (!has(variables.p.volumes) || variables.p.volumes.all(v, (has(v.emptyDir) && has(v.emptyDir.sizeLimit)) ||
+      (variables.mappingHelper && has(v.secret) && v.name == 'handoff' && v.secret.secretName == variables.handoffName && v.secret.defaultMode == 288 &&
+      has(v.secret.items) && size(v.secret.items) == 1 && v.secret.items[0].key == 'attempt.json' && v.secret.items[0].path == 'attempt.json')))
+    message: Only bounded per-pod emptyDir volumes are allowed.
+  - expression: variables.deletionCleanup || (has(variables.p.activeDeadlineSeconds) && variables.p.activeDeadlineSeconds > 0 && variables.p.activeDeadlineSeconds
+      <= 1800 && variables.p.restartPolicy == 'Never')
+    message: Build pods require a bounded deadline and no automatic restart.
+  - expression: variables.deletionCleanup || ((!has(variables.p.nodeName) || (request.kind.kind == 'Pod' && request.operation == 'UPDATE' && has(dyn(oldObject).spec.nodeName)
+      && variables.p.nodeName == dyn(oldObject).spec.nodeName)) && (!has(variables.p.tolerations) || variables.p.tolerations.all(t, t.key in ['node.kubernetes.io/not-ready',
+      'node.kubernetes.io/unreachable'])) && (!has(variables.p.nodeSelector) || size(variables.p.nodeSelector) == 0) && !has(variables.p.affinity) && (!has(variables.p.runtimeClassName)
+      || variables.p.runtimeClassName == 'webdock-build-sandbox'))
+    message: Placement and runtime overrides are not permitted by the initial profile.
+  - expression: 'variables.deletionCleanup || (namespaceObject.metadata.name == ''webdock-build-qualification'' ? (variables.mappingHelper && variables.approvedRunner
+      != '''' && variables.containers.all(c, c.image == variables.approvedRunner)) : (namespaceObject.metadata.name == ''webdock-builds'' && variables.containers.all(c,
+      c.image in [''docker.io/library/busybox:1.37.0@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec'',''docker.io/moby/buildkit:v0.34.1-rootless@sha256:f68752a5a94acfcdad2d07867b7075601a421638e17fc5f28efc1c814d0c4f89''])))'
+    message: Qualified builds require the exact approved runner; diagnostic images stay in the original Restricted namespace.
+  - expression: 'variables.deletionCleanup || (variables.containers.all(c, has(c.securityContext) && c.securityContext.readOnlyRootFilesystem == true &&
+      (c.securityContext.allowPrivilegeEscalation == false || (variables.mappingHelper && (variables.approvedRunner != '''' && c.image == variables.approvedRunner
+      && c.name == ''runner''))) && (has(c.securityContext.runAsNonRoot) ? c.securityContext.runAsNonRoot : variables.p.securityContext.runAsNonRoot) ==
+      true && (has(c.securityContext.runAsUser) ? c.securityContext.runAsUser : variables.p.securityContext.runAsUser) >= 1000 && (has(c.securityContext.seccompProfile)
+      ? c.securityContext.seccompProfile.type : variables.p.securityContext.seccompProfile.type) == ''RuntimeDefault'' && c.securityContext.capabilities.drop.exists(x,
+      x == ''ALL'') && (!has(c.securityContext.privileged) || !c.securityContext.privileged)))'
+    message: Nonroot, read-only, RuntimeDefault and dropped capabilities are required.
+  - expression: variables.deletionCleanup || (variables.containers.all(c, (!has(c.securityContext.appArmorProfile) || c.securityContext.appArmorProfile.type
+      == 'RuntimeDefault') && (!has(c.securityContext.capabilities.add) || size(c.securityContext.capabilities.add) == 0 || (variables.mappingHelper &&
+      (variables.approvedRunner != '' && c.image == variables.approvedRunner && c.name == 'runner') && c.securityContext.capabilities.add.all(x, x in ['SETUID','SETGID'])))))
+    message: AppArmor overrides and added capabilities are forbidden.
+  - expression: variables.deletionCleanup || (!has(variables.p.securityContext) || ((!has(variables.p.securityContext.appArmorProfile) || variables.p.securityContext.appArmorProfile.type
+      == 'RuntimeDefault') && (!has(variables.p.securityContext.seccompProfile) || variables.p.securityContext.seccompProfile.type == 'RuntimeDefault')
+      && (!has(variables.p.securityContext.sysctls) || size(variables.p.securityContext.sysctls) == 0)))
+    message: Pod profile overrides and custom sysctls are forbidden.
+  - expression: variables.deletionCleanup || (variables.containers.all(c, !has(c.envFrom) && (!has(c.env) || c.env.all(e, (!has(e.valueFrom) || (variables.mappingHelper
+      && c.image == variables.approvedRunner && e.name == 'WEBDOCK_JOB_UID' && has(e.valueFrom.fieldRef) && e.valueFrom.fieldRef.apiVersion == 'v1' && e.valueFrom.fieldRef.fieldPath
+      == "metadata.labels['batch.kubernetes.io/controller-uid']")))) && (!has(c.ports) || c.ports.all(p, !has(p.hostPort) || p.hostPort == 0))))
+    message: Indirect credential/environment references and host ports are forbidden.
+  - expression: variables.deletionCleanup || (variables.containers.all(c, has(c.resources) && has(c.resources.limits) && has(c.resources.requests) && ['cpu',
+      'memory', 'ephemeral-storage'].all(r, r in c.resources.limits && r in c.resources.requests)))
+    message: CPU, memory and ephemeral storage requests and limits are mandatory.
+  - expression: variables.deletionCleanup || (request.kind.kind != 'Job' || (has(dyn(object).spec.backoffLimit) && dyn(object).spec.backoffLimit == 0 &&
+      has(dyn(object).spec.activeDeadlineSeconds) && dyn(object).spec.activeDeadlineSeconds <= 1800 && dyn(object).spec.activeDeadlineSeconds > 0 && (!has(dyn(object).spec.parallelism)
+      || dyn(object).spec.parallelism == 1) && (!has(dyn(object).spec.completions) || dyn(object).spec.completions == 1) && !has(dyn(object).spec.ttlSecondsAfterFinished)))
+    message: Job retries/parallel fanout/TTL are forbidden; outcome capture must precede cleanup.
+  - expression: variables.deletionCleanup || (variables.approvedRunner == '' || variables.approvedRunner.matches('^[a-z0-9][a-z0-9.:/_-]*@sha256:[a-f0-9]{64}$'))
+    message: The operator runner image must be immutable.
+  - expression: variables.deletionCleanup || (variables.containers.all(c, c.image != variables.approvedRunner || (variables.mappingHelper && variables.jobName.matches('^wd-build-[a-f0-9]{40}-[1-9][0-9]{0,9}$')
+      && (c.name == 'runner' || c.name == 'download') && (!has(c.volumeMounts) || c.volumeMounts.all(m, m.name != 'handoff' || (m.mountPath == '/handoff/attempt.json'
+      && m.subPath == 'attempt.json' && m.readOnly))))))
+    message: Runner handoff must be read-only and bound to this exact attempt.
+  - expression: variables.deletionCleanup || (variables.containers.all(c, c.image != variables.approvedRunner || (has(c.command) && ((c.name == 'runner'
+      && c.command == ['/usr/local/bin/webdock-build-entrypoint'] && (!has(c.args) || size(c.args) == 0)) || (c.name == 'download' && c.command == ['/usr/local/bin/webdock-build-runner']
+      && c.args == ['download','--config','/handoff/attempt.json','--policy','/etc/webdock-build/transfer-policy.json','--input-dir','/workspace/input'])))))
+    message: Only fixed trusted transfer and runner commands are admitted.
+  - expression: variables.deletionCleanup || (!variables.mappingHelper || (size(variables.p.containers) == 1 && variables.p.containers[0].name == 'runner'
+      && has(variables.p.initContainers) && size(variables.p.initContainers) == 1 && variables.p.initContainers[0].name == 'download' && variables.p.initContainers[0].securityContext.allowPrivilegeEscalation
+      == false && (!has(variables.p.initContainers[0].securityContext.capabilities.add) || size(variables.p.initContainers[0].securityContext.capabilities.add)
+      == 0)))
+    message: Only the approved main runner may use the qualified ID-map exception; download init remains restricted.
+  - expression: 'variables.deletionCleanup || (!variables.mappingHelper || (has(variables.p.volumes) && size(variables.p.volumes) == 4 && variables.p.volumes.all(v,
+      v.name in [''workspace'',''cache'',''tmp'',''handoff'']) && variables.containers.all(c, has(c.volumeMounts) && size(c.volumeMounts) == (c.name ==
+      ''runner'' ? 4 : 3) && c.volumeMounts.all(m, (m.name == ''workspace'' && m.mountPath == ''/workspace'' && !has(m.subPath) && (!has(m.readOnly) ||
+      !m.readOnly)) || (c.name == ''runner'' && m.name == ''cache'' && m.mountPath == ''/cache'' && !has(m.subPath) && (!has(m.readOnly) || !m.readOnly))
+      || (m.name == ''tmp'' && m.mountPath == ''/tmp'' && !has(m.subPath) && (!has(m.readOnly) || !m.readOnly)) || (m.name == ''handoff'' && m.mountPath
+      == ''/handoff/attempt.json'' && m.subPath == ''attempt.json'' && m.readOnly)))))'
+    message: Qualified mount paths and volume names are fixed; executables and platform configuration cannot be shadowed.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: webdock-build-template
+spec:
+  policyName: webdock-build-template
+  validationActions:
+  - Deny

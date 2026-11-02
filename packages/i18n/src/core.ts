@@ -12,18 +12,18 @@ export const isPreference = (value: unknown): value is Preference => value === '
 export function preferenceFromCookie(cookie: string | null | undefined): Preference {
  const values = (cookie || '').split(';').map(part => part.trim()).filter(part => part.startsWith(LOCALE_COOKIE + '='));
  if (values.length !== 1) return 'system';
- const value = values[0].slice(LOCALE_COOKIE.length + 1);
+ const value = values[0]?.slice(LOCALE_COOKIE.length + 1);
  return isPreference(value) ? value : 'system';
 }
 export function resolveLocale(acceptLanguage: string | null, preference?: string | null): Locale {
  if (preference === 'en' || preference === 'de') return preference;
  const candidates = (acceptLanguage || '').slice(0, 8192).split(',').map((part, index) => {
   const match = part.trim().match(/^([a-z]{1,8}(?:-[a-z0-9]{1,8})*|\*)(?:\s*;\s*q=(0(?:\.\d{0,3})?|1(?:\.0{0,3})?))?$/i);
-  return match ? { language: match[1].toLowerCase().split('-')[0], quality: match[2] === undefined ? 1 : Number(match[2]), index } : null;
- }).filter(candidate => candidate && candidate.quality > 0).sort((a, b) => b!.quality - a!.quality || a!.index - b!.index);
+  return match?.[1] ? { language: match[1].toLowerCase().split('-')[0], quality: match[2] === undefined ? 1 : Number(match[2]), index } : null;
+ }).filter((candidate): candidate is NonNullable<typeof candidate> => candidate !== null && candidate.quality > 0).sort((a, b) => b.quality - a.quality || a.index - b.index);
  for (const candidate of candidates) {
-  if (candidate!.language === 'de') return 'de';
-  if (candidate!.language === 'en' || candidate!.language === '*') return 'en';
+  if (candidate.language === 'de') return 'de';
+  if (candidate.language === 'en' || candidate.language === '*') return 'en';
  }
  return 'en';
 }
@@ -47,7 +47,7 @@ export function ngettext(locale: Locale, singular: string, plural: string, count
  return interpolate(lookup(locale, singular, index ? plural : singular, index), { ...params, count });
 }
 function knownMessage(message: string): string | null {
- const source = Object.hasOwn(legacyMessageAliases, message) ? legacyMessageAliases[message] : message;
+ const source = Object.hasOwn(legacyMessageAliases, message) ? (legacyMessageAliases[message] ?? message) : message;
  return Object.hasOwn(catalog, source) ? source : null;
 }
 export function translator(locale: Locale) {

@@ -1,0 +1,70 @@
+[
+  {
+    "input": {
+      "subject": "Ünicode subject",
+      "from": "Sender <sender@example.test>",
+      "to": "a@example.test",
+      "text": "Body"
+    },
+    "stored": "{\"from\":{\"email\":\"sender@example.test\",\"name\":\"Sender\"},\"to\":[\"a@example.test\"],\"subject\":\"Ünicode subject\",\"text\":\"Body\",\"cc\":[],\"bcc\":[]}",
+    "hash": "d31bbeb9b4fb0fa49b7b6b6a7e4b21b595cb3c0530ae7fb375c75122c1b33b54"
+  },
+  {
+    "input": {
+      "subject": "Ünicode subject",
+      "from": "Sender <sender@example.test>",
+      "to": "a@example.test",
+      "text": "Body",
+      "cc": [
+        "c@example.test"
+      ]
+    },
+    "stored": "{\"from\":{\"email\":\"sender@example.test\",\"name\":\"Sender\"},\"to\":[\"a@example.test\"],\"cc\":[\"c@example.test\"],\"subject\":\"Ünicode subject\",\"text\":\"Body\",\"bcc\":[]}",
+    "hash": "0db77cfe13f0ef3257787cf3c6f52af6eb306d722a463a19c93e19f1e54dc9a8"
+  },
+  {
+    "input": {
+      "subject": "Ünicode subject",
+      "from": "Sender <sender@example.test>",
+      "to": "a@example.test",
+      "text": "Body",
+      "bcc": [
+        "b@example.test"
+      ]
+    },
+    "stored": "{\"from\":{\"email\":\"sender@example.test\",\"name\":\"Sender\"},\"to\":[\"a@example.test\"],\"bcc\":[\"b@example.test\"],\"subject\":\"Ünicode subject\",\"text\":\"Body\",\"cc\":[]}",
+    "hash": "2fe30ee6af6ab2bc83a2949a2866c85f904f48d29c3cab0162ee6c34b89369be"
+  },
+  {
+    "input": {
+      "subject": "Ünicode subject",
+      "from": "Sender <sender@example.test>",
+      "to": "a@example.test",
+      "text": "Body",
+      "cc": [],
+      "bcc": []
+    },
+    "stored": "{\"from\":{\"email\":\"sender@example.test\",\"name\":\"Sender\"},\"to\":[\"a@example.test\"],\"cc\":[],\"bcc\":[],\"subject\":\"Ünicode subject\",\"text\":\"Body\"}",
+    "hash": "a95e92a8be94c99c9d6fe92255ea393f964ebf019237e70c01caf9a6de477a9b"
+  },
+  {
+    "input": {
+      "from": "\"\"\"Quoted\"\"\" <sender@example.test>",
+      "to": "a@example.test",
+      "subject": "Compatibility",
+      "text": "Body"
+    },
+    "stored": "{\"from\":{\"email\":\"sender@example.test\",\"name\":\"\\\"\\\"Quoted\\\"\\\"\"},\"to\":[\"a@example.test\"],\"subject\":\"Compatibility\",\"text\":\"Body\",\"cc\":[],\"bcc\":[]}",
+    "hash": "7dd244e497d12d3b0629a6e6872baf76e68c5fe84903430ee454c42fe05fbd2b"
+  },
+  {
+    "input": {
+      "from": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA                                                                                                    <sender@example.test>",
+      "to": "a@example.test",
+      "subject": "Compatibility",
+      "text": "Body"
+    },
+    "stored": "{\"from\":{\"email\":\"sender@example.test\",\"name\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"},\"to\":[\"a@example.test\"],\"subject\":\"Compatibility\",\"text\":\"Body\",\"cc\":[],\"bcc\":[]}",
+    "hash": "477072fbaa99ca8e43e10da3f091b07809ec1f5b897d53f48eb02c8e1acaa9e7"
+  }
+]

@@ -1,0 +1,1 @@
+../../plugin-host/migrations/0002_mail_policy.sql

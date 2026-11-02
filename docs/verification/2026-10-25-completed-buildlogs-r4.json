@@ -1,0 +1,296 @@
+{
+  "date": "2026-10-25",
+  "status": "implemented-red-green-real-core-rpc-and-native-buildlogs-qualified-exactly-cleaned",
+  "releaseVersion": "0.3.0",
+  "fixtureRun": "184aa2c46c38",
+  "independentReview": "Root owns post-fix independent review",
+  "sourceContract": {
+    "actualStoredCoreLogs": true,
+    "succeededAndFailed": true,
+    "runningAndCancelledDenied": true,
+    "sourceBytesLimit": 24000,
+    "gzipBytesLimit": 65536,
+    "completeStdoutClaimed": false,
+    "secretFreeClaimed": false,
+    "redactionVersionAttested": false,
+    "diagnosticsSeparate": true,
+    "noPublicActionOrJobLogBytes": true,
+    "currentDeploymentsCreateRequired": true,
+    "exactTenantProjectHostingAndNativeOperatorRequired": true,
+    "fingerprintBindsStoredBytesCompletionStatusFinishedGenerationAndCurrentSourceConfig": true
+  },
+  "streamRevocation": {
+    "offlineRedGreen": 2,
+    "realCoreRpcPassedSeconds": 21.13,
+    "realRpcSourceKind": "normalized committed Project source through shared frame driver",
+    "metadataDeliveredThenDataFrameHeld": true,
+    "actualNormalGitDisconnectWhileOriginalJobProofStillActive": true,
+    "cachedBytesDenied": true,
+    "freshScopeTransactionAndSourceValidatePerMetadataDataAndEof": true
+  },
+  "artifacts": [
+    {
+      "version": "0.3.0",
+      "digest": "sha256:1b432d2f2ce06b8c88c4102ecc4435158092393acec51383bb7708558ecd1f87",
+      "configDigest": "sha256:6ac26201995b476c23fcaefaef04adc474ec6715d5f49e029a787c8cc9571761",
+      "manifestSha256": "e1db1cdfdd53406493cc380b3b4a31bca74090f742b07093164fde90c96cf699",
+      "archiveSha256": "5c03b703214a55b67ba8223206023bfd5f402c0aed2861d71e7e58d1e6eb0bfa"
+    }
+  ],
+  "copiedCoreAgentBinaryHashes": {
+    "webdock-migrate": "c94950f82c88b4b936202a571b6d2df57280801cdebffa7904f334636c55212f",
+    "webdock-bootstrap-operator": "ec68af7c77f38ba887c8d0c42fddb092b22ac2a416723c2cf89a30139e02a99f",
+    "webdock-enroll-agent": "05958a21d650c486bc5d4f53d488b1b85fd505fb4fc68fa248face7c5f3b49b4",
+    "webdock-bootstrap-plugins": "ed2e07a9d47a4c25f8d8894dda2d491638ef7f59d64f285b6e473c3b4176e944",
+    "webdock-control-plane": "93cff6074f456bc9cb3118b0b9c6540b671c0725c2655cdb38ee5139b086b27a",
+    "webdock-plugin-control": "08c751c13e97f09d8df4806076a76d91f421e46f2f872bee1969d5b21736ba09",
+    "webdock-plugin-controller": "0656a0406d4c5c16107e5bfa676c98cdad37c02f559f9248b40f7d3033cd9178",
+    "webdock-agent-control": "642a265ae488d2038bb5137578e9a478b7b290ca4128d726f7bceccdc9e536d5",
+    "webdock-agent": "baec48dcb3300f1e5e2025497ccf5e09a3db3323821b1c89560f7853e03104f8"
+  },
+  "frozenNativeSchemaThrough53": {
+    "0001_ids.sql": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23",
+    "0002_identity_security.sql": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721",
+    "0003_identity_preview.sql": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234",
+    "0004_identity_recovery.sql": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704",
+    "0005_identity_passkeys.sql": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b",
+    "0006_oauth_authorization.sql": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+    "0007_organization_ids.sql": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e",
+    "0008_hosting_runtime.sql": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+    "0009_agent_enrollment.sql": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3",
+    "0010_access_authority.sql": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b",
+    "0011_browser_sessions.sql": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c",
+    "0012_build_authority.sql": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d",
+    "0013_repository_authority.sql": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40",
+    "0014_database_authority.sql": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603",
+    "0015_mail_authority.sql": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151",
+    "0016_repository_browser_authority.sql": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77",
+    "0017_plugin_invocation_fence.sql": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129",
+    "0018_mail_provider_binding.sql": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc",
+    "0019_mail_plugin_policy.sql": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa",
+    "0020_mail_provider_lease.sql": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa",
+    "0021_plugin_continuations.sql": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862",
+    "0023_incoming_mail_agent.sql": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de",
+    "0024_mail_configuration.sql": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d",
+    "0025_customer_deletion.sql": "dee73efd12d48b30990c9d0bb71bbab8473a51705b3694dfafd42f6ea82dc817",
+    "0026_plugin_self_service.sql": "2b3420455001313b2b93e8953b85e1f65d4f94ea0134a7b1975c7a7bdc1be3f3",
+    "0027_customer_projects.sql": "8a42816d972bc17044f516d01849939b1bdb852846845c9ada6f759c6fc9bc7d",
+    "0028_plugin_workloads.sql": "ac36c7e9a97c72b5bfcd9b88f9bbda0dbd9e0f32b01000be6c10ab700fea8b5e",
+    "0029_default_project.sql": "1f2e6cd2ccbef7bda7b42fc6384a519553dfeb484b2623c510549361cf1212b0",
+    "0030_limits.sql": "823e6b12b5ba17a23a9c3c1c38ba54837754a87f09dd762a6e6c14d73daca7d2",
+    "0031_customer_domains.sql": "9e97c2e49dba5c5cf31d959bba17ebaf2735aabfa6da2316826caecd13e14b02",
+    "0032_api_tokens.sql": "f5c436170379aa235063036ef516fc2bac04a7fd901115fe2f73c02c27f3b817",
+    "0033_notifications.sql": "63c6e26ae7f52bcbabf913ff78d625902a9ecaaa7a023974f69d9113479ad58f",
+    "0034_logs.sql": "614597c358467fab7dcba4f7c062cea212f00b6c3d15c8b24b032371c88512c6",
+    "0035_project_cluster.sql": "bb2eb64cd495a30163563c727210cd122cb2ee6258d21feb3a16e966303af014",
+    "0036_history_placement.sql": "caacc1c5c7457718ad48f8de12e512049438bf14c84789e6fa532e00b3ca60ff",
+    "0037_log_cursor.sql": "0df190f3296836ebde3cb238896a315e6bf011b09f5a18d29a844091a10ad6a8",
+    "0038_customer_acting.sql": "5507a05d3c633c535c8f7fce583e17ab1cc67a246e47cf192aed908d38bd0245",
+    "0039_identity_acting.sql": "3ae973c90c70ade2944ebb26a2306555beeadf8c48682a152222a56a0cca60e0",
+    "0040_customer_workloads.sql": "314b295dbec9ee121d86fd60acbb463bf609b83e75e0a762126d410deac545cd",
+    "0041_invitation_scope.sql": "1c951c30ec687836d82a4736b9b0cd2bbc8f3f6a68009dbac27a43dca256989e",
+    "0042_plugin_installation.sql": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+    "0043_plugin_updates.sql": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+    "0044_plugin_jobs.sql": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+    "0045_managed_mail_outbox.sql": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+    "0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+    "0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f",
+    "0050_archive_source_leases.sql": "2d3e22026c7ad792234ecce7f5a286a856eac681a22af504c23351d2de86a714",
+    "0051_database_backup_transitions.sql": "a4f16036e77bd2617f61cecc7c7881bb1abfceb920a16309e092770094ed7767",
+    "0052_native_recovery.sql": "c472a56bf4e5f90bc023778985f3191b56626e6b149c70d5c2439059816b0c20",
+    "0053_frontend_output_retention.sql": "3ef35e7f191b15c7b9aa3d007a59247e587fcc2ecb081c72a84441c9f13a458c"
+  },
+  "actualBuildSource": {
+    "customerID": "107902352865894400",
+    "projectID": "107902353683783680",
+    "connectionID": "107910698746519552",
+    "sources": {
+      "failed": {
+        "buildID": "107910939931582464",
+        "status": "failed",
+        "sourceSHA": "3265540ef76bcd996aabc67bec57ac35834bf30d",
+        "generation": 1,
+        "bytes": 1359,
+        "sha256": "d240fed29d4283e14f8d58f84362e38cba97733810b4f14e46cf71929ceb868e",
+        "actualVMOutput": true,
+        "actualCoreCompletion": true,
+        "knownLiteralMasked": true,
+        "completeOutputClaimed": false
+      },
+      "succeeded": {
+        "buildID": "107910814727413760",
+        "status": "succeeded",
+        "sourceSHA": "a2798108ae2ed7211387ad601fd562b80a4350c8",
+        "generation": 1,
+        "bytes": 954,
+        "sha256": "8e91f626cfd6e75b442a42363dda47cef872c6da95df4c8e042436393a0683ae",
+        "actualVMOutput": true,
+        "actualCoreCompletion": true,
+        "knownLiteralMasked": true,
+        "completeOutputClaimed": false
+      }
+    },
+    "actualOperatorCookieVerified": true,
+    "workerRevokedAfterCompletion": true,
+    "fixtureOnlyConfigurationSeeded": true,
+    "gitConfigurationIdentity": "107910698746519552",
+    "gitBuildKeysDerivedFromInstallation": true,
+    "fakeCompletedRows": false,
+    "vm": {
+      "imageSha256": "8f86a48e6e5f1af5a4056569dae9fade5efe4fe6d3cf61b9479253a1a38beee9",
+      "kernelSha256": "cbe9e75684786ecebeabb73f4c93621a034f0f0f9e9eaa47c5c70200b37f8b79",
+      "initrdSha256": "20467a68652e690b2f233d8ce3e26c9f6e562131bb613490890ec2541699ce3e"
+    }
+  },
+  "nativeProof": {
+    "actualCoreCompletionToNativeJobS3Gateway": true,
+    "succeededAndFailed": true,
+    "sourceHashesMatchActualStoredBytes": true,
+    "knownLiteralMaskedByActualPipeline": true,
+    "noPublicLogPayload": true,
+    "producerRestartRetainsReceipts": true,
+    "originalDescriptorWorksAfterSameGenerationRestart": true
+  },
+  "browserProof": {
+    "actualNativeCookies": true,
+    "succeededAndFailedSources": true,
+    "knownShaBlob": true,
+    "noRawPreview": true,
+    "honestSensitivityAndTruncationNotice": true,
+    "widths": [
+      375,
+      1280
+    ],
+    "pageErrors": 0
+  },
+  "readerProof": {
+    "realInvitationActivationPkce": true,
+    "actualMember": true,
+    "ordinaryProjectAndArchiveStatusAllowed": true,
+    "buildlogSourcesNotDisclosed": true,
+    "downloadDeniedWithoutDeploymentsCreate": true,
+    "downloadDenialStatus": 409
+  },
+  "ownedCustomerEntitlement": {
+    "mode": "selected",
+    "onlyCustomer": "107902352865894400",
+    "normalOperatorAPI": true,
+    "modeRevision": "1",
+    "allowRevision": "2",
+    "noRoleOrCapabilityChange": true
+  },
+  "expiryProof": {
+    "actualJob": true,
+    "seconds": 15,
+    "oldAndNewDownloadsDenied": true,
+    "expiredExactDeletion": true
+  },
+  "changedStoredLogProof": {
+    "exactStoredLogHashChanged": true,
+    "oldOpaqueDescriptorDenied": true,
+    "authorizedExactDeletionAfterSourceChange": true,
+    "noRepairPerformed": true
+  },
+  "disconnectAndDeleteProof": {
+    "actualCoreGitDisconnect": true,
+    "oldOpaqueDescriptorDenied": true,
+    "actualFailedGenerateThenRefreshDelete": true,
+    "exactDeletionAfterSourceRevocation": true,
+    "pageErrors": 0
+  },
+  "actualRunningDenied": {
+    "actualCoreRequestedClaimedBuildID": "107903467456045056",
+    "noFakeTerminalRow": true,
+    "status": 409
+  },
+  "actualCancelledDenied": {
+    "actualDomainCancelledBuildID": "107903467456045056",
+    "status": 409
+  },
+  "helperVersions": [
+    {
+      "sha256": "4b68bb58eaec146492544ed896485b21efdfbbed8da86dd2fb70279efcb64620",
+      "schemaThrough": 53,
+      "immutable": true
+    },
+    {
+      "version": 2,
+      "path": "binaries/native-buildlog-source-r2",
+      "sha256": "ed66b27861798856cc61d644067aa3d43054eb76dc47b227d3c3e598119be343",
+      "schemaThrough": 53,
+      "rust": "1.94.0",
+      "closureSha256": "c2822712601581206e380d8af8d8b82231d4d68c1834a3e3e33868b85e999aff",
+      "closureKind": "preserved52-plus-frozen53-and-helper-overlay",
+      "exactOriginal53TreeClaimed": false
+    },
+    {
+      "version": 3,
+      "attempt": 2,
+      "path": "binaries/native-buildlog-source-r3",
+      "sha256": "67ded22bfe0646f188b2baf53b632e65a73e7c23f9f9700f062f8c6a216c603f",
+      "schemaThrough": 53,
+      "rust": "1.94.0",
+      "closureSha256": "df45603e5557bcaf9625158de0cb7a43c6279d24709a8720f1e5a99500fe3902",
+      "closureKind": "preserved52-plus-frozen53-and-helper-r3-overlay",
+      "exactOriginal53TreeClaimed": false
+    }
+  ],
+  "helperClosure": {
+    "baseArchiveSha256": "0c004d3ffb710a5fdebcb213500fe93fca60243f6bc274646fd80bf824e13438",
+    "public52PinDocument": "docs/verification/2026-10-25-native-recovery-52-pin.json",
+    "public52PinSha256": "30cac5cab2df52a4bb5b698652e36d580a5c8a325c515443bcd2d8f6e9b8580e",
+    "registryPackagesPreserved": 804,
+    "rust": "1.94.0",
+    "offlineLocked": true,
+    "newVersionedOwnedClosures": true,
+    "exactOriginal53TreeClaimed": false,
+    "publishedFrontend53ProductionHashesMatch": true,
+    "frozen53SqlOverlay": "3ef35e7f191b15c7b9aa3d007a59247e587fcc2ecb081c72a84441c9f13a458c",
+    "root54SourceOrPathDependenciesUsed": false,
+    "ownedCompilerTargetsRemoved": true,
+    "qualifiedHelperSourceRetainedUnchanged": true,
+    "workspaceExampleAfterStyleOnlyDiagnosticIfCleanupSha256": "a2312ebafa44591baaccaad28198534b7dd2ed47264536aa052167f000b6a241",
+    "public52PinDocumentFileSha256": "f7f2544f05f6fa4f861eaa806135015f5bdcf6f163e7ae0cf852697c7cd5f8b1",
+    "public52PinSha256Meaning": "verified pinSHA256 field in the public document; separate from the document file byte hash"
+  },
+  "recordedCorrections": [
+    "r1 temporary artifact directory lacked explicit private mode; original requested/claimed build retained then supported domain cancellation and worker revocation, no synthetic completion",
+    "r2 reached an idempotently recorded draft app but duplicate static fixture Git installation identity was refused; no new Git/source/build/VM existed",
+    "r3 reused exact unchanged r2 hosting/app keys and bodies, allocated a unique Git installation identity and derived fresh actual build request keys",
+    "browser first waited for parent heading before async log notice; corrected to wait for actual component notice",
+    "reader fixture initially lacked product entitlement; enabled selected exact owned customer through normal operator API, preserving roles/capabilities",
+    "producer source denial is Conflict409 or Forbidden403; final reader check verifies no transfer descriptor"
+  ],
+  "tests": {
+    "protocol": 3,
+    "buildSnapshot": 2,
+    "frameGuardOffline": 2,
+    "ordinaryArchives": 12,
+    "uiComponents": 4,
+    "consoleSuite": 101,
+    "actualCoreRepositoryRpc": 1,
+    "actualNativeKvmBuilds": 2,
+    "ownedClippyAndTscEslintPassed": true
+  },
+  "cleanup": {
+    "exactContainerIDsRemoved": true,
+    "anonymousVolumesRemoved": true,
+    "ownedNetworkRemoved": true,
+    "recordedProcessesStopped": true,
+    "existingMinioStillRunning": true,
+    "privateEvidenceRetained": true
+  },
+  "minioCleanup": {
+    "exactOwnedBucketUserPolicyRemoved": true,
+    "incompleteUploadsAbortedAndAbsent": true
+  },
+  "allCustodyEntriesRemoved": true,
+  "limits": [
+    "Build logs are potentially sensitive stored excerpts; only known literal environment values are masked by the build pipeline. No full transcript or complete secret removal is claimed.",
+    "Actual native qualification used copied schema53 Core/Agent; helper-r3 was rebuilt in a preserved52-plus-frozen53 overlay closure with recorded comparisons, not claimed an exact original53 source tree.",
+    "Original API token revocation and managed operator/membership/cancellation guards were exercised in the actual shared Core repository RPC suite; native buildlog proof additionally used real first-party operator/member sessions.",
+    "Production Wasabi/signing/commercial activation and final root quality remain separate."
+  ]
+}

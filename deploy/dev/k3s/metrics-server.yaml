@@ -1,0 +1,15 @@
+# Pod CPU and memory for usage measurement, installed by k3s on start. The kubelet's serving
+# certificate inside the k3s container is self-signed, so this dev-only install skips verifying it.
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: metrics-server
+  namespace: kube-system
+spec:
+  repo: https://kubernetes-sigs.github.io/metrics-server/
+  chart: metrics-server
+  version: 3.13.0
+  targetNamespace: kube-system
+  valuesContent: |-
+    args:
+      - --kubelet-insecure-tls

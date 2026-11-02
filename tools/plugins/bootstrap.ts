@@ -2,7 +2,7 @@
 import { Pool } from "pg";
 import { verifiedPostgresConfig } from "@webdock/database-runtime";
 import { migrationConfig } from "../migrations/config";
-import { initializePluginState } from "../../apps/control-plane/src/modules/plugins/bootstrap";
+import { initializePluginState } from "../../legacy/control-plane/src/modules/plugins/bootstrap";
 const config = migrationConfig(process.env, process.argv[2]);
 const mode = process.argv[3];
 if (mode !== "fresh" && mode !== "legacy")

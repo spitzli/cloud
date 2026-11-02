@@ -1,6 +1,6 @@
 # Mail metadata backfill and Relaykit import
 
-Both tools are offline Node 24 programs. Neither creates a provider account/key,
+Both tools are offline Bun programs. Neither creates a provider account/key,
 changes DNS, starts an executor or imports identity/membership records. Run with an
 explicit target `host:port/database`; keep environment files and source data outside
 the repository. Reports contain counts, IDs and checksums only.
@@ -10,8 +10,8 @@ the repository. Reports contain counts, IDs and checksums only.
 From `apps/auth`, with gateway admission off:
 
 ```sh
-node --env-file=/private/migration.env --import tsx scripts/mail-backfill.ts --dry-run HOST:PORT/DATABASE /private/byok-mapping.json
-node --env-file=/private/migration.env --import tsx scripts/mail-backfill.ts --apply HOST:PORT/DATABASE /private/byok-mapping.json
+bun --env-file=/private/migration.env scripts/mail-backfill.ts --dry-run HOST:PORT/DATABASE /private/byok-mapping.json
+bun --env-file=/private/migration.env scripts/mail-backfill.ts --apply HOST:PORT/DATABASE /private/byok-mapping.json
 ```
 
 The optional mapping file is an array of
@@ -59,8 +59,8 @@ Stop old admission, scheduled sends and webhook executors before asserting
 original destination connection paused. Run:
 
 ```sh
-node --env-file=/private/migration.env --import tsx scripts/mail-import-relaykit.ts --dry-run HOST:PORT/DATABASE /private/relaykit-mapping.json
-node --env-file=/private/migration.env --import tsx scripts/mail-import-relaykit.ts --apply HOST:PORT/DATABASE /private/relaykit-mapping.json
+bun --env-file=/private/migration.env scripts/mail-import-relaykit.ts --dry-run HOST:PORT/DATABASE /private/relaykit-mapping.json
+bun --env-file=/private/migration.env scripts/mail-import-relaykit.ts --apply HOST:PORT/DATABASE /private/relaykit-mapping.json
 ```
 
 The import validates all account mappings before the first batch, checks payload

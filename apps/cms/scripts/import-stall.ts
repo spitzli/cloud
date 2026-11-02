@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- The archived Payload 3 JSON is recursively remapped before Payload 4 validates it. */
 /** Run only after the schema migration and Stall tenant/site provisioning.
- * node --env-file=.env.local --import tsx scripts/import-stall.ts
+ * bun --env-file=.env.local scripts/import-stall.ts
  * Originals and the private export stay untouched. Never sends notifications.
  */
 import { readFile, writeFile } from 'node:fs/promises'

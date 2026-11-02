@@ -1,0 +1,69 @@
+[package]
+name = "webdock-mail"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[features]
+test-support = ["webdock-mail-runtime/test-support"]
+
+[dependencies]
+webdock-plugin-host = { path = "../plugin-host" }
+webdock-mail-runtime = { path = "../mail-runtime" }
+aes-gcm = "0.10"
+async-trait.workspace = true
+base64 = "0.22"
+chrono.workspace = true
+getrandom = "0.2"
+hex = "0.4"
+hmac = "0.12"
+ed25519-dalek = "2"
+tonic = { version = "0.14.6", default-features = false, features = ["codegen", "transport", "tls-ring"] }
+tokio-stream = "0.1"
+webdock-mail-protocol = { path = "../mail-protocol" }
+webdock-plugin-runtime = { path = "../plugin-runtime" }
+webdock-plugin-http = { path = "../plugin-http" }
+webdock-mail-message = { path = "../mail-message" }
+mail-send = { version = "0.6.2", default-features = false, features = ["ring", "tls12"] }
+smtp-proto = "0.2"
+rustls = { version = "0.23", default-features = false, features = ["std", "ring", "tls12"] }
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
+x509-parser = "0.18"
+rustix = { version = "1", features = ["fs", "process"] }
+sea-orm.workspace = true
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
+url.workspace = true
+sha2 = "0.10"
+thiserror.workspace = true
+tokio = { workspace = true, features = ["process", "io-util"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+webdock-core = { path = "../core" }
+webdock-access = { path = "../access" }
+webdock-ids = { path = "../ids" }
+webdock-identity = { path = "../identity" }
+webdock-browser-session = { path = "../browser-session" }
+webdock-oauth = { path = "../oauth" }
+webdock-persistence = { path = "../persistence" }
+webdock-agent-protocol = { path = "../agent-protocol" }
+webdock-hosting = { path = "../hosting" }
+axum.workspace = true
+percent-encoding = "2"
+
+[dev-dependencies]
+hyper-util = { version = "0.1", features = ["server-auto", "http1", "tokio", "service"] }
+webdock-control-plane = { path = "../control-plane" }
+webdock-plugin-host = { path = "../plugin-host" }
+tempfile = "3"
+url.workspace = true
+futures-util = "0.3"
+rcgen = "0.14"
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
+rustls-pemfile = "2"
+
+[lints]
+workspace = true

@@ -1,0 +1,29 @@
+{
+  "dmiUUID": "e6d9884c-e6bd-4699-8a0c-99f2358ae8a1",
+  "api": "https://10.83.0.1:6443",
+  "publicServerCAPEMSHA256": "a1fa015c59dca9c67aeb8934430f7f90c5f9bafa41faac2f7079c7bad55ef292",
+  "node": "webdock-build-eu-01",
+  "sourceArchiveSHA256": "69a30142893179ca00745d5d34748ab7b6fb848f6334060a4724cd6f9a1c5e5d",
+  "reviewedFixtureSourceSHA256": "d4ed62d7145ed91d50ab81a9dc43003c2357760fcdd327cda4d4436b6794ab29",
+  "testBinarySHA256": "91ceb61828bd9c901d982dd505244d00bc35d9e068c783e855d580c48d4c87b5",
+  "rootOwnedStagedBinary": "/opt/spitzli-plugin-ci/agent-fixture-qualification/source-69a30142-lt9fx1kk/legacy-attachment-test",
+  "rootExecutionUID": 0,
+  "fixtureLog": "/opt/spitzli-plugin-ci/agent-fixture-qualification/source-69a30142-lt9fx1kk/fixture.log",
+  "ownedPodDiagnostics": "/opt/spitzli-plugin-ci/agent-fixture-qualification/source-69a30142-lt9fx1kk/owned-pod-diagnostics.jsonl",
+  "fixtureRoot": "/opt/spitzli-plugin-ci/legacy-attachment-fixture/e5282e56-a333-4767-ba25-1ade7d37cbee",
+  "fixturePassed": false,
+  "fixtureCleanupVerified": true,
+  "namespacePVInventoryUnchanged": true,
+  "exitCode": 101,
+  "image": "ghcr.io/spitzli/tabularium@sha256:4627facbbdf045716949195b115c7ab5d823e8c2d810d8e3dda93eeaafd9e78f",
+  "liveKubernetesFixtureExecuted": true,
+  "productionActivationPerformed": false,
+  "maximumRequiredGLIBC": "2.34",
+  "resolvedLibraries": [
+    "\tlinux-vdso.so.1 (0x00007ffdcf7ce000)",
+    "\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007939059d2000)",
+    "\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007939058e9000)",
+    "\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x0000793905600000)",
+    "\t/lib64/ld-linux-x86-64.so.2 (0x0000793907b86000)"
+  ]
+}

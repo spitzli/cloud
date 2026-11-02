@@ -1,0 +1,12 @@
+# Uniquely tagged disposable qualification image, never a production rollout.
+# Parent verifies this already cached base's immutable image ID before/after build.
+FROM webdock-rust-storage-test:owned
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sqlite3 age openssh-client openssl postgresql-client-18 \
+    && rm -rf /var/lib/apt/lists/*
+COPY webdock-agent webdock-storage webdock-recovery webdock-recovery-gateway webdock-migrate \
+    webdock-control-plane webdock-agent-control webdock-bootstrap-operator \
+    webdock-enroll-agent webdock-bootstrap-plugins /usr/local/bin/
+COPY recovery-entrypoint /usr/local/bin/recovery-entrypoint
+ENV DOCKER_HOST=unix:///run/webdock-owned-docker.sock
+ENTRYPOINT ["/usr/local/bin/recovery-entrypoint"]

@@ -1,0 +1,104 @@
+{
+  "status": "ONE bounded preflight functional0, ORIGINAL OVERALLFAIL due strict container-absence case mismatch; physical custody subsequently closed READONLY; no retry",
+  "createdUTC": "2026-10-26T03:38:39.442427+00:00",
+  "command": "python3 tools/tests/recovery-admission-component.py --preflight-only --test .runtime-test/recovery-provider-baseline-103034e48506/bootstrap-test",
+  "runID": "1d9b7ab62171",
+  "preExecPin": {
+    "path": ".runtime-test/recovery-admission-1d9b7ab62171/pin.json",
+    "sha256": "b24c19e58326ba7a316f7e7b690976cc4c9f6d8445ea05786ec1a76fa7235249",
+    "runnerSHA256": "500c4246448a54031f27bdcc520c022539bf34eb6f4799dbf9b38ead0740ed2c",
+    "imageID": "sha256:e5c40488f19caa0f1168d232f2835a8415af2943eb963c67b75a06770e86a5d8",
+    "imageCustody": {
+      "run": "1d9b7ab62171",
+      "reference": "wd-owned-recovery-component:1d9b7ab62171",
+      "imageID": "sha256:e5c40488f19caa0f1168d232f2835a8415af2943eb963c67b75a06770e86a5d8",
+      "requiredLabels": {
+        "webdock.recovery-component-run": "1d9b7ab62171",
+        "webdock.recovery-component-kind": "native-recovery-component"
+      }
+    },
+    "sourceArchiveSHA256": "45e36d71b35dd8bee2f60e0cba427f712de5a45e50fb8b750f76af206e3aeeee",
+    "binaries": {
+      "bootstrap-test": {
+        "sourceSHA256": "935e3530df2b60ced8fe32b3819339490432dfcd2f7f6d2f805bb50e93229f2f",
+        "copiedSHA256": "935e3530df2b60ced8fe32b3819339490432dfcd2f7f6d2f805bb50e93229f2f"
+      },
+      "webdock-agent": {
+        "sourceSHA256": "0238f67d6d64565aad44831adde0e701f2d8e72bcaf6ce5174445171c4d24ffc",
+        "copiedSHA256": "d8208a7e7984ee47caeed8b1f69c2ff74879a8f1a413072c7dce50a55d997270"
+      },
+      "webdock-storage": {
+        "sourceSHA256": "2cc29ffd5e259c9932f05e52cb0aa170081b32cf02bf7639e2e0204e72888801",
+        "copiedSHA256": "1f2bc06b80cc68c81a5bb392ead2358e66d8c34d971837af2df1128ed72e2301"
+      }
+    },
+    "unusedTestScope": "historical test935e... only copied/pinned; test.log absent; no current Rust/API qualification"
+  },
+  "observed": {
+    "containerExitCode": 0,
+    "functionalPassed": true,
+    "overallPassed": false,
+    "logicalStage": "nested_boundary_and_postgres_ready",
+    "nestedK3sToolsImagesAndActualNode": "bounded private preflight executed",
+    "privatePostgresConnectivity": "SELECT1 passed in nested owned namespace",
+    "CoreSchemaAgentAPIOrSourceAdmission": "NOT EXECUTED",
+    "requiredDiagnostics": "actual bytes/hashes and nonempty stage/preflight.log verified; receipt04a3b50...47c62"
+  },
+  "failure": {
+    "steps": [
+      "container-wd-recovery-preflight-848b18f885824c57",
+      "container-wd-recovery-k3s-help-848b18f885824c57"
+    ],
+    "exactActualAbsenceVariant": "error: no such object: <EXACT recorded ID>",
+    "classifierExpected": "Error: No such object: <EXACT recorded ID>",
+    "mutationResults": "both exact owned rm --volumes commands returned0; later classifier failedclosed, preserving original overallFAIL",
+    "changedSourceToBypassGuard": false
+  },
+  "custody": {
+    "readonlyClosurePath": ".runtime-test/recovery-admission-1d9b7ab62171/readonly-custody-closure.json",
+    "readonlyClosureSHA256": "6316966a46435d3191b17d77ff370c2f83ef702754af84bf8f3230f48e413a0e",
+    "remainingPhysicalObligations": [],
+    "remainingRecordingObligations": [],
+    "cachedFourIDsRepoTagsRepoDigestsEqualBefore": true,
+    "ownedContainersAbsent": [
+      {
+        "kind": "container",
+        "reference": "c79acf9dbc4df2625a51627ca413d42f3e0c668a0f0c12ea89d94a5055e78695",
+        "absence": "positive exact Docker29 lowercase No such object",
+        "exitCode": 1
+      },
+      {
+        "kind": "container",
+        "reference": "wd-recovery-k3s-help-848b18f885824c57",
+        "absence": "positive exact Docker29 lowercase No such object",
+        "exitCode": 1
+      },
+      {
+        "kind": "container",
+        "reference": "07755d302282019c20389329f7610641d19f0e44f066e62f76037766dbebe24f",
+        "absence": "positive exact Docker29 lowercase No such object",
+        "exitCode": 1
+      },
+      {
+        "kind": "container",
+        "reference": "wd-recovery-preflight-848b18f885824c57",
+        "absence": "positive exact Docker29 lowercase No such object",
+        "exitCode": 1
+      }
+    ],
+    "ownedHostCgroupAbsent": true,
+    "diagnosticAndFourAnonymousVolumesAbsent": true,
+    "ownImageAndNewPauseReferenceAbsent": true,
+    "verifiedNonemptyDiagnosticManifestSHA256": "04a3b50b46a6da26e6354dbde19cc68e9ef8b567ce1aab756be20dd46a847c62",
+    "noRepairRetagRepullOrRetry": true
+  },
+  "boundedSetup": {
+    "outerMemoryGiB": 4,
+    "outerCPU": 2,
+    "ownRuntimeTmpfsGiB": 3,
+    "networkMode": "none",
+    "hostDockerSocketMounted": false,
+    "globalCgroupSysctlSecurityfsMountPropagationChanges": false
+  },
+  "next": "Root independent custody recheck; hand window to PG primitive. No further component/image run by Main; actual Core/native/genuine API awaits later explicit release. Original aca remainsFAIL/history limits unchanged."
+}

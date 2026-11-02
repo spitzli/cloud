@@ -1,0 +1,37 @@
+# Required: external database roles/schema/CA and secrets are provisioned separately.
+externalDatabase: true
+modules:
+  configVersion: 1
+  modules: {}
+components:
+  console:
+    image: ''
+    existingSecret: ''
+    port: 3120
+  auth:
+    image: ''
+    existingSecret: ''
+    port: 3125
+  api:
+    image: ''
+    existingSecret: ''
+    port: 3130
+  # existingSecret must contain WEBDOCK_JOBS_REDIS_URL (redis:// or rediss://).
+  # Redis is operator-provisioned with persistence, noeviction and restricted egress.
+  worker:
+    enabled: false
+    image: ''
+    existingSecret: ''
+    port: 0
+migration:
+  enabled: false
+  image: ''
+  existingSecret: ''
+  target: ''
+resources:
+  requests: {cpu: 100m, memory: 256Mi}
+  limits: {cpu: '1', memory: 1Gi}
+# Supply explicit ingress controller selectors and database/provider egress rules.
+networkPolicy:
+  ingress: []
+  egress: []

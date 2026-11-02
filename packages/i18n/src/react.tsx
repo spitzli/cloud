@@ -12,3 +12,7 @@ export function useI18n(): I18nContext {
  if (!context) throw new Error('useI18n requires an I18nProvider.');
  return context;
 }
+/** For chrome rendered both inside and before the provider, such as early loading screens. */
+export function useOptionalI18n(): I18nContext | null {
+ return useContext(Context);
+}

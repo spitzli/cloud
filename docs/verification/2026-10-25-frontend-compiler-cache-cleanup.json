@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "timestampUTC": "2026-10-25T22:48:15Z",
+  "scope": "Only completed frontend task-owned compiler cache; no shared target, VM, services or source deleted",
+  "removedPath": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/frontend-target-20261025-r1",
+  "absent": true,
+  "reclaimedFilesystemBytes": 14817390592,
+  "retainedBinaryManifest": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/frontend-retained-native53-pins/pin.json",
+  "retainedBinaries": [
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/frontend-retained-native53-pins/webdock-migrate",
+      "sizeBytes": 582873240,
+      "sha256": "3e0a67c28f47948a35b1c0a730775c769d10e8d4041b39363d1eb276e0411523",
+      "rust": "1.94.0",
+      "role": "normal compiled Core migrator",
+      "originalPath": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/frontend-target-20261025-r1/debug/webdock-migrate",
+      "rehashMatches": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/frontend-retained-native53-pins/postgres-d78499512bd33aa4",
+      "sizeBytes": 793110024,
+      "sha256": "089e513d154df12ad154b8f6aec38e10ef259cae9a111ad65560bb89c4893520",
+      "rust": "1.94.0",
+      "role": "Hosting native acceptance executable embedding compiled Core/BuildService/worker HTTP paths",
+      "originalPath": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/frontend-target-20261025-r1/debug/deps/postgres-d78499512bd33aa4",
+      "rehashMatches": true
+    }
+  ],
+  "qualifiedVMChecks": [
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/build-vm-frontend-20261025-r2/base.raw",
+      "sha256": "489498f03c185625f83c19e52606afa43405f3db317203f3bb29c4de290b9262",
+      "matches": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/build-vm-frontend-20261025-r2/kernel",
+      "sha256": "26f146f664ad057be3b39b211422b03b1f94cb2c3d66522fd4841811a224bfd5",
+      "matches": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/build-vm-frontend-20261025-r2/initrd",
+      "sha256": "6db76fbf58bd0b4a8f300c6d4b1fbda08a64db26dc09f8e280924b640781e19c",
+      "matches": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/build-vm-frontend-20261025-r2/rootfs/usr/bin/webdock-build-guest",
+      "sha256": "a8e831929fd0f67ab14a4bff0f1ce5c6174c786e0b9defd6199283bb1e53734b",
+      "matches": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/build-vm-frontend-20261025-r2/verified-frontend-e2.tar",
+      "sha256": "df67af5b1d1760593c0b17c3840f4e31fe9fe33fcf48abe96c5baf5be25357c5",
+      "matches": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/build-vm-frontend-20261025-r2/verified-source.tar",
+      "sha256": "285138302fe0851c89e81b167b928586083f00cdfc82473f8c70f5c37d13f403",
+      "matches": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/build-vm-frontend-20261025-r2/packages.txt",
+      "sha256": "b99d77fc899e15945ad75ba4622e0656f41d12da559ad088ad865cb124358cea",
+      "matches": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/build-vm-frontend-20261025-r2/SHA256SUMS",
+      "sha256": "00b2c6a4685219b2d980c145b9bf95c40dd4e8e65fb8e55ad06a179e0e42c2cf",
+      "matches": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/build-vm-frontend-20261025-r2/custody.json",
+      "sha256": "3a26ce8d7ac087b47fb444543daf556845fa9e0274a0d2f24a545043c10c606b",
+      "matches": true
+    }
+  ],
+  "historicalEvidenceUnmodified": true
+}

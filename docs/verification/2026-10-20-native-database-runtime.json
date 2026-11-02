@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-20",
+  "status": "bounded runtime milestone; full platform parity incomplete",
+  "baseline": "15930ae with preserved uncommitted rewrite work",
+  "productionChanged": false,
+  "checks": [
+    {
+      "name": "Fresh restricted domain -> enrolled Core RPC -> daemon -> actual CNPG",
+      "result": "passed",
+      "seconds": 115.06,
+      "log": ".runtime-test/runtime-native/domain-acceptance.log",
+      "cases": [
+        "native operator password setup and TOTP",
+        "plan/offer/order domain admission",
+        "verified TLS/SCRAM ready proof",
+        "lost checkpoint acknowledgement and exact daemon restart replay",
+        "lost completion acknowledgement and exact daemon restart replay",
+        "established enrollment revocation retains physical UID and Ready database",
+        "explicit generation-2 operator reenrollment",
+        "restart",
+        "credential rotation",
+        "pause/resume",
+        "retained deletion",
+        "explicit purge"
+      ],
+      "fixtureRetentionClockAdvanced": true
+    },
+    {
+      "name": "Real runtime concurrency/lifecycle regression",
+      "result": "passed",
+      "seconds": 115.58,
+      "log": ".runtime-test/runtime-native/resume-fence-regression.log",
+      "cases": [
+        "controlled resourceVersion change during storage/live-guard checks",
+        "restart",
+        "credential rotation",
+        "CPU/memory resize",
+        "pause/resume",
+        "retained delete and dedicated purge",
+        "changed physical UID and denied authority"
+      ]
+    },
+    {
+      "name": "agent and agent-control ordinary tests",
+      "result": "passed",
+      "log": ".runtime-test/runtime-native/runtime-unit-tests.log"
+    },
+    {
+      "name": "Scoped rustfmt and strict Clippy",
+      "result": "passed",
+      "configurations": [
+        "agent + agent-control all targets",
+        "agent Docker-only",
+        "agent Kubernetes-only",
+        "agent without runtime adapters"
+      ]
+    },
+    {
+      "name": "Architecture/lint/strict-Serde contracts",
+      "result": "passed"
+    }
+  ],
+  "resolvedDefects": [
+    {
+      "defect": "Kubernetes Create(Update) ownership conflicted with subsequent Server-Side Apply during resize",
+      "evidence": "actual 409 on CPU/memory quota fields",
+      "change": "known owned-object updates use MergePatch with exact UID/resourceVersion; no force ownership"
+    },
+    {
+      "defect": "Resume reused a Cluster resourceVersion fetched before storage/authority calls",
+      "evidence": "controlled annotation change reproduced 409, failing in 46.76s",
+      "change": "refresh and revalidate ownership/live authority for each of at most 3 attempts; retry only server-confirmed 409, never transport uncertainty"
+    },
+    {
+      "defect": "Resize could restart the primary before its remaining SQL update",
+      "change": "finish fixed role connection-limit SQL before changing Cluster resources"
+    }
+  ],
+  "historicalObservation": {
+    "result": "one earlier combined run reached needs-reconciliation in 85.12s before phase diagnostics existed",
+    "exactInitialCause": "unconfirmed",
+    "followup": "A later Resume Apply failure was localized and deterministically reproduced as the resourceVersion defect above. Two combined runs passed before that fix (112.65s and 112.29s); final combined run (115.06s) and controlled regression (115.58s) passed after it. These do not establish blanket runtime parity."
+  },
+  "cleanup": {
+    "freshFixtureDatabasesRemaining": 0,
+    "ownedDatabaseNamespacesRemaining": 0,
+    "temporaryPostgresKindNetworkAttachmentRemoved": true,
+    "ownedNamespacePvFilesystemAndRunnerCleanup": "completed",
+    "sharedRolesModified": false,
+    "fixtureServingTls": "owned Kind node IP changed; verified exact-node CSR approved to restore matching serving SAN and healthy Metrics API"
+  },
+  "open": [
+    "database usage observation RPC composition",
+    "physical-only shared-pool/prepare-migration readiness",
+    "database migration execution",
+    "independent auxiliary-pool outage handling",
+    "Docker service-binding routes, active grants, enforced egress and bounded lease shutdown",
+    "generic provider-plugin runtime lifecycle acceptance",
+    "production packaging/enrollment and full parity review"
+  ],
+  "migrationCoordination": "No migration added or applied by this slice. Root may use native 21 for plugin-state continuation; binding-routes draft can use 22 after coordination.",
+  "sourceSha256": {
+    "crates/agent/src/management/database.rs": "fee2c1d0a24d6724990d257c98e73f6a09d0f7621be6b2452bb16eeee2c9e4b1",
+    "crates/agent/src/management.rs": "ebaa1363da994791951fbddf87b5b24721f89b6bd5e4e12ece54b7d2a8f086a4",
+    "crates/agent/src/config.rs": "d83ac667e82b98bfc65a382d23412e993943fd2f6e645f07e91ed00d57573e04",
+    "crates/agent/src/database/executor.rs": "17cf7806ca82767640c2b135eea194ee3c54bee389f7f85e033f5a8955187a6b",
+    "crates/agent/src/database/lifecycle.rs": "724c25ec2ade33f82cd0504b0391044d9f206350275c84fce1b803df9bb355c1",
+    "crates/agent/src/database/observations.rs": "4d51f9e3ca80ab8933d7a1b0e97297aa4a570cda83c65a8e2d39527d13ac1c21",
+    "crates/agent/src/storage/database.rs": "eb2c231632d6d4a1937f0f71b9234d039604189dce9df6fa3659d58eedb58efb",
+    "crates/agent-control/tests/native_database.rs": "52577821ce4e33bc297dd1faf8ad3da937e18228bd6184fce9babd226bda07bb",
+    "crates/agent-control/tests/support/native_database.rs": "770a558468351b7115385eeeba0275707fdb151c0382c98f591b3837dfd6ddb7",
+    "crates/agent/tests/database_runtime.rs": "d8b8b321226d6d347d3eb9eaaa19dacc36dae51f52868bb89e2930a80c6f4e0f",
+    "crates/agent/tests/fixtures/run-kind-storage.py": "76eb7ef7c9279d3541cb2cddbc14c58b23c597d855f4d255295e5b9febd506c2"
+  }
+}

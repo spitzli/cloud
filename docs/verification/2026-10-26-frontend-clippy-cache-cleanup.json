@@ -1,0 +1,16 @@
+{
+  "createdUTC": "2026-10-25T23:33:21.635078+00:00",
+  "scope": "Only completed Frontend task-owned Clippy198 compiler cache; no native53 binary pin or VM under this cache",
+  "ownedByEvidence": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/docs/verification/2026-10-25-frontend-output-retention.json",
+  "ownershipEvidenceSHA256": "944cb7c224303d8c1c538d63e230a0b67009dbbbb234182fecd726eabc73ad3e",
+  "removedPath": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/frontend-clippy-198-20261025",
+  "absent": true,
+  "reclaimedFilesystemBytes": 485888000,
+  "preserved": [
+    "Shared root target",
+    "All frontend53 native binary pins",
+    "Baseline and retained qualified VM",
+    "Core52 snapshot",
+    "All source/evidence/logs/services/data"
+  ]
+}

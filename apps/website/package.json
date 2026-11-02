@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
     "lint": "eslint",
-    "test": "node --test tests/*.test.mjs",
-    "payload": "node --env-file=.env.instance ../../node_modules/payload/bin.js",
-    "cms:types": "npm run payload -- generate:types",
-    "cms:migrate": "PAYLOAD_MIGRATING=true npm run payload -- migrate",
-    "test:sso-policy": "node --import tsx --test tests/sso-policy.test.ts"
+    "test": "bun test --isolate ./tests",
+    "payload": "bun --env-file=.env.instance ../../node_modules/payload/bin.js --disable-transpile",
+    "cms:types": "bun run payload generate:types",
+    "cms:migrate": "PAYLOAD_MIGRATING=true bun run payload migrate",
+    "test:sso-policy": "bun test --isolate ./tests/sso-policy.test.ts"
   },
   "dependencies": {
     "next": "16.3.8",
@@ -33,6 +33,7 @@
     "@webdock/cms-bridge": "*"
   },
   "devDependencies": {
+    "@types/bun": "1.4.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -41,11 +42,10 @@
     "eslint-config-next": "16.3.8",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "tsx": "^4.23.15",
     "@types/nodemailer": "^8.0.2"
   },
   "engines": {
-    "node": "24.x"
+    "bun": ">=1.4.3"
   },
   "type": "module"
 }

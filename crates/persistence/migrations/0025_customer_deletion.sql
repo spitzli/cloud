@@ -1,0 +1,1 @@
+../../registry/migrations/0001_customer_deletion.sql

@@ -2,18 +2,18 @@ import {getRequestI18n} from '@webdock/i18n/next';
 import type { Metadata } from 'next';
 
 export async function generateMetadata():Promise<Metadata>{const {t}=await getRequestI18n();return {
-  title: t("Vercel integration — Webdock Studio"),
-  description: t("Connect selected Vercel projects to Webdock Studio with read-only access."),
+  title: t("Vercel integration — Spitzli Cloud Studio"),
+  description: t("Connect selected Vercel projects to Spitzli Cloud Studio with read-only access."),
   alternates: { canonical: '/integrations/vercel' },
-  openGraph: { title: t("Vercel integration — Webdock Studio"), url: '/integrations/vercel' },
+  openGraph: { title: t("Vercel integration — Spitzli Cloud Studio"), url: '/integrations/vercel' },
 };}
 
 export default async function VercelGuide() {
   const {t}=await getRequestI18n();
   return <article>
-    <p className="subtle-label">{t("Webdock Studio · Integration guide")}</p>
+    <p className="subtle-label">{t("Spitzli Cloud Studio · Integration guide")}</p>
     <h1>{t("Vercel, in Studio.")}</h1>
-    <p>{t("View hosting information alongside your Webdock project records: current production release, recent deployments, Git branch and commit, runtime settings, and domain verification.")}</p>
+    <p>{t("View hosting information alongside your Spitzli Cloud project records: current production release, recent deployments, Git branch and commit, runtime settings, and domain verification.")}</p>
     <h2>{t("Connect your projects")}</h2>
     <ol>
       <li>{t("Sign in to")} <a href="https://console.webdock.dev/integrations">{t("Studio → Integrations")}</a> {t("with an authorised platform operator account.")}</li>
@@ -25,7 +25,7 @@ export default async function VercelGuide() {
     <h2>{t("Access and troubleshooting")}</h2>
     <p>{t("This private integration is available to the configured team and authorised operators. It reads hosting information; it cannot deploy, change domains or read environment-variable values. If access is denied, check that the project was selected during installation. If a connection has been revoked or expired, reconnect from Studio. Vercel outages can temporarily prevent status updates.")}</p>
     <h2>{t("Disconnect")}</h2>
-    <p>{t("Disconnect in Studio to delete its stored access token. Also uninstall Webdock Studio in your Vercel team’s integration settings to revoke permission at Vercel. Project mappings and audit records remain; contact us if you need them removed.")}</p>
+    <p>{t("Disconnect in Studio to delete its stored access token. Also uninstall Spitzli Cloud Studio in your Vercel team’s integration settings to revoke permission at Vercel. Project mappings and audit records remain; contact us if you need them removed.")}</p>
     <h2>{t("Support")}</h2>
     <p>{t("Email support at")} <a href="mailto:dominik@spitzli.dev">{"dominik@spitzli.dev"}</a> {t("with the affected project and the visible error. Never include passwords, access tokens or environment-variable values.")}</p>
     <p>{t("Read the")} <a href="/terms">{t("terms of use")}</a> {t("and the")} <a href="/privacy">{t("privacy notice")}</a> {t("before connecting.")}</p>

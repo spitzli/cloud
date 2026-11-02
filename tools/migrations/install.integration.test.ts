@@ -69,7 +69,7 @@ test(
       const target = `127.0.0.1:${port}/webdock_install_test`;
       const run = (values: Record<string, string>) =>
         spawnSync(
-          root + "node_modules/.bin/bun",
+          process.execPath,
           ["--no-env-file", "tools/migrations/install.ts", target],
           { cwd: root, encoding: "utf8", env: values },
         );
@@ -86,11 +86,11 @@ test(
         return copy.href;
       };
       const minimal = spawnSync(
-        root + "node_modules/.bin/bun",
+        process.execPath,
         [
           "--no-env-file",
           "-e",
-          `const {verifyModuleShutdown}=await import('./apps/control-plane/src/module-preflight');const {databasePools}=await import('./apps/control-plane/src/db/runtime');try{await verifyModuleShutdown()}finally{await databasePools.close()}`,
+          `const {verifyModuleShutdown}=await import('./legacy/control-plane/src/module-preflight');const {databasePools}=await import('./legacy/control-plane/src/db/runtime');try{await verifyModuleShutdown()}finally{await databasePools.close()}`,
         ],
         {
           cwd: root,
@@ -126,7 +126,7 @@ test(
       // Fresh bootstrap already journals every migration as postgres. Exercise a
       // genuinely new function under the restricted upgrade login as well.
       const provisioningSQL = await readFile(
-        new URL("../../apps/control-plane/drizzle/0048_plugin_app_provisioning.sql", import.meta.url),
+        new URL("../../legacy/control-plane/drizzle/0048_plugin_app_provisioning.sql", import.meta.url),
         "utf8",
       );
       const restricted = new Pool({ connectionString: url.href, max: 1 });
@@ -158,7 +158,7 @@ test(
         await restricted.end();
       }
       const initializePlugins = (modules: Record<string, unknown>) => spawnSync(
-        root + "node_modules/.bin/bun",
+        process.execPath,
         ["--no-env-file", "tools/plugins/bootstrap.ts", target, "fresh"],
         {cwd:root,encoding:"utf8",env:{...base,DATABASE_URL_UNPOOLED:url.href,WEBDOCK_MODULES:JSON.stringify({configVersion:1,modules})}},
       );
@@ -169,7 +169,7 @@ test(
       assert.deepEqual((await owner.query("SELECT id FROM webdock_auth.plugin_installation WHERE state='enabled' ORDER BY id")).rows,[{id:"storage"}]);
       // Both processes share the actual advisory lock and immutable journal.
       const concurrentUpgrade = () => new Promise<void>((resolve, reject) => {
-        const child = spawn(root + "node_modules/.bin/bun",
+        const child = spawn(process.execPath,
           ["--no-env-file", "tools/migrations/install.ts", target],
           { cwd: root, env: { ...base, DATABASE_URL_UNPOOLED: url.href }, stdio: ["ignore", "pipe", "pipe"] });
         let output = "";

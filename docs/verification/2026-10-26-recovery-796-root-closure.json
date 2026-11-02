@@ -1,0 +1,78 @@
+{
+  "cachedMetadataEqual": 4,
+  "cgroupAndParentAbsent": true,
+  "diagnosticHashesVerified": 17,
+  "failedBoundary": "exact digest name missing after classic offline import",
+  "functionalPassed": false,
+  "noRetryOrMutationByRoot": true,
+  "positiveAbsences": [
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "0ed83e9ed72f15fccc0a19ca2046f36f1abd18a8e0d62bc7a98e4234a998cfbf"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-k3s-help-8cf6ff1a64984c68"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "881566a1160806334844f2bc86745152f89af453bc2079fe6b284d80d79c84ec"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-8cf6ff1a64984c68"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "a11353f6a3ff4c9f0c5dc6b89cbee7b08ebd3db36f842497d428522e09881875"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "f60db8eaa54f960523e4bcc4fccd43facd1261784679bce2a10e6c8eba95f4be"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "b4fff2fff0b8cc80160531cc325d0d2550ce9f442cef33950f81ee0805293112"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "5387d6613f41e7f13c1836479d1368e639eebd4ab1330cae1543c8311a34b7cb"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-logs-796c5bd9c566"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "wd-owned-recovery-component:796c5bd9c566"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:e1cad74f5be3326d6bfabcf09e13482e99a29b835c6f8c5ce3a2ac1c85703019"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    }
+  ],
+  "reportSHA256": "99815a1dc86dd699bc7f7b4ccaa445fcb7ec246a9a891865f9f16ad99ca60707",
+  "scope": "Root796 independent closure",
+  "sourceAdmission": false
+}

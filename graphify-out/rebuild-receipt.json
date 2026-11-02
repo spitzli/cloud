@@ -1,0 +1,15 @@
+{
+  "corpusFiles": 4114,
+  "astFiles": 3603,
+  "documents": 475,
+  "imageInventory": 36,
+  "nodes": 58188,
+  "edges": 90149,
+  "communities": 3722,
+  "semanticInference": false,
+  "subagents": 0,
+  "protectedFilesExcluded": true,
+  "sourceCommit": "3b68978bb8befbff79c2173a72af577597848e48",
+  "sourceManifestSHA256": "77fdc32f7557398c106ca86ef1ad77ae51a1bcc0b996610c9f481d68552631c6",
+  "sourceKind": "Full direct public repository rebuild; AST plus literal document headings/links, no semantic-agent inference"
+}

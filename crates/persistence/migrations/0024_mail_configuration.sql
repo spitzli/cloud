@@ -1,0 +1,1 @@
+../../mail/migrations/0005_mail_configuration.sql

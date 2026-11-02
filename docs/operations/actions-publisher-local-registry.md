@@ -8,7 +8,7 @@ The initial October 10 read-only inspection of
 `root@213.136.65.22` (`vmd208517`) found 6 CPUs, 11 GiB RAM (about 10 GiB available),
 188 GiB free disk, k3s/containerd, and no registry, skopeo, nginx, Node or Vercel CLI.
 This adds no purchased infrastructure. Customer builds remain on GitHub Actions;
-this node downloads, validates and publishes artifacts only. Never run `npm ci`,
+this node downloads, validates and publishes artifacts only. Never run `bun install --frozen-lockfile`,
 Dockerfile builds, `vercel build`, customer scripts or guest.py on this node.
 
 ## Deployment inputs and prerequisites

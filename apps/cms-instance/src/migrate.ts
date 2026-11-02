@@ -3,6 +3,7 @@ import { verifiedPostgresConfig } from "@webdock/database-runtime";
 import { projectBridgeUser } from "@webdock/cms-bridge/auth";
 import type { BridgeRole } from "@webdock/cms-bridge/types";
 import pg from "pg";
+import { verifyMediaBinding } from "./lib/media-storage.ts";
 if (process.env.CMS_MIGRATING !== "true")
   throw Error("Run only in the bounded CMS migration job.");
 const environment = loadCMSConfig();
@@ -30,6 +31,8 @@ try {
   });
   if (migration?.cancelled)
     throw Error("Migration requires explicit reconciliation.");
+  if (process.env.CMS_MEDIA_INITIALIZE_STORAGE === "true")
+    await verifyMediaBinding(environment, true);
   const subject = process.env.CMS_BOOTSTRAP_SUBJECT,
     role = process.env.CMS_BOOTSTRAP_ROLE ?? "admin";
   if (subject) {

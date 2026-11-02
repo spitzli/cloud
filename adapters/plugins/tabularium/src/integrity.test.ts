@@ -8,7 +8,7 @@ const hash = (s: string) => createHash("sha256").update(s).digest("hex");
 async function fixture() {
   const pair = await generateKeyPair("EdDSA");
   const jwk = await exportJWK(pair.publicKey);
-  const raw = readFileSync("tools/plugins/fixtures/project-notes.json", "utf8");
+  const raw = readFileSync(new URL("../../../../tools/plugins/fixtures/project-notes.json", import.meta.url), "utf8");
   const m = JSON.parse(raw);
   const payload = {
     v: 1,

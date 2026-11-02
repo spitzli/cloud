@@ -18,7 +18,7 @@ import {
   verifyInvocation,
 } from "@webdock/plugin-sdk/server";
 const env = parseEnv(
-  readFileSync(process.env.WEBDOCK_PLUGIN_TEST_ENV ?? "apps/control-plane/.env.rls.test.local", "utf8"),
+  readFileSync(process.env.WEBDOCK_PLUGIN_TEST_ENV ?? "legacy/control-plane/.env.rls.test.local", "utf8"),
 );
 const u = new URL(env.API_TEST_OWNER_URL!);
 if (u.hostname !== "127.0.0.1" || u.pathname !== "/webdock_rls_test")
@@ -100,7 +100,7 @@ writeFileSync(join(dir, "runtime.json"), JSON.stringify(configuration), {
 });
 process.env.WEBDOCK_PLUGIN_RUNTIME_FILE = join(dir, "runtime.json");
 const runtime =
-  await import("../../apps/control-plane/src/modules/plugins/runtime");
+  await import("../../legacy/control-plane/src/modules/plugins/runtime");
 const manifest = JSON.parse(
   readFileSync("tools/plugins/fixtures/project-notes.json", "utf8"),
 );
@@ -306,7 +306,7 @@ try {
   const { InMemoryTransport } =
     await import("@modelcontextprotocol/sdk/inMemory.js");
   const { registerPluginTools } =
-    await import("../../apps/control-plane/src/modules/plugins/exposure");
+    await import("../../legacy/control-plane/src/modules/plugins/exposure");
   const mcp = new McpServer({ name: "fixture", version: "1" });
   await registerPluginTools(mcp, false, async () => [
     await runtime.getRuntimePlugin(plugin),
@@ -331,7 +331,7 @@ try {
   await client.close();
   await mcp.close();
   const { pluginProtocol } =
-    await import("../../apps/control-plane/src/protocols/plugins");
+    await import("../../legacy/control-plane/src/protocols/plugins");
   const api = pluginProtocol(
     {
       production: false,
@@ -482,7 +482,7 @@ try {
   await owner.query('DELETE FROM webdock_auth."user" WHERE id=$1', [subject]);
   await owner.end();
   await (
-    await import("../../apps/control-plane/src/db/runtime")
+    await import("../../legacy/control-plane/src/db/runtime")
   ).closeDatabases();
   rmSync(dir, { recursive: true, force: true });
 }

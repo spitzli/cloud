@@ -1,0 +1,77 @@
+{
+  "name": "project-notes",
+  "version": "1.0.0",
+  "kind": "extension",
+  "description": "Scoped project notes",
+  "protocolVersion": 2,
+  "sdkVersion": 2,
+  "dataProtocolVersion": 2,
+  "coreVersion": ">=0.1.0 <1.0.0",
+  "image": "registry.example.com/plugins/notes@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "dependencies": [],
+  "capabilities": [
+    "project.read",
+    "plugin.data.read",
+    "plugin.data.write"
+  ],
+  "schemaVersion": 1,
+  "readableSchema": {
+    "min": 1,
+    "max": 1
+  },
+  "migrations": [],
+  "tables": [],
+  "services": {
+    "required": [
+      {
+        "name": "data",
+        "version": 1
+      }
+    ],
+    "optional": []
+  },
+  "configuration": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "actions": [
+    {
+      "name": "notes.read",
+      "intent": "read",
+      "capabilities": [
+        "plugin.data.read"
+      ],
+      "audience": "operator"
+    },
+    {
+      "name": "notes.write",
+      "intent": "write",
+      "capabilities": [
+        "plugin.data.write"
+      ],
+      "audience": "operator"
+    }
+  ],
+  "jobs": [
+    {
+      "name": "notes.maintenance",
+      "intervalSeconds": 60,
+      "capabilities": [
+        "plugin.data.write"
+      ]
+    }
+  ],
+  "events": [],
+  "secrets": [],
+  "httpBindings": [],
+  "offerings": [],
+  "selfService": {
+    "features": []
+  },
+  "areas": {
+    "operator": {
+      "pages": []
+    }
+  }
+}

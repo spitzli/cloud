@@ -3,7 +3,9 @@ title: "Send your first message"
 description: "Use a simulator recipient before sending through an enabled Mail connection."
 ---
 
-You need an enabled Mail connection, a verified sender domain and a Webdock Mail API key. Keep the key in a private server-side environment variable named `WEBDOCK_MAIL_API_KEY`.
+<Note>These examples preserve the existing Mail API contract. Use an explicitly enabled connection whose required native endpoint, dispatch and event processing have been verified. The generated reference alone does not establish rollout readiness.</Note>
+
+You need an enabled Mail connection, a verified sender domain and a Spitzli Cloud Mail API key. Keep the key in a private server-side environment variable named `WEBDOCK_MAIL_API_KEY`.
 
 <Steps>
   <Step title="Prepare the sender">Follow [Mail setup](/guides/mail). Replace the example sender below with an address on your verified domain.</Step>
@@ -12,7 +14,7 @@ You need an enabled Mail connection, a verified sender domain and a Webdock Mail
 </Steps>
 
 ```bash
-curl --fail-with-body 'https://api.webdock.dev/api/mail/v1/emails' \
+curl --fail-with-body 'https://api.spitzli.cloud/api/mail/v1/emails' \
   -H "Authorization: Bearer $WEBDOCK_MAIL_API_KEY" \
   -H 'Content-Type: application/json' \
   -H 'Idempotency-Key: order-42-receipt' \

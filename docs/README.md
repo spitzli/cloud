@@ -1,75 +1,90 @@
-# Webdock documentation
+# Spitzli Cloud documentation
 
-Mintlify root: this `docs/` directory. Configure the Mintlify Git connection for
-`spitzli/webdock`, branch `main`, and directory `docs`.
+This `docs/` directory is the canonical Mintlify source. Public pages are English;
+product links use `spitzli.cloud` and `console.spitzli.cloud`. Registered OAuth,
+passkey and MCP protocol addresses retain their established compatibility values.
 
-## Local preview
+## Validate locally
 
-Use Node.js 24:
+Use Node.js 24. The qualified CLI for this update is `mint@4.2.1184`:
 
-```sh
-npm install -g mint
+```bash
 cd docs
-mint dev --no-open
+npx --yes mint@4.2.1184 validate
+npx --yes mint@4.2.1184 broken-links --check-anchors --check-redirects
 ```
 
-## Checks
+The first command checks content, configuration, navigation and OpenAPI, then runs
+the strict local site build. It does not publish. For a local visual review:
 
-From the repository root:
+```bash
+npx --yes mint@4.2.1184 dev --no-open
+```
 
-```sh
+The repository contract check runs from the project root:
+
+```bash
 bun docs/scripts/export-mail-openapi.ts --check
 ```
 
-From `docs/`:
+Do not place credentials in examples or start real Mail sends as a documentation
+check. Our own GitHub CI uses Blacksmith exclusively. The owner waived EU-only
+placement for this scope on 2026-11-01; the organization uses US West and the
+isolated managed-builder probe passed. Regular repository workflow publication
+and source checks remain pending. The former runner is not a fallback. See
+`tools/plugin-ci/BLACKSMITH.md` from the repository root. This exception does not
+cover Mintlify builds or other services.
 
-```sh
-mint validate
-mint broken-links
-```
+## Public source and publication
+
+The canonical repository is `spitzli/cloud`; the old `spitzli/webdock` GitHub URL
+redirects to it. The intended production connection is branch `main`, directory
+`docs`, with domain `docs.spitzli.cloud`. Confirm those settings on the existing
+Mintlify project before publishing; do not create a second site or replace DNS
+as a substitute.
+
+On 2026-11-01, the live custom domain served the Mintlify Starter Kit, not these
+pages. GitHub confirms that earlier docs commits published automatically to
+`docs.webdock.dev`; its latest README-only commit skipped the Mintlify check. Both the available browser and CLI were signed out of
+Mintlify. Consequently the active publication source/branch has not been verified
+and local changes alone are not evidence of a live deployment. Review the concrete
+docs-only diff, preserve unrelated workspace work and the registered Git signing
+identity, then publish through the confirmed connection. Verify the actual domain
+and representative pages afterwards. Do not publish internal records.
 
 ## Structure
 
-- `index.mdx`, `quickstart.mdx`, `guides/`: customer and product documentation.
-- `developers/`: authentication, MCP, registry, Mail, CMS and contribution guides.
-- `openapi/mail.json`: generated Mail API reference with 29 operations.
-- `docs.json`: navigation, branding and API-reference configuration.
-- `.mintignore`: explicit publication exclusions.
+- `index.mdx`, `quickstart.mdx`, `guides/`: customer tasks and product availability.
+- `developers/`: API/authentication, plugins, provider contracts and contribution.
+- `openapi/mail.json`: generated retained Mail contract reference, 29 operations.
+- `docs.json`: navigation, branding and reference generation.
+- `.mintignore`: explicit public/internal publication boundary.
 
-Internal architecture, operations, plans/specifications, verification records
-and UX inventories remain in Git and are excluded from Mintlify. Do not publish
-them by merely removing their navigation entries. Do not modify old evidence to
-make it appear current; use current source to update the public guides.
+Architecture, operations, plans, verification, handovers, raw workspace API notes
+and plugin ideas remain internal repository records. Navigation omission alone is
+not a publication boundary. Preserve these records; do not rewrite old evidence
+to imply a current rollout.
 
-## Update the Mail contract
+## Refresh the Mail reference
 
-```sh
+```bash
 bun docs/scripts/export-mail-openapi.ts
 bun docs/scripts/export-mail-openapi.ts --check
 ```
 
-The exporter calls `mailOpenAPI()` from `apps/control-plane`, adds readable operation titles
-and groups, and resolves the relative server URL to `https://api.webdock.dev/api/mail/v1`.
-Paths, authentication, parameters and schemas remain unchanged. Review the JSON change with the source
-contract change. The documentation playground is disabled; no live send is part
-of documentation validation.
+The exporter imports `mailOpenAPI()` from `legacy/control-plane`, assigns readable
+operation titles/groups and the API navigation origin
+`https://api.spitzli.cloud/api/mail/v1`. Paths, operation IDs, authentication,
+parameters and schemas come from that retained source unchanged. This does not
+establish native Rust endpoint parity or enabled production workers. The public
+Mail guide explains availability and the reference playground stays disabled.
 
-The imported starter's MIT notice remains in `LICENSE`. The site now uses the
-existing Webdock logo and icon. Follow `AGENTS.md` and the public documentation
-maintenance page when adding pages.
+## Maintain accuracy
 
-## Content sources
-
-Public guides were checked against the current `apps/control-plane` services and the
-Console navigation, with these internal records used for rollout boundaries:
-
-- `verification/2026-10-14-console-domain.md`: browser vs. protocol origins.
-- `verification/2026-10-14-api-production.md`: API and frontend ownership.
-- `architecture/customer-tenants.md`: membership and website authorization.
-- `architecture/studio-integrations.md`: registry and OAuth contracts, checked against current handlers.
-- `operations/managed-postgresql.md`: pilot, storage and backup limits.
-- `verification/webdock-mail-relaykit-acceptance.md`: Mail implementation vs. release acceptance.
-- `operations/polar.md`: accepted agreements and sandbox/live separation.
-
-Do not expose these source records through Mintlify. Recheck current source
-and newer rollout evidence when updating a public claim.
+Read `AGENTS.md`. Verify account behavior against native Core/Console source and
+current rollout evidence. Neon sign-in does not replace Core authorization or MFA;
+a customer Neon provider connection is separate from platform identity. New shared
+and self-hosted database orders are closed; existing-resource maintenance remains.
+Build success, deployment readiness, OCI publication, registry signatures and plugin
+activation are separate states. Provider catalog records require their own runtime
+bindings. Never describe a TODO or a local qualification as generally live.

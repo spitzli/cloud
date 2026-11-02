@@ -1,0 +1,41 @@
+{
+  "acceptedArtifact": "/home/spitzli-plugin-ci/agent-candidates/bound-69a30142-artifact/webdock-agent",
+  "acceptedSHA256": "785cb77477644b1cba3fd4622809d20d810a12de6d7e3c2485d00d1fe6123a39",
+  "recompiledArtifact": "/home/spitzli-plugin-ci/agent-candidates/runtimeqa-38a9d13a-artifact/webdock-agent",
+  "recompiledSHA256": "9e553b6ef53e7cfb05e4b83c6db00673627834154ebdd0c7cca5cee70f65de47",
+  "changedSections": {
+    ".strtab": {
+      "accepted": {
+        "flags": 0,
+        "bytes": 7010239,
+        "sha256": "19002a21ab6a58e7296956b84315d9735dc73ebfebae8d9316e55882ab54c56b"
+      },
+      "recompiled": {
+        "flags": 0,
+        "bytes": 7010239,
+        "sha256": "542c4305f83eb778df87b7295a3c4459411364421da5cc256af781f7952c3737"
+      }
+    },
+    ".note.gnu.build-id": {
+      "accepted": {
+        "flags": 2,
+        "bytes": 36,
+        "sha256": "0d56979051b5e72ec982e642eb44ed7934cab5f64e738372a69530b1aa7dbc7d"
+      },
+      "recompiled": {
+        "flags": 2,
+        "bytes": 36,
+        "sha256": "6d0d23e4d0709e4ca423e241a35e85b84b2c35b065c6caec99a4181742a8efd0"
+      }
+    }
+  },
+  "allOtherELFSectionsByteIdentical": true,
+  "textRodataDataDynsymByteIdentical": true,
+  "builderPackagesByteIdentical": true,
+  "rustcVerboseByteIdentical": true,
+  "acceptedArtifactPreserved": true,
+  "strictByteHashGateWeakened": false,
+  "productionControllerActivationPerformed": false,
+  "fileLengthEqual": true,
+  "fileBytesIdentical": false
+}

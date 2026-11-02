@@ -12,6 +12,6 @@
     "payload": "4.0.0-canary.37"
   },
   "scripts": {
-    "test": "node --import tsx --test tests/*.test.ts"
+    "test": "bun test ./tests"
   }
 }

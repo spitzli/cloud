@@ -1,0 +1,1 @@
+../../hosting/migrations/0001_runtime_kind.sql

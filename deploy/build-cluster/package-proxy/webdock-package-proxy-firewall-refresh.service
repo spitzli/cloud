@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh the owned Webdock package gateway firewall
+After=webdock-build-network.service
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/webdock-package-proxy-manage --firewall
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/run/lock
+CapabilityBoundingSet=CAP_NET_ADMIN

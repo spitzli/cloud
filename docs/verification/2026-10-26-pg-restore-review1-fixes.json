@@ -1,0 +1,354 @@
+{
+  "date": "2026-10-26",
+  "status": "review1 fixes implemented; isolated SQL primitives qualified; NEW independent internal/0056 review2 required",
+  "scope": "Part B staged database restore-order/internal authority preparation and external 0056 draft; no production registration",
+  "approval": {
+    "production": false,
+    "nativeAcceptance": false,
+    "sourceHelperOrAuditPositive": false,
+    "domainAdmissionAtomicity": false,
+    "MCPActivation": false,
+    "migration0056Materialized": false,
+    "isolatedSQLPrimitives": true
+  },
+  "reviewSourceSHA256": {
+    "Cargo.lock": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+    "crates/databases/src/restore_intent.rs": "07db8b47c8e5a6fbf1886a8dc9100eb8f4b11fbc9331f8816a8ad39342bf732b",
+    "crates/databases/src/service.rs": "7c4c547f2d657258feb071c7d77bd64de68f5d446d5577d4bd8201c255e9d211",
+    "crates/databases/src/service/backups.rs": "2271df26b11c56ae03b5b5236072136acb1805ebdf995897073846bebb9d1b42",
+    "crates/databases/src/service/capacity.rs": "16f5ce99dc033bb67e530f1465035c5b356a8a85ca5fead576a75b07a312b3b6",
+    "crates/databases/src/service/orders.rs": "5e81838bd80548e1b708cc28bb06bcb6b66f66ff618f9086cc9ef9e70530e64b",
+    "crates/databases/src/service/restore_orders.rs": "668b3e2b950bc9bff67b50545407bd571c327ef9bd5dae721b64c3575e39065c",
+    "crates/databases/src/service/restore_orders/review_sql.rs": "ca26609dfba3f701c4989fa5971d7a5e4f43aec22ba90a23ffdb92077d9bacb1",
+    "docs/superpowers/plans/2026-10-26-postgresql-restore-0056.draft.sql": "b1e15eab14ccd7b5eef38f218454d3a48227b3e83126c8bf0d064d513a653b35",
+    "infra/postgres/backup/qualification_review_component.py": "7339a64c5e58c81b6edde841905145e7e5f3aa8b09efe26c7f9015aa02d71c00",
+    "infra/postgres/backup/qualification_review_component_test.py": "c6585b845b738c42d4d1dfe037855c63eb2e64c1c8a174e36f4165452fce3d32",
+    "crates/databases/src/database_authority.rs": "a2a9229db994ac2e643b58b5434dea33683abfabd65207e0548839e7084eb9af",
+    "crates/databases/src/restore-order.schema.json": "0f58695581c10a449ab662e5277346fa807b5d0b302fc6b4496b7d9141cec184",
+    "crates/databases/tests/database_authority.rs": "8a60c9c75b58dbd71c305f62d83843f009ab1135322dcc12af051949050db758",
+    "crates/databases/tests/restore_intent.rs": "c7fcce515c60056fcbba00dbefde99b9c1acca862bf547ef6e53491890fe6527",
+    "crates/databases/tests/restore_order_contract.rs": "bc19e3c7d91b3532c4701fc0b427918920f7f954a6d01ec68615deebbcad2b4a",
+    "crates/databases/tests/persistence.rs": "175d46befdf0a6f7de8ab777f865b4dd575de61fcd836e8f10eb83f75310fc38",
+    "crates/databases/src/lib.rs": "d5a14228274171302381b0d638dba510c92693ca5f17fb69f743727a99d6f1c5",
+    "crates/databases/src/management.rs": "64722643d7b1d3cb77d9f7fec7d51e8ecf3ff0b622d8caa5d4f5c2e9e01c06ee",
+    "crates/databases/src/managed-command.schema.json": "9639af6adb35136ef5052cb14856101e7444637a519d8dd848b870c6d316f26b",
+    "crates/databases/src/service/control.rs": "f4c33970430eb61e1cc4d832feda874e637b5befa88de4a6c244e6703d2bb289"
+  },
+  "reviewSourceAggregateSHA256": "df69cf1b49b5888b50193e48e82f2215f18358ebc7cc3d77ac1906783b88a934",
+  "aggregateEncoding": "SHA256 of sorted relative-path + space + SHA256 + newline",
+  "activationBoundary": {
+    "module": "service::restore_orders is cfg(test) only",
+    "newActionsRegistered": false,
+    "publicParserRoutesAppBuildersChanged": false,
+    "oldBrowserWireUnchanged": true,
+    "manualDurableClaimRenewGuardPromotionBranchesUnchanged": true,
+    "extraHashedBoundaryFiles": [
+      "crates/databases/src/lib.rs",
+      "crates/databases/src/management.rs",
+      "crates/databases/src/managed-command.schema.json",
+      "crates/databases/src/service/control.rs"
+    ]
+  },
+  "findings": [
+    {
+      "id": "R1-1",
+      "priority": "P1",
+      "finding": "Nanosecond expiry was hashed before PostgreSQL microsecond storage, breaking offer decode/replay.",
+      "response": "Normalize newly generated expiry to microseconds BEFORE hash/snapshot/INSERT. Reject sub-microsecond selected targetTime rather than silently rounding the reviewed recovery time. Source completedAt comes from the exact DB timestamp; existing reviewed source values/offers are not rewritten.",
+      "measured": "Pure expiry/selected-time tests observed RED then GREEN. Actual typed SQLx timestamp bind: normalized old logic stored .123456 against reviewed .123456789 (RED); fixed reviewed expiry survives actual PostgreSQL roundtrip (GREEN).",
+      "limit": "No genuine source offer prepare/accept was executed."
+    },
+    {
+      "id": "R1-2",
+      "priority": "P1",
+      "finding": "Caller-set marker and unlocked epoch read did not prove retained early SHARE; copied context could bypass the fence.",
+      "response": "Same worker function/subtransaction acquires actual epoch SHARE NOWAIT and creates/inserts platform-owner-only pg_temp witness, ON COMMIT DROP. Verify current namespace/owner/temp relation/column types/ACL/current backend/top-XID8/epoch without late epoch SHARE or verify-path creation. No new persistent table/general grant/public signer; actor permission remains separate.",
+      "measured": "Normalized old logic accepted marker far enough to reach absent-native-operator denial instead of witness denial (RED). Fixed component passed existing owner TEMP check, actual NOWAIT55P03, spoof and runtime read/write/truncate/alter/reown/drop/discard probes, cross-top-TX, savepoint abort and release (GREEN).",
+      "limit": "This is actual lock/witness primitive coverage, not complete admission/claim lock-order or Main recovery overlap proof."
+    },
+    {
+      "id": "R1-3",
+      "priority": "P2",
+      "finding": "Replay depended on current database order pointer and failed after resize changed that pointer.",
+      "response": "Follow original order.database_id and original Restore job/operation offer/order/hash bindings. Ignore current order/operation pointers; still require current source and target authorization. Existing-order branch never allocates or replaces original authority/generation.",
+      "measured": "Actual query over explicitly synthetic metadata CTE: old logic returned original order with NULL database/job after pointer change (RED); fixed returns exact original order/database/operation (GREEN).",
+      "limit": "No real successful resize, concurrent double acceptance, lost reply or authority revocation through commit was exercised."
+    },
+    {
+      "id": "R1-4",
+      "priority": "P2",
+      "finding": "Current xmin/mutable timestamps did not authenticate new INSERT provenance; other backend users escaped the check.",
+      "response": "Non-Deserialize FreshAllocation/queue receipts capture actual INSERT RETURNING facts for backend/order/database/two ports/job/op. After trusted updates, final tableoid/ctid/xmin facts are bound by existing private RLS HMAC to top-XID8/epoch/offer/hash/subject/session/exact IDs. Check insertion sub-XID state and reject other database/pending-backend/job/migration users. INSERT RETURNING SQL is identical in normal/test builds; no expanded table/system-column grants.",
+      "measured": "Scratch-table old UPDATE+xmin+timestamp falsely appeared fresh (RED). Fixed component passed prior committed-origin denial, released sub-XID in-progress/retained tuple, tampered MAC SQLNULL denial, aborted insertion/copied proof and replacement-slot/final-tuple/cross-TX denial (GREEN). Both actual runtime roles passed catalog/system-column and zero-row INSERT RETURNING checks.",
+      "limit": "Scratch tuple/MAC primitives do not prove application seven-object FreshAllocation construction or positive fixed audit. Fully authorized ordinary domain INSERT paths remain unexecuted."
+    },
+    {
+      "id": "R1-5",
+      "priority": "P2",
+      "finding": "Nullable required FK/JSON comparisons using <> could fail open.",
+      "response": "Required nullable links use IS DISTINCT FROM or explicit non-null guards, including accepted.database_id/op.target_revision/target.operation_id and required scope/recovery/price/intent fields.",
+      "measured": "Actual SQL primitive old missing accepted.database_id comparison returned false (RED); fixed missing and explicit NULL cases for19 required-link classes all rejected (38 cases, GREEN).",
+      "limit": "These isolated comparisons do not execute a complete positive SourceHelper/audit/admission path."
+    }
+  ],
+  "authorityAndProofBoundary": {
+    "caller": "Staged Browser caller borrows actual retained authentication/business transactions, real Principal and server-owned StoredAuthority. Native-session-context:{actualNativeSessionID} salt0 fence and current mapped/operator/org:databases:manage checks must remain held through worker commit. No fabricated LocalSession MCP fallback.",
+    "lockOrder": "One early epoch SHARE NOWAIT on SAME worker TX before retained business/auth and installation/customer/cluster/op locks. Miss rolls back/releases whole worker attempt before those guards. No second business-connection epoch acquisition, agent lock upgrade or Main recovery job/policy/op lock while held.",
+    "witness": "Owner-only transaction-local witness proves retained epoch fence ownership, not actor permission. Removal/abort yields denial; no GUC/MAC-only fallback.",
+    "allocation": "Only trusted new INSERT constructors mint facts; no public JSON/signing API. Final tuple identity plus authenticated inserting sub-XID/top-TX binding replaces timestamp/current-xmin freshness.",
+    "separateAuthorities": "Original immediate backup/restore Browser/MCP lifetime and durable committed backup-policy authority remain separate requirements. This stage does not activate MCP, expiry lease caps or revised claim/renew/promotion/manual-vs-durable behavior."
+  },
+  "successfulPrimitiveRun": {
+    "candidate": ".runtime-test/pg-restore-review1-2a4493018f31",
+    "pin": {
+      "path": ".runtime-test/pg-restore-review1-2a4493018f31/pin.json",
+      "sha256": "1938de47bbc078acf4b63732fe37ce36022ca540ac8f4b70458b3d33d21ef699"
+    },
+    "result": {
+      "path": ".runtime-test/pg-restore-review1-2a4493018f31/result.json",
+      "sha256": "5ef5ac69189b46710044fb3797b03dfa22042fbca07b7d83e4f23b195772ac01"
+    },
+    "command": "python3 -B <candidate>/sources/infra/postgres/backup/qualification_review_component.py --execute <candidate>",
+    "binaries": {
+      "database-primitives": {
+        "bytes": 243477256,
+        "sha256": "004330cc5dbd6355b87877ae3b707242fc9690857fa9c48812f64a49ad421384"
+      },
+      "host-psql": {
+        "bytes": 900464,
+        "origin": "/usr/bin/psql",
+        "sha256": "2c65c4d844d512e16aa88bc919ba8968777a76bd62c69ea531a752affda8318f",
+        "version": "PostgreSQL 18.6"
+      },
+      "webdock-migrate": {
+        "bytes": 649913360,
+        "sha256": "76107649da9277144f6747914e50932fc1ac00dc461c127c346e13d51014e2c6"
+      }
+    },
+    "compiledStructuralDDLInputSHA256": "b1e15eab14ccd7b5eef38f218454d3a48227b3e83126c8bf0d064d513a653b35",
+    "baseline": "Separately labelled syntax-normalized original old logic only; original143f raw draft not applied/parsed/tested in this run.",
+    "baselineLogicFailures": 5,
+    "fixedPasses": 5,
+    "fixedFailures": 0,
+    "phaseSeconds": {
+      "migration": 0.485,
+      "apply-baseline-syntax-normalized-external-only": 0.036,
+      "baseline-syntax-normalized-primitives": 0.164,
+      "apply-fixed-external-only": 0.036,
+      "fixed-primitives": 0.18,
+      "cleanup-remove": 2.057
+    },
+    "startupGate": {
+      "attempts": 3,
+      "authenticatedSelect1": true,
+      "seconds": 0.514,
+      "target": "127.0.0.1:33276/webdock_rls_test",
+      "transport": "host-tcp"
+    },
+    "tupleLiteralCheckpoints": [
+      "tuple checkpoint: prior committed insertion denied",
+      "tuple checkpoint: released sub-XID in progress and tuple retained",
+      "tuple checkpoint: tampered MAC denied",
+      "tuple checkpoint: aborted sub-XID and copied proof denied",
+      "tuple checkpoint: rollback slot replacement denied",
+      "tuple checkpoint: final tuple replacement denied",
+      "tuple checkpoint: cross-top-transaction replay denied",
+      "tuple checkpoint: rollback completed"
+    ],
+    "journal": {
+      "exactBeforeAfterPinnedSHA384Rows": 54,
+      "maxVersion": 55,
+      "allSuccess": true,
+      "no56journal": true,
+      "before": {
+        "path": ".runtime-test/pg-restore-review1-2a4493018f31/journal.log",
+        "sha256": "25a989103fa71b015439bb52d9f16c30dbb02d8ca37bc4e63a80abb4843f4378"
+      },
+      "after": {
+        "path": ".runtime-test/pg-restore-review1-2a4493018f31/journal-after-external.log",
+        "sha256": "25a989103fa71b015439bb52d9f16c30dbb02d8ca37bc4e63a80abb4843f4378"
+      }
+    },
+    "logs": {
+      "baseline-syntax-normalized-primitives.log": {
+        "path": ".runtime-test/pg-restore-review1-2a4493018f31/baseline-syntax-normalized-primitives.log",
+        "sha256": "9bdf256dabbcc22e2b3670118f098629ff5a1712cc7dd6f309594ffeedb4fbad"
+      },
+      "fixed-primitives.log": {
+        "path": ".runtime-test/pg-restore-review1-2a4493018f31/fixed-primitives.log",
+        "sha256": "130b8c8d782d4cfff2b4a2b4de853dcd0428add7e94b3158b45d9cc6f8f4e601"
+      },
+      "server-state.log": {
+        "path": ".runtime-test/pg-restore-review1-2a4493018f31/server-state.log",
+        "sha256": "f1f93f00d1daec1cd5ab6876635bd37fecfbd4dc17a830573da0a08afdd61eeb"
+      },
+      "server-logs.log": {
+        "path": ".runtime-test/pg-restore-review1-2a4493018f31/server-logs.log",
+        "sha256": "de3084ed3bd3cda7c685c95b805c0a62edede4cfce9b8aa0505f376301d7dd28"
+      },
+      "cleanup-inspect.log": {
+        "path": ".runtime-test/pg-restore-review1-2a4493018f31/cleanup-inspect.log",
+        "sha256": "3091db773ceec1694019bfa7ed5c70bc05306719891f0d45529b97b660a9e3a0"
+      },
+      "cleanup-remove.log": {
+        "path": ".runtime-test/pg-restore-review1-2a4493018f31/cleanup-remove.log",
+        "sha256": "b28b36ae7968108e8a15987a4045b9e4413fdd5888b1bc5cf6ab47a016c91982"
+      },
+      "cleanup-after.log": {
+        "path": ".runtime-test/pg-restore-review1-2a4493018f31/cleanup-after.log",
+        "sha256": "e66ccf07b187d08b99d59c71232a4bf326b31451df6f018b02356bfa44286071"
+      }
+    },
+    "resourceProfile": {
+      "image": "sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336",
+      "configuredLimits": {
+        "cpus": 1,
+        "imagePull": false,
+        "memoryBytes": 1610612736,
+        "migrationSeconds": 120,
+        "newNetworks": 0,
+        "persistentOrAnonymousVolumes": 0,
+        "pids": 256,
+        "readinessSeconds": 30,
+        "testSeconds": 180,
+        "tmpfsBytes": 1073741824
+      },
+      "workload": "fresh owned PostgreSQL native <=55 plus external old/fixed function overlays, isolated SQL/scratch/CTE/negative authority probes; no Source/Ready/session/backup-success fixture rows"
+    },
+    "cleanup": {
+      "exactContainerID": "03c295096c29c4616bc160bbef3c5cde7b515bb19d940fc05817f9878faf5da3",
+      "independentPositiveExactAbsence": true,
+      "volumes": 0,
+      "privateTreeAbsent": true,
+      "obligations": [],
+      "serverDiagnosticsCapturedBeforeRemoval": true,
+      "runtimeWindow": "ended"
+    },
+    "independentRootClosure": {
+      "path": "docs/verification/2026-10-26-pg-sql-primitives-root-closure.json",
+      "sha256": "eb9696fff7e55caa41ad9794d718277db236e90ebfb22e8b88c38450f9dd96a4"
+    },
+    "rootReadOnlyCorrection": "Root first used a wrong journal filename, then read actual journal-after-external.log and independently confirmed both journals; not a runtime failure."
+  },
+  "syntaxProvenance": {
+    "originalRawBaselineSHA256": "143f3ddd6762626aa66bcf8b2dee15c36e5a4e32695ddcb10998de146ce4c2f4",
+    "syntaxNormalizedBaselineSHA256": "fa9cc254f8b0b420b0289d1efce690339eb10be01dc1e083b14b8e6e8f883340",
+    "correctedExternalDraftSHA256": "b1e15eab14ccd7b5eef38f218454d3a48227b3e83126c8bf0d064d513a653b35",
+    "baselineOverlay": {
+      "path": ".runtime-test/pg-restore-review1-2a4493018f31/baseline-syntax-provenance.json",
+      "sha256": "062da45d2f52e64ef37befafc930ffaf346fae8e91e6185f948e68d23442818e"
+    },
+    "baselineDiff": {
+      "path": ".runtime-test/pg-restore-review1-2a4493018f31/baseline-syntax.diff",
+      "sha256": "6b6abdda85d3a06a200dce805de94d2027c8f8542fe82a3804f754967f83d7ff"
+    },
+    "fixedOverlay": {
+      "path": ".runtime-test/pg-restore-review1-2a4493018f31/fixed-syntax-provenance.json",
+      "sha256": "7721aa7bc66f8a180b2f78986a0cdf01d872257d5c8a43be7d8600d9604b8a16"
+    },
+    "fixedDiff": {
+      "path": ".runtime-test/pg-restore-review1-2a4493018f31/fixed-syntax.diff",
+      "sha256": "4467e27f3963dc4a9fea165fe1d4a8250be35c33a55177dca35f4c6da17b6d21"
+    },
+    "change": "Exactly one billing CASE per file, parentheses only/+2bytes; epoch/audit contain no CASE. Expected occurrence mismatch aborts preparation."
+  },
+  "preservedHistory": [
+    {
+      "kind": "preparation/fake-runner failures",
+      "candidate": ".runtime-test/pg-restore-review1-a74e0ecf33c5",
+      "pinSHA256": "39efc1f6fae2a59bd5404dd7896e8a1313ef42e964f8050e258a3bf280eb9e86",
+      "result": "never executed; original fake runner defects and logs retained"
+    },
+    {
+      "kind": "Root bytecode boundary failure",
+      "candidate": ".runtime-test/pg-restore-review1-a8258c4cbfe9",
+      "result": "initial invocation exited before secrets/Docker/SQL on Root-generated0755cache; not baselineRED. Root withdrew premature validation, removed only its cache and revalidated -B.",
+      "evidence": {
+        "path": "docs/verification/2026-10-26-pg-pin-root-bytecode-correction.json",
+        "sha256": "fb1fc37513af3796d32b87c86b791386a130d2fbbba1a651a5ce8e65f1d45bb3"
+      },
+      "failureLog": {
+        "path": "/tmp/webdock-pg-review1-20261026/released-run-a8258.log",
+        "sha256": "97bee19a8abe499b85f7eba620cc70a2cdf1d9897290f92c3092cbbfcceab9ea"
+      }
+    },
+    {
+      "kind": "connectivity/bootstrap harness failure",
+      "candidate": ".runtime-test/pg-restore-review1-a8258c4cbfe9",
+      "result": "actual next invocation Error:Database before external DDL/tests; UNIX temporary-server explanation remains plausible/unproven for this run; exact cleanup closed.",
+      "evidence": {
+        "path": ".runtime-test/pg-restore-review1-a8258c4cbfe9/result.json",
+        "sha256": "b1cd6fb01cd33ae2ecbbe16d3fee7afa62ac70b1359f8738e57fcb255d7694aa"
+      }
+    },
+    {
+      "kind": "original raw baseline parser and optional health-template failures",
+      "candidate": ".runtime-test/pg-restore-review1-945f155d53ba",
+      "result": "TCP/bootstrap/before-journal passed; original143f source function did not compile at bare CASE/THEN. Zero logic tests. Health map lookup failed separately; server logs captured. Exact cleanup closed.",
+      "evidence": {
+        "path": ".runtime-test/pg-restore-review1-945f155d53ba/result.json",
+        "sha256": "07c91a37c8a4b9bb995d04d1f5bb5f4f5cdc683455a0b661d469cef66752ecbd"
+      }
+    },
+    {
+      "kind": "component helper SQLNULL decode failure",
+      "candidate": ".runtime-test/pg-restore-review1-add07af8cd4b",
+      "result": "5 intended normalized-oldlogic failures, fixed4pass/1helper failure; no overallGREEN/final-journal claim. Changed only test helper Option<Value> decode and bounded literal checkpoints; all original MAC/null assertions preserved. Exact cleanup closed.",
+      "evidence": {
+        "path": ".runtime-test/pg-restore-review1-add07af8cd4b/result.json",
+        "sha256": "0ce5cf017080c6ec54adbf1ce86bbef4ccf617967f0de3bd15f841ff17d784f8"
+      },
+      "independentRootClosure": {
+        "path": "docs/verification/2026-10-26-pg-add07-root-closure.json",
+        "sha256": "2ff8cbd29cddb416910fad909254ff2a9a9dc1d76a555af6acc80721fa1112d6"
+      }
+    },
+    {
+      "kind": "original source checkpoint",
+      "evidence": {
+        "path": "/tmp/webdock-pg-internal-admission-evidence.json",
+        "sha256": "6dd2c0fa3ad6a18e99a660e9bd5fb8d222d823bce6824ded3fff4cc9da7d3730"
+      },
+      "result": "6dd2 original four-source checkpoint and all copied baselines/logs/pins retained unchanged."
+    }
+  ],
+  "finitePreparationChecks": {
+    "rust": "cargo test --offline --locked -p webdock-databases --lib plus contracts/routes/binding_contracts/management_contracts/backup_contracts/restore_intent/database_authority/restore_order_contract/persistence -j2:46PASS/7IGNORED; final unit24PASS/6IGNORED",
+    "strictClippy": "cargo clippy --offline --locked -p webdock-databases --lib --tests -j2 -- -D warnings:PASS",
+    "runnerPure": "python3 -B infra/postgres/backup/qualification_review_component_test.py:26PASS",
+    "freshELF": "004330 current structural include_str input b1e15; prior b36 compiled6d7 retained separately",
+    "runtimeFailuresNotCountedAsRed": "boundary/connectivity/parser/helper failures remain distinct from the five measured old-logic REDs"
+  },
+  "frozenInputs": {
+    "0054": {
+      "sha256": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+      "status": "DRAFT, not final freeze/rebase approval"
+    },
+    "0055": {
+      "sha256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+      "status": "frozen"
+    },
+    "rootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+    "UI24AggregateSHA256": "31de2fd8d9d09aba46e613d467635bf05126d2f90798c3d65853063a1febc0f2",
+    "UI24HashesVerifiedUnchanged": true,
+    "original143fVerifiedUnchanged": true
+  },
+  "remainingRequiredBeforeActivation": [
+    "NEW independent internal/0056 review2 of this current source inventory",
+    "Final0054 freeze, 0056 rebase/review and separately coordinated materialization/pins",
+    "Genuine actual-source factory SourceHelper/historical-role ciphertext/private key recovery and positive fixed-audit/admission qualification",
+    "Concurrent worker polling never-Create, cross-transaction double accept/lost reply/rollback and controlled Main recovery overlap tests",
+    "Actual original Browser/MCP guard/revocation/expiry through commit/claim/renew/checkpoint/promotion; REST/MCP routing and current ceilings",
+    "Real Console/Core/Native/TLS/SQL/PITR/source-unavailable journey, measured workload-only recovery profile and exact custody cleanup"
+  ],
+  "publicCommitments": {
+    "publicAndOperatorConsoleRestoreDisabled": true,
+    "publicRecoveryAvailable": false,
+    "rpoSeconds": null,
+    "rtoSeconds": null,
+    "recoveryWindow": null,
+    "lastRestoreTest": null,
+    "oldOffersAndPricesImmutable": true
+  },
+  "r22Changes": "Evidence JSON only; no source/DDL/tool/build/fixture/provider/runtime change. Runtime idle; all historical artifacts preserved."
+}

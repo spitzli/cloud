@@ -1,0 +1,68 @@
+{
+  "scope": "pinned image account and unprivileged executable smoke only; quota-backed PG init/restore and CE mailbox behavior pending",
+  "cases": [
+    {
+      "case": "pg-account-uid",
+      "image": "docker.io/library/postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+      "configuredUser": "65532:65532",
+      "observed": "70",
+      "networkMode": "none",
+      "allCapabilitiesDropped": true,
+      "readOnlyRoot": true
+    },
+    {
+      "case": "pg-account-gid",
+      "image": "docker.io/library/postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+      "configuredUser": "65532:65532",
+      "observed": "70",
+      "networkMode": "none",
+      "allCapabilitiesDropped": true,
+      "readOnlyRoot": true
+    },
+    {
+      "case": "pg-runtime",
+      "image": "docker.io/library/postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+      "configuredUser": "70:70",
+      "observed": "70",
+      "networkMode": "none",
+      "allCapabilitiesDropped": true,
+      "readOnlyRoot": true
+    },
+    {
+      "case": "ce-runtime",
+      "image": "webdock.local/mail-stalwart@sha256:09460db6473d8d7103836c806603096bc6d9b59ad3d90ce8276d553e88e2c1ad",
+      "configuredUser": "65532:65532",
+      "observed": "65532",
+      "networkMode": "none",
+      "allCapabilitiesDropped": true,
+      "readOnlyRoot": true
+    },
+    {
+      "case": "pg-version",
+      "image": "docker.io/library/postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+      "configuredUser": "70:70",
+      "observed": "postgres (PostgreSQL) 18.3",
+      "networkMode": "none",
+      "allCapabilitiesDropped": true,
+      "readOnlyRoot": true
+    }
+  ],
+  "previousProbe": "failed an unverified UID999 assumption; no result used as acceptance",
+  "postgresUID": 70,
+  "postgresGID": 70,
+  "ceUID": 65532,
+  "status": "passed",
+  "cleanup": {
+    "exactContainersAbsent": 5,
+    "exactAnonymousVolumesAbsent": 6,
+    "existingImagesAndServicesChanged": false,
+    "privateDirectoryAbsent": true
+  },
+  "postgresImageLayout": {
+    "PGDATA": "/var/lib/postgresql/18/docker",
+    "declaredVolumePaths": [
+      "/var/lib/postgresql"
+    ],
+    "imageID": "sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911"
+  }
+}

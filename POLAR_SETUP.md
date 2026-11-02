@@ -7,13 +7,13 @@ API: `https://api.polar.sh`. This configuration uses **live production**, not sa
 
 ## Implementation
 
-The npm monorepo already uses TypeScript, Bun/Elysia in `apps/control-plane`, and `@polar-sh/sdk` 1.0.2. No adapter or additional SDK dependency was installed. The installed SDK's current versioned `createPolar` and async `webhooks.validateEvent` APIs are used directly.
+The Bun monorepo already uses TypeScript, Bun/Elysia in `legacy/control-plane`, and `@polar-sh/sdk` 1.0.2. No adapter or additional SDK dependency was installed. The installed SDK's current versioned `createPolar` and async `webhooks.validateEvent` APIs are used directly.
 
-- `apps/control-plane/src/modules/billing/hosted-client.ts`: one reusable SDK client selected by `POLAR_SERVER`.
-- `apps/control-plane/src/protocols/polar-hosted.ts`: `GET /checkout?products=<id>` creates a hosted checkout; `POST /api/webhook/polar` verifies the original signed bytes before acknowledging events.
-- `apps/control-plane/src/index.ts`: mounts these routes when the billing domain and environment token are configured.
-- `apps/control-plane/tests/polar-hosted.test.ts`: product validation, sanitized failures, raw signature verification and tampered-body rejection.
-- Private, ignored `apps/control-plane/.env`: `POLAR_ACCESS_TOKEN`, `POLAR_WEBHOOK_SECRET`, `POLAR_SERVER` (names only).
+- `legacy/control-plane/src/modules/billing/hosted-client.ts`: one reusable SDK client selected by `POLAR_SERVER`.
+- `legacy/control-plane/src/protocols/polar-hosted.ts`: `GET /checkout?products=<id>` creates a hosted checkout; `POST /api/webhook/polar` verifies the original signed bytes before acknowledging events.
+- `legacy/control-plane/src/index.ts`: mounts these routes when the billing domain and environment token are configured.
+- `legacy/control-plane/tests/polar-hosted.test.ts`: product validation, sanitized failures, raw signature verification and tampered-body rejection.
+- Private, ignored `legacy/control-plane/.env`: `POLAR_ACCESS_TOKEN`, `POLAR_WEBHOOK_SECRET`, `POLAR_SERVER` (names only).
 
 The hosted checkout has no custom success URL or confirmation page. No new customer-portal route was added: Polar hosts the portal and emails customers its link. Existing Webdock agreement/subscription functionality remains separate. The new `order.paid` and `customer.state_changed` handlers intentionally contain TODOs and do not grant access. Keep this distinction when testing a standalone checkout.
 
@@ -45,7 +45,7 @@ A Python urllib probe was rejected by an edge browser-signature rule (403). The 
 
 ## Local development
 
-Use `npm run dev -w @webdock/api` with the existing local database configuration and `WEBDOCK_API_DOMAINS` including `auth,portal,registry,billing`. The full Webdock API also requires its usual DB/auth configuration; the three Polar keys do not replace it. No long-running dev server was started by this setup.
+Use `bun run --filter @webdock/api dev` with the existing local database configuration and `WEBDOCK_API_DOMAINS` including `auth,portal,registry,billing`. The full Webdock API also requires its usual DB/auth configuration; the three Polar keys do not replace it. No long-running dev server was started by this setup.
 
 ## Webdock catalog
 
@@ -59,7 +59,7 @@ The original operator-authorized catalog contained 35 draft entries from the own
 
 All 17 fixed-price entries are mapped as ready in both Polar environments through the operator workflow. Webdock sales and enforcement remain disabled. The earlier one-time Test Product is now archived. The live organization connection has also been saved successfully through the authenticated Webdock operator API.
 
-The current source inventory is `apps/control-plane/src/modules/billing/initial-catalog.ts`. Non-website prices follow the source's **net EUR** basis. Price ranges, starting prices and unspecified amounts are quote-only, never zero-price products. Service descriptions preserve the original capacity/backup/SLA limits. Additional websites reuse a website package; customer-specific sponsorships and individual plans are not sold as reusable free catalog products.
+The current source inventory is `legacy/control-plane/src/modules/billing/initial-catalog.ts`. Non-website prices follow the source's **net EUR** basis. Price ranges, starting prices and unspecified amounts are quote-only, never zero-price products. Service descriptions preserve the original capacity/backup/SLA limits. Additional websites reuse a website package; customer-specific sponsorships and individual plans are not sold as reusable free catalog products.
 
 Migration `0021_full_catalog.sql` adds services, one-time intervals and nullable prices for quotes. Manual fulfillment is explicit; the existing SQL purchase function remains website-only. Quote-only entries cannot be published to Polar. No additional customer resources, service grants, sales enablement or operational approvals are created by seeding the catalog.
 

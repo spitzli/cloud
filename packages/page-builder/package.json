@@ -10,7 +10,7 @@
     "./collection": "./src/collection.ts",
     "./bridge": "./src/bridge.ts"
   },
-  "scripts": { "test": "node --experimental-strip-types --test tests/*.test.ts" },
+  "scripts": { "test": "bun test ./tests" },
   "peerDependencies": {
     "pg": "8.16.3",
     "payload": "4.0.0-canary.37"

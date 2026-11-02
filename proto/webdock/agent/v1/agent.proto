@@ -1,0 +1,239 @@
+syntax = "proto3";
+package webdock.agent.v1;
+
+// Hosted by Core. Agents initiate every RPC over one authenticated HTTP/2 channel.
+// The server must authenticate the transport peer and bind it to identity on every RPC.
+service AgentControl {
+  rpc Register(Hello) returns (Welcome);
+  rpc Heartbeat(HeartbeatRequest) returns (Ack);
+  rpc Poll(PollRequest) returns (Dispatch);
+  rpc Guard(GuardRequest) returns (GuardReply);
+  rpc Complete(Receipt) returns (Ack);
+}
+message AgentIdentity { string installation = 1; string agent_id = 2; uint64 generation = 3; }
+message Hello { AgentIdentity identity = 1; uint32 protocol_version = 2; string certificate_sha256 = 3; bytes capabilities_json = 4; }
+message Welcome { bool accepted = 1; uint32 protocol_version = 2; uint64 generation = 3; }
+message HeartbeatRequest { AgentIdentity identity = 1; uint64 sequence = 2; uint64 observed_at = 3; bytes observation_json = 4; }
+message PollRequest { AgentIdentity identity = 1; }
+message Ack { bool accepted = 1; }
+enum Intent { INTENT_UNSPECIFIED = 0; APPLY = 1; STOP = 2; INSPECT = 3; LOGS = 4; METRICS = 5; RETIRE = 6; PURGE_STORAGE = 7; }
+// spec_json is the bounded, strict RuntimeSpec; it cannot contain host commands or arbitrary YAML.
+message Command { string operation_id = 1; uint64 generation = 2; uint64 lease_until = 3; string authorization = 4; Intent intent = 5; bytes spec_json = 6; uint32 log_tail = 7; optional string expected_runtime_id = 8; bytes material_json = 9; }
+message Dispatch { Command command = 1; }
+message GuardRequest { AgentIdentity identity = 1; string operation_id = 2; uint64 generation = 3; uint64 lease_until = 4; string authorization = 5; Intent intent = 6; string request_sha256 = 7; }
+message GuardReply { bool allowed = 1; }
+enum Outcome { OUTCOME_UNSPECIFIED = 0; SUCCEEDED = 1; NEEDS_RECONCILIATION = 2; REJECTED = 3; }
+message Receipt {
+  AgentIdentity identity = 1;
+  string operation_id = 2;
+  uint64 generation = 3;
+  string request_sha256 = 4;
+  Outcome outcome = 5;
+  string error_code = 6;
+  oneof result { bytes observed_json = 7; bytes logs_utf8 = 8; bytes metrics_json = 9; }
+}
+
+// Separate native database domain. Uses the same authenticated outbound channel;
+// application commands and their existing journal hashes remain unchanged.
+service DatabaseControl {
+  rpc PollDatabase(PollRequest) returns (DatabaseDispatch);
+  rpc GuardDatabase(DatabaseGuardRequest) returns (GuardReply);
+  rpc CheckpointDatabase(DatabaseCheckpointRequest) returns (Ack);
+  rpc CompleteDatabase(DatabaseReceipt) returns (Ack);
+  rpc DatabaseObservationConfig(PollRequest) returns (DatabaseObservationPlan);
+  rpc ReportDatabaseObservations(DatabaseObservationRequest) returns (Ack);
+}
+// Strict shared database DTO JSON. material_json is ephemeral and MUST NOT be journaled.
+message DatabaseCommand {
+  bytes spec_json = 1;
+  bytes lease_json = 2;
+  uint64 lease_until = 3;
+  string request_sha256 = 4;
+  bytes material_json = 5;
+}
+message DatabaseDispatch { DatabaseCommand command = 1; }
+message DatabaseGuardRequest {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  bytes lease_json = 3;
+  string request_sha256 = 4;
+}
+message DatabaseCheckpointRequest {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  string request_sha256 = 3;
+  bytes checkpoint_json = 4;
+}
+message DatabaseReceipt {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  string request_sha256 = 3;
+  bytes completion_json = 4;
+}
+// Private durable callback envelopes: no decrypted runtime credentials/material.
+// Authorization lease tokens remain private and require the protected agent outbox.
+message DatabaseDelivery {
+  oneof callback {
+    DatabaseCheckpointRequest checkpoint = 1;
+    DatabaseReceipt receipt = 2;
+  }
+}
+
+message DatabaseObservationPlan { bytes configuration_json = 1; }
+message DatabaseObservationRequest { AgentIdentity identity = 1; bytes observation_json = 2; }
+
+// Same enrolled outbound channel and transport authority, with independent Mail custody.
+service MailControl {
+  rpc PollMail(PollRequest) returns (MailDispatch);
+  rpc GuardMail(MailGuardRequest) returns (GuardReply);
+  rpc CheckpointMail(MailCheckpointRequest) returns (Ack);
+  rpc CompleteMail(MailReceipt) returns (Ack);
+}
+message MailCommand {
+  bytes spec_json = 1;
+  bytes lease_json = 2;
+  uint64 lease_until = 3;
+  string request_sha256 = 4;
+  // Ephemeral credentials: never copy this field into a general command journal or callback.
+  bytes material_json = 5;
+  // Accepted nonsecret checkpoint, permitting restart after a recovery-container replacement.
+  bytes checkpoint_json = 6;
+}
+message MailDispatch { MailCommand command = 1; }
+message MailGuardRequest {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  bytes lease_json = 3;
+  string request_sha256 = 4;
+}
+message MailCheckpointRequest {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  string request_sha256 = 3;
+  bytes checkpoint_json = 4;
+}
+message MailReceipt {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  string request_sha256 = 3;
+  bytes completion_json = 4;
+}
+// Exact protected callback custody; contains lease tokens but no runtime credentials.
+message MailDelivery {
+  oneof callback {
+    MailCheckpointRequest checkpoint = 1;
+    MailReceipt receipt = 2;
+  }
+}
+
+// Optional configuration domain on the same authenticated enrollment boundary.
+// An older Core may return Unimplemented; agents retain the healthy shared connection.
+service MailConfigurationControl {
+  rpc PollMailConfiguration(PollRequest) returns (MailConfigurationDispatch);
+  rpc GuardMailConfiguration(MailConfigurationGuardRequest) returns (GuardReply);
+  rpc CheckpointMailConfiguration(MailConfigurationCheckpointRequest) returns (Ack);
+  rpc CompleteMailConfiguration(MailConfigurationReceipt) returns (Ack);
+}
+message MailConfigurationCommand {
+  bytes spec_json = 1;
+  bytes lease_json = 2;
+  uint64 lease_until = 3;
+  string request_sha256 = 4;
+  // Ephemeral passwords, never persisted in an agent journal or callback.
+  bytes material_json = 5;
+  // Accepted bounded nonsecret handoff/checkpoint history for this exact live lease.
+  bytes checkpoints_json = 6;
+}
+message MailConfigurationDispatch { MailConfigurationCommand command = 1; }
+message MailConfigurationGuardRequest {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  bytes lease_json = 3;
+  string request_sha256 = 4;
+}
+message MailConfigurationCheckpointRequest {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  string request_sha256 = 3;
+  bytes checkpoint_json = 4;
+}
+message MailConfigurationReceipt {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  string request_sha256 = 3;
+  bytes completion_json = 4;
+}
+message MailConfigurationDelivery {
+  oneof callback {
+    MailConfigurationCheckpointRequest checkpoint = 1;
+    MailConfigurationReceipt receipt = 2;
+  }
+}
+
+// Plugin workloads: Core-validated objects of one unit, already pinned to a namespace with owner
+// labels. The agent applies them with server-side apply, prunes objects that left the unit,
+// reports what it observes, and deletes everything of a unit that is being removed.
+service WorkloadControl {
+  rpc PollWorkloads(PollRequest) returns (WorkloadBatch);
+  rpc ReportWorkload(WorkloadReport) returns (Ack);
+}
+message Workload { string plugin_id = 1; string unit = 2; string namespace = 3; uint64 revision = 4; bytes objects_json = 5; bool removing = 6; }
+message WorkloadBatch { repeated Workload workloads = 1; }
+message WorkloadReport {
+  AgentIdentity identity = 1;
+  string plugin_id = 2;
+  string unit = 3;
+  uint64 revision = 4;
+  bytes observed_json = 5;
+  string error = 6;
+  bool removed = 7;
+}
+
+// Installation-owned runtimes, independent of customer/project workload ownership.
+service PluginRuntimeControl {
+  rpc PollPluginRuntime(PluginRuntimePollRequest) returns (PluginRuntimeDispatch);
+  rpc GuardPluginRuntime(PluginRuntimeGuardRequest) returns (GuardReply);
+  rpc CheckpointPluginRuntime(PluginRuntimeCheckpointRequest) returns (Ack);
+  rpc CompletePluginRuntime(PluginRuntimeReceipt) returns (Ack);
+}
+message PluginRuntimeCommand {
+  bytes spec_json = 1;
+  bytes lease_json = 2;
+  string request_sha256 = 3;
+  // Ephemeral private files, never copied into durable callback custody.
+  bytes material_json = 4;
+  bytes checkpoint_json = 5;
+}
+// Identity retains PollRequest's wire tag; old clients omit max_spec_version (legacy v1).
+message PluginRuntimePollRequest { AgentIdentity identity = 1; uint32 max_spec_version = 2; }
+message PluginRuntimeDispatch {
+  PluginRuntimeCommand command = 1;
+  // Absent/zero retains the old server's version1 behavior.
+  uint32 supported_spec_version = 2;
+}
+message PluginRuntimeGuardRequest {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  bytes lease_json = 3;
+  string request_sha256 = 4;
+}
+message PluginRuntimeCheckpointRequest {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  bytes lease_json = 3;
+  string request_sha256 = 4;
+  bytes checkpoint_json = 5;
+}
+message PluginRuntimeReceipt {
+  AgentIdentity identity = 1;
+  bytes spec_json = 2;
+  bytes lease_json = 3;
+  string request_sha256 = 4;
+  bytes completion_json = 5;
+}
+message PluginRuntimeDelivery {
+  oneof callback {
+    PluginRuntimeCheckpointRequest checkpoint = 1;
+    PluginRuntimeReceipt receipt = 2;
+  }
+}

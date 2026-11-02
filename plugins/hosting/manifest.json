@@ -1,0 +1,354 @@
+{
+  "name": "hosting",
+  "version": "0.1.0",
+  "kind": "extension",
+  "description": "Run web apps and services from a container image. You choose the image, the port and the settings; Webdock starts, restarts and watches it.",
+  "protocolVersion": 2,
+  "sdkVersion": 2,
+  "dataProtocolVersion": 2,
+  "coreVersion": ">=0.1.0 <1.0.0",
+  "image": "127.0.0.1:5005/webdock/hosting@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "dependencies": [],
+  "capabilities": [
+    "plugin.workloads"
+  ],
+  "workloads": {
+    "kinds": [
+      "apps/v1/Deployment",
+      "v1/Service",
+      "v1/Secret",
+      "traefik.io/v1alpha1/IngressRoute",
+      "cert-manager.io/v1/Certificate"
+    ]
+  },
+  "schemaVersion": 1,
+  "readableSchema": {
+    "min": 1,
+    "max": 1
+  },
+  "migrations": [],
+  "tables": [],
+  "services": {
+    "required": [],
+    "optional": []
+  },
+  "configuration": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "actions": [
+    {
+      "name": "apps.create",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "app",
+      "feature": "create-apps",
+      "resource": "create",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "image",
+          "port"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Name"
+          },
+          "image": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "Container image"
+          },
+          "port": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "Port the app listens on"
+          }
+        }
+      }
+    },
+    {
+      "name": "apps.view",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "apps.logs",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "apps.deploy",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "image",
+          "port"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "image": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "Container image"
+          },
+          "port": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "Port the app listens on"
+          }
+        }
+      }
+    },
+    {
+      "name": "apps.env",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "env"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "env": {
+            "type": "string",
+            "maxLength": 30000,
+            "description": "Environment variables, one KEY=value per line"
+          }
+        }
+      }
+    },
+    {
+      "name": "apps.power",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "action"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "start",
+              "stop",
+              "restart"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "apps.resize",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "app",
+      "feature": "resize-apps",
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "memory_mb"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "memory_mb": {
+            "type": "integer",
+            "enum": [
+              128,
+              256,
+              512,
+              1024,
+              2048
+            ],
+            "description": "Memory (MB)"
+          }
+        }
+      }
+    },
+    {
+      "name": "apps.domains",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "domains"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domains": {
+            "type": "string",
+            "maxLength": 2600,
+            "description": "Own domains, one per line"
+          }
+        }
+      }
+    },
+    {
+      "name": "apps.delete",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "app",
+      "feature": "create-apps",
+      "resource": "delete",
+      "destructive": true,
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    }
+  ],
+  "jobs": [],
+  "offerings": [
+    {
+      "id": "app",
+      "label": "App",
+      "description": "A web app or service running from a container image, such as nginx:stable-alpine or your own image from a registry.",
+      "highlights": [
+        "Starts with 256 MB of memory; more if your provider allows it",
+        "Environment variables are stored encrypted",
+        "Logs, restart, stop and start in the console",
+        "Deploy a new image or port at any time",
+        "Your own verified domains, with certificates"
+      ]
+    }
+  ],
+  "selfService": {
+    "features": [
+      {
+        "id": "create-apps",
+        "label": "Create apps",
+        "offering": "app",
+        "description": "Create and delete apps from a container image"
+      },
+      {
+        "id": "resize-apps",
+        "label": "Change app memory",
+        "offering": "app",
+        "description": "Choose how much memory an app gets"
+      }
+    ]
+  },
+  "areas": {
+    "operator": {
+      "pages": []
+    },
+    "selfService": {
+      "pages": [
+        {
+          "id": "app",
+          "label": "App",
+          "action": "apps.view",
+          "resource": true
+        }
+      ]
+    }
+  },
+  "events": [],
+  "secrets": [],
+  "httpBindings": [],
+  "api": [],
+  "mcp": [],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/hosting-resource.png",
+      "caption": "Actual Hosting resource panel; synthetic project, app and logs. No cluster operations.",
+      "alt": "Hosting status, memory, deployment and domain controls with synthetic data"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-hosting",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-hosting/blob/HEAD/README.md"
+}

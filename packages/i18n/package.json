@@ -11,7 +11,7 @@
     "./picker": "./src/picker.tsx"
   },
   "scripts": {
-    "test": "node --import tsx --test tests/*.test.ts",
+    "test": "bun test ./tests",
     "extract": "python3 scripts/extract.py",
     "compile": "python3 scripts/compile.py",
     "catalog:check": "python3 scripts/compile.py --check"

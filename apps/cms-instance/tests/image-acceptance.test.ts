@@ -8,13 +8,33 @@ const phase = process.env.CMS_IMAGE_ACCEPTANCE_PHASE;
 const expectedPath = "/data/acceptance-image.json";
 test(
   "immutable image serves exact 10 MiB media and retains page/media across recreation",
-  { skip: !["write", "read"].includes(phase ?? "") },
+  {
+    skip: !["write", "read", "binding-rejection"].includes(phase ?? ""),
+    timeout: 120_000,
+  },
   async () => {
     const origin = new URL(process.env.CMS_IMAGE_TEST_ORIGIN!);
     assert.ok(
       ["cms", "localhost", "127.0.0.1"].includes(origin.hostname),
       "Disposable fixture origin only.",
     );
+    if (phase === "binding-rejection") {
+      for (let i = 0; i < 3; i++) {
+        let response: Response | undefined;
+        for (let attempt = 0; attempt < 100; attempt++) {
+          try {
+            response = await fetch(new URL("/api/health", origin), {
+              signal: AbortSignal.timeout(5000),
+            });
+            break;
+          } catch {}
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        assert.equal(response?.status, 503);
+        assert.deepEqual(await response!.json(), { status: "unavailable" });
+      }
+      return;
+    }
     let ready = false;
     for (let count = 0; count < 100; count++) {
       try {
@@ -26,6 +46,19 @@ test(
     assert.equal(ready, true, "Image health must verify DB and media volume.");
     const hash = (bytes: Buffer) =>
       createHash("sha256").update(bytes).digest("hex");
+    if (process.env.CMS_LEGACY_ACCEPTANCE === "true") {
+      const legacy = JSON.parse(
+        await readFile("/data/transfers/legacy-media.json", "utf8"),
+      );
+      const response = await fetch(
+        new URL(`/api/media/file/${legacy.filename}`, origin),
+      );
+      assert.equal(response.status, 200);
+      assert.equal(
+        hash(Buffer.from(await response.arrayBuffer())),
+        legacy.hash,
+      );
+    }
     if (phase === "read") {
       const expected = JSON.parse(await readFile(expectedPath, "utf8"));
       const page = await fetch(
@@ -144,7 +177,7 @@ test(
     );
     form.set(
       "file",
-      new File([new Uint8Array(bytes)], "../../injected.html", {
+      new File([new Uint8Array(bytes)], "../../injected.png", {
         type: "image/png",
       }),
     );
@@ -155,6 +188,15 @@ test(
     const media = await uploaded.json();
     assert.equal(uploaded.status, 201, JSON.stringify(media));
     assert.match(media.doc.filename, /^[a-f0-9-]{36}\.png$/);
+    const descriptor = await (
+      await transport(`/api/cms?module=media&id=${media.doc.id}&locale=en`)
+    ).json();
+    assert.equal(
+      descriptor.fields.some((field: { name: string }) =>
+        ["contentSha256", "prefix", "_objectKey"].includes(field.name),
+      ),
+      false,
+    );
     const image = await fetch(
       new URL(`/api/media/file/${media.doc.filename}`, origin),
     );

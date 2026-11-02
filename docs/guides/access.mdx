@@ -1,24 +1,26 @@
 ---
 title: "Accounts and access"
-description: "Manage account security, workspace membership and website permissions."
+description: "Sign in, secure your account and check workspace and website access."
 ---
 
-Your account identity, workspace membership and website permissions are separate. Changing a customer's contact email does not invite that person or give them access.
+Open [Console](https://console.spitzli.cloud) with the email address approved for your account. Account identity, workspace membership and website permissions are separate. A customer's contact email does not grant access.
+
+## First sign-in
+
+If you have not set your password, select **Forgot password?** on the sign-in page. Enter your confirmed account email, open the single-use email link and choose your password. Complete any multi-factor challenge shown after sign-in.
+
+Spitzli Cloud uses Managed Neon Auth for sign-in. Core retains account approval, workspace roles, website grants, MFA and passkey checks. Connecting your own Neon account is a [separate provider connection](/guides/byok-neon).
 
 ## Workspace membership
 
-An authorized administrator invites you. Complete account setup and accept the invitation before opening the workspace. Roles include owner, administrator and member; platform operator permissions are separate. Use the membership controls available to your role. Last-administrator protections can block removal.
+An authorized administrator invites members. Complete account setup and accept the invitation before opening the workspace. Owners, administrators and members have different permissions; workspace roles do not grant platform operator access. Last-administrator protections can block removal.
 
-## Website access
+For websites, owners and administrators of a mapped workspace can receive administrator access. Members need an enabled website grant. A revoked grant, disabled binding or suspended account can still prevent access.
 
-Owners and administrators of a mapped workspace can receive administrator access to websites in that workspace. Ordinary members need an enabled website grant. An explicitly revoked grant, disabled binding or suspended account can prevent access even when other permissions exist.
+## Secure your account
 
-Sign in through Console. Website CMS identities are managed by Webdock; they are not independent passwords to reset at each website.
+Open **Account security** from Console's account menu to manage your password, passkeys, MFA and recovery codes. Operators must complete the required security setup. MFA-enabled accounts must complete the additional challenge after their password is accepted.
 
-## Account security
+<Note>Existing passkeys and authentication issuer addresses remain bound to `auth.webdock.dev`. Start account actions from Console; changing the hostname of an authentication link can break the flow.</Note>
 
-At [My account](https://auth.webdock.dev/account), manage passwords, passkeys and multi-factor authentication. Passkeys are bound to `auth.webdock.dev` and require device verification. Operators must complete the required security setup.
-
-Central sign-out invalidates access tied to the current session. Other sessions are managed separately. OAuth clients must handle expired or revoked access.
-
-<Note>Browser cookies are host-specific. Your first Console visit may establish a new application session through central sign-in, even if you previously used Studio.</Note>
+Central sign-out invalidates access tied to the current session. Manage other sessions separately. Website CMS access uses your Spitzli Cloud identity rather than an independent website password.

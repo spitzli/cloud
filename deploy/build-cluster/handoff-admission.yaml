@@ -1,0 +1,30 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: webdock-build-handoff
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    namespaceSelector:
+      matchLabels:
+        webdock.dev/role: isolated-builds
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [secrets]
+  validations:
+    - expression: "object.type == 'Opaque' && has(object.immutable) && object.immutable"
+      message: Only immutable attempt handoffs are permitted, never service-account credentials.
+    - expression: "object.metadata.name.matches('^wd-input-[a-f0-9]{40}-[1-9][0-9]{0,9}$') && has(object.metadata.annotations) && 'webdock.dev/handoff-sha256' in object.metadata.annotations && object.metadata.annotations['webdock.dev/handoff-sha256'].matches('^[a-f0-9]{64}$')"
+      message: Handoff identity and digest must be bound to an execution attempt.
+    - expression: "has(object.data) && size(object.data) == 1 && 'attempt.json' in object.data && size(object.data['attempt.json']) <= 98304 && (!has(object.stringData) || size(object.stringData) == 0)"
+      message: Only the bounded confidential attempt file is allowed.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: webdock-build-handoff
+spec:
+  policyName: webdock-build-handoff
+  validationActions: [Deny]

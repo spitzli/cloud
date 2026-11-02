@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-25",
+  "status": "Frontend and contracts gates passed; full Rust/native scope still in progress",
+  "checks": [
+    {
+      "command": "cargo run --manifest-path tools/quality/Cargo.toml --locked -- frontend",
+      "exitCode": 0,
+      "result": "54 fixture tests; full Console lint/typecheck;118 Console tests; production build; all16 configured browser suites including owned PostgreSQL backup HTTP flow passed",
+      "limits": "All browser checks in this gate use controlled HTTP fixtures. Actual signed-native product proofs and real Core/Native PostgreSQL Console acceptance are separate."
+    },
+    {
+      "command": "cargo run --manifest-path tools/quality/Cargo.toml --locked -- contracts",
+      "exitCode": 0,
+      "result": "Architecture, lint policy, strict Serde and accepted frozen migration hashes pass."
+    }
+  ],
+  "scopeLimits": [
+    "Not a full root quality result: Rust all-feature/isolated-feature tests and Clippy remain pending shared integration stability.",
+    "DRAFT0054 recovery fixes and independent re-review, full Mail/CE/SMTP/native-app recovery, PostgreSQL real Console/Native and atomic restore/bearer REST/MCP remain incomplete.",
+    "No production or Wasabi qualification."
+  ],
+  "fixes": [
+    "Two Binary transport/UI test files corrected for full ESLint rules, without suppressions or removed security assertions.",
+    "Freeze records0046\u20130051 appended only after exact hashes matched final recorded native acceptance;0052 excluded.",
+    "Added the owned backup HTTP/browser regression to the configured Console test:browser chain;16 suites now enforced."
+  ],
+  "sha256": {
+    "apps/console/tests/storage-binary.test.ts": "69d444bee6cedd0713289f4043ef55cde72e3f16e8a4999a75794fbfd4fe3746",
+    "apps/console/tests/storage-ui.test.tsx": "b05dc557be20d603580aeb7801ce1b332b056d4d878979bc64a61e34be55bc5c",
+    "tools/quality/src/runner.rs": "4038dd1baacc6f4f72ec2500d5f287ee7db4ac0b69f073906e140f59a0674782",
+    "crates/persistence/migrations/frozen.json": "d26c528e0697d33a6d87cce00e26fad314ea72401b8c1bd723d1b9e1e1158ed5",
+    "apps/console/package.json": "86c30c193800c82bc39f2c64bc61e3eb7b3f16040a13cf2b54fd3f6035a45977",
+    "apps/console/src/DatabaseBackups.tsx": "0a4e48f078115ec97c9c18bdd348d0bbe949bb239b30c47525a1f2944dc1fe59",
+    "apps/console/src/DatabaseBackupControls.tsx": "5edf8c5a76fda3be3c2dd5b9650cf2a801fabacef92d717572a24b58317ab7d7",
+    "apps/console/src/database-backup-request.ts": "0217aa0d9d4e2744eabfe82e1b7924055be1d5f60ed8ae775d3498577be9e752",
+    "packages/hosting-contracts/src/databases.ts": "a1321d5f85b9d5b0ab837f5d00a596e12ad15b5ed8e031e6eb9d9231c54d5e29"
+  }
+}

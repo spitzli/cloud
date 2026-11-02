@@ -13,7 +13,7 @@ This directory contains the public Mintlify site and internal repository records
 
 ## Terminology and evidence
 
-- Console is the browser UI at `https://console.webdock.dev`; the workspace directory remains `apps/console`.
+- Console is the browser UI at `https://console.spitzli.cloud`; the workspace directory remains `apps/console`.
 - Studio protocol URLs, OAuth issuer and MCP audiences remain compatibility contracts. Never globally replace them with the Console domain.
 - Distinguish workspaces, projects, applications, websites and database services.
 - CMS instance IDs and Auth website binding IDs are different. Preserve decimal Snowflake IDs as strings.

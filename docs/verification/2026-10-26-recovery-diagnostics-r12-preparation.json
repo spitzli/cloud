@@ -1,0 +1,186 @@
+{
+  "status": "SOURCE_STABLE_DIAGNOSTICS_R12_PREPARATION_ONLY; no runtime authorization",
+  "ownedSourceSHA256": {
+    "crates/control-plane/tests/support/recovery_admission.rs": "647c407135af2d8a9e5ffb3a0646c57bdd7a831da313eacddda003f0d3f6e19e",
+    "crates/control-plane/tests/support/plugin_builtins.rs": "58bbca28ea99785fb0a51161673f7672eac960fb83cdfd1e65050149c151c0fa"
+  },
+  "scope": "Only test diagnostics/markers in two allowed support modules; no production, authority, SQL, migrations, dependencies, Root lock or reviewed runner/custody changes.",
+  "diagnostics": {
+    "logs": [
+      "agent-first.stdout",
+      "agent-first.stderr",
+      "storage.stdout",
+      "storage.stderr"
+    ],
+    "configsReceiptOnly": [
+      "agent.json",
+      "storage.json"
+    ],
+    "perFileReadLimit": 65536,
+    "rawBodiesRetained": false,
+    "redaction": "Entire raw body omitted, including fixture secrets/credential URLs/tokens/PEM/context. Only closed categories and prefix byte/hash receipts leave memory.",
+    "fileSafety": "Fixed allowlist, directory-relative no-follow/nonblocking descriptors; current UID, private mode, regular single-link files. Arbitrary names, traversal and symlink files denied.",
+    "processes": "Actual agent/helper try_wait exit code/signal/unavailable and control.is_finished snapshot before heartbeat scope unwinds; no readiness/drain/authority claim. Control result not consumed to preserve task handle.",
+    "startup": "Actual stdio-open/spawn IO failure captures fixed participant/error-kind receipt before original unwrap; no retry.",
+    "panicSafety": "Drop captures before owned children/temp scope unwind. Capture errors remain secondary to original panic; disarmed after actual heartbeat return.",
+    "output": "Fresh private /diagnostics/native-heartbeat-UUID or native-startup-UUID allowlist JSON files with receipt, no whole tempdir copy.",
+    "timeoutSecondsUnchanged": 40,
+    "assertionsUnchanged": true,
+    "directoryKeepUnchanged": true,
+    "phaseMarkers": "Closed fixed strings gated by existing recovery fixture env; placed only after successful offline bootstrap/password/TOTP/PKCE/current Console operator/Builtin/Registry/allowance/enrollment/control bind/storage initialize/Agent spawn/heartbeat checks."
+  },
+  "tests": {
+    "command": "cargo test --offline --locked -j2 -p webdock-control-plane --test bootstrap",
+    "passed": 6,
+    "failed": 0,
+    "ignoredInfrastructure": 2,
+    "coverage": [
+      "Mocked missing log/config and failed child status retained",
+      "Raw fixture secrets/URLs/tokens/PEM omitted; arbitrary names/traversal/symlink denied",
+      "Panic guard captures before TempDir cleanup and actual exited/signal category",
+      "Success disarms; recording failure does not replace original panic",
+      "Oversized log bounded64KiB; config body never copied",
+      "Distinct literal configuration/transport/control and process-startup/exit/finished observations"
+    ],
+    "redBoundary": "Test-only new helper scaffold:4fail1pass, not production/native RED. Literal control category separately RED\u2192GREEN.",
+    "initialRedLogSHA256": "c836770fb0c5df1c7a7eba51ab56123b9496c1cf52a029f4a2d7b7f584e24e0f",
+    "controlCategoryRedSHA256": "55cf76a4c4d9995ea4d3179c726f6a444356ef109a547e8664c7494701a39e73",
+    "finalTestsLogSHA256": "0d504b08dec2e53e153d7f13ae36b9e9ef07b3afdab94686231bbb82b5ed47b0",
+    "noRunCommand": "cargo test --offline --locked -j2 -p webdock-control-plane --test bootstrap --no-run --message-format=json",
+    "noRunLogSHA256": "24def25090437867b7e21b3155e9f4caac16767a2f020982f8abd38890ec30c6",
+    "noRunSeconds": 0.19,
+    "clippyCommand": "cargo clippy --offline --locked -j2 -p webdock-control-plane --test bootstrap -- -D warnings",
+    "clippyLogSHA256": "7fcd15afd575156c37d232f47b265f72b1a10c64e3cb2723176e65f062b88d74",
+    "clippySeconds": 4.57,
+    "ownedRustfmtCheck": "PASS",
+    "diffCheck": "PASS"
+  },
+  "newVersionedPairing": {
+    "manifest": ".runtime-test/recovery-diagnostics-source-component-96b0ea742cb5/pin.json",
+    "manifestSHA256": "c517f1f58aea62915c102b5f08fbe558746dbd7a3bf0f56a3dd03ee0b0582439",
+    "newTest": {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-diagnostics-source-component-96b0ea742cb5/bootstrap-test",
+      "copiedStrippedSHA256": "1bc509349983daeca6384902f6a92db5d198c32e9f87d2149f243f2bd3bf00ed",
+      "originalBuildSHA256": "949f5d0c2b723caa84eef0d9930fdb38b6af42e7a37e1c90e45a9d24a625c94a",
+      "bytes": 147133784,
+      "mode": "0500",
+      "source": "new diagnostic bootstrap-test only; current offline locked test compilation, 12 other ELFs retain original6223 provenance"
+    },
+    "originalBasePin": {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/pin.json",
+      "sha256": "1bbbdd07c56540bff34faa1a8a7dd0ef97493061f9005f0b2cb5d5e54426e11e"
+    },
+    "originalBaseSourceArchive": {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/public-source.tar.gz",
+      "sha256": "c00ef395c5fd51359c7915665623c4eca1b2f529deff71419470cc7754fe4bdb"
+    },
+    "unchanged12OriginalNames": [
+      "webdock-agent",
+      "webdock-agent-control",
+      "webdock-bootstrap-operator",
+      "webdock-bootstrap-plugins",
+      "webdock-control-plane",
+      "webdock-enroll-agent",
+      "webdock-migrate",
+      "webdock-plugin-control",
+      "webdock-plugin-controller",
+      "webdock-recovery",
+      "webdock-recovery-gateway",
+      "webdock-storage"
+    ],
+    "newTestSourceArchive": {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-diagnostics-source-component-96b0ea742cb5/diagnostic-test-source.tar.gz",
+      "sha256": "18c2919603be8b295136d4f25d4c75d513071cdee91cad5587a891158efbab2a"
+    },
+    "compilationInventory": {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-diagnostics-source-component-96b0ea742cb5/diagnostic-test-compilation.json",
+      "sha256": "399a79fc0deb02ee6fa2aef74432cd5d65e09863a7956dedd6c215c898b25aba"
+    },
+    "compilerSourceFileCount": 480,
+    "registryTupleCount": 804,
+    "registryTuplesEqualOriginal6223": true,
+    "scope": "Only bootstrap-test copied at new path. Twelve existing copied ELF entries and original compile/source provenance byte-value unchanged; original664 bootstrap-test remains preserved. No all13 rebuilt/current-tree claim. Cargo may build/check its ordinary test-bin dependencies; none of those new shared-target binaries selected into this pairing."
+  },
+  "rootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+  "nativeMigrationsSHA256": {
+    "crates/persistence/migrations/0001_ids.sql": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23",
+    "crates/persistence/migrations/0002_identity_security.sql": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721",
+    "crates/persistence/migrations/0003_identity_preview.sql": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234",
+    "crates/persistence/migrations/0004_identity_recovery.sql": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704",
+    "crates/persistence/migrations/0005_identity_passkeys.sql": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b",
+    "crates/persistence/migrations/0006_oauth_authorization.sql": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+    "crates/persistence/migrations/0007_organization_ids.sql": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e",
+    "crates/persistence/migrations/0008_hosting_runtime.sql": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+    "crates/persistence/migrations/0009_agent_enrollment.sql": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3",
+    "crates/persistence/migrations/0010_access_authority.sql": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b",
+    "crates/persistence/migrations/0011_browser_sessions.sql": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c",
+    "crates/persistence/migrations/0012_build_authority.sql": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d",
+    "crates/persistence/migrations/0013_repository_authority.sql": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40",
+    "crates/persistence/migrations/0014_database_authority.sql": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603",
+    "crates/persistence/migrations/0015_mail_authority.sql": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151",
+    "crates/persistence/migrations/0016_repository_browser_authority.sql": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77",
+    "crates/persistence/migrations/0017_plugin_invocation_fence.sql": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129",
+    "crates/persistence/migrations/0018_mail_provider_binding.sql": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc",
+    "crates/persistence/migrations/0019_mail_plugin_policy.sql": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa",
+    "crates/persistence/migrations/0020_mail_provider_lease.sql": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa",
+    "crates/persistence/migrations/0021_plugin_continuations.sql": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862",
+    "crates/persistence/migrations/0023_incoming_mail_agent.sql": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de",
+    "crates/persistence/migrations/0024_mail_configuration.sql": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d",
+    "crates/persistence/migrations/0025_customer_deletion.sql": "dee73efd12d48b30990c9d0bb71bbab8473a51705b3694dfafd42f6ea82dc817",
+    "crates/persistence/migrations/0026_plugin_self_service.sql": "2b3420455001313b2b93e8953b85e1f65d4f94ea0134a7b1975c7a7bdc1be3f3",
+    "crates/persistence/migrations/0027_customer_projects.sql": "8a42816d972bc17044f516d01849939b1bdb852846845c9ada6f759c6fc9bc7d",
+    "crates/persistence/migrations/0028_plugin_workloads.sql": "ac36c7e9a97c72b5bfcd9b88f9bbda0dbd9e0f32b01000be6c10ab700fea8b5e",
+    "crates/persistence/migrations/0029_default_project.sql": "1f2e6cd2ccbef7bda7b42fc6384a519553dfeb484b2623c510549361cf1212b0",
+    "crates/persistence/migrations/0030_limits.sql": "823e6b12b5ba17a23a9c3c1c38ba54837754a87f09dd762a6e6c14d73daca7d2",
+    "crates/persistence/migrations/0031_customer_domains.sql": "9e97c2e49dba5c5cf31d959bba17ebaf2735aabfa6da2316826caecd13e14b02",
+    "crates/persistence/migrations/0032_api_tokens.sql": "f5c436170379aa235063036ef516fc2bac04a7fd901115fe2f73c02c27f3b817",
+    "crates/persistence/migrations/0033_notifications.sql": "63c6e26ae7f52bcbabf913ff78d625902a9ecaaa7a023974f69d9113479ad58f",
+    "crates/persistence/migrations/0034_logs.sql": "614597c358467fab7dcba4f7c062cea212f00b6c3d15c8b24b032371c88512c6",
+    "crates/persistence/migrations/0035_project_cluster.sql": "bb2eb64cd495a30163563c727210cd122cb2ee6258d21feb3a16e966303af014",
+    "crates/persistence/migrations/0036_history_placement.sql": "caacc1c5c7457718ad48f8de12e512049438bf14c84789e6fa532e00b3ca60ff",
+    "crates/persistence/migrations/0037_log_cursor.sql": "0df190f3296836ebde3cb238896a315e6bf011b09f5a18d29a844091a10ad6a8",
+    "crates/persistence/migrations/0038_customer_acting.sql": "5507a05d3c633c535c8f7fce583e17ab1cc67a246e47cf192aed908d38bd0245",
+    "crates/persistence/migrations/0039_identity_acting.sql": "3ae973c90c70ade2944ebb26a2306555beeadf8c48682a152222a56a0cca60e0",
+    "crates/persistence/migrations/0040_customer_workloads.sql": "314b295dbec9ee121d86fd60acbb463bf609b83e75e0a762126d410deac545cd",
+    "crates/persistence/migrations/0041_invitation_scope.sql": "1c951c30ec687836d82a4736b9b0cd2bbc8f3f6a68009dbac27a43dca256989e",
+    "crates/persistence/migrations/0042_plugin_installation.sql": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+    "crates/persistence/migrations/0043_plugin_updates.sql": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+    "crates/persistence/migrations/0044_plugin_jobs.sql": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+    "crates/persistence/migrations/0045_managed_mail_outbox.sql": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+    "crates/persistence/migrations/0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "crates/persistence/migrations/0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+    "crates/persistence/migrations/0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "crates/persistence/migrations/0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f",
+    "crates/persistence/migrations/0050_archive_source_leases.sql": "2d3e22026c7ad792234ecce7f5a286a856eac681a22af504c23351d2de86a714",
+    "crates/persistence/migrations/0051_database_backup_transitions.sql": "a4f16036e77bd2617f61cecc7c7881bb1abfceb920a16309e092770094ed7767",
+    "crates/persistence/migrations/0052_native_recovery.sql": "c472a56bf4e5f90bc023778985f3191b56626e6b149c70d5c2439059816b0c20",
+    "crates/persistence/migrations/0053_frontend_output_retention.sql": "3ef35e7f191b15c7b9aa3d007a59247e587fcc2ecb081c72a84441c9f13a458c",
+    "crates/persistence/migrations/0054_source_recovery_fences.sql": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+    "crates/persistence/migrations/0055_native_operator_allowances.sql": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de"
+  },
+  "diffSHA256": {
+    "recovery_admission.diff": "c5fb49d9c3fe6bc46e43940b904454d07562290df7c6067a3975004912c02601",
+    "plugin_builtins.diff": "c2df577cbf75af28b508cc349e6e53c1a31fbd5a6c64c1b13cc6ca09c47fc014"
+  },
+  "unchangedRunnerSHA256": "746eaf90c81da977c16666f263bb361756af24403f0a65661b28dc2b2799be5a",
+  "unchangedCustodySHA256": "4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c",
+  "nextRunnerBinding": "NOT IMPLEMENTED. Needs finite new manifest path/hash, exact13name->expectedpath/metadata mapping, independent original6223pin/provenance verification, additional new-test source archive verification/copy/record, original descriptor/module/mode guards preserved, pure tests and Root review.",
+  "runtime": {
+    "dockerCommands": 0,
+    "containersStarted": 0,
+    "providerCalls": 0,
+    "newComponentRuns": 0,
+    "noLiveMainCargo": true
+  },
+  "limits": [
+    "Visibility preparation only; d43 actual Agent heartbeat cause remains unknown.",
+    "No new runtime, positive source admission, full54/fence/CE/SMTP/ntfy recovery acceptance or final54 freeze.",
+    "Categories can be incomplete for unfamiliar or truncated logs; omission is explicit.",
+    "Control task finished state is observed; its result is not consumed or asserted as successful.",
+    "Existing default genuine foundation runtime not rerun; both infrastructure tests remain ignored."
+  ],
+  "budgetFreeBytes": {
+    "home": 10028228608,
+    "tmp": 5677375488
+  }
+}

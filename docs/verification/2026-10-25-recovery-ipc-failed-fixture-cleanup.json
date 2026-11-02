@@ -1,0 +1,30 @@
+{
+  "scope": "three bounded IPC harness failures only",
+  "runs": [
+    {
+      "ownedRun": "349f903b93044a6689b42e0c3899ecd0",
+      "containersVerifiedAbsent": 1,
+      "imageHasNoAnonymousVolumes": true,
+      "privateDiagnosticsRemoved": true,
+      "productAcceptanceClaimed": false,
+      "exitCode": null
+    },
+    {
+      "ownedRun": "2813df338f6940baa3c14e276b60979f",
+      "containersVerifiedAbsent": 1,
+      "imageHasNoAnonymousVolumes": true,
+      "privateDiagnosticsRemoved": true,
+      "productAcceptanceClaimed": false,
+      "exitCode": 101
+    },
+    {
+      "ownedRun": "4f8f7696b9c4481db2fc130c3cb2a89b",
+      "containersVerifiedAbsent": 1,
+      "imageHasNoAnonymousVolumes": true,
+      "privateDiagnosticsRemoved": true,
+      "productAcceptanceClaimed": false,
+      "exitCode": 101
+    }
+  ],
+  "existingServicesChanged": false
+}

@@ -1,0 +1,17 @@
+{
+  "candidate": ".runtime-test/pg-restore-review1-2a4493018f31",
+  "exactContainerID": "03c295096c29c4616bc160bbef3c5cde7b515bb19d940fc05817f9878faf5da3",
+  "fixedPasses": 5,
+  "independentExactAbsence": true,
+  "journalsExactPinnedNativeRows": 54,
+  "maxVersion": 55,
+  "no56journal": true,
+  "normalizedOldLogicFailures": 5,
+  "obligations": [],
+  "privateAbsent": true,
+  "resultSHA256": "5ef5ac69189b46710044fb3797b03dfa22042fbca07b7d83e4f23b195772ac01",
+  "scope": "Root independent SQL primitive and custody check only",
+  "sourceAuditNativeSuccessClaimed": false,
+  "tupleLiteralCheckpoints": 8,
+  "volumes": 0
+}

@@ -6,11 +6,12 @@ The plugin uses generic approved application provisioning and scoped HTTP servic
 
 ## Build and test
 
-From the Webdock repository root, with Node 24 and Bun:
+From the Webdock repository root, with Bun:
 
 ```bash
-npm ci
-bun test extensions/managed-cms/tests
+bun install --frozen-lockfile
+bun run --filter @webdock/plugin-sdk build
+bun test ./extensions/managed-cms/tests
 bun extensions/managed-cms/build.ts
 docker build -f extensions/managed-cms/Dockerfile -t managed-cms-plugin .
 docker build -f apps/cms-instance/Dockerfile -t managed-cms-instance .

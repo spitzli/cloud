@@ -1,0 +1,63 @@
+---
+title: "Local development"
+description: "Work with the current Webdock monorepo and isolated test environments."
+---
+
+Use Node.js 24 and the repository's workspace lockfile. The API workspace pins Bun for its runtime and scripts.
+
+## Repository map
+
+| Workspace | Responsibility |
+| --- | --- |
+| `apps/website` | Public website and its CMS |
+| `apps/console` | Console browser application |
+| `apps/auth` | Central account and sign-in UI |
+| `apps/control-plane` | Bun API, protocol handlers, services and worker |
+| `agents/kubernetes` | Managed workload execution |
+| `packages/module-sdk`, `packages/core` | Installation contracts and local identity interfaces |
+| `modules/{mail,hosting,databases,storage}` | Product services, UI and module admission |
+| `adapters/<area>/<provider>` | Concrete identity and provider integrations |
+| `packages/api-client` | Server-side frontend transport to the API |
+| `docs` | Public Mintlify pages and excluded repository records |
+
+Console and Auth are HTTP frontends. Business and identity services now live in `apps/control-plane`; older historical documents may refer to their former location in the frontends.
+
+## Install
+
+```bash
+git clone https://github.com/spitzli/webdock.git
+cd webdock
+bun install --frozen-lockfile
+```
+
+Configure only the local environment variables required by the workspace you run. Follow its checked-in examples and scripts. Do not copy production database URLs or provider credentials into a test environment.
+
+See [installed module configuration](/developers/modules) for runtime product selection and safe draining.
+
+## Start a workspace
+
+Run the relevant command in its own terminal after preparing its local configuration:
+
+```bash
+bun run dev:admin
+bun run dev:auth
+bun run --filter @webdock/api dev
+```
+
+Console uses port 3120 and the Auth UI uses port 3125. Running the frontend alone does not provision a backend or establish account access.
+
+## Verify changes
+
+The API fixture creates labeled disposable local PostgreSQL infrastructure and ignored test environment files. It requires Docker. Use the root workspace scripts:
+
+```bash
+bun run --filter @webdock/api test:setup
+bun run --filter @webdock/api test:setup:rls
+bun test -w @webdock/api
+bun run --filter @webdock/api test:rls
+bun run --filter @webdock/api check
+```
+
+Run the relevant frontend or shared-package checks for your change. Use `bun run --filter @webdock/api test:teardown` to remove the owned fixture after testing. Follow the fixture output for its actual local target; never point test setup at production.
+
+Read repository `AGENTS.md` files before contributing. For Next.js changes, consult the documentation shipped with the installed version.

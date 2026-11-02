@@ -1,0 +1,92 @@
+{
+  "verification": {"mailDefaultSuite":{"command":"cargo test --manifest-path plugins/mail/Cargo.toml --locked","passed":27,"ignored":15},"mailClippy":{"command":"cargo clippy --manifest-path plugins/mail/Cargo.toml --locked --all-targets -- -D warnings","exitCode":0},"privateTLSRecoveryCases":{"command":"python3 tools/tests/mail-application-recovery.py plugins/mail/target/debug/examples/recovery-object","passed":4,"tests":["durable_gate_drains_rejects_stale_resume_and_quarantines_restore","cancelled_effect_cannot_be_mistaken_for_a_drained_transport","private_snapshot_prepare","private_snapshot_verify"]},"nativeContract":{"command":"cargo test --locked -p webdock-agent --test application_recovery","passed":3},"nativeContractClippy":{"command":"cargo clippy --locked -p webdock-agent --test application_recovery -- -D warnings","exitCode":0},"disposableNtfyProfile":{"command":"python3 -m unittest discover -s agents/kubernetes -p test_ntfy_recovery.py","passed":5}},
+  "objectAdapter": {"binarySHA256":"97a56e2115add7b8a9304dcb4203222f2358c6cb544643b5b84a2526b562849f","sourceSHA256":"d6a67c3a0adde88ab90baaa1d97e1d4fcc8ad9044bdb339be30fb1f214c9b1cc","transport":"existing crates/object-storage verified multipart/readback","ceilingBytes":68719476736,"buildNote":"standalone fixture compiled before tighter dependency freeze; manifest/lock additions removed; coordinated rebuild wiring remains required"},
+  "remainingIntegration": ["real Core standing policy/admission/revocation and operation leases","matched canonical send ledger + private metadata + offline retained CE set","fresh restored Core sessions/API-key invalidation and quarantined dispatch","real SMTP confirmed-once and uncertain historical sends blocked after restore","native Rust storage pool/executor hooks and actual fresh quota-backed allocation","approved production recovery-key custody/signer/provider inputs"],
+  "scope": "private Mail storage + offline ntfy profile; native Core/CE integration not claimed",
+  "run": "7a05b2bfdd1c4eb78080786e7f7c152b",
+  "checks": [
+    "private_gate_drain_stale_resume_restart_quarantine",
+    "mail_source_unavailable_original_plaintext_removed",
+    "mail_private_fresh_pg_tls_payload_owner_wrong_key_closed_dispatch",
+    "separate_readonly_restore_and_revoked_writer",
+    "ntfy_source_unavailable_fresh_target_sql_auth_tls_attachment_origin_bytes_no_egress",
+    "independent_operator_age_key"
+  ],
+  "mailSnapshotAt": 1792938479.4955432,
+  "mailOperatorRecoveryMaterial": {
+    "bytes": 381,
+    "sha256": "0426edea58dc50b208d3154d176028670cf54c76b7b208ddb4b00aa0ec1dee94",
+    "custody": "separate local operator age envelope; not production escrow or customer download"
+  },
+  "objectReceipts": {
+    "mail-private": {
+      "backendId": "minio-7d07dee322e111fcf8df",
+      "binding": "4b3f7a9cb3c35e7c3a37c7a0956e03150e56ec89647d52817d6b7725df66a170",
+      "objectKey": "builds/mail-private/d26d4675-2283-426a-91cb-72b662b836ce",
+      "sha256": "e64ee2f93f6bbff1f2a3fbc37aaedfbe18b11c633b096ddee5e69c08b1c8c7fa",
+      "sizeBytes": 22663
+    },
+    "ntfy": {
+      "backendId": "minio-7d07dee322e111fcf8df",
+      "binding": "4b3f7a9cb3c35e7c3a37c7a0956e03150e56ec89647d52817d6b7725df66a170",
+      "objectKey": "builds/ntfy/5373a7a0-abb9-4a7d-b4e7-f561328fe58d",
+      "sha256": "12e85dd6e8fcc98f948e065a52e9e73d283cc4079c49bf8458f8343b83bbaec5",
+      "sizeBytes": 194792
+    }
+  },
+  "mailDump": {
+    "bytes": 22463,
+    "sha256": "c3294c8af4d6e756764cc7c071b3adec1274ff89d7fcdcda865a73258c6d7caf"
+  },
+  "mailSnapshotToVerifiedTargetSeconds": 14.181,
+  "mailSourceUnavailableToVerifiedTargetSeconds": 7.913,
+  "mailRPO": "one encrypted private payload; no writes after fence; no canonical Core/CE recovery claim",
+  "ntfyOperatorRecoveryMaterial": {
+    "bytes": 2405,
+    "sha256": "9535bfe5562e785471aadb702ff255cb4fe4f944c5c9a7ee8373d18540428eef",
+    "custody": "separate local operator age envelope with environment/TLS recovery; not production escrow"
+  },
+  "ntfy": {
+    "image": "binwiederhier/ntfy@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da",
+    "profile": "ntfy-sqlite-offline-v1",
+    "sourceUnavailable": true,
+    "sourceRetained": true,
+    "freshVolumeUUID": true,
+    "nativePoolAllocationClaimed": false,
+    "logicalOriginPreserved": true,
+    "targetTLSVerified": true,
+    "wrongCARejected": true,
+    "authenticatedRead": true,
+    "anonymousAndWrongPasswordTopicReadDenied": true,
+    "attachmentURLAnonymousStatusPreserved": 200,
+    "attachmentBytes": 54,
+    "attachmentSHA256": "aca5a83fa5c0744b030c2bdbf73438b738e105bdf0dfeaf26fac445ebdd3c876",
+    "networkMode": "none",
+    "defaultRouteAbsent": true,
+    "snapshotToVerifiedTargetSeconds": 3.194,
+    "rpo": "offline fence; one local cached attachment notification; no commercial SLA",
+    "sourceUnavailableToVerifiedTargetSeconds": 2.781
+  },
+  "cleanup": {
+    "containers": 6,
+    "exactIDsAbsent": true,
+    "clustersTouched": false,
+    "privateDirectoryRemovedOnReturn": true,
+    "taskRestorePrincipalsAbsent": true,
+    "taskRestorePoliciesAbsent": true,
+    "allTaskContainersAbsent": true,
+    "failedRunPrivateDiagnosticsRemoved": 4,
+    "minioPreserved": true,
+    "earlierFailedAttemptPrincipalCleanup": "2026-10-25-mail-app-failed-fixture-cleanup.json"
+  },
+  "sourceSHA256": {
+    "plugins/mail/src/recovery.rs": "9deeaed9297508cd8339583305e9b18d205533c65f0454557b51e85638e340d7",
+    "plugins/mail/src/recovery.sql": "c0e0a8e3b1f8734a0cfda790cd80d92ae9772b3c2e2698af63dfd16b884ae9d6",
+    "plugins/mail/tests/recovery.rs": "c39cfdc5ec065c28391bd5a5fd5a016022880a57d49c5a7c1d812485c5506947",
+    "crates/agent/src/storage/recovery.rs": "1295e1e2a958ae36ca977a65b691fd497b3b3bdf46a0250f2e60d1f453604f82",
+    "crates/agent/tests/application_recovery.rs": "ff6dcd49abf5430e9751d7f3947e31715bd764cd0b6cdece2af451c513981cb3",
+    "agents/kubernetes/ntfy_recovery.py": "8e128954a3be894ebdf84166d25d7f48ebe20c75879d271dd495c78ab926baf1",
+    "agents/kubernetes/test_ntfy_recovery.py": "9f8115ea12399a4559a98e399e684adce93844742302607ce963922d09a2adaa",
+    "tools/tests/mail-application-recovery.py": "5247a1c471a296e2c34428c51f7829864d77105240fe9d5eb084e3293d0ce23a"
+  }
+}

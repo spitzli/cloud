@@ -1,0 +1,476 @@
+{
+  "date": "2026-10-26",
+  "status": "Observed GREEN for the one existing OAuth retained PostgreSQL component; exact cleanup independently reconfirmed",
+  "scope": "Auth component only: native OAuth access lock-order prerequisite and original MCP expiry getter; not fresh Core HTTP bootstrap, live Database MCP parity, full native ACL qualification or production approval",
+  "head": "819041524049117bc50e11dfd96a6a29407804b8",
+  "priorEvidenceUnchanged": {
+    "path": "docs/verification/2026-10-26-oauth-mcp-access-lock-prerequisite.json",
+    "sha256": "fb4f824c49a33cd94fe9d80f4aa7ea3b3be205a59e7ec9718bcb540517764860"
+  },
+  "sourceChangesInThisWindow": [],
+  "candidate": {
+    "directory": ".runtime-test/oauth-mcp-component-0bab694c6b8b",
+    "binaries": {
+      "oauth-retained": {
+        "sha256": "82f1a9a6068a69d4ba6cc1c0fea730bb84e5a134bb1413a01d6c56bfb5630ba7",
+        "bytes": 145021448,
+        "builtFrom": "target/debug/deps/retained-fd98670ad7bbfc55"
+      },
+      "webdock-migrate": {
+        "sha256": "76107649da9277144f6747914e50932fc1ac00dc461c127c346e13d51014e2c6",
+        "bytes": 649913360,
+        "builtFrom": "target/debug/webdock-migrate"
+      }
+    },
+    "sourceSHA256": {
+      "crates/oauth/src/service.rs": "245a0f2c4b0c4f1be4193833fd7444f4a0351589ae8df8685c3e883b8f78df3b",
+      "crates/oauth/src/mcp_authority.rs": "14dc5194c696a22d01445c442778cbdc3a229bfb6b24dda7587d6f0d029bd71d",
+      "crates/oauth/tests/retained.rs": "becf5de42a7a19f942928e1c37e16d51c2c29b7234835dafd30932aa68d47dc0",
+      "crates/oauth/migrations/0001_oauth_authorization.sql": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+      "crates/persistence/schema/baseline.sql": "3d7e1fff67a12b0d4ea0133340fc88d60bedd1ada816924ff94eeba4f3370f16",
+      "crates/persistence/src/migrations.rs": "3fabdcf051c47be6d95f69cb190e871d1f213288c7a0b206656f9b592db02e47",
+      "crates/persistence/src/roles.rs": "1e01af1886e05cd27db47088f320200ab6047e0c8af37f27170fc55cd3904384",
+      "crates/persistence/src/lib.rs": "9aeac96c2919dcc5e261c785543def53a261f22d0b9b8e55e43d3e3c2171490f",
+      "crates/control-plane/src/bin/webdock-migrate.rs": "1ec5eef9ef4d0c33f525b2361714eae4e9d9b929c9d033f24cbe3e2ac12e5c5c",
+      "crates/control-plane/src/config.rs": "a2ff73a7ea6a14aac015d03d88d8d717ff1eb6c7047f9f3339bc642163e6b552",
+      "Cargo.lock": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf"
+    },
+    "sourceSnapshotInventoryPath": ".runtime-test/oauth-mcp-component-0bab694c6b8b/pin.json",
+    "sourceInventoryCount": 135,
+    "runtimeUsesCopiedExecutablesOnly": true,
+    "sourceAndLockStillMatchReviewedCandidate": true
+  },
+  "buildCommands": [
+    {
+      "command": "cargo test --offline --locked -p webdock-oauth --test retained --no-run -j2",
+      "exitCode": 0
+    },
+    {
+      "command": "cargo build --offline --locked -p webdock-control-plane --bin webdock-migrate -j2",
+      "exitCode": 0
+    }
+  ],
+  "resourceBudget": {
+    "postgresTmpfsBytes": 1073741824,
+    "postgresMemoryBytes": 1610612736,
+    "postgresCpus": 2,
+    "pidsLimit": 256,
+    "migrationTimeoutSeconds": 120,
+    "testTimeoutSeconds": 180,
+    "readinessTimeoutSeconds": 30,
+    "copiedExecutableBytes": 794934808,
+    "loopbackOnly": true,
+    "pull": false,
+    "concurrentTests": 1,
+    "image": "sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336",
+    "cachedImmutableImage": true,
+    "mount": "/var/lib/postgresql tmpfs",
+    "persistentOrAnonymousVolumes": 0,
+    "logDriver": "local, max-size=5m, max-file=1, compress=false"
+  },
+  "schema": {
+    "freshOwnedDatabase": "webdock_rls_test",
+    "migrator": "Copied webdock-migrate --target 127.0.0.1:33266/webdock_rls_test --initialize-empty --provision-roles-from <own private password file>",
+    "nativeJournalEntries": 54,
+    "nativeMaxVersion": 55,
+    "allJournalSuccessAndSHA384MatchPinnedInputs": true,
+    "migrationSetSHA256": "36d6f8ccad137c7adc46120863434dfe4098cfac8e8563e41a04062ec1d25e16",
+    "migrationSetDigestEncoding": "SHA256 of Python json.dumps(nativeMigrations, sort_keys=True).encode(); entries contain each relative path, SHA256 and SHA384",
+    "nativeMigrations": {
+      "crates/persistence/migrations/0001_ids.sql": {
+        "sha256": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23",
+        "sha384": "84fad835d0ec3ea72a1605ef16fde22b36591d26323fac7ee2ab853e5368c16bc6371abfcab6ef168f51d7d90d30e4cd"
+      },
+      "crates/persistence/migrations/0002_identity_security.sql": {
+        "sha256": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721",
+        "sha384": "5c14e895b11c90b9826219fb8af0ed550339fcd29c00fa605f04fb7e3220652bafa8d08093047fa93e8e0d0ad933f73f"
+      },
+      "crates/persistence/migrations/0003_identity_preview.sql": {
+        "sha256": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234",
+        "sha384": "e7ebbc1d5fcf512912eb8da32bc9d8138b3e9223282e59800431bb420a68ca8478a073e64c4e90cbd3944d2d5f93902e"
+      },
+      "crates/persistence/migrations/0004_identity_recovery.sql": {
+        "sha256": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704",
+        "sha384": "e4998ae4d2be16e89997ed45fb072853e093142d3fb36c6791e4c65912dd88e96ee1a95b9e2c25328ef451bdde961d19"
+      },
+      "crates/persistence/migrations/0005_identity_passkeys.sql": {
+        "sha256": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b",
+        "sha384": "730c3053010b322635515ef5dc4f23721bb06a7d45b22e5fa79c28930822db7a0ec768752e3751beb5ccdefa19734d02"
+      },
+      "crates/persistence/migrations/0006_oauth_authorization.sql": {
+        "sha256": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+        "sha384": "37997dc436eae74074ac6a4b2c5ae3b583dc702635f5779b5cf14960ff4008977cdbbd67fbc5fd89e370599323d71bae"
+      },
+      "crates/persistence/migrations/0007_organization_ids.sql": {
+        "sha256": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e",
+        "sha384": "a015ece940725269f1446ab98a48b13db16459a8bcb86297d80d1b972602fda22f75ad048e2cbd3839b3390928b549f5"
+      },
+      "crates/persistence/migrations/0008_hosting_runtime.sql": {
+        "sha256": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+        "sha384": "c3efe3de37495b16ac4497f67aeadff77247ea2e4d8bdae6d6a1c8262101e19e0f45c65144eff99709a97394aea4b336"
+      },
+      "crates/persistence/migrations/0009_agent_enrollment.sql": {
+        "sha256": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3",
+        "sha384": "ab8d7dd7aba83c576a698673ebb952340881ae4f8e7a315977116e884acebd0e956bb39d677cbeb04629828a7a812f60"
+      },
+      "crates/persistence/migrations/0010_access_authority.sql": {
+        "sha256": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b",
+        "sha384": "afc4591d186abe4ab95502750f3bf966d3344f4b5f8710451fe5f353e4055fb9fc831d86a89dfcaca8a238b64905f7a8"
+      },
+      "crates/persistence/migrations/0011_browser_sessions.sql": {
+        "sha256": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c",
+        "sha384": "74fe701e0ec0963b994a5b9d8fdd546ea145aba32cf59db36f4e726a1c3a21611bc58f122a7cef931b252d02a16b865e"
+      },
+      "crates/persistence/migrations/0012_build_authority.sql": {
+        "sha256": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d",
+        "sha384": "46413565fd6f5b704acfdf4fee575af475b44b54ba943cf01803ccc012f05afd552d8ea789cb699ffca5a2259222c51a"
+      },
+      "crates/persistence/migrations/0013_repository_authority.sql": {
+        "sha256": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40",
+        "sha384": "9d35bce0e3d6a18830fe19193b7bf1309c1e2b475b0452539688dc253467db4d3d5ebdba70364f24fe1c2695d4ea419a"
+      },
+      "crates/persistence/migrations/0014_database_authority.sql": {
+        "sha256": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603",
+        "sha384": "a7c9d5c94eaf234e4ed73271250b838b5b98b296e1ac110e9221690181121442d3f5b638466f0563765e22cfca8fb7a9"
+      },
+      "crates/persistence/migrations/0015_mail_authority.sql": {
+        "sha256": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151",
+        "sha384": "eefd51be04a184200ab7dc37fc68eb7748c3d78146c6955e3d9c44a2281edc27c7dc218849d647689f035e1233a3a280"
+      },
+      "crates/persistence/migrations/0016_repository_browser_authority.sql": {
+        "sha256": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77",
+        "sha384": "37191dd7343b3e78c87bfdf0ea433271febc0ec8c412aea9e4d2d278ecbd67a26c35fb753d8bf3470803a8051fbfdb4f"
+      },
+      "crates/persistence/migrations/0017_plugin_invocation_fence.sql": {
+        "sha256": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129",
+        "sha384": "9ca2065d0e2f7d917f5b44af6d330c8d291f63c8096c0d1d10809885ab4b1348f57f745831594dd9a04c8d76c1d7dcde"
+      },
+      "crates/persistence/migrations/0018_mail_provider_binding.sql": {
+        "sha256": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc",
+        "sha384": "bd4bc4588c29050b6814ee6b85741d34272f944b913d6c87db14773524878bc3b59cba5f506942865291498136d89577"
+      },
+      "crates/persistence/migrations/0019_mail_plugin_policy.sql": {
+        "sha256": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa",
+        "sha384": "119f32a136da5d15da41b43cab0dc318d9cd303030e994865b3f5e2ebabeac1504b19a1887c37d2243a5a89402e4101b"
+      },
+      "crates/persistence/migrations/0020_mail_provider_lease.sql": {
+        "sha256": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa",
+        "sha384": "bff2a995d55f7088f14dd66f73e7fbbea6ba1d24099163e536935941da33a5b356a527f06771ff5931b5a686ab591f4f"
+      },
+      "crates/persistence/migrations/0021_plugin_continuations.sql": {
+        "sha256": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862",
+        "sha384": "b97f21910266b5a3b05a177bd67360d2a4007076b9fa16185106598e2fc7ca104d51138eb96c75568234a992826a25a0"
+      },
+      "crates/persistence/migrations/0023_incoming_mail_agent.sql": {
+        "sha256": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de",
+        "sha384": "fd36f07d110c82ecff831568d464dfe61c0c93131b0abb4f45a2b6d5b24d42f1a2ae5cd996b8143a91a2a53428a4f322"
+      },
+      "crates/persistence/migrations/0024_mail_configuration.sql": {
+        "sha256": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d",
+        "sha384": "120d65de9343242761d51ad89ec161e5d72808cb9f95af732fbdbf655ce9c19fa94859d656cfa007d9a0c58e8edd5470"
+      },
+      "crates/persistence/migrations/0025_customer_deletion.sql": {
+        "sha256": "dee73efd12d48b30990c9d0bb71bbab8473a51705b3694dfafd42f6ea82dc817",
+        "sha384": "b7a7ef11bdb45f293739d52bf32c7e7ebafd9cb0d1193f3d391ba42c7216aa32e31a96913673b3d94b1b526a593bcf3e"
+      },
+      "crates/persistence/migrations/0026_plugin_self_service.sql": {
+        "sha256": "2b3420455001313b2b93e8953b85e1f65d4f94ea0134a7b1975c7a7bdc1be3f3",
+        "sha384": "56812a3bcec4caa23b41c38b4dc835685ddf67c8eea15e6932b96e8f40af9c11338dcfb98c4d925964573c2435c12456"
+      },
+      "crates/persistence/migrations/0027_customer_projects.sql": {
+        "sha256": "8a42816d972bc17044f516d01849939b1bdb852846845c9ada6f759c6fc9bc7d",
+        "sha384": "b4758d274ecad851a5d623aefb571acfe89de64be338bc43fd9c791ae3aea5b9914ec437385d2a251e43442f2c986ab4"
+      },
+      "crates/persistence/migrations/0028_plugin_workloads.sql": {
+        "sha256": "ac36c7e9a97c72b5bfcd9b88f9bbda0dbd9e0f32b01000be6c10ab700fea8b5e",
+        "sha384": "f55ae807edb7d4b304b6a12d19defd8e5152b5302527384114092dbc4b6972697be249908608e9d1dcdba14e015e6a85"
+      },
+      "crates/persistence/migrations/0029_default_project.sql": {
+        "sha256": "1f2e6cd2ccbef7bda7b42fc6384a519553dfeb484b2623c510549361cf1212b0",
+        "sha384": "2a6fa7f8f47d1bbeacd8211f62014296b4bc9a538a3868af230c8de83ea6540fec5ed289d635f754891529d52339f52d"
+      },
+      "crates/persistence/migrations/0030_limits.sql": {
+        "sha256": "823e6b12b5ba17a23a9c3c1c38ba54837754a87f09dd762a6e6c14d73daca7d2",
+        "sha384": "61c0e36435116a74df0de71d1a425515042b0368c15ea0cdbfd846bb40443a8ac5f7be8c333a7e785638963a2c4eb14b"
+      },
+      "crates/persistence/migrations/0031_customer_domains.sql": {
+        "sha256": "9e97c2e49dba5c5cf31d959bba17ebaf2735aabfa6da2316826caecd13e14b02",
+        "sha384": "680b8f77e22d3ad460ada01b363888162a69a68ca8d0b49bb942e7a681f56f9c51f5cf4536776526e6d3c9468f367154"
+      },
+      "crates/persistence/migrations/0032_api_tokens.sql": {
+        "sha256": "f5c436170379aa235063036ef516fc2bac04a7fd901115fe2f73c02c27f3b817",
+        "sha384": "d3926c74aa5662406276e66f9c2f201db3ac5647e2dd21e98a8239de96182111860dfd1fb2a3b3dd48eb0da3ba51253c"
+      },
+      "crates/persistence/migrations/0033_notifications.sql": {
+        "sha256": "63c6e26ae7f52bcbabf913ff78d625902a9ecaaa7a023974f69d9113479ad58f",
+        "sha384": "fe4d2badd6c315a54d46269e5905e81d554157d59458b3a84934700feb93341bce242df82a305b43d99448c5169f2cb5"
+      },
+      "crates/persistence/migrations/0034_logs.sql": {
+        "sha256": "614597c358467fab7dcba4f7c062cea212f00b6c3d15c8b24b032371c88512c6",
+        "sha384": "28fe96cefc522ccf27afcc938d35f3f4c35e2aec63b01a675f0af909d6d7904ddceeedf77ef49e32a9ffd847aeb717fa"
+      },
+      "crates/persistence/migrations/0035_project_cluster.sql": {
+        "sha256": "bb2eb64cd495a30163563c727210cd122cb2ee6258d21feb3a16e966303af014",
+        "sha384": "84e961e9842f0901952b5dd76cf35c042a5d3959fc6d5e8dea69e94d46792c0d316b7077cb826143d360048fd33f9a41"
+      },
+      "crates/persistence/migrations/0036_history_placement.sql": {
+        "sha256": "caacc1c5c7457718ad48f8de12e512049438bf14c84789e6fa532e00b3ca60ff",
+        "sha384": "35bc062f1faa71337a2d320315a82e162a33a7ecf9e71e39d7687ea5b6fb6b74eb5a262c974c9aec0c2ca7fedda34882"
+      },
+      "crates/persistence/migrations/0037_log_cursor.sql": {
+        "sha256": "0df190f3296836ebde3cb238896a315e6bf011b09f5a18d29a844091a10ad6a8",
+        "sha384": "07193b56046f9a2c72c162551f085351995a1ce3969504cf2d4f78b9507f0f56be5f9a885fad2771243fe8f0b75ccf6c"
+      },
+      "crates/persistence/migrations/0038_customer_acting.sql": {
+        "sha256": "5507a05d3c633c535c8f7fce583e17ab1cc67a246e47cf192aed908d38bd0245",
+        "sha384": "da78314036a919a498f6d7eb28f137750dc02a44f06d9befee6e8281a94afe59eee670a6a3ffd169c3649d5f1b74962a"
+      },
+      "crates/persistence/migrations/0039_identity_acting.sql": {
+        "sha256": "3ae973c90c70ade2944ebb26a2306555beeadf8c48682a152222a56a0cca60e0",
+        "sha384": "c3a37e80e385796dcb6ed63267dd6f71ee6dfd8f4c2ee336778c989dc408952b6cabd1a7610e2118f648fc7d3a7fccb2"
+      },
+      "crates/persistence/migrations/0040_customer_workloads.sql": {
+        "sha256": "314b295dbec9ee121d86fd60acbb463bf609b83e75e0a762126d410deac545cd",
+        "sha384": "7165c9ce67569609041b2e16302f58397cfc425e40ae6b97ae5d47c1513ae17106ac705129d1ba8da37a420de4ad17e9"
+      },
+      "crates/persistence/migrations/0041_invitation_scope.sql": {
+        "sha256": "1c951c30ec687836d82a4736b9b0cd2bbc8f3f6a68009dbac27a43dca256989e",
+        "sha384": "3193409326bdc741bc92d29ab068ada31fdb3078a34ea00c63eed0fa6d3e53bc1dfbf41b87eb6a3f0cc2ad8192e450a9"
+      },
+      "crates/persistence/migrations/0042_plugin_installation.sql": {
+        "sha256": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+        "sha384": "33f00da70293388b04d53a5e83e07af56573fd3ba2d29e5c80417af7db6242c65171c7cf96187ac9eebca534e398ac82"
+      },
+      "crates/persistence/migrations/0043_plugin_updates.sql": {
+        "sha256": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+        "sha384": "557464a57e49076e3cb7ccead1f2d4f41abab0932e7a92a0c05966709f1a50186be0a6b01584bde7ed14cc58a282a35f"
+      },
+      "crates/persistence/migrations/0044_plugin_jobs.sql": {
+        "sha256": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+        "sha384": "6acb204f887d968081ade67cabb73313a0d28f6de87a1afa6a56f9270dab88d6f6c656864c75c6ea06b868a0ef8d168b"
+      },
+      "crates/persistence/migrations/0045_managed_mail_outbox.sql": {
+        "sha256": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+        "sha384": "7c7a8188f1c3de5a467292d63762fee32f803b2e8839396a253142806192b59d8baf8bd1579c14a0d779f104ae6d27f9"
+      },
+      "crates/persistence/migrations/0046_remote_build_artifacts.sql": {
+        "sha256": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+        "sha384": "76d5385bf2deb792550c5e8d0af620bb501c1605352ed6c92e7b18e42d2d6f2f5d632e2c6a54d9be4c50396071eb1e1c"
+      },
+      "crates/persistence/migrations/0047_resource_create_reservations.sql": {
+        "sha256": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+        "sha384": "321d369a344c93598a5d98adfe5924a8cd976d7407543d688b5d78dc720271ef18145fd75735888791a2f5ab40ee3ed0"
+      },
+      "crates/persistence/migrations/0048_database_backups.sql": {
+        "sha256": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+        "sha384": "aecfcec25c3d08495154f31c01f5df5cf638f3b28148684cb639df818599284a5408ea27540ad0f34389f609adf3b7c5"
+      },
+      "crates/persistence/migrations/0049_plugin_storage_transfers.sql": {
+        "sha256": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f",
+        "sha384": "c49385a0d592749cbb3a9fde8aeb567fde47c83798f1f0bd2fbdae1f153db9786ce0260f682b0f94ffee97f761d5ebb7"
+      },
+      "crates/persistence/migrations/0050_archive_source_leases.sql": {
+        "sha256": "2d3e22026c7ad792234ecce7f5a286a856eac681a22af504c23351d2de86a714",
+        "sha384": "307a38770db27ba97bb1d02b66ab99cceb551208e32dd8fa7b0be1fe5f19d54918889cbafca6e5e4ef7d44491a097538"
+      },
+      "crates/persistence/migrations/0051_database_backup_transitions.sql": {
+        "sha256": "a4f16036e77bd2617f61cecc7c7881bb1abfceb920a16309e092770094ed7767",
+        "sha384": "80d613b86feb29461fed7f15372a6a7847e612d384d1459ae0be40d5bc34f440e5b15ab7c56315a91d0a3b549129c81e"
+      },
+      "crates/persistence/migrations/0052_native_recovery.sql": {
+        "sha256": "c472a56bf4e5f90bc023778985f3191b56626e6b149c70d5c2439059816b0c20",
+        "sha384": "9f162bc532572a7270f718479a13ec7ac7c3cc021fd282670fccc4a0ca7200510b6c66669a02531e4828f07a8ca22619"
+      },
+      "crates/persistence/migrations/0053_frontend_output_retention.sql": {
+        "sha256": "3ef35e7f191b15c7b9aa3d007a59247e587fcc2ecb081c72a84441c9f13a458c",
+        "sha384": "aa61b9e136e6f2dd5a87b1b8fb0fa5a273c202344bbef74cd98894ab39f8b40e575e33ba5d3eaecc765f61e288b82b6f"
+      },
+      "crates/persistence/migrations/0054_source_recovery_fences.sql": {
+        "sha256": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+        "sha384": "df11874546d38f6adc2a791f8f084668901e02e79b3c78c494d8b5e9e61a3d32b744682df972abc3c72e1f5a63c42ba6"
+      },
+      "crates/persistence/migrations/0055_native_operator_allowances.sql": {
+        "sha256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+        "sha384": "9cf0b0941ae58172a35fbd14527177a653fad5f99cb291e716df775c08ccdad76ba7373d9f14413a511dfcaa8814e6cb"
+      }
+    },
+    "migration54Status": "DRAFT, pinned 411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c; not a schema freeze approval",
+    "migration55Status": "Frozen ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+    "roles": {
+      "createdThrough": "Existing roles::provision_roles via copied migrator",
+      "count": 12,
+      "loginRoles": 9,
+      "nonLoginOwners": 3,
+      "runtimeIdentityRole": "webdock_auth_bootstrap",
+      "superuserBypassRlsCreateDbCreateRoleInheritReplicationAllFalse": true,
+      "setupAndObserver": "Fresh private postgres owner; never used for AUTH_DATABASE_URL"
+    },
+    "allocatorPrerequisites": "native slot2 from migration0001 plus fresh legacy snowflake_state(singleton=true)"
+  },
+  "executedLegacyOAuthOverlay": {
+    "path": "crates/oauth/migrations/0001_oauth_authorization.sql",
+    "sha256": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+    "includedInCopiedTestBinary": true,
+    "executedByExistingRetainedTest": true,
+    "byteIdenticalTo": "crates/persistence/migrations/0006_oauth_authorization.sql",
+    "actions": "CREATE TABLE/INDEX IF NOT EXISTS, revoke PUBLIC, bootstrap DML grant, platform owner assignment, ENABLE/FORCE RLS and drop/recreate owner/bootstrap policies on identity_oauth_request",
+    "beforeAfterCapturedOwnerAclRlsPolicyMetadataEqual": true,
+    "metadataSHA256": "146d0c0767a5615f57d4565ed07d6d26d126eb6204150a10e4cece50eb35d0e1",
+    "qualificationLimit": "This replayed legacy overlay is disclosed; equality of this one table metadata is not full native-schema ACL or upgrade qualification. No ACL or constraint workaround was applied."
+  },
+  "execution": {
+    "actualTestInvocationCount": 1,
+    "selectedTest": "retained.rs::real_oidc_pkce_consent_refresh_and_mcp_authority",
+    "command": [
+      "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/oauth-mcp-component-0bab694c6b8b/candidate/oauth-retained",
+      "--ignored",
+      "--exact",
+      "real_oidc_pkce_consent_refresh_and_mcp_authority",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "runnerEnvironment": "Cleared environment; fresh own localhost DSNs/passwords, RLS secret and BETTER_AUTH_SECRET generated privately; no existing credentials or env profiles consumed",
+    "phases": [
+      {
+        "name": "migration",
+        "command": [
+          "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/oauth-mcp-component-0bab694c6b8b/candidate/webdock-migrate",
+          "--target",
+          "127.0.0.1:33266/webdock_rls_test",
+          "--initialize-empty",
+          "--provision-roles-from",
+          "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/oauth-mcp-component-0bab694c6b8b/private/passwords.json"
+        ],
+        "exitCode": 0,
+        "elapsedSeconds": 0.471,
+        "logSHA256": "c2e6178515f53344a0e7f13799825f7de9f40d9ae253812a6b0ae23d8c4415bc"
+      },
+      {
+        "name": "oauth-retained",
+        "command": [
+          "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/oauth-mcp-component-0bab694c6b8b/candidate/oauth-retained",
+          "--ignored",
+          "--exact",
+          "real_oidc_pkce_consent_refresh_and_mcp_authority",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "exitCode": 0,
+        "elapsedSeconds": 8.452,
+        "logSHA256": "cf2395120536675aed0bb07adf5b9f80b037a72aa0ace72a6793421eb9c5fddc"
+      }
+    ],
+    "observedTestCounts": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 0
+    },
+    "assertionInventory": {
+      "guardedFunctionSites": 4,
+      "helperFunctionSites": 1,
+      "testBodySites": 39,
+      "allSourceSites": 44,
+      "successfulMacroEvaluationsInferredFromSequentialCalls": 49,
+      "runtimeCounterInstrumented": false
+    },
+    "assertionCountInterpretation": "44 macro sites: 39 in the test body, 4 in guarded() called twice, 1 in the lock helper called twice. A complete successful sequential execution entails 49 macro evaluations; this count is source-derived, not a separately instrumented runtime counter. The retained-lock let-Err SQLx pattern check and bounded expect/panic guards are additional checks, not counted as assert macros.",
+    "completedChecks": [
+      {
+        "phase": "MCP reference creation identity-before-access",
+        "result": "Verifier blocked on actual user row, observed via pg_blocking_pids; independent exact access-row FOR UPDATE NOWAIT still succeeded."
+      },
+      {
+        "phase": "CURRENT expiry reload",
+        "result": "While identity blocked, committed a one-second-shorter expiresAt on the genuinely issued access row; returned reference expires_at() matched the new value."
+      },
+      {
+        "phase": "Stored-reference revalidation identity-before-access",
+        "result": "Repeated the observed native identity wait and access-row NOWAIT availability with the stored reference, without raw-token revalidation."
+      },
+      {
+        "phase": "Retained transaction lock lifetime",
+        "result": "After actual revalidation returned, before its transaction commit, separate exact access-row NOWAIT failed with typed SQLx database code 55P03. Generic database errors cannot satisfy the assertion."
+      },
+      {
+        "phase": "Existing ordinary OAuth protections",
+        "result": "Existing subject tampering, expiry denial, refresh-as-MCP denial, legacy JWT revocation, refresh rotation/replay family revocation and logout/null-session refresh denial completed in the same passing test."
+      }
+    ]
+  },
+  "initialHarnessPreparationFailure": {
+    "directory": ".runtime-test/oauth-mcp-component-47727140cbdd",
+    "status": "Container start failed before PostgreSQL/schema/test start; no product or SQL RED",
+    "runnerExitCode": 1,
+    "testStarted": false,
+    "reason": "owned Docker start failed: Error response from daemon: failed to create task for container: failed to initialize logging driver: compression cannot be enabled when max file count is 1\nfailed to start containers: 21b600adbd3173b2a380a2e02e71845d5edae536b61e2593b0229b3c303b8658\n",
+    "newCopiedRevision": "Only Docker local logging compress=false added; immutable executables, source/schema snapshots and budgets unchanged",
+    "resultSHA256": "a8126696a04a6618391e4a5dd5908df52f1e2631eb8821392349d61707070829",
+    "failureLogSHA256": "1e5bbbb293ebabfd1cc536cf5eed9e37d2acf5097ece8dc7152d043f5bec084c",
+    "cleanup": {
+      "runId": "oauth-mcp-component-47727140cbdd",
+      "containerId": "21b600adbd3173b2a380a2e02e71845d5edae536b61e2593b0229b3c303b8658",
+      "independentDockerInspectExit": 1,
+      "containerAbsent": true,
+      "volumeNames": [],
+      "volumeProof": "tmpfs at the immutable image VOLUME path; runner inspect found no volume mounts; rm --volumes completed",
+      "privateDirectoryAbsent": true,
+      "secretFileAbsent": true,
+      "nonexistentDockerConfigAbsent": true
+    },
+    "failedCopiedExecutablesCleanup": {
+      "scope": "Only exact failed-start run copied executables; sources/pins/runner/results/cleanup retained; successful candidate copies retained for review",
+      "removed": [
+        {
+          "path": ".runtime-test/oauth-mcp-component-47727140cbdd/candidate/oauth-retained",
+          "sha256": "82f1a9a6068a69d4ba6cc1c0fea730bb84e5a134bb1413a01d6c56bfb5630ba7",
+          "bytes": 145021448
+        },
+        {
+          "path": ".runtime-test/oauth-mcp-component-47727140cbdd/candidate/webdock-migrate",
+          "sha256": "76107649da9277144f6747914e50932fc1ac00dc461c127c346e13d51014e2c6",
+          "bytes": 649913360
+        }
+      ],
+      "bytesRemoved": 794934808,
+      "candidateDirectoryAbsent": true
+    }
+  },
+  "cleanup": {
+    "runId": "oauth-mcp-component-0bab694c6b8b",
+    "containerId": "d0814bd08790e0a4d5ea575d801e69a352894176a4c34b4353ff1bdb20e60619",
+    "independentDockerInspectExit": 1,
+    "containerAbsent": true,
+    "volumeNames": [],
+    "volumeProof": "tmpfs at the immutable image VOLUME path; runner inspect found no volume mounts; rm --volumes completed",
+    "privateDirectoryAbsent": true,
+    "secretFileAbsent": true,
+    "nonexistentDockerConfigAbsent": true
+  },
+  "retainedArtifacts": {
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/pin.json": "6753d00500b6f47272e4bf53b0df22606843f3d03aaf65ee60084377609ea7a2",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/run_owned_component.py": "e5c0291dcd5ae0ca68242925cf4c63e1eb72db1553708ab46a8def50ae1adaff",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/result.json": "04f25b7184311ea696143ce9d3a511b140bb39134f67b700d8b5ee062c7722ce",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/cleanup.json": "b4a82664604d6654b7828cee3ae8d38fb0ecea1ae5f85f82c8a43e7919886c3d",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/independent-cleanup.json": "e72db7ee5e2fac6e5c46a9081d2ec29e4a8d75f034deb895b097fdd3dac69646",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/selection.log": "8cfc3401d88ace296b43681eca222b1502001a00d3f5d738390fe2a657c8f529",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/migration.log": "c2e6178515f53344a0e7f13799825f7de9f40d9ae253812a6b0ae23d8c4415bc",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/oauth-retained.log": "cf2395120536675aed0bb07adf5b9f80b037a72aa0ace72a6793421eb9c5fddc",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/migration-journal.json": "728f64cecf497df5db0404552d5bf7a4b001ca7c46086084c5a873b303b06dcf",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/restricted-roles.json": "4f3e0b602a2b3a03f9c5df4de411a994323a22c5cb3cc9a22373e8af42d4816f",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/allocator-prerequisite.json": "c26facb068d75555a826412116331c76025137f4968cd1928949ab8cb1a87320",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/oauth-overlay-before.json": "146d0c0767a5615f57d4565ed07d6d26d126eb6204150a10e4cece50eb35d0e1",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/oauth-overlay-after.json": "146d0c0767a5615f57d4565ed07d6d26d126eb6204150a10e4cece50eb35d0e1",
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/assertion-inventory.json": "70ad835652c0dc5b887ec822688c3ab65eb2900c0abfdcd5627b803c22625bf6"
+  },
+  "retention": "Successful copied test/migrator (794934808 bytes), source snapshots, pins, runner, logs and non-secret proof records retained for independent review. Failed-start copied executables removed after exact hash verification; its source/pins/runner/failure/cleanup retained. Both private credential directories and every generated secret file removed.",
+  "limits": [
+    "Only reviewed current production source ran; no pre-fix executable and no observed SQL RED is claimed.",
+    "The live probes establish native user-before-access order on both MCP paths, current expiry reload and actual revalidation transaction token-lock retention. They do not independently isolate issuer-client/session/resource-policy ordering, disappeared/replaced ownership or all cross-client grant concurrency.",
+    "Existing fixture creates an operator through trusted IdentityService API, marks emailVerified with setup SQL, performs password change/TOTP confirmation/consent/S256 PKCE/token issuance, and retains pre-existing role/expiry mutation probes and offline signing/client provisioning. It is not clean fresh Core HTTP bootstrap.",
+    "No fabricated session/role/Ready/scope authority rows were added as positive proof. Only existing migration/bootstrap metadata and one fresh legacy allocator-state row were prepared.",
+    "No K3s, Agent, provider, browser, protocol intermediary, Host race case or previously filtered mechanism; no existing services/credentials touched.",
+    "No source, manifests, locks, dependencies, schema files, constraints, proto, routes, Control Plane hooks or other-owner files changed; no delegation/commit/push.",
+    "This evidence does not grant Root, Database, native, production or full MCP approval."
+  ]
+}

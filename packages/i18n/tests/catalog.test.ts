@@ -18,6 +18,6 @@ test('GNU catalogs compile context/plurals and reject conflicts or broken named 
   writeFileSync(join(dir,'studio.po'),header+'\nmsgid "Hello {name}"\nmsgstr "Hallo {person}"\n');result=run();assert.notEqual(result.status,0);assert.match(result.stderr,/placeholder mismatch/);
  }finally{rmSync(dir,{recursive:true,force:true})}
 });
-test('Checked-in generated catalog matches authoritative PO files',()=>{
+test('Checked-in generated catalog matches authoritative PO files',{timeout:120_000},()=>{
  const result=spawnSync('python3',[compiler,'--check'],{encoding:'utf8'});assert.equal(result.status,0,result.stderr);
 });

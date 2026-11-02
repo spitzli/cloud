@@ -1,0 +1,118 @@
+{
+  "milestone": "native-plugin-update-storage-slice",
+  "date": "2026-10-24",
+  "sourceBase": "da7d1f8",
+  "productionChanged": false,
+  "scope": "read-only retained metadata ownership verification and physical PostgreSQL Store retention",
+  "retainedStorage": {
+    "command": "WEBDOCK_PLUGIN_PROVISIONING_DOCKER_TEST=1 cargo test --locked -p webdock-plugin-host --test provisioning_retained -- --ignored",
+    "result": "3 passed, 0 failed",
+    "checks": [
+      "read-only PostgreSQL session forbids provisioning writes while retained lookup succeeds",
+      "returned private connection material stays byte-identical and authenticates successfully",
+      "missing role or database is rejected without creation",
+      "missing or foreign role/database ownership comments are rejected without repair",
+      "a changed retained-password ownership marker is rejected",
+      "privileged role flags, inherited memberships, disabled login and changed database owner are rejected"
+    ],
+    "passwordBoundary": "retained checks the password-derived ownership marker; actual application login is separately proved"
+  },
+  "physicalPostgresStorage": {
+    "command": "WEBDOCK_POSTGRES_STORAGE_DOCKER_TEST=1 cargo test --manifest-path plugins/postgres/Cargo.toml --locked --test storage_retention -- --ignored",
+    "result": "1 passed, 0 failed",
+    "checks": [
+      "private migration history remains exactly 1,2,3 across repeated Store startup",
+      "the dropped pending_sealed column remains absent",
+      "every persisted resource field and sealed password bytes remain unchanged",
+      "the original sealing key decrypts the original password; a different key fails",
+      "project isolation remains enforced",
+      "a SQL sentinel survives repeated Store startup"
+    ]
+  },
+  "additionalVerification": {
+    "existingTlsProvisioningIsolationAndReplay": "1 passed with the owned Docker fixture",
+    "postgresDefaultSuite": "4 passed, 0 failed; 5 opt-in tests ignored by default",
+    "privatePreparer": "artifact-only and fresh native database/kernel preparation completed; actual signed Console lifecycle acceptance remains root-owned"
+  },
+  "limits": [
+    "logical signed schema version1 is separate from physical migration count3",
+    "no production migrator change, checksum journal adoption, down migration or new Health field",
+    "the Store test is not a substitute for signed OCI and Console lifecycle acceptance",
+    "all PostgreSQL test containers were owned disposable fixtures with automatic cleanup",
+    "real Console install/update/rollback, SQL/password acceptance and final quality remain root-owned"
+  ],
+  "compatibleOciArtifacts": {
+    "claim": "compatible code-only lifecycle; no physical schema2 migration",
+    "sourceBase": "da7d1f80cccf2b5b1d0c59e935cee63eaa613427",
+    "executableProductionSourcesUnchangedFromBase": true,
+    "signatureAndExactBytesVerified": true,
+    "criResolvesBothPinnedImages": true,
+    "sameExecutableAndFilesystemLayers": true,
+    "distinctImageAndConfigurationDigests": true,
+    "releases": [
+      {
+        "version": "0.1.0",
+        "imageManifestSha256": "f14debf8708d135d2a83a0034530d10200b0d750a378c1b87dc383d115d8d297",
+        "imageConfigSha256": "b02754db40cad8eab4acaf0832dc6726aa211b03adc009f39af1b389c97e0230",
+        "binarySha256": "486876401acc48d4f5f3852240b76804b8f94e5bde0fa5874b7f3aad5e018f06",
+        "manifestSha256": "6079cd2bd3042b4704b78c638a86f96a1d0a2c8643182462a909a9736a55b9cf"
+      },
+      {
+        "version": "0.2.0",
+        "imageManifestSha256": "740d6afb973b8db659c891f1a1f02157eeff94f9fbf31a7001d64dcd241041a9",
+        "imageConfigSha256": "45894fb344b443a09a4f52f405e0dda1875019e7b4d634aa48280fdbefba1637",
+        "binarySha256": "486876401acc48d4f5f3852240b76804b8f94e5bde0fa5874b7f3aad5e018f06",
+        "manifestSha256": "90b7a42fd0d37fca223efbe26702ba7cd0878b9729ebd02495988b2e3841b87f"
+      }
+    ]
+  },
+  "clusterPreparation": {
+    "initialState": "exited",
+    "startedRetainedK3s": true,
+    "retainedVolumePreserved": true,
+    "automaticClusterShutdown": false
+  },
+  "freshNativePreparation": {
+    "result": "prepared; root-owned processes and Console acceptance not started",
+    "nativeCommands": [
+      "webdock-migrate --initialize-empty --provision-roles-from",
+      "webdock-bootstrap-operator",
+      "webdock-enroll-agent",
+      "webdock-bootstrap-plugins"
+    ],
+    "migration43SourceSha256": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+    "migrationJournalChecksumVerified": true,
+    "externalInstallationsBeforeAcceptance": 0,
+    "customersBeforeAcceptance": 0,
+    "operationsBeforeAcceptance": 0,
+    "manualInstallationRowsUsed": false,
+    "privateFilePermissions": "0600; private directories0700",
+    "callback": "owned idle container on existing Docker network; reviewed Core binaries mounted read-only and linkage verified",
+    "coreApiViteControllerAgentProcessesStarted": false,
+    "fixtureRecovery": "Docker changed an ephemeral published PostgreSQL port on its fixture-only TLS restart; resumed the same server with retained password/certificates and refreshed port observation"
+  },
+  "callbackMountHardening": {
+    "result": "owned idle callback replaced and ready for root launch",
+    "individualRequiredFileMounts": 9,
+    "reviewedBinaryMounts": 1,
+    "allMountsReadOnly": true,
+    "kubeconfigAdminPasswordsOperatorEnvironmentAndIssuerKeyAbsent": true,
+    "networkIpNameEnvironmentPortsAndAdmittedBytesPreserved": true,
+    "mountedBinaryHelpPassed": true,
+    "postgresAndK3sUntouched": true,
+    "futurePreparerUsesShortUnixSocket": true
+  },
+  "artifactCacheRestoration": {
+    "trigger": "root generation2 pod could not pull its exact signed image",
+    "catalogAndRuntimeDigestMatch": true,
+    "v2PinnedCriReferenceInitiallyMissing": true,
+    "v1PinnedCriReferenceStillAvailable": true,
+    "retainedV2OciArchiveAndAllBlobsVerified": true,
+    "exactV2ReferenceReimportedAndCriVerified": true,
+    "newReleaseIdentityCreated": false,
+    "catalogDatabaseDeploymentOrPullPolicyChanged": false,
+    "imagesDeleted": false,
+    "globalGcOrRegistryConfigurationChanged": false,
+    "cacheLossCause": "not independently established; kubelet fallback pull reported connection refusal"
+  }
+}

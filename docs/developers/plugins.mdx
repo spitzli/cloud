@@ -1,183 +1,46 @@
 ---
-title: "Webdock plugins"
-description: "Discover the Webdock plugin registry, its manifest contract and the current integration status."
+title: "Develop a Spitzli Cloud plugin"
+description: "Use independent repositories, versioned contracts and Core-managed runtime authority."
 ---
 
-The [Webdock Registry](https://registry.webdock.dev) catalogs extensions for Webdock projects. Sign in with GitHub through the **Webdock Studio** GitHub App. Publishing requires repository access and operator approval; signing in does not install a plugin in Webdock.
+Plugins run outside Core. Their containers implement declared actions and use scoped host services; they do not receive Core database credentials, signing keys or cluster administration access. Core checks identity, workspace/project permissions, installation state, capabilities, runtime generation and current grants before executing work.
 
-<Info>The source installer pilot is available from `v0.1.0-alpha.2` for configured Webdock installations. The earlier `v0.1.0-alpha.1` images do not contain it. It requires an operator, a private GitHub Actions build repository, an artifact publisher on the existing app node, an image registry and a Kubernetes runtime adapter. Enable it separately for each installation; the standard Core deployment does not provision these services. Jobs, plugin tables and migrations are not supported by this installer.</Info>
+## Start from the current source
 
-## Plugin kind
+Native plugins use protocol v2 and the Rust crates in [cloud-plugin-sdk](https://github.com/spitzli/cloud-plugin-sdk). Use the independent [Echo demo](https://github.com/spitzli/cloud-plugin-echo-demo) as a small reference. Pin all shared SDK crates to one reviewed, exact Git commit and commit the Cargo lockfile.
 
-Use **`extension`**. Product areas such as hosting, mail and analytics are categories or tags, not separate runtime kinds. Kind-specific fields such as `image`, `capabilities` and `actions` live directly at the manifest root. They declare compatibility, an immutable runtime image and the capabilities used by the extension.
+The platform's `plugins/` directories are compatibility, test and UI snapshots during migration. They are not the release build context for independent repositories. See source ownership (`plugins/README.md`) and [release workflow](/developers/plugin-releases).
 
-The registry is separate from the [customer/project Registry REST API](/developers/registry). Tabularium owns plugin discovery and release metadata; Webdock owns installation, permissions and execution. Executable images live in an OCI registry.
+| Repository | Purpose |
+| --- | --- |
+| [cloud-plugin-archives](https://github.com/spitzli/cloud-plugin-archives) | Archives |
+| [cloud-plugin-echo-demo](https://github.com/spitzli/cloud-plugin-echo-demo) | Reference extension |
+| [cloud-plugin-hosting](https://github.com/spitzli/cloud-plugin-hosting) | Hosting |
+| [cloud-plugin-lumaserv-compute](https://github.com/spitzli/cloud-plugin-lumaserv-compute) | Read-only compute integration |
+| [cloud-plugin-mail](https://github.com/spitzli/cloud-plugin-mail) | Mail and gateway |
+| [cloud-plugin-object-storage](https://github.com/spitzli/cloud-plugin-object-storage) | Object storage |
+| [cloud-plugin-postgres](https://github.com/spitzli/cloud-plugin-postgres) | Existing PostgreSQL resource maintenance |
+| [cloud-plugin-github-repository](https://github.com/spitzli/cloud-plugin-github-repository) | Repository provider protocol v1 |
+| [cloud-plugin-mail-relay](https://github.com/spitzli/cloud-plugin-mail-relay) | Mail provider protocol v1 |
+| [cloud-plugin-managed-cms](https://github.com/spitzli/cloud-plugin-managed-cms) | Managed CMS protocol v1, plugin and instance images |
 
-## Author a manifest
+New shared or self-hosted PostgreSQL orders are disabled. The PostgreSQL plugin maintains existing resources; Neon BYOK is the current default for new database connections.
 
-Put JSON in `.tabularium` or `tabularium.json` at the repository root. Prefer one file to avoid ambiguous sources. `name` is the stable lowercase plugin identifier in the Webdock v1 contract; do not substitute a display name or rely on Tabularium's optional `id` field. `version` is exact SemVer and must match the release tag after removing an optional `v` prefix.
+## Implement and validate
 
-See [Manifest reference](/developers/plugin-manifest) for required fields and a complete example. The public JSON Schema is available at:
+1. Follow the repository's README, pinned toolchain and committed lockfile.
+2. Declare only the actions, capabilities and host services the plugin uses in its manifest.
+3. Use the matching protocol validator. A TypeScript v1 validator does not validate a native v2 release.
+4. Test against owned, disposable fixtures. Keep provider keys and tenant data out of source, image layers and logs.
+5. Release an immutable image and exact descriptors, then pass the separate registry signature gate.
+6. Have an operator configure the required bindings and approve installation. Publication does not grant customer access.
 
-```text
-https://registry.webdock.dev/manifest.schema.json?kind=extension
-```
+Native runtime RPC uses authenticated private Unix sockets or mutual TLS. Legacy Elysia extensions retain their separately enrolled HTTPS transport and protocol-v1 contract. Do not change a protocol version to migrate a runtime.
 
-Validate before submitting:
+## Availability
 
-```bash
-jq -n --rawfile text .tabularium \
-  '{kind:"extension",text:$text}' | \
-  curl --fail-with-body \
-    -H 'Content-Type: application/json' \
-    --data-binary @- \
-    https://registry.webdock.dev/api/manifest/validate
-```
+As of 1 November 2026, the nine native repositories, Managed CMS and shared SDK have independent releases. Their images and release assets are published. All ten new plugin releases have registry metadata and verified signatures from the established registry key. Provider entries still require their dedicated runtime bindings. Publication is not proof of customer activation or general installation readiness.
 
-Check the response's `ok` field: validation errors return HTTP 200 with `ok: false`. This authoring endpoint accepts at most **64 KiB** of manifest text. The Webdock host contract separately caps release manifests/descriptors at **256 KiB**.
+The previous private GitHub source-import build workflow is retired. Do not use older source-installer instructions or route unknown customer source to the trusted maintainer runner. Public customer build readiness is a separate qualification.
 
-## Release layout
-
-1. Build and push the runtime image to an approved OCI registry. Record its actual SHA-256 digest.
-2. Put that immutable image reference and the release version in the manifest.
-3. Attach both `tabularium.json` and `<name>-universal.json` to the forge release with **identical manifest bytes**. Tabularium ingests the manifest asset; the host verifies the universal JSON descriptor separately from the container image.
-4. Submit the repository through the registry and configure the release webhook shown by Tabularium. Operator approval is required.
-5. Verify release integrity before considering a version installable. Catalog acceptance alone is not proof of image availability, signature trust or host compatibility.
-
-Runtime networking depends on the host adapter. The operator-managed Elysia plugins use a private TLS action listener on port **3443** and a separate public UI listener on **3444**. Follow the specific plugin README for its endpoints and health checks. Plugins declare capabilities and named bindings; they receive no platform database credentials or arbitrary Kubernetes/RBAC configuration.
-
-The source installer below builds directly from source; registry publication remains a separate workflow. The [backend jobs CLI and local BullMQ fixture](/developers/plugin-jobs) remains available for local development, but its jobs template is not compatible with the source installer pilot. Registry publication does not automatically start a workload or grant tenant access.
-
-## Install from source
-
-Operators can open a project's **Extensions → Install plugin** page at `/plugins/<projectID>/install`. Choose one of:
-
-- **GitHub** (default): connect the existing GitHub App, choose an account and repository, including private repositories granted to the app. Importing source requires **Contents → Read-only** permission; metadata-only connections can browse but cannot download source. Source import only reads repositories. **Actions → Read and write** enables automatic builds in the private build repository; existing **Checks → Write** may remain. Unrelated permissions and Contents write access are rejected.
-- **Git URL**: provide an HTTPS repository URL and optional branch, tag or commit. For private repositories, enter a username and token in the separate fields. Credentials are used for this import and are cleared from the form on submission.
-- **ZIP upload**: upload a non-empty archive up to **32 MiB**. Console transfers it in sequential 64 KiB chunks.
-
-The source must contain `tabularium.json` and a `Dockerfile` at its root. The installer builds an OCI image with Docker BuildKit on a disposable GitHub-hosted runner in the private build repository and pins the result to its actual digest. It then pauses for you to review the exact manifest, image, requested capabilities and JSON configuration. Approval applies to that manifest hash. Deployment and project activation continue in the background after approval. The worker revalidates the approving session and current operator/project authority before enabling the plugin. Browser status checks pause after ten minutes or a request failure. Temporary runtime-readiness failures retry every three seconds for up to one minute. Use **Refresh status** to continue, or **Retry activation** if activation paused. No import is reported as installed until activation succeeds.
-
-An unconfigured installation shows **Installer setup required** and disables import and approval actions.
-
-Use **Discard import** to remove an unfinished upload, queued import or a build you
-do not want to approve. This clears its uploaded source and private credentials
-and frees an import slot. It does not stop or delete an approved/running plugin.
-There are at most three active imports per operator and 32 per installation;
-unfinished imports expire after 24 hours. An interrupted build/deployment with an
-expired claim requires operator inspection before another attempt.
-
-## Start with a compatible action plugin
-
-From a Webdock checkout with dependencies installed and the SDK built:
-
-```bash
-node packages/plugin-cli/src/cli.js plugin create echo-demo \
-  --template actions --dir /tmp/echo-demo
-cd /tmp/echo-demo
-npm install --ignore-scripts
-npm run build
-```
-
-The additive `actions` template declares one read action, `demo.echo`, with no capabilities, jobs, tables or migrations. It includes a Dockerfile and bundles the CLI's installed SDK under `vendor/plugin-sdk`, with its package metadata and license notices. A published SDK package is not required. Public transitive dependencies are installed by npm. Commit the generated lockfile and vendor directory alongside the source. The template's image digest is a placeholder which source installation replaces before approval; it is not a publishable release digest.
-
-The existing default `backend` template still targets the local jobs fixture. Use `--template actions` for the source installer.
-
-### Private runtime contract
-
-The action process listens on **HTTPS port 3443**. All requests require `Authorization: Bearer <runtime token>`. `GET /healthz` must return `{ "pluginID": "echo-demo", "version": "0.1.0", "generation": 1, "protocolVersion": 1 }` matching the installed identity. Actions receive `POST /actions/<action-name>` with `{ "input": ... , "configuration": ... , "hostOrigin": ... }` and a signed `x-plugin-invocation` token.
-
-Verify the token with the SDK and check the exact action name, plugin identity, generation and expiration before processing input. Construct an SDK context per invocation using the configured host origin and runtime credential; never accept a caller-supplied host origin as authority. The generated template implements these checks and limits bodies to 32 KiB. Its echo action accepts a message of at most 1,000 characters.
-
-The installer supplies these environment variables: `WEBDOCK_PLUGIN_ID`, `WEBDOCK_PLUGIN_VERSION`, `WEBDOCK_PLUGIN_GENERATION`, `WEBDOCK_PLUGIN_HOST_URL`, `WEBDOCK_PLUGIN_RUNTIME_TOKEN`, `WEBDOCK_PLUGIN_PUBLIC_KEY`, `WEBDOCK_PLUGIN_CONFIGURATION`, `WEBDOCK_PLUGIN_TLS_CERT` and `WEBDOCK_PLUGIN_TLS_KEY`. The TLS files are mounted at `/runtime-tls/tls.crt` and `/runtime-tls/tls.key`. They and the runtime credential must stay out of the source archive. A UI plugin also receives `WEBDOCK_PLUGIN_CONSOLE_ORIGIN`, copied from the operator's `runtime.consoleOrigin`. An optional browser UI uses a separate plain HTTP listener on **3444**, behind the host's HTTPS ingress.
-
-### Operator setup
-
-The API requires `WEBDOCK_PLUGIN_INSTALLER_TOKEN` (at least 32 characters) and `WEBDOCK_PLUGIN_RUNTIME_FILE`. Run `apps/build-worker/plugin_installer.py --config <private-config.json>` as the dedicated installer. Its configuration extends the existing build worker configuration with:
-
-- `controlURL` pointing to `https://<api-host>/v1/plugin-installer`, and `credentialFile` holding the matching installer bearer token.
-- `isolation: "artifact-only"`, a private `artifactRoot`, and the existing location, isolation and storage evidence fields. No KVM, VM image or additional build host is required.
-- `github.appID`, `installationID`, `privateKeyFile`, `repository`, `repositoryID`, `workflow` and `ref`, restricted to an operator-owned private build repository. The App needs Actions write and Contents read on that repository.
-- `registry.repository` and a private `registry.authFile` for publishing built OCI images.
-- `runtime.namespace`, `runtime.kubeconfigFile`, `runtime.clusterID`, `runtime.hostOrigin`, `runtime.apiNamespace`, `runtime.apiPodLabels` and `runtime.apiAddresses` for workload isolation and host access.
-- `runtime.configSecret` with `name`, `namespace` and `key` identifying the runtime configuration secret mounted by the API. Optional `imagePullSecret` supports private image pulls. Set `ingressNamespace` and `ingressPodLabels` when API traffic is routed back through cluster ingress; this permits only those pods on TCP 443/8443 after address translation.
-
-Browser UI installations also require `consoleOrigin`, `uiBaseDomain`, `ingressClass`, `ingressNamespace`, `ingressPodLabels`, and **exactly one** TLS option:
-
-- `uiCertResolver`: the name of an existing Traefik certificate resolver, such as `webdock` in the example configuration. The installer selects that resolver on the `websecure` entrypoint. It does not create or configure the resolver.
-- `uiTLSSecret`: an existing TLS Secret in `runtime.namespace`, whose certificate covers the generated UI hostname. Omit `uiCertResolver` when using this option.
-
-An existing Traefik HTTP-01 resolver can issue an individual certificate for each `pi-<importID>.<uiBaseDomain>` host; no wildcard certificate is required. Point those hostnames to the ingress endpoint (wildcard DNS is suitable) and keep port 80 reachable for the resolver's HTTP-01 challenge. HTTPS UI traffic uses `websecure`; the plugin's internal UI service remains on port 3444. See [Traefik's ingress TLS configuration](https://doc.traefik.io/traefik/reference/routing-configuration/kubernetes/ingress/) and [ACME HTTP-01 requirements](https://doc.traefik.io/traefik/reference/install-configuration/tls/certificate-resolvers/acme/).
-
-Set `runtime.consoleOrigin` to the exact canonical HTTPS Console origin, such as `https://console.example.com`. It must have no path, trailing slash, credentials, query, fragment or wildcard. The installer validates it and passes it unchanged for an exact `frame-ancestors` policy; it never derives the Console origin from `hostOrigin`. Existing UI installer configurations must add this field when upgrading the installer source.
-
-If no browser UI is needed, `consoleOrigin` can be omitted along with `uiBaseDomain` and both TLS options. Supplying both TLS options, or a UI domain without either option, fails configuration validation before any workload is created.
-
-The worker creates a non-root workload with a read-only root filesystem, restricted network policy, private TLS credentials and image digest verification. It updates the runtime binding before API health verification and activation. Provision and test the worker, registry, secret mounting and network permissions for your installation; the Console setup indicator alone does not prove that infrastructure is ready.
-
-Workloads include startup, readiness and liveness probes. On clusters enforcing Webdock's application safety admission policy, verify Restricted Pod Security, the namespace quota and default-deny ingress/egress policy before setting `security.webdock.dev/ready=true` on the plugin namespace.
-
-Use the checked-in [example configuration](https://github.com/spitzli/webdock/blob/main/apps/build-worker/plugin-installer.example.json)
-and [systemd service](https://github.com/spitzli/webdock/blob/v0.1.0-alpha.2/apps/build-worker/webdock-plugin-installer.service).
-Install the [private workflow template](https://github.com/spitzli/webdock/tree/v0.1.0-alpha.2/tools/plugins/github-actions)
-and its trusted helpers in the private build repository. Set its
-`WEBDOCK_PLUGIN_CONTROL_URL` variable to the exact API URL ending in
-`/v1/plugin-installer`. The existing app node downloads source as data, verifies
-artifacts, publishes images and provisions runtimes; it does not execute source
-Dockerfiles or package scripts. The service limits memory, processes and CPU.
-
-The publisher mints a GitHub App token restricted to the one private build
-repository. The runner receives source through a short-lived GitHub OIDC identity
-bound to the exact repository, workflow commit, run, first attempt and import.
-The installer token, GitHub source credentials, App key, registry credentials and
-Kubernetes credentials never enter the build runner. Public build repositories
-are rejected. Builds use existing GitHub Actions capacity; private base images
-requiring additional registry credentials are not supported by this template.
-
-Install an executable Kubernetes client at `/usr/bin/kubectl` and verify it with
-the installer service account and its scoped kubeconfig. On k3s, avoid the bootstrap
-launcher symlink: it may try to extract tools into the service account's home.
-Use a standalone client or the verified, already-extracted bundled client.
-
-Create a dedicated plugin namespace with Pod Security Admission set to
-`pod-security.kubernetes.io/enforce=restricted`. The installer refuses other
-namespaces. Its Kubernetes credential needs namespace metadata read access;
-create/get/list/watch for Deployments; get/list for Pods; create/get for Services;
-and create for Secrets, NetworkPolicies and optional Ingresses. Grant get/update
-access to the **one named runtime configuration Secret** separately. Give it no
-cluster-administrator credential.
-The API reads that Secret through its existing read-only file mount; allow up to
-one minute for a new binding to become visible during activation.
-
-The runtime configuration Secret must already contain the host's Ed25519 signing
-key, canonical `hostOrigin` and `runtimes` object. Existing keys and runtimes are
-preserved through a resource-version check. A Docker-Compose-only installation
-needs a Kubernetes runtime target for this pilot. Public UI plugins also need a
-separate UI domain and either a provisioned TLS Secret or a configured Traefik HTTP-01 resolver. Validate actual network
-policy enforcement on your cluster; creating policy objects alone is not proof.
-
-Installed runtimes use one-year RSA transport certificates compatible with the
-Bun API and Node runtimes. Host invocation signatures continue using Ed25519.
-Rotate each runtime certificate
-and matching host CA binding before expiry. Failed/ambiguous deployments retain
-their objects labelled `webdock.dev/source-import=<import-id>` for inspection;
-they are never blindly overwritten or deleted. Existing plugin IDs cannot be
-replaced through this source installer. Use the explicit offline update workflow.
-
-## Connect an MCP client
-
-Use **`https://registry.webdock.dev/mcp`** with OAuth. Consent is bound to your registry account and requested scopes. Administrators can grant read/write scopes; ordinary users do not gain administrator access through the client. Review or revoke connections in your account settings.
-
-This endpoint manages the plugin registry. The [Webdock platform MCP](/developers/mcp) manages platform resources and is a different service.
-
-## First functional extension
-
-[Project Notes](/developers/project-notes) implements project-scoped notes, an isolated panel and BullMQ reminders. Its developer alpha is published in the registry. Local integration is verified; production Console installation remains unavailable.
-
-## Managed Analytics pilot
-
-[Managed Analytics](/developers/managed-analytics) runs as a separate ElysiaJS container and is used by the public Webdock homepage. The operator-managed host supports scoped document storage and named HTTP bindings, plus declared [API routes and MCP tools](/developers/plugin-api-mcp). This does not complete the automated installation controller or every declared SDK service.
-
-## Managed Apps
-
-[Managed Apps](/developers/managed-apps) operates dedicated customer applications. Tabularium runs as its own app; registry configuration stays in its native administration. Shared Umami tracking remains in Managed Analytics. The former standalone registry-admin alpha is withdrawn.
+Continue with the [manifest contract](/developers/plugin-manifest), [background jobs](/developers/plugin-jobs) and [API/MCP integration](/developers/plugin-api-mcp).

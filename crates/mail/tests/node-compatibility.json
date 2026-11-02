@@ -1,0 +1,22 @@
+{
+  "key": "ExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExM=",
+  "raw": "From: a@example.test\r\nSubject: A\r\n folded subject\r\n\r\nBody\r\n",
+  "digest": "6782c43f4187675635720adda1a4547fbdeaba8c3b8d249b4c51ee19266ea115",
+  "context": {
+    "customerID": "123",
+    "id": "456",
+    "digest": "6782c43f4187675635720adda1a4547fbdeaba8c3b8d249b4c51ee19266ea115",
+    "from": "a@example.test",
+    "to": [
+      "z@example.test",
+      "b@example.test",
+      "b@example.test"
+    ],
+    "transportRevision": "2",
+    "serviceRevision": "3"
+  },
+  "proof": "iUNi96XPYWmSbgAVBNUTx3WksKpzSsKu4z2TKiOMqqM",
+  "purpose": "payload:123:12345678-1234-4123-8123-123456789012",
+  "value": "UHJpdmF0ZSBtYWlsIGJvZHkgYW5kIGF0dGFjaG1lbnQ=",
+  "sealed": "v1.AvDOQGvqF1QGtqcF.ud0t90pEzGNfqcCCkSY6tA.GvSvg5s3l-mXb5otGgd9cIZNlrwFUTI8LqpUPrHawfvGeTyumtfR_mtb7_xang"
+}

@@ -1,6 +1,6 @@
 # Provider adapters
 
-Adapters are grouped by product area, then provider. Each TypeScript leaf owns its package, public exports and tests. npm discovers them through `adapters/*/*`; the area directories are organizational, not additional packages.
+Adapters are grouped by product area, then provider. Each TypeScript leaf owns its package, public exports and tests. Bun discovers them through `adapters/*/*`; the area directories are organizational, not additional packages.
 
 ```text
 adapters/
@@ -25,4 +25,4 @@ Product behavior belongs in `modules/<product>`. Shared contracts belong in `pac
 
 `hosting/kubernetes` describes the enrolled-agent boundary through `runtime.json`; it is not a JavaScript package. The actual Python executor stays in `agents/kubernetes`, with separate credentials, privileges and deployment artifacts.
 
-Run `npm run test:modules` from the repository root to include adapter tests recursively. New providers belong under the relevant area; add another area only for a distinct product responsibility.
+Run `bun run test:modules` from the repository root to include adapter tests recursively. New providers belong under the relevant area; add another area only for a distinct product responsibility.

@@ -30,12 +30,12 @@ backlog after two minutes and unknown handoffs after five minutes. An idle sende
 does not need periodic provider callbacks.
 
 For an authenticated operator session, save the native Auth Cookie header in a
-private file (mode 0600, no shell history). From `apps/auth` with Node 24:
+private file (mode 0600, no shell history). From `apps/auth` with Bun:
 
 ```sh
-node --env-file=/private/auth-runtime.env --import tsx scripts/mail-operator.ts health CUSTOMER CONNECTION /private/operator-cookie
-node --env-file=/private/auth-runtime.env --import tsx scripts/mail-operator.ts reconcile CUSTOMER CONNECTION /private/operator-cookie MESSAGE_ID
-node --env-file=/private/auth-runtime.env --import tsx scripts/mail-operator.ts pause CUSTOMER CONNECTION /private/operator-cookie CURRENT_REVISION
+bun --env-file=/private/auth-runtime.env scripts/mail-operator.ts health CUSTOMER CONNECTION /private/operator-cookie
+bun --env-file=/private/auth-runtime.env scripts/mail-operator.ts reconcile CUSTOMER CONNECTION /private/operator-cookie MESSAGE_ID
+bun --env-file=/private/auth-runtime.env scripts/mail-operator.ts pause CUSTOMER CONNECTION /private/operator-cookie CURRENT_REVISION
 ```
 
 `resume` has the same arguments as `pause`. Reports contain operational metadata,
@@ -62,7 +62,7 @@ Use exactly one scheduler. The current Auth Vercel configuration retains its
 existing storage cron and has no Mail crons. If an operator instead confirms a
 Vercel plan supporting minute ticks, use those same handlers there and leave the
 Kubernetes jobs suspended. Do not activate both. Vercel CLI 63.1.2 was installed
-with `npm i -g vercel`; read-only authentication confirmed the Spitzli team. This
+with `bun add -g vercel`; read-only authentication confirmed the Spitzli team. This
 worktree is not linked to a deployment project. Explicitly verify project and
 environment before pulling configuration or deploying.
 

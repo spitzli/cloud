@@ -5,7 +5,7 @@
   "type": "module",
   "exports": "./src/index.ts",
   "scripts": {
-    "test": "node --import tsx --test src/*.test.ts"
+    "test": "bun test ./src"
   },
   "dependencies": {
     "pg": "8.16.3"

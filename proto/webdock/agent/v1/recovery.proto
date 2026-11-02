@@ -1,0 +1,16 @@
+syntax = "proto3";
+package webdock.agent.v1;
+import "webdock/agent/v1/agent.proto";
+// Additive domain on the existing authenticated native agent channel.
+service RecoveryControl {
+  rpc PollRecovery(PollRequest) returns (RecoveryDispatch);
+  rpc GuardRecovery(RecoveryGuardRequest) returns (GuardReply);
+  rpc CheckpointRecovery(RecoveryCheckpointRequest) returns (RecoveryCheckpointReply);
+  rpc CompleteRecovery(RecoveryReceipt) returns (Ack);
+}
+message RecoveryDispatch { bytes claim_json = 1; }
+message RecoveryGuardRequest { AgentIdentity identity = 1; bytes claim_json = 2; }
+message RecoveryCheckpointRequest { AgentIdentity identity = 1; bytes claim_json = 2; string phase = 3; bytes checkpoint_json = 4; }
+message RecoveryCheckpointReply { bool accepted = 1; string epoch = 2; bytes plan_json = 3; }
+message RecoveryReceipt { AgentIdentity identity = 1; bytes claim_json = 2; bytes completion_json = 3; }
+message RecoveryDelivery { oneof callback { RecoveryCheckpointRequest checkpoint = 1; RecoveryReceipt receipt = 2; } }

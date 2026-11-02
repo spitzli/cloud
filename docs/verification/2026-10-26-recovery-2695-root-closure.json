@@ -1,0 +1,81 @@
+{
+  "actualDiagnosticBytesAndHashes": 21,
+  "actualStrict409Observed": true,
+  "cachedReferencesMetadataEqual": 4,
+  "draft54OnlyChange": "AS status on first reservations CASE projection",
+  "functionalPassed": false,
+  "newDraft54SHA256": "6425988741790a3420b7da0ebc711f02a32cdd40ae0d43b470b8000fd5ea4df7",
+  "noFinalFreeze": true,
+  "observedBoundary": "deploy-ntfy503; actual SQLSTATE unmeasured",
+  "ownedCgroupAndParentAbsent": true,
+  "positiveAbsences": [
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "a77ab7e8f77703d0666a7e0baa996789ed2404568ac6ec188eeeffdb2afbaeb3"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-k3s-help-6f38a99a9b774929"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "ddc3d8b01b7b2af9f7f2588f93be2969b5ace89bb08cbcd9dd5983ccc6097bac"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-6f38a99a9b774929"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "13440b1d61e8a6c6531e9d05231d444191489ee646c2b42ce18599c5e79abed9"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "ce8c5238a2bd2e264f29b2e17d3e832ac979bf286b589be0e4981e2f55998e80"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "00c8b4115161aba27ee0322b734f167dae57624fb0e09857aa4821b38f1a55af"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "b3c0b54ec7851a70ea59bc5706d72713532e0a39911871adb2da850990dca239"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-logs-2695b3ec0849"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "wd-owned-recovery-component:2695b3ec0849"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:5098a80ab4fb06a3e60a62b03f7dc40ef85879598d510d46ef7ad6106c0ac3a4"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    }
+  ],
+  "reportSHA256": "d44867a85a7e0f39ad204bf53489c628f0eeb8aac9510e68ec405c8fc405937a",
+  "runtimeSQLCauseClaimed": false,
+  "scope": "Root2695independentclosure and separate draft54 alias-only source check"
+}

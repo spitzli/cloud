@@ -1,0 +1,9 @@
+# Install only in an approved workload namespace and bind to the operator's agent identity.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: webdock-agent-metrics
+rules:
+  - apiGroups: [metrics.k8s.io]
+    resources: [pods]
+    verbs: [get]

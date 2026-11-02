@@ -169,7 +169,7 @@ test(
       );
       form.set(
         "file",
-        new File([bytes], "../../unsafe.html", { type: "image/png" }),
+        new File([bytes], "../../unsafe.png", { type: "image/png" }),
       );
       const uploaded = await handleNativeCMS(
         new Request(`${config.origin}/api/cms`, {

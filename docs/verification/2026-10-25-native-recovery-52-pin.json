@@ -1,0 +1,120 @@
+{
+  "schemaMax": 52,
+  "migration52SHA256": "c472a56bf4e5f90bc023778985f3191b56626e6b149c70d5c2439059816b0c20",
+  "cargoLockSHA256": "c6f2848cdeeeb1f63ebf38bf9c8faba12cbb9247b336c1b999427e643901a576",
+  "snapshot": "/home/newt/.cache/webdock-native-recovery-52-b8c696efe326ea8b",
+  "pinSHA256": "30cac5cab2df52a4bb5b698652e36d580a5c8a325c515443bcd2d8f6e9b8580e",
+  "sourceArchiveSHA256": "0c004d3ffb710a5fdebcb213500fe93fca60243f6bc274646fd80bf824e13438",
+  "binaries": {
+    "webdock-control-plane": {
+      "sha256": "73c8558d9dafa7aed317170929139f740faf5eacf305de2f47e59667c3e5c880",
+      "bytes": 772344736
+    },
+    "webdock-agent-control": {
+      "sha256": "f713c647203acc185e665e023bed52ab27eec4958ce7e49b0ad9a89f20e4dc29",
+      "bytes": 723943336
+    },
+    "webdock-migrate": {
+      "sha256": "ab0fa4dfd29309dfee2f397bccdfa071b24049c222ad358f150cfdb2deea5dee",
+      "bytes": 649540112
+    },
+    "webdock-bootstrap-operator": {
+      "sha256": "ba494fa38c152c1fc5ef35b1cbb526b4b3d88cdf2df781e0a110664f11c5b04e",
+      "bytes": 657444240
+    },
+    "webdock-enroll-agent": {
+      "sha256": "fe41a3f8bd524dd5493b9ea5c242ac736f9ba9739e0173f04044915f6c1f7c4d",
+      "bytes": 651792968
+    },
+    "webdock-bootstrap-plugins": {
+      "sha256": "3bb23d94e65e5a2cf835dff161f64cc2c36c02e28e97c5a1e41d5a49e29b2a1a",
+      "bytes": 660955456
+    },
+    "webdock-plugin-control": {
+      "sha256": "e678fea31a6dff76e0aac89a21408e9dd8db05d73b0eeea8c248880ba78226f9",
+      "bytes": 718944048
+    },
+    "webdock-plugin-controller": {
+      "sha256": "00fb39e004e3457979d17343874e3ef1ff7800e69102af04c8fd2848a858e393",
+      "bytes": 698410472
+    },
+    "webdock-agent": {
+      "sha256": "48d1c57e0faa54d6cd4ce715ce7b0d9429ae3e590019e82440771f499c2ecd50",
+      "bytes": 482919568
+    },
+    "webdock-storage": {
+      "sha256": "7d48c821bda7a320ab9bad165fe027e2148a11a3efc55461200511c96fbac8ed",
+      "bytes": 376210960
+    },
+    "webdock-recovery": {
+      "sha256": "3519a9432ddf3a0e6f923ac67aff88c47e89e2f90542a33a72275dfd11e611b9",
+      "bytes": 404552216
+    },
+    "webdock-recovery-gateway": {
+      "sha256": "e84a4fd0b287b9e463e4b84efa92f2d38715a74f65e84b1b9d7ebff6a2aa3602",
+      "bytes": 369007496
+    },
+    "managed-webdock-mail": {
+      "sha256": "bd007a2bb65a518fc0737d756ebc3fca960c3fbdb552c93d8318c0c39b019831",
+      "bytes": 272792320
+    },
+    "managed-webdock-mail-gateway": {
+      "sha256": "42c005af1b16ef38bfa90858cc7789d08b78d4522dd6b1b6e1091ad7cd7d8b6a",
+      "bytes": 191497048
+    }
+  },
+  "migrations": {
+    "0001_ids.sql": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23",
+    "0002_identity_security.sql": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721",
+    "0003_identity_preview.sql": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234",
+    "0004_identity_recovery.sql": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704",
+    "0005_identity_passkeys.sql": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b",
+    "0006_oauth_authorization.sql": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+    "0007_organization_ids.sql": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e",
+    "0008_hosting_runtime.sql": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+    "0009_agent_enrollment.sql": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3",
+    "0010_access_authority.sql": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b",
+    "0011_browser_sessions.sql": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c",
+    "0012_build_authority.sql": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d",
+    "0013_repository_authority.sql": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40",
+    "0014_database_authority.sql": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603",
+    "0015_mail_authority.sql": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151",
+    "0016_repository_browser_authority.sql": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77",
+    "0017_plugin_invocation_fence.sql": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129",
+    "0018_mail_provider_binding.sql": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc",
+    "0019_mail_plugin_policy.sql": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa",
+    "0020_mail_provider_lease.sql": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa",
+    "0021_plugin_continuations.sql": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862",
+    "0023_incoming_mail_agent.sql": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de",
+    "0024_mail_configuration.sql": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d",
+    "0025_customer_deletion.sql": "dee73efd12d48b30990c9d0bb71bbab8473a51705b3694dfafd42f6ea82dc817",
+    "0026_plugin_self_service.sql": "2b3420455001313b2b93e8953b85e1f65d4f94ea0134a7b1975c7a7bdc1be3f3",
+    "0027_customer_projects.sql": "8a42816d972bc17044f516d01849939b1bdb852846845c9ada6f759c6fc9bc7d",
+    "0028_plugin_workloads.sql": "ac36c7e9a97c72b5bfcd9b88f9bbda0dbd9e0f32b01000be6c10ab700fea8b5e",
+    "0029_default_project.sql": "1f2e6cd2ccbef7bda7b42fc6384a519553dfeb484b2623c510549361cf1212b0",
+    "0030_limits.sql": "823e6b12b5ba17a23a9c3c1c38ba54837754a87f09dd762a6e6c14d73daca7d2",
+    "0031_customer_domains.sql": "9e97c2e49dba5c5cf31d959bba17ebaf2735aabfa6da2316826caecd13e14b02",
+    "0032_api_tokens.sql": "f5c436170379aa235063036ef516fc2bac04a7fd901115fe2f73c02c27f3b817",
+    "0033_notifications.sql": "63c6e26ae7f52bcbabf913ff78d625902a9ecaaa7a023974f69d9113479ad58f",
+    "0034_logs.sql": "614597c358467fab7dcba4f7c062cea212f00b6c3d15c8b24b032371c88512c6",
+    "0035_project_cluster.sql": "bb2eb64cd495a30163563c727210cd122cb2ee6258d21feb3a16e966303af014",
+    "0036_history_placement.sql": "caacc1c5c7457718ad48f8de12e512049438bf14c84789e6fa532e00b3ca60ff",
+    "0037_log_cursor.sql": "0df190f3296836ebde3cb238896a315e6bf011b09f5a18d29a844091a10ad6a8",
+    "0038_customer_acting.sql": "5507a05d3c633c535c8f7fce583e17ab1cc67a246e47cf192aed908d38bd0245",
+    "0039_identity_acting.sql": "3ae973c90c70ade2944ebb26a2306555beeadf8c48682a152222a56a0cca60e0",
+    "0040_customer_workloads.sql": "314b295dbec9ee121d86fd60acbb463bf609b83e75e0a762126d410deac545cd",
+    "0041_invitation_scope.sql": "1c951c30ec687836d82a4736b9b0cd2bbc8f3f6a68009dbac27a43dca256989e",
+    "0042_plugin_installation.sql": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+    "0043_plugin_updates.sql": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+    "0044_plugin_jobs.sql": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+    "0045_managed_mail_outbox.sql": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+    "0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+    "0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f",
+    "0050_archive_source_leases.sql": "2d3e22026c7ad792234ecce7f5a286a856eac681a22af504c23351d2de86a714",
+    "0051_database_backup_transitions.sql": "a4f16036e77bd2617f61cecc7c7881bb1abfceb920a16309e092770094ed7767",
+    "0052_native_recovery.sql": "c472a56bf4e5f90bc023778985f3191b56626e6b149c70d5c2439059816b0c20"
+  },
+  "scope": "immutable acceptance compiler inputs; not native recovery success or production qualification"
+}

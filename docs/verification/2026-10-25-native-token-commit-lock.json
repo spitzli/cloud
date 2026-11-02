@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-25",
+  "status": "Defensive canonical native-token commit lock locally qualified and independent review2 passed",
+  "head": "819041524049117bc50e11dfd96a6a29407804b8",
+  "finding": "Builtin review1 P2 inherited native OAuth access-token validation did not hold row authority through the caller domain commit.",
+  "mechanism": [
+    "Read immutable token ownership, lock client and identity/session in refresh-compatible order, then lock and reload access-token row FOR SHARE. Changed/missing ownership returns inactive.",
+    "Existing revoked/expiry/issuer/client/session/role validation remains authoritative on the reloaded row.",
+    "Caller retains its authentication transaction through its own business commit; the endpoint retains that transaction in admin_commit."
+  ],
+  "observedTests": [
+    {
+      "scope": "Original missing token lock",
+      "result": "RED 21.08s: normal public revocation returned HTTP200 while actual native verifier authorization transaction remained open",
+      "pin": ".runtime-test/native-token-lock-root-feeacee9255a/pin.json",
+      "cleanup": ".runtime-test/native-token-lock-root-feeacee9255a/cleanup.json"
+    },
+    {
+      "scope": "Lock order",
+      "result": "Initial owner-connection timeout was harness failure, not product RED. Corrected separate-connection probe RED19.14s: naive token-first FOR SHARE prevented token acquisition while verification waited for identity; required refresh-compatible order.",
+      "pin": ".runtime-test/native-token-order-red2-9cb8c7494c/pin.json",
+      "cleanup": ".runtime-test/native-token-order-red2-9cb8c7494c/cleanup.json"
+    },
+    {
+      "scope": "Ordered row-lock and original endpoint matrix",
+      "result": "GREEN28.48s,1passed0failed0ignored; initial successful run used Fixture Drop cleanup, exact historical volume ID was not emitted. Final run below captures exact IDs."
+    },
+    {
+      "scope": "Final owned PG/component plus complete existing HTTP fixture",
+      "result": "GREEN27.04s,1passed0failed0ignored: genuine reviewed bootstrap service/password/TOTP/S256PKCE, actual verifier row-lock lifetime and pg_blocking_pids, business transaction retained guard, regular public revoke serialization and revoke-first denial, refresh rotation/userinfo/replay denial, original activation/replay/concurrency/roles/preview/logout/quarantine cases",
+      "pin": ".runtime-test/native-token-final-ae08d8c296/pin.json",
+      "cleanup": ".runtime-test/native-token-final-ae08d8c296/cleanup.json"
+    },
+    {
+      "command": "cargo test --locked -p webdock-oauth -p webdock-browser-session -j2",
+      "result": "4 passed,3 fixture-dependent ignored"
+    },
+    {
+      "command": "cargo clippy --locked -p webdock-oauth -p webdock-browser-session --all-targets -- -D warnings",
+      "result": "exit0"
+    },
+    {
+      "command": "cargo clippy --locked -p webdock-control-plane --lib --test bootstrap -- -D warnings",
+      "result": "exit0"
+    }
+  ],
+  "testBoundary": [
+    "Ordinary owned database transactions and normal OAuth routes only; no intermediary or traffic interception.",
+    "New opt-in test invokes the same reviewed bootstrap service in-process to isolate embedded schema from mutable external CLI artifacts. The original separate CLI/MFA endpoint proof remains in native-builtin-activation.json.",
+    "This component proves the retained transaction row-lock lifetime. It does not claim an independently paused complete endpoint after its final verifier and before commit. Endpoint ownership/retention is code-traced.",
+    "First complete successful cleanup used the existing exact-container Fixture Drop; event history no longer yielded that run identity. Final and RED run IDs/volumes/private directories were independently checked absent."
+  ],
+  "providerFailureDisclosure": "The previous delegated verification turn was automatically stopped for possible cybersecurity risk. Its unexecuted intermediary draft was withdrawn from compiled tests and retained privately. No attempt was made to run that mechanism; standard transaction tests replaced it.",
+  "limits": [
+    "Draft54 was embedded at pinned candidate2a0530c8014f5a9c77b53a1b7b7c11b8559727e7c1c97d93ee5cef6183b2253d. This is not final54 freeze, full Mail recovery, PG native UI or production approval.",
+    "No native/source Agent/provider/S3 infrastructure started; existing services were not changed.",
+    "Whole-root quality, full recovery and production qualification remain pending."
+  ],
+  "sourceSHA256": {
+    "crates/oauth/src/service.rs": "34f31794fda22ecbc39df12f8d175691ca6920f733aa73f275ffca37bd26d541",
+    "crates/control-plane/tests/support/plugin_builtins.rs": "ce219d8499f816b515fe1ba4b8c900fa2c2599c7244c87937e62a844338226f3",
+    "crates/control-plane/tests/support/native_token_lock.rs": "239b05fd6fa11f3db231ebb9ac054189699ba0fb46ec76bd507e6b4af12549f8"
+  },
+  "finalBinarySHA256": "e2d5adb2ed5391ee6fc0fdfe290cc1d9ed71db11fd0ee7e5d82ede7a4cd4a8a4",
+  "copiedExecutableCleanup": {
+    "removedAfterIndependentReview": [
+      {
+        "directory": ".runtime-test/native-token-lock-root-feeacee9255a",
+        "bytes": 755396144
+      },
+      {
+        "directory": ".runtime-test/native-token-order-red-2fbb54a694",
+        "bytes": 756464080
+      },
+      {
+        "directory": ".runtime-test/native-token-order-red2-9cb8c7494c",
+        "bytes": 756464080
+      },
+      {
+        "directory": ".runtime-test/native-token-lock-green-90f5724ed9",
+        "bytes": 756674304
+      },
+      {
+        "directory": ".runtime-test/native-token-final-ae08d8c296",
+        "bytes": 756916928
+      }
+    ],
+    "scope": "Only exact owned copied test executables; workspace target binaries, other fixtures and protected snapshots unchanged"
+  },
+  "independentReview": {
+    "task": "s3-native-builtin-activation-review-20261025-r2",
+    "result": "No confirmed P1/P2; canonical native access rows and retained activation receipt replay covered; unchanged legacy fallback/refresh-introspection/wall-clock limits explicit",
+    "checks": "4 prebuilt pure tests, scoped format/diff and source/evidence/pin hashes checked; no live fixture or Clippy rerun by reviewer"
+  }
+}

@@ -1,0 +1,86 @@
+# Execution stays disabled until the operator records Blacksmith qualification.
+# See webdock/tools/plugin-ci/BLACKSMITH.md; runner labels alone do not select a region.
+name: Backend bootstrap artifact
+
+# One-time, maintainer-dispatched packaging before Webdock's API exists.
+# Normal builds/deployments use the native K3s backend after Native quality succeeds.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-bootstrap-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != '' && vars.WEBDOCK_BLACKSMITH_BUILDER_READY == 'true' && (github.repository == 'spitzli/cloud' && github.ref == 'refs/heads/main')
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 60
+    env:
+      WEBDOCK_OCI_BACKEND: blacksmith-buildx
+      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+    steps:
+      - name: Require reviewed Blacksmith execution
+        shell: bash
+        env:
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+        run: |
+          set -euo pipefail
+          case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac
+          test "$BLACKSMITH_REGION" = "$QUALIFIED_BLACKSMITH_REGION"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Reject unexpected existing BuildKit before provider setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e buildkitd.toml
+          python3 tools/plugin-release/build_oci.py --before-blacksmith-setup
+      - name: Set up the managed Blacksmith builder
+        uses: useblacksmith/setup-docker-builder@19215110ab936351210feebdfa5b440b4493e184 # reviewed v2
+        with:
+          cache-key: deploy/docker/backend.Dockerfile
+          nofallback: true
+          buildx-version: v0.23.0
+          platforms: linux/amd64
+      - name: Verify provider builder and keep generated configuration outside source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/plugin-release/build_oci.py --assert-blacksmith-builder
+          mv -- buildkitd.toml "$RUNNER_TEMP/blacksmith-buildkitd.toml"
+      - name: Package the backend through managed Blacksmith BuildKit
+        env:
+          IMAGE_REPOSITORY: ghcr.io/spitzli/cloud
+        run: python3 tools/plugin-release/build_oci.py --bootstrap < /dev/null
+      - name: Record the exact reviewed source and archive
+        env:
+          SOURCE_REVISION: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re
+          source=os.environ['SOURCE_REVISION']
+          assert re.fullmatch(r'[0-9a-f]{40}',source)
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])
+          archive=root/'webdock-backend.oci.tar'
+          size=archive.stat().st_size
+          assert 0 < size <= 480*1024*1024, 'Bootstrap artifact exceeds the bounded storage budget'
+          digest=hashlib.file_digest(archive.open('rb'),'sha256').hexdigest()
+          manifest={'schemaVersion':1,'sourceSHA':source,'filename':archive.name,'sha256':digest,'bytes':size,'platform':'linux/amd64','target':'backend','frontendIncluded':False,'deploymentPerformed':False}
+          (root/'bootstrap-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          PY
+      - name: Retain the short-lived bootstrap candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: webdock-backend-bootstrap-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/webdock-backend.oci.tar
+            ${{ runner.temp }}/bootstrap-manifest.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1

@@ -1,0 +1,4 @@
+# Bun is the only JavaScript runtime and package manager for this repository.
+[install]
+# Scripts and tools resolve packages from the root node_modules (e.g. ../../node_modules/payload).
+linker = "hoisted"

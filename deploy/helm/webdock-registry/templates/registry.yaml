@@ -1,0 +1,169 @@
+{{- $name := printf "%s-registry" .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- $secret := required "existingSecret is required" .Values.existingSecret -}}
+{{- $image := required "a digest-pinned image is required" .Values.image -}}
+{{- if hasSuffix (repeat 64 "0") $image }}{{ fail "placeholder image digest is forbidden" }}{{ end -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}
+immutable: true
+data:
+  config.yml: |
+    version: 0.1
+    log:
+      level: warn
+    storage:
+      s3:
+        region: {{ .Values.s3.region | quote }}
+        regionendpoint: {{ .Values.s3.endpoint | quote }}
+        bucket: {{ .Values.s3.bucket | quote }}
+        rootdirectory: /registry
+        secure: true
+        skipverify: false
+        v4auth: true
+        forcepathstyle: true
+        chunksize: 8388608
+        multipartcopychunksize: 8388608
+        multipartcopymaxconcurrency: 2
+      redirect:
+        disable: true
+      delete:
+        enabled: false
+      maintenance:
+        uploadpurging:
+          enabled: false
+    auth:
+      htpasswd:
+        realm: webdock-private-registry
+        path: /run/registry-private/htpasswd
+    http:
+      addr: :5000
+      tls:
+        certificate: /run/registry-private/tls.crt
+        key: /run/registry-private/tls.key
+      debug:
+        addr: :5001
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+        threshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ $name }}
+      annotations:
+        webdock.dev/location-evidence: {{ .Values.locationEvidence | quote }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: registry
+          image: {{ $image | quote }}
+          args: [serve, /etc/distribution/config.yml]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          env:
+            - name: REGISTRY_STORAGE_S3_ACCESSKEY
+              valueFrom:
+                secretKeyRef: {name: {{ $secret }}, key: s3AccessKeyId}
+            - name: REGISTRY_STORAGE_S3_SECRETKEY
+              valueFrom:
+                secretKeyRef: {name: {{ $secret }}, key: s3SecretAccessKey}
+            - name: REGISTRY_HTTP_SECRET
+              valueFrom:
+                secretKeyRef: {name: {{ $secret }}, key: httpSecret}
+          ports:
+            - {name: registry, containerPort: 5000}
+            - {name: health, containerPort: 5001}
+          startupProbe:
+            httpGet: {path: /debug/health, port: health}
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: {path: /debug/health, port: health}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /debug/health, port: health}
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+            - {name: config, mountPath: /etc/distribution, readOnly: true}
+            - {name: private, mountPath: /run/registry-private, readOnly: true}
+            - {name: temporary, mountPath: /tmp}
+      volumes:
+        - name: config
+          configMap: {name: {{ $name }}}
+        - name: private
+          secret: {secretName: {{ $secret }}, defaultMode: 0440}
+        - name: temporary
+          emptyDir: {sizeLimit: 64Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ $name }}
+  ports:
+    - {name: registry, port: 5000, targetPort: registry}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $name }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+{{ toYaml .Values.clientNamespaceSelector | indent 14 }}
+          podSelector:
+            matchLabels:
+{{ toYaml .Values.clientPodSelector | indent 14 }}
+      ports:
+        - {protocol: TCP, port: 5000}
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - {protocol: UDP, port: 53}
+        - {protocol: TCP, port: 53}
+    - to:
+{{- range .Values.objectStoreCIDRs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+{{- end }}
+      ports:
+        - {protocol: TCP, port: {{ .Values.s3.port }}}

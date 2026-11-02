@@ -1,0 +1,21 @@
+{
+  "baseline": "syntax-normalized old logic only, five intended failures",
+  "candidate": ".runtime-test/pg-restore-review1-add07af8cd4b",
+  "containerID": "e46f889dc91728bbdebd1f5ca1b4c0fe23c396c5290f858adc915bdf0b2fa4fa",
+  "finalJournalReached": false,
+  "fixed": "four pass, tuple test helper SQLNULL decode failure",
+  "independentExactAbsence": true,
+  "nativeAcceptance": false,
+  "overallGreen": false,
+  "privateAbsent": true,
+  "remainingObligations": [],
+  "resultSHA256": "0ce5cf017080c6ec54adbf1ce86bbef4ccf617967f0de3bd15f841ff17d784f8",
+  "scope": "Root independent read-only closure of add07 mixed SQL primitive result",
+  "serverDiagnostics": {
+    "complete": true,
+    "errors": [],
+    "logsCaptured": true,
+    "stateCaptured": true
+  },
+  "volumes": 0
+}

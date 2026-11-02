@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "migrations": [
+    {
+      "file": "0001_ids.sql",
+      "sha256": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23"
+    },
+    {
+      "file": "0002_identity_security.sql",
+      "sha256": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721"
+    },
+    {
+      "file": "0003_identity_preview.sql",
+      "sha256": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234"
+    },
+    {
+      "file": "0004_identity_recovery.sql",
+      "sha256": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704"
+    },
+    {
+      "file": "0005_identity_passkeys.sql",
+      "sha256": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b"
+    },
+    {
+      "file": "0006_oauth_authorization.sql",
+      "sha256": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e"
+    },
+    {
+      "file": "0007_organization_ids.sql",
+      "sha256": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e"
+    },
+    {
+      "file": "0008_hosting_runtime.sql",
+      "sha256": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5"
+    },
+    {
+      "file": "0009_agent_enrollment.sql",
+      "sha256": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3"
+    },
+    {
+      "file": "0010_access_authority.sql",
+      "sha256": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b"
+    },
+    {
+      "file": "0011_browser_sessions.sql",
+      "sha256": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c"
+    },
+    {
+      "file": "0012_build_authority.sql",
+      "sha256": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d"
+    },
+    {
+      "file": "0013_repository_authority.sql",
+      "sha256": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40"
+    },
+    {
+      "file": "0014_database_authority.sql",
+      "sha256": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603"
+    },
+    {
+      "file": "0015_mail_authority.sql",
+      "sha256": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151"
+    },
+    {
+      "file": "0016_repository_browser_authority.sql",
+      "sha256": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77"
+    },
+    {
+      "file": "0017_plugin_invocation_fence.sql",
+      "sha256": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129"
+    },
+    {
+      "file": "0018_mail_provider_binding.sql",
+      "sha256": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc"
+    },
+    {
+      "file": "0019_mail_plugin_policy.sql",
+      "sha256": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa"
+    },
+    {
+      "file": "0020_mail_provider_lease.sql",
+      "sha256": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa"
+    },
+    {
+      "file": "0021_plugin_continuations.sql",
+      "sha256": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862"
+    },
+    {
+      "file": "0023_incoming_mail_agent.sql",
+      "sha256": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de"
+    },
+    {
+      "file": "0024_mail_configuration.sql",
+      "sha256": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d"
+    },
+    {
+      "file": "0046_remote_build_artifacts.sql",
+      "sha256": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f"
+    },
+    {
+      "file": "0047_resource_create_reservations.sql",
+      "sha256": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290"
+    },
+    {
+      "file": "0048_database_backups.sql",
+      "sha256": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092"
+    },
+    {
+      "file": "0049_plugin_storage_transfers.sql",
+      "sha256": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f"
+    },
+    {
+      "file": "0050_archive_source_leases.sql",
+      "sha256": "2d3e22026c7ad792234ecce7f5a286a856eac681a22af504c23351d2de86a714"
+    },
+    {
+      "file": "0051_database_backup_transitions.sql",
+      "sha256": "a4f16036e77bd2617f61cecc7c7881bb1abfceb920a16309e092770094ed7767"
+    },
+    {
+      "file": "0052_native_recovery.sql",
+      "sha256": "c472a56bf4e5f90bc023778985f3191b56626e6b149c70d5c2439059816b0c20"
+    },
+    {
+      "file": "0053_frontend_output_retention.sql",
+      "sha256": "3ef35e7f191b15c7b9aa3d007a59247e587fcc2ecb081c72a84441c9f13a458c"
+    },
+    {
+      "file": "0055_native_operator_allowances.sql",
+      "sha256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de"
+    },
+    {
+      "file": "0057_native_kubernetes_builds.sql",
+      "sha256": "395c6b82022c8c5fe4d71cfb8315eed1967fb71b9a7f21a691c16ff6e33e8687"
+    },
+    {
+      "file": "0058_kubernetes_build_completion_logs.sql",
+      "sha256": "b7561893b9999fe40ac827aefa9ddd470c6bb62a66ab841b89d1f36f765e455f"
+    },
+    {
+      "file": "0059_git_build_webhooks.sql",
+      "sha256": "575128218d7323711f85c7531618ca29e4e2d59e62ff2e092686b71a368d2c23"
+    },
+    {
+      "file": "0060_container_build_settings.sql",
+      "sha256": "18de2d45c41e27c8833899ba2ae0694a109162a4ccd637ac99cd529b324e0134"
+    },
+    {
+      "file": "0061_build_production_environments.sql",
+      "sha256": "f582c597cfa7c7ad798ccc41a58481b7ebbab9db4d6e767f7cd5ec019a8ea72f"
+    },
+    {
+      "file": "0062_build_attempt_resource_budget.sql",
+      "sha256": "050174114b2fd5f61ec2b229d706f64ef59161a3b309bf15d636e7f8cdf3b968"
+    },
+    {
+      "file": "0063_build_volume_authority.sql",
+      "sha256": "b3219a48e8f874e90ad55b18ed7199d697c77732fa9aa8ca8b39a98bce0b3825"
+    },
+    {
+      "file": "0064_build_fair_queue_retry.sql",
+      "sha256": "8e39f0b1c47abfe5b8528bb6308f362d76a146f30264105d7f7f9bdab5ad4a2d"
+    },
+    {
+      "file": "0065_git_workflow_build_trigger.sql",
+      "sha256": "2665dc854b05fdafe0984659d71d07a38a4251013bb7ce3acc9f0deea899c9a0"
+    },
+    {
+      "file": "0066_platform_hostnames.sql",
+      "sha256": "0d9f6621b27ef242f6fcb97bc1eefd0dfbf0435eee8f7dc9c162c8bde6869c12"
+    }
+  ]
+}

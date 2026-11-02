@@ -1,0 +1,277 @@
+{
+  "customer": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "customerType": {
+        "type": "string",
+        "enum": [
+          "person",
+          "company"
+        ]
+      },
+      "firstName": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 160
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lastName": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 160
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "companyName": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 160
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "contactName": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 160
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "contactEmail": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "phone": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 50
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "addressLine1": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 160
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "addressLine2": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 160
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "postalCode": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 32
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "city": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 160
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "region": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 160
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "country": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "notes": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 3000
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "name"
+    ],
+    "additionalProperties": false
+  },
+  "project": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "customer": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{0,18}$"
+      },
+      "url": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uri"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "repositoryURL": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "uri"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "notes": {
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 3000
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "name",
+      "customer"
+    ],
+    "additionalProperties": false
+  },
+  "filters": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "collection": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "search": {
+        "type": "string",
+        "maxLength": 160
+      },
+      "page": {
+        "default": 1,
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "limit": {
+        "default": 20,
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 50
+      },
+      "status": {
+        "type": "string",
+        "maxLength": 80
+      },
+      "customer": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{0,18}$"
+      },
+      "targetCollection": {
+        "type": "string",
+        "maxLength": 80
+      },
+      "targetID": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{0,18}$"
+      },
+      "sort": {
+        "default": "-updatedAt",
+        "type": "string",
+        "maxLength": 80
+      }
+    },
+    "required": [
+      "collection",
+      "page",
+      "limit",
+      "sort"
+    ],
+    "additionalProperties": false
+  }
+}

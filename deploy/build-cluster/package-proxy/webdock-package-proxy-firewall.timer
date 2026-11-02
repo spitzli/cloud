@@ -1,0 +1,9 @@
+[Unit]
+Description=Reconcile only the owned package-proxy port after host firewall reloads
+[Timer]
+OnBootSec=3s
+OnUnitActiveSec=5s
+AccuracySec=1s
+Unit=webdock-package-proxy-firewall-refresh.service
+[Install]
+WantedBy=timers.target

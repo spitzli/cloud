@@ -1,0 +1,50 @@
+[
+  {
+    "input": {
+      "key": "notes",
+      "value": {
+        "2": 2,
+        "10": 10,
+        "Z": 1,
+        "a": 2,
+        "A": 3,
+        "é": 4,
+        "é": 5,
+        "01": 1,
+        "4294967295": 7,
+        "escape": "quote\" slash/ back\\ newline\n\t\u0000",
+        "numbers": [
+          0,
+          1,
+          1e-7,
+          1e+21,
+          0.000001,
+          9007199254740992
+        ]
+      },
+      "expectedRevision": null,
+      "idempotencyKey": "request-1"
+    },
+    "canonical": "{\"expectedRevision\":null,\"idempotencyKey\":\"request-1\",\"key\":\"notes\",\"value\":{\"2\":2,\"10\":10,\"01\":1,\"4294967295\":7,\"a\":2,\"A\":3,\"é\":4,\"é\":5,\"escape\":\"quote\\\" slash/ back\\\\ newline\\n\\t\\u0000\",\"numbers\":[0,1,1e-7,1e+21,0.000001,9007199254740992],\"Z\":1}}",
+    "sha256": "aaaa631ccf092f372446fa5f02ca7b7229e3690e4ee5dc5263bd01ba472282fb"
+  },
+  {
+    "input": {
+      "value": [
+        {
+          "a-b": 1,
+          "a_b": 2,
+          "a.b": 3,
+          "💡": true,
+          "ä": false,
+          "Ä": null
+        }
+      ],
+      "key": "x",
+      "expectedRevision": "1",
+      "idempotencyKey": "request-2"
+    },
+    "canonical": "{\"expectedRevision\":\"1\",\"idempotencyKey\":\"request-2\",\"key\":\"x\",\"value\":[{\"💡\":true,\"ä\":false,\"Ä\":null,\"a_b\":2,\"a-b\":1,\"a.b\":3}]}",
+    "sha256": "13ad0f94e32afa0748372bde18caad810ad43a7464a66c49d9fed3b33209e956"
+  }
+]

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 // Build a copied core package in an owned fixture, rejecting product dependencies
 // during resolution even when a third-party symlink leads back to the workspace.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const bun = process.env.BUN_BINARY || join(root, 'node_modules/.bin/bun');
+const bun = process.env.BUN_BINARY || process.execPath;
 const fixture = await mkdtemp(join(tmpdir(), 'webdock-core-product-free-'));
 try {
   const manifest = JSON.parse(await readFile(join(root, 'packages/core/package.json'), 'utf8'));

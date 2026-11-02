@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "verifiedOn": "2026-10-20",
+  "scope": "Native Mail configuration runtimes and optional daemon transport; no production activation",
+  "imageRecipe": "infra/mail/Dockerfile",
+  "reviewedLocalImage": "webdock.local/mail-stalwart@sha256:09460db6473d8d7103836c806603096bc6d9b59ad3d90ce8276d553e88e2c1ad",
+  "checks": [
+    {
+      "suite": "ce_configuration_group_user_dkim_contract",
+      "backend": "owned internal Docker",
+      "seconds": 8.43,
+      "result": "passed",
+      "assertions": [
+        "Domain description ownership marker",
+        "Group/User membership and conservative permission readback",
+        "JMAP Group access",
+        "EmailSubmission/set forbidden",
+        "active RSA DKIM readback",
+        "full restriction denies authentication",
+        "regrant retains original password and DKIM"
+      ]
+    },
+    {
+      "suite": "native_configuration_replays_checkpoint_and_contracts_membership_without_rotation",
+      "backend": "owned internal Docker",
+      "seconds": 9.95,
+      "result": "passed",
+      "assertions": [
+        "accepted Applied checkpoint acknowledgement loss and restart",
+        "normal runtime identity binding",
+        "partial restriction preserves other membership and permissions",
+        "full restriction denies authentication",
+        "original identity credential remains valid for retained access",
+        "post-restriction DKIM public key equals original"
+      ]
+    },
+    {
+      "suite": "mail::configuration unit/fault tests",
+      "count": 6,
+      "result": "passed",
+      "assertions": [
+        "unmarked/ambiguous create adoption denied",
+        "account reference type/name/domain/marker checked",
+        "maintained RSA SPKI parsing",
+        "dropped HTTP create response reconciles through marked handoff without another create",
+        "revoked handoff prevents mutation and absent uncertain resource is not recreated",
+        "revocation after uncertain write cannot publish Applied custody"
+      ]
+    },
+    {
+      "suite": "configuration_management",
+      "count": 3,
+      "features": "no-default-features",
+      "result": "passed",
+      "assertions": [
+        "older Core Unimplemented leaves Hosting and heartbeats healthy",
+        "empty or temporarily unavailable configuration produces no denial receipt and does not block other domains",
+        "exact completion callback survives daemon restart without executing again"
+      ]
+    },
+    {
+      "suite": "owned_mail_kubernetes_configuration",
+      "backend": "owned Kind node-installed agent and local storage helper",
+      "seconds": 121.77,
+      "result": "passed",
+      "assertions": [
+        "normal-instance inspection before configuration",
+        "initial validated RSA DKIM readback",
+        "accepted configuration checkpoint acknowledgement loss",
+        "two Group mailboxes and User JMAP access",
+        "partial and full membership restriction",
+        "original credential retained for surviving access",
+        "Deployment/Pod/PVC identity and Deployment specification unchanged",
+        "existing JMAP draft remains readable",
+        "live guard denial",
+        "suspended configuration refused without restarting"
+      ],
+      "dkimPostRestrictionEqualityAsserted": false
+    }
+  ],
+  "kubernetesFixture": {
+    "customerID": "800520420135011",
+    "namespace": "wd-mail-800520420135011",
+    "deploymentUID": "d7362fbb-c123-484c-b476-96b621306a6e",
+    "podUID": "29955835-b85e-4015-8489-e97eef0c1a18",
+    "claimUID": "1dbf9b5d-0d93-4411-bc2f-f5f0d320341c"
+  },
+  "cleanup": {
+    "verified": true,
+    "namespace": "wd-mail-800520420135011",
+    "persistentVolume": "wd-800520420135011-data",
+    "resources": [
+      "namespace",
+      "PV/PVC",
+      "helper allocation",
+      "free loop device created by fixture",
+      "node runner directory"
+    ],
+    "mechanism": "exact owned fixture checks and Kubernetes UID/resourceVersion preconditions; runner cleanup marker verified"
+  },
+  "strictChecks": {
+    "agentClippyAllTargets": "passed",
+    "agentFeatureMatrices": [
+      "no default features",
+      "Docker only",
+      "Kubernetes only"
+    ],
+    "runtimeIndependentReview": "no findings; depends on Core serialized current-authority contract"
+  },
+  "openGates": [
+    "Direct Core-to-daemon Kubernetes configuration composition",
+    "Core provenance/scheduler/deadline verification is tracked separately",
+    "Public delivery and submission/provider execution",
+    "Production activation and complete Mail parity"
+  ],
+  "localArtifacts": {
+    "kindLog": "/tmp/webdock-mail-config-kind-runtime.log",
+    "kindEvidence": ".runtime-test/runtime-native/mail-configuration-runtime-evidence.json",
+    "dockerExecutorLog": "/tmp/webdock-mail-configuration-native-executor.log",
+    "faultTestsLog": "/tmp/webdock-mail-configuration-fault-tests.log",
+    "daemonTestsLog": "/tmp/webdock-mail-configuration-daemon-green.log"
+  }
+}

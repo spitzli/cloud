@@ -1,0 +1,247 @@
+{
+  "scope": "review54#10 private Mail controlled CE; no production/Core/SMTP/S3 acceptance",
+  "phase": "red",
+  "checks": [
+    {
+      "test": "mailboxes::recovery_tests::mailbox_unknown_response_retains_custody",
+      "outcome": "lost",
+      "exitCode": 101,
+      "seconds": 0.2,
+      "assertionCodes": [
+        "ambiguous_provider_outcome_lost_durable_custody"
+      ],
+      "passed": false,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::mailbox_unknown_response_retains_custody",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::mailbox_unknown_response_retains_custody",
+      "outcome": "timeout",
+      "exitCode": 101,
+      "seconds": 10.21,
+      "assertionCodes": [
+        "ambiguous_provider_outcome_lost_durable_custody"
+      ],
+      "passed": false,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::mailbox_unknown_response_retains_custody",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::mailbox_unknown_response_retains_custody",
+      "outcome": "http400",
+      "exitCode": 101,
+      "seconds": 0.22,
+      "assertionCodes": [
+        "ambiguous_provider_outcome_lost_durable_custody"
+      ],
+      "passed": false,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::mailbox_unknown_response_retains_custody",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::reconciliation_partial_completion_retains_custody",
+      "outcome": "provision",
+      "exitCode": 101,
+      "seconds": 0.19,
+      "assertionCodes": [
+        "ambiguous_provider_outcome_lost_durable_custody"
+      ],
+      "passed": false,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::reconciliation_partial_completion_retains_custody",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::reconciliation_partial_completion_retains_custody",
+      "outcome": "suspend",
+      "exitCode": 101,
+      "seconds": 0.18,
+      "assertionCodes": [
+        "ambiguous_provider_outcome_lost_durable_custody"
+      ],
+      "passed": false,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::reconciliation_partial_completion_retains_custody",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::mailbox_success_without_metadata_persistence_retains_custody",
+      "outcome": "",
+      "exitCode": 101,
+      "seconds": 0.21,
+      "assertionCodes": [
+        "ambiguous_provider_outcome_lost_durable_custody"
+      ],
+      "passed": false,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::mailbox_success_without_metadata_persistence_retains_custody",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::reconciliation_success_without_metadata_persistence_retains_custody",
+      "outcome": "",
+      "exitCode": 101,
+      "seconds": 0.19,
+      "assertionCodes": [
+        "ambiguous_provider_outcome_lost_durable_custody"
+      ],
+      "passed": false,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::reconciliation_success_without_metadata_persistence_retains_custody",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::disconnected_metadata_writer_cannot_release_accepted_effect",
+      "outcome": "",
+      "exitCode": 101,
+      "seconds": 0.2,
+      "assertionCodes": [
+        "ambiguous_provider_outcome_lost_durable_custody"
+      ],
+      "passed": false,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::disconnected_metadata_writer_cannot_release_accepted_effect",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::definite_success_and_never_started_release_only_their_own_custody",
+      "outcome": "",
+      "exitCode": 0,
+      "seconds": 0.49,
+      "assertionCodes": [],
+      "passed": true,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::definite_success_and_never_started_release_only_their_own_custody",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::prevalidation_failure_never_submits_a_provider_request",
+      "outcome": "",
+      "exitCode": 0,
+      "seconds": 0.19,
+      "assertionCodes": [],
+      "passed": true,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::prevalidation_failure_never_submits_a_provider_request",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "recovery::tests::wrong_token_and_stale_epoch_cannot_release_custody",
+      "outcome": "",
+      "exitCode": 0,
+      "seconds": 0.23,
+      "assertionCodes": [],
+      "passed": true,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "recovery::tests::wrong_token_and_stale_epoch_cannot_release_custody",
+        "--nocapture"
+      ]
+    },
+    {
+      "test": "mailboxes::recovery_tests::cancelled_mailbox_process_verify",
+      "outcome": "",
+      "exitCode": 101,
+      "seconds": 0.21,
+      "assertionCodes": [
+        "restart_replayed_unresolved_provider_effect"
+      ],
+      "passed": false,
+      "command": [
+        "$owned_mail_lib_test",
+        "--ignored",
+        "--exact",
+        "mailboxes::recovery_tests::cancelled_mailbox_process_verify",
+        "--nocapture"
+      ]
+    }
+  ],
+  "head": "819041524049117bc50e11dfd96a6a29407804b8",
+  "buildCommand": [
+    "cargo",
+    "test",
+    "--manifest-path",
+    "plugins/mail/Cargo.toml",
+    "--offline",
+    "--locked",
+    "--lib",
+    "--no-run",
+    "--message-format=json"
+  ],
+  "testExecutableSha256": "e721641da13f6765ac09d3549dcacf98f2556cf61e2e83117748579acedafb82",
+  "cancelledProcess": {
+    "pid": 665446,
+    "exitCode": -9,
+    "acceptedBeforeKill": true,
+    "reaped": true
+  },
+  "ownedDatabaseRestarted": true,
+  "containers": [
+    {
+      "name": "wd-recovery-review10-6008e08069a54a75",
+      "id": "21f9efd52e2839d564fe67f3c9fee65800b1c39387163530d70e2f8619cb509b"
+    }
+  ],
+  "cleanup": {
+    "containers": 1,
+    "exactIDsAbsent": true,
+    "clustersTouched": false,
+    "volumesRemovedWithExactContainer": true,
+    "providerFixtures": "in test processes; all bounded processes exited or reaped",
+    "temporaryPkiAndPrivateLogsRemoved": true,
+    "minioKindK3sUnchanged": true
+  },
+  "sourceInventory": {
+    "plugins/mail/src/mailboxes.rs": "214ffa32ab54e0091eba6a86d0fdde1b69527ffd7cf29b67416fe6a475f4a894",
+    "plugins/mail/src/mailboxes/recovery_tests.rs": "5712d6efc219bb3b187a6f892396aef657337271c0e5527c459f62062cb553d5",
+    "plugins/mail/src/recovery.rs": "ce868c46000e0349f979b213af5ee41ecb4dbf051e51efaf19cefa9de2cdd51e",
+    "plugins/mail/src/recovery/tests.rs": "edbac442c5d4db84a8545e203361c3611be21dd04a7d863a0409d3a0c57d35b9",
+    "plugins/mail/src/recovery.sql": "c0e0a8e3b1f8734a0cfda790cd80d92ae9772b3c2e2698af63dfd16b884ae9d6",
+    "plugins/mail/tests/fixtures/mailbox-recovery.py": "f2affc20eacc647b61cbbe10e54bc5003034a019e4089b70af57711bfeafa0f5"
+  }
+}

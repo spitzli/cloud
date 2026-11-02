@@ -1,0 +1,30 @@
+[package]
+name = "webdock-supervisor"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.94"
+license = "AGPL-3.0-only"
+
+[features]
+default = ["journal"]
+journal = ["dep:fs2", "dep:tempfile", "dep:rustix"]
+
+[dependencies]
+webdock-core = { path = "../core" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"] }
+async-trait = "0.1"
+regex = "1"
+sha2 = "0.10"
+fs2 = { version = "0.4", optional = true }
+tempfile = { version = "3", optional = true }
+rustix = { version = "1", optional = true, features = ["process", "fs"] }
+tracing = "0.1"
+
+ipnet = "2"
+x509-parser = "0.18"
+
+[lints]
+workspace = true

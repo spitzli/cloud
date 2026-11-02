@@ -1,64 +1,24 @@
 ---
-title: "Project Notes"
-description: "The first Webdock extension: scoped notes and BullMQ reminders, verified in the local authoring host."
+title: "Project Notes reference extension"
+description: "Use the preserved protocol-v1 notes example without assuming native scheduling support."
 ---
 
-[Project Notes](https://github.com/spitzli/webdock-extension-project-notes) is the first functional Webdock extension. Its repository is public under `spitzli`; its manifest uses `kind: extension` with top-level runtime fields.
+[Project Notes](https://github.com/spitzli/webdock-extension-project-notes) is an established protocol-v1 reference extension. Its signed `0.1.0-alpha.2` release and immutable assets remain preserved. It uses top-level `kind: "extension"` fields and the retained TypeScript SDK.
 
-<Info>The public [0.1.0-alpha.2 developer preview](https://registry.webdock.dev/plugins/project-notes) includes English screenshots, a public OCI image and a signed descriptor. Production installer, invocation transport and UI host integration remain release gates. The local authoring host is explicitly a fixture, not the production Console.</Info>
+## Reference behavior
 
-## Features
+The example keeps project-scoped notes with optimistic document revisions and idempotent write receipts. Its legacy authoring fixture also demonstrates BullMQ reminders that mark notes due in the panel; it sends no email. This is historical fixture behavior, not a promise of interval scheduling in the native host.
 
-- Create, edit and delete notes within a project.
-- Project overview panel with a list, editor and optional reminder time.
-- Optimistic document revisions prevent stale updates.
-- BullMQ reminders mark notes as due in the panel. No email is sent.
-- A declared 60-second reconciliation job recovers pending or overdue reminders, including exhausted delivery retries.
-- Editing or deleting a note invalidates old reminder versions.
+The UI uses a sandboxed frame and host-owned message channel. Runtime tokens, provider keys and database credentials stay outside the frame. Host admission controls project access and capabilities.
 
-The plugin receives no PostgreSQL or Redis credentials. The Core data API uses the existing restricted roles and invocation-bound PostgreSQL RLS. The UI is a sandboxed iframe with a host-owned MessageChannel; host tokens stay outside the frame.
+## Data limits
 
-## Limits
+The reference supports up to 100 notes, 100 characters per title and 5,000 characters per body within a 24 KiB total document. Reminder dates in the legacy fixture are limited to seven days ahead. Editing or deleting a note invalidates its previous reminder version.
 
-A project can hold 100 notes, with 100 characters per title and 5000 per body, within a **24 KiB total document**. The smaller document bound keeps UI responses below the 32 KiB frame-message cap. Reminder dates are limited to seven days ahead.
+Document reads return value and revision. Writes compare the expected revision and retain an operation receipt. Keep the same key when retrying unchanged input; changed input with a reused key or a stale revision fails instead of overwriting another edit.
 
-Deleting removes a note from the active document. Host idempotency receipts remain retained; final retention/purge policy belongs to the production host and must be completed before production rollout.
+## Develop or migrate
 
-## Local verification
+Follow the independent repository's README and pinned dependencies for that v1 release. Retained local fixtures do not establish production installation, customer activation or native runtime compatibility. Current native jobs reject interval scheduling; see [background jobs](/developers/plugin-jobs).
 
-Build the packed SDK and install it in the independent plugin repository as described in that repository's README. Build and run its tests:
-
-```sh
-npm run build
-npm test
-```
-
-In the Webdock checkout, first create the owned local PostgreSQL/RLS fixture and a disposable Redis instance using the repository's fixture workflow. Then:
-
-```sh
-WEBDOCK_TEST_REDIS_PORT=<local-port> node --import tsx \
-  tools/plugins/project-notes-host.ts \
-  /path/to/webdock-extension-project-notes --smoke
-```
-
-The smoke test exercises actual Core HTTP services, PostgreSQL RLS, BullMQ and the plugin in an independent process. It covers project isolation, concurrent CAS writes, receipt replay, stale saves, reminders, plugin restart retention, deletion and revoked grants. Omit `--smoke` to keep a browser preview running; the tool prints its loopback URL.
-
-The fixture creates explicit development identities and grants. These must never be substituted for production authentication or counted as an installer verification.
-
-## Backend services
-
-`ctx.data.read(key)` returns `{value, revision}`; a missing document returns both fields as `null`.
-
-```typescript
-const document = await ctx.data.read('notes');
-await ctx.data.write({
-  key: 'notes',
-  value: {notes: nextNotes},
-  expectedRevision: document.revision,
-  idempotencyKey: requestID,
-});
-```
-
-Writes are transactional and use a revision comparison plus immutable, operation-bound receipts. Retry unchanged input with the same request ID. Changed input with a reused ID or a stale revision is a conflict, not an overwrite.
-
-For reminders use `ctx.jobs.enqueue({name, payload, idempotencyKey, runAt})` with an absolute ISO timestamp. The absolute time keeps the idempotency fingerprint stable across retries. `runAt` and a nonzero `delaySeconds` cannot be combined. See [background jobs](/developers/plugin-jobs).
+For a new native extension, start from [cloud-plugin-echo-demo](https://github.com/spitzli/cloud-plugin-echo-demo) and the [native SDK](https://github.com/spitzli/cloud-plugin-sdk). Preserve Project Notes' existing signed bytes; changing protocol numbers is not a migration. See [independent releases](/developers/plugin-releases).

@@ -30,7 +30,7 @@ spec:
             - {name: WEBDOCK_DATABASE_MANAGED_RUNTIMES, value: {{ .Values.managedRuntimes | toString | quote }}}
             - {name: WEBDOCK_DATABASE_RUNTIME_CAPACITY, value: {{ .Values.runtimeCapacity | toString | quote }}}
             {{- if .Values.runtimeCAConfigMap }}
-            - {name: NODE_EXTRA_CA_CERTS, value: /runtime-trust/ca.crt}
+            - {name: WEBDOCK_DATABASE_RUNTIME_CA_FILE, value: /runtime-trust/ca.crt}
             {{- end }}
           securityContext:
             readOnlyRootFilesystem: true

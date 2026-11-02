@@ -36,6 +36,14 @@ class AcceptanceSafetyTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'Ownership label mismatch'): fixture.remove({'kind':'container','id':'foreign-id','name':'foreign'})
             self.assertEqual(called,[])
 
+    def test_cleanup_checks_resource_absence_before_reporting_success(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)/'webdock-cms-acceptance-0123456789abcdef';root.mkdir(mode=0o700)
+            fixture=module.Fixture(root,'0123456789abcdef',[{'kind':'container','id':'owned','name':'owned'}])
+            fixture.remove=lambda resource:None
+            fixture.inspect=lambda *args:{'Config':{'Labels':{module.LABEL:'0123456789abcdef'}}}
+            with self.assertRaisesRegex(RuntimeError,'remained after cleanup'):fixture.cleanup()
+
     def test_private_artifacts_have_no_group_or_world_access(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)/'webdock-cms-acceptance-0123456789abcdef';root.mkdir(mode=0o700)

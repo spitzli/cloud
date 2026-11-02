@@ -1,0 +1,79 @@
+{
+  "actualDiagnosticBytesAndHashes": 16,
+  "actualSourceDraftPrepared": true,
+  "cachedReferencesMetadataEqual": 4,
+  "failedBoundary": "strict recovery-denial predicate; actual reply not retained, cause unknown",
+  "functionalPassed": false,
+  "ownedCgroupAndParentAbsent": true,
+  "positiveAbsences": [
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "c82aa5f07ffe962bea9aff1144fce06cfc582c49b0435cdcd4c1a4dadf892919"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-k3s-help-63d5ada36e714d82"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "b7bc577dd891a8cb022115e4923d7067c605f87fd9f2224c44efd9e8ed3bb06d"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-63d5ada36e714d82"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "241ee3ea7828748b69212a00fe727571af5660ff7a510d957c758616a37fa15b"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "50b75dc84f1ee758fe86e3652a6dfc1791ba267b198ae7338eb0df0a097f41d4"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "0046c4d048cf26d966ea48e93bd07efbf81beb1f67894809a02511d6f617e7d4"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "c3050c607059ca37061ee17e6f3404ac076a5e7f47c55c83bb66f6915ab29377"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-logs-63e4e05183e5"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "wd-owned-recovery-component:63e4e05183e5"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:dd170b99eb0977d64e8f5686a7981653fd49c00cd2278ee5c80ba25a485b6da4"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    }
+  ],
+  "reportSHA256": "6519e7f3be6a77208326d2dd4d4a2e6158cb1b393bf7557864c77d60f73a4363",
+  "retryOrMutationByRoot": false,
+  "scope": "Root independent read-only63e closure",
+  "sourceReadyOrRecoveryAccepted": false
+}

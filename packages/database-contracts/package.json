@@ -12,6 +12,6 @@
     "@webdock/hosting-contracts": "*"
   },
   "scripts": {
-    "test": "node --import tsx --test src/*.test.ts"
+    "test": "bun test ./src"
   }
 }

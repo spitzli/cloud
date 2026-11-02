@@ -1,0 +1,14 @@
+{
+  "nodeVersion": "24.21.0",
+  "npmVersion": "11.19.0",
+  "bundledNPMPackageVersion": "11.19.0",
+  "npmCLIPath": "/usr/local/lib/node_modules/npm/bin/npm-cli.js",
+  "npmCLISHA256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7",
+  "applicationBuildExecuted": false,
+  "npmInstallExecuted": false,
+  "githubWorkflowTriggered": false,
+  "nodeImage": "docker.io/library/node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20",
+  "buildHost": "167.86.75.144",
+  "dmiUUID": "e6d9884c-e6bd-4699-8a0c-99f2358ae8a1",
+  "qualificationOnly": true
+}

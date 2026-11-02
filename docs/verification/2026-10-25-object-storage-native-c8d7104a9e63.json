@@ -1,0 +1,710 @@
+{
+  "date": "2026-10-25",
+  "scope": "Owned local MinIO qualification only",
+  "runID": "c8d7104a9e63",
+  "privateEvidenceDirectory": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/native-object-storage/c8d7104a9e63",
+  "platformID": "object-c8d7104a9e63",
+  "clusterID": "107795576115961856",
+  "deadline": "2026-10-25T14:55:56.415Z",
+  "completedStages": [
+    "prepare",
+    "start-watchdog",
+    "build-version-images",
+    "artifacts",
+    "pin-binaries",
+    "bootstrap",
+    "prepare-transports",
+    "start-core",
+    "start-ui",
+    "setup",
+    "finalize-catalog",
+    "start",
+    "install",
+    "data",
+    "lifecycle",
+    "cleanup"
+  ],
+  "operatorSetup": {
+    "passwordChange": true,
+    "totp": true,
+    "pkce": true,
+    "registryAPI": true
+  },
+  "schemaSha256": {
+    "0001_ids.sql": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23",
+    "0002_identity_security.sql": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721",
+    "0003_identity_preview.sql": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234",
+    "0004_identity_recovery.sql": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704",
+    "0005_identity_passkeys.sql": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b",
+    "0006_oauth_authorization.sql": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+    "0007_organization_ids.sql": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e",
+    "0008_hosting_runtime.sql": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+    "0009_agent_enrollment.sql": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3",
+    "0010_access_authority.sql": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b",
+    "0011_browser_sessions.sql": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c",
+    "0012_build_authority.sql": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d",
+    "0013_repository_authority.sql": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40",
+    "0014_database_authority.sql": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603",
+    "0015_mail_authority.sql": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151",
+    "0016_repository_browser_authority.sql": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77",
+    "0017_plugin_invocation_fence.sql": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129",
+    "0018_mail_provider_binding.sql": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc",
+    "0019_mail_plugin_policy.sql": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa",
+    "0020_mail_provider_lease.sql": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa",
+    "0021_plugin_continuations.sql": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862",
+    "0023_incoming_mail_agent.sql": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de",
+    "0024_mail_configuration.sql": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d",
+    "0025_customer_deletion.sql": "dee73efd12d48b30990c9d0bb71bbab8473a51705b3694dfafd42f6ea82dc817",
+    "0026_plugin_self_service.sql": "2b3420455001313b2b93e8953b85e1f65d4f94ea0134a7b1975c7a7bdc1be3f3",
+    "0027_customer_projects.sql": "8a42816d972bc17044f516d01849939b1bdb852846845c9ada6f759c6fc9bc7d",
+    "0028_plugin_workloads.sql": "ac36c7e9a97c72b5bfcd9b88f9bbda0dbd9e0f32b01000be6c10ab700fea8b5e",
+    "0029_default_project.sql": "1f2e6cd2ccbef7bda7b42fc6384a519553dfeb484b2623c510549361cf1212b0",
+    "0030_limits.sql": "823e6b12b5ba17a23a9c3c1c38ba54837754a87f09dd762a6e6c14d73daca7d2",
+    "0031_customer_domains.sql": "9e97c2e49dba5c5cf31d959bba17ebaf2735aabfa6da2316826caecd13e14b02",
+    "0032_api_tokens.sql": "f5c436170379aa235063036ef516fc2bac04a7fd901115fe2f73c02c27f3b817",
+    "0033_notifications.sql": "63c6e26ae7f52bcbabf913ff78d625902a9ecaaa7a023974f69d9113479ad58f",
+    "0034_logs.sql": "614597c358467fab7dcba4f7c062cea212f00b6c3d15c8b24b032371c88512c6",
+    "0035_project_cluster.sql": "bb2eb64cd495a30163563c727210cd122cb2ee6258d21feb3a16e966303af014",
+    "0036_history_placement.sql": "caacc1c5c7457718ad48f8de12e512049438bf14c84789e6fa532e00b3ca60ff",
+    "0037_log_cursor.sql": "0df190f3296836ebde3cb238896a315e6bf011b09f5a18d29a844091a10ad6a8",
+    "0038_customer_acting.sql": "5507a05d3c633c535c8f7fce583e17ab1cc67a246e47cf192aed908d38bd0245",
+    "0039_identity_acting.sql": "3ae973c90c70ade2944ebb26a2306555beeadf8c48682a152222a56a0cca60e0",
+    "0040_customer_workloads.sql": "314b295dbec9ee121d86fd60acbb463bf609b83e75e0a762126d410deac545cd",
+    "0041_invitation_scope.sql": "1c951c30ec687836d82a4736b9b0cd2bbc8f3f6a68009dbac27a43dca256989e",
+    "0042_plugin_installation.sql": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+    "0043_plugin_updates.sql": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+    "0044_plugin_jobs.sql": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+    "0045_managed_mail_outbox.sql": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+    "0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+    "0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f"
+  },
+  "producerManifestSha256": "40907a03a60bf94f61a8227435b963c2ded81ff834b493904cdd6abba624ea72",
+  "releases": [
+    {
+      "version": "0.1.0",
+      "imageManifestDigest": "sha256:685463e4f806eaeb0041cfd17ccea5bc78714fb7398632daeb5009d556bd2585",
+      "imageConfigDigest": "sha256:307e663371fbefbb299f418c6c4751430b3cf85b74bd75a9cc266f65632aa70d",
+      "signedManifestSha256": "26b6cefb6c5c110d6897a5f62e3b754367705c02e3ef16e910dec119dc6ed44f",
+      "archiveSha256": "d7f1c962888ab08777d226a9845f1a5080f8a7960bae19c79f152493e7fa5304"
+    },
+    {
+      "version": "0.2.0",
+      "imageManifestDigest": "sha256:7f9af9adf89dc6772a0e5b59d6772c13039ae0c5afc758af1a1f053d7ac412f9",
+      "imageConfigDigest": "sha256:eb4da3e3cbdfdf6a5271225e779df08ad244ea60cc46ac5323d0f5a20a98c75a",
+      "signedManifestSha256": "310d5e9d8430476c1aa861c63b86d33e1e432946f0efd415f5b3b2686233592b",
+      "archiveSha256": "c8240814eb8f89a8c7495e1309acb68fabd188a7cdf46abc336e5ebf28191265"
+    }
+  ],
+  "acceptedOperation": {
+    "id": "107796346886430720",
+    "pluginID": "object-storage",
+    "generation": "1",
+    "accepted": true
+  },
+  "installationVerified": true,
+  "coreReadyStatus": 200,
+  "binarySha256": {
+    "webdock-migrate": "a195cd97ca85c04f6763a86b6093bcedb81633e944c13bbbb524360b4c9002e5",
+    "webdock-bootstrap-operator": "e7b0cee9d96a21499df62cf9084081894dbed7e01846aaea1135cea37c8f0e98",
+    "webdock-enroll-agent": "08d2c12f9da8b41a839d1239bd7ef3fe8d739fd5b727d219d95873d43e571d96",
+    "webdock-bootstrap-plugins": "a2fa45c82de73f86ee7c85df6d1b8ba9cb074ab7158f32e070edee5f75ac89ea",
+    "webdock-control-plane": "073c56e42e80d2e1c8340e2b6dfb55e6d631dcc50afb0b665683d7fd2c45f3eb",
+    "webdock-plugin-control": "b459172788a67dbc70777329db6e1cb5616094a31cb4cc8664a7f82ae196ef5e",
+    "webdock-plugin-controller": "55f1739ea232ce827fbe1cef980b0b02c031126735e75b4445c14c6e154f675c",
+    "webdock-agent-control": "e754b84138da4c94b13daf7d855b40a56d844a88d82889dcdbceb099e5e8ae7c",
+    "webdock-agent": "d1e1a9d783a2f1db59ccf8989f2f911827c5835756855c7ff4091046535f4ea9"
+  },
+  "containers": [
+    {
+      "name": "wd-object-k3s-c8d7104a9e63",
+      "id": "8a3f274ac2b7fdf17ff564c998ebd958c6c1add5acb4bd60f62040a07e0f41ee",
+      "status": "removed",
+      "anonymousVolumes": [
+        "efa786ef7c7b961a4d12e46e1651fe017adb75f2174255db05dcdc8c2e234b9e",
+        "8d246d7742379151337dd4744fcb5be12ad5d0869dc1e2e43e66d3e5c340de0b",
+        "863112a84daa638667a695875f20de6e9cb5e82c72fbb824ced365d5f8e6f6a4",
+        "51837b6bdc1b85be036e90ab84b1c56fb654f4b83f7407826e793fa11bdd02c1"
+      ]
+    },
+    {
+      "name": "wd-object-platform-c8d7104a9e63",
+      "id": "84d09366953964936491f2c8d3d7d0ba0e5a84672cd42ff176435d83eae9c8f9",
+      "status": "removed",
+      "anonymousVolumes": [
+        "18cacf33cc738668fb04f62368a5a7c6bd20cf965692e3161fc22e392194d269"
+      ]
+    },
+    {
+      "name": "wd-object-metadata-c8d7104a9e63",
+      "id": "9175028367ac3ba1d7434534b9f52d4fc0916668f745052622936e446c21a56b",
+      "status": "removed",
+      "anonymousVolumes": [
+        "e5c2211bbc7d5afc23463999d894bc80e24ccb26a33220d6a5ccbe018003b461"
+      ]
+    },
+    {
+      "name": "wd-object-registry-c8d7104a9e63",
+      "id": "aacb9eca21a06a7c32074905f1726e2a12d13118189f3739a9b0573ee8f43505",
+      "status": "removed",
+      "anonymousVolumes": [
+        "4cb7ba40e52bca2b7bc07591d22508a5aa37b2f9cca4eea4f7dc3cccee958f25"
+      ]
+    },
+    {
+      "name": "wd-object-proxy-c8d7104a9e63",
+      "id": "fe6b2b72d766be0b249878a36d426577444da81835734347bb811d75e3a88a07",
+      "status": "removed",
+      "anonymousVolumes": []
+    },
+    {
+      "name": "wd-object-callback-c8d7104a9e63",
+      "id": "56419b3c9b5f63f73d43c8707295449d6036353fe649231b8fe1ec870ca27358",
+      "status": "removed",
+      "anonymousVolumes": []
+    }
+  ],
+  "runtimes": [
+    {
+      "stage": "data",
+      "generations": [
+        {
+          "generation": 1,
+          "version": "0.1.0",
+          "namespace": "wd-plugin-c509eaf202cb214cb50609c8",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-c509eaf202cb214cb50609c8",
+              "uid": "2c942571-cba5-47eb-b61a-d45ad09e48cd"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "4fc39245-70bf-4d33-a933-e3892c17b118"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "2eb8d8f0-e3ef-4f5d-bdfd-d321064b1986"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "3173cf1f-ceac-46eb-9527-42db24e14711"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "c26b4255-4b99-4132-a355-e36876ab6b49"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "e5a24361-8384-47ee-aeb6-e602fa504f18"
+            }
+          ],
+          "replicas": 1,
+          "pods": [
+            {
+              "name": "runtime-8b7c64b5b-z2pxn",
+              "uid": "46d68276-e85c-4264-94d2-1d90a8053e82",
+              "ready": true,
+              "containers": [
+                {
+                  "id": "containerd://bfff0178084468b8a6f53511956de47be1b780893a0c2e6d6b5cb6cffd64ba39",
+                  "imageID": "127.0.0.1:33072/webdock/object-storage@sha256:685463e4f806eaeb0041cfd17ccea5bc78714fb7398632daeb5009d556bd2585",
+                  "restarts": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "before-restart",
+      "generations": [
+        {
+          "generation": 1,
+          "version": "0.1.0",
+          "namespace": "wd-plugin-c509eaf202cb214cb50609c8",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-c509eaf202cb214cb50609c8",
+              "uid": "2c942571-cba5-47eb-b61a-d45ad09e48cd"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "4fc39245-70bf-4d33-a933-e3892c17b118"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "2eb8d8f0-e3ef-4f5d-bdfd-d321064b1986"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "3173cf1f-ceac-46eb-9527-42db24e14711"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "c26b4255-4b99-4132-a355-e36876ab6b49"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "e5a24361-8384-47ee-aeb6-e602fa504f18"
+            }
+          ],
+          "replicas": 1,
+          "pods": [
+            {
+              "name": "runtime-8b7c64b5b-z2pxn",
+              "uid": "46d68276-e85c-4264-94d2-1d90a8053e82",
+              "ready": true,
+              "containers": [
+                {
+                  "id": "containerd://bfff0178084468b8a6f53511956de47be1b780893a0c2e6d6b5cb6cffd64ba39",
+                  "imageID": "127.0.0.1:33072/webdock/object-storage@sha256:685463e4f806eaeb0041cfd17ccea5bc78714fb7398632daeb5009d556bd2585",
+                  "restarts": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "restart",
+      "generations": [
+        {
+          "generation": 1,
+          "version": "0.1.0",
+          "namespace": "wd-plugin-c509eaf202cb214cb50609c8",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-c509eaf202cb214cb50609c8",
+              "uid": "2c942571-cba5-47eb-b61a-d45ad09e48cd"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "4fc39245-70bf-4d33-a933-e3892c17b118"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "2eb8d8f0-e3ef-4f5d-bdfd-d321064b1986"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "3173cf1f-ceac-46eb-9527-42db24e14711"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "c26b4255-4b99-4132-a355-e36876ab6b49"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "e5a24361-8384-47ee-aeb6-e602fa504f18"
+            }
+          ],
+          "replicas": 1,
+          "pods": [
+            {
+              "name": "runtime-8b7c64b5b-7mvfc",
+              "uid": "c06f4f7c-4107-4eaa-b7ed-4aaf7d96caaa",
+              "ready": true,
+              "containers": [
+                {
+                  "id": "containerd://e31a1b6870bdc939e3fcb2a8da9fd3e575dcfa36da100c6456331f87c5849ce6",
+                  "imageID": "127.0.0.1:33072/webdock/object-storage@sha256:685463e4f806eaeb0041cfd17ccea5bc78714fb7398632daeb5009d556bd2585",
+                  "restarts": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "resume",
+      "generations": [
+        {
+          "generation": 1,
+          "version": "0.1.0",
+          "namespace": "wd-plugin-c509eaf202cb214cb50609c8",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-c509eaf202cb214cb50609c8",
+              "uid": "2c942571-cba5-47eb-b61a-d45ad09e48cd"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "4fc39245-70bf-4d33-a933-e3892c17b118"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "2eb8d8f0-e3ef-4f5d-bdfd-d321064b1986"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "3173cf1f-ceac-46eb-9527-42db24e14711"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "c26b4255-4b99-4132-a355-e36876ab6b49"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "e5a24361-8384-47ee-aeb6-e602fa504f18"
+            }
+          ],
+          "replicas": 1,
+          "pods": [
+            {
+              "name": "runtime-8b7c64b5b-7mvfc",
+              "uid": "c06f4f7c-4107-4eaa-b7ed-4aaf7d96caaa",
+              "ready": true,
+              "containers": [
+                {
+                  "id": "containerd://e31a1b6870bdc939e3fcb2a8da9fd3e575dcfa36da100c6456331f87c5849ce6",
+                  "imageID": "127.0.0.1:33072/webdock/object-storage@sha256:685463e4f806eaeb0041cfd17ccea5bc78714fb7398632daeb5009d556bd2585",
+                  "restarts": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "update",
+      "generations": [
+        {
+          "generation": 1,
+          "version": "0.1.0",
+          "namespace": "wd-plugin-c509eaf202cb214cb50609c8",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-c509eaf202cb214cb50609c8",
+              "uid": "2c942571-cba5-47eb-b61a-d45ad09e48cd"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "4fc39245-70bf-4d33-a933-e3892c17b118"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "2eb8d8f0-e3ef-4f5d-bdfd-d321064b1986"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "3173cf1f-ceac-46eb-9527-42db24e14711"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "c26b4255-4b99-4132-a355-e36876ab6b49"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "e5a24361-8384-47ee-aeb6-e602fa504f18"
+            }
+          ],
+          "replicas": 0,
+          "pods": []
+        },
+        {
+          "generation": 2,
+          "version": "0.2.0",
+          "namespace": "wd-plugin-fbcf543a374702eedf62a944",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-fbcf543a374702eedf62a944",
+              "uid": "995009ca-81f5-454e-b747-31bd7c62f68d"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "d6565c3f-44c9-4539-bbed-40dea155ffa6"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "59a2d432-2aa2-4a81-9b5f-119416562f23"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "e744e193-9a24-479b-80d9-ca1fd4666d38"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "3bcd381e-a43a-4a4b-9241-329de41aff22"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "67acf9b1-de4d-4092-869e-de65b3253be1"
+            }
+          ],
+          "replicas": 1,
+          "pods": [
+            {
+              "name": "runtime-84778595f6-rvfn2",
+              "uid": "2a5c8710-c2ba-4eb5-b828-d1704fcd1e3f",
+              "ready": true,
+              "containers": [
+                {
+                  "id": "containerd://15e497f80a4c4f84d813a1508ab7f423748fe4d71f894fd6c308681035008888",
+                  "imageID": "127.0.0.1:33072/webdock/object-storage@sha256:7f9af9adf89dc6772a0e5b59d6772c13039ae0c5afc758af1a1f053d7ac412f9",
+                  "restarts": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "rollback",
+      "generations": [
+        {
+          "generation": 3,
+          "version": "0.1.0",
+          "namespace": "wd-plugin-49e0a5f4905fab0a445766a1",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-49e0a5f4905fab0a445766a1",
+              "uid": "a78a20e7-030a-4532-a572-96b01d9efc75"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "9634642c-8ed1-4540-8653-3b8335c14302"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "b444293a-bf6a-421b-986e-1653393b8e81"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "187151c2-ad9f-492a-8c77-3131fac8465e"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "bb6de413-8104-4cf2-9526-e567d67ebdd4"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "0c90c0d0-3685-454c-a65a-ccbf01a74fa9"
+            }
+          ],
+          "replicas": 1,
+          "pods": [
+            {
+              "name": "runtime-94fcc4764-4cfh7",
+              "uid": "5b32931b-d471-4874-a2d1-10635f59d654",
+              "ready": true,
+              "containers": [
+                {
+                  "id": "containerd://c4080143820f22d4e218d1e1edd20c1e88454fc768cccdd62a3d0d64dab1ae7c",
+                  "imageID": "127.0.0.1:33072/webdock/object-storage@sha256:685463e4f806eaeb0041cfd17ccea5bc78714fb7398632daeb5009d556bd2585",
+                  "restarts": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "generation": 1,
+          "version": "0.1.0",
+          "namespace": "wd-plugin-c509eaf202cb214cb50609c8",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-c509eaf202cb214cb50609c8",
+              "uid": "2c942571-cba5-47eb-b61a-d45ad09e48cd"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "4fc39245-70bf-4d33-a933-e3892c17b118"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "2eb8d8f0-e3ef-4f5d-bdfd-d321064b1986"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "3173cf1f-ceac-46eb-9527-42db24e14711"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "c26b4255-4b99-4132-a355-e36876ab6b49"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "e5a24361-8384-47ee-aeb6-e602fa504f18"
+            }
+          ],
+          "replicas": 0,
+          "pods": []
+        },
+        {
+          "generation": 2,
+          "version": "0.2.0",
+          "namespace": "wd-plugin-fbcf543a374702eedf62a944",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-fbcf543a374702eedf62a944",
+              "uid": "995009ca-81f5-454e-b747-31bd7c62f68d"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "d6565c3f-44c9-4539-bbed-40dea155ffa6"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "59a2d432-2aa2-4a81-9b5f-119416562f23"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "e744e193-9a24-479b-80d9-ca1fd4666d38"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "3bcd381e-a43a-4a4b-9241-329de41aff22"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "67acf9b1-de4d-4092-869e-de65b3253be1"
+            }
+          ],
+          "replicas": 0,
+          "pods": []
+        }
+      ]
+    }
+  ],
+  "transportProof": {
+    "privateCATLSVerified": true,
+    "untrustedCARejected": true,
+    "existingMinioIdentityRetained": true
+  },
+  "dataProof": {
+    "resourceID": "c7523a48-ee7f-4f77-913e-7aeea84ef2e9",
+    "bytes": 262144,
+    "sha256": "4e288a6d62b358407f4ee018c894ac574791e399b3abb6ded4d174050e6bfcdb",
+    "actualCoreProducerUpload": true,
+    "actualCoreProducerDownload": true,
+    "providerVersionObservedPrivately": true,
+    "foreignProjectDenied": true,
+    "readOnlyUploadDenied": true,
+    "revokedBrowserDenied": true,
+    "publicDescriptorHasNoProviderURL": true
+  },
+  "lifecycleProof": {
+    "observedPodRestart": true,
+    "exactSixUIDsRetainedOnRestart": true,
+    "disableResume": true,
+    "update": true,
+    "rollback": true,
+    "generations": [
+      1,
+      2,
+      3
+    ],
+    "oldGenerationPodsAbsent": true,
+    "physicalMetadataAndPasswordRetained": true,
+    "sealingKeyRetained": true,
+    "bucketAndApplicationKeyRetained": true,
+    "originalCredentialUnsealsAcrossGenerations": true,
+    "sentinelCoreDownloadsAcrossGenerations": true
+  },
+  "browserProof": {
+    "realConsoleAndCore": true,
+    "realPasswordTotpPkceSession": true,
+    "widths": [
+      375,
+      1280
+    ],
+    "resourceLoads": true,
+    "explicitCredentialRevealAndHide": true,
+    "hiddenCredentialAbsentFromDOM": true,
+    "horizontalOverflow": false,
+    "pageErrors": 0,
+    "screenshotsPrivateAndEndpointMasked": true,
+    "binaryBrowserControlsClaimed": false
+  },
+  "nativeResourceCleanup": {
+    "deactivated": true,
+    "keysRevoked": true,
+    "purged": true,
+    "bucketObservedAbsent": true,
+    "remoteUserObservedAbsent": true,
+    "remotePolicyObservedAbsent": true,
+    "finalCoreDeleteSucceeded": false,
+    "condition": "local_mc_policy_file_missing_after_generation_change",
+    "uncertainPrivateReceiptPreserved": true,
+    "noSQLRepair": true
+  },
+  "cleanup": {
+    "exactContainerIDsRemoved": true,
+    "anonymousVolumesRemoved": true,
+    "ownedNetworkRemoved": true,
+    "recordedProcessesStopped": true,
+    "existingMinioStillRunning": true,
+    "privateEvidenceRetained": true
+  },
+  "limits": {
+    "coreTransferBytes": 536870912,
+    "concurrentTransfers": 4,
+    "aggregateStagingBytes": 2147483648,
+    "planSeconds": 300,
+    "fixtureProxyBytes": 16777216
+  },
+  "productionActions": false,
+  "wasabiQualified": false,
+  "buildCacheAdded": false,
+  "privateReportSha256": "640ef54d446ab75061a88eaf28a1261fd3dd4fbed36101d946b6293fdacd1d4d"
+}

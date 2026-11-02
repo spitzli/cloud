@@ -1,0 +1,81 @@
+{
+  "actualRepoDigestPreconditionPassed": true,
+  "cachedMetadataEqual": 4,
+  "cgroupAndParentAbsent": true,
+  "diagnosticHashesVerified": 22,
+  "functionalPassed": false,
+  "measuredEngineCause": "native snapshot copy_file_range no space left on /owned after duplicate all-image import into Docker and K3s stores",
+  "noDetachOrMutation": true,
+  "positiveAbsences": [
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "f15d2e7f6679c5b4fbdd28db041689249cb546aa78c91aaf780b249d69202394"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-k3s-help-082a2a92d6014891"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "cb46648f5e40c4aadee1173eea6d601f5d17f0abd69ac5f43c9c47a88f27285c"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-082a2a92d6014891"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "bcf8249e08eafe9656a08f8f9c7edce2f98a0b6ffe830e2a9cf774cc193e5bd0"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "70e6fa876b2bb7a4a09aad6598e402616f9c78d2be74260cd97e2dcc539f7395"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "42df8bfa7478c9144810589ada50e3101fb8dd8d98e4fdc196ee5f13beedc802"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "82e90656f87fd634762ffea6d548250d8443a623372eee7ab97441e70c45c237"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-logs-d508f7de68e4"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "wd-owned-recovery-component:d508f7de68e4"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:587861b43e9030c5289a4a61c285a728cb64849f10463b8be504fee1d7c022f1"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    }
+  ],
+  "reportSHA256": "ad44b28fe5c5b1b3b75e92eafbe5d7b79dddc2f2a449f26cfb6855e76ee929fd",
+  "runtimeErrorCode": "runtime_unavailable",
+  "scope": "Root d508 independent closure",
+  "sourceReady": false,
+  "visibleLoopsUnbound": 10
+}

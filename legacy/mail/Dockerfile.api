@@ -1,0 +1,26 @@
+FROM oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288 AS dependencies
+WORKDIR /app
+# The lockfile covers every workspace, so all manifests are present; only Mail's production closure is installed.
+COPY package.json bun.lock bunfig.toml ./
+COPY apps ./apps
+COPY packages ./packages
+COPY modules ./modules
+COPY adapters ./adapters
+COPY integrations ./integrations
+COPY extensions ./extensions
+COPY vendor ./vendor
+RUN bun install --frozen-lockfile --production --ignore-scripts --filter @webdock/mail && rm -rf /root/.bun/install/cache
+
+FROM oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288
+WORKDIR /app
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY package.json ./package.json
+COPY apps/mail/package.json apps/mail/package.json
+COPY apps/mail/src apps/mail/src
+# Workspace packages are linked from node_modules and loaded as source.
+COPY packages ./packages
+COPY modules ./modules
+USER 65532:65532
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=3139 MAIL_PAYLOAD_DIRECTORY=/data/payloads
+EXPOSE 3139
+CMD ["bun", "apps/mail/src/api/main.ts"]

@@ -1,0 +1,11 @@
+# No exceptions until authenticated private entry points and S3 egress are qualified.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: obs-unqualified-deny-all
+  namespace: webdock-observability
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+  ingress: []
+  egress: []

@@ -1,0 +1,81 @@
+# Specialized/native processes without a reviewed extension authoring manifest.
+# This publishes OCI metadata only. It never claims Tabularium extension admission.
+name: Native OCI plugin
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-oci-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  check:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ${{ fromJSON(vars.WEBDOCK_PLUGIN_CI_RUNNER) }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python3 scripts/native-release.py check
+      - name: Run independent locked checks in the qualified rootless EU builder
+        env:
+          WEBDOCK_BUILDKIT_ADDR: ${{ vars.WEBDOCK_BUILDKIT_ADDR }}
+          WEBDOCK_BUILDCTL_SHA256: ${{ vars.WEBDOCK_BUILDCTL_SHA256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export IMAGE_REPOSITORY="ghcr.io/${GITHUB_REPOSITORY,,}"
+          python3 scripts/plugin-release/build_oci.py --check </dev/null
+  release:
+    needs: check
+    if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push'
+    runs-on: ${{ fromJSON(vars.WEBDOCK_PLUGIN_CI_RUNNER) }}
+    timeout-minutes: 30
+    environment: plugin-release
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - run: python3 scripts/native-release.py check
+      - name: Resolve repository image and require exact release tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -c 'import json,os; m=json.load(open("standalone.json")); assert os.environ["GITHUB_REF_NAME"] == "v"+m["release"]["version"], "Tag/version mismatch"'
+          printf 'IMAGE_REPOSITORY=ghcr.io/%s\n' "${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+      - name: Build and push through the qualified rootless EU builder
+        id: image
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WEBDOCK_BUILDKIT_ADDR: ${{ vars.WEBDOCK_BUILDKIT_ADDR }}
+          WEBDOCK_BUILDCTL_SHA256: ${{ vars.WEBDOCK_BUILDCTL_SHA256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$GH_TOKEN" | python3 scripts/plugin-release/build_oci.py
+      - name: Bind OCI metadata to actual image and source; do not mint protocol descriptors
+        env:
+          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/native-release.py finalize --image "$IMAGE_REPOSITORY@$IMAGE_DIGEST" --tag "$GITHUB_REF_NAME" --source-sha "$GITHUB_SHA" --repository "$GITHUB_REPOSITORY"
+      - name: Publish immutable native OCI metadata only
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo 'Release already exists; refusing to overwrite assets.' >&2
+            exit 1
+          fi
+          prerelease=()
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then prerelease=(--prerelease); fi
+          gh release create "$GITHUB_REF_NAME" release/native-release.json --verify-tag --title "$GITHUB_REF_NAME" --generate-notes "${prerelease[@]}"

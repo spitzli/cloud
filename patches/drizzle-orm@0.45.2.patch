@@ -1,0 +1,33 @@
+diff --git a/package.json b/package.json
+index 74f3ae71ace696a275b2263d1d6eaf60ce7fb0c6..8c285a23437d31cf47f271fd5813bc932dddfb36 100644
+--- a/package.json
++++ b/package.json
+@@ -57,7 +57,6 @@
+     "@prisma/client": "*",
+     "@tidbcloud/serverless": "*",
+     "@types/better-sqlite3": "*",
+-    "@types/pg": "*",
+     "@types/sql.js": "*",
+     "@vercel/postgres": ">=0.8.0",
+     "@xata.io/client": "*",
+@@ -67,7 +66,6 @@
+     "knex": "*",
+     "kysely": "*",
+     "mysql2": ">=2",
+-    "pg": ">=8",
+     "postgres": ">=3",
+     "sql.js": ">=1",
+     "sqlite3": ">=5",
+@@ -102,12 +100,6 @@
+     "@cloudflare/workers-types": {
+       "optional": true
+     },
+-    "pg": {
+-      "optional": true
+-    },
+-    "@types/pg": {
+-      "optional": true
+-    },
+     "postgres": {
+       "optional": true
+     },

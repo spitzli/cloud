@@ -1,7 +1,9 @@
 # Default-deny context. Named Dockerfiles additionally use their adjacent ignore files.
 **
 !package.json
-!package-lock.json
+!bun.lock
+!bunfig.toml
+!patches/**
 !apps/**
 !agents/**
 !packages/**
@@ -39,6 +41,6 @@
 **/.netrc
 **/*.log
 
-apps/control-plane/dist-core/
+legacy/control-plane/dist-core/
 
 .core-build/

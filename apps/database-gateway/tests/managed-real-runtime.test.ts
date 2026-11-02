@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { createServer } from "node:http";
 import { once } from "node:events";
@@ -12,7 +12,7 @@ import { createGateway } from "../src/server";
 
 // Explicit opt-in: this creates only a disposable loopback Docker database with synthetic credentials.
 test("real managed process negotiates, uses verified PostgreSQL TLS, edits schema and erases session state", {
-  skip: !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_BINARY && !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE, timeout: 60_000,
+  skip: !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_BINARY && !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE && !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY, timeout: 60_000,
 }, async t => {
   const directory = await mkdtemp(join(tmpdir(), "managed-real-test-"));
   const container = "webdock-managed-viewer-test-" + randomUUID();
@@ -41,7 +41,35 @@ test("real managed process negotiates, uses verified PostgreSQL TLS, edits schem
   };
   let origin: string;
   const gatewayContainer = container + "-gateway";
-  if (process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE) {
+  if (process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY) {
+    // The existing real database/TLS acceptance now also runs against the native Rust gateway.
+    const api = createServer(async (req, res) => {
+      try {
+        assert.equal(req.headers.authorization, "Bearer " + "fixture-secret-".repeat(3));
+        let body = ""; for await (const chunk of req) body += chunk;
+        res.setHeader("Content-Type", "application/json"); res.end(JSON.stringify({ data: await control(JSON.parse(body)) }));
+      } catch { res.writeHead(401); res.end(); }
+    });
+    api.listen(0, "127.0.0.1"); await once(api, "listening");
+    t.after(() => { api.closeAllConnections(); api.close(); });
+    const address = api.address(); assert.ok(address && typeof address !== "string");
+    const reserve=createServer(); reserve.listen(0,"127.0.0.1"); await once(reserve,"listening");
+    const reserved=reserve.address(); assert.ok(reserved && typeof reserved!=="string");
+    await new Promise<void>(resolve=>reserve.close(()=>resolve()));
+    origin=`http://127.0.0.1:${reserved.port}`;
+    const pin=JSON.parse(await readFile(new URL("../../../vendor/tabularis-web-ui.json",import.meta.url),"utf8"));
+    const child=spawn(process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY,[],{stdio:"ignore",env:{
+      PATH:process.env.PATH,LANG:"C.UTF-8",RUST_LOG:"off",HOST:"127.0.0.1",PORT:String(reserved.port),
+      WEBDOCK_AUTH_ORIGIN:`http://127.0.0.1:${address.port}`,WEBDOCK_DATABASE_GATEWAY_ORIGIN:origin,
+      WEBDOCK_DATABASE_BROWSER_ORIGINS:"http://localhost:3120",WEBDOCK_DATABASE_GATEWAY_SECRET:"fixture-secret-".repeat(3),
+      WEBDOCK_DATABASE_MANAGED_RUNTIMES:"true",WEBDOCK_DATABASE_RUNTIME_CAPACITY:"2",WEBDOCK_DATABASE_RUNTIME_DIRECTORY:directory,
+      TABULARIS_EXPECTED_COMMIT:pin.sourceCommit,TABULARIS_EXECUTABLE:process.env.WEBDOCK_MANAGED_RUNTIME_TEST_BINARY,
+      TABULARIS_WEB_ROOT:process.env.WEBDOCK_MANAGED_RUNTIME_TEST_WEB_ROOT,
+    }});
+    const exited=once(child,"exit");t.after(async()=>{if(child.exitCode===null&&child.signalCode===null){child.kill("SIGTERM");const force=setTimeout(()=>child.kill("SIGKILL"),2000);try{await exited;}finally{clearTimeout(force);}}});
+    let available=false;for(let i=0;i<100&&!available;i++){try{available=(await fetch(origin+"/healthz")).ok;}catch{await new Promise(resolve=>setTimeout(resolve,50));}}
+    assert.ok(available,"Native database gateway must start");
+  } else   if (process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE && !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY) {
     const api = createServer(async (req, res) => {
       try {
         assert.equal(req.headers.authorization, "Bearer " + "fixture-secret-".repeat(3));
@@ -98,10 +126,10 @@ test("real managed process negotiates, uses verified PostgreSQL TLS, edits schem
   const tls = await query("SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()"); assert.deepEqual(tls.body.data.rows, [[true]]);
   const crossTarget = await rpc("execute_query", { connectionId: "456", query: "select 1" }); assert.equal(crossTarget.status, 403);
   revoked = true; assert.equal((await query("SELECT 1")).status, 401);
-  if (process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE) {
-    const files = execFileSync("docker", ["exec", gatewayContainer, "node", "-e", "console.log(JSON.stringify(require('node:fs').readdirSync('/tmp').filter(n=>n.startsWith('webdock-tabularis-'))))"], { encoding: "utf8" });
-    assert.deepEqual(JSON.parse(files), []);
-  } else assert.deepEqual((await readdir(directory)).filter(name => name.startsWith("webdock-tabularis-")), []);
+  if (process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE && !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY) {
+    const files = execFileSync("docker", ["exec", gatewayContainer, "find", "/tmp", "-maxdepth", "1", "-type", "d", "(", "-name", "webdock-tabularis-*", "-o", "-name", "webdock-database-*", ")"], { encoding: "utf8" });
+    assert.equal(files.trim(), "");
+  } else assert.deepEqual((await readdir(directory)).filter(name => name.startsWith("webdock-tabularis-") || name.startsWith("webdock-database-")), []);
 
   // A new process with an unrelated CA must not connect, proving verification is enforced.
   revoked = false;

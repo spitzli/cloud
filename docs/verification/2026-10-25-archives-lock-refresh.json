@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-25",
+  "scope": "Archives developer workspace path-dependency lock refresh",
+  "beforeRegistryPins": 620,
+  "afterRegistryPins": 620,
+  "removedOrChangedPins": [],
+  "newRegistryPins": [],
+  "productionRuntimeManifestChanged": false
+}

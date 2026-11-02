@@ -7,7 +7,7 @@ class ServiceBindingTests(unittest.TestCase):
     def packet(self):
         p=ExecutorTests().packet()
         p['serviceBindingsVersion']=1
-        p['serviceBindings']=[{'id':'111','revision':2,'backendID':'222','caCertificate':Path(__file__).parents[2].joinpath('apps/control-plane/tests/ported-auth/fixtures/database-ca.crt').read_text()}]
+        p['serviceBindings']=[{'id':'111','revision':2,'backendID':'222','caCertificate':Path(__file__).parents[2].joinpath('legacy/control-plane/tests/ported-auth/fixtures/database-ca.crt').read_text()}]
         return p
     def test_binding_grants_only_selected_app_database_and_mounts_ca(self):
         p=self.packet();validate(p)

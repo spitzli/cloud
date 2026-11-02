@@ -1,0 +1,6 @@
+apiVersion: v2
+name: webdock-registry
+description: Opt-in private OCI registry with separate S3 storage and operator-owned secrets
+type: application
+version: 0.1.0
+appVersion: 3.1.2

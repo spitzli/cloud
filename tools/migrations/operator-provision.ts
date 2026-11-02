@@ -8,7 +8,7 @@ import {
   type InitialOperatorInput,
 } from "./operator-config";
 const apiRequire = createRequire(
-  new URL("../../apps/control-plane/package.json", import.meta.url),
+  new URL("../../legacy/control-plane/package.json", import.meta.url),
 );
 /** Matches oauth-provider 1.7.7 with JWT enabled and default hashed client-secret storage. */
 export const oauthSecretHash = (secret: string) =>

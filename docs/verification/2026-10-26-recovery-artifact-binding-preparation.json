@@ -1,0 +1,96 @@
+{
+  "status": "SOURCE_STABLE_PREPARATION_ONLY; execution held",
+  "baseArtifactPin": ".runtime-test/recovery-current-source-component-6223d3e8baf0/pin.json",
+  "baseArtifactPinSHA256": "1bbbdd07c56540bff34faa1a8a7dd0ef97493061f9005f0b2cb5d5e54426e11e",
+  "all13PinnedELFsRehashedUnchanged": true,
+  "basePublicSourceArchiveSHA256": "c00ef395c5fd51359c7915665623c4eca1b2f529deff71419470cc7754fe4bdb",
+  "overlay": ".runtime-test/recovery-source-input-overlay-b384b6d5ee31/overlay.json",
+  "overlaySHA256": "b384b6d5ee31014177a7e592bd33a5701018847576c8617108211f79085f9eb0",
+  "overlayFiles": {
+    "agents/kubernetes/ntfy_recovery.py": "8e128954a3be894ebdf84166d25d7f48ebe20c75879d271dd495c78ab926baf1",
+    "deploy/helm/webdock-agent/Chart.yaml": "cf2da66338d5d397e1ea6894994b517c64b62075f83e0c27a214ea7c4c7f6d96",
+    "deploy/helm/webdock-agent/templates/agent.yaml": "e0ba67444f120602c3cd67cd77d083bb9db20cd9a39a3ee55c5debfe5f84ef24",
+    "deploy/helm/webdock-agent/values.schema.json": "981ab5e0eab751b7b75cd32798377a13f8cc76fbaa98a8db1c700d1894d0735a",
+    "deploy/helm/webdock-agent/values.yaml": "b25430e9e9394f140cf81d02e14c747f71d36e5524c674ba22f5e7ea109a4fbf",
+    "tools/tests/mail-application-recovery.py": "5247a1c471a296e2c34428c51f7829864d77105240fe9d5eb084e3293d0ce23a",
+    "tools/tests/recovery-admission-component.py": "6487372f0ffd59cb1b6ad1b8e17321d956e8caf0bde986504cfa993f649b4ebf",
+    "tools/tests/recovery_fixture_custody.py": "4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c"
+  },
+  "selectedELFs": {
+    "bootstrap-test": "6643718329135d108f3685fdc6993d5bb09395a7eb657cc3dfe4a09910e3e74a",
+    "webdock-agent": "d8208a7e7984ee47caeed8b1f69c2ff74879a8f1a413072c7dce50a55d997270",
+    "webdock-storage": "1f2bc06b80cc68c81a5bb392ead2358e66d8c34d971837af2df1128ed72e2301"
+  },
+  "selectedDriver": "docker",
+  "sourceSHA256": {
+    "tools/tests/recovery-admission-component.py": "6487372f0ffd59cb1b6ad1b8e17321d956e8caf0bde986504cfa993f649b4ebf",
+    "tools/tests/test_recovery_fixture_artifacts.py": "13a4d04363f47dd61ecdeb8bc2114dbde9bcc13a67ac4db5442eecfe3ce3310c",
+    "tools/tests/recovery_fixture_custody.py": "4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c",
+    "tools/tests/test_recovery_fixture_runner.py": "d672c7fea60a641d56fb3e99a0a10ba51e17b9d9304d125b417b47222c455778",
+    "tools/tests/test_recovery_fixture_custody.py": "1e86182bbdc62ed469f04c745f26faea930cda7bf5dd9bc33143b46fc6c621cb"
+  },
+  "tests": {
+    "command": "PYTHONPATH=tools/tests python3 -m unittest tools/tests/test_recovery_fixture_artifacts.py tools/tests/test_recovery_fixture_runner.py tools/tests/test_recovery_fixture_custody.py",
+    "passed": 41,
+    "failed": 0,
+    "newArtifactTests": 11,
+    "existingGuardTests": 30,
+    "red": "7 initial tests; 16 assertion failures for missing binding API; retained red.log",
+    "additionalRegression": "bound-input metadata after pause descriptor selection failed then passed; retained integration-red.log",
+    "greenLogSHA256": "61cd94aed11bb06658d3dc15bb279550791ef8dd2eccc760cbfd7940167cbe3c",
+    "redLogSHA256": "d23889433415536aaabba21c1f15bb1a5f83cefdc8ca41ff43a0e03b1263dd03",
+    "syntax": "python3 -m py_compile passed",
+    "nonregularRedLogSHA256": "e7fd8df5387f23a5c027a6c8e86fe948b0f39f361887790367e1f198cd4d5896"
+  },
+  "runnerDiffSHA256": "5c73a7bbdf4788cfa5e2ce9c79cf3a1dbcfd7e4b632ec7eb884bdf55c44079d7",
+  "reviewedFinalizerASTUnchanged": true,
+  "currentRootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+  "current54SHA256": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+  "current55SHA256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+  "execution": {
+    "dockerCommands": 0,
+    "imageActions": 0,
+    "runtimeStarts": 0,
+    "newELFBuilds": 0,
+    "componentRun": false
+  },
+  "limits": [
+    "No genuine Core/native component run; no Mail/SMTP/CE/ntfy recovery acceptance; no final54 freeze.",
+    "6223 source archive is immutable; this overlay replaces only finite Python/chart runtime inputs.",
+    "Root approval and shared execution window still required before component run."
+  ],
+  "budgetFreeBytes": {
+    "home": 10140688384,
+    "tmp": 5678235648
+  },
+  "nextCommandAfterRootRelease": [
+    "python3",
+    "tools/tests/recovery-admission-component.py",
+    "--artifact-pin",
+    "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/pin.json",
+    "--driver",
+    "docker",
+    "--input-overlay",
+    "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-source-input-overlay-b384b6d5ee31/overlay.json",
+    "--input-overlay-sha256",
+    "b384b6d5ee31014177a7e592bd33a5701018847576c8617108211f79085f9eb0"
+  ],
+  "priorPreparationOverlay": {
+    "path": ".runtime-test/recovery-source-input-overlay-00b4a4e52acf/overlay.json",
+    "sha256": "00b4a4e52acf69244fe91963e6421eb681da63148240e4b63d519d20378c7e0a",
+    "status": "superseded preparation only, never executed; added nonregular-file check and test in final overlay"
+  },
+  "changedFiles": [
+    "tools/tests/recovery-admission-component.py",
+    "tools/tests/test_recovery_fixture_artifacts.py",
+    "docs/verification/2026-10-26-recovery-artifact-binding-preparation.json"
+  ],
+  "reviewBoundary": "Base 6223 source/ELFs, custody helper and old guard tests unchanged; only runner artifact selection/staging/provenance/driver plus new pure tests. No changes to finalizer, guard decisions, Rust, SQL, proto, dependencies or lock.",
+  "overlayInputsNotInBase": [
+    "deploy/helm/webdock-agent/Chart.yaml",
+    "deploy/helm/webdock-agent/values.yaml",
+    "deploy/helm/webdock-agent/values.schema.json",
+    "deploy/helm/webdock-agent/templates/agent.yaml",
+    "agents/kubernetes/ntfy_recovery.py"
+  ]
+}

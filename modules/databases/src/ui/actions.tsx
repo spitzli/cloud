@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext } from "react";
 import type { DatabaseOrderState, DatabaseCredentials } from "../ui-types";
 import type { DatabaseLaunch } from "@webdock/database-contracts";
 type FormState = { error?: string; message?: string };
@@ -31,7 +31,7 @@ export function DatabaseActionsProvider({
   children,
 }: {
   actions: DatabaseUIActions;
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return <Actions.Provider value={actions}>{children}</Actions.Provider>;
 }

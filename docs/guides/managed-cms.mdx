@@ -1,67 +1,45 @@
 ---
 title: "Managed CMS"
-description: "Create an independent project CMS and edit pages, drafts and media in Webdock."
+description: "Create an approved CMS instance and edit pages, drafts and media."
 ---
 
-Managed CMS is an optional plugin. Each newly created instance has its own PostgreSQL database and persistent media volume. The plugin's control runtime contains no customer content database or provider credentials.
+Managed CMS is optional and requires explicit operator activation, approved resources and deployment acceptance. A plugin installation or successful image build does not establish that it is ready for customer content. Each new instance has its own database and persistent media storage.
 
-<Warning>
-This implementation is undergoing deployment acceptance. Do not treat a successful build or plugin installation as a production-ready CMS. The pinned Payload version, `4.0.0-canary.37`, is a canary release. Follow the release's verification record before enabling it for customer content.
-</Warning>
-
-## Create a CMS
-
-Your operator must approve the CMS template, database plan and storage allocation for your project first. Installing the plugin does not allocate a CMS automatically for every project.
+## Create an instance
 
 <Steps>
-  <Step title="Open the project plugin">Open **CMS** from your project's installed plugins.</Step>
-  <Step title="Create the instance">Enter a website name and select **Create CMS**. Webdock uses the operator-approved resources and image.</Step>
-  <Step title="Follow setup progress">Webdock provisions the database and media volume, initializes the schema with separate migration credentials, starts the application and verifies its HTTPS address. You can leave the page and return later.</Step>
-  <Step title="Open the editor">The native editor appears when the instance is ready. A repeated request reconnects to the same project instance; it does not create a second database.</Step>
+  <Step title="Open CMS">Open **CMS** in the intended project. The operator must have approved its template and resources.</Step>
+  <Step title="Request the instance">Enter the website name and select **Create CMS**. This requests a new project instance; it does not create one for every project.</Step>
+  <Step title="Wait for readiness">Follow setup progress. Open the editor once setup and its HTTPS address are ready. You can leave and return to the existing instance.</Step>
+  <Step title="Resolve a blocked setup">Ask your operator to resolve the reported Hosting requirement, then use **Resume setup**. Do not delete retained resources to force an uncertain setup to run again.</Step>
 </Steps>
-
-If setup needs attention, resolve the Hosting requirement shown by your operator and select **Resume setup**. Do not delete retained resources to force an uncertain migration to run again.
 
 ## Edit and publish
 
-The initial template includes pages, text and image sections, SEO fields, media and site settings in English and German. Content language is selected separately from the interface language.
+Choose the content language, open a page and save your draft before publishing. The initial template includes pages, text and image sections, SEO fields, media and site settings in English and German. Content language is separate from the Console interface language.
 
-Save a draft before publishing. Publication changes the public version; an unpublished edit remains private to authorized editors. Use **Unpublish** to take the selected language offline while keeping its content and history. If someone else saved a newer version, reload and reconcile your changes instead of overwriting theirs. Administrators can review and restore earlier versions.
+Publishing updates the public version. Use **Unpublish** to take the selected language offline while retaining its content and history. If a newer version was saved by someone else, reload and reconcile your changes before saving.
 
-Media accepts single-frame PNG, JPEG, WebP and AVIF images up to **10 MiB** and **40 megapixels**. Add useful alternative text. SVG, HTML and animated uploads are rejected.
-
-Uploaded files are immutable in managed instances. To replace an image, upload a new media item and select it in the page; alternative text remains editable. This prevents a failed update from deleting a file still referenced by saved content.
-
-Administrators can remove managed media to trash. This hides it from normal editor lists and fresh public media requests while retaining its bytes. Trashed files still count toward storage and backups until a separate explicit operator purge; removal does not reclaim quota. A failed or conflicting removal keeps both the metadata and file.
-
-If a save has an uncertain outcome, check the content list before retrying. The editor blocks further mutations until you reconcile the saved state; it does not automatically repeat the write.
-
-| Role | Allowed actions |
+| Role | Available actions |
 | --- | --- |
-| Reader | View content and versions |
+| Reader | Read content and versions |
 | Editor | Create, edit and publish content; upload media |
-| Administrator | Editor actions plus deletion and version restoration |
+| Administrator | Editor actions, deletion and version restoration |
 
-Your current website grants are checked on every request. A locally disabled account or a lower local role also restricts access. Plugin access does not grant arbitrary access to another project's website.
+Website grants and local account restrictions apply to each request. CMS access to one project does not grant access to another website.
 
-## Existing websites
+## Upload and replace images
 
-An existing independent website can opt into the bridge while keeping its schema and content. The editor exposes only the collections and globals that website explicitly allows. Connecting it does not add the new-instance template or provide a general schema designer.
+Use single-frame PNG, JPEG, WebP or AVIF images up to **10 MiB** and **40 megapixels**. Add useful alternative text. SVG, HTML and animated images are rejected.
 
-The included existing-website integration uses PostgreSQL for its shared transfer journal, so uploads and mutation receipts survive separate serverless function instances. Run that website's `cms:migrate` with migration credentials before enabling its bridge, and grant the runtime access to the transfer tables. It does not use a local filesystem journal. See [website integration](/developers/website-integration).
+To replace an image, upload a new media item and select it in the page. Managed files are immutable; alternative text remains editable. Administrators can move media to trash. Trashed bytes remain retained and count toward storage until a separate explicit purge.
 
-## Stop, disable and retain
+If saving or uploading has an uncertain outcome, check the saved content before retrying. Reconcile the state before making another change.
 
-Disabling the plugin revokes editing and further provisioning. Already published content continues serving, including certificate renewal. Suspend the application in Hosting to take the website offline. Both operations retain the database and media; permanent purge is separate.
+## Existing websites and retention
 
-Keep matched database and media backups on a separately hosted destination. A retained disk or remount after reboot is not a backup. Restore into isolated resources and verify content and file hashes before making a restored instance public.
+An existing website can use the CMS bridge while retaining its own schema and content. Only explicitly allowed collections and globals are exposed. See [websites and content](/guides/websites) and [website integration](/developers/website-integration).
 
-## Self-hosting requirements
+Disabling the plugin blocks editing and further provisioning, while published content continues serving. Suspend its application in Hosting to take it offline. Database and media remain retained; permanent deletion is separate.
 
-Automatic provisioning requires the **Full** distribution with Hosting and Databases, migration **0048** or later, the updated managed agent, an approved immutable CMS image, a same-cluster managed PostgreSQL plan, persistent volume capacity and HTTPS publication. Core-only installations do not contain these product adapters.
-
-Set `WEBDOCK_APPROVED_CMS_TEMPLATE` on both the API and setup worker, and install the matching root-owned agent approval. The configuration pins the image, domain, ingress addresses, cert-manager ClusterIssuer, database plan and authentication issuer. Each instance has an exact-hostname Certificate, Ingress and TLS Secret issued and renewed by cert-manager. The agent does not copy a wildcard certificate or handle its private key; wildcard DNS still routes instance hostnames to the approved ingress addresses. Keep credentials out of plugin JSON configuration and source archives.
-
-Before starting an updated CMS image, run its bounded migration job, including additive migration `20261018_201453_managed_media_trash`. It adds media and version trash timestamps and indexes while retaining existing tables and files.
-
-Use the [operator runbook](https://github.com/spitzli/webdock/blob/main/agents/kubernetes/APP_TEMPLATES.md) for exact configuration, migration recovery, certificate renewal and backup/restore commands. General deployment and licensing are covered in [self-hosting Webdock](/developers/self-hosting).
+Agree on matched database and media backups before using the instance for important content. Retained storage is not a backup or a verified restore service.

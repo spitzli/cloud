@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-25",
+  "removed": [
+    {
+      "tag": "webdock-cms:s3-acceptance-20261025-r1",
+      "identity": "sha256:13a0c4be560c0a606b294aa9c9b7cf2464dae38f9e5e2cbb53ccb1a6b89673cb",
+      "absent": true
+    },
+    {
+      "tag": "webdock-cms:s3-acceptance-20261025-r2",
+      "identity": "sha256:d4842bd97d5890ec94d4337d5257a7cd9ffba61639280f305b2312492d272edf",
+      "absent": true
+    }
+  ],
+  "preserved": "Qualified r4 candidate and all unrelated images/containers/volumes; no prune/force"
+}

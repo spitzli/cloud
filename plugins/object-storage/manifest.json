@@ -1,0 +1,1162 @@
+{
+  "name": "object-storage",
+  "version": "0.5.0",
+  "kind": "extension",
+  "description": "Private managed buckets with restricted application keys, retained deactivation and observed soft usage.",
+  "protocolVersion": 2,
+  "sdkVersion": 2,
+  "dataProtocolVersion": 2,
+  "coreVersion": ">=0.1.0 <1.0.0",
+  "image": "127.0.0.1:5005/webdock/object-storage@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "dependencies": [],
+  "capabilities": [
+    "plugin.storage.read",
+    "plugin.storage.write"
+  ],
+  "schemaVersion": 1,
+  "readableSchema": {
+    "min": 1,
+    "max": 1
+  },
+  "migrations": [],
+  "tables": [],
+  "services": {
+    "required": [
+      {
+        "name": "storage",
+        "version": 1
+      }
+    ],
+    "optional": []
+  },
+  "configuration": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "actions": [
+    {
+      "name": "buckets.create",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "create",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "request_id",
+          "name",
+          "environment"
+        ],
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 63
+          },
+          "environment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 63
+          }
+        }
+      },
+      "offering": "bucket",
+      "feature": "manage-buckets"
+    },
+    {
+      "name": "buckets.view",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "buckets.deactivate",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "buckets.reactivate",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "buckets.reconcile",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "credentials.create",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "credentials.rotate",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "credentials.reveal",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "access_key"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "access_key": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "feature": "manage-buckets"
+    },
+    {
+      "name": "credentials.revoke",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision",
+          "access_key"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "access_key": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "versioning.set",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision",
+          "enabled"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    {
+      "name": "lifecycle.preview",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "policy"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "policy": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "expire_current_days": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 36500
+              },
+              "expire_noncurrent_days": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 36500
+              },
+              "abort_multipart_days": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 36500
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "lifecycle.set",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision",
+          "policy"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "policy": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "expire_current_days": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 36500
+              },
+              "expire_noncurrent_days": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 36500
+              },
+              "abort_multipart_days": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 36500
+              }
+            }
+          }
+        }
+      },
+      "destructive": true
+    },
+    {
+      "name": "usage.inventory",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "buckets.purge",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision",
+          "confirm"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "confirm": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "destructive": true
+    },
+    {
+      "name": "buckets.delete",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "delete",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "request_id",
+          "revision",
+          "confirm"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "confirm": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "offering": "bucket",
+      "feature": "manage-buckets",
+      "destructive": true
+    },
+    {
+      "name": "objects.upload",
+      "intent": "write",
+      "audience": "customer",
+      "feature": "manage-buckets",
+      "resource": "use",
+      "storage": "upload",
+      "capabilities": [
+        "plugin.storage.write"
+      ],
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "key",
+          "exact_bytes",
+          "expected_sha256",
+          "filename",
+          "content_type",
+          "expires_at"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "exact_bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 536870912
+          },
+          "expected_sha256": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "content_type": {
+            "type": "string",
+            "enum": [
+              "application/octet-stream",
+              "application/pdf",
+              "application/zip",
+              "application/gzip",
+              "text/plain",
+              "text/csv"
+            ]
+          },
+          "expires_at": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "description": "Authenticated Core TransferDescriptor v1. Provider URLs and private headers are never public. expectedSha256 is present only when known.",
+        "required": [
+          "version",
+          "id",
+          "path",
+          "method",
+          "expiresAt",
+          "exactBytes",
+          "attachment",
+          "expectedSha256"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 36,
+            "minLength": 36
+          },
+          "path": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "PUT"
+            ]
+          },
+          "attachment": {
+            "type": "object",
+            "required": [
+              "filename",
+              "contentType"
+            ],
+            "properties": {
+              "filename": {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              "contentType": {
+                "type": "string",
+                "enum": [
+                  "application/octet-stream",
+                  "application/pdf",
+                  "application/zip",
+                  "application/gzip",
+                  "text/plain",
+                  "text/csv"
+                ]
+              }
+            },
+            "description": "Attachment metadata, never a provider URL.",
+            "additionalProperties": false
+          },
+          "expiresAt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "exactBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 536870912
+          },
+          "expectedSha256": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64,
+            "description": "Verified or producer-bound full SHA-256 when known; omitted for unknown direct-app content checksums."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "objects.download",
+      "intent": "read",
+      "audience": "customer",
+      "feature": "manage-buckets",
+      "resource": "use",
+      "storage": "download",
+      "capabilities": [
+        "plugin.storage.read"
+      ],
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "key",
+          "exact_bytes",
+          "filename",
+          "content_type",
+          "expires_at",
+          "version_id",
+          "if_match"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "exact_bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 536870912
+          },
+          "expected_sha256": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "content_type": {
+            "type": "string",
+            "enum": [
+              "application/octet-stream",
+              "application/pdf",
+              "application/zip",
+              "application/gzip",
+              "text/plain",
+              "text/csv"
+            ]
+          },
+          "expires_at": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "version_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "if_match": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 130
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "description": "Authenticated Core TransferDescriptor v1. Provider URLs and private headers are never public. expectedSha256 is present only when known.",
+        "required": [
+          "version",
+          "id",
+          "path",
+          "method",
+          "expiresAt",
+          "exactBytes",
+          "attachment"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 36,
+            "minLength": 36
+          },
+          "path": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "GET"
+            ]
+          },
+          "attachment": {
+            "type": "object",
+            "required": [
+              "filename",
+              "contentType"
+            ],
+            "properties": {
+              "filename": {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              "contentType": {
+                "type": "string",
+                "enum": [
+                  "application/octet-stream",
+                  "application/pdf",
+                  "application/zip",
+                  "application/gzip",
+                  "text/plain",
+                  "text/csv"
+                ]
+              }
+            },
+            "description": "Attachment metadata, never a provider URL.",
+            "additionalProperties": false
+          },
+          "expiresAt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "exactBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 536870912
+          },
+          "expectedSha256": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64,
+            "description": "Verified or producer-bound full SHA-256 when known; omitted for unknown direct-app content checksums."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "objects.observe",
+      "intent": "read",
+      "audience": "customer",
+      "feature": "manage-buckets",
+      "resource": "use",
+      "capabilities": [
+        "plugin.storage.read"
+      ],
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "key"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "exact_bytes",
+          "version_id",
+          "if_match",
+          "filename",
+          "content_type"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "exact_bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 536870912
+          },
+          "version_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "if_match": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 130
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "content_type": {
+            "type": "string",
+            "enum": [
+              "application/octet-stream",
+              "application/pdf",
+              "application/zip",
+              "application/gzip",
+              "text/plain",
+              "text/csv"
+            ]
+          },
+          "expected_sha256": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          }
+        },
+        "description": "Exact owned active object metadata. expected_sha256 is omitted when a full object checksum is unknown. ETag is an opaque condition, never a SHA-256."
+      }
+    }
+  ],
+  "jobs": [],
+  "offerings": [
+    {
+      "id": "bucket",
+      "label": "Managed bucket",
+      "description": "One private bucket bound to a project and environment. Direct S3 application credentials carry permanent project application authority. Usage is observed and soft.",
+      "highlights": [
+        "Private generated bucket and restricted app keys",
+        "Retained deactivation; explicit purge and empty-bucket deletion",
+        "No hard byte quota or browser download membership guarantee"
+      ]
+    }
+  ],
+  "selfService": {
+    "features": [
+      {
+        "id": "manage-buckets",
+        "label": "Manage buckets",
+        "offering": "bucket",
+        "description": "Create and delete private managed buckets"
+      }
+    ]
+  },
+  "areas": {
+    "operator": {
+      "pages": []
+    },
+    "selfService": {
+      "pages": [
+        {
+          "id": "bucket",
+          "label": "Bucket",
+          "action": "buckets.view",
+          "resource": true
+        }
+      ]
+    }
+  },
+  "events": [],
+  "secrets": [],
+  "httpBindings": [],
+  "api": [
+    {
+      "method": "POST",
+      "path": "/buckets/create",
+      "action": "buckets.create"
+    },
+    {
+      "method": "POST",
+      "path": "/buckets/view",
+      "action": "buckets.view"
+    },
+    {
+      "method": "POST",
+      "path": "/buckets/deactivate",
+      "action": "buckets.deactivate"
+    },
+    {
+      "method": "POST",
+      "path": "/buckets/reactivate",
+      "action": "buckets.reactivate"
+    },
+    {
+      "method": "POST",
+      "path": "/buckets/reconcile",
+      "action": "buckets.reconcile"
+    },
+    {
+      "method": "POST",
+      "path": "/credentials/create",
+      "action": "credentials.create"
+    },
+    {
+      "method": "POST",
+      "path": "/credentials/rotate",
+      "action": "credentials.rotate"
+    },
+    {
+      "method": "POST",
+      "path": "/credentials/reveal",
+      "action": "credentials.reveal"
+    },
+    {
+      "method": "POST",
+      "path": "/credentials/revoke",
+      "action": "credentials.revoke"
+    },
+    {
+      "method": "POST",
+      "path": "/versioning/set",
+      "action": "versioning.set"
+    },
+    {
+      "method": "POST",
+      "path": "/lifecycle/preview",
+      "action": "lifecycle.preview"
+    },
+    {
+      "method": "POST",
+      "path": "/lifecycle/set",
+      "action": "lifecycle.set"
+    },
+    {
+      "method": "POST",
+      "path": "/usage/inventory",
+      "action": "usage.inventory"
+    },
+    {
+      "method": "POST",
+      "path": "/buckets/purge",
+      "action": "buckets.purge"
+    },
+    {
+      "method": "POST",
+      "path": "/buckets/delete",
+      "action": "buckets.delete"
+    },
+    {
+      "method": "POST",
+      "path": "/objects/upload",
+      "action": "objects.upload"
+    },
+    {
+      "method": "POST",
+      "path": "/objects/download",
+      "action": "objects.download"
+    },
+    {
+      "method": "POST",
+      "path": "/objects/observe",
+      "action": "objects.observe"
+    }
+  ],
+  "mcp": [
+    {
+      "name": "buckets_create",
+      "description": "Managed storage: buckets.create",
+      "action": "buckets.create"
+    },
+    {
+      "name": "buckets_view",
+      "description": "Managed storage: buckets.view",
+      "action": "buckets.view"
+    },
+    {
+      "name": "buckets_deactivate",
+      "description": "Managed storage: buckets.deactivate",
+      "action": "buckets.deactivate"
+    },
+    {
+      "name": "buckets_reactivate",
+      "description": "Managed storage: buckets.reactivate",
+      "action": "buckets.reactivate"
+    },
+    {
+      "name": "buckets_reconcile",
+      "description": "Managed storage: buckets.reconcile",
+      "action": "buckets.reconcile"
+    },
+    {
+      "name": "credentials_create",
+      "description": "Managed storage: credentials.create",
+      "action": "credentials.create"
+    },
+    {
+      "name": "credentials_rotate",
+      "description": "Managed storage: credentials.rotate",
+      "action": "credentials.rotate"
+    },
+    {
+      "name": "credentials_reveal",
+      "description": "Managed storage: credentials.reveal",
+      "action": "credentials.reveal"
+    },
+    {
+      "name": "credentials_revoke",
+      "description": "Managed storage: credentials.revoke",
+      "action": "credentials.revoke"
+    },
+    {
+      "name": "versioning_set",
+      "description": "Managed storage: versioning.set",
+      "action": "versioning.set"
+    },
+    {
+      "name": "lifecycle_preview",
+      "description": "Managed storage: lifecycle.preview",
+      "action": "lifecycle.preview"
+    },
+    {
+      "name": "lifecycle_set",
+      "description": "Managed storage: lifecycle.set",
+      "action": "lifecycle.set"
+    },
+    {
+      "name": "usage_inventory",
+      "description": "Managed storage: usage.inventory",
+      "action": "usage.inventory"
+    },
+    {
+      "name": "buckets_purge",
+      "description": "Managed storage: buckets.purge",
+      "action": "buckets.purge"
+    },
+    {
+      "name": "buckets_delete",
+      "description": "Managed storage: buckets.delete",
+      "action": "buckets.delete"
+    },
+    {
+      "name": "objects_upload",
+      "description": "Prepare a short-lived Core upload descriptor for an exact owned object",
+      "action": "objects.upload"
+    },
+    {
+      "name": "objects_download",
+      "description": "Prepare a short-lived Core download descriptor for an exact owned object",
+      "action": "objects.download"
+    },
+    {
+      "name": "objects_observe",
+      "description": "Observe exact owned object metadata before preparing a Core download",
+      "action": "objects.observe"
+    }
+  ],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/bucket-controls.png",
+      "caption": "Actual Object Storage panel; synthetic bucket, observed usage and example key. No provider connection.",
+      "alt": "Bucket status, observed usage, retained deactivation and key controls"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-object-storage",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-object-storage/blob/HEAD/README.md"
+}

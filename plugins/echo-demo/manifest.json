@@ -1,0 +1,213 @@
+{
+  "name": "echo-demo",
+  "version": "0.1.0",
+  "kind": "extension",
+  "description": "Reference self-service plugin: echoes messages and keeps demo notes per project",
+  "protocolVersion": 2,
+  "sdkVersion": 2,
+  "dataProtocolVersion": 2,
+  "coreVersion": ">=0.1.0 <1.0.0",
+  "image": "127.0.0.1:5005/webdock/echo-demo@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "dependencies": [],
+  "capabilities": [],
+  "schemaVersion": 1,
+  "readableSchema": {
+    "min": 1,
+    "max": 1
+  },
+  "migrations": [],
+  "tables": [],
+  "services": {
+    "required": [],
+    "optional": []
+  },
+  "configuration": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "actions": [
+    {
+      "name": "demo.echo",
+      "intent": "read",
+      "audience": "operator",
+      "capabilities": [],
+      "input": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "demo.operator",
+      "intent": "read",
+      "audience": "operator",
+      "capabilities": []
+    },
+    {
+      "name": "notes.create",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "note",
+      "feature": "create-notes",
+      "resource": "create",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Note name"
+          }
+        }
+      }
+    },
+    {
+      "name": "notes.view",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "note",
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "notes.secret",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "note",
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "notes.delete",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "note",
+      "feature": "create-notes",
+      "resource": "delete",
+      "destructive": true,
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    }
+  ],
+  "jobs": [],
+  "offerings": [
+    {
+      "id": "note",
+      "label": "Note",
+      "description": "A demo resource to try self-service: create a note, reveal its code, delete it.",
+      "highlights": [
+        "Nothing is stored outside the project index",
+        "Safe to create and delete"
+      ]
+    }
+  ],
+  "selfService": {
+    "features": [
+      {
+        "id": "create-notes",
+        "label": "Create notes",
+        "offering": "note",
+        "description": "Add and remove demo notes in a project"
+      }
+    ]
+  },
+  "areas": {
+    "operator": {
+      "pages": [
+        {
+          "id": "overview",
+          "label": "Overview",
+          "action": "demo.operator"
+        }
+      ]
+    },
+    "selfService": {
+      "pages": [
+        {
+          "id": "note",
+          "label": "Note",
+          "action": "notes.view",
+          "resource": true
+        }
+      ]
+    }
+  },
+  "events": [],
+  "secrets": [],
+  "httpBindings": [],
+  "api": [
+    {
+      "method": "POST",
+      "path": "/echo",
+      "action": "demo.echo"
+    }
+  ],
+  "mcp": [
+    {
+      "name": "echo",
+      "description": "Echo a message within the project",
+      "action": "demo.echo"
+    }
+  ],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/demo-note-panel.png",
+      "caption": "Actual Console declarative renderer using the demo note response; synthetic data and disabled actions.",
+      "alt": "Echo demo note panel with disabled reveal and delete controls"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-echo-demo",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-echo-demo/blob/HEAD/README.md"
+}

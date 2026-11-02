@@ -1,0 +1,15 @@
+# Issues certificates for plugin hosts and verified customer domains through ACME HTTP-01, answered
+# by Traefik on the web entry point. Plugins name it in their configuration (`issuer: webdock-acme`).
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: webdock-acme
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: webdock-acme-account
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: traefik

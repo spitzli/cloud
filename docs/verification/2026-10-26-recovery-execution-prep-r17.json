@@ -1,0 +1,41 @@
+{
+  "status": "SOURCE_STABLE_PREPARATION_ONLY; no runtime",
+  "capturedSourceSHA256": {
+    "crates/hosting/src/agent.rs": "027f3a639f2bc3e01cc25fa3c8063cf17b82f08524f3f5b99bd8389235906c47",
+    "crates/control-plane/tests/support/recovery_admission.rs": "f5f85d33b9ca424720a005cd061914c4d9fd6f4d7f0f20036b00ad28d7e111c8"
+  },
+  "changes": [
+    "Fixture-gated static whitelist of existing Agent completion error codes, after current lease/authority validation; unknown emits ONLYunknown, no rawcode/message/material, no state/return/authorization change.",
+    "Beforedeploy readonly exactpinnedntfy digest-name inspection via same innerEngineUnixsocket. Only bounded Id/RepoTags/RepoDigests requested/retained; failclosed on lookup/missingmatchingRepoDigest; no tag/retag/pull/latest fallback/verification change."
+  ],
+  "checks": {
+    "hostingPassed": 21,
+    "hostingInfraIgnored": 3,
+    "bootstrapPassed": 11,
+    "bootstrapInfraIgnored": 2,
+    "pythonPassed": 52,
+    "strictClippy": "bothPASS",
+    "noRun": "PASS",
+    "redCases": "new static-code whitelist and matching digest metadata positive checks failed before implementations; pureonly",
+    "hostingLogSHA256": "304d53150d2bcc4514c63310dfedec7c6ce3e881cf6f38bd3299307dada44d2d",
+    "bootstrapLogSHA256": "63dd17c2327733f03387d448319642137ee1e6d2a74b5583c2b4b51850cc67e7",
+    "pythonLogSHA256": "7fe90c55fd537f7b9aa9d43db088b61847ac4d225cd878f919c05e437ed97f3e"
+  },
+  "manifest": ".runtime-test/recovery-diagnostics-source-component-ecbd3a947610/pin.json",
+  "manifestSHA256": "9897853bf62630238c0ef51930b8b4ba6f9dfc29cd4797569c1ff7c350c5958c",
+  "newTestSHA256": "652126f66228740a2e7f3e2e433f3e3b913fc147a1344d020887b2533c4c2b5b",
+  "testSourceArchiveSHA256": "f00dad87858af948df679ca2f20a1349b17ec6be3417bf973ac9041384c64777",
+  "compilationInventorySHA256": "58c5d50d2cef04f4aa6a5b97707e1dd1e514c41a0ff6e786dcb910a1e9b94e00",
+  "original12Unchanged": true,
+  "basePinSHA256": "1bbbdd07c56540bff34faa1a8a7dd0ef97493061f9005f0b2cb5d5e54426e11e",
+  "runnerSHA256": "9afd81de51a90b49da836581e04ea3178af3c7d2f2102565b7db1589d9c210a5",
+  "overlay": ".runtime-test/recovery-source-input-overlay-4154883ae1da/overlay.json",
+  "overlaySHA256": "4154883ae1da31a54ed2b26a0d223d2a6d8a34a0816f0efd76fefac9d86a30dc",
+  "allRunnerFunctionASTUnchanged": true,
+  "rootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+  "native54SHA256": "6425988741790a3420b7da0ebc711f02a32cdd40ae0d43b470b8000fd5ea4df7",
+  "provenance": "All484compiledinputs/newtest frozen before PGresumed; laterliveCPPatch not re-read ascompileprovenance.12old6223 productionELFs retain oldcompile; onlyinprocess testembeds newdiagnostics/new64254.",
+  "runtimeActions": 0,
+  "noMainCargo": true,
+  "limits": "acadaexactruntimeerror stillunknown; image-digest hypothesis NOTproven. No Engine inspection executed by thisprep. No SourceReady/UID/full54/Mail/SMTP/restore acceptance. Next runtime only Rootnamedrelease; PCkeepON."
+}

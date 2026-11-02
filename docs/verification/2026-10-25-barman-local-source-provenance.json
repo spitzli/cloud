@@ -1,0 +1,318 @@
+{
+  "observedAt": "2026-10-25T08:52:39.289762+00:00",
+  "status": "source-built-local-fixture-verified",
+  "productionQualified": false,
+  "operatorApprovedSigner": false,
+  "scope": "New backup-local tools and this verification note only. No upstream Barman image was mirrored/signed, no registry push, S3 operation, cluster, existing service, account or product mutation.",
+  "repositoryFiles": [
+    "infra/postgres/backup/.gitignore",
+    "infra/postgres/backup/README.md",
+    "infra/postgres/backup/negative_checks.py",
+    "infra/postgres/backup/offline-os.sh",
+    "infra/postgres/backup/os-evidence.sh",
+    "infra/postgres/backup/os_evidence.py",
+    "infra/postgres/backup/provenance.py",
+    "infra/postgres/backup/python-build.sh",
+    "infra/postgres/backup/test_provenance.py",
+    "docs/verification/2026-10-25-barman-local-source-provenance.json"
+  ],
+  "privateOutputDirectory": "/tmp/webdock-barman-proof-20261025-final",
+  "otherRetainedTaskDirectories": [
+    "/tmp/webdock-barman-local-fZLUVqm5",
+    "/tmp/webdock-barman-proof-20261025-0919",
+    "/tmp/webdock-barman-proof-20261025-0921",
+    "/tmp/webdock-barman-proof-20261025-0925"
+  ],
+  "source": {
+    "commit": "6216b7dd552f389952d3de77712d9522a79d9548",
+    "repository": "https://github.com/cloudnative-pg/plugin-barman-cloud",
+    "signer": "968479A1AFF927E37D1A566BB5690EEEBB952194",
+    "signatureStatus": "git verify-commit: VALIDSIG for pinned GitHub web-flow fingerprint",
+    "archiveSha256": "abeca5ced1c3f81e0f9a7902433ebb5f3113cb5ead4ab2159f36c090f5966adc",
+    "signedPythonRequirementsSha256": "d6caf4f88b0916e453b991f00b013dab976c66c8797cc6138a06e7c0c3621ea1",
+    "sourcePatches": [],
+    "upstreamMutableDockerfilesReplacedBy": "archived recipe (hash bound in provenance)",
+    "primaryEvidenceUrl": "https://github.com/cloudnative-pg/plugin-barman-cloud/commit/6216b7dd552f389952d3de77712d9522a79d9548"
+  },
+  "builders": {
+    "goBase": "docker.io/library/golang@sha256:23fdfd3a6abc97c81e32a724cdd1cf541c06c416eb04d717815f4ed7c75623d0",
+    "networkDuringCompilation": "none",
+    "platform": "linux/amd64",
+    "runtimeAndPythonBuilderBase": "docker.io/library/debian@sha256:4876fdea29cac1a33a3195f1eb1952feb1fca7dd6dd00be3e2f1879cf20d34d2",
+    "type": "bounded-local-docker-run+webdock-oci-packager"
+  },
+  "dependencies": {
+    "goOnlineVerify": "all modules verified",
+    "goOfflineVerify": "all modules verified",
+    "goCompiler": "go version go1.26.6 linux/amd64",
+    "managerSha256": "9dfd5dd841d64826e3e78134d1ee27dd5917095437e70ab8dedebf161f80b3e6",
+    "pythonDownloadedArtifacts": 41,
+    "pythonHashLockedWheels": 41,
+    "pythonPipCheck": "No broken requirements found.",
+    "sidecarVersionSmoke": "barman-cloud-backup 3.20.1",
+    "authenticatedOsPackageCounts": {
+      "go": 208,
+      "python": 189,
+      "plugin": 97,
+      "sidecar": 112
+    },
+    "osChain": "pinned archive keyring -> gpgv(InRelease) -> SHA256(uncompressed Packages) -> SHA256(each installed .deb), exact offline builder inventory and empty dpkg audit",
+    "archiveKeyringSha256": "506b815cbb32d9b6066b4a2aa524071e071761e7e7f68c3ac74f3061ba852017"
+  },
+  "images": [
+    {
+      "configDigest": "sha256:2dff75f236bdb4a560dd8ce105e217062ff272cdfa80c2fb3148205bcb291f9a",
+      "id": "sha256:7868c4bfa3635cafda00b150f18949789d40f151b3463a7e958385543d1512e9",
+      "manifestDigest": "sha256:7868c4bfa3635cafda00b150f18949789d40f151b3463a7e958385543d1512e9",
+      "name": "localhost/webdock-barman-plugin-local:webdock-barman-797871c75ff9",
+      "ociDirectory": "/tmp/webdock-barman-proof-20261025-final/plugin.oci",
+      "ociTar": "/tmp/webdock-barman-proof-20261025-final/plugin.oci.tar",
+      "sbom": "plugin.sbom.cdx.json",
+      "sbomSha256": "34f32ae507ab0632d5e3e787184b8bc6d2d12c7637385979a70a0d9a1b00617a",
+      "sbomComponents": 210,
+      "smoke": [
+        "Usage:",
+        "  manager [command]"
+      ]
+    },
+    {
+      "configDigest": "sha256:780e0cef2616a9ffd3e1f19e53c2e9e07ea6d98d6cc8fca0bfe9ee307b8c7503",
+      "id": "sha256:696e02ed0681feeb2440d6ecf5000bbee8c48164ed8c95a8e7c9bfa03adb761c",
+      "manifestDigest": "sha256:696e02ed0681feeb2440d6ecf5000bbee8c48164ed8c95a8e7c9bfa03adb761c",
+      "name": "localhost/webdock-barman-sidecar-local:webdock-barman-797871c75ff9",
+      "ociDirectory": "/tmp/webdock-barman-proof-20261025-final/sidecar.oci",
+      "ociTar": "/tmp/webdock-barman-proof-20261025-final/sidecar.oci.tar",
+      "sbom": "sidecar.sbom.cdx.json",
+      "sbomSha256": "305604ca31722affff343178ce2128bfe9f7aa5e978e94aac03f32b2d8c8e660",
+      "sbomComponents": 267,
+      "smoke": [
+        "Usage:",
+        "  manager [command]"
+      ]
+    }
+  ],
+  "signature": {
+    "kind": "NEW LOCAL FIXTURE Ed25519 detached signature; not an operator-approved or production identity",
+    "publicKeyPemSha256": "9a037db0b52fa7b4fb4032a882d9d7ebbfa82c527e2a9fa5367533092214ef6a",
+    "provenanceSha256": "7fc156b47011a1aa7cbb97a916d69481c98cc3b198121a0fe83f57ac9b97da88",
+    "signatureSha256": "485b712e94e8356d7b3145f064e11f873fcfc458d8b03eddaf474ae068e613e6",
+    "publicKeyFile": "fixture-public.pem",
+    "privateKeyRetained": true,
+    "privateKeyMode": "0o600",
+    "privateDirectoryMode": "0o700",
+    "statement": "provenance.json",
+    "signature": "provenance.sig",
+    "materialsCount": 815
+  },
+  "commandsAndResults": [
+    {
+      "argv": [
+        "python3",
+        "infra/postgres/backup/provenance.py",
+        "verify",
+        "--output",
+        "/tmp/webdock-barman-proof-20261025-final",
+        "--public-key-sha256",
+        "9a037db0b52fa7b4fb4032a882d9d7ebbfa82c527e2a9fa5367533092214ef6a",
+        "--require-images"
+      ],
+      "exitCode": 0,
+      "outputLog": "/tmp/webdock-barman-proof-20261025-final.final-check-0.log",
+      "outputSha256": "1301ed17b2a120be0893296a59a95865196ea010b1011262175ac74c7987b776"
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "infra/postgres/backup",
+        "-v"
+      ],
+      "exitCode": 0,
+      "outputLog": "/tmp/webdock-barman-proof-20261025-final.final-check-1.log",
+      "outputSha256": "b9afd957009f48e806c76b06d72edf0a3fe041dc2331818ca157347b385bc049"
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "infra/postgres",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "outputLog": "/tmp/webdock-barman-proof-20261025-final.final-check-2.log",
+      "outputSha256": "024e2d62f39b1b4b839a590070b8b6b755c2bb3f4ed137f7938f3af350ccdd3a"
+    }
+  ],
+  "successfulBuildCommand": [
+    "python3",
+    "infra/postgres/backup/provenance.py",
+    "resume-build",
+    "--output",
+    "/tmp/webdock-barman-proof-20261025-final",
+    "--public-key-sha256",
+    "9a037db0b52fa7b4fb4032a882d9d7ebbfa82c527e2a9fa5367533092214ef6a"
+  ],
+  "successfulBuildExitCode": 0,
+  "freshBuildCommand": [
+    "python3",
+    "infra/postgres/backup/provenance.py",
+    "build",
+    "--output",
+    "/tmp/webdock-barman-proof-NEW-UNIQUE"
+  ],
+  "preparationOnlyCommand": [
+    "python3",
+    "infra/postgres/backup/provenance.py",
+    "prepare",
+    "--output",
+    "/tmp/webdock-barman-prepare-NEW-UNIQUE"
+  ],
+  "negativeCommand": [
+    "python3",
+    "infra/postgres/backup/negative_checks.py",
+    "--output",
+    "/tmp/webdock-barman-proof-20261025-final",
+    "--public-key-sha256",
+    "9a037db0b52fa7b4fb4032a882d9d7ebbfa82c527e2a9fa5367533092214ef6a"
+  ],
+  "negativeExitCode": 0,
+  "negativeResult": {
+    "baselineAndRestoredBundle": "verified",
+    "negativeCases": [
+      {
+        "case": "foreign public fixture pin",
+        "result": "rejected"
+      },
+      {
+        "case": "signed provenance altered",
+        "result": "rejected"
+      },
+      {
+        "case": "source archive altered",
+        "result": "rejected"
+      },
+      {
+        "case": "extracted compiler input altered",
+        "result": "rejected"
+      },
+      {
+        "case": "plugin OCI layer altered",
+        "result": "rejected"
+      },
+      {
+        "case": "sidecar OCI layer altered",
+        "result": "rejected"
+      },
+      {
+        "case": "OS repository signature altered",
+        "result": "rejected"
+      },
+      {
+        "case": "OS Packages index altered",
+        "result": "rejected"
+      },
+      {
+        "case": "OS package payload altered",
+        "result": "rejected"
+      },
+      {
+        "case": "Python dependency artifact altered",
+        "result": "rejected"
+      }
+    ]
+  },
+  "testCounts": {
+    "newSecurityTests": 12,
+    "existingPostgresInfrastructureTests": 9,
+    "realArtifactTamperRejections": 10
+  },
+  "cleanup": {
+    "ownedContainersRemaining": [],
+    "ownedContainerNames": [
+      "webdock-barman-c0dc3320a44c-go-prepare",
+      "webdock-barman-c0dc3320a44c-python-prepare",
+      "webdock-barman-c0dc3320a44c-go-build",
+      "webdock-barman-c0dc3320a44c-python-build",
+      "webdock-barman-eac7f1d59f6a-go-build",
+      "webdock-barman-eac7f1d59f6a-python-build",
+      "webdock-barman-44f6b4b6ac67-go-build",
+      "webdock-barman-44f6b4b6ac67-python-build",
+      "webdock-barman-44f6b4b6ac67-plugin-runtime",
+      "webdock-barman-797871c75ff9-go-build",
+      "webdock-barman-797871c75ff9-python-build",
+      "webdock-barman-797871c75ff9-plugin-runtime",
+      "webdock-barman-797871c75ff9-plugin-manager",
+      "webdock-barman-797871c75ff9-sidecar-runtime",
+      "webdock-barman-797871c75ff9-sidecar-manager",
+      "webdock-barman-797871c75ff9-sidecar-barman"
+    ],
+    "importedImagesRetained": [
+      {
+        "configDigest": "sha256:d4f9d1dfa25c6e208d3ef5316646a3a450f640806a89fec0990e2a700a113fb1",
+        "id": "sha256:2336075fe590aea1af1be12905a48b6443032078e85cf7171a7ab1a1bcb9fff4",
+        "manifestDigest": "sha256:2336075fe590aea1af1be12905a48b6443032078e85cf7171a7ab1a1bcb9fff4",
+        "name": "localhost/webdock-barman-plugin-local:webdock-barman-44f6b4b6ac67",
+        "retiredFixture": true
+      },
+      {
+        "configDigest": "sha256:2dff75f236bdb4a560dd8ce105e217062ff272cdfa80c2fb3148205bcb291f9a",
+        "id": "sha256:7868c4bfa3635cafda00b150f18949789d40f151b3463a7e958385543d1512e9",
+        "manifestDigest": "sha256:7868c4bfa3635cafda00b150f18949789d40f151b3463a7e958385543d1512e9",
+        "name": "localhost/webdock-barman-plugin-local:webdock-barman-797871c75ff9"
+      },
+      {
+        "configDigest": "sha256:780e0cef2616a9ffd3e1f19e53c2e9e07ea6d98d6cc8fca0bfe9ee307b8c7503",
+        "id": "sha256:696e02ed0681feeb2440d6ecf5000bbee8c48164ed8c95a8e7c9bfa03adb761c",
+        "manifestDigest": "sha256:696e02ed0681feeb2440d6ecf5000bbee8c48164ed8c95a8e7c9bfa03adb761c",
+        "name": "localhost/webdock-barman-sidecar-local:webdock-barman-797871c75ff9"
+      }
+    ],
+    "sharedImmutableBasesRetained": [
+      {
+        "cleanup": "retained shared immutable pull cache; never automatically deleted",
+        "preexisting": true,
+        "reference": "docker.io/library/golang@sha256:23fdfd3a6abc97c81e32a724cdd1cf541c06c416eb04d717815f4ed7c75623d0"
+      },
+      {
+        "cleanup": "retained shared immutable pull cache; never automatically deleted",
+        "preexisting": true,
+        "reference": "docker.io/library/debian@sha256:4876fdea29cac1a33a3195f1eb1952feb1fca7dd6dd00be3e2f1879cf20d34d2"
+      }
+    ],
+    "customNetworksCreated": [],
+    "volumesCreated": [],
+    "publishedPorts": [],
+    "pruneUsed": false,
+    "discoveryContainersRemoved": [
+      "webdock-barman-discovery-fzl-1",
+      "webdock-barman-discovery-fzl-user",
+      "webdock-barman-discovery-fzl-apt",
+      "webdock-barman-discovery-fzl-apt2",
+      "webdock-barman-offline-debug-fzl"
+    ],
+    "imageCleanup": "docker image rm EXACT_ID_FROM_OWNERSHIP_JSON; review all three fixture IDs, including the retired plugin. Do not delete shared bases or prune. Private source, keys, evidence and artifacts retained at the exact directories above."
+  },
+  "qualificationBoundaries": [
+    "LOCAL FIXTURE signer only; no production trust or operator-approved key",
+    "Official base digests/keyring and local host are explicit bootstrap trust anchors; base/host builds are not independently reproduced",
+    "Linux/amd64 only; runtime uses Debian and UID/GID 65532 instead of upstream UBI/distroless/sidecar UID 26; Debian libpq replaces PGDG",
+    "SBOM coverage is installed Debian packages, linked Go modules and installed Python distributions/files, not arbitrary vendored-code discovery",
+    "No vulnerability clearance, registry promotion, resource admission, controller install, MinIO/S3 backup/restore or PITR qualification"
+  ],
+  "remainingLocalProvenanceBlockers": [],
+  "resolvedEngineeringFailures": [
+    "Fail closed on vanished inherited OS versions; use authenticated upgrades and lock every exact resulting package",
+    "Signed Debian setuptools/wheel made explicit to pip metadata and offline wheel build",
+    "Safe tar extraction trailing-directory-symlink normalization accepted without changing compiler input bytes",
+    "Offline non-forced dpkg reconstruction bounded to three passes, empty audit, exact authenticated installed inventory",
+    "Docker containerd manifest ID and legacy config ID both verified against packaged manifest/config/layers; invalid IDs rejected"
+  ]
+}

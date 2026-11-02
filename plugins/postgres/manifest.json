@@ -1,0 +1,276 @@
+{
+  "name": "postgres",
+  "version": "0.1.0",
+  "kind": "extension",
+  "description": "Managed PostgreSQL: the server runs on our side, you only connect. Pick a shared database to start small or a dedicated instance for production.",
+  "protocolVersion": 2,
+  "sdkVersion": 2,
+  "dataProtocolVersion": 2,
+  "coreVersion": ">=0.1.0 <1.0.0",
+  "image": "127.0.0.1:5005/webdock/postgres@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "dependencies": [],
+  "capabilities": [
+    "plugin.workloads"
+  ],
+  "workloads": {
+    "kinds": [
+      "v1/Secret",
+      "postgresql.cnpg.io/v1/Cluster",
+      "traefik.io/v1alpha1/IngressRouteTCP",
+      "cert-manager.io/v1/Certificate"
+    ]
+  },
+  "schemaVersion": 1,
+  "readableSchema": {
+    "min": 1,
+    "max": 1
+  },
+  "migrations": [],
+  "tables": [],
+  "services": {
+    "required": [],
+    "optional": []
+  },
+  "configuration": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "actions": [
+    {
+      "name": "databases.create",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "shared",
+      "feature": "create-shared",
+      "resource": "create",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Name"
+          }
+        }
+      }
+    },
+    {
+      "name": "instances.create",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "dedicated",
+      "feature": "create-dedicated",
+      "resource": "create",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 63,
+            "description": "Name"
+          },
+          "version": {
+            "type": "string",
+            "enum": [
+              "18",
+              "17"
+            ],
+            "description": "PostgreSQL version"
+          }
+        }
+      }
+    },
+    {
+      "name": "databases.view",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "databases.credentials",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "databases.rotate",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "databases.delete",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "shared",
+      "feature": "create-shared",
+      "resource": "delete",
+      "destructive": true,
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "instances.delete",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "dedicated",
+      "feature": "create-dedicated",
+      "resource": "delete",
+      "destructive": true,
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    }
+  ],
+  "jobs": [],
+  "offerings": [
+    {
+      "id": "shared",
+      "label": "Shared database",
+      "description": "A database of your own on a PostgreSQL server that several customers use. Quick to create and the most economical choice for small apps, staging and side projects.",
+      "highlights": [
+        "Own database and login, invisible to other customers",
+        "Ready in a few seconds",
+        "Server capacity is shared, so speed can vary under load",
+        "Connect with any PostgreSQL client or framework"
+      ]
+    },
+    {
+      "id": "dedicated",
+      "label": "Dedicated instance",
+      "description": "A complete PostgreSQL server only you use. Choose it for production workloads that need predictable performance, more connections or full control.",
+      "highlights": [
+        "Own server process and storage",
+        "Choose the PostgreSQL version (17 or 18)",
+        "Full admin rights inside your instance",
+        "Starts in about a minute"
+      ]
+    }
+  ],
+  "selfService": {
+    "features": [
+      {
+        "id": "create-shared",
+        "label": "Create shared databases",
+        "offering": "shared",
+        "description": "Create and delete databases on a shared PostgreSQL server"
+      },
+      {
+        "id": "create-dedicated",
+        "label": "Create dedicated instances",
+        "offering": "dedicated",
+        "description": "Create and delete PostgreSQL instances of their own"
+      }
+    ]
+  },
+  "areas": {
+    "operator": {
+      "pages": []
+    },
+    "selfService": {
+      "pages": [
+        {
+          "id": "database",
+          "label": "Database",
+          "action": "databases.view",
+          "resource": true
+        }
+      ]
+    }
+  },
+  "events": [],
+  "secrets": [],
+  "httpBindings": [],
+  "api": [],
+  "mcp": [],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/retained-database.png",
+      "caption": "Actual maintenance panel; synthetic existing database. New orders remain disabled; no database was created.",
+      "alt": "Retained PostgreSQL connection settings with hidden password"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-postgres",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-postgres/blob/HEAD/README.md"
+}

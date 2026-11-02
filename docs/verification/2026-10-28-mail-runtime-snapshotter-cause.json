@@ -1,0 +1,39 @@
+{
+  "scope": "Measured local K3s fixture prerequisite correction; no whole-Mail/restore qualification",
+  "before": {
+    "snapshotter": "native",
+    "sameOwnedPodEvents": [
+      "Evicted: ephemeral-storage",
+      "Killing"
+    ],
+    "runtimeRootfsUsedBytes": 77066240,
+    "podEphemeralUsedBytes": 77074432,
+    "runtimeLimitBytes": 16777216,
+    "resourceReceiptSHA256": "602b582c0f5948d970365b74b6746c1250b3ed58e5dcee663f32c84c3557b0b2",
+    "sourceReportSHA256": "bd4be3cb486f3d00073445aaacac55ac9f597366a00c2d44f4f066defac70bb2"
+  },
+  "after": {
+    "snapshotter": "overlayfs",
+    "runtimeRootfsUsedBytes": 24576,
+    "podEphemeralUsedBytes": 32768,
+    "runtimeLimitBytes": 16777216,
+    "ownedPodStable": true,
+    "outgoingDomainsCreateHTTPStatus": 200,
+    "firstMailSendHTTPStatus": 503,
+    "resourceReceiptSHA256": "20157a723fabe3ebd59e90c987c2b5effa4cc66ca459847e32affcfebb91aa6f",
+    "sourceReportSHA256": "91d4b4dd3e295fe82ba471a36ccf296aacc16d094afcde111aa6e0197e25486e"
+  },
+  "changed": "Mail-only local K3s snapshotter; no quotas/security/timeouts/product binary changes",
+  "regression": "Actual generated MAIN commands3modes nativeRED/overlayGREEN; 24 runner/rootfs/prelaunch testsPASS",
+  "cleanup": {
+    "before": "b7996597f07b087a18109e8ec43eca93f31d4f166f85bf866ae5434d78054bfb",
+    "after": "1506b41b639b0a3ead1cb06ea73ee3cc7d3bcf52143d05fbd6cbd271cb0380ca",
+    "complete": true,
+    "obligations": [],
+    "MinioStopped": true
+  },
+  "remaining": "mail.send enters live worker handler then returns unavailable; native tenant provider transport/account configuration is absent from source factory and must be supplied through a real authorized producer; no authority/ledger seeding shortcut",
+  "wholeMailQualified": false,
+  "backupQualified": false,
+  "restoreQualified": false
+}

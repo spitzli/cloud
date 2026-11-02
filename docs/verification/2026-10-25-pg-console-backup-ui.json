@@ -1,0 +1,193 @@
+{
+  "date": "2026-10-25",
+  "status": "part-a-console-implemented-controlled-http-qualified-native-acceptance-held-0054",
+  "scope": "No backend Rust/Core/Agent/SQL/proto/Cargo/dependency/production/existing-service edits. No commits or delegation. Root contract checkpoint is a historical input, extended here.",
+  "changedPaths": [
+    "apps/console/src/ManagedDatabases.tsx",
+    "apps/console/src/DatabaseBackups.tsx",
+    "apps/console/src/DatabaseBackupControls.tsx",
+    "apps/console/src/database-backup-request.ts",
+    "apps/console/tests/database-backup-state.test.tsx",
+    "apps/console/tests/database-backup-browser.mjs",
+    "apps/console/tests/database-backup-proof.tsx",
+    "apps/console/tests/support/database-backup-fixture.ts",
+    "packages/hosting-contracts/src/databases.ts",
+    "packages/hosting-contracts/src/database-backup.test.ts",
+    "packages/i18n/locales/de/managed-postgresql.po",
+    "packages/i18n/locales/webdock.pot",
+    "packages/i18n/compiled/de.json",
+    "docs/operations/managed-postgresql.md"
+  ],
+  "rootHandoffPreserved": [
+    "packages/hosting-contracts/src/databases.test.ts",
+    "modules/databases/src/server/databases.ts",
+    "docs/verification/2026-10-25-pg-console-status-contract.json"
+  ],
+  "fixes": [
+    "Current strict backup status view parses all five states and keeps required publicRecoveryAvailable=false, disabledReason production-qualification-required, null RPO/RTO/window/restore-test fields.",
+    "Actual Core policy spec/history parser accepts unobserved NULL observedSuspended and rejects provider material.",
+    "Current observed status differs from historical last completion and stale/failed/revision-mismatched observations. On-demand admission in UI waits for a current configured view.",
+    "Operator AND current canWrite, canonical session operator, non-preview and unexpired session guard mutations; members/preview read status/history.",
+    "Grant/update/revoke/manual backup and request-only destination registration; independent schedule/WAL/retention deletion; revoke remains pending until fresh observed effective status.",
+    "Non-secret command retry retains exact action/input/key through uncertain response. Definite conflict requires explicit refresh; forbidden locks writes.",
+    "Provider credentials never enter React state/refs, TanStack query/mutation variables/cache, storage, logs or URLs; DOM inputs wiped immediately and on scope retirement, including unsent detached controls. Only a request fingerprint/key survives ambiguous registration and exact credentials must be re-entered for retry. AbortController plus keyed principal/project/resource boundary suppresses late receipts.",
+    "Current database offer snapshot/exclusion wording remains immutable; Shared backup/restore/clone unavailable; public Restore always disabled. No operator restore wizard using a racing acceptOrder then restore."
+  ],
+  "checks": [
+    {
+      "command": "bun run --cwd apps/console test",
+      "result": "118 passed, 0 failed; 17 backup component interactions",
+      "log": "/tmp/webdock-pg-console-tests-final.log"
+    },
+    {
+      "command": "bun run --cwd packages/hosting-contracts test",
+      "result": "28 passed, 0 failed; captured actual Core view/policy shapes and command required fields",
+      "log": "/tmp/webdock-pg-console-contract-final.log"
+    },
+    {
+      "command": "bun run --cwd apps/console lint",
+      "result": "passed; full Console plus plugin UI lint",
+      "log": "/tmp/webdock-pg-console-lint-final.log"
+    },
+    {
+      "command": "bun run --cwd apps/console check",
+      "result": "passed; no Rust/compiler/native bootstrap",
+      "log": "/tmp/webdock-pg-console-tsc-final.log"
+    },
+    {
+      "command": "bun run --cwd packages/i18n test",
+      "result": "12 passed, 0 failed",
+      "log": "/tmp/webdock-pg-console-i18n-tests.log"
+    },
+    {
+      "command": "bun run --cwd packages/i18n catalog:check",
+      "result": "12 PO catalogs / 4043 messages valid",
+      "log": "/tmp/webdock-pg-console-i18n-check.log"
+    },
+    {
+      "command": "bun apps/console/tests/database-backup-browser.mjs",
+      "result": "controlled HTTP only, widths375/1280, EN/DE, actual components+ApiClient; no Core/Native proof",
+      "log": "/tmp/webdock-pg-console-browser-final.log"
+    }
+  ],
+  "redGreenLogs": [
+    "/tmp/webdock-pg-console-ui-status-red.log",
+    "/tmp/webdock-pg-console-ui-status-green.log",
+    "/tmp/webdock-pg-console-controls-red.log",
+    "/tmp/webdock-pg-console-controls-green.log",
+    "/tmp/webdock-pg-console-boundaries-red.log",
+    "/tmp/webdock-pg-console-boundaries-green.log",
+    "/tmp/webdock-pg-console-scope-red.log",
+    "/tmp/webdock-pg-console-policy-red.log",
+    "/tmp/webdock-pg-console-policy-green.log",
+    "/tmp/webdock-pg-console-read-revoke-red.log",
+    "/tmp/webdock-pg-console-read-revoke-green.log",
+    "/tmp/webdock-pg-console-revision-gap-red.log",
+    "/tmp/webdock-pg-console-revision-gap-green.log"
+  ],
+  "controlledBrowser": {
+    "status": "controlled-http-only",
+    "widths": [
+      375,
+      1280
+    ],
+    "assertions": [
+      "list-detail-contract",
+      "on-demand-receipt",
+      "separate-controls",
+      "revision-fences",
+      "pending-effective-revoke",
+      "member-preview-readonly",
+      "restore-disabled",
+      "ephemeral-destination-registration",
+      "grant-pending-observed",
+      "conflict-explicit-refresh",
+      "forbidden-locked",
+      "english-german",
+      "no-horizontal-overflow"
+    ],
+    "nativeProof": false,
+    "consoleErrors": 0
+  },
+  "browserArtifacts": [
+    {
+      "path": "/tmp/webdock-pg-console-http-bMOKOv/backup-1280.png",
+      "sha256": "6daa400c24e299115fe7184b71f6dcf9852d9101992769a80885a2180c72db52"
+    },
+    {
+      "path": "/tmp/webdock-pg-console-http-bMOKOv/backup-375.png",
+      "sha256": "77a740f91eb8f38ff779e1581a606b8d05c506657c4f19f4bb69045c198cbcf6"
+    },
+    {
+      "path": "/tmp/webdock-pg-console-http-bMOKOv/backup-de-1280.png",
+      "sha256": "2cc30701017ede3d10678b2825287c6621cb3a9e37c62d7723680f37eee275c0"
+    },
+    {
+      "path": "/tmp/webdock-pg-console-http-bMOKOv/backup-de-375.png",
+      "sha256": "354a401deb42b790b5d8fadd25dc4d186db6783956bc6d83d945e61c004a2c35"
+    }
+  ],
+  "cleanup": {
+    "ownedHttpListenerAbsent": true,
+    "browserDisconnected": true,
+    "viteCacheAbsent": true,
+    "nativeCoreFixtureStarted": false,
+    "existingServicesTouched": false,
+    "ownedRunDirectories": [
+      "/tmp/webdock-pg-console-http-3uSBbM",
+      "/tmp/webdock-pg-console-http-Beb1mJ",
+      "/tmp/webdock-pg-console-http-JsnwPc",
+      "/tmp/webdock-pg-console-http-MaINqy",
+      "/tmp/webdock-pg-console-http-NP8Opb",
+      "/tmp/webdock-pg-console-http-SD0BiH",
+      "/tmp/webdock-pg-console-http-bMOKOv"
+    ],
+    "allOwnedViteCachesAbsent": true
+  },
+  "privateFailureEvidence": {
+    "preserved": true,
+    "logs": [
+      "/tmp/webdock-pg-console-browser.log",
+      "/tmp/webdock-pg-console-browser-r2.log",
+      "/tmp/webdock-pg-console-browser-r3.log",
+      "/tmp/webdock-pg-console-browser-r4.log"
+    ],
+    "cause": "Controlled harness initially lacked Vite aliases; then its middleware next callback shadowed receipt counter, producing unsupported operation IDs. All failed runs cleaned own listener/browser/cache; no Native/Core was started."
+  },
+  "partB": {
+    "status": "design-sent-directly-to-parent-decisions-approved-no-backend-edits",
+    "parentThreadID": "e79adf82-487b-4f78-9fd8-d106c9bd1c3a",
+    "atomicFlow": "databases.restoreOrder.prepare/accept; new immutable restore-purpose offer/restoreIntent, reviewed intentHash and explicit price acceptance. Generic acceptOrder/Create reject restore offers. Recompute exact source/target scope, UID/revision/policy/destination/point/time/timeline/credential/hash/offer/plan/name/price binding. One order-worker transaction reserves capacity and directly enqueues RESTORE; no claimable Create intermediate. Retain source; ambiguous issued effects stay isolated/needs-reconciliation.",
+    "authority": "Database-owned Browser(existing StoredAuthority)/Mcp(Box<webdock_oauth::McpAuthority>) wrapper; actual held OAuthService::begin_mcp_authority/McpGuard and fresh verify through commit/claim/renew/reconcile, current hosting read/write ceilings and operator/customer permissions. No fabricated LocalSession or public caller authority objects. Durable policy source grant independent of initiating token only after actual committed operator grant.",
+    "intentionalMcpExclusions": "Credential-bearing registration/reveal must not enter tool conversations. Exclude it from MCP and document protected operator UI/configuration lane unless an existing protected server credential reference can be reused.",
+    "pendingInputs": [
+      "Root migration0054/compiler/pin freeze and explicit fixture release.",
+      "Read current 0054 source-recovery fences and existing tables/RLS after freeze; confirm whether0055 is actually required and its narrow grants/functions before writing it.",
+      "Coordinate future databases->oauth path edge and root offline lock inventory/pin preservation; no Cargo edits now.",
+      "Fresh owned real Console→Core→Native/PG acceptance after release using previous owned fixture factory/current pins; do not reuse existing rows/services."
+    ]
+  },
+  "limits": [
+    "Controlled HTTP model is explicitly a fixture and does not prove authentication, native execution, provider durability or production activation.",
+    "Previous PG130/Core/PITR measurements remain historical and do not approve this UI.",
+    "Browser strings/request frames cannot be reliably zeroized in JavaScript; provider material is request-only and is not intentionally retained.",
+    "No SLA, measured UI RPO/RTO, production or Wasabi qualification; no bearer REST/MCP parity claim yet.",
+    "Generated webdock.pot is a full current-source extraction and includes broad legacy-to-native reference/order changes; DE domain and compiled JSON include new UI messages."
+  ],
+  "sourceSHA256": {
+    "apps/console/src/ManagedDatabases.tsx": "f4941b9a729fb24518710efa88879881b7ccad28948ec1a92d3fca5a78c59379",
+    "apps/console/src/DatabaseBackups.tsx": "0a4e48f078115ec97c9c18bdd348d0bbe949bb239b30c47525a1f2944dc1fe59",
+    "apps/console/src/DatabaseBackupControls.tsx": "5edf8c5a76fda3be3c2dd5b9650cf2a801fabacef92d717572a24b58317ab7d7",
+    "apps/console/src/database-backup-request.ts": "0217aa0d9d4e2744eabfe82e1b7924055be1d5f60ed8ae775d3498577be9e752",
+    "apps/console/tests/database-backup-state.test.tsx": "3d325d1128554b1e5da846ab422f11597a502b97232d3ff573f9919f5661798a",
+    "apps/console/tests/database-backup-browser.mjs": "f4276eea6b7972b5d50a31eb5ca65a1b9ab924a10df9e1fd02a5731d9a34a85f",
+    "apps/console/tests/database-backup-proof.tsx": "3545e96992400b4ada8af6f2f5b215f2c345061b2576e7fe0620a4a6886326c1",
+    "apps/console/tests/support/database-backup-fixture.ts": "79ae4f60194da7fb07a332179a3fd5fc391fa9a43e13a7c0f661367e2575cffa",
+    "packages/hosting-contracts/src/databases.ts": "a1321d5f85b9d5b0ab837f5d00a596e12ad15b5ed8e031e6eb9d9231c54d5e29",
+    "packages/hosting-contracts/src/database-backup.test.ts": "b3581d11303165cee70efdec0eedd34c8d778cea5c52f98ee868c30391185686",
+    "packages/i18n/locales/de/managed-postgresql.po": "d307b783a4e2c73f6e0ca328dd4a84759bb3c720573d6cefebcb119e00bae941",
+    "packages/i18n/locales/webdock.pot": "0c0c50891c88084d9545226964dad2f471b3cc4a81d0eba6a910aaeac49a832e",
+    "packages/i18n/compiled/de.json": "ff98fbb3a778e63af309f33e53431d4e59285845a88700cd90b962f8a7d4e044",
+    "docs/operations/managed-postgresql.md": "6b8618ddb89dd6efe399fd12a6945118904dd5b18b5e72cceb933fed51415ce0"
+  }
+}

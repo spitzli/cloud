@@ -38,4 +38,4 @@ docker exec -u postgres "$fixture" pgbouncer -d /tmp/pgbouncer-test.ini
 port="$(docker port "$fixture" 6432/tcp | cut -d: -f2)"
 export SCOPED_POOL_TEST_URL="postgres://scoped_runtime:runtime-local-only@127.0.0.1:${port}/scopedpool_fixture"
 docker exec "$fixture" pgbouncer --version
-node --import tsx --test packages/database-runtime/tests/pgbouncer.integration.ts
+bun test ./packages/database-runtime/tests/pgbouncer.integration.ts

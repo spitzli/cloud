@@ -1,0 +1,6 @@
+apiVersion: v2
+name: webdock-plugin
+version: 0.1.0
+description: Isolated Webdock workload runtime
+appVersion: "1"
+type: application

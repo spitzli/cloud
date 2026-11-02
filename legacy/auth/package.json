@@ -1,0 +1,43 @@
+{
+  "name": "@webdock/auth",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "bun": ">=1.4.3"
+  },
+  "scripts": {
+    "dev": "bun --bun next dev --port 3125",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
+    "check": "tsc --noEmit",
+    "lint": "eslint",
+    "test": "bun test --isolate ./tests/*.test.ts",
+    "prebuild": "bun scripts/copy-scalar.mjs",
+    "predev": "bun scripts/copy-scalar.mjs"
+  },
+  "dependencies": {
+    "@better-auth/oauth-provider": "1.7.7",
+    "@better-auth/passkey": "1.7.7",
+    "better-auth": "1.7.7",
+    "next": "16.3.8",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "@webdock/i18n": "*",
+    "@webdock/hosting-contracts": "*",
+    "@webdock/search": "*",
+    "@webdock/database-contracts": "*",
+    "@webdock/mail-contracts": "*",
+    "ipaddr.js": "2.3.0",
+    "@scalar/api-reference": "1.73.1",
+    "@webdock/api-client": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.8",
+    "typescript": "^5"
+  }
+}

@@ -1,4 +1,7 @@
-# Core BullMQ operations
+# Core BullMQ operations (historical)
+
+This describes the retained TypeScript implementation. The active Rust job path and
+`bun run test:plugin-jobs` are documented in [Native plugin jobs](native-plugin-jobs.md).
 
 Core owns BullMQ 6.3.16 and ioredis 6.0.0. `@webdock/core/jobs` exports explicit Redis configuration and durable per-domain dispatch workers. `@webdock/core/plugin-jobs` owns the scoped plugin service and HTTP adapter. `@webdock/plugin-sdk/server` is the plugin-facing client; it has no Redis dependency.
 
@@ -20,6 +23,6 @@ Cancellation is cooperative; execute implementations must honor AbortSignal and 
 
 ## Verification
 
-`npm run test:plugin-jobs` provisions its own pinned Redis container and verifies Core scheduling/restart/domain ownership, Redis-down startup cleanup, scoped job API, retries, idempotency conflicts, read-only denial, foreign-project denial, delayed/running cancellation and revocation. It also checks packed SDK/CLI in an empty directory and an actual separate plugin process.
+`bun run test:plugin-jobs` provisions its own pinned Redis container and verifies Core scheduling/restart/domain ownership, Redis-down startup cleanup, scoped job API, retries, idempotency conflicts, read-only denial, foreign-project denial, delayed/running cancellation and revocation. It also checks packed SDK/CLI in an empty directory and an actual separate plugin process.
 
 The actual restricted-role `worker.ts` storage profile was run against a new isolated PostgreSQL fixture and real Redis; it completed its business job and exited cleanly on SIGTERM. Production deployment has not been performed.

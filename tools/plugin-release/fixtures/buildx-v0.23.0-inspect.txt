@@ -1,0 +1,14 @@
+Name:          blacksmith-miw0u1uo
+Driver:        remote
+Last Activity: 2026-11-01 14:00:00 +0000 UTC
+
+Nodes:
+Name:             blacksmith-miw0u1uo0
+Endpoint:         tcp://127.0.0.1:1234
+Status:           running
+BuildKit version: v0.34.1
+Platforms:        linux/amd64*
+Labels:
+ org.mobyproject.buildkit.worker.executor:         oci
+ org.mobyproject.buildkit.worker.oci.process-mode: sandbox
+ org.mobyproject.buildkit.worker.snapshotter:      overlayfs

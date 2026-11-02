@@ -1,0 +1,50 @@
+---
+title: "Independent plugin releases"
+description: "Separate repository pins, immutable image publication and registry signature verification."
+---
+
+A plugin release has several independent gates: source checks, immutable image publication, exact release assets, registry ingestion, signature verification and authorized runtime activation. Passing one gate does not pass the next.
+
+## Repository and dependency pins
+
+Core is maintained in [spitzli/cloud](https://github.com/spitzli/cloud). Runtime plugins and [cloud-plugin-sdk](https://github.com/spitzli/cloud-plugin-sdk) release from their own repositories. See the [repository list](/developers/plugins).
+
+Pin every `webdock-*` SDK dependency to the same reviewed 40-character Git revision. Do not retain parent-checkout paths. Keep `Cargo.lock`, the pinned Rust toolchain, root `manifest.json` and the repository's Dockerfile together. For native extensions, the package version and manifest version must match the exact `v<version>` release tag.
+
+Use the maintained [release template](https://github.com/spitzli/cloud-plugin-echo-demo/tree/v0.1.0/scripts/plugin-release) for native extensions. Managed CMS and provider repositories use their own matching workflows; a generic extension workflow cannot replace their protocol-specific checks.
+
+## Image publication
+
+The release workflow checks source, builds the production image and resolves its actual OCI digest. The final manifest must use `@sha256:<digest>`; tags and zero-digest authoring placeholders are not release identities.
+
+The final `tabularium.json` and `<plugin-name>-universal.json` assets contain identical JSON bytes with that digest. The universal filename selects a registry asset; it does not make a native plugin a legacy executable package. Preserve published immutable assets when retrying metadata publication.
+
+## Registry metadata and signatures
+
+The registry job downloads the same tag's exact assets and submits metadata separately from the image release. A successful ingestion response is not a signed-release receipt.
+
+Verification must check the pinned operator-established Ed25519 key, expected registry origin and `kid`, plugin name, version, original manifest bytes, descriptor hashes and sizes. A missing, unsigned, altered or wrong-key result fails the gate. Fetching the registry's current public key does not establish trust; an explicit key rotation is a separate reviewed operation. Preserve the established registry key identity.
+
+After an image release succeeds but the registry job fails, fix the metadata or approval blocker and rerun only the registry job. Do not rebuild or overwrite immutable release assets to turn a failed signature check green.
+
+## Protocol v1 and v2
+
+The native Rust validator requires the complete tuple `protocolVersion: 2`, `sdkVersion: 2`, `dataProtocolVersion: 2`. Existing TypeScript extensions retain the complete v1 tuple and their original signed bytes. Registry admission must preserve both complete schema branches; allowing each field to be independently 1 or 2 would admit invalid mixed tuples.
+
+Managed CMS remains protocol v1. The GitHub repository and Mail relay plugins implement dedicated provider protocols with their own catalog metadata and OCI images. They require explicit Core-owned provider enrollment, transport and account/project bindings. They are not ordinary action extensions that become usable through a generic project grant. Provider credentials remain in Core's protected connection storage.
+
+## Build infrastructure
+
+The completed manual releases used an operator-qualified EU runner and rootless BuildKit with its process sandbox enabled. This path accepts trusted maintainer source only. Source/image publication does not establish an EU-only guarantee for GitHub or GHCR services.
+
+Spitzli's own GitHub CI uses Blacksmith as its selected provider. EU-only placement has been waived for this CI scope; customer builds and other services retain their separate requirements. The GitHub App is installed for the sixteen platform repositories. A real isolated runner/build probe passed in `us-west`, including an uncached OCI export and digest verification. Complete application, plugin and SDK source checks and regular workflow migration remain pending. A runner label alone does not prove execution or location.
+
+## Status on 1 November 2026
+
+The nine native repositories, Managed CMS and SDK have independent releases. All nine native images and both CMS images were published and anonymously pulled; release assets and original signed tags were verified. The older signed v1 release baseline remains intact.
+
+All ten new plugin releases are published in the registry. Their original manifest bytes, declared image digests and signed asset hashes/sizes were checked against the established Ed25519 key. The CMS receipt also binds its separate instance-image descriptor and release metadata. The existing v1 release signatures remain intact. No new customer activation or general public customer build approval follows from these artifacts.
+
+The registry owner's GitHub connection has been renewed through normal sign-in. Future unattended publication still needs repository-scoped publisher credentials or release webhooks configured. Earlier registry-only CI jobs failed before metadata publication; the manual signature verification now passes. New or repeated GitHub CI execution must use the approved Blacksmith setup after its runner and build-backend qualification. Do not rerun old jobs on the previous runner merely to change their badge.
+
+The maintained release implementation and its exact-byte verifier are in [tools/plugin-release](https://github.com/spitzli/cloud-plugin-echo-demo/tree/v0.1.0/scripts/plugin-release); native registry admission preparation is in `tools/plugin-registry`.

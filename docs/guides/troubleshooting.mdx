@@ -1,17 +1,23 @@
 ---
 title: "Troubleshooting"
-description: "Resolve common account, resource and integration problems."
+description: "Resolve sign-in, connection, database and deployment problems."
 ---
 
 <AccordionGroup>
-  <Accordion title="My workspace or website is missing">Confirm the account and accepted invitation. Ask an administrator to check current membership, website grants and resource status. A contact email or pending invitation does not grant access.</Accordion>
-  <Accordion title="Console asks me to sign in after using Studio">Console has its own host-only application session. Complete central sign-in. Restart an in-progress provider connection from Console instead of reusing an old callback URL.</Accordion>
-  <Accordion title="An action is accepted but the resource has not changed">Open its operation record and inspect progress, readiness and errors. Avoid repeating a pending mutation. Successful submission is not completed execution.</Accordion>
-  <Accordion title="Mail was accepted but has not arrived">Look up message status, recipient results and events. Provider acceptance is not delivery. If the outcome is unknown, reconcile the existing message instead of sending it again with a new idempotency key.</Accordion>
-  <Accordion title="OAuth returns 401">Check token expiry, resource audience and scopes. Reconnect if the session or client was revoked. Console's browser URL does not replace the registered Studio MCP audience.</Accordion>
-  <Accordion title="Storage remains allocated after deletion">Application deletion retains persistent data. A platform administrator reviews the separate permanent-purge operation.</Accordion>
+  <Accordion title="I cannot complete my first sign-in">Select **Forgot password?** in Console and enter your confirmed account email. Use the email link to set your password, then complete any required MFA challenge. Account approval and workspace invitations are separate from password setup.</Accordion>
+  <Accordion title="My workspace or website is missing">Check the account and accepted invitation. Ask an administrator to review current membership, website grants and resource status. A contact email or pending invitation does not grant access.</Accordion>
+  <Accordion title="Neon connects but my database is not deployed">Connections currently manages the API key and reads project inventory. Create the database in your own Neon account. SQL access and automatic application bindings are separate capabilities.</Accordion>
+  <Accordion title="Neon project inventory is unavailable">Check the API key's validity and permissions. For a project-scoped key, enter the exact project ID. Refresh after correcting access; no platform key or paid-capacity fallback is used.</Accordion>
+  <Accordion title="An existing database browser does not open">Wait for the reported connection result, then use its retry action after a failure or timeout. If it still fails, ask your operator to check the database state, access grant and gateway. Do not delete the database to resolve a browser error.</Accordion>
+  <Accordion title="No repository source or build action is available">Git self-service is not generally available. Your operator must activate the repository authorization, Hosting, registry and build-service prerequisites. A visible Builds page or saved repository URL does not admit a public build.</Accordion>
+  <Accordion title="My build succeeded but the application is not ready">Open **Publications**, follow its deployment status and **Rollout operation**, then check the application endpoint. Successful build output and healthy deployment are separate results.</Accordion>
+  <Accordion title="An action is accepted but the resource has not changed">Open the existing operation and inspect its progress and errors. If its result is uncertain, use that request's retry or ask an operator to reconcile it before submitting another change.</Accordion>
+  <Accordion title="Mail was accepted but has not arrived">Check message status, recipient results and events. Provider acceptance is not delivery. Reconcile an unknown result instead of sending it again as a new request.</Accordion>
+  <Accordion title="Console asks me to sign in again">Complete central sign-in. Console has its own host-specific application session. Start an interrupted provider authorization again from Console rather than reusing an old callback URL.</Accordion>
+  <Accordion title="OAuth returns 401">Check token expiry, audience, scope and revocation. Registered Auth and Studio protocol addresses remain compatibility contracts; Console's browser domain does not replace them.</Accordion>
+  <Accordion title="Usage is unreported or storage remains allocated">Missing telemetry does not mean zero usage. Stopping or deleting an application can retain storage and its accounting. Permanent purge is a separate administrator action.</Accordion>
 </AccordionGroup>
 
-## Reporting a problem
+## Report a problem
 
-Include the resource ID, operation or request ID, timestamp, action and error text. State whether the issue occurred in Console, an API client or an application. Remove credentials, cookies, payment URLs and private message content.
+Include the resource ID, operation or request ID, timestamp, attempted action and displayed error. Say whether it happened in Console, an API client or the application. Remove credentials, cookies, private connection strings and message content.

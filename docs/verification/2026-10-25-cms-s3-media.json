@@ -1,0 +1,249 @@
+{
+  "date": "2026-10-25",
+  "scope": "Opt-in private S3 media for new CMS instances only",
+  "status": "Four confirmed CMS findings fixed and parent inspected;17 tests, typecheck,7 safety checks passed; delegated fresh local/S3 r4 image acceptance passed; full-root gate pending",
+  "commands": [
+    {
+      "command": "bun test --isolate apps/cms-instance/tests/*.test.ts",
+      "result": "8 passed, 5 infrastructure entries skipped"
+    },
+    {
+      "command": "bun run --filter @webdock/cms-instance build",
+      "result": "passed"
+    },
+    {
+      "command": "bun --bun node_modules/typescript/bin/tsc -p apps/cms-instance/tsconfig.json --noEmit --incremental false",
+      "result": "passed"
+    },
+    {
+      "command": "bun test packages/database-runtime/src/index.test.ts apps/cms-instance/tests/media-storage.test.ts",
+      "result": "16 passed"
+    },
+    {
+      "command": "python3 -B -m unittest discover -s apps/cms-instance/scripts -p 'test_*.py'",
+      "result": "6 passed"
+    },
+    {
+      "command": "python3 -B apps/cms-instance/scripts/acceptance.py",
+      "result": "passed: fresh PostgreSQL18/TLS, distinct roles, schema migrations, existing CMS and trash safety"
+    },
+    {
+      "command": "python3 -B apps/cms-instance/scripts/acceptance.py --s3",
+      "result": "passed: existing MinIO, fresh TLS PostgreSQL18, seven suite entries across independent processes, exact10MiB public raster, no local media files, permissionrevocation, trash/restore, hashfailure, explicitpurge"
+    },
+    {
+      "command": "docker build -f apps/cms-instance/Dockerfile -t webdock-cms:s3-acceptance-20261025-r1 .",
+      "result": "passed"
+    },
+    {
+      "command": "python3 -B apps/cms-instance/scripts/acceptance.py --s3 --image webdock-cms:s3-acceptance-20261025-r2",
+      "result": "passed: fresh schema with migration-only credentials from immutable image, runtime DML roles, source safety/revocation/purge, real HTTP chunked bridge upload of exact10MiB, verified public bytes, container removal/recreation and fresh HTTP reads"
+    },
+    {
+      "command": "bun test apps/cms-instance/tests/bridge-large-media.test.ts",
+      "result": "RED->GREEN: preserves Content-Type before large multipart body consumption"
+    },
+    {
+      "command": "bun test --isolate apps/cms-instance/tests/*.test.ts",
+      "result": "17 passed, 7 explicit infrastructure entries skipped; configured deadline test takes30s"
+    },
+    {
+      "command": "bun test --isolate apps/cms-instance/tests/startup-binding.test.ts packages/cms-bridge/src/*.test.ts packages/cms-bridge/tests/*.test.ts packages/cms-ui/src/server.test.ts packages/database-runtime/src/index.test.ts",
+      "result": "37 passed, 1 opt-in PostgreSQL overflow entry skipped; real bounded PostgreSQL bridge suite ran"
+    },
+    {
+      "command": "python3 -B -m unittest discover -s apps/cms-instance/scripts -p 'test_*.py'",
+      "result": "7 passed, including cleanup absence verification"
+    },
+    {
+      "command": "bun --bun node_modules/typescript/bin/tsc -p apps/cms-instance/tsconfig.json --noEmit --incremental false",
+      "result": "passed after correcting the isolated test child environment NODE_ENV typing"
+    },
+    {
+      "command": "python3 -B apps/cms-instance/scripts/acceptance.py",
+      "result": "passed: fresh old-schema fixture seeded with actual local file, row and version before forward migration; null hash, historical timestamps, version, exact bytes and URL retained"
+    },
+    {
+      "command": "python3 -B apps/cms-instance/scripts/acceptance.py --s3",
+      "result": "passed: repeated binding rejection, exact10MiB, source safety/editor contract, denied reads, delete-only denied purge retains identity/versions/exact bytes, successful purge retry"
+    },
+    {
+      "command": "docker build -f apps/cms-instance/Dockerfile -t webdock-cms:s3-acceptance-20261025-r4 .",
+      "result": "passed: fresh frozen-lock dependency installation, Next production build/typecheck and bounded migration bundle"
+    },
+    {
+      "command": "python3 -B apps/cms-instance/scripts/acceptance.py --s3 --image webdock-cms:s3-acceptance-20261025-r4",
+      "result": "passed: fresh TLS PG18 migration/runtime roles, no migration S3 data keys, source regression/editor checks, repeated binding rejection, delete-only denied purge with exact metadata+versions+byte/hash retention, successful same-reference purge retry, image HTTP health503 repeated on mismatch, exact10MiB bridge upload/public bytes/native hidden-field descriptor, container removal/recreation and fresh reads"
+    },
+    {
+      "command": "python3 -B apps/cms-instance/scripts/acceptance.py --image webdock-cms:s3-acceptance-20261025-r4",
+      "result": "passed: actual old-schema file/row/version created before forward migration; null hash, URL, timestamps, original version and bytes preserved; source safety plus image HTTP read of historical file, repeated mismatch health503, exact10MiB upload/public hash and container recreation"
+    }
+  ],
+  "evidence": [
+    "Real source failure identified generated SQL column naming error; corrected before acceptance.",
+    "Real editor regression identified upstream S3 complete-document metadata echo, stale updatedAt and consequent CAS409; one-line pinned dependency patch removes nonexistent provider metadata.",
+    "Bun1.4.3 multipart fixture derives MIME from filename; invalid legacy fixture names corrected; product MIME/byte validation unchanged.",
+    "S3 source fixture removed all exact owned buckets/users/policies and PG containers/networks/volumes, including failed rounds. Private failure logs retained.",
+    "Real immutable-image HTTP acceptance initially failed on preexisting Bun lazy multipart headers; small shared client fix verified RED->GREEN and by full HTTP flow.",
+    "Infrastructure image test has explicit120second bound; old default5second testbudget was insufficient for 16KiB durable bridgeframes. Application transfer limits/timeouts were not increased.",
+    "Final S3 acceptance additionally denies anonymous provider reads and verifies known object removal after an explicit fixture-owned permanent purge.",
+    "All four confirmed review findings have failing regressions observed before their respective fixes.",
+    "CMS forward migration20261025_120000 unchanged; preexisting-local-media upgrade exercised on a fresh old-schema fixture.",
+    "r3 built before the additional GET-body race correction and is superseded by r4; r1/r2 are parent-owned and preserved.",
+    "Final r4 build succeeded after correcting NODE_ENV in the isolated test wrapper; both source and compiled immutable-image flows passed on fresh resources.",
+    "A supplemental attempt to resolve unbundled S3 packages inside r4 found none: Next/esbuild carry them in compiled bundles. No claim of independent runtime dependency-file hash verification; frozen-lock patched build and real image HTTP flows are the image evidence. Its exact --rm audit container is confirmed absent.",
+    "Final receipt verified all27 recorded source hashes; CMS forward migration hash unchanged from pre-review receipt."
+  ],
+  "limits": [
+    "No existing store or production migration; old-schema upgrade proof uses only fresh owned local fixture data.",
+    "No Wasabi compatibility, commercial capability, production or full handover completion claim.",
+    "S3 writes/deletes and PostgreSQL commits are not atomic; retain unknown completed upload orphans and reconcile successful provider deletion followed by database commit failure explicitly.",
+    "Parent re-review of this implementation remains separate; no commits, delegation or native migrations performed."
+  ],
+  "prior_image": {
+    "tag": "webdock-cms:s3-acceptance-20261025-r2",
+    "identity": "sha256:d4842bd97d5890ec94d4337d5257a7cd9ffba61639280f305b2312492d272edf",
+    "production": false,
+    "retained": "Local fixture candidate retained for review; no registry push or activation"
+  },
+  "image": {
+    "tag": "webdock-cms:s3-acceptance-20261025-r4",
+    "identity": "sha256:6f98669497058068df029374f04591e163a86be594453288b7d64bf094d6cf1d",
+    "production": false,
+    "retained": "Retained locally for parent re-review; no registry push or activation"
+  },
+  "review_fixes": [
+    {
+      "finding": "P1 failed-init cache bypass",
+      "change": "getCMS verifies the immutable media binding independently before every Payload cache access; onInit is no longer the authority",
+      "red": "Real offline Payload init rejected a mismatched binding; subsequent getCMS unexpectedly resolved",
+      "green": "Repeated getCMS rejection and health503, successful recovery, transient failure recovery and rejection after a previously successful cached return; real PG source and image checks repeat startup failures"
+    },
+    {
+      "finding": "P1 unbounded HEAD/cancellation",
+      "change": "Pinned S3 getFile patch supplies HEAD AbortSignal, recognizes already-aborted callers, enforces a 30s whole-read deadline, destroys aborted bodies and cleans timers/listeners; Smithy requestTimeout15000 now throws",
+      "red": "Actual installed adapter stayed pending after HEAD abort and already-aborted input; GET-body-arrival race emitted an unhandled stream error",
+      "green": "Real stalled HTTP HEAD/GET/body sockets close; configured adapter HEAD/body without caller signal settle within30s; cancellation race returns failure without unhandled error"
+    },
+    {
+      "finding": "P2 denied purge commits metadata deletion",
+      "change": "Pinned Cloud Storage afterDelete rethrows the original provider failure into the Payload transaction",
+      "red": "Actual installed cloud hook swallowed AccessDenied and resolved instead of rejecting",
+      "green": "Owned real PG/MinIO delete-only Deny makes purge reject; complete media identity and version results match pre-purge snapshot; exact bytes/hash remain readable; remove denial and retry permanent purge successfully"
+    },
+    {
+      "finding": "P3 checksum exposed in native editor",
+      "change": "contentSha256 has admin.hidden in addition to hidden/access controls",
+      "red": "cmsFields on the actual sanitized configuration included contentSha256",
+      "green": "Sanitized native editor fields omit checksum; source descriptor and image HTTP descriptor also assert no checksum/prefix/internal key field"
+    }
+  ],
+  "fixture_cleanup": [
+    {
+      "run": "fdd5f431024f4841",
+      "result": "First expanded S3 run stopped because the test trash update had no admin actor. Corrected fixture actor; all14 exact Docker resources subsequently confirmed absent. Exact owned MinIO buckets/user/policy removed; private failure logs retained."
+    },
+    {
+      "run": "507d4ef8062c23c9",
+      "result": "Expanded S3 source acceptance passed; all16 exact Docker resources confirmed absent; helper removed exact owned MinIO buckets/user/policies; no incomplete multipart uploads."
+    },
+    {
+      "run": "5424906f0b7c6c5a",
+      "result": "Final r4 S3 source+HTTP image acceptance passed; all23 exact Docker resources confirmed absent; exact owned MinIO buckets/user/policies removed; no incomplete multipart uploads."
+    },
+    {
+      "run": "2d8975fbc05bc60d",
+      "result": "Final r4 local old-schema upgrade+source+HTTP image acceptance passed; all18 exact Docker resources confirmed absent."
+    },
+    {
+      "image": "webdock-cms:s3-acceptance-20261025-r3",
+      "identity": "sha256:747c4cdd067950b997274d8bd42e8d24e7766f4bfe6a88260c59e547cad839ec",
+      "result": "Superseded pre-race-correction image tag removed after checking exact owned identity. Parent-owned r1/r2 untouched; final r4 retained.",
+      "config_digest": "sha256:3f99c75d0d44bd749f6251bea70e26f3d218eddfac58f0dd7fb56d27b21ca5cf"
+    }
+  ],
+  "sha256_before_review_fixes": {
+    "apps/cms-instance/src/lib/media-config.ts": "9f6c1e80b4bb3b233caf6839203f0bf6fa146e31c9a1d47616f5dd55733fdbb4",
+    "apps/cms-instance/src/lib/media-storage.ts": "c20a393d603278c2272c898f9732de22e2e3b53c227368ac7a66a80d167cfe3a",
+    "apps/cms-instance/src/lib/content.ts": "ba0996e775fb3a4d0bff49c027d2e67fab55c60e415fecb6127d3ebd333e3502",
+    "apps/cms-instance/src/payload.config.ts": "a8d66b70954aca8ef362cb004ce088b325ccfa2a9f74a353e62c5f83d10fe2fa",
+    "apps/cms-instance/src/app/api/media/file/[filename]/route.ts": "c2eb8a82f5787f0b2f2b932dc2a89d9b9bbfb13264534a60fa335d5869e0b767",
+    "apps/cms-instance/src/migrations/20261025_120000_media_storage_binding.ts": "9884d5533f55bcc6ee9643c3a16a021521270fced5a8bd58aac7602a973f8948",
+    "apps/cms-instance/scripts/acceptance.py": "41d309fa200326a786074897b706cf8bd2bdee5b023078e3f3ff2e9f0ff039b0",
+    "apps/cms-instance/tests/s3-media.test.ts": "b9570e0fbf4155fb2560ddd585e6204c754c3b35e3b0368d9c0cb6d90594d358",
+    "patches/drizzle-orm@0.45.2.patch": "b1f95ffbc8e29dacc14918e25d78074ac26d10a691250ff52669b1b0fd94bd54",
+    "patches/@payloadcms%2Fstorage-s3@4.0.0-canary.37.patch": "539125eb2ff98a337025e66f55f4bda57aed0b0436725afaac3eac1e37d80443",
+    "packages/cms-bridge/src/client.ts": "4ef243a952d0cb1c61bf1b0067f488e6aa52daa33c9c6bd7d14a06267d4887fc",
+    "apps/cms-instance/tests/bridge-large-media.test.ts": "35178c737281e056ac0b7129f322cfcb80193f68aa2a0515702f6bfe979b90d3",
+    "apps/cms-instance/tests/image-acceptance.test.ts": "974f64aa2bc8ef4277415342fc61c87bf4f99526d6710ee4f1deb70860fc73bf",
+    "apps/cms-instance/tests/editor-safety.test.ts": "d0bf693c32354d3421d112b5296f8652cb8a4beed3586c3d44f031a7cd44334e"
+  },
+  "sha256": {
+    "apps/cms-instance/scripts/acceptance.py": "4e5ae675dc1ade3125e0ece3120cc91c11c62260041b38426d50e5d324e26961",
+    "apps/cms-instance/scripts/seed-legacy-media.ts": "bfcfb6505bbd3ca2895e4d8a7b7dac9d292cec6c5d5055afd1dc7118c5e1b380",
+    "apps/cms-instance/scripts/test_acceptance.py": "dea9e43c86761d64f5f48b65cf25223752a173b7a85cde1a80d2c42e891e00d3",
+    "apps/cms-instance/src/app/api/media/file/[filename]/route.ts": "c2eb8a82f5787f0b2f2b932dc2a89d9b9bbfb13264534a60fa335d5869e0b767",
+    "apps/cms-instance/src/lib/cms.ts": "c52403bf1ef6e22a57189d4fe96a5ce3f282cc4506703b46a8fdbd46a3a35553",
+    "apps/cms-instance/src/lib/content.ts": "4670bd66ae51cdb3597ba0da42c96d75628ee16f4affd962ec9b2beeef0c73e9",
+    "apps/cms-instance/src/lib/media-config.ts": "9f6c1e80b4bb3b233caf6839203f0bf6fa146e31c9a1d47616f5dd55733fdbb4",
+    "apps/cms-instance/src/lib/media-storage.ts": "3cf1e127f5fef49d5791f6edb4281a96f5eec006ccce30cc5e669926dd79964b",
+    "apps/cms-instance/src/migrations/20261025_120000_media_storage_binding.ts": "9884d5533f55bcc6ee9643c3a16a021521270fced5a8bd58aac7602a973f8948",
+    "apps/cms-instance/src/payload.config.ts": "0215c27bbf4cf316e101590573ff9ceafa9b13bddc68361e582a4130303e6f0c",
+    "apps/cms-instance/tests/bridge-large-media.test.ts": "35178c737281e056ac0b7129f322cfcb80193f68aa2a0515702f6bfe979b90d3",
+    "apps/cms-instance/tests/editor-safety.test.ts": "9f19238d39823b9fac9409fe50b8a0c7861f85a4e9ffa3e74ef93f2dc81dd639",
+    "apps/cms-instance/tests/fixtures/startup-binding.mjs": "c566310e6ec21d4a8bb650dd3b40df9f0c653a72cc416cc2cebd8193e4670a08",
+    "apps/cms-instance/tests/image-acceptance.test.ts": "d11b7f54d42e5b7ef34822b44760c54d20339ce1ed66b1f38e80f5ac815f4159",
+    "apps/cms-instance/tests/legacy-media.test.ts": "88a1c1793e84d982f265b9e60ba2e04f947754a1a1d84f5902edede2c213480c",
+    "apps/cms-instance/tests/s3-media.test.ts": "c6a3c72456dae43bc1be8b8f8281e2335232f50396ed282aeddd2c5ccaf7b992",
+    "apps/cms-instance/tests/startup-binding.test.ts": "2a26168c1860815c5de544282bde2529aec5bd748dea134d48658621cfc3f3ca",
+    "apps/cms-instance/tests/startup-real.test.ts": "8fb6c05af5c1eadecc8bd587e729dbec6eed6ecaef1231ed222767182a030d95",
+    "apps/cms-instance/tests/storage-dependencies.test.ts": "2e825ad27e0ccd229ed73cce4a298d202979b2dcd904e615a14c5bd477de4709",
+    "bun.lock": "5dabc0c7c490873bed7905e55ca4f7ee9219ae3e47fa2f0669a3b1647d0d68ac",
+    "package.json": "20b3ab9bce8cb69584f57aeb10c0b99fef1535071a2d3e3ec7e8a503cc868772",
+    "packages/cms-bridge/src/client.ts": "4ef243a952d0cb1c61bf1b0067f488e6aa52daa33c9c6bd7d14a06267d4887fc",
+    "patches/@payloadcms%2Fplugin-cloud-storage@4.0.0-canary.37.patch": "3a6a7ed21495dc37765aeb3c0b40b09d93d5b9afcf6942e178a0b127004a6407",
+    "patches/@payloadcms%2Fstorage-s3@4.0.0-canary.37.patch": "c8e71dd140abb9ecd7ccd23b3041d82c24f5f777b7254aa516adbb6bc4901e4b",
+    "patches/README.md": "c76fc5fb3153d3b8a0c417e449ebf93ff3e77bec03f09d817d8e065d81819de8",
+    "patches/drizzle-orm@0.45.2.patch": "b1f95ffbc8e29dacc14918e25d78074ac26d10a691250ff52669b1b0fd94bd54",
+    "docs/operations/cms-s3-media.md": "e197d6f321eb91bedf2a97bc557d85c5be2247f7c55fe361c4fe99d04bb46120"
+  },
+  "review_changed_paths": [
+    "apps/cms-instance/src/lib/cms.ts",
+    "apps/cms-instance/src/payload.config.ts",
+    "apps/cms-instance/src/lib/media-storage.ts",
+    "apps/cms-instance/src/lib/content.ts",
+    "patches/@payloadcms%2Fstorage-s3@4.0.0-canary.37.patch",
+    "patches/@payloadcms%2Fplugin-cloud-storage@4.0.0-canary.37.patch",
+    "patches/README.md",
+    "package.json",
+    "bun.lock",
+    "apps/cms-instance/tests/storage-dependencies.test.ts",
+    "apps/cms-instance/tests/startup-binding.test.ts",
+    "apps/cms-instance/tests/fixtures/startup-binding.mjs",
+    "apps/cms-instance/tests/startup-real.test.ts",
+    "apps/cms-instance/tests/legacy-media.test.ts",
+    "apps/cms-instance/tests/s3-media.test.ts",
+    "apps/cms-instance/tests/editor-safety.test.ts",
+    "apps/cms-instance/tests/image-acceptance.test.ts",
+    "apps/cms-instance/scripts/seed-legacy-media.ts",
+    "apps/cms-instance/scripts/acceptance.py",
+    "apps/cms-instance/scripts/test_acceptance.py",
+    "docs/operations/cms-s3-media.md",
+    "docs/verification/2026-10-25-cms-s3-media.json"
+  ],
+  "parentVerification": {
+    "date": "2026-10-25",
+    "checks": [
+      "All27 recorded source hashes matched",
+      "Manually inspected binding-before-Payload-cache, hard timeout and HEAD signal propagation, purge error propagation and admin.hidden hash field",
+      "CMS suite17 passed,7 infrastructure opt-ins skipped",
+      "Nonincremental CMS typecheck passed",
+      "Fixture safety7 passed"
+    ],
+    "limits": [
+      "Fresh local and S3 r4 image acceptance results are from delegated execution; parent did not duplicate those costly fixtures",
+      "Shared full-root quality gate remains pending ongoing integration"
+    ]
+  }
+}

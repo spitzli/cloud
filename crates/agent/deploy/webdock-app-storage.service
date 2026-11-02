@@ -1,0 +1,24 @@
+[Unit]
+Description=Webdock app filesystem helper
+After=local-fs.target
+Before=webdock-agent.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+UMask=0077
+RuntimeDirectory=webdock-app-storage
+RuntimeDirectoryMode=0700
+ExecStart=/usr/local/bin/webdock-storage --config /etc/webdock/app-storage.json serve --socket /run/webdock-app-storage/storage.sock
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+RestrictAddressFamilies=AF_UNIX
+# Filesystems must be visible in the Engine/kubelet host mount namespace.
+# Do not enable filesystem sandbox options that create a private mount namespace.
+PrivateMounts=no
+PrivateDevices=no
+
+[Install]
+WantedBy=multi-user.target

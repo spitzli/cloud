@@ -203,7 +203,10 @@ export interface Image {
  */
 export interface Media {
   id: number;
+  contentSha256?: string | null;
   alt: string;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -364,7 +367,10 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  contentSha256?: T;
   alt?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

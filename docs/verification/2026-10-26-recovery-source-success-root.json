@@ -1,0 +1,86 @@
+{
+  "actualNativeSourceReady": true,
+  "cachedMetadataEqual": 4,
+  "cgroupAndParentAbsent": true,
+  "diagnosticHashesVerified": 17,
+  "exactRepoDigestPassed": true,
+  "functionalPassed": true,
+  "healthConvergenceAgentSHA256": "84d3bd2efae22b961ab6a33d70899f1154575e7473c3551aba7feb871c0b6875",
+  "limits": [
+    "Source component only; no full Mail/SMTP/restore/RPO/RTO acceptance",
+    "No final54 freeze or production approval"
+  ],
+  "noDetachOrMutation": true,
+  "ownedMountReferencesAbsent": true,
+  "positiveAbsences": [
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "18985afd4f7dda45a6f7aa1ddbf78c038d001b185097d7b98f9f505a9afd335f"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-755867bf5c454432"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "5dff3f2553c9f059d3088653c80dcad71aa90e1ec63063488183aaa66ca81c92"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-k3s-help-755867bf5c454432"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "4101830c9ed2d69d82f0fc2144360560cc5a8c0009ae8f600f457de9cbcbfb9b"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "abc5d3104f428953cd8e97e8f2687e81e7983a68346e0dee1898848ee1ded398"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "3d3c9c6e7bc5ab3560facc3460ce83e022fb55fc5f249a8161dc4fc2f8354222"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "739bd77e548e98dc4eed77b250904e8e66edaa2673de46d33c553f1edc228153"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-logs-74dc978a68b9"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "wd-owned-recovery-component:74dc978a68b9"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:efd3c850c7080eee5e55248cd0987b99905522237498e4a9ac7ed892266aedc9"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    }
+  ],
+  "resultSHA256": "4049f13804b82ecf1b00311a4ae0744b7358dcb8147c2c017a900dadeb1e8788",
+  "scope": "Root independent source component success closure",
+  "sourceUIDPresent": true,
+  "visibleLoopsAllUnbound": 10
+}

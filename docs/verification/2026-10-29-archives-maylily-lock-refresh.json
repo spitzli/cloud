@@ -1,0 +1,10 @@
+{
+  "scope": "Standalone Archives path-package lock matches selected local IDs dependency",
+  "registryPinsChanged": false,
+  "registryChecksumChanged": false,
+  "newPathPackage": "maylily",
+  "externalRepositoryEdited": false,
+  "privateMailLockChanged": false,
+  "RootLockChanged": false,
+  "actualFullLockedAllFeaturesMetadataPassed": true
+}

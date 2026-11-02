@@ -1,0 +1,24 @@
+{
+  "status": "Child task ended by provider safety filter after recorded Access success and baseline Host boundary failure; no retry of additional Host race case",
+  "providerMessage": "This content was flagged for possible cybersecurity risk.",
+  "candidate": "/tmp/webdock-allowance-r2-green-q_11alh1/bootstrap-tests",
+  "candidateSHA256": "b481b18d7105f6a28e2f7557ea3087d2fb4b0e73b6c69b4d9e1f0a905a837cbb",
+  "retainedFiles": {
+    "/tmp/webdock-allowance-r2-green-q_11alh1/manifest.json": "dd314c0a616168e00111dd887fc65a5e169814edbbc8a541b6c61c956e55b000",
+    "/tmp/webdock-allowance-r2-green-q_11alh1/preview-races.log": "bff9f23b39b6eaafbc0fb0dc430b6c90fa514ee4998f70c37c641bafb39a69e1",
+    "/tmp/webdock-allowance-r2-green-q_11alh1/builtin-baseline.log": "c25bdd93c48bab4a11f91db29e6d88e1cc3a6851f0c7b6a9285b14c47ec191dd"
+  },
+  "accessObserved": "12 ordinary HTTP serialization cases passed26.87s plus retained config-failure denial; no exact post-final-check exploit claimed",
+  "baselineHostObserved": "Existing log reports retained replay serialized=false/status200 and assertion failure20.78s; Root did not rerun it",
+  "cleanup": {
+    "container": {
+      "id": "c851de3cd0e69be482eb1dfd8a4a1bf4338c1e956e33ba9befebffb3093cab96",
+      "absent": true
+    },
+    "volume": {
+      "id": "3f3a0fefed67012efa8df6b1598228ca11814c9811be26d25e621780d0729ca7",
+      "absent": true
+    },
+    "privateDirectoryAbsent": "/tmp/.tmpmQnNJx"
+  }
+}

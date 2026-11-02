@@ -1,0 +1,18 @@
+{
+  "scope": "actual kernel UID65532 recovery IPC info/denials only; no canonical Core grant/data/volume acceptance",
+  "binarySHA256": "d17ddbf93b010a27e883b92b3af17c331e97875391d4ecc781e01fcd27dc3226",
+  "imageID": "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe",
+  "priorHarnessFailures": [
+    "docker cp into read-only created layer denied",
+    "fixture omitted CAP_CHOWN before required UID65 stage setup",
+    "fixture Root cleanup lacked DAC_OVERRIDE on enrolled UID65 private directory"
+  ],
+  "exitCode": 0,
+  "passed": true,
+  "cleanup": {
+    "exactContainerAbsent": true,
+    "exactAnonymousVolumesAbsent": 0,
+    "privateDirectoryRemoved": true,
+    "existingServicesChanged": false
+  }
+}

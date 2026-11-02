@@ -1,0 +1,92 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Spitzli Cloud\n"
+"PO-Revision-Date: 2026-10-31 00:00+0000\n"
+"Last-Translator: Spitzli Development\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "(optional)"
+msgstr "(optional)"
+
+msgid "Already invited?"
+msgstr "Bereits eingeladen?"
+
+msgid "Approve"
+msgstr "Freigeben"
+
+msgid "Approved"
+msgstr "Freigegeben"
+
+msgid "Approving…"
+msgstr "Wird freigegeben…"
+
+msgid "Enter a valid email and accept the privacy policy."
+msgstr "Gib eine gültige E-Mail-Adresse ein und stimme der Datenschutzerklärung zu."
+
+msgid "I agree to the"
+msgstr "Ich stimme der"
+
+msgid "Loading access requests…"
+msgstr "Zugangsanfragen werden geladen…"
+
+msgid "New requests will appear here."
+msgstr "Neue Anfragen erscheinen hier."
+
+msgid "Newest requests"
+msgstr "Neueste Anfragen"
+
+msgid "No access requests"
+msgstr "Keine Zugangsanfragen"
+
+msgid "Older requests"
+msgstr "Ältere Anfragen"
+
+msgid "Reject"
+msgstr "Ablehnen"
+
+msgid "Rejected"
+msgstr "Abgelehnt"
+
+msgid "Rejecting…"
+msgstr "Wird abgelehnt…"
+
+msgid "Request approved. Invite this contact from workspace member management to grant access."
+msgstr "Anfrage freigegeben. Lade diesen Kontakt über die Mitgliederverwaltung eines Workspaces ein, um Zugriff zu vergeben."
+
+msgid "Request rejected."
+msgstr "Anfrage abgelehnt."
+
+msgid "Review access requests. Approval permits onboarding; workspace access is assigned separately."
+msgstr "Prüfe Zugangsanfragen. Die Freigabe ermöglicht die Einrichtung; Workspace-Zugriff wird separat vergeben."
+
+msgid "Spitzli Cloud is currently invitation-only. Leave your contact details to request access."
+msgstr "Spitzli Cloud ist derzeit nur auf Einladung verfügbar. Hinterlasse deine Kontaktdaten, um Zugang anzufragen."
+
+msgid "The service is not responding right now."
+msgstr "Der Dienst antwortet gerade nicht."
+
+msgid "Too many requests. Please wait before trying again."
+msgstr "Zu viele Anfragen. Bitte warte, bevor du es erneut versuchst."
+
+msgid "Unable to review request"
+msgstr "Anfrage konnte nicht bearbeitet werden"
+
+msgid "Unable to load"
+msgstr "Laden nicht möglich"
+
+msgid "You're on the waitlist"
+msgstr "Du stehst auf der Warteliste"
+
+msgid "Your request has been saved. We will review it before inviting you to Spitzli Cloud."
+msgstr "Deine Anfrage wurde gespeichert. Wir prüfen sie, bevor wir dich zu Spitzli Cloud einladen."
+
+msgid "for processing my access request."
+msgstr "zur Verarbeitung meiner Zugangsanfrage zu."
+
+msgid "privacy policy"
+msgstr "Datenschutzerklärung"

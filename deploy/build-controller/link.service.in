@@ -1,0 +1,35 @@
+[Unit]
+Description=Owned controller to BUILD WireGuard link (@ROLE@)
+Requires=webdock-build-controller-link-guard.service @BUILD_DEPENDENCY@
+After=network-online.target webdock-build-controller-link-guard.service @BUILD_DEPENDENCY@
+Wants=network-online.target
+ConditionPathExists=/etc/webdock-build-controller/network-approved.sha256
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+UMask=0077
+ExecStartPre=/usr/local/libexec/webdock-build-controller-profile --guard --config /etc/webdock-build-controller/connection.json --role @ROLE@
+ExecStartPre=/usr/bin/test ! -e /sys/class/net/wd-build-ctl
+ExecStart=/usr/sbin/ip link add wd-build-ctl type wireguard
+ExecStart=/usr/bin/wg set wd-build-ctl listen-port @LOCAL_PORT@ private-key @PRIVATE_FILE@ peer @PEER_KEY@ allowed-ips @ALLOWED@ endpoint @PEER_PUBLIC@:@PEER_PORT@ persistent-keepalive 25
+@ADDRESS@
+ExecStart=/usr/sbin/ip link set wd-build-ctl up
+ExecStart=/usr/sbin/ip route add @ALLOWED@ dev wd-build-ctl src @LOCAL_IP@
+ExecStop=/usr/sbin/ip link delete wd-build-ctl
+CapabilityBoundingSet=CAP_NET_ADMIN
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+TasksMax=16
+MemoryMax=64M
+TimeoutStartSec=30
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

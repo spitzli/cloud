@@ -7,7 +7,7 @@ import sys
 REPO = Path(__file__).resolve().parents[3]
 OUTPUT = REPO / 'packages/i18n/locales/webdock.pot'
 ROOTS = [REPO / path for path in (
-    'apps/auth/src', 'apps/console/src', 'apps/website/src', 'apps/cms-instance/src', 'apps/cms/src', 'packages/i18n/src',
+    'legacy/auth/src', 'legacy/console/src', 'apps/console/src', 'apps/website/src', 'apps/cms-instance/src', 'apps/cms/src', 'packages/i18n/src',
     'packages/cms-ui/src', 'packages/instance-kit/src', 'packages/payload-sso/src',
     'packages/page-builder/src', 'packages/hosting-contracts/src', 'packages/search/src',
     'packages/console-kit/src', 'modules/mail/src', 'modules/hosting/src', 'modules/databases/src',

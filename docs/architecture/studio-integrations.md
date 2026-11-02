@@ -75,7 +75,7 @@ curl --fail-with-body \
 
 ### Upgrading an existing auth deployment
 
-The OAuth provider seeds resources in insert-only mode, so adding `offline_access` to code does not update an existing resource policy. After deploying, run `node --env-file=.env.instance --import tsx scripts/enable-mcp-renewal.ts` from `apps/auth` using the intended environment. This idempotent update appends only `offline_access` to the existing enabled Webdock resource and leaves registered clients, their granted scopes and all other resource settings unchanged. No schema migration is required.
+The OAuth provider seeds resources in insert-only mode, so adding `offline_access` to code does not update an existing resource policy. After deploying, run `bun --env-file=.env.instance scripts/enable-mcp-renewal.ts` from `apps/auth` using the intended environment. This idempotent update appends only `offline_access` to the existing enabled Webdock resource and leaves registered clients, their granted scopes and all other resource settings unchanged. No schema migration is required.
 
 ## Accounts, customer invitations and website access
 
@@ -87,7 +87,7 @@ Website roles do not grant Studio or platform access. Each CMS still introspects
 
 Customer groups here are identity/permission groups, not new Studio registry records. Existing website-to-group assignments are preserved; changing ownership requires a separate reviewed operation. This release does not create a customer self-service console, provision CMS instances or invite real customers automatically.
 
-Before deploying the first build with `/people`, run `node --env-file=.env.instance --import tsx scripts/migrate-access.ts` from `apps/auth`. It adds only the `access_event` audit table. Actions record actor, operation, target and outcome, never passwords, tokens or email bodies. Native identity/email operations can partially complete if delivery fails; the UI tells the operator to review state and resend rather than claiming a rollback. Tests use local synthetic accounts and a captured mail outbox.
+Before deploying the first build with `/people`, run `bun --env-file=.env.instance scripts/migrate-access.ts` from `apps/auth`. It adds only the `access_event` audit table. Actions record actor, operation, target and outcome, never passwords, tokens or email bodies. Native identity/email operations can partially complete if delivery fails; the UI tells the operator to review state and resend rather than claiming a rollback. Tests use local synthetic accounts and a captured mail outbox.
 
 ## CMS product interface
 
@@ -105,7 +105,7 @@ The server-side `deleteVercelProject` adapter is reserved for the operator-autho
 
 References: [delete project endpoint](https://vercel.com/docs/rest-api/projects/delete-a-project), [integration permissions and scope upgrades](https://vercel.com/docs/integrations/create-integration/vercel-api-integrations).
 
-Configure `WEBDOCK_VERCEL_CLIENT_ID`, `WEBDOCK_VERCEL_CLIENT_SECRET`, `WEBDOCK_VERCEL_INTEGRATION_SLUG`, `WEBDOCK_VERCEL_TEAM_ID`, and `WEBDOCK_VERCEL_TEAM_SLUG` (required for the private dashboard installation URL) on Studio. Its callback is `https://studio.webdock.dev/api/vercel/callback`. Before deployment run `node --env-file=.env.instance --import tsx scripts/migrate-vercel.ts` from `apps/admin`; this adds only the connection and project-reference tables.
+Configure `WEBDOCK_VERCEL_CLIENT_ID`, `WEBDOCK_VERCEL_CLIENT_SECRET`, `WEBDOCK_VERCEL_INTEGRATION_SLUG`, `WEBDOCK_VERCEL_TEAM_ID`, and `WEBDOCK_VERCEL_TEAM_SLUG` (required for the private dashboard installation URL) on Studio. Its callback is `https://studio.webdock.dev/api/vercel/callback`. Before deployment run `bun --env-file=.env.instance scripts/migrate-vercel.ts` from `apps/admin`; this adds only the connection and project-reference tables.
 
 Start installation from Studio → Integrations after signing in as an operator. The encrypted ten-minute flow cookie binds the callback to that operator, team, app and origin. Code exchange verifies the returned installation and its exact read scopes. The persistent access token is encrypted using a purpose-separated key derived from Studio's SSO cookie secret and is never returned to browser JavaScript, MCP or the registry API. Secret rotation therefore requires reconnecting. Installation revocation and denied provider access produce a visible connection error.
 

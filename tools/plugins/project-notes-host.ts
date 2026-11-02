@@ -23,7 +23,7 @@ const root = resolve(import.meta.dirname, "../.."),
 if (!process.argv[2]) throw Error("Pass built Project Notes directory");
 const env = parseEnv(
   await readFile(
-    resolve(root, "apps/control-plane/.env.rls.test.local"),
+    resolve(root, "legacy/control-plane/.env.rls.test.local"),
     "utf8",
   ),
 );

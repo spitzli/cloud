@@ -1,0 +1,45 @@
+{
+  "runs": [
+    {
+      "runID": "a9c50e103f82",
+      "allRecordedCustodyRemoved": true,
+      "noLabelledContainersRemain": true
+    },
+    {
+      "runID": "b4e261c9a073",
+      "allRecordedCustodyRemoved": true,
+      "noLabelledContainersRemain": true
+    },
+    {
+      "runID": "c8d7104a9e63",
+      "allRecordedCustodyRemoved": true,
+      "noLabelledContainersRemain": true
+    },
+    {
+      "runID": "f4b19d6c208a",
+      "allRecordedCustodyRemoved": true,
+      "noLabelledContainersRemain": true
+    }
+  ],
+  "minio": {
+    "id": "c6afce009fceb7b83dc98451e0f4fd594b1e981d82e5bdb42240b873b44a4e67",
+    "running": true,
+    "identityRetained": true
+  },
+  "existingKindNodes": [
+    {
+      "name": "webdock-rust-native-3c8064-control-plane",
+      "id": "6c1603f267dd21e01c942ed66af2cabf906327c6097a8728a0bb450891982e6c",
+      "running": true,
+      "identityMatchesPreflight": true
+    },
+    {
+      "name": "webdock-git-e2e-control-plane",
+      "id": "8855b015cc725f7ce4be9e8fb29051944c6083a3a99610c437fc60c7f0be4708",
+      "running": true,
+      "identityMatchesPreflight": true
+    }
+  ],
+  "noProductionActions": true,
+  "noGlobalPrune": true
+}

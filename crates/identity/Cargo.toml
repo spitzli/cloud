@@ -1,0 +1,40 @@
+[package]
+name = "webdock-identity"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+reqwest={version="0.12",default-features=false,features=["json","rustls-tls"]}
+sea-orm.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+url.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+scrypt = "0.11"
+unicode-normalization = "0.1"
+subtle = "2.6"
+hmac = "0.12"
+sha2 = "0.10"
+base64 = "0.22"
+hex = "0.4"
+chacha20poly1305 = "0.10"
+getrandom = "0.2"
+percent-encoding = "2.3"
+totp-rs = { version = "=6.0.0", features = ["otpauth"] }
+async-trait.workspace = true
+webauthn-rs = { version = "=0.5.5", features = ["danger-allow-state-serialisation", "danger-credential-internals", "conditional-ui"] }
+webauthn-rs-core = "=0.5.5"
+uuid = { version = "1", features = ["v5"] }
+serde_cbor = { package = "serde_cbor_2", version = "0.13" }
+webdock-persistence = { path = "../persistence" }
+
+[dev-dependencies]
+webdock-ids = { path = "../ids" }
+webauthn-authenticator-rs = { version = "=0.5.5", features = ["softpasskey"] }
+
+[lints]
+workspace = true

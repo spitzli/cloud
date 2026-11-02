@@ -1,2 +1,6 @@
 # Unified patches contain space-prefixed blank context lines and mail separators.
 vendor/*.patch -whitespace
+
+# Reviewed generated output remains available while product diffs stay readable.
+graphify-out/** linguist-generated=true
+apps/cms-instance/src/migrations/*.json linguist-generated=true

@@ -1,0 +1,153 @@
+{
+  "status": "Source-stable defensive session-fence fixes ready for NEW independent review2; migration54/55 remain draft; full recovery not accepted",
+  "verifiedUTC": "2026-10-25T23:23:05.277949+00:00",
+  "head": "819041524049117bc50e11dfd96a6a29407804b8",
+  "priorEvidence": {
+    "path": "docs/verification/2026-10-25-native-operator-allowances.json",
+    "sha256": "6183217a9aac38f6ea8e38e0068f59841170876486477b5012aa494592ab2a72",
+    "unchanged": true
+  },
+  "sourceSHA256": {
+    "crates/access/src/allowances.rs": "f102c0e1a71b75eaef2f8e6dc862a9db0b4600c0dd51686bd40e88b843dccded",
+    "crates/access/src/lib.rs": "bbb1ba809ef1995c4090a7c0c85d709c83af076615e3fc4a0cd8943c75d0ddc9",
+    "crates/control-plane/src/access_allowances.rs": "aacced725249fc693de445e484b225854253ce60abdf55daad815bdcff4928f6",
+    "crates/control-plane/src/access.rs": "12831e226445027d6d7f629faea80ca480d1276b0f5fbcd7dbd6360b0a22f454",
+    "crates/control-plane/src/bootstrap.rs": "ce62a4b1c440836c8f87beb973312fdc91e82380729416edf9d960824fb057db",
+    "crates/control-plane/tests/allowance_routes.rs": "b7c30272e3b0c1359d6d3146dc055bf5cefcb539505b72fd0995c219bdfc9a46",
+    "crates/control-plane/tests/support/allowance_configuration.rs": "54d035e3695401a5b252dd53a68848e5a1f4655919e288345de06962248701b3",
+    "crates/control-plane/tests/support/plugin_builtins.rs": "2578fb7b57aaab397762a939eb8941cd8c217448cb6437ba1480641447e711fc",
+    "crates/persistence/migrations/0055_native_operator_allowances.sql": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+    "docs/operations/native-operator-allowances.md": "e249eefe1d86c4d3d60b3e2566662d8fe6a63dd2a4406bf7e8e3e1c87c46c00e",
+    "crates/access/src/admin.rs": "0e5a6d16c3b6e2d4e639717582437117af35bea55160ec862c9cbbcfa0bf2045",
+    "crates/access/src/service.rs": "f9a6e3d21c0fa19c1d8923da423fdcd9421e166907bd3734cdb8ecc1ec8aaa3a",
+    "crates/plugin-host/src/builtins.rs": "9d36feceb1952bbd3323b6dec9e9241954052527a2b6139a80530553bf157665",
+    "crates/plugin-host/src/admin.rs": "97a690069f3257a73782d485ae18058b9e4c0ec485c6ad456798bf2fad4aff9f",
+    "crates/control-plane/tests/support/allowance_preview_races.rs": "ded7ea9a5a6d8b13086f728cf04b26a84b21f24d6d24a9239c9f6c811b7f8e53",
+    "crates/control-plane/tests/support/native_token_lock.rs": "239b05fd6fa11f3db231ebb9ac054189699ba0fb46ec76bd507e6b4af12549f8",
+    "crates/oauth/src/service.rs": "34f31794fda22ecbc39df12f8d175691ca6920f733aa73f275ffca37bd26d541",
+    "crates/persistence/migrations/0054_source_recovery_fences.sql": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+    "Cargo.lock": "c6f2848cdeeeb1f63ebf38bf9c8faba12cbb9247b336c1b999427e643901a576"
+  },
+  "sourceAggregateSHA256": "0f4cbaf25e4d64dddef5cbbc3fb2966dfe557f2a7ddf00460b7f6678f64da9aa",
+  "reviewFinding": {
+    "priority": "P2",
+    "scope": "Preview may change installation operator context after final allowance check and before commit; per-customer and auth FOR SHARE locks do not fence absent/new preview rows",
+    "response": "One exclusive business transaction session-context lock shared by allowance read/write/replay and preview enter/exit; identify then release initial auth before lock wait; fresh retained authority after lock through business commit. Builtin activation participates before retained auth/global installation lock. No new public API/dependency/migration/OAuth change."
+  },
+  "lock": {
+    "sql": "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
+    "parameter": "native-session-context:{actual native session ID}",
+    "salt": 0,
+    "transaction": "business",
+    "order": [
+      "initial verified identification auth transaction released",
+      "signed business transaction/session fence",
+      "fresh retained native/browser authentication",
+      "mapped operator and customer/plan/subscription/receipt locks or builtin installation locks",
+      "final current authority",
+      "business commit releases session fence",
+      "auth commit"
+    ]
+  },
+  "observedAccess": {
+    "candidateDirectory": "/tmp/webdock-allowance-r2-green-q_11alh1",
+    "binarySHA256": "b481b18d7105f6a28e2f7557ea3087d2fb4b0e73b6c69b4d9e1f0a905a837cbb",
+    "manifestSHA256": "dd314c0a616168e00111dd887fc65a5e169814edbbc8a541b6c61c956e55b000",
+    "logSHA256": "bff9f23b39b6eaafbc0fb0dc430b6c90fa514ee4998f70c37c641bafb39a69e1",
+    "actualCases": 12,
+    "testSummary": "1 passed,0 failed;26.87s",
+    "caseMatrix": "ReadOnly/Owner x write/replay/GET x allowance-first success/preview-first deny. Actual two Registry customers, native password/TOTP/PKCE, ordinary row barriers and pg_blocking_pids, no production hooks/interception",
+    "retainedConfigFailure": "After initial browser resolution, active client protected configuration changes while request waits for session fence; post-fence revalidation503, source unchanged; fresh genuine PKCE returns retained receipt",
+    "proofLimit": "Missing serialization RED executed before fix, not exact post-final-check stale-commit exploit. Aborted auth-transaction injection not performed. Core/physical Mail admission not proved.",
+    "cleanupIndependentlyVerifiedByRoot": {
+      "container": {
+        "id": "89e89c1aa80ef0255f85a660b5e9e00f8f6be74fe3258613f748c950938a3385",
+        "absent": true
+      },
+      "volume": {
+        "id": "75ae97f748ea06343aaaf74f3c3e09656321a03dd39cfc49b78b209719d7003a",
+        "absent": true
+      },
+      "privateDirectory": {
+        "path": "/tmp/.tmpYITpH0",
+        "absent": true
+      }
+    }
+  },
+  "providerInterruption": {
+    "path": "docs/verification/2026-10-26-session-context-filter-boundary.json",
+    "sha256": "d9bed46b66e38ace96de2ba96927c5d06d960ddfed2e392320f88bd0ed0c09a8",
+    "scope": "Provider stopped child with possible cybersecurity risk after existing baseline Host log written. No retry/rephrasing of additional Host race case; no policy/tier changes."
+  },
+  "builtinDefensiveFix": {
+    "path": "crates/plugin-host/src/builtins.rs",
+    "sha256": "9d36feceb1952bbd3323b6dec9e9241954052527a2b6139a80530553bf157665",
+    "baselineLog": "/tmp/webdock-allowance-r2-green-q_11alh1/builtin-baseline.log",
+    "baselineLogSHA256": "c25bdd93c48bab4a11f91db29e6d88e1cc3a6851f0c7b6a9285b14c47ec191dd",
+    "baselineObservation": "Existing20.78s log: retained activation serialized=false/status200 then assertion failure; Root inspected only",
+    "greenBoundary": "Additional Host race NOT rerun; no runtime race-GREEN claim",
+    "ordinaryFunctionality": {
+      "directory": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/session-context-default-89956f819a3e",
+      "binarySHA256": "cfeced0a6471fb90cc2537e1b3dc0a7340fcec42a8bbc496bcd9286d71c3bbfe",
+      "logSHA256": "4b96c0cebd9d197f558bd72cd374d31117d65188edd37635c45674478f3f0eaf",
+      "summary": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 48.14s"
+      ],
+      "elapsedSeconds": 48.192,
+      "flags": "Existing ordinary builtin bootstrap and native token-lock regression only; all allowance flags removed",
+      "cleanup": {
+        "container": {
+          "id": "42438f53480dc7dfb870d977bdf9be75426112c72576dff76f633d84e6ef6253",
+          "absent": true
+        },
+        "volume": {
+          "id": "6809f50446158740c84697add42eed2b2f1652b4d94daaef1f42b1feb102a8c6",
+          "absent": true
+        },
+        "privateDirectory": {
+          "path": "/tmp/.tmpByMA0x",
+          "absent": true
+        }
+      }
+    }
+  },
+  "quality": {
+    "ordinarySixPackageTests": {
+      "command": "cargo test --offline --locked -p webdock-access -p webdock-plugin-host -p webdock-control-plane -p webdock-persistence -p webdock-hosting -p webdock-mail",
+      "summary": {
+        "passed": 172,
+        "failed": 0,
+        "ignored": 169
+      },
+      "log": "/tmp/webdock-session-context-packages.log",
+      "logSHA256": "8eb218a90375c374c626cbbad5aa7b8386d468a89fd8d1aef8c138bcb30b4b11",
+      "scope": "Ordinary suites only; ignored/provider fixtures are not counted as executed"
+    },
+    "scopedLibTests": {
+      "command": "cargo test --offline --locked -p webdock-plugin-host -p webdock-control-plane --lib",
+      "passed": 57,
+      "failed": 0,
+      "logSHA256": "ea3bba817fabb958305de5daf44d0cd3227f7a8c07c84b06fec4d3a51a006011"
+    },
+    "clippy": {
+      "command": "cargo clippy --offline --locked -p webdock-access -p webdock-plugin-host -p webdock-control-plane --lib --test bootstrap -- -D warnings",
+      "exitCode": 0,
+      "logSHA256": "f1675cc8e1e749523b80905fa1deae67709a8818b3c2031357c4d39eeb5bf850"
+    },
+    "format": {
+      "command": "cargo fmt --all -- --check",
+      "exitCode": 0,
+      "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "scopedDiffCheck": "Passed; run again after this documentation write"
+  },
+  "preserved": [
+    "0046\u20130053 frozen migrations",
+    "DRAFT54/55 bytes and root lock",
+    "Root canonical native OAuth locking fix",
+    "No commits/push/production/provider changes",
+    "All old successful and failed fixture evidence and copied candidates",
+    "Mail finite effective readback only; no physical/provider/sender/recovery assertion"
+  ],
+  "next": "NEW independent review2 of Access serialization and defensive builtin participation, then coordinate final55/54 phase and Main recovery. No production/fullRoot/final54 approval."
+}

@@ -1,0 +1,1 @@
+../../plugin-host/migrations/0004_self_service.sql

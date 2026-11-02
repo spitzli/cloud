@@ -1,0 +1,146 @@
+{
+  "scope": "Active authenticated database REST/MCP READ implementation; no-fixture verification only",
+  "sourceSHA256": {
+    "crates/control-plane/src/first_party_mcp.rs": "c486b5b13b95486c2fbd0d5964fa58b33c5c54c78e74846c5ec541d5657c02f7",
+    "crates/control-plane/src/lib.rs": "eba04672b906f4c94050c1426178885d62917bbe986cc42bd2247f282afc11c6",
+    "crates/control-plane/src/resource_databases.rs": "02f1f0527cb60dbcdbb188b843d3059d818b1552a62739eae326244d35bcafd4",
+    "crates/control-plane/src/resource_hosting.rs": "3bd7429aa288e75f08223f693200a3f1806d33f9ff59b805892fede3312ca3b4",
+    "crates/control-plane/tests/database_resource_reads.rs": "8dc530c0df55c4a7efb853d511c511feca97d760d641839b8fad3dab6e99b315",
+    "crates/control-plane/tests/support/database_reads.rs": "c9c3dc806114866f87f81ae29150b4ded706b3b9aa12df52d650c97fcaaa4ec1",
+    "crates/databases/src/lib.rs": "50343de1e79b297169c89c9b62b74ba1abd8b899991575f0dcc9da10e8d3395b",
+    "crates/databases/src/managed-command.schema.json": "f472332595311118c150158ef123cbf4c844c650372702a787115a339f0c7a43",
+    "crates/databases/src/management.rs": "5fd40787e7951f68e0487a8f4d6b2157e4c035aabe29d874ca69ccaedaa2e660",
+    "crates/databases/src/read.rs": "9598ccd28329ab36d35b4f0285fb94cdeea839087f94e8de6e56391fab556e98",
+    "crates/databases/src/service.rs": "bb3830b2eeb9e1e9f32adbd046fc20deda7f5145598da22be0886cc948633703",
+    "crates/databases/src/service/control.rs": "9e2222df7aab42d10cd2ea3862c44e61b56a48d652ae6e99202868eb45366baf",
+    "crates/databases/src/service/read.rs": "b16e095b1f836e668e15c05ae9a4ac8dce23cdcf96a7b1a79a4f32142a0c1e48",
+    "crates/databases/tests/read_contracts.rs": "a72bd1c4e5b37d482e89e40077646ace793782d365328aa245ea622b4fe7933c"
+  },
+  "sourceAggregateSHA256": "ed78e05f7858448dde37d9751e1ef6b73aec2df77ced8877bec60f25adf85885",
+  "aggregateFormat": "SHA256 of path-sorted lines: <hash> two spaces <relativePath> newline",
+  "priorEvidence": "docs/verification/2026-10-26-pg-restore-review2-fixes.json",
+  "priorEvidenceSHA256": "803ee6eca60a05ea58d5344e080ebcbb35637fe3e3871d1e9c31b70e24b0c1f9",
+  "priorReviewedSourcePathsChanged": [
+    "crates/databases/src/lib.rs",
+    "crates/databases/src/managed-command.schema.json",
+    "crates/databases/src/management.rs",
+    "crates/databases/src/service.rs",
+    "crates/databases/src/service/control.rs"
+  ],
+  "restPrefix": "/api/hosting/databases",
+  "getPaths": [
+    "customers/{customerID}/projects",
+    "projects/{projectID}/databases",
+    "{databaseID}",
+    "projects/{projectID}/permissions",
+    "projects/{projectID}/plans",
+    "plans (operator only)",
+    "{databaseID}/backups",
+    "{databaseID}/operations/{operationID}"
+  ],
+  "commandEndpoint": "POST /api/hosting/commands (fixed database READ allowlist only)",
+  "tools": [
+    "list_database_projects",
+    "list_managed_databases",
+    "get_managed_database",
+    "get_database_permissions",
+    "list_database_plans",
+    "get_database_backup_history",
+    "get_database_operation"
+  ],
+  "pagination": {
+    "defaultLimit": 50,
+    "maximumLimit": 100,
+    "order": "ascending immutable numeric IDs",
+    "cursor": "previous nextCursor; positive decimal i64",
+    "envelope": {
+      "items": [],
+      "nextCursor": null
+    },
+    "history": "backups uses the same envelope",
+    "maxResponseBytes": 262144,
+    "oversize": "explicit failure, no hidden truncation"
+  },
+  "authoritySequence": [
+    "business native-session-context:{actualSessionID} shared fence before retained auth",
+    "actual OAuth begin_mcp_authority current native/client/session/access guard; reject registry scope and all previews",
+    "signed business scope for guard principal (never supplied principal/cookie/LocalSession)",
+    "canonical mapped operator auth_subject/role SHARE where operator authority used",
+    "organization/tenant/member SHARE and existing project/customer checks/current org permissions",
+    "guard.verify; business commit while all guards retained"
+  ],
+  "compatibility": [
+    "DatabaseService constructor/execute_managed and Browser StoredAuthority unchanged",
+    "Browser arrays/SDK/Console unchanged",
+    "Strict additive databases.operations.get read command",
+    "All mutations/credential registration/reveal/material/restore excluded; no provider destination/nativeAuthority/desired/lease in read projections",
+    "Public restore disabled; false recovery/null commitments; immutable offers/prices unchanged"
+  ],
+  "tests": {
+    "database": {
+      "passed": 53,
+      "failed": 0,
+      "ignored": 7
+    },
+    "coreLib": {
+      "passed": 43,
+      "failed": 0,
+      "ignored": 0
+    },
+    "http": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 4
+    },
+    "strictClippy": "lib/tests dependency-inclusive -Dwarnings PASS final0.84s; initial7.23s",
+    "formatting": "scoped rustfmt --check skip_children PASS"
+  },
+  "redGreen": [
+    "strict operations.get rejected400 -> accepted read",
+    "read adapter API absent compile error ->3 contract tests pass (not auth proof)",
+    "GET database path rejected by Hosting ->native command mapping passes",
+    "database-only read discovery0 vs7 ->7 fixed tools passes"
+  ],
+  "commands": [
+    "cargo test --offline --locked -p webdock-databases --lib --tests -j 2",
+    "cargo test --offline --locked -p webdock-control-plane --lib --test database_resource_reads --test resource_api -j 2",
+    "cargo clippy --offline --locked -p webdock-databases -p webdock-control-plane --lib --tests -j 2 -- -D warnings"
+  ],
+  "logs": {
+    "privateDirectory": "/tmp/webdock-pg-read-parity-20261026",
+    "sha256": {
+      "contract-red.log": "e80767262580a7e9c80adaa83035c18c8aabeb2817891a089acc9caa100804be",
+      "adapter-red.log": "ecb0122c922909b08df25c0d3d300a70abfb78d18897111f8ac5b77258097fef",
+      "routes-red.log": "0296038ea7ba1cd59572b3d3afa826b8219320d01dd3517a0e459f6feefaa03c",
+      "discovery-red.log": "75994b948be103573b6e71e766a57c7404d2feb25002bd9e1e55301258526ebf",
+      "db-final.log": "5b9b7a2b214e4ec4ddbf41fc0f144d3a30ea1c42bd4d728a32a61d36f8b13d75",
+      "core-final.log": "175d7252baa6572022683cef3f1984fe244ecc1984a9ee330bccbead16a351aa",
+      "clippy-final.log": "cbb9063f4c4acb01bb8dc29def8898b2a250be43cd5b0dbab02e68e9e1c03085"
+    }
+  },
+  "preparedQualification": {
+    "helper": "crates/control-plane/tests/support/database_reads.rs::qualify",
+    "executed": false,
+    "inputs": "fresh genuine Foundation Router/OAuth/MFA cookie/native client + actual installation targets, memory only",
+    "preparedCases": "actual consent/PKCE read and read+write tokens; seven REST/MCP reads each; discovery;10 mutation denials; actual OAuth revoke;4 REST/MCP denials"
+  },
+  "limits": [
+    "No positive token-backed read, ordinary-member RLS/SELECT-lock execution, preview/membership/mapped-role/expiry/revocation-through-commit race or Main overlap run in this stage.",
+    "Prepared helper is typechecked only, requires next fresh owned Foundation/native factory and serialized runtime release.",
+    "No SourceHelper/audit/atomic restore/job claim/lease/promotion/manual-vs-durable or public restore activation;0056 remains external draft only.",
+    "No new fixtures, Docker/PG/S3/services, schema/protobuf/dependency/lock/UI changes. Historical proofs are not new API/native acceptance."
+  ],
+  "cleanup": {
+    "fixturesStarted": 0,
+    "credentialFilesCreated": 0,
+    "listenersStarted": 0,
+    "dockerOrPGActions": 0,
+    "obligations": []
+  },
+  "frozenSHA256": {
+    "Cargo.lock": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+    "external0056Draft": "c862cd756ac6a56642e8d88b271483426fc1d556857131613ad7dba779fca74a",
+    "crates/persistence/migrations/0054_source_recovery_fences.sql": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+    "crates/persistence/migrations/0055_native_operator_allowances.sql": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de"
+  }
+}

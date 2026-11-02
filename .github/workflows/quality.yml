@@ -1,0 +1,80 @@
+# Execution stays disabled until the operator records Blacksmith qualification.
+# See webdock/tools/plugin-ci/BLACKSMITH.md; runner labels alone do not select a region.
+name: Native quality
+
+# Checks handle public platform source only, with no deployment/tenant credentials.
+# Customer image builds run through Webdock's dedicated K3s backend.
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != ''
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 45
+    # One ephemeral target for workspace and standalone crates; keep full test assertions.
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/target
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "3"
+      RUST_TEST_THREADS: "3"
+    steps:
+      - name: Require reviewed Blacksmith execution
+        shell: bash
+        env:
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+        run: |
+          set -euo pipefail
+          case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac
+          test "$BLACKSMITH_REGION" = "$QUALIFIED_BLACKSMITH_REGION"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.21.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - name: Install native check prerequisites
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends protobuf-compiler pkg-config libssl-dev python3-yaml
+          curl --fail --silent --show-error --location https://get.helm.sh/helm-v3.21.0-linux-amd64.tar.gz --output "$RUNNER_TEMP/helm.tar.gz"
+          printf '%s  %s\n' '0093eb572e3d2380f094df162ddb525e219249de88957afe24cfbb19632acd36' "$RUNNER_TEMP/helm.tar.gz" | sha256sum --check -
+          tar -xzf "$RUNNER_TEMP/helm.tar.gz" -C "$RUNNER_TEMP" linux-amd64/helm
+          sudo install -m 0755 "$RUNNER_TEMP/linux-amd64/helm" /usr/local/bin/helm
+      - name: Check isolated runner tooling
+        run: |
+          bun --version
+          cargo --version
+          protoc --version
+          helm version --short
+          python3 -c 'import yaml'
+          df -h "$RUNNER_TEMP"
+          df -i "$RUNNER_TEMP"
+      - name: Install locked frontend dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+      - name: Install browser for isolated UI fixtures
+        working-directory: apps/console
+        run: bunx playwright install --with-deps chromium
+      - name: Enforce native quality and local tests
+        run: bun run quality
+      - name: Verify native deployment manifests and probe routing
+        run: bun run test:distribution
+      - name: Report final CI disk usage
+        if: always()
+        run: |
+          df -h "$RUNNER_TEMP"
+          df -i "$RUNNER_TEMP"
+          if [ -d "$CARGO_TARGET_DIR" ]; then du -sh "$CARGO_TARGET_DIR"; fi

@@ -1,0 +1,9 @@
+{
+  "secret": "fixture-legacy-environment-secret-32-bytes",
+  "appID": "123",
+  "values": {
+    "TOKEN": "first\nsecond",
+    "UNICODE": "é-💡"
+  },
+  "sealed": "v1.BwcHBwcHBwcHBwcH.aAHj91ANJwIY-bByN_v3xQ.Rzaz9K8f1Vq4kWldJ7PEji9jEDNqYlfaw-gWBflnzZOg3RDtwBnyEWlkP3tm"
+}

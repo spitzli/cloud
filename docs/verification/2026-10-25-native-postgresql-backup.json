@@ -1,0 +1,1653 @@
+{
+  "observedAt": "2026-10-25T11:39:53.497873+00:00",
+  "status": "native-implementation-and-connected-local-recovery-qualified",
+  "productionQualified": false,
+  "operatorApprovedProductionSigner": false,
+  "connectedCoreGrpcNativeRestoreQualified": true,
+  "scope": "Dedicated PostgreSQL only; no commits/delegation/production/Wasabi/retained-service mutations or old-data migration. Existing MinIO preserved. No build caches added.",
+  "changedPaths": [
+    "crates/agent-protocol/src/database.rs",
+    "crates/agent-protocol/tests/database_backup.rs",
+    "crates/databases/src/managed-command.schema.json",
+    "crates/databases/src/management.rs",
+    "crates/databases/src/service.rs",
+    "crates/databases/src/service/backups.rs",
+    "crates/databases/src/service/agent.rs",
+    "crates/databases/src/service/agent/completion.rs",
+    "crates/databases/src/service/capacity.rs",
+    "crates/databases/src/service/control.rs",
+    "crates/databases/tests/backup_contracts.rs",
+    "crates/databases/tests/persistence.rs",
+    "crates/agent/src/database.rs",
+    "crates/agent/src/database/backup.rs",
+    "crates/agent/src/database/backup-digest.sql",
+    "crates/agent/src/database/executor.rs",
+    "crates/agent/src/database/lifecycle.rs",
+    "crates/agent/src/database/manifests.rs",
+    "crates/agent/src/database/observations.rs",
+    "crates/agent/tests/database_runtime.rs",
+    "crates/agent/tests/support/database_management.rs",
+    "crates/agent-control/tests/database_delivery.rs",
+    "crates/hosting/src/observation.schema.json",
+    "crates/persistence/migrations/0048_database_backups.sql",
+    "infra/postgres/backup/qualification.py",
+    "infra/postgres/backup/qualification_core.py",
+    "infra/postgres/backup/qualification_admission.py",
+    "infra/postgres/backup/qualification_test.py",
+    "infra/postgres/backup/qualification_README.md",
+    "docs/operations/managed-postgresql.md",
+    "docs/verification/2026-10-25-native-postgresql-backup.json",
+    "crates/databases/src/lib.rs",
+    "crates/databases/src/backup-status.schema.json",
+    "crates/databases/src/service/maintenance.rs",
+    "crates/databases/tests/support/connected_backup.rs",
+    "crates/agent-control/tests/database_backup_connected.rs",
+    "infra/postgres/backup/qualification_connected.py",
+    "infra/postgres/backup/qualification_tls_proxy.py"
+  ],
+  "narrowOutsidePrimaryScope": [
+    "crates/agent/src/database.rs: optional operator backup runtime config",
+    "crates/hosting/src/observation.schema.json: databaseBackupVersion capability only",
+    "crates/agent-control/tests/database_delivery.rs: new optional completion-proof field",
+    "crates/agent/tests/support/database_management.rs: new optional proof/material fields",
+    "crates/agent-control/tests/database_backup_connected.rs: database-only integration caller, implementation remains under crates/databases/tests/support"
+  ],
+  "provenance": {
+    "publicPin": "9a037db0b52fa7b4fb4032a882d9d7ebbfa82c527e2a9fa5367533092214ef6a",
+    "sourceCommit": "6216b7dd552f389952d3de77712d9522a79d9548",
+    "pluginManifest": "sha256:7868c4bfa3635cafda00b150f18949789d40f151b3463a7e958385543d1512e9",
+    "sidecarManifest": "sha256:696e02ed0681feeb2440d6ecf5000bbee8c48164ed8c95a8e7c9bfa03adb761c",
+    "trust": "LOCAL FIXTURE ONLY; both imported from the verified source-built OCI bundle"
+  },
+  "implementation": [
+    "Operator-approved durable Core grant with installation/customer/project/source UID and immutable archive/serverName/destination/credential/recovery bindings",
+    "RLS, immutable audit/history, revision/generation/lease/UID/capability fences; native background observation without fabricated sessions",
+    "Schedule suspension, WAL archiving and retention deletion remain independent; revocation effective only after observed applied suspension",
+    "Completed CNPG Backup proof rather than upload acknowledgement",
+    "Exact base/time/numeric timeline/read-only recovery into an unused accepted fresh Dedicated target; source volume held",
+    "Encrypted historical password versions; native database/role identity remapping; expected SQL data hash, product SQL and direct/pooler TLS checks before readiness",
+    "Declared CPU/RAM/ephemeral/storage recovery/sidecar peak reservation, egress and supplemental sidecar admission renderer",
+    "Immutable old no-backup offers preserved; Shared recovery and clone remain unavailable",
+    "Backup capability advertised only after observed pinned runtime and supplemental admission; Core requires databaseBackupVersion=1"
+  ],
+  "results": {
+    "fixtureOnly": true,
+    "pitr": {
+      "sourceUnavailable": true,
+      "A_present": true,
+      "B_absent": true,
+      "dataHashMatches": true,
+      "baseBackupID": "20261025T092229",
+      "targetTime": "2026-10-25 09:23:46.026221+00",
+      "timeline": 1,
+      "clusterReadySeconds": 59.04,
+      "productRtoSeconds": 64.553,
+      "rtoIncludes": "new bounded volume, material, recovery, hash, direct/pooled SQL, verify-full TLS"
+    },
+    "rolesAndPasswordVersionRecovered": true,
+    "directAndPoolerSQL": true,
+    "sourceUIDPreserved": true,
+    "unforcedCrashRPO": {
+      "acknowledgedCommits": 30,
+      "recoveredLastSequence": 30,
+      "lostAcknowledgedCommits": 0,
+      "acknowledgedTailSeconds": 0.0,
+      "lastRecoveredCommitAgeAtCrashSeconds": 0.909984,
+      "restoreSeconds": 49.217,
+      "finalWalSwitch": false,
+      "sourceKilledBeforeFencing": true,
+      "fixtureOnly": true
+    },
+    "faults": {
+      "foreignArchiveRejected": true,
+      "recoveryCredentialCannotWrite": true,
+      "revokedRecoveryCredentialRejected": true,
+      "recoveryCredentialResumed": true,
+      "missingWalRejected": true,
+      "walRecoveredAfterRepair": true,
+      "boundedFilesystemENOSPC": {
+        "volumeBytes": 1610612736,
+        "writtenBeforeENOSPC": 1528823808
+      }
+    },
+    "schedule": {
+      "installedRBACRecurrenceWithoutSession": true,
+      "completedBaseBackupID": "20261025T094200",
+      "suspendObservedUID": "ccfff37a-ccd1-4516-bd56-a3c9ed397cdb",
+      "suspendObservedResourceVersion": "7111",
+      "noNewBackupsAfterSuspensionSeconds": 25,
+      "restartableSidecarPinnedAndBounded": true,
+      "fixtureCronOnly": "*/10 * * * * *",
+      "coreProductSchedule": "daily six-field schedule"
+    },
+    "tlsVerifyFullDirectAndPooler": true,
+    "newProductIdentityPreservesRolesScramAndData": true
+  },
+  "measurementBoundaries": [
+    "All timing and RPO values are small synthetic local fixture measurements, not production SLOs or a guaranteed recovery window.",
+    "Earlier component run: The 64.553-second timer includes fresh bounded-volume/material creation, real CNPG recovery, hashes and direct/pooled SQL with verify-full TLS. Logical identity remapping was independently verified after that timed run.",
+    "Earlier component run: Fixture PostgreSQL: 250m CPU/512Mi memory; Barman requests 100m/128Mi and limits 500m/256Mi; ephemeral resources are bounded. This does not qualify all native tariff/resource profiles.",
+    "Earlier component run: S3 fixture uses the existing private MinIO HTTP endpoint reachable from the new node. Native product contracts require approved HTTPS endpoints; HTTPS provider transport is not established by this fixture.",
+    "Earlier component run: Foreign archive, revoked/read-only keys and missing-WAL failures are real Barman/S3 command tests; missing WAL was not a separate complete negative CNPG restore.",
+    "Earlier component PITR 64.553-second and unforced 30/30 crash RPO samples remain separate historical measurements; neither is relabeled as connected.",
+    "Connected Core restore request to native SQL/product readiness: 78.22055717 seconds; accepted response to readiness: 78.20644682 seconds; fresh target offer/order through native readiness: 78.27607731 seconds. Timers include Core reservation, authenticated RPC, fresh bounded storage, provision/replay, identity remap, expected hash, direct/pooler TLS, authenticated SQL/product rollback and Core completion.",
+    "The additional independent A/B and Core state assertions finished 78.297858054 seconds after the restore request; this is a later endpoint than the native-readiness timer, not an inconsistent start time.",
+    "The timed path includes a negative capacity preflight before acceptance and foreign-archive RPC fencing after acceptance. The earlier faulted target is a resumed operation and has no clean RTO claim.",
+    "Timed recovery hardware is the owned 6 CPU / 8 GiB node with source and fault-recovered target reservations held; Core uses a separate 2 CPU / 1 GiB fixture. Images/operators were warm; cluster preparation and image construction are excluded. One app table, one recovered row, logical database 8,083,135 bytes; 1.5 GiB independent volume per installation.",
+    "The source preparation initially used 4 CPUs / 6 GiB. Holding three native peak reservations under 20 percent node headroom required the explicitly verified 6 CPU / 8 GiB limit. PostgreSQL 250m/512Mi, Barman 100m/256Mi; no production resource profile or SLO is implied.",
+    "S3 client HTTPS is verified through an owned TLS TCP bridge to existing private HTTP MinIO. This proves the native custom-CA/client boundary, not Wasabi or production-provider transport. Python 3.14 strict X.509 rejected the original fixture CA lacking keyUsage; future prepares add the extension and the revised CA profile passed strict verification and wrong-IP rejection.",
+    "No new crash RPO guarantee is inferred from PITR. This connected fixture uses no final forced WAL switch; the retained 30/30 unforced crash sample remains the RPO evidence.",
+    "Retention configuration authority was independently observed; aged-backup deletion, notifications and provider credential rotation remain unqualified."
+  ],
+  "authorityFixture": [
+    "Grant execution continues after the initiating session is really expired",
+    "Revocation returns pending; stale old lease is rejected",
+    "Only current agent observation of the applied schedule revision marks revocation effective",
+    "Insufficient ephemeral recovery/sidecar capacity rejects the grant",
+    "Existing native ordering, lifecycle, leases and SQL authority persistence regressions pass"
+  ],
+  "commandsAndResults": [
+    {
+      "command": "python3 infra/postgres/backup/provenance.py verify --output /tmp/webdock-barman-proof-20261025-final --public-key-sha256 9a037db0b52fa7b4fb4032a882d9d7ebbfa82c527e2a9fa5367533092214ef6a --require-images",
+      "result": "passed",
+      "log": "/tmp/webdock-backup-provenance-verify-20261025.log"
+    },
+    {
+      "command": "cargo test --locked -p webdock-agent -p webdock-agent-protocol -p webdock-databases",
+      "result": {
+        "passed": 121,
+        "failed": 0,
+        "ignored": 27
+      },
+      "log": "/tmp/webdock-backup-final-rust-tests.log"
+    },
+    {
+      "command": "cargo clippy --locked -p webdock-agent-protocol -p webdock-databases -p webdock-agent --all-targets -- -D warnings",
+      "result": "passed",
+      "log": "/tmp/webdock-backup-clippy-final.log"
+    },
+    {
+      "command": "cargo test --locked -p webdock-agent-control --test database_delivery",
+      "result": "compiled; existing live restricted-fixture test remains ignored",
+      "log": "/tmp/webdock-backup-delivery-tests.log"
+    },
+    {
+      "command": "python3 -m unittest discover -s infra/postgres/backup -p qualification_test.py -v",
+      "result": "3 passed"
+    },
+    {
+      "command": "python3 -m unittest discover -s infra/postgres/backup -p test_provenance.py -v",
+      "result": "12 passed",
+      "log": "/tmp/webdock-backup-provenance-tests-final.log"
+    },
+    {
+      "command": "python3 -m unittest discover -s infra/postgres -p 'test_*.py' -v",
+      "result": "9 passed",
+      "log": "/tmp/webdock-backup-infra-tests-final.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification_core.py",
+      "result": "fresh native migration and restricted-role persistence/authority fixture passed; exact container removed",
+      "log": "/tmp/webdock-backup-core-fixture-fences-final.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py prepare --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "prepared",
+      "log": "/tmp/webdock-pg-backup-prepare-third.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py qualify --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "initial attempt reached real PITR/hash success; later pooler fixture setup failed and was repaired in subsequent phases",
+      "log": "/tmp/webdock-pg-backup-qualify-third.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py pitr --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "real component fixture passed",
+      "log": "/tmp/webdock-pg-backup-pitr-final.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py tls --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "real component fixture passed",
+      "log": "/tmp/webdock-pg-backup-tls.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py rpo --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "real component fixture passed",
+      "log": "/tmp/webdock-pg-backup-rpo-final.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py faults --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "real component fixture passed",
+      "log": "/tmp/webdock-pg-backup-faults.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py schedule --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "real component fixture passed",
+      "log": "/tmp/webdock-pg-backup-schedule.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py full_pitr --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "real component fixture passed",
+      "log": "/tmp/webdock-pg-backup-full-product-rto-clean.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py rename --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "real component fixture passed",
+      "log": "/tmp/webdock-pg-backup-identity-final.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification.py cleanup --output /tmp/webdock-pg-backup-qualification-20261025-third",
+      "result": "real component fixture passed",
+      "log": "/tmp/webdock-pg-backup-cleanup-final.log"
+    },
+    {
+      "command": "cargo test --locked -p webdock-hosting --test contracts",
+      "result": "passed; database-specific capability remains optional for old observations",
+      "log": "/tmp/webdock-backup-hosting-contracts.log"
+    },
+    {
+      "command": "cargo test --locked -p webdock-agent --test database_runtime",
+      "result": "6 passed; 1 existing privileged Kind fixture ignored",
+      "log": "/tmp/webdock-backup-native-final-tests.log"
+    },
+    {
+      "command": "cargo test --locked -p webdock-agent-protocol -p webdock-databases -p webdock-agent",
+      "result": {
+        "passed": 125,
+        "failed": 0,
+        "ignored": 27
+      },
+      "log": "/tmp/webdock-backup-connected-final-tests.log"
+    },
+    {
+      "command": "cargo clippy --locked -p webdock-agent-protocol -p webdock-databases -p webdock-agent --all-targets -- -D warnings",
+      "result": "passed",
+      "log": "/tmp/webdock-backup-connected-final-clippy.log"
+    },
+    {
+      "command": "cargo clippy --locked -p webdock-agent-control --test database_backup_connected -- -D warnings",
+      "result": "passed",
+      "log": "/tmp/webdock-backup-connected-caller-final-clippy.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification_core.py",
+      "result": "passed: fresh offline migration, restricted-role lifecycle, lease/session/revocation and actual public-status schema regressions; exact fixture removed",
+      "log": "/tmp/webdock-backup-connected-core-final.log"
+    },
+    {
+      "command": "python3 -m unittest discover -s infra/postgres/backup -p qualification_test.py -v",
+      "result": "3 passed",
+      "log": "/tmp/webdock-backup-connected-python-tests.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification_connected.py prepare --output /tmp/webdock-connected-backup-20261025-r4",
+      "result": "fresh node, restricted Core roles, real operator/admission/TLS setup",
+      "log": "/tmp/webdock-connected-prepare-r4.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification_connected.py backup --output /tmp/webdock-connected-backup-20261025-r4",
+      "result": "passed after documented fixture resume; all readiness evidence is stored native Core/gRPC receipts",
+      "log": "/tmp/webdock-connected-backup-r4b.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification_connected.py archive_core --output /tmp/webdock-connected-backup-20261025-r4",
+      "result": "source Core and original TLS issuer removed; private backup/identity bundle retained",
+      "log": "/tmp/webdock-connected-archive-r4.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification_connected.py recover_core --output /tmp/webdock-connected-backup-20261025-r4",
+      "result": "fresh Core and TLS identity recovered; pgcrypto ownership correction documented separately",
+      "log": "/tmp/webdock-connected-recover-r4.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification_connected.py restore --output /tmp/webdock-connected-backup-20261025-r4",
+      "result": "passed: real disabled-key failure retained, operator reconciliation completed, independent clean timed target verified",
+      "log": "/tmp/webdock-connected-restore-r4g.log"
+    },
+    {
+      "command": "python3 infra/postgres/backup/qualification_connected.py cleanup --output /tmp/webdock-connected-backup-20261025-r4",
+      "result": "passed; exact absence independently checked",
+      "log": "/tmp/webdock-connected-cleanup-r4.log"
+    },
+    {
+      "command": "supplemental curl CA/anonymous-object checks, real TLS Barman foreign-archive restore, strict revised-CA verification",
+      "result": "trusted CA succeeds; untrusted CA rejected; existing anonymous object 403; foreign restore rejected; revised fixture CA strict verification passes and wrong IP fails"
+    }
+  ],
+  "cleanup": {
+    "errors": [],
+    "ownedResourcesRemaining": [],
+    "existingMinioPreserved": true,
+    "fixtureCredentialsDestroyed": true,
+    "ownedLoopVolumesDetached": 10,
+    "ownedClusterRemoved": "wd-pg-backup-f521ececbe7d33fa",
+    "existingMinioService": "webdock-dev-minio-1",
+    "existingMinioContainerIdentityPreserved": true,
+    "ownedS3BucketUsersPoliciesRemoved": true,
+    "coreDatabaseFixtureContainersRemoved": true,
+    "sourceProvenanceImagesAndArtifactsRetained": true
+  },
+  "privateDiagnosticsDirectory": "/tmp/webdock-connected-backup-20261025-r4",
+  "resolvedEngineeringFailures": [
+    "Cached pilot image did not carry the current Dockerfile PATH; explicit /bin/aux PATH and bundled k3s binaries used on a newly created node",
+    "Explicit API endpoint /32 replaced an incorrect fixture network assumption",
+    "Missing loop device nodes created only inside the owned node; existing volume initialization rejected; all ten owned attachments detached at cleanup",
+    "Pooler bootstrap-controller requests/limits supplied and actual endpoint readiness retried",
+    "TLS pooler connected by its ClusterIP with the verified postgres-rw certificate hostname; no TLS downgrade",
+    "Crash sample repeated with source force-killed before fencing, avoiding a possible graceful fencing flush",
+    "Barman CLI source URL trailing slash normalized before MinIO fault checks",
+    "Restore identity remap terminates only old database connections in the new installation before renaming",
+    "Strict backup capability added so old database agents cannot receive new backup work",
+    "Native backup observer rejected Kubernetes empty continuation strings; regression now distinguishes empty completion from a real next page.",
+    "128 MiB native sidecar OOM-killed during actual scheduled base backup; new grants reserve and limit 256 MiB, verified by successful scheduled/on-demand backups.",
+    "Pending replay lease renewal was absent; only a currently authorized unexpired claim now renews within its final minute, without changing generation/token.",
+    "Restore FOR SHARE on immutable backup evidence invoked missing UPDATE RLS and hid the completed base; only the mutable policy is locked now.",
+    "Expired restore reconciliation skipped configuration; unfinished recovery now returns to guarded configuration before SQL/product observation.",
+    "CNPG OPERATOR_IMAGE_NAME must carry the pinned operator digest so generated bootstrap containers satisfy admission.",
+    "Fixture native storage requires complete util-linux/e2fsprogs paths; copied exact host utilities/libraries into the owned node, with no provenance image changes.",
+    "Debug connected fixture requires 16 MiB thread stacks.",
+    "Imported Barman sidecar was garbage-collected after source hibernation; verified source bundle is reimported and CRI-pinned in the owned node.",
+    "Core pg_dump does not retain changed pgcrypto extension-member ownership; separate inventory added, diagnostic recovery used the pinned bootstrap invariant after source destruction.",
+    "Stale callback assertion corrected: retirement acknowledgment drains custody without applying obsolete evidence or renewing execution."
+  ],
+  "remainingScope": [
+    "Production operator-approved image trust, install/RBAC/admission review and resource-profile qualification; no production activation performed",
+    "An atomic restore-order flow; current restore refuses an already claimed/provisioned target and supports the same project/cluster only",
+    "Large-database streaming/integrity verification; current SQL digest sorts/aggregates under a statement timeout",
+    "Recurring failure notifications, broader external endpoint tests, provider HTTPS/Wasabi compatibility, measured recovery-window and RPO/RTO commitments",
+    "Shared backup semantics, backup-based clone, old-data migration and public offer/UI activation remain outside this milestone",
+    "Coordinate policy suspension before database-module/customer/project deactivation; automatic lifecycle-triggered cancellation is not qualified by these tests.",
+    "Production operator-approved signer/image trust and registry delivery, actual private HTTPS S3 destination/IAM with independent recovery and retention rights, and independently held production key/identity custody inputs are still required; fixture identities are not production trust.",
+    "Provider credential rotation and aged-backup retention deletion are not qualified by this connected drill."
+  ],
+  "connectedQualification": {
+    "fixtureOnly": true,
+    "resumedAfterTransportAssertionCorrection": true,
+    "originalOfferSnapshotUnchanged": true,
+    "offerSnapshotSHA256": "f45911906d064a88e07f5554513b81a046d8a1301058c6046541a2de17ac95b8",
+    "connectedCreate": {
+      "resumedStoredNativeReceipt": true,
+      "proof": {
+        "state": "ready",
+        "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+        "revision": 1,
+        "copySHA256": null,
+        "databaseID": "107791450736959488",
+        "endpointReady": true,
+        "installationID": "107791450707599360"
+      },
+      "spec": {
+        "phase": "observe",
+        "action": "create",
+        "backend": {
+          "id": "107791450707599360",
+          "host": "db-107791450707599360.fixture.test",
+          "kind": "dedicated",
+          "node": "backup-qualification",
+          "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+          "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "revision": 1,
+          "namespace": "wd-db-107791450707599360",
+          "resources": {
+            "memoryBytes": 536870912,
+            "volumeBytes": 1610612736,
+            "cpuMillicores": 250
+          },
+          "directPort": 32000,
+          "pooledPort": 32001
+        },
+        "members": [
+          {
+            "id": "107791450736959488",
+            "enabled": true,
+            "projectID": "107791450426580992",
+            "databaseName": "db_107791450736959488"
+          }
+        ],
+        "version": 1,
+        "database": {
+          "id": "107791450736959488",
+          "kind": "dedicated",
+          "name": "db_107791450736959488",
+          "revision": 1,
+          "connectionLimit": 10,
+          "credentialRevision": 1
+        },
+        "revision": 1,
+        "clusterID": "107791449457696768",
+        "migration": null,
+        "operationID": "107791450757931008",
+        "previousPodUID": null,
+        "agentGeneration": 1,
+        "operationGeneration": 1
+      }
+    },
+    "connectedPolicy": {
+      "spec": {
+        "phase": "observe",
+        "action": "configureBackup",
+        "backup": {
+          "id": "107791696003080192",
+          "sidecar": {
+            "memoryBytes": 268435456,
+            "cpuMillicores": 100,
+            "ephemeralBytes": 268435456
+          },
+          "revision": 1,
+          "schedule": "0 47 10 * * *",
+          "projectID": "107791450426580992",
+          "suspended": false,
+          "customerID": "107791450413998080",
+          "walEnabled": true,
+          "destination": {
+            "id": "107791695977914368",
+            "bucket": "wd-pg-backup-b37ff8e3db7372f0",
+            "region": "us-east-1",
+            "serverName": "wd-107791450707599360-107791696003080192",
+            "archivePath": "postgresql/107791450413998080/107791450426580992/107791450707599360/107791696003080192",
+            "endpointURL": "https://192.168.16.3:9443",
+            "credentialID": "107791695977914369",
+            "keyRecoveryID": "110",
+            "credentialRevision": 1,
+            "recoveryCredentialID": "107791695982108672",
+            "recoveryCredentialRevision": 1
+          },
+          "recoveryJob": {
+            "memoryBytes": 536870912,
+            "cpuMillicores": 500,
+            "ephemeralBytes": 536870912
+          },
+          "retentionDays": 30,
+          "sourceCnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "installationID": "107791450707599360",
+          "retentionDelete": false,
+          "resourceRevision": 1
+        },
+        "backend": {
+          "id": "107791450707599360",
+          "host": "db-107791450707599360.fixture.test",
+          "kind": "dedicated",
+          "node": "backup-qualification",
+          "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+          "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "revision": 1,
+          "namespace": "wd-db-107791450707599360",
+          "resources": {
+            "memoryBytes": 536870912,
+            "volumeBytes": 1610612736,
+            "cpuMillicores": 250
+          },
+          "directPort": 32000,
+          "pooledPort": 32001
+        },
+        "members": [
+          {
+            "id": "107791450736959488",
+            "enabled": true,
+            "projectID": "107791450426580992",
+            "databaseName": "db_107791450736959488"
+          }
+        ],
+        "version": 1,
+        "database": {
+          "id": "107791450736959488",
+          "kind": "dedicated",
+          "name": "db_107791450736959488",
+          "revision": 1,
+          "connectionLimit": 10,
+          "credentialRevision": 1
+        },
+        "revision": 1,
+        "clusterID": "107791449457696768",
+        "migration": null,
+        "operationID": "107791696040828928",
+        "previousPodUID": null,
+        "agentGeneration": 1,
+        "operationGeneration": 1
+      },
+      "proof": {
+        "state": "ready",
+        "backup": {
+          "controls": {
+            "schedule": "0 47 10 * * *",
+            "walEnabled": true,
+            "retentionDays": 30,
+            "objectStoreUID": "8406d3aa-f7d9-45e3-b24e-c49acaeb5da0",
+            "retentionDelete": false,
+            "clusterResourceVersion": "1315",
+            "objectStoreResourceVersion": "1290",
+            "scheduledBackupResourceVersion": "1293"
+          },
+          "policyID": "107791696003080192",
+          "revision": 1,
+          "backupUID": null,
+          "suspended": false,
+          "completedAt": null,
+          "baseBackupId": null,
+          "scheduledBackupUID": "6ac58a8b-6c3d-45cb-8d40-df0b2bc34e43"
+        },
+        "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+        "revision": 1,
+        "copySHA256": null,
+        "databaseID": "107791450736959488",
+        "endpointReady": false,
+        "installationID": "107791450707599360"
+      },
+      "action": "configureBackup",
+      "operationID": "107791696040828928",
+      "policyRevision": 1
+    },
+    "connectedScheduledBackup": {
+      "spec": {
+        "phase": "observe",
+        "action": "configureBackup",
+        "backup": {
+          "id": "107791696003080192",
+          "sidecar": {
+            "memoryBytes": 268435456,
+            "cpuMillicores": 100,
+            "ephemeralBytes": 268435456
+          },
+          "revision": 1,
+          "schedule": "0 47 10 * * *",
+          "projectID": "107791450426580992",
+          "suspended": false,
+          "customerID": "107791450413998080",
+          "walEnabled": true,
+          "destination": {
+            "id": "107791695977914368",
+            "bucket": "wd-pg-backup-b37ff8e3db7372f0",
+            "region": "us-east-1",
+            "serverName": "wd-107791450707599360-107791696003080192",
+            "archivePath": "postgresql/107791450413998080/107791450426580992/107791450707599360/107791696003080192",
+            "endpointURL": "https://192.168.16.3:9443",
+            "credentialID": "107791695977914369",
+            "keyRecoveryID": "110",
+            "credentialRevision": 1,
+            "recoveryCredentialID": "107791695982108672",
+            "recoveryCredentialRevision": 1
+          },
+          "recoveryJob": {
+            "memoryBytes": 536870912,
+            "cpuMillicores": 500,
+            "ephemeralBytes": 536870912
+          },
+          "retentionDays": 30,
+          "sourceCnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "installationID": "107791450707599360",
+          "retentionDelete": false,
+          "resourceRevision": 1
+        },
+        "backend": {
+          "id": "107791450707599360",
+          "host": "db-107791450707599360.fixture.test",
+          "kind": "dedicated",
+          "node": "backup-qualification",
+          "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+          "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "revision": 1,
+          "namespace": "wd-db-107791450707599360",
+          "resources": {
+            "memoryBytes": 536870912,
+            "volumeBytes": 1610612736,
+            "cpuMillicores": 250
+          },
+          "directPort": 32000,
+          "pooledPort": 32001
+        },
+        "members": [
+          {
+            "id": "107791450736959488",
+            "enabled": true,
+            "projectID": "107791450426580992",
+            "databaseName": "db_107791450736959488"
+          }
+        ],
+        "version": 1,
+        "database": {
+          "id": "107791450736959488",
+          "kind": "dedicated",
+          "name": "db_107791450736959488",
+          "revision": 1,
+          "connectionLimit": 10,
+          "credentialRevision": 1
+        },
+        "revision": 1,
+        "clusterID": "107791449457696768",
+        "migration": null,
+        "operationID": "107792206458265600",
+        "previousPodUID": null,
+        "agentGeneration": 1,
+        "operationGeneration": 1
+      },
+      "proof": {
+        "state": "ready",
+        "backup": {
+          "controls": {
+            "schedule": "0 47 10 * * *",
+            "walEnabled": true,
+            "retentionDays": 30,
+            "objectStoreUID": "8406d3aa-f7d9-45e3-b24e-c49acaeb5da0",
+            "retentionDelete": false,
+            "clusterResourceVersion": "1626",
+            "objectStoreResourceVersion": "1623",
+            "scheduledBackupResourceVersion": "1532"
+          },
+          "policyID": "107791696003080192",
+          "revision": 1,
+          "backupUID": "874004eb-530a-4663-8835-c0c1e3c3756f",
+          "suspended": false,
+          "completedAt": "2026-10-25T10:47:28Z",
+          "baseBackupId": "20261025T104701",
+          "scheduledBackupUID": "6ac58a8b-6c3d-45cb-8d40-df0b2bc34e43"
+        },
+        "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+        "revision": 1,
+        "copySHA256": null,
+        "databaseID": "107791450736959488",
+        "endpointReady": false,
+        "installationID": "107791450707599360"
+      },
+      "action": "configureBackup",
+      "operationID": "107792206458265600",
+      "policyRevision": 1
+    },
+    "connectedManualBackup": {
+      "spec": {
+        "phase": "observe",
+        "action": "backup",
+        "backup": {
+          "id": "107791696003080192",
+          "sidecar": {
+            "memoryBytes": 268435456,
+            "cpuMillicores": 100,
+            "ephemeralBytes": 268435456
+          },
+          "revision": 1,
+          "schedule": "0 47 10 * * *",
+          "projectID": "107791450426580992",
+          "suspended": false,
+          "customerID": "107791450413998080",
+          "walEnabled": true,
+          "destination": {
+            "id": "107791695977914368",
+            "bucket": "wd-pg-backup-b37ff8e3db7372f0",
+            "region": "us-east-1",
+            "serverName": "wd-107791450707599360-107791696003080192",
+            "archivePath": "postgresql/107791450413998080/107791450426580992/107791450707599360/107791696003080192",
+            "endpointURL": "https://192.168.16.3:9443",
+            "credentialID": "107791695977914369",
+            "keyRecoveryID": "110",
+            "credentialRevision": 1,
+            "recoveryCredentialID": "107791695982108672",
+            "recoveryCredentialRevision": 1
+          },
+          "recoveryJob": {
+            "memoryBytes": 536870912,
+            "cpuMillicores": 500,
+            "ephemeralBytes": 536870912
+          },
+          "retentionDays": 30,
+          "sourceCnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "installationID": "107791450707599360",
+          "retentionDelete": false,
+          "resourceRevision": 1
+        },
+        "backend": {
+          "id": "107791450707599360",
+          "host": "db-107791450707599360.fixture.test",
+          "kind": "dedicated",
+          "node": "backup-qualification",
+          "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+          "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "revision": 1,
+          "namespace": "wd-db-107791450707599360",
+          "resources": {
+            "memoryBytes": 536870912,
+            "volumeBytes": 1610612736,
+            "cpuMillicores": 250
+          },
+          "directPort": 32000,
+          "pooledPort": 32001
+        },
+        "members": [
+          {
+            "id": "107791450736959488",
+            "enabled": true,
+            "projectID": "107791450426580992",
+            "databaseName": "db_107791450736959488"
+          }
+        ],
+        "version": 1,
+        "database": {
+          "id": "107791450736959488",
+          "kind": "dedicated",
+          "name": "db_107791450736959488",
+          "revision": 1,
+          "connectionLimit": 10,
+          "credentialRevision": 1
+        },
+        "revision": 1,
+        "clusterID": "107791449457696768",
+        "migration": null,
+        "operationID": "107792247499530240",
+        "previousPodUID": null,
+        "agentGeneration": 1,
+        "operationGeneration": 1
+      },
+      "proof": {
+        "state": "ready",
+        "backup": {
+          "controls": {
+            "schedule": "0 47 10 * * *",
+            "walEnabled": true,
+            "retentionDays": 30,
+            "objectStoreUID": "8406d3aa-f7d9-45e3-b24e-c49acaeb5da0",
+            "retentionDelete": false,
+            "clusterResourceVersion": "1765",
+            "objectStoreResourceVersion": "1762",
+            "scheduledBackupResourceVersion": "1659"
+          },
+          "policyID": "107791696003080192",
+          "revision": 1,
+          "backupUID": "dd824183-8ef6-40fc-a9c6-31bbfd96dc84",
+          "suspended": false,
+          "completedAt": "2026-10-25T10:48:28Z",
+          "baseBackupId": "20261025T104759",
+          "scheduledBackupUID": "6ac58a8b-6c3d-45cb-8d40-df0b2bc34e43"
+        },
+        "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+        "revision": 1,
+        "copySHA256": null,
+        "databaseID": "107791450736959488",
+        "endpointReady": false,
+        "installationID": "107791450707599360"
+      },
+      "action": "backup",
+      "operationID": "107792247499530240",
+      "policyRevision": 1
+    },
+    "historicalCredentialRevisions": [
+      1,
+      2
+    ],
+    "rotatedCredentials": {
+      "spec": {
+        "phase": "observe",
+        "action": "rotateCredentials",
+        "backend": {
+          "id": "107791450707599360",
+          "host": "db-107791450707599360.fixture.test",
+          "kind": "dedicated",
+          "node": "backup-qualification",
+          "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+          "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "revision": 1,
+          "namespace": "wd-db-107791450707599360",
+          "resources": {
+            "memoryBytes": 536870912,
+            "volumeBytes": 1610612736,
+            "cpuMillicores": 250
+          },
+          "directPort": 32000,
+          "pooledPort": 32001
+        },
+        "members": [
+          {
+            "id": "107791450736959488",
+            "enabled": true,
+            "projectID": "107791450426580992",
+            "databaseName": "db_107791450736959488"
+          }
+        ],
+        "version": 1,
+        "database": {
+          "id": "107791450736959488",
+          "kind": "dedicated",
+          "name": "db_107791450736959488",
+          "revision": 2,
+          "connectionLimit": 10,
+          "credentialRevision": 2
+        },
+        "revision": 2,
+        "clusterID": "107791449457696768",
+        "migration": null,
+        "operationID": "107792451791495168",
+        "previousPodUID": null,
+        "agentGeneration": 1,
+        "operationGeneration": 1
+      },
+      "proof": {
+        "state": "ready",
+        "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+        "revision": 2,
+        "copySHA256": null,
+        "databaseID": "107791450736959488",
+        "endpointReady": true,
+        "installationID": "107791450707599360"
+      },
+      "action": "rotateCredentials",
+      "operationID": "107792451791495168",
+      "policyRevision": null
+    },
+    "independentObservedControls": [
+      {
+        "spec": {
+          "phase": "observe",
+          "action": "configureBackup",
+          "backup": {
+            "id": "107791696003080192",
+            "sidecar": {
+              "memoryBytes": 268435456,
+              "cpuMillicores": 100,
+              "ephemeralBytes": 268435456
+            },
+            "revision": 2,
+            "schedule": "0 47 10 * * *",
+            "projectID": "107791450426580992",
+            "suspended": true,
+            "customerID": "107791450413998080",
+            "walEnabled": true,
+            "destination": {
+              "id": "107791695977914368",
+              "bucket": "wd-pg-backup-b37ff8e3db7372f0",
+              "region": "us-east-1",
+              "serverName": "wd-107791450707599360-107791696003080192",
+              "archivePath": "postgresql/107791450413998080/107791450426580992/107791450707599360/107791696003080192",
+              "endpointURL": "https://192.168.16.3:9443",
+              "credentialID": "107791695977914369",
+              "keyRecoveryID": "110",
+              "credentialRevision": 1,
+              "recoveryCredentialID": "107791695982108672",
+              "recoveryCredentialRevision": 1
+            },
+            "recoveryJob": {
+              "memoryBytes": 536870912,
+              "cpuMillicores": 500,
+              "ephemeralBytes": 536870912
+            },
+            "retentionDays": 30,
+            "sourceCnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+            "installationID": "107791450707599360",
+            "retentionDelete": true,
+            "resourceRevision": 1
+          },
+          "backend": {
+            "id": "107791450707599360",
+            "host": "db-107791450707599360.fixture.test",
+            "kind": "dedicated",
+            "node": "backup-qualification",
+            "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+            "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+            "revision": 1,
+            "namespace": "wd-db-107791450707599360",
+            "resources": {
+              "memoryBytes": 536870912,
+              "volumeBytes": 1610612736,
+              "cpuMillicores": 250
+            },
+            "directPort": 32000,
+            "pooledPort": 32001
+          },
+          "members": [
+            {
+              "id": "107791450736959488",
+              "enabled": true,
+              "projectID": "107791450426580992",
+              "databaseName": "db_107791450736959488"
+            }
+          ],
+          "version": 1,
+          "database": {
+            "id": "107791450736959488",
+            "kind": "dedicated",
+            "name": "db_107791450736959488",
+            "revision": 2,
+            "connectionLimit": 10,
+            "credentialRevision": 2
+          },
+          "revision": 2,
+          "clusterID": "107791449457696768",
+          "migration": null,
+          "operationID": "107792582179823616",
+          "previousPodUID": null,
+          "agentGeneration": 1,
+          "operationGeneration": 1
+        },
+        "proof": {
+          "state": "ready",
+          "backup": {
+            "controls": {
+              "schedule": "0 47 10 * * *",
+              "walEnabled": true,
+              "retentionDays": 30,
+              "objectStoreUID": "8406d3aa-f7d9-45e3-b24e-c49acaeb5da0",
+              "retentionDelete": true,
+              "clusterResourceVersion": "1846",
+              "objectStoreResourceVersion": "1844",
+              "scheduledBackupResourceVersion": "1845"
+            },
+            "policyID": "107791696003080192",
+            "revision": 2,
+            "backupUID": null,
+            "suspended": true,
+            "completedAt": null,
+            "baseBackupId": null,
+            "scheduledBackupUID": "6ac58a8b-6c3d-45cb-8d40-df0b2bc34e43"
+          },
+          "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "revision": 2,
+          "copySHA256": null,
+          "databaseID": "107791450736959488",
+          "endpointReady": false,
+          "installationID": "107791450707599360"
+        },
+        "action": "configureBackup",
+        "operationID": "107792582179823616",
+        "policyRevision": 2
+      },
+      {
+        "spec": {
+          "phase": "observe",
+          "action": "configureBackup",
+          "backup": {
+            "id": "107791696003080192",
+            "sidecar": {
+              "memoryBytes": 268435456,
+              "cpuMillicores": 100,
+              "ephemeralBytes": 268435456
+            },
+            "revision": 3,
+            "schedule": "0 47 10 * * *",
+            "projectID": "107791450426580992",
+            "suspended": true,
+            "customerID": "107791450413998080",
+            "walEnabled": false,
+            "destination": {
+              "id": "107791695977914368",
+              "bucket": "wd-pg-backup-b37ff8e3db7372f0",
+              "region": "us-east-1",
+              "serverName": "wd-107791450707599360-107791696003080192",
+              "archivePath": "postgresql/107791450413998080/107791450426580992/107791450707599360/107791696003080192",
+              "endpointURL": "https://192.168.16.3:9443",
+              "credentialID": "107791695977914369",
+              "keyRecoveryID": "110",
+              "credentialRevision": 1,
+              "recoveryCredentialID": "107791695982108672",
+              "recoveryCredentialRevision": 1
+            },
+            "recoveryJob": {
+              "memoryBytes": 536870912,
+              "cpuMillicores": 500,
+              "ephemeralBytes": 536870912
+            },
+            "retentionDays": 30,
+            "sourceCnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+            "installationID": "107791450707599360",
+            "retentionDelete": false,
+            "resourceRevision": 1
+          },
+          "backend": {
+            "id": "107791450707599360",
+            "host": "db-107791450707599360.fixture.test",
+            "kind": "dedicated",
+            "node": "backup-qualification",
+            "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+            "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+            "revision": 1,
+            "namespace": "wd-db-107791450707599360",
+            "resources": {
+              "memoryBytes": 536870912,
+              "volumeBytes": 1610612736,
+              "cpuMillicores": 250
+            },
+            "directPort": 32000,
+            "pooledPort": 32001
+          },
+          "members": [
+            {
+              "id": "107791450736959488",
+              "enabled": true,
+              "projectID": "107791450426580992",
+              "databaseName": "db_107791450736959488"
+            }
+          ],
+          "version": 1,
+          "database": {
+            "id": "107791450736959488",
+            "kind": "dedicated",
+            "name": "db_107791450736959488",
+            "revision": 2,
+            "connectionLimit": 10,
+            "credentialRevision": 2
+          },
+          "revision": 2,
+          "clusterID": "107791449457696768",
+          "migration": null,
+          "operationID": "107792603746934784",
+          "previousPodUID": null,
+          "agentGeneration": 1,
+          "operationGeneration": 1
+        },
+        "proof": {
+          "state": "ready",
+          "backup": {
+            "controls": {
+              "schedule": "0 47 10 * * *",
+              "walEnabled": false,
+              "retentionDays": 30,
+              "objectStoreUID": "8406d3aa-f7d9-45e3-b24e-c49acaeb5da0",
+              "retentionDelete": false,
+              "clusterResourceVersion": "1863",
+              "objectStoreResourceVersion": "1861",
+              "scheduledBackupResourceVersion": "1862"
+            },
+            "policyID": "107791696003080192",
+            "revision": 3,
+            "backupUID": null,
+            "suspended": true,
+            "completedAt": null,
+            "baseBackupId": null,
+            "scheduledBackupUID": "6ac58a8b-6c3d-45cb-8d40-df0b2bc34e43"
+          },
+          "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "revision": 2,
+          "copySHA256": null,
+          "databaseID": "107791450736959488",
+          "endpointReady": false,
+          "installationID": "107791450707599360"
+        },
+        "action": "configureBackup",
+        "operationID": "107792603746934784",
+        "policyRevision": 3
+      }
+    ],
+    "revocation": {
+      "seconds": 5.250559623,
+      "stages": [
+        {
+          "phase": "Apply",
+          "seconds": 0.1712046
+        },
+        {
+          "phase": "Configure",
+          "seconds": 2.691716783
+        },
+        {
+          "phase": "Observe",
+          "seconds": 5.028361377
+        }
+      ],
+      "proof": {
+        "installationID": "107791450707599360",
+        "databaseID": "107791450736959488",
+        "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+        "revision": 2,
+        "state": "ready",
+        "endpointReady": false,
+        "copySHA256": null,
+        "backup": {
+          "policyID": "107791696003080192",
+          "revision": 5,
+          "scheduledBackupUID": "6ac58a8b-6c3d-45cb-8d40-df0b2bc34e43",
+          "suspended": true,
+          "controls": {
+            "schedule": "0 47 10 * * *",
+            "walEnabled": false,
+            "retentionDelete": false,
+            "retentionDays": 30,
+            "scheduledBackupResourceVersion": "2356",
+            "clusterResourceVersion": "2357",
+            "objectStoreUID": "8406d3aa-f7d9-45e3-b24e-c49acaeb5da0",
+            "objectStoreResourceVersion": "2355"
+          },
+          "backupUID": null,
+          "baseBackupId": null,
+          "completedAt": null
+        }
+      },
+      "spec": {
+        "version": 1,
+        "operationID": "107792625683144704",
+        "agentGeneration": 1,
+        "operationGeneration": 1,
+        "clusterID": "107791449457696768",
+        "action": "configureBackup",
+        "phase": "observe",
+        "revision": 2,
+        "previousPodUID": null,
+        "backend": {
+          "id": "107791450707599360",
+          "kind": "dedicated",
+          "namespace": "wd-db-107791450707599360",
+          "node": "backup-qualification",
+          "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+          "revision": 1,
+          "cnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "resources": {
+            "cpuMillicores": 250,
+            "memoryBytes": 536870912,
+            "volumeBytes": 1610612736
+          },
+          "host": "db-107791450707599360.fixture.test",
+          "directPort": 32000,
+          "pooledPort": 32001
+        },
+        "database": {
+          "id": "107791450736959488",
+          "kind": "dedicated",
+          "name": "db_107791450736959488",
+          "revision": 2,
+          "credentialRevision": 2,
+          "connectionLimit": 10
+        },
+        "members": [
+          {
+            "id": "107791450736959488",
+            "projectID": "107791450426580992",
+            "databaseName": "db_107791450736959488",
+            "enabled": true
+          }
+        ],
+        "migration": null,
+        "backup": {
+          "id": "107791696003080192",
+          "installationID": "107791450707599360",
+          "customerID": "107791450413998080",
+          "projectID": "107791450426580992",
+          "sourceCnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+          "revision": 5,
+          "resourceRevision": 1,
+          "destination": {
+            "id": "107791695977914368",
+            "endpointURL": "https://192.168.16.3:9443",
+            "region": "us-east-1",
+            "bucket": "wd-pg-backup-b37ff8e3db7372f0",
+            "archivePath": "postgresql/107791450413998080/107791450426580992/107791450707599360/107791696003080192",
+            "serverName": "wd-107791450707599360-107791696003080192",
+            "credentialID": "107791695977914369",
+            "credentialRevision": 1,
+            "recoveryCredentialID": "107791695982108672",
+            "recoveryCredentialRevision": 1,
+            "keyRecoveryID": "110"
+          },
+          "schedule": "0 47 10 * * *",
+          "suspended": true,
+          "walEnabled": false,
+          "retentionDays": 30,
+          "retentionDelete": false,
+          "sidecar": {
+            "cpuMillicores": 100,
+            "memoryBytes": 268435456,
+            "ephemeralBytes": 268435456
+          },
+          "recoveryJob": {
+            "cpuMillicores": 500,
+            "memoryBytes": 536870912,
+            "ephemeralBytes": 536870912
+          }
+        }
+      }
+    },
+    "staleExecutionDeniedAndCallbackRetired": {
+      "status": "failed",
+      "checkpoint": null,
+      "disposition": "obsolete"
+    },
+    "browserExpiredBeforeApply": true,
+    "dailyScheduleObserved": "0 47 10 * * *",
+    "sourceUnavailable": true,
+    "connectedRestore": {
+      "workflowFromTargetOrderSeconds": 78.27607731,
+      "acceptedRestoreThroughProductVerificationSeconds": 78.20644682000001,
+      "restoreReservationAndAcceptanceSeconds": 0.01411035,
+      "targetOrderThroughAcceptanceSeconds": 0.06963049,
+      "execution": {
+        "seconds": 78.191660322,
+        "stages": [
+          {
+            "phase": "Apply",
+            "seconds": 0.151481538
+          },
+          {
+            "phase": "Configure",
+            "seconds": 3.068105557
+          },
+          {
+            "phase": "Observe",
+            "seconds": 77.688373703
+          }
+        ],
+        "proof": {
+          "installationID": "107799636516806656",
+          "databaseID": "107799636533583872",
+          "cnpgUID": "12d16b86-539a-4c33-a38a-dcd7c4e36479",
+          "revision": 1,
+          "state": "ready",
+          "endpointReady": true,
+          "copySHA256": "d3494704aee3bb7fdcd0ab63c93a7fa33615b480448a0fe8a340d8c7a30056ff"
+        },
+        "spec": {
+          "version": 1,
+          "operationID": "107799636642635776",
+          "agentGeneration": 1,
+          "operationGeneration": 1,
+          "clusterID": "107791449457696768",
+          "action": "restore",
+          "phase": "observe",
+          "revision": 1,
+          "previousPodUID": null,
+          "backend": {
+            "id": "107799636516806656",
+            "kind": "dedicated",
+            "namespace": "wd-db-107799636516806656",
+            "node": "backup-qualification",
+            "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+            "revision": 1,
+            "cnpgUID": "12d16b86-539a-4c33-a38a-dcd7c4e36479",
+            "resources": {
+              "cpuMillicores": 250,
+              "memoryBytes": 536870912,
+              "volumeBytes": 1610612736
+            },
+            "host": "db-107799636516806656.fixture.test",
+            "directPort": 32004,
+            "pooledPort": 32005
+          },
+          "database": {
+            "id": "107799636533583872",
+            "kind": "dedicated",
+            "name": "db_107799636533583872",
+            "revision": 1,
+            "credentialRevision": 1,
+            "connectionLimit": 10
+          },
+          "members": [
+            {
+              "id": "107799636533583872",
+              "projectID": "107791450426580992",
+              "databaseName": "db_107799636533583872",
+              "enabled": true
+            }
+          ],
+          "migration": null,
+          "recovery": {
+            "source": {
+              "id": "107791696003080192",
+              "installationID": "107791450707599360",
+              "customerID": "107791450413998080",
+              "projectID": "107791450426580992",
+              "sourceCnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+              "revision": 5,
+              "resourceRevision": 1,
+              "destination": {
+                "id": "107791695977914368",
+                "endpointURL": "https://192.168.16.3:9443",
+                "region": "us-east-1",
+                "bucket": "wd-pg-backup-b37ff8e3db7372f0",
+                "archivePath": "postgresql/107791450413998080/107791450426580992/107791450707599360/107791696003080192",
+                "serverName": "wd-107791450707599360-107791696003080192",
+                "credentialID": "107791695977914369",
+                "credentialRevision": 1,
+                "recoveryCredentialID": "107791695982108672",
+                "recoveryCredentialRevision": 1,
+                "keyRecoveryID": "110"
+              },
+              "schedule": "0 47 10 * * *",
+              "suspended": true,
+              "walEnabled": false,
+              "retentionDays": 30,
+              "retentionDelete": false,
+              "sidecar": {
+                "cpuMillicores": 100,
+                "memoryBytes": 268435456,
+                "ephemeralBytes": 268435456
+              },
+              "recoveryJob": {
+                "cpuMillicores": 500,
+                "memoryBytes": 536870912,
+                "ephemeralBytes": 536870912
+              }
+            },
+            "sourceDatabaseID": "107791450736959488",
+            "baseBackupId": "20261025T104759",
+            "targetTime": "2026-10-25T10:48:29Z",
+            "timeline": 1,
+            "credentialRevision": 1,
+            "verificationSHA256": "d3494704aee3bb7fdcd0ab63c93a7fa33615b480448a0fe8a340d8c7a30056ff"
+          }
+        }
+      },
+      "sourceRuntimeUnavailable": true,
+      "sourceCoreDestroyed": true,
+      "privateRecoveryBundleOnly": true,
+      "historicalCredentialRevision": 1,
+      "sourceLatestCredentialRevision": 2,
+      "wrongMasterKeyRejected": true,
+      "foreignArchiveRPCRejected": true,
+      "capacityRejectedBeforeClaim": true,
+      "A_present": true,
+      "B_absent": true,
+      "targetState": "ready",
+      "request": {
+        "action": "databases.restore",
+        "sourceDatabaseID": "107791450736959488",
+        "restorePointID": "107792441746137088",
+        "targetProjectID": "107791450426580992",
+        "targetOrderID": "107799636529389568",
+        "revision": 2,
+        "credentialRevision": 1,
+        "targetTime": "2026-10-25T10:48:29+00:00",
+        "timeline": 1,
+        "verificationSHA256": "d3494704aee3bb7fdcd0ab63c93a7fa33615b480448a0fe8a340d8c7a30056ff",
+        "name": "Recovered",
+        "idempotencyKey": "connected-restore-accept"
+      },
+      "restoreRequestThroughIndependentAssertionsSeconds": 78.297858054,
+      "restoreRequestThroughNativeProductReadinessSeconds": 78.22055717,
+      "timerBoundaries": {
+        "nativeReadiness": "Native expected hash, owned UID/storage/resources, direct/pooler TLS, authenticated SQL and transactional product probe, then authenticated gRPC Core completion",
+        "independentAssertions": "Additional sentinel A/B query and Core ready/confirmed revision assertion after native readiness",
+        "timedWorkflowChecks": "Includes negative capacity preflight before acceptance and foreign-archive RPC fencing after acceptance; no production SLO"
+      }
+    },
+    "revokedKeyConnectedRestore": {
+      "currentExecutionSeconds": 1.002125594,
+      "resumedEarlierAcceptedRestore": true,
+      "observedFailure": {
+        "providerRejected": true,
+        "observedCoreState": {
+          "state": "needs-reconciliation",
+          "billingStartedAt": null,
+          "restoreOperationID": "107796098252283904"
+        },
+        "failureLogSHA256": "eada66965be45d1f593eaa80a46e064c82557f03e35b15b0c27d75e821daae57",
+        "observation": "Retained sidecar log from the initial connected recovery; no success receipt or billing before rejection"
+      },
+      "eventuallyVerifiedExecution": {
+        "resumedStoredNativeReceipt": true,
+        "proof": {
+          "state": "ready",
+          "cnpgUID": "5ac7ad95-84db-438e-9f34-0e6fc36ad921",
+          "revision": 1,
+          "copySHA256": "d3494704aee3bb7fdcd0ab63c93a7fa33615b480448a0fe8a340d8c7a30056ff",
+          "databaseID": "107796098063540224",
+          "endpointReady": true,
+          "installationID": "107796098042568704"
+        },
+        "spec": {
+          "phase": "observe",
+          "action": "restore",
+          "backend": {
+            "id": "107796098042568704",
+            "host": "db-107796098042568704.fixture.test",
+            "kind": "dedicated",
+            "node": "backup-qualification",
+            "poolID": "1bd81db6-f2af-40ee-89ca-3ce440f491e2",
+            "cnpgUID": "5ac7ad95-84db-438e-9f34-0e6fc36ad921",
+            "revision": 1,
+            "namespace": "wd-db-107796098042568704",
+            "resources": {
+              "memoryBytes": 536870912,
+              "volumeBytes": 1610612736,
+              "cpuMillicores": 250
+            },
+            "directPort": 32002,
+            "pooledPort": 32003
+          },
+          "members": [
+            {
+              "id": "107796098063540224",
+              "enabled": true,
+              "projectID": "107791450426580992",
+              "databaseName": "db_107796098063540224"
+            }
+          ],
+          "version": 1,
+          "database": {
+            "id": "107796098063540224",
+            "kind": "dedicated",
+            "name": "db_107796098063540224",
+            "revision": 1,
+            "connectionLimit": 10,
+            "credentialRevision": 1
+          },
+          "recovery": {
+            "source": {
+              "id": "107791696003080192",
+              "sidecar": {
+                "memoryBytes": 268435456,
+                "cpuMillicores": 100,
+                "ephemeralBytes": 268435456
+              },
+              "revision": 5,
+              "schedule": "0 47 10 * * *",
+              "projectID": "107791450426580992",
+              "suspended": true,
+              "customerID": "107791450413998080",
+              "walEnabled": false,
+              "destination": {
+                "id": "107791695977914368",
+                "bucket": "wd-pg-backup-b37ff8e3db7372f0",
+                "region": "us-east-1",
+                "serverName": "wd-107791450707599360-107791696003080192",
+                "archivePath": "postgresql/107791450413998080/107791450426580992/107791450707599360/107791696003080192",
+                "endpointURL": "https://192.168.16.3:9443",
+                "credentialID": "107791695977914369",
+                "keyRecoveryID": "110",
+                "credentialRevision": 1,
+                "recoveryCredentialID": "107791695982108672",
+                "recoveryCredentialRevision": 1
+              },
+              "recoveryJob": {
+                "memoryBytes": 536870912,
+                "cpuMillicores": 500,
+                "ephemeralBytes": 536870912
+              },
+              "retentionDays": 30,
+              "sourceCnpgUID": "0c0d59af-173e-4849-a27f-5247a1e14fea",
+              "installationID": "107791450707599360",
+              "retentionDelete": false,
+              "resourceRevision": 1
+            },
+            "timeline": 1,
+            "targetTime": "2026-10-25T10:48:29Z",
+            "baseBackupId": "20261025T104759",
+            "sourceDatabaseID": "107791450736959488",
+            "credentialRevision": 1,
+            "verificationSHA256": "d3494704aee3bb7fdcd0ab63c93a7fa33615b480448a0fe8a340d8c7a30056ff"
+          },
+          "revision": 1,
+          "clusterID": "107791449457696768",
+          "migration": null,
+          "operationID": "107796098252283904",
+          "previousPodUID": null,
+          "agentGeneration": 1,
+          "operationGeneration": 2
+        }
+      }
+    },
+    "providerTLS": {
+      "approvedPrivateCAVerified": true,
+      "untrustedCARejected": true,
+      "existingArchiveObjectAnonymousReadRejected403": true,
+      "foreignArchiveRealBarmanRestoreRejected": true,
+      "client": "Native Barman, rustls SQL and supplemental curl; Python 3.14 strict-CA probe rejected the original fixture CA missing keyUsage (new prepares include it)",
+      "scope": "TLS bridge on owned node to existing MinIO; foreign archive probe supplements authenticated RPC fencing"
+    },
+    "workload": {
+      "dataset": {
+        "sentinelRows": 1,
+        "applicationTables": 1,
+        "recoveredRoleCount": 3,
+        "logicalDatabaseBytes": 8083135
+      },
+      "sourceAndTarget": "PostgreSQL 18.6; tiny synthetic A/B PITR fixture; no large workload claim",
+      "postgresCPU": 250,
+      "postgresMemoryBytes": 536870912,
+      "barmanCPU": 100,
+      "barmanMemoryBytes": 268435456,
+      "recoveryJobReservedCPU": 500,
+      "recoveryJobReservedMemoryBytes": 536870912,
+      "perTargetVolumeBytes": 1610612736,
+      "namespacePeakCPU": 1050,
+      "namespacePeakMemoryBytes": 1879048192,
+      "namespacePeakEphemeralBytes": 1342177280,
+      "node": {
+        "cpuMillicores": 6000,
+        "memoryBytes": 8589934592,
+        "reason": "Hold source and fault-recovered target while reserving the independent timed target under 20 percent node headroom"
+      },
+      "coreFixture": {
+        "cpuMillicores": 2000,
+        "memoryBytes": 1073741824
+      }
+    },
+    "authority": {
+      "core": "real DatabaseService operations with restricted auth/business/worker roles",
+      "operator": "first-party password change and TOTP enrollment; real canonical local session",
+      "transport": "actual enrolled UID-bound private Unix gRPC, ControlPlane DatabaseControl service",
+      "runtime": "NativeDatabaseExecutor; no synthetic Ready receipts",
+      "leaseSeconds": 300,
+      "renewalWithinSeconds": 60,
+      "expiredLease": "explicit current operator reconciliation; final faulted restore operation generation 2",
+      "staleCallback": "obsolete callback acknowledged only for outbox custody; no installed checkpoint, lease renewal or execution authority",
+      "capabilities": "computed by NativeDatabaseExecutor against the owned cluster; published to the isolated Core fixture by its owner setup"
+    }
+  },
+  "independentKeyRecovery": {
+    "qualifiedLocally": true,
+    "sourcePostgresUnavailable": true,
+    "originalCoreContainerDestroyedBeforeRecovery": true,
+    "newCoreRestoredFromProtectedDumpAndRolesBackup": true,
+    "masterAndRLSKeys": "separately retained protected fixture identity bundle; destroyed at cleanup",
+    "providerSecretDelivery": "decrypted from restored Core backup; restore fixture configuration omits writer and recovery secrets",
+    "historicalCredentialRevision": 1,
+    "sourceConfirmedCredentialRevision": 2,
+    "wrongMasterKey": "503 rejection observed before real native restore apply in diagnostic round r4d",
+    "sourceIssuerIdentity": {
+      "issuerUID": "6b4a6a92-2d2f-4276-b1fe-726397fa4b95",
+      "secretUID": "ea12b465-cd53-4151-99bf-7fb95546daed",
+      "caSHA256": "4ea939fe2da21abcf86f20e8af0c58edb5ebc248d5612385608ef4a21397dbce"
+    },
+    "recoveredIssuerUID": "3a5c0560-60cb-4744-a7de-85a6dc5ec653",
+    "issuerPrivateKey": "restored from explicit protected CA identity bundle; original issuer and CA Secret deleted first",
+    "extensionOwnershipRecovery": "original diagnostic bundle predates inventory capture; pinned native bootstrap ownership invariant applied after source destruction; future bundles capture extension-member ownership separately",
+    "extensionOwnershipSHA256": "51a16031914ffac254f326f136f66cef946bc0f1a1e99a3cb7aef903789bccbd",
+    "bundleArtifactSHA256": {
+      "restore-selection.json": "bdb512c97aa0201e5d99228b3e1546f2aebeb2add70bb5594e18cf916fca9b23",
+      "ca.key": "b59fe3128d9fe8bedcfb2403302dbedbdaa41e1baed51727ffc17ce624aac074",
+      "ca.crt": "4ea939fe2da21abcf86f20e8af0c58edb5ebc248d5612385608ef4a21397dbce",
+      "identity.json": "703bac429e5fb571207d8725b33f9fe313c65164a1b9fdae7b9292acf0951467",
+      "core.sql": "459aeb863daeef8c756dcbf7a8fda014e57688de1b147ea39aa77ae41f6feb74",
+      "roles.sql": "aa8b0f444dfdca06217275ab0291c92a4a365b4de2905b79c0ef74fcb3c5de65"
+    },
+    "recoveryBundleDestroyed": true
+  },
+  "migrationFreeze": {
+    "path": "crates/persistence/migrations/0048_database_backups.sql",
+    "sha256": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "status": "frozen permanently for accepted milestone; further schema changes require coordinated 0050+",
+    "olderMigrationsEdited": false
+  },
+  "connectedPrivateFailureEvidence": [
+    {
+      "attempt": "r1",
+      "cause": "CA file copied with wrong ownership",
+      "path": "/tmp/webdock-connected-backup-20261025-r1/command-1792923840466056198.log",
+      "private": true
+    },
+    {
+      "attempt": "r2",
+      "cause": "initial fixture capability envelope, then missing native storage utility paths",
+      "path": "/tmp/webdock-connected-backup-20261025-r2",
+      "private": true
+    },
+    {
+      "attempt": "r3",
+      "cause": "debug stack, operator bootstrap pin, empty continuation and 128 MiB sidecar OOM",
+      "path": "/tmp/webdock-connected-backup-20261025-r3",
+      "private": true
+    },
+    {
+      "attempt": "r4",
+      "cause": "stale-callback custody assertion, extension ownership, immutable evidence lock, provider rejection logging, lease reconciliation and bounded peak capacity",
+      "path": "/tmp/webdock-connected-backup-20261025-r4",
+      "private": true
+    }
+  ],
+  "connectedCleanup": {
+    "attempts": [
+      {
+        "attempt": 1,
+        "cluster": "wd-pg-backup-c7a0b00c519f97d6",
+        "custodyLabelAbsent": true,
+        "errors": [],
+        "ownedResourcesRemaining": [],
+        "existingMinioPreserved": true,
+        "fixtureCredentialsDestroyed": true,
+        "recoveryBundleDestroyed": true,
+        "s3BucketUsersPoliciesAbsenceVerified": true
+      },
+      {
+        "attempt": 2,
+        "cluster": "wd-pg-backup-92336db4c824d381",
+        "custodyLabelAbsent": true,
+        "errors": [],
+        "ownedResourcesRemaining": [],
+        "existingMinioPreserved": true,
+        "fixtureCredentialsDestroyed": true,
+        "recoveryBundleDestroyed": true,
+        "s3BucketUsersPoliciesAbsenceVerified": true
+      },
+      {
+        "attempt": 3,
+        "cluster": "wd-pg-backup-5f950f14ffa80946",
+        "custodyLabelAbsent": true,
+        "errors": [],
+        "ownedResourcesRemaining": [],
+        "existingMinioPreserved": true,
+        "fixtureCredentialsDestroyed": true,
+        "recoveryBundleDestroyed": true,
+        "s3BucketUsersPoliciesAbsenceVerified": true
+      },
+      {
+        "attempt": 4,
+        "cluster": "wd-pg-backup-b37ff8e3db7372f0",
+        "custodyLabelAbsent": true,
+        "errors": [],
+        "ownedResourcesRemaining": [],
+        "existingMinioPreserved": true,
+        "fixtureCredentialsDestroyed": true,
+        "recoveryBundleDestroyed": true,
+        "s3BucketUsersPoliciesAbsenceVerified": true
+      }
+    ],
+    "successfulAttemptNativeVolumesDetached": 3,
+    "ownedCustodyLabelsRemaining": [],
+    "originalMinioIdentityPreserved": true,
+    "recoveryBundleAndFixtureCredentialsDestroyed": true,
+    "sourceProvenanceBundleRetainedUnchanged": true,
+    "scope": "No production, Wasabi, existing Kind/dev k3s or retained-service mutation; only owned fixture resources removed"
+  },
+  "firstPartyIntegration": {
+    "HTTP": [
+      "POST /api/console/databases",
+      "POST /v1/databases"
+    ],
+    "request": "native managed command JSON; use normal authenticated actor resolution",
+    "response": "{\"data\": result}",
+    "schema": "webdock_databases::MANAGED_COMMAND_SCHEMA",
+    "statusSchema": "webdock_databases::BACKUP_STATUS_SCHEMA",
+    "corePlacementEnvironment": [
+      "WEBDOCK_DATABASE_CLUSTER_ID",
+      "WEBDOCK_DATABASE_DOMAIN",
+      "WEBDOCK_DATABASE_PUBLIC_ENABLED=false",
+      "WEBDOCK_CONTROL_DATABASE_ID (optional)"
+    ],
+    "effectiveCipherKey": "WEBDOCK_HOSTING_ENCRYPTION_KEY; initializer fallback BETTER_AUTH_SECRET if absent; preserve actual effective key, do not replace it",
+    "agentConfiguration": "AgentConfig.databaseRuntime -> private DatabaseRuntimeConfig JSON; optional backup.{pluginImage,sidecarImage,endpoints,egressCIDRs,endpointCACertificate}",
+    "qualifiedPath": "domain + actual authenticated agent gRPC + NativeDatabaseExecutor; browser/Console journey remains parent integration scope",
+    "outsideOwnedFilesEdited": "only narrow database-only agent-control integration test caller"
+  }
+}

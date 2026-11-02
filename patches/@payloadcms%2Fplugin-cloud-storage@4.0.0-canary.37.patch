@@ -1,0 +1,12 @@
+diff --git a/dist/hooks/afterDelete.js b/dist/hooks/afterDelete.js
+index 8530ed2924e57386552ee880d96f818ed72e2f6c..06cfc900019c5cec55ce2c22e2fd68269b96ff7f 100644
+--- a/dist/hooks/afterDelete.js
++++ b/dist/hooks/afterDelete.js
+@@ -35,6 +35,7 @@ export const getAfterDeleteHook = ({ adapter, collection, collectionPrefix, useC
+                 err,
+                 msg: `There was an error while deleting files corresponding to the ${collection.labels?.singular} with ID ${doc.id}.`
+             });
++            throw err;
+         }
+         return doc;
+     };

@@ -1,0 +1,91 @@
+[package]
+name = "webdock-object-storage-plugin"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.94"
+license = "AGPL-3.0-only"
+publish = false
+
+[workspace]
+
+[[bin]]
+name = "webdock-object-storage-plugin"
+path = "src/main.rs"
+required-features = ["providers"]
+
+[features]
+default = ["providers"]
+providers = ["dep:aws-sdk-s3", "dep:aws-sdk-iam", "dep:rustls"]
+# Only the separately built disposable native acceptance image enables this.
+local-native-fixture = ["providers"]
+
+[dependencies]
+async-trait = "0.1"
+base64 = "0.22"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+hex = "0.4"
+uuid = { version = "1", features = ["v4", "serde"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "time", "process", "io-util"] }
+tokio-postgres = { version = "0.7", features = ["with-uuid-1"] }
+url = "2"
+libc = "0.2"
+rustix = { version = "1", features = ["process"] }
+rustls = { version = "0.23", optional = true, default-features = false, features = ["ring", "std", "tls12"] }
+webdock-plugin-protocol = { path = "../../crates/plugin-protocol" }
+webdock-plugin-runtime = { path = "../../crates/plugin-runtime" }
+webdock-plugin-kit = { path = "../../crates/plugin-kit" }
+tonic = { version = "0.14.6", features = ["transport"] }
+ed25519-dalek = "2"
+# Last SDK service releases below MSRV 1.94.1. Lock transitive dependencies too.
+aws-sdk-s3 = { version = "=1.137.0", optional = true, default-features = false, features = ["rt-tokio", "rustls", "default-https-client"] }
+aws-sdk-iam = { version = "=1.113.0", optional = true, default-features = false, features = ["rt-tokio", "rustls", "default-https-client"] }
+
+[profile.dev]
+debug = 0
+
+# Mirrors the root workspace policy; checked by tools/quality.
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+unused_must_use = "deny"
+unfulfilled_lint_expectations = "deny"
+
+[lints.clippy]
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
+complexity = { level = "deny", priority = -1 }
+perf = { level = "deny", priority = -1 }
+style = { level = "deny", priority = -1 }
+allow_attributes_without_reason = "deny"
+as_ptr_cast_mut = "deny"
+await_holding_lock = "deny"
+await_holding_refcell_ref = "deny"
+cast_lossless = "deny"
+checked_conversions = "deny"
+dbg_macro = "deny"
+excessive_nesting = "deny"
+exit = "deny"
+fallible_impl_from = "deny"
+implicit_clone = "deny"
+let_underscore_future = "deny"
+lossy_float_literal = "deny"
+manual_assert = "deny"
+manual_let_else = "deny"
+match_wildcard_for_single_variants = "deny"
+mem_forget = "deny"
+mut_mut = "deny"
+needless_continue = "deny"
+needless_pass_by_ref_mut = "deny"
+option_option = "deny"
+rc_mutex = "deny"
+redundant_else = "deny"
+ref_option_ref = "deny"
+todo = "deny"
+unchecked_time_subtraction = "deny"
+undocumented_unsafe_blocks = "deny"
+unimplemented = "deny"
+unnecessary_box_returns = "deny"
+unnecessary_safety_comment = "deny"
+unnecessary_safety_doc = "deny"
+unnested_or_patterns = "deny"

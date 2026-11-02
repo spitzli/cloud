@@ -14,8 +14,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SELF = Path(__file__).resolve().relative_to(ROOT).as_posix()
 MOVES = {
-    "apps/admin": "apps/console",
-    "apps/api": "apps/control-plane",
+    "apps/admin": "legacy/console",
+    "apps/api": "legacy/control-plane",
     "apps/web": "apps/website",
     "apps/hosting-agent": "agents/kubernetes",
 }
@@ -49,7 +49,7 @@ TARGETED = {
     "apps/cms/scripts/verify-instance-source.mjs": [("|| '../web'", "|| '../website'")],
     "apps/cms/scripts/provision-instance-schemas.mjs": [("webdock:'../web'", "webdock:'../website'")],
     "apps/cms/scripts/import-instance-users.mjs": [("webdock:'../web'", "webdock:'../website'")],
-    "apps/hosting-agent/test_service_bindings.py": [("Path(__file__).parents[1].joinpath('api/tests/ported-auth/fixtures/database-ca.crt')", "Path(__file__).parents[2].joinpath('apps/control-plane/tests/ported-auth/fixtures/database-ca.crt')")],
+    "apps/hosting-agent/test_service_bindings.py": [("Path(__file__).parents[1].joinpath('api/tests/ported-auth/fixtures/database-ca.crt')", "Path(__file__).parents[2].joinpath('legacy/control-plane/tests/ported-auth/fixtures/database-ca.crt')")],
     "deploy/helm/webdock/templates/platform.yaml": [('{{ if eq $name "console" }}admin{{ else }}auth{{ end }}', '{{ if eq $name "console" }}console{{ else }}auth{{ end }}')],
 }
 

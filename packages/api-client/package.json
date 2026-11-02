@@ -17,7 +17,7 @@
     "./integration-resume": "./src/integration-resume.ts"
   },
   "scripts": {
-    "test": "node --import tsx --test src/*.test.ts"
+    "test": "bun test ./src"
   },
   "dependencies": {
     "@webdock/mail-core": "*",

@@ -129,7 +129,15 @@ export function appDemand(spec: AppSpec, deleted = false): HostingDemand {
     concurrentDeployments: 1,
   };
 }
+export const publicAddressRequestSchema = z.object({
+  label: z.string().min(1).max(63).regex(/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/).optional(),
+}).strict();
+export const publicAddressViewSchema = z.object({
+  id: resourceID, hostname: z.string(), url: z.string().url(),
+  state: z.enum(["allocated", "ready", "retired"]), revision,
+});
 const appViewFields = {
+  publicAddress: publicAddressViewSchema.nullable().optional(),
   environmentNames: z.array(z.string()).optional(),
   id: resourceID,
   name: z.string(),
@@ -155,6 +163,15 @@ export const appViewSchema = z.discriminatedUnion("lifecycle", [
 ]);
 export type HostingAppView = z.infer<typeof appViewSchema>;
 export const commandSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("addresses.list"), customerID: resourceID, ...paging }).strict(),
+  z.object({
+    action: z.literal("clusters.publicSites.configure"), clusterID: resourceID,
+    domain: z.string().min(3).max(189).regex(/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/),
+    enabled: z.boolean(), policyRevision: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
+    tenantDailyLimit: z.number().int().min(1).max(1000), globalDailyLimit: z.number().int().min(1).max(1000),
+    trustedCustomerIDs: z.array(resourceID).max(100),
+  }).strict(),
+
   ...serviceCommands,
   ...setupCommands,
   z
@@ -208,6 +225,7 @@ export const commandSchema = z.discriminatedUnion("action", [
   z
     .object({
       action: z.literal("apps.prepare"),
+      publicAddress: publicAddressRequestSchema.optional(),
       projectID: resourceID,
       name,
       spec: preparedAppSpecSchema,
@@ -219,6 +237,7 @@ export const commandSchema = z.discriminatedUnion("action", [
   z
     .object({
       action: z.literal("apps.deploy"),
+      publicAddress: publicAddressRequestSchema.optional(),
       appID: resourceID,
       spec: appSpecSchema,
       environment: environmentPatchSchema.optional(),
@@ -230,6 +249,7 @@ export const commandSchema = z.discriminatedUnion("action", [
   z
     .object({
       action: z.literal("apps.create"),
+      publicAddress: publicAddressRequestSchema.optional(),
       environment: environmentPatchSchema.optional(),
       projectID: resourceID,
       name,
@@ -241,6 +261,7 @@ export const commandSchema = z.discriminatedUnion("action", [
   z
     .object({
       action: z.literal("apps.update"),
+      publicAddress: publicAddressRequestSchema.optional(),
       environment: environmentPatchSchema.optional(),
       appID: resourceID,
       spec: appSpecSchema,
@@ -421,6 +442,7 @@ export const commandSchema = z.discriminatedUnion("action", [
 ]);
 export type HostingCommand = z.infer<typeof commandSchema>;
 export const readActions = new Set<HostingCommand["action"]>([
+  "addresses.list",
   "services.list",
   "setup.get",
   "setup.list",
@@ -558,6 +580,7 @@ export const observationSchema = z
           .optional(),
 
         registryVersion: z.literal(1).optional(),
+        publicRoutingVersion: z.literal(1).optional(),
       })
       .strict(),
   })

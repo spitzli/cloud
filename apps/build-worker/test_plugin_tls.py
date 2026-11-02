@@ -12,7 +12,7 @@ import plugin_installer as installer
 
 ROOT = Path(__file__).resolve().parents[2]
 NODE = os.environ.get('WEBDOCK_TEST_NODE') or shutil.which('node')
-BUN = os.environ.get('BUN_BINARY') or str(ROOT / 'node_modules/.bin/bun')
+BUN = os.environ.get('BUN_BINARY') or shutil.which('bun') or 'bun'
 
 
 class PluginTLSTests(unittest.TestCase):

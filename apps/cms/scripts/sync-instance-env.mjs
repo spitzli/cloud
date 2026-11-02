@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {parseEnv} from 'node:util';
 const dir=path.resolve(process.argv[2]||'');
-if(!process.argv[2])throw new Error('Usage: node scripts/sync-instance-env.mjs /path/to/instance');
+if(!process.argv[2])throw new Error('Usage: bun scripts/sync-instance-env.mjs /path/to/instance');
 const project=JSON.parse(fs.readFileSync(path.join(dir,'.vercel/project.json'),'utf8'));
 const env=parseEnv(fs.readFileSync(path.join(dir,'.env.instance'),'utf8'));
 const auth=JSON.parse(fs.readFileSync(path.join(process.env.HOME,'.local/share/com.vercel.cli/auth.json'),'utf8'));

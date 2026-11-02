@@ -1,0 +1,12 @@
+{
+  "scope": "owned filesystem primitive only; no Core admission, signed grant or PG init/restore acceptance",
+  "binarySHA256": "55acec3b700baaa866d17ce5ecea79c32eb257cc213346cb94ee6a0425863dbf",
+  "imageID": "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe",
+  "exitCode": 0,
+  "passed": true,
+  "cleanup": {
+    "exactContainerAbsent": true,
+    "privateDirectoryRemoved": true,
+    "existingServicesChanged": false
+  }
+}

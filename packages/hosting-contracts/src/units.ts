@@ -1,5 +1,5 @@
 /** Decimal display units; exact integer storage, including unchanged legacy values. */
-const factors: Record<string, bigint> = {
+const factors = {
   "": 1n,
   cores: 1000n,
   MB: 1000000n,
@@ -8,7 +8,7 @@ const factors: Record<string, bigint> = {
 };
 export function parseResourceInput(key: string, text: string): number {
   const match = /^(\d+)(?:[.,](\d+))?\s*(cores|MB|GB|TB)?$/.exec(text.trim());
-  if (!match || text.length > 80) throw Error("Enter a valid resource amount.");
+  if (!match?.[1] || text.length > 80) throw Error("Enter a valid resource amount.");
   const unit = match[3] ?? "";
   if (
     unit &&
@@ -20,7 +20,8 @@ export function parseResourceInput(key: string, text: string): number {
   )
     throw Error("Invalid resource unit.");
   const denominator = 10n ** BigInt((match[2] ?? "").length);
-  const numerator = BigInt(match[1] + (match[2] ?? "")) * factors[unit];
+  const factor = factorFor(unit);
+  const numerator = BigInt(match[1] + (match[2] ?? "")) * factor;
   if (
     numerator % denominator ||
     numerator / denominator > BigInt(Number.MAX_SAFE_INTEGER)
@@ -71,5 +72,10 @@ export function resourceInUnit(
   unit: string,
 ): string {
   parseResourceInput(key, "1 " + unit);
-  return decimal(value, factors[unit]);
+  return decimal(value, factorFor(unit));
+}
+
+function factorFor(unit: string): bigint {
+  if (!Object.hasOwn(factors, unit)) throw Error("Invalid resource unit.");
+  return factors[unit as keyof typeof factors];
 }

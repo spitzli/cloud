@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-30",
+  "scope": "Offline-only observability foundation; no runtime/deployment qualification",
+  "result": {
+    "objects": 87,
+    "upstreamDashboards": 17,
+    "containerMemoryLimitBytesIncludingTwoReloaders": 6442450944,
+    "containerCpuLimitsIncludingTwoReloaders": 3.35,
+    "requestedPersistentBytes": 56908316672,
+    "immutableImages": [
+      "docker.io/grafana/grafana:13.3.0-distroless@sha256:540b8afb775bf34aefce417e4329039daa5d44b6f2fbda6881397b1b247ca7df",
+      "docker.io/grafana/loki@sha256:0db216b630ae1f348a1584c67f3cead8b4c1fc839169a39501db664744158e28",
+      "quay.io/kiwigrid/k8s-sidecar:2.14.1@sha256:092dbe0c335fba9af414a27630ca68f34df6185784fa847d9954187e69dbfdd7",
+      "quay.io/prometheus-operator/prometheus-config-reloader:v0.94.2@sha256:a1897c67478bc23434534e91ad3855280771196b1daf17144db9dbcb655bef71",
+      "quay.io/prometheus-operator/prometheus-operator:v0.94.2@sha256:c7edf0379b7271ef1705dce258d2bb73820e299cc95559369e9f6fc3321639ec",
+      "quay.io/prometheus/alertmanager:v0.34.2@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b",
+      "quay.io/prometheus/prometheus:v3.15.1-distroless@sha256:451a845bae1d51622b41af1780eb2ad911bbb79a9855bc8e9bb67fabbc03f934",
+      "registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.20.0@sha256:42cfe3723a5f058171c627537fb57a3ea0f26e4380fa18555a95cb1a1b4cfc5b"
+    ],
+    "negativeControlsRejected": 6,
+    "activationEnabled": false,
+    "runtimeQualified": false,
+    "s3MfaTenantGatewayQualified": false
+  },
+  "checks": {
+    "archiveFetch": "Both exact upstream release archives downloaded and verified against official index SHA256; no dependency updates",
+    "imageResolution": "Eight official Registry V2 manifest/index responses hashed; Docker-Content-Digest matched when present; no layers downloaded or images run",
+    "render": "Helm 3.21.0 client-only template, Kubernetes render version 1.35.0, empty Helm homes/plugins, KUBECONFIG=/dev/null; chart values schemas accepted",
+    "defaultDisabled": "Actual CLI with absent cache returns activationEnabled=false and zero objects, creates no cache/output",
+    "negativeControls": "Six checker controls rejected; additional actual-CLI corrupted archive test fails SHA256 verification before Helm",
+    "pythonSyntax": "python3 -m py_compile passed",
+    "whitespace": "git diff --check passed"
+  },
+  "notQualified": [
+    "actual K3s/CRD/operator/image architecture and workload runtime",
+    "physical persistent/ephemeral disk enforcement, WAL replay, restore and disk-exhaustion behavior",
+    "actual S3 bucket/IAM/lifecycle/billing/TLS binding",
+    "Webdock operator sign-in/MFA and private routing/session revocation",
+    "authenticated tenant gateway and two-tenant/forged-header/revocation denial",
+    "Alloy collection, bounded buffering/backpressure, live source/receiver outages and source independence",
+    "actual alert delivery, independent dead-man check and measured capacity/cost"
+  ],
+  "liveResourcesCreated": false,
+  "purchasesOrCredentialsCreated": false,
+  "inputSHA256": {
+    "charts.lock.json": "52abe2db129a54849c2f14aaf15a99d5224bffb0d660401e56bf78730c7327a6",
+    "metrics-values.yaml": "8c7cc852b8aa0a3ccb3d6c13fbafe3a1912808f54affa21e467377cc03c0dbdf",
+    "loki-values.yaml": "fb6511b740feb6f80ffcb970c7ded82a91205f33245b77625db7337f8d3dde7a",
+    "isolation.yaml": "42a1ee844ea22bd40ad5a0ab02093bd7ad80abcb6c85dc04e30a909787dd678b",
+    "render.py": "6bc2f02c34060a01a54ccbe29fb01a1a17f4b415bf4ebe4232bbbf26959349e4",
+    "README.md": "507b3be26fdcb580cc3150945668ee9c96c8a2cc4c3b8072bf7b531709e5e3a0"
+  }
+}

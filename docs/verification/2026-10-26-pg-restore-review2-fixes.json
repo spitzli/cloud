@@ -1,0 +1,52 @@
+{
+  "baseline": "syntax-normalized archived old logic; five intended failures",
+  "candidate": ".runtime-test/pg-restore-review1-94eeed5a569c",
+  "containerID": "fbcf7d0f24b0a70612aa2f98832c98582b50a0bba6f601f5beaa03cbd5fbfaaf",
+  "fixedPasses": 5,
+  "fixes": [
+    "Only new source backend reads use SHARE NOWAIT; typed55P03 and failedcaller latch require full owner rollback/fresh attempt",
+    "Retained proof fraction truncates before timestamp cast; immutable proof and selected time unchanged"
+  ],
+  "journalsExactNativeRows": 54,
+  "limits": [
+    "Primitive scratch lock modeling only; no actual application/auth3TX lifetime or global deadlock proof",
+    "No positive SourceHelper/audit/native source factory/atomic admission/concurrent poll proof",
+    "External draft only; final54/rebase/materialization/public/MCP remain held"
+  ],
+  "maxVersion": 55,
+  "newReverseLockCases": 2,
+  "newTypedPrecisionCases": 10,
+  "obligations": [],
+  "pinSHA256": "80dac99c5a3dc2770c936a60e80b1d2058379d5c4052b0f23e0b71b8eabee42b",
+  "priorEvidence": "docs/verification/2026-10-26-pg-restore-review1-fixes.json",
+  "priorEvidenceSHA256": "2993049835524a0e8513401e0d41e532f74fb8033a114edc6d9187971e512d6e",
+  "privateAbsent": true,
+  "resultSHA256": "c9ffa821107c56e9798f6df20ee9dd9831b99453f230291f72fd88e47ba48048",
+  "reviewSourceAggregateSHA256": "4586b0906ee98fc815df5f03dce8ddf1960865334b3ea8149c8046affd0c0cdc",
+  "reviewSourceSHA256": {
+    "Cargo.lock": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+    "crates/databases/src/database_authority.rs": "a2a9229db994ac2e643b58b5434dea33683abfabd65207e0548839e7084eb9af",
+    "crates/databases/src/lib.rs": "d5a14228274171302381b0d638dba510c92693ca5f17fb69f743727a99d6f1c5",
+    "crates/databases/src/managed-command.schema.json": "9639af6adb35136ef5052cb14856101e7444637a519d8dd848b870c6d316f26b",
+    "crates/databases/src/management.rs": "64722643d7b1d3cb77d9f7fec7d51e8ecf3ff0b622d8caa5d4f5c2e9e01c06ee",
+    "crates/databases/src/restore-order.schema.json": "0f58695581c10a449ab662e5277346fa807b5d0b302fc6b4496b7d9141cec184",
+    "crates/databases/src/restore_intent.rs": "07db8b47c8e5a6fbf1886a8dc9100eb8f4b11fbc9331f8816a8ad39342bf732b",
+    "crates/databases/src/service.rs": "7c4c547f2d657258feb071c7d77bd64de68f5d446d5577d4bd8201c255e9d211",
+    "crates/databases/src/service/backups.rs": "2271df26b11c56ae03b5b5236072136acb1805ebdf995897073846bebb9d1b42",
+    "crates/databases/src/service/capacity.rs": "16f5ce99dc033bb67e530f1465035c5b356a8a85ca5fead576a75b07a312b3b6",
+    "crates/databases/src/service/control.rs": "f4c33970430eb61e1cc4d832feda874e637b5befa88de4a6c244e6703d2bb289",
+    "crates/databases/src/service/orders.rs": "5e81838bd80548e1b708cc28bb06bcb6b66f66ff618f9086cc9ef9e70530e64b",
+    "crates/databases/src/service/restore_orders.rs": "2da29f6032cd711f64e5d2644ef9d3ca803cb3e0f9160368962a2dd0cd40585a",
+    "crates/databases/src/service/restore_orders/review_sql.rs": "8a8d16a2baa037ab0afc09ff3660966bb2e2cdbeb3f4d530d48e6cd747c24a44",
+    "crates/databases/tests/database_authority.rs": "8a60c9c75b58dbd71c305f62d83843f009ab1135322dcc12af051949050db758",
+    "crates/databases/tests/persistence.rs": "175d46befdf0a6f7de8ab777f865b4dd575de61fcd836e8f10eb83f75310fc38",
+    "crates/databases/tests/restore_intent.rs": "c7fcce515c60056fcbba00dbefde99b9c1acca862bf547ef6e53491890fe6527",
+    "crates/databases/tests/restore_order_contract.rs": "bc19e3c7d91b3532c4701fc0b427918920f7f954a6d01ec68615deebbcad2b4a",
+    "docs/superpowers/plans/2026-10-26-postgresql-restore-0056.draft.sql": "c862cd756ac6a56642e8d88b271483426fc1d556857131613ad7dba779fca74a",
+    "infra/postgres/backup/qualification_review_component.py": "7339a64c5e58c81b6edde841905145e7e5f3aa8b09efe26c7f9015aa02d71c00",
+    "infra/postgres/backup/qualification_review_component_test.py": "c6585b845b738c42d4d1dfe037855c63eb2e64c1c8a174e36f4165452fce3d32"
+  },
+  "rootIndependentExactAbsence": true,
+  "scope": "Review2 two fixes; internal stage and external draft only",
+  "volumes": 0
+}

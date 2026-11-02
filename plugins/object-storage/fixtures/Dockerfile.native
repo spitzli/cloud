@@ -1,0 +1,22 @@
+# Disposable acceptance only. The production Dockerfile has neither mc nor the test profile.
+FROM scratch AS source
+COPY . /
+FROM docker.io/library/rust:1.94.0-slim-trixie@sha256:f7bf1c266d9e48c8d724733fd97ba60464c44b743eb4f46f935577d3242d81d0 AS build
+RUN apt-get update && apt-get install -y --no-install-recommends protobuf-compiler && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY --from=source / /src
+ARG FIXTURE_VERSION=0.5.0
+RUN case "$FIXTURE_VERSION" in 0.5.0) ;; 0.6.0) sed -i 's/"version": "0.5.0"/"version": "0.6.0"/' plugins/object-storage/manifest.json ;; *) exit 1 ;; esac
+RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/plugins/object-storage/target \
+    cargo build --manifest-path plugins/object-storage/Cargo.toml --locked --release --features local-native-fixture -j 2 \
+    && cp plugins/object-storage/target/release/webdock-object-storage-plugin /webdock-object-storage-plugin
+FROM quay.io/minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727 AS mc
+FROM docker.io/library/debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=fixture /ca.crt /usr/local/share/ca-certificates/native-object-storage.crt
+RUN update-ca-certificates
+COPY --from=build /webdock-object-storage-plugin /usr/local/bin/webdock-object-storage-plugin
+COPY --from=mc --chown=65532:65532 --chmod=0500 /usr/bin/mc /usr/local/bin/mc
+ENV HOME=/tmp
+USER 65532:65532
+ENTRYPOINT ["/usr/local/bin/webdock-object-storage-plugin"]

@@ -1,0 +1,18 @@
+{
+  "scope": "Actual isolated pinned CE constructor and management wire; no full Mail or external DNS qualification",
+  "sourceReceiptSHA256": "67e00ab313b93bb267b405d84e0a689a046160a3ad03638b37c3290f3a0b82e7",
+  "sameCEProcess": true,
+  "unansweredDNSQueries": 2,
+  "answersBefore": 0,
+  "startupUnavailableMs": 3006,
+  "afterEnablingOnlyNegativeAnswers": 17,
+  "HTTP200AfterMs": 2024,
+  "completeManagementLifecyclePassed": true,
+  "network": "own container loopback only; networknone",
+  "rawDNSNamesRetained": false,
+  "rawCredentialsRetained": false,
+  "allOwnContainersRemoved": true,
+  "privatePKIErased": true,
+  "wholeMailQualified": false,
+  "pending": "Run same genuine signed actions with a negative-only resolver in the deliberately CoreDNS-free test cluster"
+}

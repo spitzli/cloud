@@ -1,4 +1,4 @@
-import { databaseURL } from "../../apps/control-plane/src/db/client";
+import { databaseURL } from "../../legacy/control-plane/src/db/client";
 export const runtimeRoles = [
   "webdock_auth_bootstrap",
   "webdock_auth_runtime",

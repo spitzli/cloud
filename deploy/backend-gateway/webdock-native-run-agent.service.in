@@ -1,0 +1,40 @@
+[Unit]
+Description=Webdock enrolled RUN cluster executor
+Wants=network-online.target
+After=network-online.target k3s.service webdock-storage.service
+Requires=webdock-storage.service
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+User=root
+Group=root
+ExecStart=@REVIEWED_AGENT_BINARY@ --config /etc/webdock-native-agent/agent.json run
+KillSignal=SIGINT
+TimeoutStopSec=90s
+Restart=on-failure
+RestartSec=10s
+UMask=0077
+RuntimeDirectory=webdock-native-agent
+RuntimeDirectoryMode=0700
+Environment=TMPDIR=/run/webdock-native-agent
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/webdock-native-agent /run/webdock-native-agent
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+MemoryMax=1G
+CPUQuota=100%
+TasksMax=256
+LimitNOFILE=8192
+
+[Install]
+WantedBy=multi-user.target

@@ -39,7 +39,7 @@ export default buildConfig({
   }),
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_FROM || 'noreply@webdock.dev',
-    defaultFromName: 'Webdock',
+    defaultFromName: 'Spitzli Cloud',
     skipVerify: true,
     transport: nodemailer.createTransport({
       host: process.env.SMTP_HOST,

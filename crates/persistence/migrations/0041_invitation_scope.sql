@@ -1,0 +1,1 @@
+../../access/migrations/0008_invitation_scope.sql

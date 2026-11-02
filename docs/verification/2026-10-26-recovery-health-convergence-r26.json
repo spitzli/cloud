@@ -1,0 +1,56 @@
+{
+  "status": "SOURCE_STABLE_PRODUCT_FIX_PREPARATION_ONLY; no runtime",
+  "capturedDockerSourceSHA256": "c1b89e06af53aebf3e3a82a34bec18b648f35d335b96bb040912b5403322fede",
+  "fix": "Apply+replicas>0+configuredhealth polls actualinspect untilready; guard.check_for(command) beforeandafter eachprobe;250mssleep, existingExecutor300s/250msauthoritytick unchanged. Stopped/disappeared=>Runtime;ownership/runtime/guarderrorspropagate. Otheractions/zero/nohealthimmediateunchanged. ActualObservedState UID/storage/conditions returned unchanged.",
+  "checks": {
+    "agentLibPassed": 56,
+    "agentLibIgnored": 1,
+    "healthFocusedTests": 5,
+    "cpBootstrapPassed": 11,
+    "cpBootstrapInfraIgnored": 2,
+    "pythonPassed": 59,
+    "strictAgentClippy": "PASS",
+    "strictCPClippy": "PASS",
+    "dockerLifecycleTest": "compileONLY;notrun",
+    "noRun": "PASS",
+    "red": "4healthbehaviorcasesfailedone-inspectstub, thenGREEN; not realDockerproof",
+    "agentLogSHA256": "223efa43886bfa445445fbe7862856a5695a884d95cf0f12c90d79fbf6c9508e",
+    "cpLogSHA256": "4a578e76876f1b4b826feffdf87a3dede57d16a028dcce6516180bcc94386a7b",
+    "pythonLogSHA256": "2a43a12eefa0baa4c9e4169b8f1a653339a034b158083f8da2752177a5f1370d"
+  },
+  "manifest": ".runtime-test/recovery-source-health-component-f065cab12793/pin.json",
+  "manifestSHA256": "983748be8f399a509b617c5cbea425dba92519c3f1b574e5fb216b4515fe34fd",
+  "newAgent": {
+    "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-source-health-component-f065cab12793/webdock-agent",
+    "sha256": "84d3bd2efae22b961ab6a33d70899f1154575e7473c3551aba7feb871c0b6875",
+    "mode": 320,
+    "bytes": 113239792
+  },
+  "newTest": {
+    "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-source-health-component-f065cab12793/bootstrap-test",
+    "sha256": "1ea75dc509c091c2140ed6c8e06f82e309f5ae34bb6b6825ccda11a55e6bf25a",
+    "mode": 320,
+    "bytes": 147663008
+  },
+  "storageHelperUnchangedSHA256": "1f2bc06b80cc68c81a5bb392ead2358e66d8c34d971837af2df1128ed72e2301",
+  "original11Unchanged": true,
+  "basePinSHA256": "1bbbdd07c56540bff34faa1a8a7dd0ef97493061f9005f0b2cb5d5e54426e11e",
+  "replacementSourceArchiveSHA256": "530af9cbe63d3d48aff1a44bb7ce6c86b9bee6389fc818c61ed25b2fe241c088",
+  "compilationInventorySHA256": "c632b8f9ccebe600b7edbe8736258bf06c21ef471ede145ee0911ac65c4b06fb",
+  "capturedCompilerSourceInputs": 566,
+  "provenance": "Both Agent+test current compileinputs frozen before PGlinkedwrites;11old6223ELFs retain originalcompile/sourcec00ef, noall13rebuild/currenttreeclaim.",
+  "runnerSHA256": "a81cd635e7dc79010ec4f67e593611991d5b0663f10aa1844ea0677ccb88fd9e",
+  "overlay": ".runtime-test/recovery-source-input-overlay-a02fae6114fe/overlay.json",
+  "overlaySHA256": "a02fae6114fe1e760d547ddc0e561102423a5999542c6b5885ed58c8b97cea9f",
+  "selector": "Finite two replacements newAgent+newtest exactnewpaths/hash/0500; other11exactparent1bbb; original d820 cannotfallback.",
+  "unchangedAST": "fd/byteJSON/copy/custody/moduleROOT/OCI/pauseexport/finalizer; onlyfinite replacement membership/version andprovenance/header changed",
+  "rootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+  "native54SHA256": "6425988741790a3420b7da0ebc711f02a32cdd40ae0d43b470b8000fd5ea4df7",
+  "diffSHA256": {
+    "docker": "15a47b953634cce2c845b1f5b2437268e01fcbb7d8c63f3a8b0976f5facea13c",
+    "runner": "ddefae31c6a286b87f9f32343f44ea41db2d9aa3f7579b6a6735b1b96a609af6"
+  },
+  "runtimeActions": 0,
+  "noMainCargo": true,
+  "limits": "60abc sourceReadyfalse/historypreserved; no actualnewAgent runtime yet. NoCore/outbox/quota/healthfalse-ready/100sleniency. No full54/Mail/SMTP/physicalrestoreacceptance. PCkeepON."
+}

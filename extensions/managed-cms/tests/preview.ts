@@ -23,7 +23,7 @@ Bun.serve({hostname:"127.0.0.1",port,maxRequestBodySize:32768,async fetch(reques
   if(request.headers.get("origin")!==origin||request.headers.get("x-cms-preview")!==csrf)return new Response("Denied",{status:403});
   try{
    const input=await request.json();if(!["reader","editor","admin"].includes(input.role))throw Error("Invalid fixture role");
-   const now=Math.floor(Date.now()/1000),claims=Buffer.from(JSON.stringify({v:1,id:crypto.randomUUID(),pluginID:"managed-cms",generation:1,action:input.name,projectID:"123",iat:now,exp:now+50})).toString("base64url");
+   const now=Math.floor(Date.now()/1000),claims=Buffer.from(JSON.stringify({v:1,id:crypto.randomUUID(),pluginID:"managed-cms",generation:1,action:input.name,projectID:"123",customerID:"101",iat:now,exp:now+50})).toString("base64url");
    const token=claims+"."+sign(null,Buffer.from(claims),keys.privateKey).toString("base64url");
    return runtime(input.role)(new Request("https://runtime.invalid/actions/"+input.name,{method:"POST",headers:{authorization:"Bearer "+credential,"x-plugin-invocation":token,"content-type":"application/json"},body:JSON.stringify({input:input.input,configuration:{},hostOrigin:config.hostOrigin})}));
   }catch{return Response.json({error:"Fixture action failed"},{status:400});}

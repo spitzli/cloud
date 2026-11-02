@@ -5,7 +5,7 @@ import {randomBytes} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {createClerkClient} from '@clerk/backend';
 import {createClerkBackend} from '../../packages/auth-clerk/src/sdk';
-import {resolveConsolePrincipal} from '../../apps/control-plane/src/modules/auth/clerk-identity';
+import {resolveConsolePrincipal} from '../../legacy/control-plane/src/modules/auth/clerk-identity';
 const path=process.argv[2];if(!path)throw Error('Dedicated development env file required');
 const env=parseEnv(readFileSync(path,'utf8'));
 const secret=env.CLERK_SECRET_KEY,pub=env.CLERK_PUBLISHABLE_KEY??env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;

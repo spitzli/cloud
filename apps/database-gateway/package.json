@@ -4,24 +4,21 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "24.x"
+    "bun": ">=1.4.3"
   },
   "scripts": {
-    "start": "node --import tsx src/main.ts",
-    "test": "node --import tsx --test tests/*.test.ts",
-    "check": "tsc --noEmit",
-    "build": "esbuild src/main.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/main.cjs"
-  },
-  "dependencies": {
-    "@webdock/database-contracts": "*",
-    "tsx": "^4.23.15",
-    "ws": "8.22.0",
-    "@webdock/integration-tabularis-web": "*"
+    "start": "cargo run --manifest-path ../../Cargo.toml -p webdock-database-gateway",
+    "test": "cargo test --manifest-path ../../Cargo.toml -p webdock-database-gateway",
+    "test:compatibility": "bun test --isolate ./tests/*.test.ts",
+    "check": "cargo check --manifest-path ../../Cargo.toml -p webdock-database-gateway",
+    "build": "cargo build --manifest-path ../../Cargo.toml --release -p webdock-database-gateway"
   },
   "devDependencies": {
     "@types/node": "^24",
     "@types/ws": "8.18.2",
-    "esbuild": "0.25.12",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@webdock/database-contracts": "*",
+    "ws": "8.22.0",
+    "@webdock/integration-tabularis-web": "*"
   }
 }

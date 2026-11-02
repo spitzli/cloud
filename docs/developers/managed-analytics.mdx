@@ -3,7 +3,7 @@ title: "Managed Analytics"
 description: "Use an external ElysiaJS plugin for managed website analytics with Umami."
 ---
 
-Managed Analytics is an external Webdock extension backed by a shared Umami service. Each customer receives project-scoped tracking resources, not a dedicated Umami instance. The same plugin actions are available in the Console panel, authenticated HTTP API and the Webdock host's MCP server. Webdock's public homepage uses this integration.
+Managed Analytics is an external Spitzli Cloud extension backed by a shared Umami service. Each customer receives project-scoped tracking resources, not a dedicated Umami instance. The same plugin actions are available in the Console panel, authenticated HTTP API and the Spitzli Cloud host's MCP server. The established protocol-v1 pilot integrated tracking on Spitzli Cloud's public homepage.
 
 <Note>
 This is an operator-managed alpha. An operator installs a verified release, configures the provider binding and grants the extension to a project. Automatic registry installation and customer billing activation are not included in this pilot.
@@ -29,7 +29,7 @@ The plugin declares these actions:
 
 Stats inputs contain `start_at` and `end_at` as Unix timestamps in milliseconds, covering at most 366 days. HTTP paths are prefixed with `/v1/plugins/managed-analytics/projects/{projectID}/api`. See [plugin API and MCP tools](/developers/plugin-api-mcp) for authentication and idempotency.
 
-These tools belong to the **Webdock host's MCP server**. The registry's separate MCP connection manages catalog entries and releases; it does not execute installed project plugins.
+These tools belong to the **Spitzli Cloud host's MCP server**. The registry's separate MCP connection manages catalog entries and releases; it does not execute installed project plugins.
 
 ## Optional tracking domain
 
@@ -46,3 +46,5 @@ The dashboard remains on the provider origin. DNS ownership checks, routing and 
 - [Manifest contract](/developers/plugin-manifest)
 
 The runtime uses ElysiaJS with private HTTPS action handlers and a separate static UI listener. Core enforces current project access, explicit grants, approved capabilities and runtime generations on every invocation.
+
+This independent TypeScript extension retains its protocol-v1 contract. Native v2 image publication does not replace it or grant a project access. Preserve the existing signed release and named bindings; see [release boundaries](/developers/plugin-releases).

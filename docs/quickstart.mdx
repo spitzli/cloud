@@ -1,24 +1,38 @@
 ---
 title: "Get started"
-description: "Join a Webdock workspace and find the resources assigned to you."
+description: "Sign in, secure your account, choose your workspace and take your first action."
 ---
 
-You need a workspace invitation or an existing Webdock account with workspace access. Ask your workspace administrator if you have neither.
+You need an approved account and access to a workspace. If you have neither, [request access](https://console.spitzli.cloud/waitlist) or ask the workspace administrator for an invitation. Joining the waitlist does not immediately grant access.
 
 <Steps>
-  <Step title="Accept your invitation">Open your invitation and follow the central sign-in or account setup flow. Complete email verification and accept the invitation. A pending invitation does not grant access.</Step>
-  <Step title="Secure your account">Complete the security setup requested by Webdock. Manage your password, passkeys and multi-factor authentication at [My account](https://auth.webdock.dev/account).</Step>
-  <Step title="Open Console">Visit [console.webdock.dev](https://console.webdock.dev). Choose your workspace if you have several. Your role and enabled services determine the sections you see.</Step>
-  <Step title="Choose a resource">Open an assigned website to work on its content, or your workspace's hosting or Mail area. Creating a project record does not automatically deploy an application or provision a CMS.</Step>
+  <Step title="Sign in with your approved email">
+    Open [Console](https://console.spitzli.cloud). If you have not set a password for the current login, select **Forgot password?** and use the single-use link sent to your confirmed email. Accept any workspace invitation as part of account setup.
+  </Step>
+  <Step title="Complete your security setup">
+    Complete any multi-factor challenge shown after sign-in. Open **My account** to manage your password, passkeys, MFA and recovery codes. Operator access requires the platform's additional security checks; a workspace role does not grant operator access.
+  </Step>
+  <Step title="Choose your workspace">
+    Check the workspace name before making changes. Your role and enabled services determine what you can see and manage. If the workspace is missing, ask its administrator to check your membership.
+  </Step>
+  <Step title="Choose your first task">
+    Open an assigned website to edit content, manage an existing application, or open **Connections** to link a provider. Creating a project or saving a connection does not deploy a workload automatically.
+  </Step>
 </Steps>
 
-## Next steps
+## Choose a path
 
 <Columns cols={2}>
-  <Card title="Website content" icon="file-lines" href="/guides/websites">Edit, preview and publish.</Card>
-  <Card title="Applications" icon="server" href="/guides/applications">Read application state, operations and logs.</Card>
-  <Card title="Mail" icon="envelope" href="/guides/mail">Set up sending and sender domains.</Card>
-  <Card title="Developer tools" icon="terminal" href="/developers/mcp">Register an OAuth client for MCP.</Card>
+  <Card title="Connect a database" icon="database" href="/guides/byok-neon">Link your Neon account or project with your own API key.</Card>
+  <Card title="Run an application" icon="server" href="/guides/applications">Inspect an application, request an image and follow the operation.</Card>
+  <Card title="Edit a website" icon="file-lines" href="/guides/websites">Understand drafts, previews and publishing.</Card>
+  <Card title="Set up Mail" icon="envelope" href="/guides/mail">Check availability and prepare a sender domain.</Card>
 </Columns>
 
-If a workspace or website is missing, check your signed-in account and [access troubleshooting](/guides/troubleshooting).
+For a repository-based application, read [Git and deployments](/guides/git-deployments) before connecting a repository. Provider credentials and supported build strategies have separate activation requirements.
+
+## Before changing a resource
+
+Check its workspace, project, current state and displayed limits. Keep secrets in private credential inputs. If a request times out, inspect its operation before repeating it; a lost response does not mean the change failed.
+
+See [plans and limits](/guides/plans-and-billing) or [troubleshooting](/guides/troubleshooting) when an action is unavailable.

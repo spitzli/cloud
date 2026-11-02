@@ -1,0 +1,28 @@
+# Entry points on the bundled Traefik for dedicated PostgreSQL and mail engines; each instance is
+# routed by TLS server name and its TLS passes through.
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    ports:
+      postgres:
+        port: 5432
+        exposedPort: 5432
+        protocol: TCP
+        expose:
+          default: true
+      imaps:
+        port: 993
+        exposedPort: 993
+        protocol: TCP
+        expose:
+          default: true
+      submissions:
+        port: 465
+        exposedPort: 465
+        protocol: TCP
+        expose:
+          default: true

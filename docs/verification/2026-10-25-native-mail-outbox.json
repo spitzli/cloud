@@ -1,0 +1,164 @@
+{
+  "date": "2026-10-25",
+  "base": "5fe5576fc624fa1d6c2509e94196707ed40a97a8",
+  "scope": "Managed Mail message custody and execution over the canonical Core outbox",
+  "status": "verified_local_implementation",
+  "ownership": {
+    "core": "Atomic source, recipient allowance, route, queue, one-use attempt and receipt ledger",
+    "managedMail": "Encrypted private payload custody, native ingress, preparation, dispatch and cleanup",
+    "secondQueue": false,
+    "genericAutonomousJobs": false,
+    "legacyPaths": "Compatibility retained; live consumer and old-payload cutover requires separate explicit operation"
+  },
+  "contracts": {
+    "mailRelease": "0.3.0",
+    "logicalSchema": 2,
+    "readableSchema": [
+      1,
+      2
+    ],
+    "physicalMailMigrations": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "nativeMigration0045": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+    "nativeMigrations0042to0044Changed": false,
+    "nativeApi": "POST/GET/DELETE /v1/emails with original key and sender policy",
+    "pluginActions": [
+      "mail.send",
+      "mail.status",
+      "mail.cancel",
+      "mail.history"
+    ],
+    "queueAcceptanceIsProviderAcceptance": false,
+    "retry": "Preparation lease reclaim only; definitive rejection terminal; handoff/unknown never automatically resends"
+  },
+  "bounds": {
+    "nativeControlCommandBytes": 163840,
+    "nativeControlResultBytes": 131072,
+    "mailSendInputBytes": 131072,
+    "otherActionAndJobInputBytes": 32768,
+    "configurationBytes": 65536,
+    "mailInvokeTransportBytes": 229376,
+    "otherRuntimeTransportBytes": 131072,
+    "nativeHttpBodyBytes": 16777216,
+    "nativePayloadBytes": 26214400,
+    "pluginActionDisplayName": "80 Rust Unicode characters",
+    "nativeDisplayName": "80 UTF-16 units"
+  },
+  "focusedVerification": {
+    "sharedExtractionReview": "approved, no findings",
+    "rootSharedFeatureTestsPassed": 36,
+    "coreControl": "Final fix1 frozen and freshly source-reviewed:144 defaults passed/107 explicit ignored,6-package all-target clippy,31 entrypoint tests,6Mail+2Host focused restricted PG cases; root verified34 hashes and exact fixture removal",
+    "productDefaultPassed": 27,
+    "productDefaultIgnored": 11,
+    "ownedProductPgAndProcessTargetsPassed": 3,
+    "productProcessAuthority": "Controlled Core/Host fault stand-ins, not final real-Core acceptance",
+    "rootProductDefaultReplay": "passed",
+    "rootUiUnitTestsPassed": 88,
+    "rootUiBrowser": "passed same-key lost/network/postcommit403 retry, queue/unknown/cancel/member/legacy gating",
+    "uiRefreshFinding": "Background refresh discarded unresolved snapshot; behavioral RED empty input, fix and fresh scoped review passed",
+    "rootUiTypesAndLint": "passed",
+    "rootSmtpCatcherTestsPassed": 12,
+    "qualityToolTestsPassed": 21,
+    "rootUiVisual": "six synthetic canonical-array HTTP fixture screenshots at375/1280 refreshed; no horizontal overflow, no credentials",
+    "rootFinalBoundaryTestsPassed": 7,
+    "rootSafeNativeSourceRegressionsPassed": 9
+  },
+  "ociPackaging": {
+    "status": "built and negative-smoked",
+    "dockerfile": "plugins/mail/Dockerfile",
+    "published": false,
+    "manifestDigest": "sha256:db333f4acc7de26f8e1c784110d744656366b68dcd0d3a42eccd0fe67c98f6e8",
+    "configDigest": "sha256:22140e5a1f24b007241f7ad8a6ce405cab3a53beada17db573fc08d02ad99917",
+    "user": "65532:65532",
+    "entrypoint": "/usr/local/bin/webdock-mail",
+    "packagedBinaries": {
+      "webdock-mail": "e68f12bfad2b631843d368c66d4d6c112dc02f36a072fd2a0c29e4d943c10c1d",
+      "webdock-mail-gateway": "c12cc2d3ac3eb00d2317845eb9aa018a926e8073601909e9f29827329ffe2f75"
+    },
+    "negativeSmoke": "Both exact fixed startup markers with missing config, nonroot/network-none/read-only/cap-drop; root also verified copied ELF host loading",
+    "positiveCoreDeliveryFromImage": "Exact packaged image ELFs executed on host through real Core/local SMTP; configured in-image delivery and rollout are not claimed",
+    "ownedContainersRemaining": 0,
+    "ownedLocalTagCleanup": "exact owned tag removed with --no-prune after ID/label verification; copied binaries/build context/home removed; sanitized provenance preserved",
+    "finalCoreSourceCompatibilityComparedFiles": 96,
+    "buildRelevantSourceChanged": false
+  },
+  "actualAcceptance": {
+    "status": "all12_unique_cases_passed",
+    "uniqueCasesPassed": 12,
+    "successfulOwnedSubruns": 37,
+    "diagnosedFixtureOnlyFailedAttempts": 5,
+    "testTarget": "crates/plugin-host/tests/mail_outbox_native.rs",
+    "cases": {
+      "generic_installer_persisted_six_files_run_actual_mail_with_automatic_binding": 1,
+      "native_and_action_network_replay_conflict_and_restart": 2,
+      "console_network_large_original_mail_inputs_and_80_character_name": 1,
+      "native_and_action_unknown_retains_payload_quota_and_never_resends": 2,
+      "native_and_action_explicit_smtp_rejections_are_terminal_and_release_allowance": 6,
+      "native_and_action_lost_begin_and_finish_ack_never_duplicate_attempt": 4,
+      "actual_claim_fencing_and_competing_worker_do_not_duplicate_delivery": 2,
+      "native_and_action_cancel_and_revocation_fail_closed": 13,
+      "kill_after_stored_data_restarts_without_a_second_attempt": 2,
+      "incoming_and_domain_transition_race_is_serialized_without_ce": 1,
+      "accepted_handoff_blocks_transition_drain_and_survives_sigterm": 2,
+      "normal_tls_binding_derivation_and_schema_reader_fence": 1
+    },
+    "paths": [
+      "native public API through actual pinned gateway",
+      "plugin action through actual Console HTTP -> PluginEndpoints -> Runtime Invoke -> NativeControl",
+      "signed operator installer admission -> public Worker load/advance -> six persisted material files -> actual packaged Mail with automatic TLS binding"
+    ],
+    "commitmentProof": "exact prepared MIME hash/size/envelope plus exactly one SMTP framing CRLF; complete DATA retained",
+    "failureInjection": "explicit postcommit ACK-loss shim; full-DATA final-reply loss; exact owned process termination",
+    "fixtureCorrections": [
+      "bounded logical installation ID",
+      "distinct production Auth/Console origins",
+      "strict separate SMTP framing comparison",
+      "native changed-input400 versus plugin409 preserved",
+      "bounded exact positive advisory waiter observation"
+    ],
+    "oldIgnoredGenericFixture": "retired only after replacement passed; signed catalog default test retained",
+    "cleanup": {
+      "ownedRuns": 42,
+      "containersAbsent": 84,
+      "volumesAbsent": 84,
+      "ownedPIDIdentitiesAbsent": 79,
+      "privateDirectoriesAbsent": 42,
+      "newNetworksCreated": 0,
+      "rootIndependentExactResourceChecks": true
+    },
+    "limitations": [
+      "Exact packaged ELF processes ran on host; image default-UID negative smokes are separate",
+      "Isolated fixture identities/customer/provider/file enrollment are setup data, not fresh Console login provisioning",
+      "Installer candidate was not promoted or deployed",
+      "Schema1 denial uses controlled release metadata, not an old executable/down migration",
+      "Incoming reverse-order proof uses a labeled retained reservation sentinel, not CE deployment",
+      "Public exposed REST/MCP bearer ingress not separately network-wired by C4; focused authenticated boundary tests are separate",
+      "No provider/public delivery, Webmail, incoming relay or production cutover",
+      "Replacement installer test does not repeat the retired runtime-handshake using metadata-CA negative assertion; independent authorities/pinned startup and metadata wrong-CA denial are covered (non-blocking review note)"
+    ]
+  },
+  "limits": [
+    "No real provider delivery, public reception, incoming relay or production/Contabo action",
+    "No Webmail UI, backup or live old-record/key/payload migration",
+    "Standalone process and local image packaging are separate from a new Console/Kubernetes rollout",
+    "Prior 5fe Mail Console/CE/PVC lifecycle evidence remains a separate baseline"
+  ],
+  "finalGates": {
+    "coreReview": "approved: exact original OAuth grant identities, retained terminal native status across generations, canonical numeric payload-store version selectors",
+    "runtimeAndUiReview": "approved after refresh repair",
+    "actualCoreAndInstallerAcceptance": "passed12unique cases/37successfulsubruns;5 diagnosedfixturefailures retained in sanitized audit and exactly cleaned",
+    "wholeChangeReview": "whole review and targeted UI fix approved; final C4 execution-reconciliation/retirement and Relay lock alignment scopedPASS, no Critical/Important",
+    "fullQuality": {
+      "command": "bun run quality",
+      "exitCode": 0,
+      "checksPassed": 49
+    },
+    "ownedCleanup": "root independently checked84containers/84volumes/42privateDirs/79recordedPIDidentities absent, exact owned OCI tag/copies removed; retained k3s remains stopped"
+  },
+  "operationsGuide": "../operations/native-mail-outbox.md",
+  "integrationReceipt": "Git signature/remote-ref and requested local-PC shutdown are recorded in the post-commit handoff, outside this source verification record."
+}

@@ -1,0 +1,345 @@
+{
+  "date": "2026-10-25",
+  "scope": "Owned local MinIO qualification only",
+  "runID": "f4b19d6c208a",
+  "privateEvidenceDirectory": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/native-object-storage/f4b19d6c208a",
+  "platformID": "object-f4b19d6c208a",
+  "clusterID": "107801550721654784",
+  "deadline": "2026-10-25T15:20:52.295Z",
+  "completedStages": [
+    "prepare",
+    "start-watchdog",
+    "build-version-images",
+    "artifacts",
+    "pin-binaries",
+    "bootstrap",
+    "prepare-transports",
+    "start-core",
+    "start-ui",
+    "setup",
+    "finalize-catalog",
+    "start",
+    "install",
+    "cleanup-qualification",
+    "cleanup"
+  ],
+  "operatorSetup": {
+    "passwordChange": true,
+    "totp": true,
+    "pkce": true,
+    "registryAPI": true
+  },
+  "schemaSha256": {
+    "0001_ids.sql": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23",
+    "0002_identity_security.sql": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721",
+    "0003_identity_preview.sql": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234",
+    "0004_identity_recovery.sql": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704",
+    "0005_identity_passkeys.sql": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b",
+    "0006_oauth_authorization.sql": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+    "0007_organization_ids.sql": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e",
+    "0008_hosting_runtime.sql": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+    "0009_agent_enrollment.sql": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3",
+    "0010_access_authority.sql": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b",
+    "0011_browser_sessions.sql": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c",
+    "0012_build_authority.sql": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d",
+    "0013_repository_authority.sql": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40",
+    "0014_database_authority.sql": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603",
+    "0015_mail_authority.sql": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151",
+    "0016_repository_browser_authority.sql": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77",
+    "0017_plugin_invocation_fence.sql": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129",
+    "0018_mail_provider_binding.sql": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc",
+    "0019_mail_plugin_policy.sql": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa",
+    "0020_mail_provider_lease.sql": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa",
+    "0021_plugin_continuations.sql": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862",
+    "0023_incoming_mail_agent.sql": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de",
+    "0024_mail_configuration.sql": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d",
+    "0025_customer_deletion.sql": "dee73efd12d48b30990c9d0bb71bbab8473a51705b3694dfafd42f6ea82dc817",
+    "0026_plugin_self_service.sql": "2b3420455001313b2b93e8953b85e1f65d4f94ea0134a7b1975c7a7bdc1be3f3",
+    "0027_customer_projects.sql": "8a42816d972bc17044f516d01849939b1bdb852846845c9ada6f759c6fc9bc7d",
+    "0028_plugin_workloads.sql": "ac36c7e9a97c72b5bfcd9b88f9bbda0dbd9e0f32b01000be6c10ab700fea8b5e",
+    "0029_default_project.sql": "1f2e6cd2ccbef7bda7b42fc6384a519553dfeb484b2623c510549361cf1212b0",
+    "0030_limits.sql": "823e6b12b5ba17a23a9c3c1c38ba54837754a87f09dd762a6e6c14d73daca7d2",
+    "0031_customer_domains.sql": "9e97c2e49dba5c5cf31d959bba17ebaf2735aabfa6da2316826caecd13e14b02",
+    "0032_api_tokens.sql": "f5c436170379aa235063036ef516fc2bac04a7fd901115fe2f73c02c27f3b817",
+    "0033_notifications.sql": "63c6e26ae7f52bcbabf913ff78d625902a9ecaaa7a023974f69d9113479ad58f",
+    "0034_logs.sql": "614597c358467fab7dcba4f7c062cea212f00b6c3d15c8b24b032371c88512c6",
+    "0035_project_cluster.sql": "bb2eb64cd495a30163563c727210cd122cb2ee6258d21feb3a16e966303af014",
+    "0036_history_placement.sql": "caacc1c5c7457718ad48f8de12e512049438bf14c84789e6fa532e00b3ca60ff",
+    "0037_log_cursor.sql": "0df190f3296836ebde3cb238896a315e6bf011b09f5a18d29a844091a10ad6a8",
+    "0038_customer_acting.sql": "5507a05d3c633c535c8f7fce583e17ab1cc67a246e47cf192aed908d38bd0245",
+    "0039_identity_acting.sql": "3ae973c90c70ade2944ebb26a2306555beeadf8c48682a152222a56a0cca60e0",
+    "0040_customer_workloads.sql": "314b295dbec9ee121d86fd60acbb463bf609b83e75e0a762126d410deac545cd",
+    "0041_invitation_scope.sql": "1c951c30ec687836d82a4736b9b0cd2bbc8f3f6a68009dbac27a43dca256989e",
+    "0042_plugin_installation.sql": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+    "0043_plugin_updates.sql": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+    "0044_plugin_jobs.sql": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+    "0045_managed_mail_outbox.sql": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+    "0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+    "0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f"
+  },
+  "producerManifestSha256": "40907a03a60bf94f61a8227435b963c2ded81ff834b493904cdd6abba624ea72",
+  "releases": [
+    {
+      "version": "0.1.0",
+      "imageManifestDigest": "sha256:8d3aa2dda3dc4b39d1cc256deec6a3f68c22b55ef1400e9a0f5ebb6b126d6d95",
+      "imageConfigDigest": "sha256:b585653e4397d9768e055bd38193ce2a654e8a58837d1844dc50ee83d6597704",
+      "signedManifestSha256": "43bf8589efc99b98c2859fe2da78259e6dcbbf1b2b1282784397e3a93045edf9",
+      "archiveSha256": "268f0a4f95aaedeb64ec3d817646245915276f8fea1d1b34df1fe6054770d9ab"
+    },
+    {
+      "version": "0.2.0",
+      "imageManifestDigest": "sha256:de6f02c276065c7eb6126b27b6c9f4af3295e7413ccdb7f2074992bf042032b9",
+      "imageConfigDigest": "sha256:7d9f815540694bda3a4ccdc2bede672e3482ddceaeb4098fb5f2918011fd34db",
+      "signedManifestSha256": "9f7ad8c4a4469f3045a0fd7a4baf2e1e9a56b60557cae9044a80affe144472ed",
+      "archiveSha256": "f69b9886b882d9632e2c8769be2460add391fc77019f81bd3056c0fa649f7af4"
+    }
+  ],
+  "acceptedOperation": {
+    "id": "107801672423579648",
+    "pluginID": "object-storage",
+    "generation": "1",
+    "accepted": true
+  },
+  "installationVerified": true,
+  "coreReadyStatus": 200,
+  "binarySha256": {
+    "webdock-migrate": "6f8f54b6e65ea262cb9dcb689166248f138b85a0a21b95161c8b7919027c52ae",
+    "webdock-bootstrap-operator": "e7b0cee9d96a21499df62cf9084081894dbed7e01846aaea1135cea37c8f0e98",
+    "webdock-enroll-agent": "08d2c12f9da8b41a839d1239bd7ef3fe8d739fd5b727d219d95873d43e571d96",
+    "webdock-bootstrap-plugins": "a2fa45c82de73f86ee7c85df6d1b8ba9cb074ab7158f32e070edee5f75ac89ea",
+    "webdock-control-plane": "073c56e42e80d2e1c8340e2b6dfb55e6d631dcc50afb0b665683d7fd2c45f3eb",
+    "webdock-plugin-control": "b459172788a67dbc70777329db6e1cb5616094a31cb4cc8664a7f82ae196ef5e",
+    "webdock-plugin-controller": "55f1739ea232ce827fbe1cef980b0b02c031126735e75b4445c14c6e154f675c",
+    "webdock-agent-control": "e754b84138da4c94b13daf7d855b40a56d844a88d82889dcdbceb099e5e8ae7c",
+    "webdock-agent": "7d51971b4548e87e8021cc28a5a5de5099528c022200d7c5ebc5a58b0ef1bf08"
+  },
+  "containers": [
+    {
+      "name": "wd-object-k3s-f4b19d6c208a",
+      "id": "41890649a1b88f9fad21820360b4f305d6248fcac4db4013389e6c38f6c0aa9d",
+      "status": "removed",
+      "anonymousVolumes": [
+        "3c43882b3026147456f226b7409de49182d76dc1d9505e047495324db3b30a3a",
+        "8eb6163684fd5e7ca1f548e3d841283031c04ef5835fd496b1cc9c1690ef9071",
+        "4a3e7643c836f80b991f0756f8a051c33439762ab51a3648e93459005227e2a6",
+        "d490d7d3572ee3c0105510aea4bf45690c8d4d712bfcbc84182bee9df3409577"
+      ]
+    },
+    {
+      "name": "wd-object-platform-f4b19d6c208a",
+      "id": "a58d7be70453cadb3a7950fb1bd69d7bd1f734219b6fb2730ab2a6967f8413aa",
+      "status": "removed",
+      "anonymousVolumes": [
+        "88f2f61a5e6985b2ec87ff1a5fce2681063850f0461355dc96d01a790f901d95"
+      ]
+    },
+    {
+      "name": "wd-object-metadata-f4b19d6c208a",
+      "id": "4a348b8f0b8fe8865e076dd07436142aa7fee6d440735591acca2ca9dfcdaf09",
+      "status": "removed",
+      "anonymousVolumes": [
+        "b5e9531cf8f23efced36b9b27706a0e457a57a15183f98c1f5dfbc59e1edebfa"
+      ]
+    },
+    {
+      "name": "wd-object-registry-f4b19d6c208a",
+      "id": "2dc1dacb556afea65c05df525a6d9200f12399c72d59bf1c23e2a3b72b5d2aab",
+      "status": "removed",
+      "anonymousVolumes": [
+        "3e37ac57f8131279cf0dc0453b55bd8e5401775259ad9d73dc086ffab17cfb2f"
+      ]
+    },
+    {
+      "name": "wd-object-proxy-f4b19d6c208a",
+      "id": "457cc048c86bdd3f9e1028181f1796b722367d91d949328648b255405a1b27cc",
+      "status": "removed",
+      "anonymousVolumes": []
+    },
+    {
+      "name": "wd-object-callback-f4b19d6c208a",
+      "id": "31f10416bf09c4e3fe53de01c019ce70f1cf2a458391ef5ee4766cb97a00fac9",
+      "status": "removed",
+      "anonymousVolumes": []
+    }
+  ],
+  "runtimes": [
+    {
+      "stage": "before-restart",
+      "generations": [
+        {
+          "generation": 1,
+          "version": "0.1.0",
+          "namespace": "wd-plugin-6052359db31566c739749f67",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-6052359db31566c739749f67",
+              "uid": "8669fdf3-7390-4a5d-a963-149a1c7ed4f4"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "98ee2dfb-9731-49bf-81f5-1bbed9d845cc"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "b00146d6-ec7f-419c-ba70-e64d64418ffb"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "51f9ef90-1e8e-477a-9c28-d119cb67e322"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "b8f3dfcf-1be5-4ecb-b61d-2987f4f25a1c"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "2c5f9436-e385-459f-a356-20d9c79dc52e"
+            }
+          ],
+          "replicas": 1,
+          "pods": [
+            {
+              "name": "runtime-f5875ccfb-27n59",
+              "uid": "695de8cd-731c-4731-b6f6-2d0b299d9af0",
+              "ready": true,
+              "containers": [
+                {
+                  "id": "containerd://ccd42c78dd6f21a02b283902a2355ebf48602b897c31d9d5c5e96161724d88a6",
+                  "imageID": "127.0.0.1:33087/webdock/object-storage@sha256:8d3aa2dda3dc4b39d1cc256deec6a3f68c22b55ef1400e9a0f5ebb6b126d6d95",
+                  "restarts": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "restart",
+      "generations": [
+        {
+          "generation": 1,
+          "version": "0.1.0",
+          "namespace": "wd-plugin-6052359db31566c739749f67",
+          "objects": [
+            {
+              "kind": "Namespace",
+              "name": "wd-plugin-6052359db31566c739749f67",
+              "uid": "8669fdf3-7390-4a5d-a963-149a1c7ed4f4"
+            },
+            {
+              "kind": "Secret",
+              "name": "runtime-config",
+              "uid": "98ee2dfb-9731-49bf-81f5-1bbed9d845cc"
+            },
+            {
+              "kind": "Deployment",
+              "name": "runtime",
+              "uid": "b00146d6-ec7f-419c-ba70-e64d64418ffb"
+            },
+            {
+              "kind": "Service",
+              "name": "runtime",
+              "uid": "51f9ef90-1e8e-477a-9c28-d119cb67e322"
+            },
+            {
+              "kind": "NetworkPolicy",
+              "name": "runtime",
+              "uid": "b8f3dfcf-1be5-4ecb-b61d-2987f4f25a1c"
+            },
+            {
+              "kind": "IngressRouteTCP",
+              "name": "runtime",
+              "uid": "2c5f9436-e385-459f-a356-20d9c79dc52e"
+            }
+          ],
+          "replicas": 1,
+          "pods": [
+            {
+              "name": "runtime-f5875ccfb-vwmrw",
+              "uid": "4953b0c1-ff3a-45de-88ce-f19066ef6a15",
+              "ready": true,
+              "containers": [
+                {
+                  "id": "containerd://a7018ecd7eab29e97e1da4d86b5d9f7e804220be781333c8a35da30aef52a62e",
+                  "imageID": "127.0.0.1:33087/webdock/object-storage@sha256:8d3aa2dda3dc4b39d1cc256deec6a3f68c22b55ef1400e9a0f5ebb6b126d6d95",
+                  "restarts": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "transportProof": null,
+  "dataProof": null,
+  "lifecycleProof": null,
+  "browserProof": null,
+  "cleanupRegressionProof": {
+    "actualNativeImage": true,
+    "exactSixUIDsRetained": true,
+    "actualPodReplacement": true,
+    "localPolicyCacheAbsent": true,
+    "metadataRetainedBeforeDelete": true,
+    "normalCoreDeleteSucceeded": true,
+    "privateResourceStateDeleted": true,
+    "noSQLRepair": true
+  },
+  "nativeResourceCleanup": {
+    "deactivated": true,
+    "keysRevoked": true,
+    "purged": true,
+    "bucketDeleted": true,
+    "privatePendingCleared": true,
+    "coreResourceCount": 0,
+    "remoteBucketUserPolicyAbsenceObserved": true
+  },
+  "cleanup": {
+    "exactContainerIDsRemoved": true,
+    "anonymousVolumesRemoved": true,
+    "ownedNetworkRemoved": true,
+    "recordedProcessesStopped": true,
+    "existingMinioStillRunning": true,
+    "privateEvidenceRetained": true
+  },
+  "limits": {
+    "coreTransferBytes": 536870912,
+    "concurrentTransfers": 4,
+    "aggregateStagingBytes": 2147483648,
+    "planSeconds": 300,
+    "fixtureProxyBytes": 16777216
+  },
+  "productionActions": false,
+  "wasabiQualified": false,
+  "buildCacheAdded": false,
+  "signedReleaseIdentity": {
+    "signerPublicKeySha256": "73e599a14f7712fb735a0432203fe3bbab429bfacb2852f5246df342fc899781",
+    "releases": [
+      {
+        "pluginID": "object-storage",
+        "version": "0.1.0",
+        "signedEnvelopeSha256": "72adf58bbf7a0e8c773f3ae33071ea1a1cd0ddc95bc287eee3caa1c6d559bba0"
+      },
+      {
+        "pluginID": "object-storage",
+        "version": "0.2.0",
+        "signedEnvelopeSha256": "a1849b7ab530c615a633f08824597669c3394d6dd4098eaebbdcb9aebcdc2474"
+      }
+    ]
+  },
+  "kernelIdentity": {
+    "authorityCertificateSha256": "9f564d9d2ebd5a2fbfb8189042c5a731498715b5170a0aa2e03c8009ae3bb824",
+    "coreCertificateSha256": "805a411cd41e901f15b35803e611b788a2edb831eb8341787a096ea50873ae96",
+    "oneKernelAuthorityAndCoreLeaf": true
+  },
+  "privateReportSha256": "e934f6852e6fad01f90f45541a61c01d54f818a4c3e6ee54df1020777f67286e"
+}

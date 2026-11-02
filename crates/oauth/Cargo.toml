@@ -1,0 +1,32 @@
+[package]
+name = "webdock-oauth"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+webdock-identity = { path = "../identity" }
+webdock-persistence = { path = "../persistence" }
+sea-orm.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+url.workspace = true
+tokio.workspace = true
+thiserror.workspace = true
+oxide-auth = "=0.6.1"
+josekit = "=0.10.3"
+sha2 = "0.10"
+base64 = "0.22"
+subtle = "2.6"
+getrandom = "0.2"
+
+[dev-dependencies]
+oauth2 = { version = "=5.0.0", default-features = false }
+webdock-ids = { path = "../ids" }
+totp-rs = { version = "=6.0.0", features = ["otpauth"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,47 @@
+{
+  "status": "SOURCE_STABLE_HARNESS_ONLY_PREPARATION; no runtime",
+  "runnerSHA256": "da12db921f8ebb1eb56bd4e39b3c512d2bc2779e0ddde6084e089eddb698a83d",
+  "testsSHA256": "8972fa285a726d33d867e76e5cfde64e93303f0c284b59364c378dd7aa33461c",
+  "overlay": ".runtime-test/recovery-source-input-overlay-7aa89ab9f4b5/overlay.json",
+  "overlaySHA256": "7aa89ab9f4b578ab6b8803bfcf74ac7cba528beb35ea6728e5238a83a1e8c0a9",
+  "manifest": ".runtime-test/recovery-diagnostics-source-component-ecbd3a947610/pin.json",
+  "manifestSHA256": "9897853bf62630238c0ef51930b8b4ba6f9dfc29cd4797569c1ff7c350c5958c",
+  "newTestUnchangedSHA256": "652126f66228740a2e7f3e2e433f3e3b913fc147a1344d020887b2533c4c2b5b",
+  "sourceArchiveUnchangedSHA256": "f00dad87858af948df679ca2f20a1349b17ec6be3417bf973ac9041384c64777",
+  "compilationInventoryUnchangedSHA256": "58c5d50d2cef04f4aa6a5b97707e1dd1e514c41a0ff6e786dcb910a1e9b94e00",
+  "changes": [
+    "PRIMARYexistingUDS dockerd now containerd-snapshotter=true/lazy-pull=false/native; sameone /owned/engine,4G2CPU3Gexec/pids1024/privatecgroup/networknone.",
+    "SECONDmoderncomparison/store removed; optionalimportcheck exits after rootimage-IDverification in same store. No duplicate3GiB image stores.",
+    "PGexecution selector now verifiedimportBindings.rootDigest instead of classic configurationID; publicntfy exactreference guard unchanged.",
+    "OCIroot/platform/config identities verified unchanged by image_bindings and reported separately; imported root-ID checks precedeCore."
+  ],
+  "tests": {
+    "purePassed": 55,
+    "prior52Retained": true,
+    "newTests": 3,
+    "red": "primary old2daemons andPGconfigselector failed; OCI3identitytest passed before/after",
+    "redSHA256": "19d985474946b43c4d723999e02a39ed0c3b9aa7f79d41597b4566d938350259",
+    "greenSHA256": "d28837eb19441773075520d42a397a4a52ed4e1d7b1286448dc256e52da867d3",
+    "pythonSyntax": "PASS",
+    "generatedShellSyntax": "bash -n PASS; NOTexecuted"
+  },
+  "unchangedAST": [
+    "verified fd/JSON reader",
+    "finite13parent/newtest admission",
+    "ELFcopy0500sizehash",
+    "bothsourcearchivecopy",
+    "verifiedbytecustody+module/root loaders",
+    "OCIimage_bindings",
+    "finalizer"
+  ],
+  "historicalReadOnlyEvidence": {
+    ".runtime-test/recovery-admission-0ca52861d95d/diagnostics/modern-import.log": "451cf2ca812af3e1cf8b0b20b07089a717e3c99227a77e597c15cebab85291af",
+    ".runtime-test/recovery-admission-aca7967d86be/diagnostics/modern-image-list": "25b239f0b9e265cbcd13f296292af13784401386e57716621a4f0122dd96d878"
+  },
+  "historyBoundary": "HistoricalmodernrootIDs/import-rootfs evidence supports selected store; exactpublicntfyRepoDigestlookup still MUST pass nextactualprecondition.796measuredmissingdigest unchanged; no retrospectiveacadacauseclaim.",
+  "diffSHA256": "7469e0dd51c719627969f2c0ab50d5937a8e0f4fc71aaa4af547414c9ea404a5",
+  "runtimeActions": 0,
+  "RustCompileActions": 0,
+  "noMainCargo": true,
+  "limits": "NoDocker/preflight/image mutations/retag/forgeddigest/pull/latest fallback/verification disable. No SourceReady/full54 claim. KeepPCON."
+}

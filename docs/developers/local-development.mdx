@@ -1,63 +1,54 @@
 ---
 title: "Local development"
-description: "Work with the current Webdock monorepo and isolated test environments."
+description: "Run the Rust Core, React Console and isolated local fixtures."
 ---
 
-Use Node.js 24 and the repository's workspace lockfile. The API workspace pins Bun for its runtime and scripts.
+The active API lives in `crates/control-plane`. `apps/console` contains the Vite React Console and account UI. The previous TypeScript platform applications are archived under `legacy/` and excluded from the active Bun workspace.
 
-## Repository map
+## Install and start
 
-| Workspace | Responsibility |
-| --- | --- |
-| `apps/website` | Public website and its CMS |
-| `apps/console` | Console browser application |
-| `apps/auth` | Central account and sign-in UI |
-| `apps/control-plane` | Bun API, protocol handlers, services and worker |
-| `agents/kubernetes` | Managed workload execution |
-| `packages/module-sdk`, `packages/core` | Installation contracts and local identity interfaces |
-| `modules/{mail,hosting,databases,storage}` | Product services, UI and module admission |
-| `adapters/<area>/<provider>` | Concrete identity and provider integrations |
-| `packages/api-client` | Server-side frontend transport to the API |
-| `docs` | Public Mintlify pages and excluded repository records |
+<Note>These commands require a native source revision containing `crates/control-plane` and `Tiltfile`. Check the revision after checkout; an older TypeScript branch has different setup commands.</Note>
 
-Console and Auth are HTTP frontends. Business and identity services now live in `apps/control-plane`; older historical documents may refer to their former location in the frontends.
+Use the repository's pinned Rust toolchain and Bun 1.4.3, with Docker, Tilt and `protoc` available:
 
-## Install
-
-```bash
-git clone https://github.com/spitzli/webdock.git
-cd webdock
-npm ci
+```sh
+bun install --frozen-lockfile
+bun run dev
 ```
 
-Configure only the local environment variables required by the workspace you run. Follow its checked-in examples and scripts. Do not copy production database URLs or provider credentials into a test environment.
+Tilt prepares restricted local database roles and native migrations, then starts the Rust services and the browser development servers. Console uses port 3121, account pages use `localhost:3125`, and Core uses 3130. Private local state belongs in `.dev-local/`. Consult `crates/control-plane/README.md` for first-run configuration and local HTTPS.
 
-See [installed module configuration](/developers/modules) for runtime product selection and safe draining.
+For individually configured processes, run these in separate terminals:
 
-## Start a workspace
-
-Run the relevant command in its own terminal after preparing its local configuration:
-
-```bash
-npm run dev:admin
-npm run dev:auth
-npm run dev -w @webdock/api
+```sh
+bun run dev:api
+bun run dev:console
+bun run dev:auth
 ```
 
-Console uses port 3120 and the Auth UI uses port 3125. Running the frontend alone does not provision a backend or establish account access.
+The separate public website uses `bun run dev:web`.
 
 ## Verify changes
 
-The API fixture creates labeled disposable local PostgreSQL infrastructure and ignored test environment files. It requires Docker. Use the root workspace scripts:
-
-```bash
-npm run test:setup -w @webdock/api
-npm run test:setup:rls -w @webdock/api
-npm test -w @webdock/api
-npm run test:rls -w @webdock/api
-npm run check -w @webdock/api
+```sh
+cargo fmt --all
+bun run quality
+bun run test:distribution
 ```
 
-Run the relevant frontend or shared-package checks for your change. Use `npm run test:teardown -w @webdock/api` to remove the owned fixture after testing. Follow the fixture output for its actual local target; never point test setup at production.
+Use the quality gate required by the matching source revision. Its Rust, frontend and contract checks are separate from opt-in browser, database and cluster acceptance. Use disposable local PostgreSQL and Kubernetes fixtures only. Never use customer data, production configuration or real mail in tests; local mail goes only to Mailpit.
 
-Read repository `AGENTS.md` files before contributing. For Next.js changes, consult the documentation shipped with the installed version.
+## Repository map
+
+| Directory | Responsibility |
+| --- | --- |
+| `crates/` | Native platform, protocol, persistence and executor services |
+| `apps/console` | React Console and canonical account screens |
+| `plugins/` | Compatibility/test/UI snapshots; independent repositories own releases |
+| `apps/website` | Separate public website and CMS |
+| `legacy/` | Retired TypeScript platform and release tooling |
+| `deploy/` | Native deployment artifacts and plugin workloads |
+
+Filesystem changes do not alter OAuth issuers, MCP audiences or registered clients.
+
+The loopback bootstrap fixture does not reproduce every hosted Managed Auth, provider or release gate. Current hosted identity is [Neon Managed Auth with Core security](/developers/auth-adapters). Source: `Tiltfile`, [root commands](https://github.com/spitzli/cloud/blob/main/package.json) and native runtime (`crates/control-plane`).

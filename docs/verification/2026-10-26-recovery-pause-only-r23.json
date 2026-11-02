@@ -1,0 +1,39 @@
+{
+  "status": "SOURCE_STABLE_HARNESS_ONLY_PREP; no runtime",
+  "runnerSHA256": "09bdaf3a31f08ab5da9e5b630ce403e042d3544ede17d1a25c0695de171bf259",
+  "testsSHA256": "baec4b2444a3c6f3f8fea5b6e8e642f13690166c39705e12eef611c94153f8bd",
+  "overlay": ".runtime-test/recovery-source-input-overlay-9b17b457f3b9/overlay.json",
+  "overlaySHA256": "9b17b457f3b9a1150ae6e797e92a15157a546d2f5cd80d180c30f67055ec96a2",
+  "manifestUnchangedSHA256": "9897853bf62630238c0ef51930b8b4ba6f9dfc29cd4797569c1ff7c350c5958c",
+  "testUnchangedSHA256": "652126f66228740a2e7f3e2e433f3e3b913fc147a1344d020887b2533c4c2b5b",
+  "changes": [
+    "Docker images.tar remains all3verifiedimages; separate pause.tar saved onlyfrom exactalreadyacquiredpause_ref, SHA/root-platform-config bindings recorded.",
+    "K3s ctr now imports /owned/pause.tar ONLY and tags ONLYpause; Docker loads /owned/images.tar once.3GiB/4GiB unchanged.",
+    "Newlocalarchive pendingbeforecheckedexport, verifiedafterbindings; checkedcopy requiresprivateevidence; unknownsave/copy retains unresolvedartifact until exactcleanup.",
+    "Explicitownedartifactcleanup list nowincludespause.tar; closeitslocalreceipt onlyafterfileabsence. Unknowncontainer/import outcomes remain overallFAIL/ownedcontainer+diagnosticobligations untilexactcleanup, no fakepass."
+  ],
+  "checks": {
+    "purePassed": 58,
+    "previous55Retained": true,
+    "newMethods": 3,
+    "coverage": [
+      "actualDocker-save selectorONLYpause_ref",
+      "pausearchive root/platform/config verification",
+      "partialsave pendingcustody",
+      "actualcopyexpression timeout leavesunresolvedarchive",
+      "Dockerall3/K3spauseonlyscriptpaths",
+      "bothlocaltarcleanup",
+      "oneprimarymodernstore/PGrootselector retained"
+    ],
+    "redSHA256": "2633bfc01aef18da78be05e1f57c93286cf09bed231d65a29451ba854a3e4901",
+    "greenSHA256": "c263d70549f9495f67da2a5ab969f0cfba0661bc8df4d1455fc74228a33a0fd7",
+    "syntax": "Pythoncompile/bash-nPASS; no shell execution"
+  },
+  "trustHelpersASTUnchanged": true,
+  "finalizerChange": "Only explicitpause.tar ownedartifact+closinglocalreceipt afterverifiedabsence; all othercleanupguards/independentattempts/evidencefailure logic unchanged.",
+  "diffSHA256": "4ac5baa8f8052cbc0fc4342667a605b27dbd9a8267034feeafabfb7447a8d4be",
+  "RustCompileActions": 0,
+  "runtimeActions": 0,
+  "provenance": "ecbd989/test652/frozen484inputs/f00dad+58c5 unchanged,12original6223unchanged; noRust/spec/digest/lease/quota/productchange.",
+  "limits": "Measured d508 ENOSPC duplicateimport fromRootrecord preserved; nextactualSourceattemptstillrequired. No SourceReady/full54 claim; PCkeepON."
+}

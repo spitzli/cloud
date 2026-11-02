@@ -1,0 +1,16 @@
+{
+  "name": "@webdock/realtime-sealer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "bun": ">=1.4.3"
+  },
+  "scripts": {
+    "build": "bun build src/server.ts --target=bun --outdir=dist && mkdir -p dist/licenses && cp ../../node_modules/@neon/realtime/LICENSE dist/licenses/neon-realtime-APACHE-2.0 && cp ../../node_modules/base64-js/LICENSE dist/licenses/base64-js-MIT && cp ../../node_modules/postgres-array/license dist/licenses/postgres-array-MIT && cp ../../LICENSE ../../NOTICE dist/licenses/",
+    "test": "bun test --no-env-file tests"
+  },
+  "dependencies": {
+    "@neon/realtime": "0.1.2"
+  }
+}

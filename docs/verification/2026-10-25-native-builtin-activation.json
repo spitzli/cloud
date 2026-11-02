@@ -1,0 +1,141 @@
+{
+  "status": "passed-scoped-fresh-builtin-foundation",
+  "verifiedAt": "2026-10-25T20:07:54.892040+00:00",
+  "head": "819041524049117bc50e11dfd96a6a29407804b8",
+  "scope": "Hosting and configured dedicated Databases compiled in-process activation; not full Mail/PG/native recovery acceptance",
+  "endpoint": "POST /api/console/plugins/builtins/{hosting|databases}/activate",
+  "request": {
+    "idempotencyKey": "operator-reviewed-setup-v1"
+  },
+  "requiredAuthority": [
+    "genuine native password change and TOTP",
+    "S256 PKCE first-party Console session",
+    "current native operator role and live mapped Console operator row",
+    "write authority without tenant preview",
+    "normal same-origin/JSON browser boundary"
+  ],
+  "availability": "Core config feature is not disabled AND actual matching ServiceState service is Some; fixed Hosting/Databases whitelist; no builtin Mail",
+  "trustedVersion": "Compiled CARGO_PKG_VERSION, not a client field",
+  "sqlChanges": false,
+  "rlsAudit": {
+    "source": "crates/persistence/schema/baseline.sql",
+    "installationInsertPolicyLine": 25366,
+    "operationInsertPolicyLine": 25387,
+    "installationGrantLine": 37639,
+    "operationGrantLine": 37662,
+    "consoleMappingGrantLine": 35876,
+    "result": "Existing restricted webdock_auth_runtime operator INSERT and mapped-user row locking grants suffice; no migration55 required"
+  },
+  "writeSemantics": [
+    "installation scope; no customer/project required",
+    "fresh bootstrap marker required and unchanged by activation",
+    "existing exclusive installation and shared migration advisory fences",
+    "current Console operator mapping locked FOR SHARE through commit, including receipt replay",
+    "insert absent builtin enabled only; runtime absent, generation0, current/candidate/previous runtime generations NULL, image NULL",
+    "persist succeeded operation, original receipt and accepted audit in same transaction",
+    "same actor/key exact command replay revalidates current auth and returns persisted receipt; different command/key conflict rules preserve existing installs",
+    "no runtime/release/enrollment/worker workload rows; no tenant feature grants or provider resources"
+  ],
+  "actualProof": {
+    "runner": "Copied compiled Axum HTTP router integration test with actual restricted PostgreSQL services and copied offline webdock-bootstrap-operator binary; embedded native migrator SQL",
+    "test": "plugin_builtins::fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialized_receipts",
+    "result": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 1,
+      "durationSeconds": 19.83
+    },
+    "pins": {
+      "bootstrap-test": "40a0361a150909e26c4f1c686aeb97edf395705e59bf1cc75dc7e79d5ce051b9",
+      "webdock-bootstrap-operator": "bb3c2536b80c855fd5288b005fc80797589b935377d013c78c560c77b39cf12b",
+      "webdock-migrate": "69be8353db588e723008222ff6ff6482ea4b3c9ce42c7bd8347756d30a20bc28",
+      "0054_source_recovery_fences.sql": "10d6eb14234f47447765d20e6b34863e83fd52b726bebbee2d231c0e7aaaa01d",
+      "builtin-test.rs": "58f600b27dd12f091f423ae6d1291b7f9678c97d644086f5feec139d1ef9e451",
+      "builtins.rs": "6271dd8e7e79538e5c0fbadcdb0ba83f7da0c34feff279f9c90bec828447607b",
+      "plugin_builtins.rs": "5f2d50caf41b66ac6002d9e8b80e6462eb916ddac51c653b1ec9a3a67da105ee"
+    },
+    "checks": [
+      "fresh database has zero sessions and module rows after actual offline operator bootstrap",
+      "password change and TOTP enrollment through HTTP",
+      "real S256 PKCE authorize/callback and Console cookie",
+      "deny missing configured/compiled capability and disabled feature without module/operation rows",
+      "deny builtin Mail",
+      "deny wrong or missing Origin",
+      "concurrent same-key Hosting activation with one response dropped before receipt body read, then retained exact receipt replay",
+      "concurrent different-key Databases activation has one success and one409",
+      "two enabled builtin rows runtime absent generation0; two completed operations and two audit events",
+      "zero external runtimes/configs/releases/grants/feature policies/workloads/install executions",
+      "zero customer and project rows during positive activation",
+      "legacy marker and existing disabled/external installation conflict without overwrite",
+      "current Console operator mapping downgrade403; real native ordinary member context403",
+      "actual read_only and owner preview scopes403",
+      "signed-out native authority denies replay",
+      "quarantined restored target423"
+    ],
+    "negativeFixtureDisclosure": "Only after legitimate positive activation: a customer is created via Registry API and a negative-only ordinary membership is inserted for the genuine existing native account; marker/existing installation/roles are mutated only to exercise denials. No manually inserted operator, session or initial builtin row qualifies setup."
+  },
+  "verification": {
+    "libraryTests": "cargo test --locked -p webdock-plugin-host -p webdock-control-plane --lib --no-default-features:55 passed,0 failed,0 ignored",
+    "strictClippy": "cargo clippy --locked -p webdock-plugin-host -p webdock-control-plane --lib --test bootstrap -- -D warnings:passed",
+    "format": "rustfmt --check --edition2024 --config skip_children=true on all seven touched Rust files:passed",
+    "diff": "git diff --check on existing touched Rust files:passed",
+    "rootCargoLockSha256": "c6f2848cdeeeb1f63ebf38bf9c8faba12cbb9247b336c1b999427e643901a576 unchanged"
+  },
+  "attempts": [
+    {
+      "candidate": 1,
+      "testSha256": "b67f51d7686398aa22d528421de9a5c291fa9843816ba2d5589092125fa39395",
+      "result": "failed test harness unsupported returnTo=/plugins; corrected to supported /projects"
+    },
+    {
+      "candidate": 2,
+      "testSha256": "ccb18aa047941c1bce5bd2273532baf385eecc8aa778b1254d76668cf44c58ce",
+      "result": "real security RED: stale mapped Console reader accepted replay200; fixed current mapping guard in product"
+    },
+    {
+      "candidate": 3,
+      "testSha256": "475cb3ed68743300a9aca7ee88e9e6212fc65aaa1af34d898a4cd9891c20d685",
+      "result": "mapping fix GREEN; test expected403 for downgraded native user without member context but actual401 correctly denied; corrected harness expectation"
+    },
+    {
+      "candidate": 4,
+      "testSha256": "3ebd9bb970bbcf843518eeaff52ba140f2c85b71826e49332396daec7746e56a",
+      "result": "1 passed,25.29s"
+    },
+    {
+      "candidate": 5,
+      "testSha256": "40a0361a150909e26c4f1c686aeb97edf395705e59bf1cc75dc7e79d5ce051b9",
+      "result": "1 passed19.83s; explicit dropped unread committed reply, real ordinary member denial context and exact cleanup identifiers"
+    }
+  ],
+  "cleanup": {
+    "finalContainer": "cf58ec93576df82cd781cf8248d22d549e8e41c052c5faabeff3f59254994874",
+    "finalAnonymousVolume": "eb6e25f1456b37bcf216e3670a92b69a331058a31d36ff3e6542c14cb3c2d2e4",
+    "finalPrivateDirectory": "/tmp/.tmpXchniZ",
+    "finalContainerVolumeAndPrivateDirectory": "all independently verified absent after fixture teardown",
+    "priorAttempts": "All five named containers absent; known attempt2/3 volumes independently absent. Attempts1/4 fixture teardown used docker rm --force --volumes; their anonymous volume IDs were not captured.",
+    "retainedEvidence": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/builtin-foundation-eb0a8c561af9",
+    "copiedExecutableCleanup": "15 owned copied executable files hash-verified then removed after proof; all pin manifests, copied SQL/source and attempt records retained; no Cargo cache cleanup",
+    "productionOrForeignServiceChanges": false,
+    "removedOwnedCopiedExecutableBytes": 10283648912,
+    "cleanupEvidence": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/builtin-foundation-eb0a8c561af9/cleanup.json"
+  },
+  "usage": [
+    "Run normal fresh migration/bootstrap-operator and plugin-host configuration setup; enable hosting config and actually load HostingService (and Databases if wanted).",
+    "Complete mandatory operator password change, TOTP and Console PKCE login.",
+    "From that genuine Console browser/API session POST JSON request shown above to hosting activation; use a distinct reviewed key for databases.",
+    "Do not seed module/session rows, rerun legacy import, provision tenant/provider resources or activate builtin Mail. Existing disabled/external/mismatched installations require their existing reviewed lifecycle."
+  ],
+  "limitations": [
+    "This is real PostgreSQL plus actual Axum HTTP/protocol handling, not a standalone Core network-listener or browser-rendering test.",
+    "SQL54 is an independently copied DRAFT pin10d6eb14234f47447765d20e6b34863e83fd52b726bebbee2d231c0e7aaaa01d, not approval or a final freeze of recovery migration54.",
+    "No Agent/provider/Kubernetes/SMTP/production starts; signed external Mail installation and full S3/Mail/PG acceptance remain the parent tasks.",
+    "The PostgreSQL bootstrap fixture remains opt-in/ignored by default and was explicitly run here; unrelated original bootstrap test was filtered, not claimed passing."
+  ],
+  "sourceSha256": {
+    "crates/plugin-host/src/builtins.rs": "6271dd8e7e79538e5c0fbadcdb0ba83f7da0c34feff279f9c90bec828447607b",
+    "crates/control-plane/src/plugin_builtins.rs": "5f2d50caf41b66ac6002d9e8b80e6462eb916ddac51c653b1ec9a3a67da105ee",
+    "crates/control-plane/tests/support/plugin_builtins.rs": "58f600b27dd12f091f423ae6d1291b7f9678c97d644086f5feec139d1ef9e451"
+  }
+}

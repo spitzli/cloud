@@ -1,0 +1,222 @@
+{
+  "status": "PURE absence compatibility +CURRENT binary/source pin PREPARED; no Docker/runtime execution; actual source component HELD",
+  "createdUTC": "2026-10-26T03:58:00.575337+00:00",
+  "compatibility": {
+    "exactDiff": "container_probe known message prefix only .lower(); full suffix reference bytes stay exact case-sensitive; original exit1/empty-or-[] requirement and unknown refusal unchanged",
+    "red": "23 runner tests: two recorded lowercase ID/name subcases errored as unknown before correction",
+    "green": {
+      "command": "python3 -m unittest discover -s tools/tests -p 'test_recovery_fixture_*.py'",
+      "passed": 30,
+      "failed": 0,
+      "originalRegressionsRetained": 28
+    },
+    "syntax": "py_compile passes",
+    "currentSHA256": {
+      "tools/tests/recovery_fixture_custody.py": "4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c",
+      "tools/tests/test_recovery_fixture_custody.py": "1e86182bbdc62ed469f04c745f26faea930cda7bf5dd9bc33143b46fc6c621cb",
+      "tools/tests/recovery-admission-component.py": "500c4246448a54031f27bdcc520c022539bf34eb6f4799dbf9b38ead0740ed2c",
+      "tools/tests/test_recovery_fixture_runner.py": "d672c7fea60a641d56fb3e99a0a10ba51e17b9d9304d125b417b47222c455778"
+    }
+  },
+  "currentPin": {
+    "directory": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0",
+    "pinSHA256": "1bbbdd07c56540bff34faa1a8a7dd0ef97493061f9005f0b2cb5d5e54426e11e",
+    "publicSourceArchiveSHA256": "c00ef395c5fd51359c7915665623c4eca1b2f529deff71419470cc7754fe4bdb",
+    "sourceFiles": 789,
+    "executables": {
+      "webdock-control-plane": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-control-plane",
+        "copiedStrippedSHA256": "62ebc27b72cb6864b68fe837b9cf8c83832500f0b4be405f63c8a51d0eb4dcf2",
+        "originalBuildSHA256": "c77d92a35f4cac2e1d0f917213b21cb8f8adad672938b5a8ac0e892843236c46",
+        "bytes": 141549536,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-agent-control": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-agent-control",
+        "copiedStrippedSHA256": "fb8c5514599cd0d697d97bf6fa6b35ebed37ce5f53e5a2fe0c33aa956dbd3140",
+        "originalBuildSHA256": "cc45f04f8846b92c254f04a2c9aaf68d16d3f79b9bbe2a7dbfb2e213eaa4768f",
+        "bytes": 81502328,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-migrate": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-migrate",
+        "copiedStrippedSHA256": "3778b4cbf9f91b018cfa3251c4b2bc3bb620fc0f717fc22772a941e4cedb8967",
+        "originalBuildSHA256": "1529289a8958e1e52256d083beba679b910741bbd966c8371f476ed0f8829179",
+        "bytes": 28520168,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-bootstrap-operator": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-bootstrap-operator",
+        "copiedStrippedSHA256": "0a73a9ff56cea0798857085bcb648a3a8e560314764cbfda136d943f601eca38",
+        "originalBuildSHA256": "0e1bf4466eca4808d8a6a0a52cae1e3ccb54bc0bf11d7a58c4738c33a0327b9d",
+        "bytes": 36360168,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-enroll-agent": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-enroll-agent",
+        "copiedStrippedSHA256": "aac99b4f697fdcfdc1a7b3cbe99a5a1fd00ccaa2b30753e28d1b61b1b9889edd",
+        "originalBuildSHA256": "97b7a15565ba62c50c7b317261613a5056dd68b239a870d4e13b878b84c432e3",
+        "bytes": 31052552,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-bootstrap-plugins": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-bootstrap-plugins",
+        "copiedStrippedSHA256": "1e4f2c861e53304f2f6080be764bc717daaa45a6f90a497cc908d3ebee1ffc64",
+        "originalBuildSHA256": "11cf582cc202ce0be6114110189ad9ff2bfcdc5135862d0116016ee5393a81bb",
+        "bytes": 40036632,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-plugin-control": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-plugin-control",
+        "copiedStrippedSHA256": "51cee62734c41b10406399b3f88da71a92cc3eab2de191d567268d0190e546f1",
+        "originalBuildSHA256": "dbd7eeb83364850a4b44c1e50c0bb12b96cdadee2f6f876c2263d0f77e8a3ac1",
+        "bytes": 79655984,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-plugin-controller": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-plugin-controller",
+        "copiedStrippedSHA256": "c0552419cd09e8ddae639430c72ede4771b64777e743fcd6c097a135ff821b5e",
+        "originalBuildSHA256": "355e1fd06c085849c7547d2bc66029bd2ff3ca215f41ab427d85133437bb7732",
+        "bytes": 68348792,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-agent": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-agent",
+        "copiedStrippedSHA256": "d8208a7e7984ee47caeed8b1f69c2ff74879a8f1a413072c7dce50a55d997270",
+        "originalBuildSHA256": "0238f67d6d64565aad44831adde0e701f2d8e72bcaf6ce5174445171c4d24ffc",
+        "bytes": 113232144,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-storage": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-storage",
+        "copiedStrippedSHA256": "1f2bc06b80cc68c81a5bb392ead2358e66d8c34d971837af2df1128ed72e2301",
+        "originalBuildSHA256": "2cc29ffd5e259c9932f05e52cb0aa170081b32cf02bf7639e2e0204e72888801",
+        "bytes": 22535240,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-recovery": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-recovery",
+        "copiedStrippedSHA256": "16227688c416aa95853012f704d06a2f106213a6e47c99e2f7468bc8859585ec",
+        "originalBuildSHA256": "c7037ad2fde6568b5ae4bdf4fe71d4b3fb0b84531765b8bc3421096d17546169",
+        "bytes": 50433984,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "webdock-recovery-gateway": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/webdock-recovery-gateway",
+        "copiedStrippedSHA256": "9ce1cf666f85ee3ce7150364186e02b7c5d6c222e507ff98cfd7730d12ff2bf8",
+        "originalBuildSHA256": "768710453b2877fe8b6054255a5cd14224803c6cb816f697ff26d562e4a19a46",
+        "bytes": 22093864,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      },
+      "bootstrap-test": {
+        "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-current-source-component-6223d3e8baf0/bootstrap-test",
+        "copiedStrippedSHA256": "6643718329135d108f3685fdc6993d5bb09395a7eb657cc3dfe4a09910e3e74a",
+        "originalBuildSHA256": "d3ea3b2487f13a37e018f04b93aef1ac8540c2ca5015105af3593210b78f1791",
+        "bytes": 146995328,
+        "mode": "0500",
+        "source": "fresh current successful --offline --locked build; no historical935e reuse"
+      }
+    },
+    "migrations": {
+      "crates/persistence/migrations/0001_ids.sql": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23",
+      "crates/persistence/migrations/0002_identity_security.sql": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721",
+      "crates/persistence/migrations/0003_identity_preview.sql": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234",
+      "crates/persistence/migrations/0004_identity_recovery.sql": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704",
+      "crates/persistence/migrations/0005_identity_passkeys.sql": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b",
+      "crates/persistence/migrations/0006_oauth_authorization.sql": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+      "crates/persistence/migrations/0007_organization_ids.sql": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e",
+      "crates/persistence/migrations/0008_hosting_runtime.sql": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+      "crates/persistence/migrations/0009_agent_enrollment.sql": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3",
+      "crates/persistence/migrations/0010_access_authority.sql": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b",
+      "crates/persistence/migrations/0011_browser_sessions.sql": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c",
+      "crates/persistence/migrations/0012_build_authority.sql": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d",
+      "crates/persistence/migrations/0013_repository_authority.sql": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40",
+      "crates/persistence/migrations/0014_database_authority.sql": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603",
+      "crates/persistence/migrations/0015_mail_authority.sql": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151",
+      "crates/persistence/migrations/0016_repository_browser_authority.sql": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77",
+      "crates/persistence/migrations/0017_plugin_invocation_fence.sql": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129",
+      "crates/persistence/migrations/0018_mail_provider_binding.sql": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc",
+      "crates/persistence/migrations/0019_mail_plugin_policy.sql": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa",
+      "crates/persistence/migrations/0020_mail_provider_lease.sql": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa",
+      "crates/persistence/migrations/0021_plugin_continuations.sql": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862",
+      "crates/persistence/migrations/0023_incoming_mail_agent.sql": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de",
+      "crates/persistence/migrations/0024_mail_configuration.sql": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d",
+      "crates/persistence/migrations/0025_customer_deletion.sql": "dee73efd12d48b30990c9d0bb71bbab8473a51705b3694dfafd42f6ea82dc817",
+      "crates/persistence/migrations/0026_plugin_self_service.sql": "2b3420455001313b2b93e8953b85e1f65d4f94ea0134a7b1975c7a7bdc1be3f3",
+      "crates/persistence/migrations/0027_customer_projects.sql": "8a42816d972bc17044f516d01849939b1bdb852846845c9ada6f759c6fc9bc7d",
+      "crates/persistence/migrations/0028_plugin_workloads.sql": "ac36c7e9a97c72b5bfcd9b88f9bbda0dbd9e0f32b01000be6c10ab700fea8b5e",
+      "crates/persistence/migrations/0029_default_project.sql": "1f2e6cd2ccbef7bda7b42fc6384a519553dfeb484b2623c510549361cf1212b0",
+      "crates/persistence/migrations/0030_limits.sql": "823e6b12b5ba17a23a9c3c1c38ba54837754a87f09dd762a6e6c14d73daca7d2",
+      "crates/persistence/migrations/0031_customer_domains.sql": "9e97c2e49dba5c5cf31d959bba17ebaf2735aabfa6da2316826caecd13e14b02",
+      "crates/persistence/migrations/0032_api_tokens.sql": "f5c436170379aa235063036ef516fc2bac04a7fd901115fe2f73c02c27f3b817",
+      "crates/persistence/migrations/0033_notifications.sql": "63c6e26ae7f52bcbabf913ff78d625902a9ecaaa7a023974f69d9113479ad58f",
+      "crates/persistence/migrations/0034_logs.sql": "614597c358467fab7dcba4f7c062cea212f00b6c3d15c8b24b032371c88512c6",
+      "crates/persistence/migrations/0035_project_cluster.sql": "bb2eb64cd495a30163563c727210cd122cb2ee6258d21feb3a16e966303af014",
+      "crates/persistence/migrations/0036_history_placement.sql": "caacc1c5c7457718ad48f8de12e512049438bf14c84789e6fa532e00b3ca60ff",
+      "crates/persistence/migrations/0037_log_cursor.sql": "0df190f3296836ebde3cb238896a315e6bf011b09f5a18d29a844091a10ad6a8",
+      "crates/persistence/migrations/0038_customer_acting.sql": "5507a05d3c633c535c8f7fce583e17ab1cc67a246e47cf192aed908d38bd0245",
+      "crates/persistence/migrations/0039_identity_acting.sql": "3ae973c90c70ade2944ebb26a2306555beeadf8c48682a152222a56a0cca60e0",
+      "crates/persistence/migrations/0040_customer_workloads.sql": "314b295dbec9ee121d86fd60acbb463bf609b83e75e0a762126d410deac545cd",
+      "crates/persistence/migrations/0041_invitation_scope.sql": "1c951c30ec687836d82a4736b9b0cd2bbc8f3f6a68009dbac27a43dca256989e",
+      "crates/persistence/migrations/0042_plugin_installation.sql": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+      "crates/persistence/migrations/0043_plugin_updates.sql": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+      "crates/persistence/migrations/0044_plugin_jobs.sql": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+      "crates/persistence/migrations/0045_managed_mail_outbox.sql": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+      "crates/persistence/migrations/0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+      "crates/persistence/migrations/0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+      "crates/persistence/migrations/0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+      "crates/persistence/migrations/0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f",
+      "crates/persistence/migrations/0050_archive_source_leases.sql": "2d3e22026c7ad792234ecce7f5a286a856eac681a22af504c23351d2de86a714",
+      "crates/persistence/migrations/0051_database_backup_transitions.sql": "a4f16036e77bd2617f61cecc7c7881bb1abfceb920a16309e092770094ed7767",
+      "crates/persistence/migrations/0052_native_recovery.sql": "c472a56bf4e5f90bc023778985f3191b56626e6b149c70d5c2439059816b0c20",
+      "crates/persistence/migrations/0053_frontend_output_retention.sql": "3ef35e7f191b15c7b9aa3d007a59247e587fcc2ecb081c72a84441c9f13a458c",
+      "crates/persistence/migrations/0054_source_recovery_fences.sql": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+      "crates/persistence/migrations/0055_native_operator_allowances.sql": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de"
+    },
+    "rootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+    "builds": [
+      {
+        "command": "cargo build --offline --locked -j2 -p webdock-control-plane --bins",
+        "exitCode": 0,
+        "seconds": 28.26
+      },
+      {
+        "command": "cargo build --offline --locked -j2 -p webdock-agent --features local-recovery-fixture --bins",
+        "exitCode": 0,
+        "seconds": 0.38
+      },
+      {
+        "command": "cargo test --offline --locked -j2 -p webdock-control-plane --test bootstrap --no-run",
+        "exitCode": 0,
+        "seconds": 3.88
+      }
+    ],
+    "copiedELFBytes": 862316720,
+    "homeFreeAfterCopy": 10181029888
+  },
+  "limits": [
+    "CURRENT compiled/copied artifacts only; no Core/schema/Agent/API/sourceadmission started.",
+    "Rootprovider correction source-frozen; no Rust/SQL/dependency/lock edits during preparation.",
+    "Next source component contract is prepared but runner pin selection/driver integration not yet executed or claimed complete.",
+    "Source54 remains DRAFT;55frozen; no final54/full recovery/RTO/RPO acceptance.",
+    "Original1d9 functional0/overallFAIL remains immutable; supplemental actual custody closure independent."
+  ],
+  "custody": {
+    "liveFixtureCreated": false,
+    "DockerImageOrRuntimeActions": false,
+    "newDelegation": false,
+    "privateArtifacts": "13 copied0500 ELF files and curated0400 public code archive/pin; no runtime keys/credentials/protected inputs"
+  }
+}

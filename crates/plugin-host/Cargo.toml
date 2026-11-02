@@ -1,0 +1,61 @@
+[package]
+name = "webdock-plugin-host"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+test-transport = []
+
+[dependencies]
+webdock-export-protocol={path="../export-protocol"}
+webdock-plugin-http={path="../plugin-http"}
+webdock-browser-session={path="../browser-session"}
+webdock-oauth={path="../oauth"}
+tonic={version="0.14.6",default-features=false,features=["codegen","transport","tls-ring"]}
+webdock-plugin-protocol = { path = "../plugin-protocol" }
+webdock-plugin-runtime = { path = "../plugin-runtime" }
+webdock-identity = { path = "../identity" }
+webdock-persistence = { path = "../persistence" }
+webdock-agent-protocol = { path = "../agent-protocol" }
+webdock-hosting = { path = "../hosting" }
+webdock-secrets = { path = "../secrets" }
+sea-orm = { workspace = true, features = ["with-uuid"] }
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order"] }
+chrono.workspace = true
+url.workspace = true
+tokio.workspace = true
+async-trait.workspace = true
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4"
+base64 = "0.22"
+ed25519-dalek = "2"
+uuid = { version = "1", features = ["v4"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+futures-util = "0.3"
+icu_collator = "=2.3.1"
+icu_locale = "2.2"
+ryu-js = "=1.0.3"
+rustix = { version = "1", features = ["fs", "process"] }
+x509-parser = "0.18"
+rcgen = { version = "0.14", features = ["x509-parser"] }
+tokio-postgres = "0.7"
+webdock-plugin-kit = { path = "../plugin-kit" }
+
+[dev-dependencies]
+webdock-control-plane={path="../control-plane"}
+webdock-core={path="../core"}
+webdock-mail = { path = "../mail" }
+webdock-mail-protocol = { path = "../mail-protocol" }
+axum.workspace=true
+tower={version="0.5",features=["util"]}
+http-body-util="0.1"
+tempfile = "3"
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring"] }
+webdock-ids = { path = "../ids" }
+
+[lints]
+workspace = true

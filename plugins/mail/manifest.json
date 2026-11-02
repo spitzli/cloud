@@ -1,0 +1,634 @@
+{
+  "name": "mail",
+  "version": "0.3.0",
+  "kind": "extension",
+  "description": "Mail for your domains: send from your apps and the console, give people mailboxes, or route sending through your own turboSMTP account.",
+  "protocolVersion": 2,
+  "sdkVersion": 2,
+  "dataProtocolVersion": 2,
+  "coreVersion": ">=0.1.0 <1.0.0",
+  "image": "127.0.0.1:5005/webdock/mail@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "dependencies": [],
+  "capabilities": [
+    "plugin.workloads"
+  ],
+  "workloads": {
+    "kinds": [
+      "apps/v1/Deployment",
+      "v1/Service",
+      "v1/Secret",
+      "v1/PersistentVolumeClaim",
+      "networking.k8s.io/v1/NetworkPolicy",
+      "traefik.io/v1alpha1/IngressRoute",
+      "traefik.io/v1alpha1/IngressRouteTCP",
+      "cert-manager.io/v1/Certificate"
+    ]
+  },
+  "schemaVersion": 2,
+  "readableSchema": {
+    "min": 1,
+    "max": 2
+  },
+  "migrations": [],
+  "tables": [],
+  "services": {
+    "required": [
+      {
+        "name": "native-mail-control",
+        "version": 1
+      }
+    ],
+    "optional": []
+  },
+  "configuration": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "actions": [
+    {
+      "name": "domains.create",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "domain",
+      "feature": "add-domains",
+      "resource": "create",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "domain"
+        ],
+        "properties": {
+          "domain": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 253,
+            "description": "Domain"
+          }
+        }
+      }
+    },
+    {
+      "name": "domains.view",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "domains.verify",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "domains.delete",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "domain",
+      "feature": "add-domains",
+      "resource": "delete",
+      "destructive": true,
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "mail.send",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "from",
+          "to",
+          "subject",
+          "text"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Sending domain"
+          },
+          "from": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Sender name before the @"
+          },
+          "from_name": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Sender display name"
+          },
+          "to": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2000,
+            "description": "Recipients, comma-separated"
+          },
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Subject"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30000,
+            "description": "Plain-text body"
+          }
+        }
+      }
+    },
+    {
+      "name": "mail.status",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 19
+          }
+        }
+      }
+    },
+    {
+      "name": "mail.cancel",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id",
+          "id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 19
+          }
+        }
+      }
+    },
+    {
+      "name": "mail.history",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "relay.connect",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "relay",
+      "feature": "byok-turbosmtp",
+      "resource": "create",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "consumer_key",
+          "consumer_secret"
+        ],
+        "properties": {
+          "consumer_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "turboSMTP consumer key"
+          },
+          "consumer_secret": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "turboSMTP consumer secret"
+          }
+        }
+      }
+    },
+    {
+      "name": "relay.view",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "relay.delete",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "relay",
+      "feature": "byok-turbosmtp",
+      "resource": "delete",
+      "destructive": true,
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "mailboxes.create",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "mailbox",
+      "feature": "create-mailboxes",
+      "resource": "create",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "domain_id",
+          "local_part"
+        ],
+        "properties": {
+          "domain_id": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Sending domain"
+          },
+          "local_part": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Address before the @"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Display name"
+          }
+        }
+      }
+    },
+    {
+      "name": "mailboxes.view",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "mailboxes.credentials",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "mailboxes.rotate",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "mailboxes.delete",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "mailbox",
+      "feature": "create-mailboxes",
+      "resource": "delete",
+      "destructive": true,
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "incoming.activate",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "domain",
+      "feature": "manage-incoming",
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "incoming.deactivate",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [],
+      "offering": "domain",
+      "feature": "manage-incoming",
+      "resource": "use",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resource_id"
+        ],
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    }
+  ],
+  "jobs": [],
+  "offerings": [
+    {
+      "id": "domain",
+      "label": "Sending domain",
+      "description": "A domain you send mail from. Add it, prove you own it with one DNS record, then send from any address at that domain.",
+      "highlights": [
+        "Needed before sending or creating mailboxes",
+        "Shows every DNS record to add at your DNS provider",
+        "Send from the console, the API or the send_email MCP tool",
+        "Keeps a log of recent messages"
+      ]
+    },
+    {
+      "id": "relay",
+      "label": "Own turboSMTP account",
+      "description": "Your own turboSMTP account for sending, instead of the platform's. Useful if you already have a turboSMTP contract, sending volume or reputation.",
+      "highlights": [
+        "All mail of the project goes through your account",
+        "Keys are stored encrypted and never shown again",
+        "Uses the turboSMTP EU endpoint",
+        "Remove it any time to send through the platform again"
+      ]
+    },
+    {
+      "id": "mailbox",
+      "label": "Mailbox",
+      "description": "An inbox at one of your domains, for a person or a team. Read and write it with any mail app over IMAP and SMTP.",
+      "highlights": [
+        "Address at your own domain, such as hello@example.com",
+        "Works with Outlook, Apple Mail, Thunderbird and phones",
+        "Password shown on request and rotatable",
+        "1 GB of storage"
+      ]
+    }
+  ],
+  "selfService": {
+    "features": [
+      {
+        "id": "add-domains",
+        "label": "Add sending domains",
+        "offering": "domain",
+        "description": "Add and remove domains to send mail from"
+      },
+      {
+        "id": "byok-turbosmtp",
+        "label": "Connect own turboSMTP account",
+        "offering": "relay",
+        "description": "Send through the customer's own turboSMTP account instead of the platform's"
+      },
+      {
+        "id": "create-mailboxes",
+        "label": "Create mailboxes",
+        "offering": "mailbox",
+        "description": "Create and remove mailboxes on the project's domains"
+      },
+      {
+        "id": "manage-incoming",
+        "label": "Manage incoming mail",
+        "offering": "domain",
+        "description": "Activate or suspend incoming mail for all projects of the customer; suspension retains mailbox data"
+      }
+    ]
+  },
+  "areas": {
+    "operator": {
+      "pages": []
+    },
+    "selfService": {
+      "pages": [
+        {
+          "id": "resource",
+          "label": "Mail",
+          "action": "domains.view",
+          "resource": true
+        }
+      ]
+    }
+  },
+  "events": [],
+  "secrets": [],
+  "httpBindings": [],
+  "api": [
+    {
+      "method": "POST",
+      "path": "/send",
+      "action": "mail.send"
+    },
+    {
+      "method": "POST",
+      "path": "/status",
+      "action": "mail.status"
+    },
+    {
+      "method": "POST",
+      "path": "/cancel",
+      "action": "mail.cancel"
+    },
+    {
+      "method": "POST",
+      "path": "/history",
+      "action": "mail.history"
+    }
+  ],
+  "mcp": [
+    {
+      "name": "send_email",
+      "description": "Send a plain-text email from a verified sending domain of the project",
+      "action": "mail.send"
+    },
+    {
+      "name": "email_status",
+      "action": "mail.status",
+      "description": "Get the durable status of a message on an owned sending domain"
+    },
+    {
+      "name": "cancel_email",
+      "action": "mail.cancel",
+      "description": "Cancel a message before handoff on an owned sending domain"
+    },
+    {
+      "name": "email_history",
+      "action": "mail.history",
+      "description": "List the latest twenty durable sends on an owned sending domain"
+    }
+  ],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/mailbox-settings.png",
+      "caption": "Actual Mail mailbox panel; synthetic settings. No public reception, delivery or Webmail is demonstrated.",
+      "alt": "Mailbox client settings with hidden password and synthetic addresses"
+    }
+  ],
+  "homepage": "https://github.com/spitzli/cloud-plugin-mail",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-mail/blob/HEAD/README.md"
+}

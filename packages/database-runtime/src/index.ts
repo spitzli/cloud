@@ -59,7 +59,7 @@ export function currentDatabaseScope(): DatabaseScope | undefined {
 export function verifiedPostgresConfig(
   url: string,
   ca?: string,
-): pg.PoolConfig {
+): { connectionString: string; ssl: { ca?: string; rejectUnauthorized: true } } {
   const parsed = new URL(url);
   if (!["postgres:", "postgresql:"].includes(parsed.protocol))
     throw new Error("Expected a PostgreSQL URL");
@@ -145,6 +145,7 @@ function deliver<T>(
     (result) => callback(null, result),
     (error) => callback(error),
   );
+  return undefined;
 }
 function queryArgs(args: any[]): {
   config: pg.QueryConfig;
@@ -179,7 +180,7 @@ export function sqlCommandWords(sql: string): string[] {
   const words: string[] = [];
   let offset = 0;
   while (offset < sql.length && words.length < 8) {
-    if (/\s/.test(sql[offset])) {
+    if (/\s/.test(sql.charAt(offset))) {
       offset++;
       continue;
     }
@@ -333,14 +334,14 @@ export class ScopedPool extends pg.Pool {
             ? words[2]
             : words[1];
         const end =
-          ["COMMIT", "END", "ABORT"].includes(words[0]) ||
+          ["COMMIT", "END", "ABORT"].includes(words[0] ?? "") ||
           (words[0] === "ROLLBACK" && rollbackTarget !== "TO");
         const inheritedTransaction = transaction;
         try {
           if (
             (end && words.includes("CHAIN")) ||
             (words[0] === "PREPARE" && words[1] === "TRANSACTION") ||
-            (["COMMIT", "ROLLBACK"].includes(words[0]) &&
+            (["COMMIT", "ROLLBACK"].includes(words[0] ?? "") &&
               words[1] === "PREPARED")
           )
             throw new Error(

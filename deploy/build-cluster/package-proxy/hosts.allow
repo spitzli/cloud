@@ -1,0 +1,17 @@
+# Approved package, version metadata and OCI endpoints. Add exact observed endpoints only.
+api.github.com
+github.com
+objects.githubusercontent.com
+release-assets.githubusercontent.com
+raw.githubusercontent.com
+mise.jdx.dev
+cdn.jdx.dev
+nodejs.org
+registry.npmjs.org
+deb.debian.org
+ghcr.io
+pkg-containers.githubusercontent.com
+registry-1.docker.io
+auth.docker.io
+production.cloudflare.docker.com
+production.cloudfront.docker.com

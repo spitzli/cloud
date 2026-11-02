@@ -1,0 +1,27 @@
+# Compatibility build path; repository-root context, mirrored from deploy/docker.
+# Only Rust workspace inputs and licenses; never send runtime fixtures or environment files.
+**
+!Cargo.toml
+!Cargo.lock
+!rust-toolchain.toml
+!crates/**
+!LICENSE
+!COMMERCIAL-LICENSING.md
+!NOTICE
+**/target
+**/.git
+**/.env*
+**/*.env
+**/*.env.*
+**/*.pem
+**/*.key
+**/*credentials*.json
+**/*secrets*.json
+**/*private*.json
+**/*.dump
+**/*.sqlite*
+**/*.db
+**/*kubeconfig*
+**/.npmrc
+**/.netrc
+**/*.log

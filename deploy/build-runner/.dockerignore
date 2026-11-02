@@ -1,0 +1,8 @@
+*
+!Dockerfile
+!entrypoint.sh
+!mise-wrapper.sh
+!daemon-logger.sh
+!tools.json
+!transfer-policy.json
+!webdock-build-runner

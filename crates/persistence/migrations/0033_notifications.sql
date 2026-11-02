@@ -1,0 +1,1 @@
+../../plugin-host/migrations/0007_notifications.sql

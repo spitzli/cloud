@@ -1,0 +1,1 @@
+../../identity/migrations/0004_passkey_ceremonies.sql

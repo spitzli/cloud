@@ -7,10 +7,10 @@ This local integration fixture demonstrates a real `ctx.jobs.enqueue` call and a
 ## Develop
 
 ```sh
-# SDK/CLI are not on npm yet. Build and npm-pack them from the Webdock checkout,
+# SDK/CLI are not published yet. Build and pack them from the Webdock checkout (bun pm pack),
 # then install both local tarballs without changing this manifest:
-npm install --no-save --package-lock=false --ignore-scripts /path/to/webdock-plugin-sdk-0.1.0.tgz /path/to/webdock-cli-0.1.0.tgz
-npm run build
+bun add --no-save --ignore-scripts /path/to/webdock-plugin-sdk-0.1.0.tgz /path/to/webdock-cli-0.1.0.tgz
+bun run build
 webdock plugin validate
 ```
 

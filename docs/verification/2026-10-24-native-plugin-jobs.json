@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-24",
+  "scope": "Native immediate session-admitted project plugin jobs",
+  "status": "verified",
+  "base": "036785a7694da5472c3e620075ea3a4cb6f968bc",
+  "implementation": {
+    "queue": "Retained PostgreSQL plugin_job_execution",
+    "transport": "Authenticated UDS/mTLS RunJob and Host Call",
+    "migration": "0044_plugin_jobs.sql",
+    "migrationSha256": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+    "attemptSeconds": 45,
+    "tokenSeconds": 60,
+    "leaseSeconds": 90,
+    "defaultAttempts": 3,
+    "maxAttempts": 5,
+    "payloadAndResultBytes": 32768,
+    "delivery": "at_least_once",
+    "authority": "Original real session and exact native/browser/MCP authority; acting epoch retained; independently revalidated after parent cleanup"
+  },
+  "verification": {
+    "protocolAndRuntime": {
+      "protocolTestsPassed": 34,
+      "runtimeTestsPassed": 18,
+      "totalPassed": 52,
+      "freshScopedReview": "approved; token expiry verified after payload callback"
+    },
+    "ownedPostgresAndRpc": {
+      "passed": 18,
+      "ignored": 0,
+      "covers": [
+        "parent cleanup and original session",
+        "real Core dispatcher and Host/Runtime RPC",
+        "stable document receipt across retry/restart",
+        "live cancellation",
+        "two claimers and pool-one concurrency",
+        "expired claim and stale host effects/completion",
+        "max attempt exhaustion",
+        "partition/SQL scope denial",
+        "session/acting/grant/config/generation/parent policy invalidation",
+        "pending drain and legacy quarantine",
+        "verifier outage preserves work",
+        "required jobs service in a signed catalog",
+        "lossless numeric fingerprints and expanded JSON/configuration persistence",
+        "SQL NULL capability denial",
+        "runtime saturation is retryable",
+        "stale discovery cannot bypass max attempts or cancellation"
+      ]
+    },
+    "packageTests": {
+      "passed": 24,
+      "ignored": 62,
+      "ignoredReason": "Explicit local/external fixture requirements; all 18 new owned acceptance tests ran separately"
+    },
+    "scopedClippy": "passed",
+    "rootNativeAcceptance": {
+      "command": "bun run test:plugin-jobs",
+      "passed": 18,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 235.91
+    },
+    "rootHttpRegression": {
+      "command": "cargo test --locked -p webdock-control-plane --test plugin_installation -- --ignored --test-threads=1",
+      "passed": 1,
+      "failed": 0,
+      "seconds": 19.04
+    },
+    "fullQuality": {
+      "command": "bun run quality",
+      "exitCode": 0,
+      "result": "passed after final claim repair",
+      "includes": "Workspace and standalone lint/tests, native job runtime/contract tests and all Console browser suites",
+      "investigation": "A preceding concurrent run had an Acceptance project fixture timeout. Instrumented first navigation and the full browser fixture did not reproduce it; a sequential unchanged full-quality rerun passed. No application or test-timeout workaround was added."
+    },
+    "wholeFeatureReview": {
+      "importantFindings": 6,
+      "rootAdditionalPersistenceBoundFinding": 1,
+      "status": "all addressed and independently rereviewed",
+      "completionRepair": "Fresh locked-row attempt/cancel guard; deterministic stale-discovery regression; approved narrow rereview"
+    },
+    "finalFixWave": {
+      "reported": "all seven findings and fresh-row completion repair addressed",
+      "runtimeTestsPassed": 18,
+      "rootNativeAcceptancePassed": 18,
+      "rootPackageTestsPassed": 24,
+      "scopedReview": "approved",
+      "rootChecks": "passed after final repair"
+    }
+  },
+  "cleanup": {
+    "implementationOwnedContainersRemaining": 0,
+    "rootFinalCleanup": {
+      "remainingTestContainers": 0,
+      "retainedK3sStarted": false,
+      "retainedK3sState": "exited",
+      "sharedResourcesChanged": false
+    }
+  },
+  "limits": [
+    "Immediate jobs only; delay/runAt/recurring schedules deferred",
+    "Session expiry/revocation and acting exit cancel remaining work; autonomous system authority deferred",
+    "Job data/http capabilities only; apps and nested jobs deferred",
+    "External provider effects require their own idempotency; cancellation does not undo accepted effects",
+    "Synthetic native RPC plugin; existing product workflows were not migrated",
+    "First-party/MCP use shared verifier paths; new execution fixture directly covers native sessions and acting",
+    "No production/provider/mail/k3s actions; no Redis queue service"
+  ],
+  "operationsGuide": "../operations/native-plugin-jobs.md"
+}

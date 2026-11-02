@@ -1,0 +1,128 @@
+{
+  "observedAt": "2026-10-25T07:59:39.381500+00:00",
+  "milestone": "private-s3-transport-and-durable-oci-artifacts",
+  "baseCommit": "819041524049117bc50e11dfd96a6a29407804b8",
+  "uncommittedWorktree": true,
+  "implemented": [
+    "explicit private HTTPS S3 configuration and restricted credentials",
+    "bounded multipart streaming, size/SHA-256 and readback verification",
+    "immutable application object names and destination fingerprints",
+    "optional durable OCI artifact receipts in Core/outbox",
+    "cross-worker publication eligibility by storage binding, project and exact registry target",
+    "legacy local artifact and completion compatibility",
+    "Jenkins research and recommendation"
+  ],
+  "verification": {
+    "quality": {
+      "command": "bun run quality",
+      "checks": 52,
+      "exitCode": 0,
+      "includesConsoleBrowserFixtures": true
+    },
+    "qualityRunnerRegressions": {
+      "command": "cargo test --locked --manifest-path tools/quality/Cargo.toml",
+      "passed": 22
+    },
+    "minio": {
+      "command": "python3 tools/tests/object-storage.py",
+      "passed": true,
+      "cases": [
+        "17 MiB multipart",
+        "fresh client",
+        "wrong customer scope",
+        "provider bucket policy denial",
+        "wrong credentials",
+        "hash mismatch",
+        "empty object",
+        "size limit and multipart abort",
+        "lost multipart completion response",
+        "hard completion rejection",
+        "truncated download"
+      ]
+    },
+    "buildEndToEnd": {
+      "command": "python3 tools/tests/object-storage.py python3 tools/tests/build-storage.py",
+      "passed": 2,
+      "uses": [
+        "fresh native PostgreSQL database including migration0046",
+        "existing pinned offline KVM fixture",
+        "owned MinIO buckets and restricted user",
+        "pinned temporary OCI registry"
+      ],
+      "cases": [
+        "legacy local completion wire/hash replay after lost Core response",
+        "remote completion replay and changed receipt rejection",
+        "retained destination immutability",
+        "original local store removed",
+        "different enrolled publisher",
+        "actual OCI registry publication",
+        "rollback and live approval revocation",
+        "real Worker::publish_once skips another project",
+        "wrong exact registry target is ineligible before assignment"
+      ]
+    },
+    "transferRevocation": {
+      "command": "cargo test --locked -p webdock-build --all-features --lib transfer_tests",
+      "passed": true,
+      "checks": "pending transfer cancelled after initial live lease succeeds and authority is subsequently revoked; no completion outbox entry"
+    },
+    "freshCheckout": {
+      "command": "python3 -B -m unittest discover -s tools/tests -p test_build_storage.py",
+      "passed": true
+    },
+    "formatAndWhitespace": true
+  },
+  "review": {
+    "independent": true,
+    "findings": 3,
+    "fixed": 3,
+    "regressionsObservedFailingBeforeFix": true
+  },
+  "cleanup": {
+    "ownedTestBucketsUsersPoliciesRemoved": true,
+    "ownedDatabaseAndRegistryContainersAbsent": true,
+    "incompleteMultipartUploadsAbsentAtFixtureEnd": true,
+    "generatedDatabasePasswordFilesRemoved": true,
+    "existingMinioRestoredToStoppedState": true
+  },
+  "notEstablished": [
+    "Wasabi compatibility/account/contract qualification",
+    "frontend outputs/source snapshots/signature/SBOM retention",
+    "production activation",
+    "customer Object Storage product and REST/MCP/Console parity",
+    "backup/restore/PITR and scheduling",
+    "CMS/app file migration",
+    "exports and diagnostic/log archive products",
+    "S3 registry backend"
+  ],
+  "limitations": [
+    "crash/cancellation can leave incomplete multipart or completed unreferenced objects; authorized inventory/reconciliation remains pending",
+    "no TTL or provider Object Lock policy enabled",
+    "existing local artifact capacity remains bounded; no automatic migration or deletion",
+    "Hosting execution completion uses the existing observed-agent fixture, not a real Kubernetes deployment"
+  ],
+  "sourceSha256": {
+    "Cargo.lock": "5ebe6962b9831430291dd488738ccd31c1d97702b35db6e75284623ab293ece9",
+    "Cargo.toml": "41eb39ce5981cc10532c33e9e6c744e7b709f53dff8cc55df57c984f43a7f6d5",
+    "crates/build/Cargo.toml": "12dc54c768529702105051e01c8ff03323522113e4acfce9d842adea4c14f1c0",
+    "crates/build/src/artifact.rs": "72548cabb49519abe7348737ba564d831886c2ebe7d4f555b07a7c208a64b25f",
+    "crates/build/src/http.rs": "af18b68d552b1e6f01ccbc9bf0a2fd7443cb23ee7433bde5675c3b44dedade41",
+    "crates/build/src/lib.rs": "abe582616ae2be4cb2005e87db8b9a4b124044b6b9cdf8f033e5771f90aad165",
+    "crates/build/src/remote.rs": "465461975425105d0c31d3a2fe02572f7964fb128a093f342686502a38603240",
+    "crates/build/src/service.rs": "a7b788c8ed7bfc6e2651ff55ab290403961bd053b672ae7100b171ce309d2d90",
+    "crates/build/src/worker.rs": "a0896fd9bae0f06e1b60fea52d29e5b7d05445489ebd8b4c220fbfc615911c5d",
+    "crates/build/tests/remote_artifacts.rs": "88951a0fcd4f14e6b104a40cbc197bc5fabf6fcbbb1b4fde949e8bf007bbb146",
+    "crates/build/tests/support/hosting_flow.rs": "67c3486c283805a53c124f9d02f6a325111970ca63c243dafb0cd2063fcaeb9c",
+    "crates/hosting/Cargo.toml": "4e7cb3e7b641cbdc80d27704c6785c9ad7d977515d596303bac70ab866529ebd",
+    "crates/object-storage/Cargo.toml": "14053e906d408ad9ad93cba78109a4c2aaf01f3e7ab9407a3827b8d04fae539a",
+    "crates/object-storage/src/lib.rs": "81fd1ad5c70b67a36cad9c4f85e570e2a8ddbf6196a8d2b12c182f0ef4bf051e",
+    "crates/object-storage/tests/support/faults.rs": "1e3388a2deaad7151f98c1ea250724b394355e98d74463f423e7ea6071f442ce",
+    "crates/object-storage/tests/transfers.rs": "2fec5b405034f4e97a4818af9b7d010cf43aa3e4c53681788af8bf210aada842",
+    "crates/persistence/migrations/0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "crates/plugin-host/Cargo.toml": "cc033b218c6daf7a05ee1fd85a51e1641001b5cf6120d1a714038c9bff37892c",
+    "tools/quality/src/runner.rs": "c16ce8a5fcb04c31e1412441edfbe40a44d98a4d3ff0fbfadcb7bf6100c9f8ae",
+    "tools/tests/build-storage.py": "b7bc909a2b02a9dd05ca6a243dcda0b9f95f69844c8e0446f925cbb89ca5446c",
+    "tools/tests/object-storage.py": "7e0ccb9629b9dfd71db8c262a355e226dd7e1fce5e10e5ea259096cbb19f1539",
+    "tools/tests/test_build_storage.py": "d1253de24c09c14b5584642c235800cf5715e8494877fe29538c0607e9d92029"
+  }
+}

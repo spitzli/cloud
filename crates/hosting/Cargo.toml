@@ -1,0 +1,72 @@
+[package]
+name = "webdock-hosting"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+docker-test = []
+
+[dependencies]
+tempfile = "3"
+rustix = { version="1",features=["process"] }
+webdock-agent-protocol = { path = "../agent-protocol" }
+webdock-oauth = { path = "../oauth" }
+webdock-browser-session={path="../browser-session"}
+webdock-core = { path = "../core" }
+webdock-identity = { path = "../identity" }
+webdock-persistence = { path = "../persistence" }
+webdock-supervisor = { path = "../supervisor", default-features = false }
+sea-orm.workspace = true
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order"] }
+chrono.workspace = true
+url.workspace = true
+tokio.workspace = true
+async-trait.workspace = true
+thiserror.workspace = true
+regex = "1"
+jsonschema = { version = "0.59", default-features = false }
+icu_collator = "=2.3.1"
+icu_locale = "2.3"
+ryu-js = "1.0"
+sha2 = "0.10"
+hmac = "0.12"
+hex = "0.4"
+base64 = "0.22"
+subtle = "2.6"
+aes-gcm = "0.10"
+getrandom = "0.2"
+unicode-normalization = "0.1"
+
+[dev-dependencies]
+webdock-object-storage = { path = "../object-storage", features = ["local-test"] }
+webdock-access={path="../access"}
+webdock-registry={path="../registry"}
+webdock-control-plane={path="../control-plane"}
+tower={version="0.5",features=["util"]}
+http-body-util="0.1"
+ed25519-dalek="2"
+webdock-repository-protocol={path="../repository-protocol"}
+webdock-plugin-host={path="../plugin-host"}
+axum.workspace = true
+webdock-build = { path = "../build", features = ["local-registry-test", "kubernetes-job"] }
+kube = { version = "4.2.0", default-features = false, features = ["client", "config", "rustls-tls", "ring"] }
+k8s-openapi = { version = "0.28", features = ["v1_32"] }
+flate2 = "1"
+tar = "0.4"
+libc = "0.2"
+webdock-agent-control = { path = "../agent-control" }
+webdock-agent-protocol = { path = "../agent-protocol" }
+webdock-plugin-runtime = { path = "../plugin-runtime" }
+tempfile = "3"
+rustix = { version = "1", features = ["process"] }
+tonic = { version = "0.14.6", features = ["transport", "tls-ring"] }
+tokio-stream = { version = "0.1", features = ["net"] }
+webdock-agent = { path = "../agent", default-features = false, features = ["docker"] }
+bollard = "0.21"
+webdock-ids = { path = "../ids" }
+
+[lints]
+workspace = true

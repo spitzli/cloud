@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3105",
-    "build": "next build",
-    "start": "next start",
+    "dev": "bun --bun next dev --port 3105",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
     "lint": "eslint",
-    "test": "node --env-file=.env.local --import tsx --test tests/*.test.ts",
-    "payload": "node --env-file=.env.local ../../node_modules/payload/bin.js",
-    "cms:types": "npm run payload -- generate:types",
-    "cms:migrate": "PAYLOAD_MIGRATING=true npm run payload -- migrate",
-    "cms:seed": "node --env-file=.env.local --env-file=.env.bootstrap --import tsx scripts/seed.ts",
-    "cms:sites": "node --env-file=.env.local --import tsx scripts/bootstrap-sites.ts"
+    "test": "bun --env-file=.env.local test --isolate ./tests/*.test.ts",
+    "payload": "bun --env-file=.env.local ../../node_modules/payload/bin.js --disable-transpile",
+    "cms:types": "bun run payload generate:types",
+    "cms:migrate": "PAYLOAD_MIGRATING=true bun run payload migrate",
+    "cms:seed": "bun --env-file=.env.local --env-file=.env.bootstrap scripts/seed.ts",
+    "cms:sites": "bun --env-file=.env.local scripts/bootstrap-sites.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "4.0.0-canary.37",
@@ -42,11 +42,10 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
     "tailwindcss": "^4",
-    "tsx": "^4.23.15",
     "typescript": "^5"
   },
   "engines": {
-    "node": "24.x"
+    "bun": ">=1.4.3"
   },
   "type": "module"
 }

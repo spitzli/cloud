@@ -1,83 +1,51 @@
 ---
-title: "Background jobs with BullMQ"
-description: "Use the Core-owned job API from an extension, and run the local integration fixture."
+title: "Plugin background jobs"
+description: "Use Core-owned durable job execution with current authority and retry rules."
 ---
 
-BullMQ is part of Webdock Core. Platform workers use persistent domain queues for enabled product dispatch. PostgreSQL continues to own business-operation state, leases and authorization. Redis holds scheduling/delivery state; plugins never receive its connection credentials.
+The native job service stores execution state, receipts, claims and leases in Core's PostgreSQL database. Plugins execute in separate runtimes and receive scoped host access. They do not receive database or queue credentials. Older BullMQ examples describe the retained TypeScript implementation, not the current native queue.
 
-<Info>The Core worker wiring, plugin-job service and SDK are implemented and tested locally in development work that is not yet included in the published main branch. They are not yet deployed to the production platform. The plugin service requires the host's authentication, live authorization and isolated runtime-dispatch ports; it does not supply the unfinished production plugin installer.</Info>
+## Declare a handler
 
-## Declare job capabilities
+A job must appear in the matching [manifest](/developers/plugin-manifest), request supported capabilities and be included in the installation's approved project grant. Permission to enqueue a job is separate from the handler's own host-service capabilities.
 
-Declare the `jobs` service and use only the capabilities needed by each action:
+The current host supports immediate jobs using document and named HTTP capabilities. Interval scheduling is rejected; declaring `intervalSeconds` does not start a scheduler. Dependencies, tables and migrations have separate installer restrictions.
+
+## Enqueue and retry
+
+The native enqueue input contains `name`, `payload`, `idempotencyKey` and optional `attempts`:
 
 ```json
 {
-  "services": { "required": [{ "name": "jobs", "version": 1 }], "optional": [] },
-  "capabilities": ["plugin.jobs.read", "plugin.jobs.enqueue", "plugin.jobs.cancel"],
-  "jobs": [{ "name": "demo.process", "capabilities": [] }]
+  "name": "demo.process",
+  "payload": { "message": "hello" },
+  "idempotencyKey": "request-42",
+  "attempts": 3
 }
 ```
 
-This is an excerpt from the [full manifest](/developers/plugin-manifest). The job handler's capability list controls its own host-service requests; it is separate from permission to enqueue that handler.
-
-## Plugin API
-
-The backend-only SDK export is `@webdock/plugin-sdk/server`:
-
-```typescript
-import { createPluginContext } from '@webdock/plugin-sdk/server';
-
-// Construct for one host-authenticated invocation. Never put this token in a UI bundle.
-const ctx = createPluginContext({
-  hostURL: hostOrigin,
-  token: () => invocationToken,
-});
-
-const job = await ctx.jobs.enqueue({
-  name: 'demo.process',
-  payload: { message: 'hello' },
-  idempotencyKey: requestID,
-  delaySeconds: 0,
-  attempts: 3,
-});
-const status = await ctx.jobs.get(job.id);
-await ctx.jobs.cancel(job.id);
-```
-
-The HTTP adapter exposes `POST /v1/plugin/jobs`, `GET /v1/plugin/jobs/:id` and `DELETE /v1/plugin/jobs/:id`. The host authenticates every call and supplies plugin/customer/project scope; these identifiers cannot be supplied in the request body. Status reads and cancellation also check ownership.
-
-| Option | Limit |
+| Input | Limit |
 | --- | --- |
-| Payload and result | 32 KiB each |
-| Delay | 0–604800 seconds (7 days); alternatively `runAt` is an absolute ISO timestamp within seven days |
+| Payload | 32 KiB |
 | Attempts | 1–5; default 3 |
 | Idempotency key | 8–128 letters, digits, dots, underscores or hyphens |
-| Execution deadline | 60 seconds; handlers must cooperate with cancellation |
 
-Only manifest-declared, currently granted jobs can run. Authority is checked before dispatch and periodically during execution. Disabled/revoked grants and cancellation abort execution. Cancellation cannot undo effects already committed; handlers must be idempotent because delivery is at least once.
+Use the matching SDK's private host-service transport for one authenticated invocation. The host derives plugin, customer and project scope; a request body cannot choose another tenant. Keep the same idempotency key for unchanged intent. Changed input with a reused key fails instead of creating another job.
 
-Identical retries retain the same job ID within the plugin/customer/project scope. Reusing a key with changed input fails with a conflict. Completed jobs and cancellation tombstones are retained so retries do not silently recreate work. An operator retention/quota policy is required before exposing this service to production authors. Raw handler errors are not returned in status responses.
+## Execution and cancellation
 
-## First test extension
+Core rechecks current identity, stored browser/OAuth authority, installation generation, configuration and grants when claiming and running work. Leases fence stale workers; retries preserve durable state. Cancellation and revocation cannot undo a provider effect already accepted. Handlers must retain operation identities and reconcile uncertain remote writes before attempting another effect.
 
-[spitzli/webdock-extension-job-demo](https://github.com/spitzli/webdock-extension-job-demo) is a private, independent backend example. Its action enqueues `demo.process`; the worker invokes the plugin in a separate process over HTTP. The handler returns an uppercase message and its SHA-256. No job executes uploaded plugin code inside the Core process.
+Installation disablement waits for durable jobs and provider continuations to drain. An unavailable blocker check does not mean there are no blockers.
 
-The initial CLI supports:
+## Verification boundary
 
-```bash
-webdock plugin create job-demo --template backend --services jobs --dir ./job-demo
-webdock plugin validate --dir ./job-demo
-webdock plugin build --dir ./job-demo
-webdock plugin pack --dir ./job-demo --image 'ghcr.io/spitzli/job-demo@sha256:<actual-digest>'
+Use owned disposable PostgreSQL and runtime fixtures. The repository command targets the native integration suite:
+
+```sh
+bun run test:plugin-jobs
 ```
 
-`build` compiles the generated TypeScript; the Dockerfile is supplied for a separate image build. `pack` writes identical `dist/tabularium.json` and `dist/job-demo-universal.json`, with a checksum lock. It does not publish, install or verify remote image availability. CLI/SDK npm publication, fullstack templates and `dev`/`publish`/`install` commands are not available yet; use locally packed packages.
+Read its fixture requirements before running it. A local suite does not prove that a given release is installed or that its runtime supports the required job RPC. Independent images, registry signatures and controller rollout remain separate [release gates](/developers/plugin-releases).
 
-From the Webdock checkout, run the reproducible test:
-
-```bash
-npm run test:plugin-jobs
-```
-
-It starts an owned, disposable Redis container, tests Core worker scheduling and plugin isolation/retry/cancellation, packs SDK and CLI, generates an extension outside the monorepo, builds and packs it, then runs the separate-process HTTP flow. It removes its temporary container and directories afterward. The packing test uses a clearly labeled fixture digest and never publishes to the registry.
+Source: native job service (`crates/plugin-host/src/jobs.rs`), runtime dispatcher (`crates/control-plane/src/plugin_jobs.rs`) and job integration tests (`crates/plugin-host/tests/jobs.rs`).

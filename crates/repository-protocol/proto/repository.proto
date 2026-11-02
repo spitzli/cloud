@@ -1,0 +1,23 @@
+syntax = "proto3";
+package webdock.repository.v1;
+// Separate authority purpose; these tokens cannot authorize ordinary session Invoke.
+service RepositoryRuntime {
+ rpc Describe(DescribeRequest) returns (DescriptorReply);
+ rpc Resolve(LeaseRequest) returns (JsonReply);
+ rpc Archive(LeaseRequest) returns (stream ArchiveFrame);
+ rpc Check(LeaseRequest) returns (JsonReply);
+}
+service RepositoryAuthority {
+ rpc AuthorizePeer(PeerProof) returns (AuthorityReply);
+ rpc Authorize(LeaseProof) returns (AuthorityReply);
+}
+message DescribeRequest {}
+message DescriptorReply { bytes signed_descriptor_json=1; }
+message LeaseRequest { string lease_token=1; bytes input_json=2; bytes configuration_json=3; }
+message LeaseProof { string lease_token=1; }
+message AuthorityReply { bool active=1; }
+message JsonReply { bytes output_json=1; }
+message ArchiveMetadata { uint64 size_bytes=1; string sha256=2; string format=3; }
+message ArchiveFrame { uint64 offset=1; bytes data=2; optional ArchiveMetadata metadata=3; }
+
+message PeerProof { string plugin_id=1; uint64 generation=2; string descriptor_sha256=3; }

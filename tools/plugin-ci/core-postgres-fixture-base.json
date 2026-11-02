@@ -1,0 +1,8 @@
+{
+  "image": "docker.io/library/postgres:18-bookworm@sha256:5c4783a8cc3f0074912164f94dfa1be4e043438f0f707cf968d7af9a0d31a2c8",
+  "linuxAMD64Child": "sha256:41a369edc91d9bdd7a58be6bc71ea0f8f7a3f49e82818a9f0829021ea7840b7c",
+  "officialRegistryIndexSHA256Verified": true,
+  "registryURL": "https://registry-1.docker.io/v2/library/postgres/manifests/18-bookworm",
+  "productionUseApproved": false,
+  "purpose": "owned disposable manual EU website/migration qualification only"
+}

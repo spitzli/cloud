@@ -1,0 +1,100 @@
+{
+  "scope": "Production-linked retained authority guard and manual/durable policy selection; worker activation remains held",
+  "sourceSHA256": {
+    "crates/databases/src/database_authority.rs": "a2a9229db994ac2e643b58b5434dea33683abfabd65207e0548839e7084eb9af",
+    "crates/databases/src/lib.rs": "70bfd462677d6f330b44d02f9854b3b78d50ec4274ef17e334a42e71d63c2b0c",
+    "crates/databases/src/service.rs": "af7aab7c98841981884fc1dea09b72196208078c46836d560bef9a127681da70",
+    "crates/databases/src/service/agent.rs": "cb52ea228386616b6d0c5738831f8dbb20a62d8d6d244261d23dbc000c3ba47e",
+    "crates/databases/src/service/authority.rs": "215f18a651e3543ea4716776e8a0a505e9a042e0a57b5172b57462c2d20d1884",
+    "crates/databases/src/service/authority/staged.rs": "670a32eea0f636e5a35b1ac3e190e9284cd5793b47892bc9ba1821b1833f888e",
+    "crates/databases/src/service/control.rs": "a6e5ced6fb9c4399c7168c53af15609cb95325d4cc8e0b22f0f817c12bb51a36",
+    "crates/databases/src/service/orders.rs": "7c09a792b1f9b9a99ce39ee26cf974e8aa0b34937525edee53a574a39b7e69ca",
+    "crates/databases/src/service/read.rs": "5f0d0d5f62d3552436dae10363ebc70523927cab6c071525f6efccc4c19eba15",
+    "crates/databases/tests/database_authority.rs": "9fdb7204db3c700a1cbf1d638875fd9b21580d2cc4280451f413580ba404aee9"
+  },
+  "sourceAggregateSHA256": "e6b2a639b78a95ac3742f0ca90e5ccb2a01c5046bf46874a81b3c6bde787341c",
+  "aggregateFormat": "SHA256 of path-sorted <hash> two spaces <relativePath> newline",
+  "implemented": [
+    "Private DatabaseAuthority strict tagged MCP/legacy Browser codec linked to genuine existing Browser job producer and worker Browser decoder; MCP job candidate fails closed without LocalSession fallback.",
+    "One private retained authentication wrapper for Browser execute_managed and actual MCP read; existing public signatures and Browser persistence unchanged.",
+    "Unsigned business native-session-context shared fence(salt0) before retained auth, real Browser revalidation or actual OAuth McpGuard, canonical mapped operator SHARE, final fresh verification through business/ordinary-order worker commits.",
+    "Original typed McpAuthority.expires_at getter used only after actual begin_mcp_authority success; request lifetime bounded to original proof and native session.",
+    "DB/config/crypto/transient failures preserve503; only definitive current authority becomes404(Browser)/403(MCPread); signer-scope DBerror also503.",
+    "Every non-null policy ID still checks existing UID/revision/resource/revocation policy fences; only exact databases.configureBackup/configureBackup with valid policyID/revision skips initiating proof. Manual backup requires original Browser proof; Restore never becomes a policy grant."
+  ],
+  "stagedOnly": [
+    "service/authority/staged.rs is cfg(test) ONLY: original-expiry lease cap, explicit unissued/gen0 evidence classification, transient whole-attempt rollback decision, expired/revoked mutation denial vs exact receipt custody, explicit fresh reconciliation generation with exact target/UID/checkpoint/intent projections.",
+    "These pure decisions do not authenticate, mint proof, update queues or acknowledge/promote any real runtime object."
+  ],
+  "held": [
+    "0056 early worker epoch definer is unmaterialized. Existing current_recovery_epoch is unlocked and worker has no direct epoch table lock privileges. No undefined SQL/GUC proof/late second connection substituted.",
+    "No new MCP write producer or atomic restore admission/dispatch; private stored MCP worker proof is rejected until the approved epoch caller is integrated.",
+    "Runtime claim lock order,300s job lease/renew writes,unissued retirement classifier,callback/promotion MCP guards and maintenance reconcile generation behavior are NOT activated/upgraded in this stage.",
+    "Existing conservative worker needs-reconciliation/capacity retention remains; no safe retirement or release is claimed for transient failures."
+  ],
+  "redGreen": {
+    "actualConsumer": "EXACT4prepared tests0PASS4FAIL(policybypass/type/revision,MCP403vs503,Browser404vs503) ->4PASS",
+    "stagedDecision": "4pure baseline decision failures ->4purePASS;not runtime proof",
+    "signerScope": "DBscope error404vs503 observed1FAIL ->PASS in final DBsuite",
+    "zeroSelection": "scope-no-selection.log ran0tests after a preparation edit mismatch; NOTcounted asRED"
+  },
+  "tests": {
+    "database": {
+      "passed": 64,
+      "failed": 0,
+      "ignored": 7
+    },
+    "agentControl": {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    "coreLibAndHTTP": {
+      "passed": 51,
+      "failed": 0,
+      "ignored": 4
+    },
+    "strictClippy": "dependency-inclusive DB/AgentControl/Core --lib --tests -j2 -Dwarnings PASS22.58s/no suppressions",
+    "formatting": "10scoped Rust files rustfmt --check skip_children PASS"
+  },
+  "commands": [
+    "cargo test --offline --locked -p webdock-databases --lib --tests -j 2",
+    "cargo test --offline --locked -p webdock-agent-control --lib -j 2",
+    "cargo test --offline --locked -p webdock-control-plane --lib --test database_resource_reads --test resource_api -j 2",
+    "cargo clippy --offline --locked -p webdock-databases -p webdock-agent-control -p webdock-control-plane --lib --tests -j 2 -- -D warnings"
+  ],
+  "privateLogs": {
+    "directory": "/tmp/webdock-pg-authority-20261026",
+    "sha256": {
+      "four-red.log": "69238f2f9685122ead87e72bd356017d214cb29dcd9686ead556fdef45657ad3",
+      "four-green.log": "6a7f59ba7231e7b5b572dc650b75493ebdbf282392a3c9c9ed6a7162b1292d58",
+      "staged-red.log": "e684b11a0a6a737aec7e9856901c812a7d4b8a1d30fd281bc35d62d0d9049e4b",
+      "scope-red.log": "cf0420f61466a99e0528ee006db947cfbf3386cb37930632b055c556923d72fa",
+      "scope-no-selection.log": "15a66a876bb19088f13f5d9f6799c637ff5df807ae75f94a9eda11803c57e12e",
+      "database-final.log": "948a54797b901f450e0db2d3397c34754c5211d3e7981bbbbf4d123ab30b1a1a",
+      "agent-control.log": "53a5501917b092d483c6f99c03fb7de0fa269f9bf98fc42452b5a0985ebd1044",
+      "core.log": "dc28c1984ee44e0884c5930a3e3c5397960634938500fc3c68bb691e8e3c0f5c",
+      "clippy.log": "3eee3555d123709e632c3677255ed23f1456bd5cb5a7d9fc871975771735a2b7"
+    }
+  },
+  "limits": [
+    "No synthetic principal/MCP authentication success used. Codec candidate is explicitly untrusted serialization-only; production expiry getter follows actual OAuth verification.",
+    "No PG/Docker/native/provider execution or real concurrency/revocation-through-commit test in this stage. Prior genuine16MCPmetadata read proof is historical, not new guard-wrapper runtime acceptance.",
+    "Old Browser arrays/signatures/wire and current READ contract/HTTP checks pass; real positive wrapper requalification remains for a serialized genuine fixture window.",
+    "No app/AgentControl/routes/OAuth/Main/schema/proto/Cargo/dependency/lock/UI/production activation edits."
+  ],
+  "frozenSHA256": {
+    "Cargo.lock": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+    "external0056Draft": "c862cd756ac6a56642e8d88b271483426fc1d556857131613ad7dba779fca74a",
+    "crates/persistence/migrations/0054_source_recovery_fences.sql": "6425988741790a3420b7da0ebc711f02a32cdd40ae0d43b470b8000fd5ea4df7",
+    "crates/persistence/migrations/0055_native_operator_allowances.sql": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de"
+  },
+  "cleanup": {
+    "runtimeActions": 0,
+    "fixturesStarted": 0,
+    "newCredentialFiles": 0,
+    "listenersStarted": 0,
+    "obligations": [],
+    "pcShutdownCancelled": true
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "milestone": "native-initial-plugin-installation",
+  "date": "2026-10-23",
+  "sourceBase": "433b54c",
+  "environment": "owned disposable PostgreSQL services and isolated namespaces on local webdock-dev Kubernetes",
+  "productionChanged": false,
+  "developmentSeedUsed": false,
+  "manualInstallationRowsUsed": false,
+  "bootstrap": [
+    "initialize-empty native migration journal and restricted roles",
+    "webdock-bootstrap-operator",
+    "webdock-enroll-agent with Unix transport enrollment",
+    "webdock-bootstrap-plugins",
+    "native password change, MFA and first-party PKCE login"
+  ],
+  "artifact": {
+    "plugin": "postgres",
+    "version": "0.1.0",
+    "imageManifestSha256": "c1971081b7f551b571ef6e1ad7fb4555572502ace78e80c59528eab1a95ae2e6",
+    "releaseSignature": "pinned Ed25519 JWS over the exact reviewed manifest",
+    "actualOCIExecuted": true,
+    "runtimeIdentity": "pinned mTLS Describe and Health before promotion"
+  },
+  "acceptance": {
+    "consoleCatalogReviewAndInstall": "passed",
+    "installationWithoutCustomerOrProject": "passed",
+    "explicitRetryRetainsRuntimeAndPrivateMaterial": "passed",
+    "unsupportedSharedOfferingDisabled": "passed",
+    "customerOwnerCreatesDedicatedPostgreSQL17": "passed",
+    "agentObservedCloudNativePGReadiness": "passed",
+    "verifiedTLSCredentialedSQLWriteRead": "passed",
+    "runtimePodReplacement": "passed",
+    "retainedMetadataAndPasswordAfterReplacement": "passed",
+    "SQLReadAfterReplacement": "passed",
+    "responsive375And1280": "passed; screenshots inspected with credentials hidden"
+  },
+  "regressionsFoundDuringAcceptance": [
+    "Traefik TCP CRD prunes unsupported service kind; fixed the emitted profile while retaining strict ownership checks",
+    "host UFW blocked the original callback path; the replacement fixture used an isolated callback container without firewall changes"
+  ],
+  "migration0042Sha256": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+  "limits": [
+    "initial install and recovery only; updates, rollback, jobs and purge remain separate work",
+    "the initial managed kernel profile requires one kernel CA and one Core client/server leaf; metadata storage uses its own CA",
+    "catalog finalization after kernel identity generation changes its digest, so exact bootstrap replay refuses the modified catalog without rotating keys",
+    "dedicated workload database images still use reviewed major tags; no production rollout was performed"
+  ],
+  "review": {
+    "initialFindings": {
+      "critical": 0,
+      "important": 2,
+      "minor": 1
+    },
+    "fixed": [
+      "unpromoted managed installations reject availability mutations and expose installation recovery",
+      "separate storage is enforced with the observed PostgreSQL cluster-wide system identifier",
+      "Console accepts the native target-label range"
+    ],
+    "scopedIndependentRereview": "all three addressed; no new load-bearing regression"
+  },
+  "verification": {
+    "fullQuality": "bun run quality: passed on the final product tree",
+    "freshRestrictedCatalogInstallation": "4 passed, including two owned PostgreSQL fixtures",
+    "freshDualInterfaceStorageBoundary": "1 passed; same cluster denied on both NICs, distinct cluster accepted, unavailable identity denied",
+    "realNativeBrowser": "passed again after final API/controller build",
+    "consoleCatalogLabelBoundary": "3 tests passed",
+    "consoleRecoveryBrowser": "passed",
+    "timingObservation": "One full run timed out waiting for the existing Mail UI intermediate Suspending state; standalone and complete confirmation passed without a product or test change."
+  }
+}

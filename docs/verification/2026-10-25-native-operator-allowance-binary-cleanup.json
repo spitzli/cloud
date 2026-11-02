@@ -1,0 +1,45 @@
+{
+  "createdUTC": "2026-10-25T22:48:25.002518+00:00",
+  "scope": "only completed owned obsolete round1-5 copied executables",
+  "removed": [
+    {
+      "path": "/tmp/webdock-allowance-candidate-x4qqxtso/bootstrap-tests",
+      "sha256BeforeRemoval": "134ed49e306dd32b3c22432d0d0bf5314465a22a566ad1b29c7d1ef59f60503c",
+      "bytesRemoved": 759472952,
+      "removed": true,
+      "sourcePinAndFailureLogsRetained": true
+    },
+    {
+      "path": "/tmp/webdock-allowance-candidate-x4qqxtso/bootstrap-tests-round2",
+      "sha256BeforeRemoval": "708b784acebf9b66770a1f005b32eeaa32af8303e3a2a82c57c3e9fc4e740814",
+      "bytesRemoved": 759477552,
+      "removed": true,
+      "sourcePinAndFailureLogsRetained": true
+    },
+    {
+      "path": "/tmp/webdock-allowance-round3-tqmhflpr/bootstrap-tests",
+      "sha256BeforeRemoval": "8bcaca90a659d2cb7de53b3b67be4f6425a4997859c6e21c962ea969ddf4d78e",
+      "bytesRemoved": 759856496,
+      "removed": true,
+      "sourcePinAndFailureLogsRetained": true
+    },
+    {
+      "path": "/tmp/webdock-allowance-round4-algwzh5u/bootstrap-tests",
+      "sha256BeforeRemoval": "2c094476d9467542f18b8accc204d0e803331fa2467fe61a0a4afb13554e3500",
+      "bytesRemoved": 759824128,
+      "removed": true,
+      "sourcePinAndFailureLogsRetained": true
+    },
+    {
+      "path": "/tmp/webdock-allowance-round5-tilranbw/bootstrap-tests",
+      "sha256BeforeRemoval": "4db48b98ab1daaaf0199329141a2692eac3063e49c0a185c3a80d89d900ecd11",
+      "bytesRemoved": 759835536,
+      "removed": true,
+      "sourcePinAndFailureLogsRetained": true
+    }
+  ],
+  "totalBytesRemoved": 3798466664,
+  "retainedFinalRound6Directory": "/tmp/webdock-allowance-round6-uiwh6ipy",
+  "sharedTargetTouched": false,
+  "oldPinManifestsRewritten": false
+}

@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-25",
+  "scope": "Owned local MinIO qualification only",
+  "runID": "a9c50e103f82",
+  "privateEvidenceDirectory": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/native-object-storage/a9c50e103f82",
+  "platformID": "object-a9c50e103f82",
+  "clusterID": "107784243005890560",
+  "deadline": "2026-10-25T14:13:01.353Z",
+  "completedStages": [
+    "finish-prepare",
+    "bootstrap",
+    "artifacts",
+    "start-core",
+    "start-ui",
+    "setup",
+    "build-image",
+    "artifacts",
+    "finalize-catalog",
+    "stop-services",
+    "archive-artifacts",
+    "build-version-images",
+    "artifacts",
+    "finalize-catalog",
+    "cleanup",
+    "cleanup"
+  ],
+  "operatorSetup": {
+    "passwordChange": true,
+    "totp": true,
+    "pkce": true,
+    "registryAPI": true
+  },
+  "schemaSha256": null,
+  "producerManifestSha256": "40907a03a60bf94f61a8227435b963c2ded81ff834b493904cdd6abba624ea72",
+  "releases": [
+    {
+      "version": "0.1.0",
+      "imageManifestDigest": "sha256:d632e446b2d078af3697d9dab54536fa23213a8bc1f11cf88860da699065c0b4",
+      "imageConfigDigest": "sha256:897339fd51b5607155ba8e923990da39eaea3886ab8073c9725d8f03ca230ca8",
+      "signedManifestSha256": "812c2154321d51ae932c6403b826316ec3da51d9de960ecc3e6ed9e982caf446",
+      "archiveSha256": "4ec5890dd4bc7abc519bd5257e552db1e33b2682fd76f6f670a600231da08a8a"
+    },
+    {
+      "version": "0.2.0",
+      "imageManifestDigest": "sha256:40184431bbb16ff3e4134bae5b774ca78b0549f8debb61828ff27baca328790f",
+      "imageConfigDigest": "sha256:dc2af45a7a86a2913dcc9922e445398098c1d9f5d96ac560654be5536c7e80fa",
+      "signedManifestSha256": "df3109cb2e04f81ccfa2105e97e5c4ca580e0e96edbc712570129ea97735bb08",
+      "archiveSha256": "7aa59f5ec1a8a4df10413a206eec49e2c2fb3c4f681f7a7a5df7abef0fa1ea7b"
+    }
+  ],
+  "acceptedOperation": {
+    "id": "107787193988161536",
+    "pluginID": "object-storage",
+    "generation": "1",
+    "accepted": true
+  },
+  "containers": [
+    {
+      "name": "wd-object-k3s-a9c50e103f82",
+      "id": "c7db18e083460b7540d5e6667879aec16d1d4d9bcd0e88570eb5b2207bdc7b74",
+      "status": "removed",
+      "anonymousVolumes": [
+        "e704ae08d246b5113488dd91d8b43e89c09e2f3efa48ef55971a8a338c4376e7",
+        "8e0816d80fb765b359737e41fbdf9d0f27473f1b888d41c0c206c881d8997851",
+        "219b27c87168328d0bee5e706c6e01b56d3acb84147837c5ee9ad878f79b74b3",
+        "b7f848b49336aa88d20ac1395329e82227506bc3f9da4ef3db0f172ad59331dc"
+      ]
+    },
+    {
+      "name": "wd-object-platform-a9c50e103f82",
+      "id": "7d1ef5bba3887f05e5ef12667ab04982721520a6c3e305541b0be1cdee08aa2b",
+      "status": "removed",
+      "anonymousVolumes": [
+        "cf313e6d1b1629f94ab3fea1758e7337bf570b7f48954913f9be2608f2639792"
+      ]
+    },
+    {
+      "name": "wd-object-metadata-a9c50e103f82",
+      "id": "c0c72e187debeb4e8fe32a622017842870706822a1028806404c41d46b5300f9",
+      "status": "removed",
+      "anonymousVolumes": [
+        "00af7107b7d5a7a8c26d273bfec164da8a4198296af1857e7efe6c5a847b21d8"
+      ]
+    },
+    {
+      "name": "wd-object-registry-a9c50e103f82",
+      "id": "3b92f5657291f7d11db55a236878441ef4654a8e55961d24e9f6428f324dc1ad",
+      "status": "removed",
+      "anonymousVolumes": [
+        "4e5a949aae39e274200f2d2f201cc327310199e3ffc2157eda5e2e3cf425918a"
+      ]
+    },
+    {
+      "name": "wd-object-registry-a9c50e103f82-r2",
+      "id": "48405b34ea589ca6eca0d28e62875d92220dd138a2e7e83bc9a96fde11f06ff3",
+      "status": "removed",
+      "anonymousVolumes": [
+        "ccd69f50d0e44527de72def2a59c403783264d030ed842b7eb97789cfa6b113b"
+      ]
+    },
+    {
+      "name": "wd-object-registry-a9c50e103f82-r3",
+      "id": "88c0605276a040a170fb367f098b628743f7d6831e98a220d79882468d544268",
+      "status": "removed",
+      "anonymousVolumes": [
+        "14eafc94f478c78d8d908f5a1661baf847aa7821ecca61c6218fcfd8220e0243"
+      ]
+    },
+    {
+      "name": "wd-object-probe-a9c50e103f82",
+      "id": "da88a412898820c26a4262a265ba47f5bf0db4a66db5186fb8efa388ebb8875b",
+      "status": "removed",
+      "anonymousVolumes": []
+    },
+    {
+      "name": "wd-object-tls-probe-a9c50e103f82",
+      "id": "e1af587b29b2f5ea817e7eb1cd3e05c1315f3fad7c8014c2720efc59a3975cc8",
+      "status": "removed",
+      "anonymousVolumes": []
+    },
+    {
+      "name": "wd-object-tls-probe2-a9c50e103f82",
+      "id": "b2a9ab5f35d9b4cd063dff3df45a96c53700a586b6c635a96b0e4375dc4cff59",
+      "status": "removed",
+      "anonymousVolumes": []
+    }
+  ],
+  "runtimes": [],
+  "transportProof": null,
+  "dataProof": null,
+  "lifecycleProof": null,
+  "browserProof": null,
+  "cleanup": {
+    "exactContainerIDsRemoved": true,
+    "anonymousVolumesRemoved": true,
+    "ownedNetworkRemoved": true,
+    "recordedProcessesStopped": true,
+    "existingMinioStillRunning": true,
+    "privateEvidenceRetained": true
+  },
+  "limits": {
+    "coreTransferBytes": 536870912,
+    "concurrentTransfers": 4,
+    "aggregateStagingBytes": 2147483648,
+    "planSeconds": 300,
+    "fixtureProxyBytes": 16777216
+  },
+  "productionActions": false,
+  "wasabiQualified": false,
+  "buildCacheAdded": false,
+  "privateReportSha256": "bc33f411328919264670a3bde34813ea491e344d3eb942d3cbaf4a7f9c2c89f7"
+}

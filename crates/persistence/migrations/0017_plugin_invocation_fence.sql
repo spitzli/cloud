@@ -1,0 +1,1 @@
+../../plugin-host/migrations/0001_invocation_fence.sql

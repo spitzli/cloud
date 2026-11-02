@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-25",
+  "scope": "Retained normalized build source and scoped evidence inside the existing immutable OCI artifact",
+  "status": "Two confirmed review defects and crypto coverage gap fixed; mixed-reader compatibility added; actual Core/KVM qualification165.02s passed; final root gate pending",
+  "migration": "None; existing Core artifact digest/size/S3 receipt binds the complete outer archive",
+  "legacy": "Unconfigured local one-file artifacts and their completion hashes remain unchanged",
+  "commands": [
+    {
+      "command": "cargo test --locked -p webdock-build --no-default-features --features worker --test evidence --test artifact --test contracts --test remote_artifacts",
+      "result": "12 passed"
+    },
+    {
+      "command": "rustup run 1.94.0 cargo test --locked -p webdock-build --no-default-features --test evidence --test artifact --test contracts",
+      "result": "10 passed on actual Rust1.94"
+    },
+    {
+      "command": "cargo test --offline -p webdock-build --no-default-features --test evidence",
+      "result": "3 passed, including official SPDX2.3.1 schema validation after adding already pinned jsonschema0.59 as dev dependency"
+    },
+    {
+      "command": "cargo test --locked -p webdock-build --features local-registry-test --lib revocation_during_a_transfer -- --nocapture",
+      "result": "1 passed, actual owned HTTP revocation while a transfer is pending"
+    },
+    {
+      "command": "cargo test --locked -p webdock-build --no-default-features --features worker --lib secret_configuration",
+      "result": "1 passed with real private/public files, symlink, hardlink and size cases"
+    },
+    {
+      "command": "cargo clippy --locked -p webdock-build --all-targets --all-features --no-deps -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "python3 -B tools/tests/object-storage.py python3 -B tools/tests/build-storage.py",
+      "result": "Legacy local case passed; remote fixture failed before artifact creation because its new /tmp scratch was a 5.9GiB tmpfs against a 10GiB disk reservation. Fixture scratch corrected to the owned VM filesystem; no product disk check weakened."
+    },
+    {
+      "command": "python3 -B tools/tests/object-storage.py python3 -B tools/tests/build-storage.py --remote-only",
+      "result": "passed in95.72seconds: actual Core/HTTP/Worker::build_once/isolated guest/signed source bundle/MinIO, separate publisher with missing original local store, exact source bytes and expected signer, unchanged OCI publication and rollback/current authority checks"
+    },
+    {
+      "command": "python3 -B -m unittest discover -s tools/tests -p 'test_*storage*.py'",
+      "result": "6 passed"
+    },
+    {
+      "command": "python3 -B tools/tests/object-storage.py python3 -B tools/tests/build-storage.py --remote-only",
+      "result": "Final165.02s passed with schema51: old reader excluded before lease, unsupported format rejected, actual signed source/OCI transfer and cross-worker publication/rollback, oversized inventory failed terminally and subsequent queued original commit succeeded. Exact cleanup passed."
+    },
+    {
+      "command": "cargo test --locked -p webdock-build --features local-registry-test --lib evidence_worker_requires -- --nocapture",
+      "result": "Passed: unsupported server format rejected before any build claim"
+    }
+  ],
+  "proof": [
+    "Mutating each companion, changing scope/generation, supplying an unexpected key or unknown outer file is rejected.",
+    "Guest-supplied evidence cannot replace trusted worker source/pins.",
+    "Provenance does not serialize build environment values, credentials, signing seeds or local private paths.",
+    "Actual fixture source archive includes only its recorded Dockerfile/busybox/musl; no workspace/private file inventory is uploaded.",
+    "Source-file SPDX checksum inventory is explicitly not a resolved OS/dependency SBOM.",
+    "Signing seed in this acceptance is fixture-only; no production signing trust is asserted.",
+    "22,000 valid escaped source filenames exercise the real inventory bound; actual Core/guest failure is terminal and does not starve the queue."
+  ],
+  "cleanup": "Exact owned PostgreSQL fixture, S3 buckets, user and policy removed after both successful and failed rounds; parent MinIO retained. Private failure evidence retained. No VM base or unrelated registry/container was deleted.",
+  "remaining": [
+    "Standalone frontend-output producer",
+    "Production signer policy/approved key setup",
+    "Reference-aware orphan inventory/reconciliation; no TTL/GC/delete is enabled",
+    "Full handover, Wasabi and production acceptance",
+    "Current scoped source SPDX inventory does not claim resolved image/dependency analysis"
+  ],
+  "sha256": {
+    "crates/build/src/evidence.rs": "a4ecf2ec9103ba843c17974b68fda1f83c2e10b88a4e04c74102677e1333f238",
+    "crates/build/src/artifact.rs": "db211c4f30c594a3d4063da087e65995038a60fd8475962bf25076fce2d9f73c",
+    "crates/build/src/execution.rs": "86f407e6506b6015b36ca7c84c8429e22213a46aa3a63db4346d5d1e1c87583a",
+    "crates/build/src/publisher.rs": "459fb0a619ebb405c62e394e858034bb026566642ea9bfab2f14670015aba9db",
+    "crates/build/src/worker.rs": "1d79ea25374b7d289d6f3e055c12f056e0780bc0d4f64ae4da9a62752f32dc07",
+    "crates/build/tests/evidence.rs": "34022c77e14c4e258e2260a0f3f6fdb3ff90ca5341608aaea29c1af97e5518b4",
+    "crates/build/tests/support/hosting_flow.rs": "9dcbf058db515f53da407288089d712471ca94233abb4d9fb5ef01d2eb386aae",
+    "crates/build/tests/fixtures/spdx-2.3.1.schema.json": "4126dc29f15e92feec92e9622f4939131ad58b125d6f578aa93e980a6e6f3212",
+    "tools/tests/build-storage.py": "01a927886b289cd08e99eaad65ac5bacba0f1f8bbee00e6bc2530da3c6c50222",
+    "crates/build/src/http.rs": "6115c80e0704adb9c79cb0bdbbc4fe6bc0c6f5a7b26bc26823a2343d25b50a16",
+    "crates/build/src/remote.rs": "4aea14d61b02d6af13b0edba76e68739766e7420dacfee96ee334af7d3bbb5b0",
+    "crates/build/src/service.rs": "d7460c86a143303beba1916c0177884cedd73fdba90f0d03008bec861e6a09d2"
+  },
+  "reviewResponse": {
+    "review": "s3-build-evidence-review-20261025-r1",
+    "fixes": [
+      "Deterministic preparation runs in host blocking build result; failure records terminal Core completion and next queued build proceeds",
+      "Shared64MiB inventory ceiling checked before constructor success",
+      "Valid-JSON signature and provenance mutations assert artifact_signature_invalid"
+    ],
+    "additionalCompatibility": "New bundles use immutable .e1.tar identity; old wire clients default to format0 and cannot claim format1 before lease assignment. New evidence workers require Core capability before build claim. Old local .tar remains unchanged."
+  }
+}

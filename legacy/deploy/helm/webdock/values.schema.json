@@ -1,0 +1,369 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "externalDatabase",
+    "components",
+    "modules",
+    "migration",
+    "resources",
+    "networkPolicy"
+  ],
+  "properties": {
+    "externalDatabase": {
+      "const": true
+    },
+    "modules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "configVersion",
+        "modules"
+      ],
+      "properties": {
+        "configVersion": {
+          "const": 1
+        },
+        "modules": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "databases": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "enabled"
+                  ],
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state"
+                  ],
+                  "properties": {
+                    "state": {
+                      "enum": [
+                        "enabled",
+                        "draining",
+                        "disabled"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "hosting": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "enabled"
+                  ],
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state"
+                  ],
+                  "properties": {
+                    "state": {
+                      "enum": [
+                        "enabled",
+                        "draining",
+                        "disabled"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "mail": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "enabled"
+                  ],
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state"
+                  ],
+                  "properties": {
+                    "state": {
+                      "enum": [
+                        "enabled",
+                        "draining",
+                        "disabled"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "storage": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "enabled"
+                  ],
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state"
+                  ],
+                  "properties": {
+                    "state": {
+                      "enum": [
+                        "enabled",
+                        "draining",
+                        "disabled"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "console",
+        "auth",
+        "api",
+        "worker"
+      ],
+      "properties": {
+        "console": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "image",
+            "existingSecret",
+            "port"
+          ],
+          "properties": {
+            "image": {
+              "type": "string",
+              "pattern": "^.+@sha256:[a-f0-9]{64}$"
+            },
+            "existingSecret": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$"
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 65535
+            }
+          }
+        },
+        "auth": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "image",
+            "existingSecret",
+            "port"
+          ],
+          "properties": {
+            "image": {
+              "type": "string",
+              "pattern": "^.+@sha256:[a-f0-9]{64}$"
+            },
+            "existingSecret": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$"
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 65535
+            }
+          }
+        },
+        "api": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "image",
+            "existingSecret",
+            "port"
+          ],
+          "properties": {
+            "image": {
+              "type": "string",
+              "pattern": "^.+@sha256:[a-f0-9]{64}$"
+            },
+            "existingSecret": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$"
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 65535
+            }
+          }
+        },
+        "worker": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "port"
+          ],
+          "properties": {
+            "image": {
+              "type": "string"
+            },
+            "existingSecret": {
+              "type": "string"
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 65535
+            },
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "enabled": {
+                    "const": true
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "image",
+                  "existingSecret"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "pattern": "^.+@sha256:[a-f0-9]{64}$"
+                  },
+                  "existingSecret": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "migration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "image": {
+          "type": "string"
+        },
+        "existingSecret": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        }
+      },
+      "if": {
+        "properties": {
+          "enabled": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "image": {
+            "type": "string",
+            "pattern": "^.+@sha256:[a-f0-9]{64}$"
+          },
+          "existingSecret": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$"
+          },
+          "target": {
+            "type": "string",
+            "pattern": "^[^/]+:[0-9]+/[^/]+$"
+          }
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "required": [
+        "requests",
+        "limits"
+      ]
+    },
+    "networkPolicy": {
+      "type": "object",
+      "required": [
+        "ingress",
+        "egress"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ingress": {
+          "type": "array"
+        },
+        "egress": {
+          "type": "array"
+        }
+      }
+    }
+  }
+}

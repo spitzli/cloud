@@ -1,0 +1,25 @@
+[Unit]
+Description=Owned controller to BUILD network guard
+Requires=@BUILD_DEPENDENCY@
+After=network-online.target @BUILD_DEPENDENCY@
+Before=webdock-build-controller-link.service
+ConditionPathExists=/etc/webdock-build-controller/network-approved.sha256
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/usr/local/libexec/webdock-build-controller-profile --guard --config /etc/webdock-build-controller/connection.json --role @ROLE@
+ExecStartPre=/usr/sbin/nft --check -f /etc/webdock-build-controller/link-guard.nft
+ExecStart=/usr/sbin/nft -f /etc/webdock-build-controller/link-guard.nft
+# No ExecStop flush: retain the deny guard when the link or its unit fails.
+CapabilityBoundingSet=CAP_NET_ADMIN
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+TasksMax=16
+MemoryMax=64M
+
+[Install]
+WantedBy=multi-user.target

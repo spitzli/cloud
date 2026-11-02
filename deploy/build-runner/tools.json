@@ -1,0 +1,18 @@
+{
+  "buildctl": {
+    "path": "/usr/bin/buildctl",
+    "sha256": "8e64362dceba989827b23af567915feda10426ebd40611772318662e33bf2bfd"
+  },
+  "railpack": {
+    "cli": {
+      "path": "/usr/local/bin/railpack",
+      "sha256": "6c99bdd6d9606261a218fb22f3d663eb72fc483e8dc8c839844c15aa0c2fbdf1"
+    },
+    "version": "0.40.1",
+    "frontend": "ghcr.io/railwayapp/railpack-frontend:v0.40.1@sha256:f1973377693af30c9b37a92c97c661c07b277ccdc6be909213c74c771f8d2d6d",
+    "builderImage": "ghcr.io/railwayapp/railpack-builder:mise-2026.9.15@sha256:55390774b8087529bdcb40302d09f73153199ee786c17dcb79165c1d1b3d76aa",
+    "runtimeImage": "ghcr.io/railwayapp/railpack-runtime:mise-2026.9.15@sha256:18e4a631ecfd99e91e6421eabaf84533c0ded7b35f103a506fe1106922b8f20c"
+  },
+  "buildkitSocket": "/workspace/runtime/buildkitd.sock",
+  "proxyURL": "http://10.83.0.1:3128"
+}

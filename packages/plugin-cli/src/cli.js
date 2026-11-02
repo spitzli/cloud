@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 import {
   mkdir,
   writeFile,
@@ -124,9 +124,9 @@ try {
       version: "0.1.0",
       private: true,
       type: "module",
-      scripts: { build: "tsc -p tsconfig.json", start: "node dist/index.js" },
+      scripts: { build: "tsc -p tsconfig.json", start: "bun dist/index.js" },
       dependencies: { "@webdock/plugin-sdk": "0.1.0" },
-      devDependencies: { typescript: "^5", "@types/node": "^24" },
+      devDependencies: { typescript: "^5", "@types/bun": "^1" },
     };
     if (templateName === "actions") {
       const sdkRoot = resolve(dirname(fileURLToPath(import.meta.resolve("@webdock/plugin-sdk/contracts"))), "../..");
@@ -232,7 +232,7 @@ try {
   } else if (command === "build") {
     parsePluginManifest(JSON.parse(await readFile(source, "utf8")));
     const result = spawnSync(
-      process.platform === "win32" ? "npm.cmd" : "npm",
+      "bun",
       ["run", "build"],
       { cwd: dir, stdio: json ? "pipe" : "inherit" },
     );

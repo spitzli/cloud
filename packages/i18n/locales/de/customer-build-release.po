@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Spitzli Cloud\n"
+"PO-Revision-Date: 2026-11-01 17:00+0100\n"
+"Last-Translator: Spitzli Development\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Project managers can connect an authorized repository below. Your provider must enable new GitHub account access."
+msgstr "Projektverantwortliche können unten ein freigegebenes Repository verbinden. Neue GitHub-Konten muss dein Anbieter freischalten."
+
+msgid "Loading GitHub connections…"
+msgstr "GitHub-Verbindungen werden geladen…"
+
+msgid "No active GitHub connection"
+msgstr "Keine aktive GitHub-Verbindung"
+
+msgid "Ask your provider to connect your GitHub account and authorize repositories for this workspace."
+msgstr "Bitte deinen Anbieter, dein GitHub-Konto zu verbinden und Repositories für diesen Arbeitsbereich freizugeben."
+
+msgid "Refresh connections"
+msgstr "Verbindungen aktualisieren"
+
+msgid "No application target"
+msgstr "Keine Zielanwendung"
+
+msgid "Create an application in this project before connecting a repository."
+msgstr "Erstelle in diesem Projekt eine Anwendung, bevor du ein Repository verbindest."
+
+msgid "Connect a repository"
+msgstr "Repository verbinden"
+
+msgid "Select a repository already authorized for this workspace. Build access and publication are approved separately."
+msgstr "Wähle ein für diesen Arbeitsbereich freigegebenes Repository. Die Freischaltung von Builds und die Veröffentlichung erfolgen separat."
+
+msgid "Authorized repository"
+msgstr "Freigegebenes Repository"
+
+msgid "Loading repositories…"
+msgstr "Repositories werden geladen…"
+
+msgid "No repositories are authorized for this account. Ask your provider to update its repository access."
+msgstr "Für dieses Konto sind keine Repositories freigegeben. Bitte deinen Anbieter, den Repository-Zugriff zu aktualisieren."
+
+msgid "Check the branch and relative root directory."
+msgstr "Prüfe den Branch und das relative Stammverzeichnis."
+
+msgid "Refresh repositories"
+msgstr "Repositories aktualisieren"
+
+msgid "Repository setup is unavailable"
+msgstr "Repository-Einrichtung nicht verfügbar"
+
+msgid "This hosting provider does not support repository source setup here."
+msgstr "Dieser Hosting-Anbieter unterstützt hier keine Einrichtung von Repository-Quellen."
+
+msgid "Select a GitHub account"
+msgstr "GitHub-Konto auswählen"

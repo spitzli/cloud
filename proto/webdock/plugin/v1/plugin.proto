@@ -1,0 +1,76 @@
+syntax = "proto3";
+package webdock.plugin.v1;
+
+// The transport version is independent from the v1 manifest and signed claims.
+// Caller identity is authenticated through private UDS credentials or required mTLS.
+service PluginRuntime {
+  rpc Describe(DescribeRequest) returns (DescribeResponse);
+  rpc Health(HealthRequest) returns (HealthResponse);
+  rpc Invoke(InvokeRequest) returns (InvokeResponse);
+  // Private active-resource revalidation; never returns provider URLs or user data.
+  rpc AuthorizeStorage(StorageAuthorizationRequest) returns (StorageAuthorizationResponse);
+  rpc RunJob(RunJobRequest) returns (RunJobResponse);
+  rpc WatchOperation(WatchOperationRequest) returns (stream OperationEvent);
+}
+message DescribeRequest {}
+message DescribeResponse { bytes manifest_json = 1; }
+message HealthRequest {}
+message HealthResponse {
+  string plugin_id = 1;
+  string version = 2;
+  uint64 generation = 3;
+  uint32 protocol_version = 4;
+}
+message InvokeRequest {
+  string invocation_token = 1;
+  string action = 2;
+  bytes input_json = 3;
+  bytes configuration_json = 4;
+}
+message InvokeResponse { bytes output_json = 1; }
+message StorageAuthorizationRequest { bytes authorization_json = 1; }
+message StorageAuthorizationResponse { bool active = 1; }
+message RunJobRequest {
+  string invocation_token = 1;
+  string name = 2;
+  bytes input_json = 3;
+  bytes configuration_json = 4;
+}
+message RunJobResponse { bytes output_json = 1; }
+message WatchOperationRequest {
+  string invocation_token = 1;
+  string operation_id = 2;
+  string after_cursor = 3;
+}
+message OperationEvent {
+  string operation_id = 1;
+  string cursor = 2;
+  bytes payload_json = 3;
+}
+
+// Host capabilities remain separately authenticated; a plugin never receives a database scope.
+service PluginHost {
+  rpc AuthorizePeer(HostPeerRequest) returns (HostAuthorityResponse);
+  rpc AuthorizeInvocation(HostInvocationRequest) returns (HostAuthorityResponse);
+  rpc AuthorizeRequest(HostPayloadRequest) returns (HostAuthorityResponse);
+  rpc Call(HostCallRequest) returns (HostCallResponse);
+  // plugin.workloads, as the authenticated plugin runtime rather than one invocation.
+  rpc Workloads(HostWorkloadRequest) returns (HostCallResponse);
+}
+message HostPeerRequest { string plugin_id = 1; uint64 generation = 2; }
+message HostInvocationRequest { bytes claims_json = 1; }
+message HostPayloadRequest { bytes claims_json = 1; bytes input_json = 2; bytes configuration_json = 3; }
+message HostAuthorityResponse { bool active = 1; }
+message HostCallRequest {
+  string invocation_token = 1;
+  string service = 2;
+  string method = 3;
+  bytes input_json = 4;
+}
+message HostCallResponse { bytes output_json = 1; }
+message HostWorkloadRequest {
+  string plugin_id = 1;
+  uint64 generation = 2;
+  string method = 3;
+  bytes input_json = 4;
+}

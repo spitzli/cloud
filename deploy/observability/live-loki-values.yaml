@@ -1,0 +1,8 @@
+# Private operator bootstrap, overlay on pinned loki-values.yaml.
+singleBinary:
+  extraEnvFrom:
+  - secretRef:
+      name: obs-loki-s3
+      optional: false
+  persistence:
+    storageClass: webdock-obs-loki-v1

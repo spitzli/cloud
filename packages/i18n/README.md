@@ -21,10 +21,10 @@ Language preferences are host-only. They do not synchronize explicit choices bet
 Run from this package:
 
 ```sh
-npm run extract
-npm run compile
-npm run catalog:check
-npm test
+bun run extract
+bun run compile
+bun run catalog:check
+bun run test
 ```
 
 The installed GNU xgettext supports TypeScript and TSX directly. Extraction scans an explicit list of workspace source roots; additional CLI paths must stay inside those roots. It writes `locales/webdock.pot`. Markers are `t`, `n`, `p`, `msgid` and the pure gettext functions. Update each owning domain (`auth.po`, `studio.po`, `web.po`, `cms.po`) with reviewed German translations; `core.po` owns the picker and common fallback messages. Avoid merging the entire POT into every domain. Identical duplicate entries are allowed; conflicting translated keys across domains fail compilation. Context is part of a key. Fuzzy/empty translations fall back to source English; their source IDs remain registered for safe error handling.

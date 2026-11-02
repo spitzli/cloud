@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 const root = new URL("../../", import.meta.url);
 const metadata = JSON.parse(
-  await readFile(new URL("apps/control-plane/.api-fixture.json", root), "utf8"),
+  await readFile(new URL("legacy/control-plane/.api-fixture.json", root), "utf8"),
 );
 if (!/^webdock-api-fixture-[a-f0-9]{12}$/.test(metadata.name))
   throw Error("Owned local fixture required");

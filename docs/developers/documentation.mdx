@@ -1,50 +1,61 @@
 ---
 title: "Maintain these docs"
-description: "Add Mintlify pages, update navigation and keep the API reference in sync."
+description: "Update customer guides and developer contracts, validate the Mintlify site and publish from the verified source."
 ---
 
-The documentation root is `docs/`. Public pages use MDX with YAML frontmatter; navigation and branding live in `docs.json`.
+The canonical source is the `docs/` directory in [spitzli/cloud](https://github.com/spitzli/cloud). Public pages use English MDX. Navigation and branding live in `docs.json`.
 
-## Preview and validate
+## Make a focused update
 
-Install the Mintlify CLI with Node.js 24, then run from the documentation root:
+1. Check the current implementation and its actual deployment status.
+2. Update the guide where the reader performs the task, including limits and failure recovery.
+3. Update affected references, examples and navigation together.
+4. Validate the complete site and review the docs-only diff before publishing.
+
+Keep account identity, workspace authorization and provider credentials distinct. Describe build completion separately from rollout health, and OCI publication separately from signed registry admission and installation. Existing protocol URLs must not be renamed merely to match product branding.
+
+## Validate and preview
+
+Use Node.js 24. From the documentation root:
 
 ```bash
-npm install -g mint
-cd docs
-mint dev --no-open
+npx --yes mint@4.2.1184 validate
+npx --yes mint@4.2.1184 broken-links --check-anchors --check-redirects
 ```
 
-Before committing:
+`validate` checks the content and runs a strict local site build. It does not publish. To inspect a local rendering:
 
 ```bash
-mint validate
-mint broken-links
+npx --yes mint@4.2.1184 dev --no-open
 ```
+
+See the official [Mintlify development guide](https://www.mintlify.com/docs/installation) when updating the CLI. Recheck commands against the installed version before changing the pin.
 
 ## Add a page
 
-Give each page a `title` and `description`, use a kebab-case filename, and add its extensionless path to the correct group in `docs.json`. Use root-relative internal links such as `/guides/mail`. Use language tags on fenced code blocks.
+Give each page a `title` and `description` in YAML frontmatter, use a kebab-case filename, and add its extensionless path to the right navigation group. Use root-relative internal links such as `/guides/byok-neon` and language tags on code fences.
 
-Use built-in `Steps` for procedures, `Columns` and `Card` for entry points, and callouts for relevant limits. Prefer short, task-focused pages over copied implementation logs.
+Use built-in `Steps` for procedures, `Columns` and `Card` for entry points, and callouts for consequential limits. Prefer short tasks over copied implementation logs. Include only example identifiers and synthetic data in public examples.
 
 ## Refresh the Mail reference
 
-From the repository root, use Bun to export the actual API builder:
+From the repository root:
 
 ```bash
 bun docs/scripts/export-mail-openapi.ts
 bun docs/scripts/export-mail-openapi.ts --check
 ```
 
-The exporter resolves the relative server URL to the canonical Mail API host and adds readable operation titles and navigation groups. Paths, authentication, parameters and schemas come from the application unchanged. It does not send messages or contact a provider. Review and commit the snapshot together with contract changes.
+The exporter uses the retained Mail API builder and supplies readable operation titles and the documentation API origin. Do not edit generated paths, authentication or schemas by hand. The generated contract does not prove native endpoint parity or that a workspace has an enabled sending connection. Keep the public playground disabled unless live request behavior is deliberately reviewed.
 
-## Public and internal material
+## Keep internal material private
 
-The `.mintignore` file excludes `architecture/`, `operations/`, `superpowers/`, `verification/`, `ux/`, contributor instructions and scripts. These records stay in Git as source evidence and historical context. Do not link a public page to an excluded local file.
+The `.mintignore` file excludes architecture, operations, plans/specifications, verification, handovers, UX records, raw planning notes and maintenance scripts. Do not link public pages to those local paths. Hiding a page from navigation does not prevent access to its URL.
 
-Removing a page from navigation alone is not a publication boundary: hidden pages can still be addressable. Keep internal material explicitly excluded.
+## Publish from the existing project
 
-## Connect the repository
+Verify the Mintlify project's repository, production branch and documentation directory before publishing. For this repository the intended source is `spitzli/cloud`, branch `main`, directory `docs`; an existing GitHub redirect does not confirm that the active Mintlify project uses it.
 
-For this monorepo, select `spitzli/webdock`, branch `main`, and documentation directory `docs` in the Mintlify project settings. The connection must already be authorized. Local configuration changes do not prove that the hosted site deployed.
+Review and publish the documentation change through the established project connection. Keep unrelated application and infrastructure changes out of the documentation release. Check the real custom domain, navigation and representative pages afterwards; local validation and an accepted Git push alone are not proof that readers received the update.
+
+Our own GitHub CI is required to use Blacksmith. Record the observed runner region and qualify the reviewed workflow before enabling it; EU-only placement has been waived for this CI scope. The migration remains separate from editing these pages.

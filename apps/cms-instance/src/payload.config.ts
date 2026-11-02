@@ -7,6 +7,7 @@ import { verifiedPostgresConfig } from "@webdock/database-runtime";
 import { payloadEnvironment } from "./lib/config.ts";
 import { pages, media, settings, users } from "./lib/content.ts";
 import { sso } from "./lib/sso.ts";
+import { mediaStorageAdapter } from "./lib/media-storage.ts";
 const runtime = payloadEnvironment();
 const directory = path.dirname(fileURLToPath(import.meta.url));
 export default buildConfig({
@@ -28,6 +29,7 @@ export default buildConfig({
     media(runtime.mediaDirectory),
   ],
   globals: [settings],
+  storage: [mediaStorageAdapter(runtime)],
   db: postgresAdapter({
     schemaName: "app",
     disableCreateDatabase: true,

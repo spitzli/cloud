@@ -1,0 +1,113 @@
+{
+  "review": "54#10",
+  "status": "qualified scoped private Mail fix",
+  "head": "819041524049117bc50e11dfd96a6a29407804b8",
+  "commitsCreated": false,
+  "productionChanges": false,
+  "productionFilesChanged": [
+    "plugins/mail/src/mailboxes.rs",
+    "plugins/mail/src/recovery.rs",
+    "plugins/mail/src/store.rs"
+  ],
+  "completionRules": [
+    "RecoveryEffect::finish is called only when no provider request started, or the entire provider operation succeeded and required private outcome persistence succeeded.",
+    "A provider error, timeout, accepted HTTP error, partial completion, process cancellation, or failed/disconnected metadata write leaves the opaque token untouched.",
+    "mailbox_ready and engine_state require UPDATE RETURNING exactly one row; missing/suppressed writes are errors, repeated matching writes succeed.",
+    "Mailbox provider failures retain honest failed state when possible; incomplete suspension stays suspending.",
+    "Crate-private read-only Store::recovery_effect_count returns installation-wide unresolved count; resume skips all automatic engine/mailbox reconciliation when nonzero, with mail_plugin_recovery_effect_uncertain diagnostic. It does not change gate state, release custody, or claim reconciliation succeeded.",
+    "Unresolved rows deny private drain and source resume and survive reconnect, process/PG restart, dump serialization and existing quarantine epoch change. Main owns Core/agent fence, known-runtime stop and restored-history quarantine."
+  ],
+  "validation": [
+    {
+      "command": "cargo test --manifest-path plugins/mail/Cargo.toml --offline --locked",
+      "exitCode": 0,
+      "passed": 27,
+      "ignored": 27,
+      "failed": 0
+    },
+    {
+      "command": "cargo clippy --manifest-path plugins/mail/Cargo.toml --offline --locked --all-targets -- -D warnings",
+      "exitCode": 0
+    },
+    {
+      "command": "cargo fmt --manifest-path plugins/mail/Cargo.toml -- --check",
+      "exitCode": 0
+    },
+    {
+      "command": "git diff --check -- plugins/mail",
+      "exitCode": 0
+    },
+    {
+      "command": "python3 plugins/mail/tests/fixtures/mailbox-recovery.py --phase green --evidence plugins/mail/tests/fixtures/review54-10-green.json",
+      "exitCode": 0,
+      "casesPassed": 16,
+      "sourceInventoryUnchangedDuringRun": true
+    }
+  ],
+  "redEvidence": {
+    "original": "plugins/mail/tests/fixtures/review54-10-red.json",
+    "originalFailures": 9,
+    "zeroRow": "plugins/mail/tests/fixtures/review54-10-zero-row-red.json",
+    "zeroRowFailures": 2
+  },
+  "retainedFixtureFailures": [
+    {
+      "evidence": "plugins/mail/tests/fixtures/review54-10-zero-row-red.json",
+      "code": "restart_readiness_deadline",
+      "note": "Both zero-row REDs observed before owned PG restart readiness failed; cleanup completed. Original and final GREEN separately exercise process/PG restart."
+    },
+    {
+      "evidence": "plugins/mail/tests/fixtures/review54-10-fixture-wiring-failure.json",
+      "code": "provider_accept_deadline",
+      "note": "New missing-engine test fixture omitted PauseApply from its host boundary. Fixture corrected; final 16 cases pass. Exact cleanup and redacted diagnostics retained."
+    }
+  ],
+  "sourceInventorySha256": {
+    "plugins/mail/src/mailboxes.rs": "75ccdbf9c433a6b739d8bc274fa6cc1ea211cf8151394a6bcf266df0c4859b42",
+    "plugins/mail/src/mailboxes/recovery_tests.rs": "d80d66d38e96c6eef7b5b8397e9a979f17faa9ef528398bfca0125ca472a8521",
+    "plugins/mail/src/recovery.rs": "a9c672b6d2967980a7534b5dad731028fd81a86be1ee019bc9eef903e12677f3",
+    "plugins/mail/src/recovery/tests.rs": "5ae0c1e2e5ed4602bf04c6101376d15371ba9b30ec033926798c1a758d26a26e",
+    "plugins/mail/src/recovery.sql": "c0e0a8e3b1f8734a0cfda790cd80d92ae9772b3c2e2698af63dfd16b884ae9d6",
+    "plugins/mail/src/store.rs": "90e86d9f731b44006a2adc2f4825b43e131f374b94cbeb3af157b7e6669378fd",
+    "plugins/mail/src/lib.rs": "37cbd6d6498291aa2843f1c74f2151a2d8e55787035a9c4148e22db5c21d97fe",
+    "plugins/mail/src/engine.rs": "cf7c9e435c553e43cc15d9c2516aa8f2262bc69a2418b6ce7775f237c7f3969e",
+    "plugins/mail/Cargo.toml": "850e47cd69aa05b868b6c0f4e0ea564724e1697925d77749a178aaca8cd35fc5",
+    "plugins/mail/Cargo.lock": "9705f40859f2484ee19a1aacf653e633ddffc0330a65c89181a67e275673a66a",
+    "plugins/mail/tests/fixtures/mailbox-recovery.py": "f1d705e23371f371b7d93e9b8e5dd310d16916dc0e99d0c17fa9e5b7a03faff6"
+  },
+  "fixtureSupportSha256": {
+    "tools/tests/mail-application-recovery.py": "5247a1c471a296e2c34428c51f7829864d77105240fe9d5eb084e3293d0ce23a"
+  },
+  "baselinePreserved": [
+    "HEAD",
+    "plugins/mail/src/recovery.sql",
+    "plugins/mail/src/lib.rs",
+    "plugins/mail/Cargo.toml",
+    "plugins/mail/Cargo.lock"
+  ],
+  "cleanup": {
+    "containers": [
+      {
+        "name": "wd-recovery-review10-3883c5ddafe24043",
+        "id": "f6765d92f2b56c0fbff1d5f58a99be3a1308a095c5e9b5701a67b23915e72725"
+      }
+    ],
+    "exactIDsAbsent": true,
+    "clustersTouched": false,
+    "volumesRemovedWithExactContainer": true,
+    "providerFixtures": "in test processes; all bounded processes exited or reaped",
+    "temporaryPkiAndPrivateLogsRemoved": true,
+    "minioKindK3sUnchanged": true,
+    "volumes": [
+      {
+        "containerId": "f6765d92f2b56c0fbff1d5f58a99be3a1308a095c5e9b5701a67b23915e72725",
+        "name": "4d501caf55cdce52d798615c73813b800e399ba3c2cd1698cb94c5a34cfef654"
+      }
+    ],
+    "providerTestProcessCount": 17,
+    "allProviderTestPidsAbsentAfterReap": true,
+    "finalOwnedTemporaryDirectoryScanEmpty": true,
+    "existingMinioKindStoppedK3sAndProductionUntouched": true
+  },
+  "integrationLimit": "No full Mail Core/private/real CE/SMTP backup acceptance. No custody resolution API added. Changed Mail capture source requires a new qualified signed binary/image pin from the main owner; accepted images were not replaced."
+}

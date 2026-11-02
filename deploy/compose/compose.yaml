@@ -1,6 +1,8 @@
-name: webdock
+# Isolated single-host candidate. Managed workloads stay on the existing Kubernetes cluster.
+name: webdock-native
 x-runtime: &runtime
   restart: unless-stopped
+  user: '65532:65532'
   read_only: true
   cap_drop: [ALL]
   security_opt: [no-new-privileges:true]
@@ -10,60 +12,8 @@ x-runtime: &runtime
   cpus: 1
   stop_grace_period: 30s
 services:
-  console:
+  core:
     <<: *runtime
-    image: ${WEBDOCK_CONSOLE_IMAGE:?Set immutable Console image}
-    tmpfs: ['/tmp:rw,nosuid,size=64m,mode=1777', '/app/apps/console/.next/cache:rw,nosuid,size=128m,mode=1777']
-    env_file: [./console.env]
-    ports: ['127.0.0.1:3120:3120']
-  auth:
-    <<: *runtime
-    image: ${WEBDOCK_AUTH_IMAGE:?Set immutable Auth image}
-    tmpfs: ['/tmp:rw,nosuid,size=64m,mode=1777', '/app/apps/auth/.next/cache:rw,nosuid,size=128m,mode=1777']
-    env_file: [./auth.env]
-    ports: ['127.0.0.1:3125:3125']
-  api:
-    <<: *runtime
-    image: ${WEBDOCK_API_IMAGE:?Set immutable API image}
-    env_file: [./api.env]
-    environment:
-      WEBDOCK_MODULES: ${WEBDOCK_MODULES:?Set reviewed module configuration}
+    image: ${WEBDOCK_CORE_IMAGE:?Set the reviewed immutable native Core image}
+    env_file: [./core.env]
     ports: ['127.0.0.1:3130:3130']
-    healthcheck:
-      test: [CMD, bun, -e, "if(!(await fetch('http://127.0.0.1:3130/readyz')).ok)process.exit(1)"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-  jobs-redis:
-    image: redis:7.4-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
-    profiles: [workers]
-    restart: unless-stopped
-    command: [redis-server, --appendonly, "yes", --maxmemory-policy, noeviction]
-    volumes: [jobs-redis:/data]
-    healthcheck:
-      test: [CMD, redis-cli, ping]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-  worker:
-    <<: *runtime
-    profiles: [workers]
-    image: ${WEBDOCK_WORKER_IMAGE:?Set immutable worker image}
-    depends_on:
-      jobs-redis: {condition: service_healthy}
-    env_file: [./worker.env]
-    environment:
-      WEBDOCK_JOBS_REDIS_URL: redis://jobs-redis:6379/0
-      WEBDOCK_JOBS_PREFIX: webdock
-      WEBDOCK_MODULES: ${WEBDOCK_MODULES:?Set reviewed module configuration}
-  migrate:
-    <<: *runtime
-    image: ${WEBDOCK_MIGRATE_IMAGE:?Set immutable migration image}
-    restart: 'no'
-    profiles: [migration]
-    env_file: [./migrator.env]
-    command: ['${WEBDOCK_MIGRATION_TARGET:?Set exact host:port/database}']
-
-volumes:
-  jobs-redis:

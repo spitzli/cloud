@@ -1,0 +1,89 @@
+diff --git a/dist/adapter.js b/dist/adapter.js
+index 97815294f4d9f32fe9a964ca046e9d55e5bfe490..d213a82d125e19af4e6a66e282b23f641c2fd4ed 100644
+--- a/dist/adapter.js
++++ b/dist/adapter.js
+@@ -45,7 +45,7 @@ export function createS3Adapter({ acl, bucket, clientUploads, config, getStorage
+                     storageFilePath,
+                     tempFilePath: file.tempFilePath
+                 });
+-                return data;
++                return undefined;
+             },
+             staticHandler: async (req, { doc, headers, params: { filename, uploadReference } })=>{
+                 const { getFile } = await import('./getFile.js');
+diff --git a/dist/getFile.js b/dist/getFile.js
+index a7551c45516751e5abae6fa5e8233f7e78645f3c..ff969e96eb2d9081f74a917a17711c189a0bf1b4 100644
+--- a/dist/getFile.js
++++ b/dist/getFile.js
+@@ -11,22 +11,24 @@ const abortRequestAndDestroyStream = ({ abortController, object })=>{
+     } catch  {
+     /* noop */ }
+     if (object?.Body && isNodeReadableStream(object.Body)) {
+-        object.Body.destroy();
++        object.Body.destroy(abortController.signal.reason);
+     }
+ };
+ export async function getFile({ bucket, client, collection, collectionPrefix = '', doc, filename, incomingHeaders, req, signedDownloads, uploadReference, useCompositePrefixes = false }) {
+     let object = undefined;
+     let streamed = false;
+     const abortController = new AbortController();
+-    if (req.signal) {
+-        req.signal.addEventListener('abort', ()=>{
+-            abortRequestAndDestroyStream({
+-                abortController,
+-                object
+-            });
+-        });
+-    }
++    const abort = ()=>abortRequestAndDestroyStream({ abortController, object });
++    const timeout = setTimeout(abort, 30000);
++    timeout.unref?.();
++    const cleanup = ()=>{
++        clearTimeout(timeout);
++        req.signal?.removeEventListener('abort', abort);
++    };
++    req.signal?.addEventListener('abort', abort, { once: true });
++    if (req.signal?.aborted) abort();
+     try {
++        abortController.signal.throwIfAborted();
+         const docPrefix = await getDocPrefix({
+             collection,
+             collectionPrefix,
+@@ -66,7 +68,7 @@ export async function getFile({ bucket, client, collection, collectionPrefix = '
+         const headObject = await client.headObject({
+             Bucket: bucket,
+             Key: storageFilePath
+-        });
++        }, { abortSignal: abortController.signal });
+         const fileSize = headObject.ContentLength;
+         if (!fileSize) {
+             return new Response('Internal Server Error', {
+@@ -135,6 +137,8 @@ export async function getFile({ bucket, client, collection, collectionPrefix = '
+             });
+         }
+         const stream = object.Body;
++        stream.once('end', cleanup);
++        stream.once('close', cleanup);
+         stream.on('error', (err)=>{
+             req.payload.logger.error({
+                 err,
+@@ -146,6 +150,11 @@ export async function getFile({ bucket, client, collection, collectionPrefix = '
+                 object
+             });
+         });
++        // Cancellation may race with GetObject returning its body.
++        if (abortController.signal.aborted) {
++            stream.destroy(abortController.signal.reason);
++            abortController.signal.throwIfAborted();
++        }
+         streamed = true;
+         return new Response(stream, {
+             headers,
+@@ -164,6 +173,7 @@ export async function getFile({ bucket, client, collection, collectionPrefix = '
+         });
+     } finally{
+         if (!streamed) {
++            cleanup();
+             abortRequestAndDestroyStream({
+                 abortController,
+                 object

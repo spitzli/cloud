@@ -8,6 +8,7 @@ export const invocationClaimsSchema = z.strictObject({
   generation: z.number().int().positive().safe(),
   action: z.string().min(1).max(64),
   projectID: z.string().regex(/^[0-9]{1,20}$/),
+  customerID: z.string().regex(/^[1-9][0-9]{0,18}$/),
   iat: z.number().int(),
   exp: z.number().int(),
 });

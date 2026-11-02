@@ -1,0 +1,94 @@
+{
+  "scope": "fresh schema and missing authority denial only; no admitted source/capture acceptance claimed",
+  "maxVersion": 54,
+  "migrationSHA256": "71fec2ff01c25683b89b5893205bf76dc6548b1d5e4e4542efdf9029c1f1c988",
+  "journal": "53|54",
+  "unfencedQuarantineDenied": true,
+  "unownedDenials": [
+    {
+      "role": "webdock_auth_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_auth_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_auth_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_auth_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_auth_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_auth_runtime",
+      "kind": "update",
+      "denied": true
+    },
+    {
+      "role": "webdock_auth_runtime",
+      "kind": "delete",
+      "denied": true
+    },
+    {
+      "role": "webdock_auth_runtime",
+      "kind": "insert",
+      "denied": true
+    },
+    {
+      "role": "webdock_worker_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_worker_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_worker_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_worker_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_worker_runtime",
+      "kind": "select",
+      "denied": true
+    },
+    {
+      "role": "webdock_worker_runtime",
+      "kind": "update",
+      "denied": true
+    },
+    {
+      "role": "webdock_worker_runtime",
+      "kind": "delete",
+      "denied": true
+    },
+    {
+      "role": "webdock_worker_runtime",
+      "kind": "insert",
+      "denied": true
+    }
+  ],
+  "cleanup": {
+    "ownedPostgreSQLAndVolumeAbsent": true,
+    "privateDirectoryAbsent": true,
+    "existingServicesTouched": false
+  }
+}

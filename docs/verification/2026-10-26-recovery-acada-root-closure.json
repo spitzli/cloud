@@ -1,0 +1,82 @@
+{
+  "actualDeployQueued": true,
+  "cachedMetadataEqual": 4,
+  "diagnosticByteHashesVerified": 21,
+  "functionalPassed": false,
+  "loopCheckNote": "Unbound loop devices lack loop/backing_file; enumerate devices, not only existing backing files",
+  "noDetachOrMutation": true,
+  "noPhysicalVolumeCreationClaim": true,
+  "ownPoolHostMountReferenceAbsent": true,
+  "ownedCgroupAndParentAbsent": true,
+  "positiveAbsences": [
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "3ea29aaca22ba943a05c2b3a6ce5ef5b455f3011bfad40e73df45d5929ff8fe4"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-k3s-help-4507a66abfe74824"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "5111ec06ba7ec5f474c8409eccdfbea080079c0cb78d28818952cdd6c62fb0eb"
+    },
+    {
+      "kind": "container",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-4507a66abfe74824"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "8743af0f215a0ae11de9926b541ced5e3a7296e602f4be8b805f528d87a76e6a"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "1e7b6efd1f7d3abcd98d9ddbc44e9daaf669c1e1bac441c5d751f88290b45e53"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "a12db09d460d6c4ef696d34ad496286d366844c11f1fef63c68b2e425b3fbddc"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "00080f9945fb9e4a83a585cb52081268d9937f664af6607b01b51632830882f6"
+    },
+    {
+      "kind": "volume",
+      "positiveAbsence": true,
+      "reference": "wd-recovery-preflight-logs-acada723f4f0"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "wd-owned-recovery-component:acada723f4f0"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:56127f4464fb7e93af47ee6b6d223901c6df767f2e59ac9a94c0db0f9be24abb"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    },
+    {
+      "kind": "image",
+      "positiveAbsence": true,
+      "reference": "sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17"
+    }
+  ],
+  "reportSHA256": "a97421c1a49ea95f4a07e7ebcdf7a4c6fb6b08e49297c08807e076c3192c7302",
+  "scope": "Root independent acada closure only",
+  "sourceReadyObserved": false,
+  "visibleLoopsAllUnbound": 10
+}

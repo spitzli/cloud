@@ -1,0 +1,107 @@
+{
+  "runID": "b3a9617ce204",
+  "rustVersion": "1.94.0",
+  "sourceSha256": {
+    "apps/console/src/api.ts": "e97bc3aa0ffd309d86ec7e37af533509182ed0c3ebe4451d144ed1b18ed5e185",
+    "apps/console/src/plugins/storage.ts": "ebf81aec38dfb4fdea39966263daa12994e382c77e28b6a8aef4ebbca23a9bc0",
+    "apps/console/src/plugins/sdk.ts": "009a7a0b437931dcb5a190988d64acd74195050c8da29f5d1dc18db4c2aaf432",
+    "plugins/object-storage/ui/index.tsx": "057f802786dd7d512961ab774ac93c46ac07db97bd06bae418f411542f98cbe9",
+    "plugins/object-storage/src/data.rs": "7ea36ae06ab8409ccc3797debccbc16463ebe573e45f72a5c6e3656d2bb6bf67",
+    "plugins/object-storage/src/provider.rs": "3fb5371f1afb6354f43f05c972443f0cc28e5973105bd8162293510a797f51fa",
+    "plugins/object-storage/src/sdk.rs": "393c0a92ba02a2ed248c4f987bf45ee032af0d192a68fc98df424eec7351fd6b",
+    "plugins/object-storage/src/engine.rs": "6b3db0fa4e09cc564ee830d006346a82830e31b473d965ec714ca704e3de5077",
+    "plugins/object-storage/manifest.json": "d4de1e54006a957ca3666e82200914ba099314bfc2d96957fba5d9ee49e4494b",
+    "crates/plugin-protocol/src/storage.rs": "759a412f74f8a7436e9a87b6d0f2e1e68151c0d37fa6a483aea5467b943f45e9"
+  },
+  "clientTests": 26,
+  "producerGroups": [
+    8,
+    1,
+    3,
+    1
+  ],
+  "ownedEpochTests": 1,
+  "typecheck": true,
+  "scopedEslint": true,
+  "scopedRustfmt": true,
+  "logs": [
+    {
+      "name": "client-ui",
+      "result": "passed",
+      "sha256": "ea56e8a87d06f05e2b023a917c2566427ee2b330d509a67f41e054d0a9c9db6d",
+      "privateLog": "browser-test-evidence/client-ui.log"
+    },
+    {
+      "name": "producer-default",
+      "result": "passed",
+      "sha256": "445afd088fc2b9279729f8f0b099ae744b975c45ae339f19a049fceb53a714ac",
+      "privateLog": "browser-test-evidence/producer-default.log"
+    },
+    {
+      "name": "producer-fixture",
+      "result": "passed",
+      "sha256": "6e1c34091fcf70adf0ce93c5ffa8feefbf2d886aa4a1d0d89c9402e05d4de158",
+      "privateLog": "browser-test-evidence/producer-fixture.log"
+    },
+    {
+      "name": "observation-epoch",
+      "result": "passed",
+      "sha256": "d3eeed3d89717454c8a86e6add0fd91628017df6227363736289bad6928f9037",
+      "privateLog": "browser-test-evidence/observation-epoch.log"
+    },
+    {
+      "name": "no-default",
+      "result": "passed",
+      "sha256": "a11a1de8037a032bda7e33f88e31dc898d0129cfe94956add639cd289d2ce985",
+      "privateLog": "browser-test-evidence/no-default.log"
+    },
+    {
+      "name": "typecheck",
+      "result": "passed",
+      "sha256": "daab981844fa7f33281e2a184953a4fa46c535d8815393a7ce98c5879da37258",
+      "privateLog": "browser-test-evidence/typecheck.log"
+    },
+    {
+      "name": "lint",
+      "result": "passed",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "privateLog": "browser-test-evidence/lint.log"
+    },
+    {
+      "name": "fixture-helpers",
+      "result": "passed",
+      "sha256": "2578ae80a33090697e84a0fa6830b731900350f3cf529e0394152e6e340c84ed",
+      "privateLog": "browser-test-evidence/fixture-helpers.log"
+    },
+    {
+      "name": "proxy-policy",
+      "result": "passed",
+      "sha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
+      "privateLog": "browser-test-evidence/proxy-policy.log"
+    }
+  ],
+  "allRecordedCustodyRemoved": true,
+  "anonymousVolumesVerifiedAbsent": true,
+  "mcExtractionReceiptRemoved": true,
+  "minio": {
+    "id": "c6afce009fceb7b83dc98451e0f4fd594b1e981d82e5bdb42240b873b44a4e67",
+    "identityRetained": true,
+    "running": true
+  },
+  "existingKindNodes": [
+    {
+      "name": "webdock-rust-native-3c8064-control-plane",
+      "id": "6c1603f267dd21e01c942ed66af2cabf906327c6097a8728a0bb450891982e6c",
+      "identityRetained": true,
+      "running": true
+    },
+    {
+      "name": "webdock-git-e2e-control-plane",
+      "id": "8855b015cc725f7ce4be9e8fb29051944c6083a3a99610c437fc60c7f0be4708",
+      "identityRetained": true,
+      "running": true
+    }
+  ],
+  "noProductionActions": true,
+  "noRoleOrMembershipSqlRepair": true
+}

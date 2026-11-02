@@ -1,0 +1,75 @@
+{
+  "status": "OriginalpreflightoverallFAILpreserved;functionalboundary0andseparatecustodyclosureindependentlyconfirmed",
+  "verifiedUTC": "2026-10-26T03:42:40.452399+00:00",
+  "ownerSupplementSHA256": "6316966a46435d3191b17d77ff370c2f83ef702754af84bf8f3230f48e413a0e",
+  "positiveAbsenceChecks": [
+    {
+      "kind": "container",
+      "reference": "c79acf9dbc4df2625a51627ca413d42f3e0c668a0f0c12ea89d94a5055e78695",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "container",
+      "reference": "wd-recovery-k3s-help-848b18f885824c57",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "container",
+      "reference": "07755d302282019c20389329f7610641d19f0e44f066e62f76037766dbebe24f",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "container",
+      "reference": "wd-recovery-preflight-848b18f885824c57",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "volume",
+      "reference": "wd-recovery-preflight-logs-1d9b7ab62171",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "volume",
+      "reference": "f307d4e4dfe8e9ade85da0eda62bbed9c13c7c819e59745edff8bffeeaf35771",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "volume",
+      "reference": "727e48b2bd73a0175b98920cf626704e7e933ab950544f89b85fbbd3e9888997",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "volume",
+      "reference": "e8096676bf49445bf64e1f024e5026963dc299400c92bebb966c56d357ebbff3",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "volume",
+      "reference": "5367220b9494ef59b422551dff15fa0efcb8820003aea9e69c2882cb4c10ef69",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "owned-image",
+      "reference": "wd-owned-recovery-component:1d9b7ab62171",
+      "positiveAbsence": true
+    },
+    {
+      "kind": "owned-image",
+      "reference": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17",
+      "positiveAbsence": true
+    }
+  ],
+  "ownCgroupAbsent": true,
+  "cached4FullMetadataEqualBefore": true,
+  "originalOverallChanged": false,
+  "CoreSchemaAgentApiExecuted": false,
+  "rootMutations": 0,
+  "next": "PGwindowonlyaftercorrectedrunnerpin;noMainretryyet",
+  "diagnosticVerification": {
+    "capturedFiles": 15,
+    "allActualBytesAndSHA256Matched": true,
+    "stageAndPreflightLogNonempty": true,
+    "testLogAbsentNoCoreExecution": true,
+    "retentionReceiptSHA256": "04a3b50b46a6da26e6354dbde19cc68e9ef8b567ce1aab756be20dd46a847c62"
+  }
+}

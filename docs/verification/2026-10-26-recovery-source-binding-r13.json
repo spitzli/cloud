@@ -1,0 +1,50 @@
+{
+  "status": "SOURCE_STABLE_PREPARATION_ONLY; no runtime release",
+  "sourceSHA256": {
+    "tools/tests/recovery-admission-component.py": "5552f5f41c038f371c890755d0672b133e7f832100a64c984528c2a1225b2603",
+    "tools/tests/test_recovery_fixture_artifacts.py": "59eaa5929ca1d8f36a849c63849888af095aba1782312e84f2424d4c31ddf938",
+    "crates/control-plane/tests/support/recovery_admission.rs": "c9113e411ec57e37e2d555b0333dec09c7573426e53f006e61b175c7697983c2",
+    "crates/control-plane/tests/support/plugin_builtins.rs": "58bbca28ea99785fb0a51161673f7672eac960fb83cdfd1e65050149c151c0fa"
+  },
+  "manifest": ".runtime-test/recovery-diagnostics-source-component-e5d701c84920/pin.json",
+  "manifestSHA256": "0569548d7859628b0b64e20aabe9b24f6cf87b0ec8ffa98061b4d0ea49901b06",
+  "basePinSHA256": "1bbbdd07c56540bff34faa1a8a7dd0ef97493061f9005f0b2cb5d5e54426e11e",
+  "newBootstrapTestSHA256": "e668039c051ef1c53c24dd808c01bfcdfaf8934896fca7a4acb747fa63a30fa5",
+  "overlay": ".runtime-test/recovery-source-input-overlay-ece14e252194/overlay.json",
+  "overlaySHA256": "ece14e252194cba7a86621c7c74bd31344b6feeb213bb9062a0491f8f0d134cd",
+  "baseSourceArchiveSHA256": "c00ef395c5fd51359c7915665623c4eca1b2f529deff71419470cc7754fe4bdb",
+  "testSourceArchiveSHA256": "47a4f80b5657f1eb9271c044a1e675556bde55d0fb105ca7321da3281e35fc31",
+  "compilationInventorySHA256": "76b4d3df31b0371581f5a2dada81072aa25a69f4097b9d948845d69cf787ca93",
+  "binding": "Only this exact mixed manifest;12 exact original6223 entry/path/hash/originalCompile metadata revalidated against the descriptor-verified original pin and physical0500 files; new test exact new path/hash/0500/size. Both source archives+compilation copied and recorded separately. No fallback/test override or all13 rebuilt/current-tree claim.",
+  "guards": "verified_file, copy_whole_inputs, custody/module loaders and finalizer AST unchanged; custody4313 unchanged.",
+  "tests": {
+    "pythonPassed": 51,
+    "previous47Retained": true,
+    "focusedNew": 4,
+    "rustPassed": 7,
+    "rustIgnoredInfra": 2,
+    "socketContract": "oldURI observed RED, corrected filesystem path GREEN; no Engine/daemon",
+    "clippy": "offline --locked -j2 bootstrap-test -D warnings PASS",
+    "syntaxAndOwnedFmt": "PASS",
+    "bindingGreenSHA256": "ad598ae7cd3b66ee56ab4691cd9cc5e977155725c0fd779303b13423819c59b1",
+    "socketRedSHA256": "0c99cd8fdc61d9559423839901a4793208f8b7a94dcd2421da3b5897353698a7",
+    "rustLogSHA256": "dd2a3950382f53f8603891b18753e6b05e950dfcdca6b231ab804c7804bab2f4",
+    "clippyLogSHA256": "ecb59c4812524306313be3cdb36c327b29ef1f70f22338a01a3fae3e48c30911"
+  },
+  "diffs": {
+    "runnerSHA256": "ab593070e78b71450c0d130cff1f9f8af41acdabaf27e0edbf4d8bd20664ceb3",
+    "testsSHA256": "3ef2befe0675795df7a18b43e1569909c1fadb2289873d72766fe2e39ce6790c"
+  },
+  "preservedHistorical": [
+    "6223/base1bbb + old664test",
+    "runner746/overlay543c",
+    "diagnostics1bc509/manifestc517",
+    "d43failure/cause_unknown"
+  ],
+  "rootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+  "native54SHA256": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+  "native55SHA256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+  "runtimeActions": 0,
+  "noMainCargo": true,
+  "limits": "Known current fixture input corrected; historical d43cause remainsunknown. No actual source admission or full recovery/native acceptance. Root review and named window required before runtime."
+}

@@ -1,0 +1,183 @@
+{
+  "date": "2026-10-25",
+  "scope": "Owned local MinIO qualification only",
+  "runID": "b4e261c9a073",
+  "privateEvidenceDirectory": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/native-object-storage/b4e261c9a073",
+  "platformID": "object-b4e261c9a073",
+  "clusterID": "107791464859181056",
+  "deadline": "2026-10-25T14:35:37.716Z",
+  "completedStages": [
+    "finish-prepare",
+    "start-watchdog",
+    "build-version-images",
+    "artifacts",
+    "pin-binaries",
+    "bootstrap",
+    "start-core",
+    "prepare-transports",
+    "start-ui",
+    "setup",
+    "finalize-catalog",
+    "start",
+    "reimport-artifacts",
+    "cleanup"
+  ],
+  "operatorSetup": {
+    "passwordChange": true,
+    "totp": true,
+    "pkce": true,
+    "registryAPI": true
+  },
+  "schemaSha256": {
+    "0001_ids.sql": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23",
+    "0002_identity_security.sql": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721",
+    "0003_identity_preview.sql": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234",
+    "0004_identity_recovery.sql": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704",
+    "0005_identity_passkeys.sql": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b",
+    "0006_oauth_authorization.sql": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+    "0007_organization_ids.sql": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e",
+    "0008_hosting_runtime.sql": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+    "0009_agent_enrollment.sql": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3",
+    "0010_access_authority.sql": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b",
+    "0011_browser_sessions.sql": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c",
+    "0012_build_authority.sql": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d",
+    "0013_repository_authority.sql": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40",
+    "0014_database_authority.sql": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603",
+    "0015_mail_authority.sql": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151",
+    "0016_repository_browser_authority.sql": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77",
+    "0017_plugin_invocation_fence.sql": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129",
+    "0018_mail_provider_binding.sql": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc",
+    "0019_mail_plugin_policy.sql": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa",
+    "0020_mail_provider_lease.sql": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa",
+    "0021_plugin_continuations.sql": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862",
+    "0023_incoming_mail_agent.sql": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de",
+    "0024_mail_configuration.sql": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d",
+    "0025_customer_deletion.sql": "dee73efd12d48b30990c9d0bb71bbab8473a51705b3694dfafd42f6ea82dc817",
+    "0026_plugin_self_service.sql": "2b3420455001313b2b93e8953b85e1f65d4f94ea0134a7b1975c7a7bdc1be3f3",
+    "0027_customer_projects.sql": "8a42816d972bc17044f516d01849939b1bdb852846845c9ada6f759c6fc9bc7d",
+    "0028_plugin_workloads.sql": "ac36c7e9a97c72b5bfcd9b88f9bbda0dbd9e0f32b01000be6c10ab700fea8b5e",
+    "0029_default_project.sql": "1f2e6cd2ccbef7bda7b42fc6384a519553dfeb484b2623c510549361cf1212b0",
+    "0030_limits.sql": "823e6b12b5ba17a23a9c3c1c38ba54837754a87f09dd762a6e6c14d73daca7d2",
+    "0031_customer_domains.sql": "9e97c2e49dba5c5cf31d959bba17ebaf2735aabfa6da2316826caecd13e14b02",
+    "0032_api_tokens.sql": "f5c436170379aa235063036ef516fc2bac04a7fd901115fe2f73c02c27f3b817",
+    "0033_notifications.sql": "63c6e26ae7f52bcbabf913ff78d625902a9ecaaa7a023974f69d9113479ad58f",
+    "0034_logs.sql": "614597c358467fab7dcba4f7c062cea212f00b6c3d15c8b24b032371c88512c6",
+    "0035_project_cluster.sql": "bb2eb64cd495a30163563c727210cd122cb2ee6258d21feb3a16e966303af014",
+    "0036_history_placement.sql": "caacc1c5c7457718ad48f8de12e512049438bf14c84789e6fa532e00b3ca60ff",
+    "0037_log_cursor.sql": "0df190f3296836ebde3cb238896a315e6bf011b09f5a18d29a844091a10ad6a8",
+    "0038_customer_acting.sql": "5507a05d3c633c535c8f7fce583e17ab1cc67a246e47cf192aed908d38bd0245",
+    "0039_identity_acting.sql": "3ae973c90c70ade2944ebb26a2306555beeadf8c48682a152222a56a0cca60e0",
+    "0040_customer_workloads.sql": "314b295dbec9ee121d86fd60acbb463bf609b83e75e0a762126d410deac545cd",
+    "0041_invitation_scope.sql": "1c951c30ec687836d82a4736b9b0cd2bbc8f3f6a68009dbac27a43dca256989e",
+    "0042_plugin_installation.sql": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+    "0043_plugin_updates.sql": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+    "0044_plugin_jobs.sql": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+    "0045_managed_mail_outbox.sql": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+    "0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+    "0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f"
+  },
+  "producerManifestSha256": "40907a03a60bf94f61a8227435b963c2ded81ff834b493904cdd6abba624ea72",
+  "releases": [
+    {
+      "version": "0.1.0",
+      "imageManifestDigest": "sha256:29781a0a66cca4201d5dcfb1cf4302d0950cc3d924b1320ec0913d9a0c178e73",
+      "imageConfigDigest": "sha256:2cac0eff3a6deaf76461c76213c97bc85d6f7bb6ed121252e2f380116eb101ed",
+      "signedManifestSha256": "d665019820bc8f3d8faaf062676e097e985a724554dca8ee9c7209b55835f673",
+      "archiveSha256": "cf935bcbdf7f85bdda4052c081091c0bd19e9dd392400525bc2249d4c2fb12d6"
+    },
+    {
+      "version": "0.2.0",
+      "imageManifestDigest": "sha256:55ba18feef28264118521f2fbccd95ce9d05ec4de7cc15774d487d0720fd5ce2",
+      "imageConfigDigest": "sha256:a792d1582c9e37d4c07e45987fedae3b289999eda6f905dbc47044b4e4c9acfb",
+      "signedManifestSha256": "8a35bd7da977b934c358db51c5d6569061ebf825ab3d33291dc8d7413ff012d0",
+      "archiveSha256": "d079237ebf2ad61718d0813e00891e3fbd14a4ec86e395a5d6aa6e4840594f63"
+    }
+  ],
+  "acceptedOperation": {
+    "id": "107792397496229888",
+    "pluginID": "object-storage",
+    "generation": "1",
+    "accepted": true
+  },
+  "containers": [
+    {
+      "name": "wd-object-k3s-b4e261c9a073",
+      "id": "51846f315a157baac3061359dc69020611b2bf18f25efc56de0e98f111884641",
+      "status": "removed",
+      "anonymousVolumes": [
+        "6ba7c01d78f1c0812256819f8f431de7048845bdd4ce674b743e98dacf6af879",
+        "df89f325170e08e4513091ab353080b81e350ad199fb4e3a8e154c2abda580c5",
+        "74b3cf187892bcbaeb729d0f6f2bca22691e3d3c74b0772ec64f27c5d26ceb70",
+        "620d178b53909aca8b1bf136597ff612a04f80c3d3902ceb19ebed4800da55f1"
+      ]
+    },
+    {
+      "name": "wd-object-platform-b4e261c9a073",
+      "id": "e461ec5af9ff7b27a472bec694ea7f4cd5d8c197fd6cef14974e02d39722e06a",
+      "status": "removed",
+      "anonymousVolumes": [
+        "a7d27c3c1ca5a137cd07c82b7d0597bed151d2f24abe8978163a477560bc36dc"
+      ]
+    },
+    {
+      "name": "wd-object-metadata-b4e261c9a073",
+      "id": "d139c91f64bda3e858d0e8ec75f7e64c30273360f824daa502db9b86d7591fec",
+      "status": "removed",
+      "anonymousVolumes": [
+        "cfaee8c51193f6e282509343eb2b3ab5fbdd91f3253108fb94538af3885f96bb"
+      ]
+    },
+    {
+      "name": "wd-object-registry-b4e261c9a073",
+      "id": "045cbc9097d9d656ba17c79e48de56d8c029c6936e3914f94051727571726fa0",
+      "status": "removed",
+      "anonymousVolumes": [
+        "538982a7ae222bbbf4c549a2de8621676ac02775ca55cde461d440e4c49718b1"
+      ]
+    },
+    {
+      "name": "wd-object-proxy-b4e261c9a073",
+      "id": "e89ccc82c3fd98f7a228d01da262805bdec3a71030e3cfdd54b532d58b490043",
+      "status": "removed",
+      "anonymousVolumes": []
+    },
+    {
+      "name": "wd-object-proxy-b4e261c9a073-r2",
+      "id": "8fff73aa93f8cf6bdd25a7246b9b9cb5b3181e8705de8d25431b467b303fa03d",
+      "status": "removed",
+      "anonymousVolumes": []
+    },
+    {
+      "name": "wd-object-callback-b4e261c9a073",
+      "id": "89f7fd831169ac9919dd573c530bd0b35a2f9a3d8fac510dd06c14215cf70558",
+      "status": "removed",
+      "anonymousVolumes": []
+    }
+  ],
+  "runtimes": [],
+  "transportProof": null,
+  "dataProof": null,
+  "lifecycleProof": null,
+  "browserProof": null,
+  "cleanup": {
+    "exactContainerIDsRemoved": true,
+    "anonymousVolumesRemoved": true,
+    "ownedNetworkRemoved": true,
+    "recordedProcessesStopped": true,
+    "existingMinioStillRunning": true,
+    "privateEvidenceRetained": true
+  },
+  "limits": {
+    "coreTransferBytes": 536870912,
+    "concurrentTransfers": 4,
+    "aggregateStagingBytes": 2147483648,
+    "planSeconds": 300,
+    "fixtureProxyBytes": 16777216
+  },
+  "productionActions": false,
+  "wasabiQualified": false,
+  "buildCacheAdded": false,
+  "privateReportSha256": "14585c40fcfdcd4afa519aa0311fc59fabbff44c92e4f2a52d57ed88b440a5f3"
+}

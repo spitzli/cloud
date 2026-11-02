@@ -58,7 +58,11 @@ test(
       form.set("data", JSON.stringify(metadata));
       form.set(
         "file",
-        new File([new Uint8Array(bytes)], "test.png", { type: mimetype }),
+        new File(
+          [new Uint8Array(bytes)],
+          mimetype === "image/avif" ? "test.avif" : "test.png",
+          { type: mimetype },
+        ),
       );
       return handleNativeCMS(
         new Request(`${config.origin}/api/cms`, {
@@ -91,7 +95,20 @@ test(
           });
           const media = await created.json();
           assert.equal(created.status, 201, JSON.stringify(media));
-          const originalPath = `/data/media/${media.doc.filename}`;
+          const originalBytes = async () => {
+            if (config.mediaStorage.kind === "local")
+              return readFile(`/data/media/${media.doc.filename}`);
+            const { GET } =
+              await import("../src/app/api/media/file/[filename]/route.ts");
+            const response = await GET(
+              new Request(
+                `${config.origin}/api/media/file/${media.doc.filename}`,
+              ),
+              { params: Promise.resolve({ filename: media.doc.filename }) },
+            );
+            assert.equal(response.status, 200);
+            return Buffer.from(await response.arrayBuffer());
+          };
           const failed = await upload(replacement, {
             module: "media",
             id: String(media.doc.id),
@@ -102,7 +119,7 @@ test(
           assert.ok(failed.status >= 400);
           assert.equal(
             createHash("sha256")
-              .update(await readFile(originalPath))
+              .update(await originalBytes())
               .digest("hex"),
             createHash("sha256").update(original).digest("hex"),
           );
@@ -122,6 +139,12 @@ test(
             )
           ).json();
           assert.equal(descriptor.canReplaceFile, false);
+          assert.equal(
+            descriptor.fields.some((field: { name: string }) =>
+              ["contentSha256", "prefix", "_objectKey"].includes(field.name),
+            ),
+            false,
+          );
           const current = await payload.findByID({
             collection: "media",
             id: media.doc.id,
@@ -137,7 +160,7 @@ test(
             data: { alt: "Valid new image" },
           });
           assert.equal(valid.status, 409);
-          assert.equal((await readFile(originalPath)).length, original.length);
+          assert.equal((await originalBytes()).length, original.length);
           const metadata = await call({
             module: "media",
             id: String(media.doc.id),
@@ -146,7 +169,7 @@ test(
             data: { alt: "Updated image description" },
           });
           assert.equal(metadata.status, 200);
-          assert.deepEqual(await readFile(originalPath), original);
+          assert.deepEqual(await originalBytes(), original);
         },
       );
       await t.test(
@@ -190,7 +213,11 @@ test(
             id: "new",
             locale: "en",
             mode: "publish",
-            data: { title: "Public title", slug, content: [{blockType: "text", text: "Public block"}] },
+            data: {
+              title: "Public title",
+              slug,
+              content: [{ blockType: "text", text: "Public block" }],
+            },
           });
           const id = String(first.id);
           const draft = await save({
@@ -199,7 +226,11 @@ test(
             locale: "en",
             mode: "draft",
             updatedAt: first.updatedAt,
-            data: { title: "Pending private title", slug, content: [{blockType: "text", text: "Pending private block"}] },
+            data: {
+              title: "Pending private title",
+              slug,
+              content: [{ blockType: "text", text: "Pending private block" }],
+            },
           });
           assert.equal(
             (await publishedPage(slug, "en"))?.title,
@@ -252,7 +283,10 @@ test(
           });
           assert.equal(await publishedPage(slug, "en"), null);
           assert.equal((await read(id)).title, "Pending private title");
-        assert.equal((await read(id)).content[0].text, "Pending private block");
+          assert.equal(
+            (await read(id)).content[0].text,
+            "Pending private block",
+          );
           const history = await (
             await handleNativeCMS(
               new Request(

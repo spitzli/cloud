@@ -1,0 +1,20 @@
+{
+  "status": "Rootgeneratedcache-onlycleanupandactualcandidate_revalidationPASSwithpython-B; priorprematurereleaseclaimwithdrawn",
+  "verifiedUTC": "2026-10-26T04:00:32.639073+00:00",
+  "candidate": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/pg-restore-review1-a8258c4cbfe9",
+  "pinSHA256": "0ab0f39598286096df2dd12544a17d72f2dec379fc97cb454ae94c876f274f87",
+  "rootMistake": "Importedcopiedrunnerwithout-Bcreated0755__pycache__,thenRootorchestrationcontinuedafterfailedvalidationandincorrectlyclaimedPASS. Correctedholdsent;ownerrunnerfailedbeforesecret/Docker/SQL.",
+  "removedONLYRootGeneratedBytecode": [
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/pg-restore-review1-a8258c4cbfe9/sources/infra/postgres/backup/__pycache__/qualification_review_component.cpython-314.pyc",
+      "sha256": "490dfac7eaf5a4fa6f3c2e51a717ae1ff7366b3a7601abe31989f06503726860",
+      "bytes": 43157
+    }
+  ],
+  "allCopiedBinarySourceDraftAndNativeHashesVerified": true,
+  "nativeFiles": 54,
+  "maxVersion": 55,
+  "privateAndResultStillAbsent": true,
+  "rootProviderMutations": 0,
+  "noCandidateSourcePinModeWeakeningOrRepin": true
+}

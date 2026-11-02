@@ -1,0 +1,6 @@
+apiVersion: v2
+name: webdock
+version: 0.1.0
+appVersion: '0.1.0'
+description: Webdock control plane using preexisting external PostgreSQL and secrets
+type: application

@@ -1,0 +1,380 @@
+{{- $c := .Values.buildController -}}
+{{- if $c.enabled -}}
+{{- $ns := required "buildController.namespace is required" $c.namespace -}}
+{{- if or (eq $ns .Release.Namespace) (has $ns (list "default" "kube-system" "webdock-build-qualification")) -}}
+{{- fail "controller requires a separate exclusive preexisting infrastructure namespace" -}}
+{{- end -}}
+{{- if ne $c.namespaceProfile "trusted-controller-root-tmpfs-v1" -}}
+{{- fail "explicit trusted-controller-root-tmpfs-v1 namespace profile required" -}}
+{{- end -}}
+{{- $pvc := required "buildController.existingPrivatePVC required" $c.existingPrivatePVC -}}
+{{- $secret := required "buildController.credentialConfigExistingSecret required" $c.credentialConfigExistingSecret -}}
+{{- $control := required "buildController.privateControlURL required: canonical private HTTPS Core worker base" $c.privateControlURL -}}
+{{- $_ := required "buildController.privateCoreTLSExistingService required" $c.privateCoreTLSExistingService -}}
+{{- $_ := required "buildController.privateCoreTLSNamespace required" $c.privateCoreTLSNamespace -}}
+{{- range $kind, $addresses := $c.network -}}
+{{- if not $addresses -}}{{- fail (printf "buildController.network.%s requires explicit narrow IPv4 endpoints" $kind) -}}{{- end -}}
+{{- range $addresses -}}{{- if or (hasPrefix "0." .) (hasPrefix "127." .) (hasPrefix "169.254." .) (ge (int (first (splitList "." .))) 224) -}}{{- fail "unsafe controller egress endpoint" -}}{{- end -}}{{- end -}}
+{{- end -}}
+{{- $image := required "immutable backend image required" .Values.image -}}
+{{- $name := printf "%s-build-controller" .Release.Name -}}
+{{- $rootCommand := "if [ \"$(stat -c '%u:%g:%a' /upload)\" != 65532:65532:700 ]; then chmod 0700 /upload; chown 65532:65532 /upload; fi; test \"$(stat -c '%u:%g:%a' /upload)\" = 65532:65532:700" -}}
+{{- $bootstrapCommand := `umask 077
+check_dir() { test -d "$1" && test ! -L "$1" && test "$(stat -c '%u' "$1")" = 65532; chmod 0700 "$1"; }
+check_file() { test -f "$1" && test ! -L "$1" && test "$(stat -c '%u:%h' "$1")" = 65532:1 && test "$(stat -c '%a' "$1")" = 600; }
+for dir in state artifacts staging publication credentials identity; do
+  path="/private/$dir"; if [ ! -e "$path" ] && [ ! -L "$path" ]; then mkdir "$path"; fi; check_dir "$path"
+done
+for name in worker.json worker-token build.kubeconfig transfer-policy.json staging-credentials.json storage-signing-key registry-credentials.json; do
+  if [ -e "/bootstrap/$name" ]; then
+    destination="/private/credentials/$name"
+    if [ -e "$destination" ] || [ -L "$destination" ]; then check_file "$destination"; fi
+    temporary=$(mktemp /private/credentials/.bootstrap.XXXXXXXX)
+    cat "/bootstrap/$name" > "$temporary"; chmod 0600 "$temporary"; mv -fT "$temporary" "$destination"; check_file "$destination"
+  fi
+done
+# This file is renewed by the worker. An existing file is audited, NEVER replaced.
+if [ -e /private/identity/token ] || [ -L /private/identity/token ]; then
+  check_file /private/identity/token
+else
+  temporary=$(mktemp /private/identity/.bootstrap.XXXXXXXX)
+  cat /bootstrap/bootstrap-token > "$temporary"; chmod 0600 "$temporary"
+  ln "$temporary" /private/identity/token; rm "$temporary"; check_file /private/identity/token
+fi
+check_file /private/credentials/worker.json
+sync
+` -}}
+{{- if $c.tlsUpload.enabled -}}
+{{- $_ := required "tlsUpload.image pinned official Caddy required" $c.tlsUpload.image -}}
+{{- $_ := required "tlsUpload.existingTLSSecret required" $c.tlsUpload.existingTLSSecret -}}
+{{- $_ := required "tlsUpload.host required" $c.tlsUpload.host -}}
+{{- if not $c.tlsUpload.sourceIPv4CIDRs -}}{{- fail "tlsUpload.sourceIPv4CIDRs required" -}}{{- end -}}
+{{- end -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  namespace: {{ $ns }}
+  annotations:
+    webdock.dev/private-control-url: {{ $control | quote }}
+    webdock.dev/private-core-tls-service: {{ printf "%s/%s" $c.privateCoreTLSNamespace $c.privateCoreTLSExistingService | quote }}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: build-controller}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: build-controller}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 120
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: {type: RuntimeDefault}
+      initContainers:
+        # Exact trusted infrastructure exception, confined to the empty tmpfs ROOT.
+        - name: own-upload-root
+          image: {{ $image | quote }}
+          imagePullPolicy: IfNotPresent
+          command: {{ list "/bin/sh" "-ec" $rootCommand | toJson }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL], add: [CHOWN]}
+          resources:
+            requests: {cpu: 10m, memory: 16Mi}
+            limits: {cpu: 100m, memory: 32Mi}
+          volumeMounts:
+            - {name: upload, mountPath: /upload}
+        - name: private-bootstrap
+          image: {{ $image | quote }}
+          imagePullPolicy: IfNotPresent
+          command: {{ list "/bin/sh" "-ec" $bootstrapCommand | toJson }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {cpu: 100m, memory: 64Mi}
+          volumeMounts:
+            - {name: private, mountPath: /private}
+            - {name: bootstrap, mountPath: /bootstrap, readOnly: true}
+      containers:
+        - name: worker
+          image: {{ $image | quote }}
+          imagePullPolicy: IfNotPresent
+          command: [/usr/local/bin/webdock-kubernetes-build-worker]
+          args: [--config, /var/lib/webdock-build-controller/credentials/worker.json]
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: '1', memory: 6Gi}
+            limits: {cpu: '2', memory: 6Gi}
+          volumeMounts:
+            - {name: private, mountPath: /var/lib/webdock-build-controller}
+            - {name: upload, mountPath: /var/lib/webdock-build-upload}
+            - {name: tmp, mountPath: /tmp}
+{{- if $c.tlsUpload.enabled }}
+        - name: upload-tls
+          image: {{ $c.tlsUpload.image | quote }}
+          command: [caddy, run, --config, /etc/caddy/Caddyfile, --adapter, caddyfile]
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 500m, memory: 128Mi}
+          ports: [{name: upload-tls, containerPort: 8443}]
+          volumeMounts:
+            - {name: upload-caddy, mountPath: /etc/caddy, readOnly: true}
+            - {name: upload-tls, mountPath: /etc/upload-tls, readOnly: true}
+            - {name: caddy-tmp, mountPath: /tmp}
+{{- end }}
+      volumes:
+        - name: private
+          persistentVolumeClaim: {claimName: {{ $pvc | quote }}}
+        - name: bootstrap
+          secret: {secretName: {{ $secret | quote }}, defaultMode: 0440}
+        - name: upload
+          emptyDir: {medium: Memory, sizeLimit: 1Gi}
+        - name: tmp
+          emptyDir: {medium: Memory, sizeLimit: 64Mi}
+{{- if $c.tlsUpload.enabled }}
+        - name: upload-caddy
+          configMap: {name: {{ $name }}-upload}
+        - name: upload-tls
+          secret: {secretName: {{ $c.tlsUpload.existingTLSSecret | quote }}, defaultMode: 0440}
+        - name: caddy-tmp
+          emptyDir: {medium: Memory, sizeLimit: 8Mi}
+{{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: {{ $name }}, namespace: {{ $ns }}}
+spec:
+  # Namespace exclusive to this controller: no additive policy may broaden this envelope.
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+  ingress:
+{{- if $c.tlsUpload.enabled }}
+    - from:
+{{- range $c.tlsUpload.sourceIPv4CIDRs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+{{- end }}
+      ports: [{protocol: TCP, port: 8443}]
+{{- else }} []
+{{- end }}
+  egress:
+{{- range $kind, $addresses := $c.network }}
+    - to:
+{{- range $addresses }}
+        - ipBlock: {cidr: {{ printf "%s/32" . | quote }}}
+{{- end }}
+      ports:
+{{- if eq $kind "dnsIPv4" }}
+        - {protocol: UDP, port: 53}
+        - {protocol: TCP, port: 53}
+{{- else if eq $kind "buildAPIIPv4" }}
+        - {protocol: TCP, port: 6443}
+{{- else }}
+        - {protocol: TCP, port: 443}
+{{- end }}
+{{- end }}
+{{- if $c.tlsUpload.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: {{ $name }}-upload, namespace: {{ $ns }}}
+data:
+  Caddyfile: |
+    {
+      admin off
+      auto_https off
+      persist_config off
+      storage file_system {
+        root /tmp/caddy-data
+      }
+    }
+    https://{{ $c.tlsUpload.host }}:8443 {
+      tls /etc/upload-tls/tls.crt /etc/upload-tls/tls.key
+      route {
+        @not_put not method PUT
+        respond @not_put 405
+        reverse_proxy 127.0.0.1:19445 {
+          flush_interval -1
+          header_up -Forwarded
+          header_up -X-Forwarded-*
+          header_up -X-Vercel-*
+          transport http {
+            compression off
+          }
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata: {name: {{ $name }}-upload, namespace: {{ $ns }}}
+spec:
+  type: ClusterIP
+  selector: {app.kubernetes.io/instance: {{ .Release.Name }}, app.kubernetes.io/component: build-controller}
+  ports: [{name: upload-tls, port: 443, targetPort: upload-tls}]
+{{- end }}
+---
+# Apply/verify this policy BEFORE creating any Pod or delivering the bootstrap token.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata: {name: {{ $ns }}-controller-mount-owner}
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  matchConditions:
+    - name: exclusive-controller-namespace
+      expression: {{ printf "request.namespace == %s" ($ns | toJson) | quote }}
+  validations:
+    - expression: >-
+        !has(object.spec.hostNetwork) || !object.spec.hostNetwork
+      message: host networking forbidden
+    - expression: >-
+        (!has(object.spec.hostPID) || !object.spec.hostPID) &&
+        (!has(object.spec.hostIPC) || !object.spec.hostIPC) &&
+        has(object.spec.automountServiceAccountToken) && !object.spec.automountServiceAccountToken &&
+        (!has(object.spec.ephemeralContainers) || size(object.spec.ephemeralContainers) == 0) &&
+        object.spec.securityContext.runAsUser == 65532 && object.spec.securityContext.runAsGroup == 65532 &&
+        object.spec.securityContext.runAsNonRoot && object.spec.securityContext.fsGroup == 65532 &&
+        object.spec.enableServiceLinks == false && object.spec.securityContext.seccompProfile.type == 'RuntimeDefault'
+      message: fixed tokenless nonroot controller profile required
+    - expression: >-
+        size(object.spec.volumes) == {{ ternary 7 4 $c.tlsUpload.enabled }} &&
+        object.spec.volumes.all(v, !has(v.hostPath) && !has(v.projected) &&
+        ((v.name == 'private' && has(v.persistentVolumeClaim) && v.persistentVolumeClaim.claimName == {{ $pvc | toJson }}) ||
+        (v.name == 'bootstrap' && has(v.secret) && v.secret.secretName == {{ $secret | toJson }}) ||
+        (v.name == 'upload' && has(v.emptyDir) && v.emptyDir.medium == 'Memory' && has(v.emptyDir.sizeLimit) && quantity(v.emptyDir.sizeLimit).compareTo(quantity('1Gi')) == 0) ||
+        (v.name == 'tmp' && has(v.emptyDir) && v.emptyDir.medium == 'Memory' && has(v.emptyDir.sizeLimit) && quantity(v.emptyDir.sizeLimit).compareTo(quantity('64Mi')) == 0)
+{{- if $c.tlsUpload.enabled }}
+        || (v.name == 'upload-caddy' && has(v.configMap) && v.configMap.name == {{ printf "%s-upload" $name | toJson }})
+        || (v.name == 'upload-tls' && has(v.secret) && v.secret.secretName == {{ $c.tlsUpload.existingTLSSecret | toJson }})
+        || (v.name == 'caddy-tmp' && has(v.emptyDir) && v.emptyDir.medium == 'Memory' && has(v.emptyDir.sizeLimit) && quantity(v.emptyDir.sizeLimit).compareTo(quantity('8Mi')) == 0)
+{{- end }}
+        ))
+      message: only exact private PVC, bootstrap Secret and bounded memory volumes; no host paths, sockets or API tokens
+    - expression: >-
+        size(object.spec.initContainers) == 2 &&
+        object.spec.initContainers[0].name == 'own-upload-root' &&
+        object.spec.initContainers[0].image == {{ $image | toJson }} &&
+        object.spec.initContainers[0].command == {{ list "/bin/sh" "-ec" $rootCommand | toJson }} &&
+        (!has(object.spec.initContainers[0].args) || size(object.spec.initContainers[0].args) == 0) &&
+        (!has(object.spec.initContainers[0].env) || size(object.spec.initContainers[0].env) == 0) &&
+        (!has(object.spec.initContainers[0].envFrom) || size(object.spec.initContainers[0].envFrom) == 0) &&
+        (!has(object.spec.initContainers[0].securityContext.privileged) || !object.spec.initContainers[0].securityContext.privileged) &&
+        (!has(object.spec.initContainers[0].securityContext.seccompProfile) || object.spec.initContainers[0].securityContext.seccompProfile.type == 'RuntimeDefault') &&
+        !has(object.spec.initContainers[0].lifecycle) &&
+        (!has(object.spec.initContainers[0].volumeDevices) || size(object.spec.initContainers[0].volumeDevices) == 0) &&
+        (!has(object.spec.initContainers[0].securityContext.procMount) || object.spec.initContainers[0].securityContext.procMount == 'Default') &&
+        object.spec.initContainers[0].securityContext.runAsUser == 0 &&
+        object.spec.initContainers[0].securityContext.runAsGroup == 0 &&
+        !object.spec.initContainers[0].securityContext.runAsNonRoot &&
+        object.spec.initContainers[0].securityContext.capabilities.add == ['CHOWN'] &&
+        object.spec.initContainers[0].securityContext.capabilities.drop == ['ALL'] &&
+        !object.spec.initContainers[0].securityContext.allowPrivilegeEscalation &&
+        object.spec.initContainers[0].securityContext.readOnlyRootFilesystem &&
+        size(object.spec.initContainers[0].volumeMounts) == 1 &&
+        object.spec.initContainers[0].volumeMounts[0].name == 'upload' &&
+        object.spec.initContainers[0].volumeMounts[0].mountPath == '/upload' &&
+        !has(object.spec.initContainers[0].volumeMounts[0].subPath) &&
+        !has(object.spec.initContainers[0].volumeMounts[0].subPathExpr) &&
+        object.spec.volumes.exists(v, v.name == 'upload' && has(v.emptyDir) && v.emptyDir.medium == 'Memory' && has(v.emptyDir.sizeLimit) && quantity(v.emptyDir.sizeLimit).compareTo(quantity('1Gi')) == 0)
+      message: only fixed CHOWN init on the dedicated 1Gi memory filesystem is allowed
+    - expression: >-
+        object.spec.containers.all(c, (!has(c.securityContext.runAsUser) || c.securityContext.runAsUser == 65532) &&
+        (!has(c.securityContext.runAsNonRoot) || c.securityContext.runAsNonRoot) &&
+        (!has(c.securityContext.runAsGroup) || c.securityContext.runAsGroup == 65532) &&
+        !c.securityContext.allowPrivilegeEscalation && c.securityContext.readOnlyRootFilesystem &&
+        (!has(c.securityContext.seccompProfile) || c.securityContext.seccompProfile.type == 'RuntimeDefault') &&
+        (!has(c.securityContext.privileged) || !c.securityContext.privileged) &&
+        c.securityContext.capabilities.drop == ['ALL'] &&
+        (!has(c.securityContext.capabilities.add) || size(c.securityContext.capabilities.add) == 0)) &&
+        object.spec.initContainers[1].name == 'private-bootstrap' &&
+        object.spec.initContainers[1].image == {{ $image | toJson }} &&
+        object.spec.initContainers[1].command == {{ list "/bin/sh" "-ec" $bootstrapCommand | toJson }} &&
+        (!has(object.spec.initContainers[1].securityContext.runAsUser) || object.spec.initContainers[1].securityContext.runAsUser == 65532) &&
+        (!has(object.spec.initContainers[1].securityContext.runAsNonRoot) || object.spec.initContainers[1].securityContext.runAsNonRoot) &&
+        !object.spec.initContainers[1].securityContext.allowPrivilegeEscalation &&
+        object.spec.initContainers[1].securityContext.readOnlyRootFilesystem &&
+        (!has(object.spec.initContainers[1].securityContext.privileged) || !object.spec.initContainers[1].securityContext.privileged) &&
+        (!has(object.spec.initContainers[1].securityContext.seccompProfile) || object.spec.initContainers[1].securityContext.seccompProfile.type == 'RuntimeDefault') &&
+        (!has(object.spec.initContainers[1].env) || size(object.spec.initContainers[1].env) == 0) &&
+        (!has(object.spec.initContainers[1].envFrom) || size(object.spec.initContainers[1].envFrom) == 0) &&
+        (!has(object.spec.initContainers[1].args) || size(object.spec.initContainers[1].args) == 0) &&
+        !has(object.spec.initContainers[1].lifecycle) &&
+        (!has(object.spec.initContainers[1].securityContext.runAsGroup) || object.spec.initContainers[1].securityContext.runAsGroup == 65532) &&
+        size(object.spec.initContainers[1].volumeMounts) == 2 &&
+        object.spec.initContainers[1].volumeMounts[0].name == 'private' &&
+        object.spec.initContainers[1].volumeMounts[0].mountPath == '/private' &&
+        object.spec.initContainers[1].volumeMounts[1].name == 'bootstrap' &&
+        object.spec.initContainers[1].volumeMounts[1].mountPath == '/bootstrap' &&
+        object.spec.initContainers[1].volumeMounts[1].readOnly &&
+        object.spec.initContainers[1].volumeMounts.all(m, !has(m.subPath) && !has(m.subPathExpr)) &&
+        object.spec.initContainers[1].securityContext.capabilities.drop == ['ALL'] &&
+        (!has(object.spec.initContainers[1].securityContext.capabilities.add) || size(object.spec.initContainers[1].securityContext.capabilities.add) == 0)
+      message: worker and bootstrap remain nonroot with no capabilities
+    - expression: >-
+        size(object.spec.containers) == {{ ternary 2 1 $c.tlsUpload.enabled }} &&
+        object.spec.containers[0].name == 'worker' &&
+        object.spec.containers[0].image == {{ $image | toJson }} &&
+        object.spec.containers[0].command == ['/usr/local/bin/webdock-kubernetes-build-worker'] &&
+        object.spec.containers[0].args == ['--config', '/var/lib/webdock-build-controller/credentials/worker.json'] &&
+        (!has(object.spec.containers[0].env) || size(object.spec.containers[0].env) == 0) &&
+        (!has(object.spec.containers[0].envFrom) || size(object.spec.containers[0].envFrom) == 0) &&
+        !has(object.spec.containers[0].lifecycle) &&
+        size(object.spec.containers[0].volumeMounts) == 3 &&
+        object.spec.containers[0].volumeMounts[0].name == 'private' &&
+        object.spec.containers[0].volumeMounts[0].mountPath == '/var/lib/webdock-build-controller' &&
+        object.spec.containers[0].volumeMounts[1].name == 'upload' &&
+        object.spec.containers[0].volumeMounts[1].mountPath == '/var/lib/webdock-build-upload' &&
+        object.spec.containers[0].volumeMounts[2].name == 'tmp' &&
+        object.spec.containers[0].volumeMounts[2].mountPath == '/tmp' &&
+        quantity(object.spec.containers[0].resources.requests['memory']).compareTo(quantity('6Gi')) == 0 &&
+        quantity(object.spec.containers[0].resources.limits['memory']).compareTo(quantity('6Gi')) == 0 &&
+        quantity(object.spec.containers[0].resources.limits['cpu']).compareTo(quantity('2')) == 0 &&
+        object.spec.containers[0].volumeMounts.all(m, !has(m.subPath) && !has(m.subPathExpr))
+      message: fixed pinned worker executable and private configuration only
+{{- if $c.tlsUpload.enabled }}
+    - expression: >-
+        object.spec.containers[1].name == 'upload-tls' &&
+        object.spec.containers[1].image == {{ $c.tlsUpload.image | toJson }} &&
+        object.spec.containers[1].command == ['caddy', 'run', '--config', '/etc/caddy/Caddyfile', '--adapter', 'caddyfile'] &&
+        (!has(object.spec.containers[1].args) || size(object.spec.containers[1].args) == 0) &&
+        (!has(object.spec.containers[1].env) || size(object.spec.containers[1].env) == 0) &&
+        (!has(object.spec.containers[1].envFrom) || size(object.spec.containers[1].envFrom) == 0) &&
+        !has(object.spec.containers[1].lifecycle) &&
+        size(object.spec.containers[1].volumeMounts) == 3 &&
+        object.spec.containers[1].volumeMounts.all(m, m.name in ['upload-caddy', 'upload-tls', 'caddy-tmp'] && !has(m.subPath) && !has(m.subPathExpr))
+      message: optional TLS relay has no worker credentials or general Core proxy
+{{- end }}
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata: {name: {{ $ns }}-controller-mount-owner}
+spec:
+  policyName: {{ $ns }}-controller-mount-owner
+  validationActions: [Deny]
+{{- end }}

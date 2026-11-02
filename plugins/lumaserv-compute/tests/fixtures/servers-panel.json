@@ -1,0 +1,56 @@
+{
+  "version": 2,
+  "title": "Cloud servers",
+  "blocks": [
+    {
+      "kind": "table",
+      "title": "Servers",
+      "columns": [
+        {
+          "key": "name",
+          "label": "Name"
+        },
+        {
+          "key": "state",
+          "label": "State"
+        },
+        {
+          "key": "id",
+          "label": "ID"
+        }
+      ],
+      "rows": [
+        {
+          "id": "2428d399-8861-40a5-a85f-6ed4c669bae0",
+          "name": "Fixture server",
+          "state": "ONLINE"
+        }
+      ]
+    },
+    {
+      "kind": "form",
+      "title": "Page",
+      "fields": [
+        {
+          "name": "page",
+          "label": "Page",
+          "type": "number",
+          "required": true
+        }
+      ],
+      "action": {
+        "id": "servers.panel",
+        "label": "Load page"
+      }
+    },
+    {
+      "kind": "actions",
+      "actions": [
+        {
+          "id": "servers.panel",
+          "label": "Refresh"
+        }
+      ]
+    }
+  ]
+}

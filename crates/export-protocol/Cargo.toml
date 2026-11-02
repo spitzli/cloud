@@ -1,0 +1,22 @@
+[package]
+name = "webdock-export-protocol"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+sha2 = "0.10"
+hex = "0.4"
+hmac = "0.12"
+base64 = "0.22"
+prost = "0.14"
+tonic = { version = "0.14.6", features = ["transport"] }
+tonic-prost = "0.14.6"
+[build-dependencies]
+prost-build = "0.14"
+tonic-prost-build = "0.14.6"
+[lints]
+workspace = true

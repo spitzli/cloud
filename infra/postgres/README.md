@@ -1,6 +1,6 @@
 # Managed PostgreSQL qualification
 
-Implementation includes native ordering, operator pools/catalog, the CNPG agent, SQL isolation, lifecycle and logical migration. See the [operations runbook](../../docs/operations/managed-postgresql.md) and [qualification evidence](../../docs/verification/managed-postgresql-lifecycle-pilot.json). The initial qualification used disposable local infrastructure. The first internal Webdock production instance is now verified in the [production evidence](../../docs/verification/2026-10-12-webdock-postgresql-production.json). Backups and backup-dependent recovery are explicitly deferred by the owner.
+Implementation includes native ordering, operator pools/catalog, the CNPG agent, SQL isolation, lifecycle and logical migration. See the [operations runbook](../../docs/operations/managed-postgresql.md) and [qualification evidence](../../docs/verification/managed-postgresql-lifecycle-pilot.json). The initial qualification used disposable local infrastructure. The first internal Webdock production instance is now verified in the [production evidence](../../docs/verification/2026-10-12-webdock-postgresql-production.json). Backups and backup-dependent recovery remain unconfigured; their implementation is now authorized by the [2026-10-25 storage handover](../../docs/handovers/2026-10-25-s3-managed-storage.md). Earlier no-backup offers remain unchanged.
 
 ## Refresh the live inventory
 

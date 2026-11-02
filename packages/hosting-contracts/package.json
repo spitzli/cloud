@@ -18,7 +18,7 @@
     "@webdock/database-runtime": "*"
   },
   "scripts": {
-    "test": "node --import tsx --test src/*.test.ts"
+    "test": "bun test ./src"
   },
   "peerDependencies": {
     "react": "^19.2.8"

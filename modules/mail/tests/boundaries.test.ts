@@ -47,7 +47,7 @@ test("Mail access policy does not read identity provider tables and API Mail com
       /(?:FROM|JOIN)\s+webdock_auth\.(?:"user"|session|member|studio_tenant_preview)/,
     );
   }
-  for (const file of files(resolve(root, "apps/control-plane/src/modules/mail"))) {
+  for (const file of files(resolve(root, "legacy/control-plane/src/modules/mail"))) {
     const source = readFileSync(file, "utf8");
     assert.doesNotMatch(
       source,
@@ -59,7 +59,7 @@ test("Mail access policy does not read identity provider tables and API Mail com
 
 test("product compatibility paths contain composition rather than database business rules", () => {
   for (const file of files(
-    resolve(root, "apps/control-plane/src/modules/mail/product"),
+    resolve(root, "legacy/control-plane/src/modules/mail/product"),
   )) {
     const source = readFileSync(file, "utf8");
     assert.doesNotMatch(

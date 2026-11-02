@@ -1,35 +1,35 @@
 ---
 title: "Mail"
-description: "Choose sending or incoming mail and prepare a verified sender domain."
+description: "Prepare a sender domain and distinguish outgoing messages from incoming mail."
 ---
 
-Mail belongs to your workspace. Connections, domains, keys and message history are checked against its permissions.
+Open Mail in the intended workspace. Connections, domains, keys and message history are scoped to that workspace's permissions.
 
-| Need | Product boundary |
+| Task | Required service |
 | --- | --- |
-| Send transactional messages | Mail API key and verified sender domain |
-| Receive or forward incoming mail | Explicitly enabled incoming-mail service |
-| Use your own supported provider | Operator-enabled connection with separate credentials and limits |
+| Send transactional messages | Ready sending connection, Mail API key and verified sender domain |
+| Receive or forward incoming messages | Explicitly enabled incoming-mail service |
+| Use your own sending provider | Activated turboSMTP connection and its separate limits |
 
-Sending-only does not require a mailbox server. Incoming Mail is a separate activation. Connecting a sender domain does not automatically create mailboxes.
+Sending-only does not require a mailbox server. Adding a sender domain does not create mailboxes. Incoming mailboxes and forwarding are activated separately and only for eligible workspaces.
 
-## Availability
-
-Your operator controls installation-level Mail availability as well as workspace access. During draining, existing services remain manageable but new accounts, domains and mailboxes cannot be created. Disabling Mail does not delete retained data. Operators can follow the [module configuration guide](/developers/modules).
-
-## Prepare a sender domain
+## Prepare API sending
 
 <Steps>
-  <Step title="Choose the connection">Open Mail in the correct workspace and select the intended connection.</Step>
-  <Step title="Add a domain">Use a domain you control. Copy the exact DNS records shown for it.</Step>
-  <Step title="Publish and verify DNS">Add the supplied records with your DNS provider, then request verification. Resolve existing-record conflicts before replacing an SPF or other mail record.</Step>
-  <Step title="Create an application key">Create a sending key, restricted to its sender domain where appropriate. Store it in the application's private environment.</Step>
+  <Step title="Select a connection">Open Mail in the correct workspace and select the intended ready connection.</Step>
+  <Step title="Add your domain">Use a domain you control. Copy the exact verification records shown.</Step>
+  <Step title="Publish DNS">Add those records at your DNS provider and request verification. Review existing SPF and other mail records before changing them.</Step>
+  <Step title="Create a sending key">Restrict the application key to the intended domain where appropriate. Store it in your application's private environment.</Step>
 </Steps>
-
-<Note>The expanded Mail API has a verified implementation contract, but production workers and the provider event chain have separate rollout gates. Availability depends on the enabled connection. Incoming-mail integration and advanced sending features must be confirmed for your workspace.</Note>
 
 Continue with [your first API message](/developers/mail-quickstart) and the [Mail API overview](/developers/mail-api).
 
-## Bring your own sending account
+<Note>API implementation, production dispatch and provider event callbacks have separate activation checks. Use the readiness shown for your connection and confirm availability with your operator before relying on delivery.</Note>
 
-Use the [turboSMTP BYOK guide](/guides/byok-mail) for account credentials, domain verification, application keys and disconnect behavior.
+## Manage incoming Mail
+
+Ask your operator to confirm incoming-mail availability before configuring mailboxes or forwarding. Use the DNS records and settings shown for that service. Outgoing API readiness does not establish that incoming delivery or Webmail is ready.
+
+Disabling incoming Mail retains its data. Permanent deletion is a separate action. During service draining, existing resources remain manageable while creation of new accounts, domains and mailboxes is blocked.
+
+For customer-owned sending, follow [Connect your turboSMTP account](/guides/byok-mail).

@@ -1,0 +1,274 @@
+{
+  "date": "2026-10-25",
+  "scope": "Owned local MinIO qualification only",
+  "runID": "b3a9617ce204",
+  "privateEvidenceDirectory": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/native-object-storage/b3a9617ce204",
+  "platformID": "object-b3a9617ce204",
+  "clusterID": "107830070533431296",
+  "deadline": "2026-10-25T16:16:21.215Z",
+  "completedStages": [
+    "prepare",
+    "start-watchdog",
+    "build-version-images",
+    "artifacts",
+    "pin-binaries",
+    "bootstrap",
+    "prepare-transports",
+    "start-core",
+    "start-ui",
+    "setup",
+    "finalize-catalog",
+    "start",
+    "install",
+    "setup",
+    "cleanup-resource",
+    "setup",
+    "cleanup-resource",
+    "cleanup"
+  ],
+  "operatorSetup": {
+    "passwordChange": true,
+    "totp": true,
+    "pkce": true,
+    "registryAPI": true
+  },
+  "schemaSha256": {
+    "0001_ids.sql": "a976a20df6f2168af1c137c7a4176876075166927ea3444203efb8fa9e102e23",
+    "0002_identity_security.sql": "34be531491aacddb07b7ab9378ec797d468cd29ee123923db0743afe9e333721",
+    "0003_identity_preview.sql": "ab4a399188ef61aaa377b7c9668af465c7bc9de25389cf357ac09029c4261234",
+    "0004_identity_recovery.sql": "a991bcc858098873a22b7627bebc80791fb8aa20b36f81023624a83bc2f8a704",
+    "0005_identity_passkeys.sql": "046e0c53255abe24fa7f307edb1cb81531574fc5eabd24992fb51f013745585b",
+    "0006_oauth_authorization.sql": "4a83e686c167b67628d4ef462ce0abddd7856098d1fb508ca9a3f9ed367d015e",
+    "0007_organization_ids.sql": "d3d8652d13ceaf04fb4ccde15d4a78f876192a8bbc18dc197e065c12e49cb33e",
+    "0008_hosting_runtime.sql": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+    "0009_agent_enrollment.sql": "266e3b0a43f6b740e98900c3f347c43c55542c44b54aad9f4a192cde449749b3",
+    "0010_access_authority.sql": "9f90034a19b42e3818938253048a929e3c19899a4060619760ab5a42c0a15c9b",
+    "0011_browser_sessions.sql": "6e0ec4c1c863e7d8500ab462b5fa026e396c4d8665415ef39148db3d8399347c",
+    "0012_build_authority.sql": "476fb067d01ded911775ec86c002e8f8c068ceda7e35c496221df00bd7f0534d",
+    "0013_repository_authority.sql": "a6324b9b588b854508cf08c0939d91449ca3cb0f6db3fac5659f6061e7b96f40",
+    "0014_database_authority.sql": "e5a7025ca995cbeea35b1ed4da9e9829e32ae53bb0597f98015d6ffb46782603",
+    "0015_mail_authority.sql": "44d1eb7ba78b22b75842df2885d72cb59e3a6003bc28bede92f65553cdc04151",
+    "0016_repository_browser_authority.sql": "8856bba6e2ab5319e793c4bb0c77664e1a4751166675510225fed4ad5fdecc77",
+    "0017_plugin_invocation_fence.sql": "2035be851f5de0c7576d61abef50684e33dda19e20fb6051f5d7ce083ed44129",
+    "0018_mail_provider_binding.sql": "f0bc37a798508ab27b86cebc50a83c51fa44bc8bf0f057700d3db9b0b72116fc",
+    "0019_mail_plugin_policy.sql": "cada55a9a55f8909f6ce629e781e1360f805838bf377cb4c6327bb6603ff35aa",
+    "0020_mail_provider_lease.sql": "76bad22886145fa4fb3ecb6af131d007fd69194390cfadaecdacbebf2a95b0aa",
+    "0021_plugin_continuations.sql": "5c583e35b972f94d96e8640bef408bbf6bc6f9adccc66729d27a3e3c605e0862",
+    "0023_incoming_mail_agent.sql": "6ab61053a8089e88a48f487172d166fc7ebc9ec36f83a26aa04551b982c6a8de",
+    "0024_mail_configuration.sql": "ba5d7f982e24ce44b458b9888bad4385c14593e2defc06049b205e02ab2f569d",
+    "0025_customer_deletion.sql": "dee73efd12d48b30990c9d0bb71bbab8473a51705b3694dfafd42f6ea82dc817",
+    "0026_plugin_self_service.sql": "2b3420455001313b2b93e8953b85e1f65d4f94ea0134a7b1975c7a7bdc1be3f3",
+    "0027_customer_projects.sql": "8a42816d972bc17044f516d01849939b1bdb852846845c9ada6f759c6fc9bc7d",
+    "0028_plugin_workloads.sql": "ac36c7e9a97c72b5bfcd9b88f9bbda0dbd9e0f32b01000be6c10ab700fea8b5e",
+    "0029_default_project.sql": "1f2e6cd2ccbef7bda7b42fc6384a519553dfeb484b2623c510549361cf1212b0",
+    "0030_limits.sql": "823e6b12b5ba17a23a9c3c1c38ba54837754a87f09dd762a6e6c14d73daca7d2",
+    "0031_customer_domains.sql": "9e97c2e49dba5c5cf31d959bba17ebaf2735aabfa6da2316826caecd13e14b02",
+    "0032_api_tokens.sql": "f5c436170379aa235063036ef516fc2bac04a7fd901115fe2f73c02c27f3b817",
+    "0033_notifications.sql": "63c6e26ae7f52bcbabf913ff78d625902a9ecaaa7a023974f69d9113479ad58f",
+    "0034_logs.sql": "614597c358467fab7dcba4f7c062cea212f00b6c3d15c8b24b032371c88512c6",
+    "0035_project_cluster.sql": "bb2eb64cd495a30163563c727210cd122cb2ee6258d21feb3a16e966303af014",
+    "0036_history_placement.sql": "caacc1c5c7457718ad48f8de12e512049438bf14c84789e6fa532e00b3ca60ff",
+    "0037_log_cursor.sql": "0df190f3296836ebde3cb238896a315e6bf011b09f5a18d29a844091a10ad6a8",
+    "0038_customer_acting.sql": "5507a05d3c633c535c8f7fce583e17ab1cc67a246e47cf192aed908d38bd0245",
+    "0039_identity_acting.sql": "3ae973c90c70ade2944ebb26a2306555beeadf8c48682a152222a56a0cca60e0",
+    "0040_customer_workloads.sql": "314b295dbec9ee121d86fd60acbb463bf609b83e75e0a762126d410deac545cd",
+    "0041_invitation_scope.sql": "1c951c30ec687836d82a4736b9b0cd2bbc8f3f6a68009dbac27a43dca256989e",
+    "0042_plugin_installation.sql": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+    "0043_plugin_updates.sql": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+    "0044_plugin_jobs.sql": "c3bf1504e7c55b80b8582a6da62186c89a0b4620cf91931f76902d707ab2e22c",
+    "0045_managed_mail_outbox.sql": "a89de6565c296dd8fee42aed6583b6f658776bb4fcfe5a666c22140a73fa9cad",
+    "0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+    "0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f",
+    "0050_archive_source_leases.sql": "2d3e22026c7ad792234ecce7f5a286a856eac681a22af504c23351d2de86a714",
+    "0051_database_backup_transitions.sql": "a4f16036e77bd2617f61cecc7c7881bb1abfceb920a16309e092770094ed7767"
+  },
+  "producerManifestSha256": "d4de1e54006a957ca3666e82200914ba099314bfc2d96957fba5d9ee49e4494b",
+  "releases": [
+    {
+      "version": "0.3.0",
+      "imageManifestDigest": "sha256:3013538ace3e47abf0955d71966622599e5471be5b9e98a81264f82ec1b79656",
+      "imageConfigDigest": "sha256:4f603227215f2299add09f6500866750c2a9a055aec4c50923512ed721a9a867",
+      "signedManifestSha256": "ff0a9247eca65146e703eefe43886852afd4dc9b54ad67ec7f93d5b9fde8b579",
+      "archiveSha256": "e0f8115766c790ad9b0d1a1f9e85188c7f70235465059eb6de14c8c541c206fa"
+    },
+    {
+      "version": "0.4.0",
+      "imageManifestDigest": "sha256:0e8255191460d98684632386deeb90e6bb8f3776e58cd15f022a3c720e50e718",
+      "imageConfigDigest": "sha256:7da7f6ca2590c0dc1f6268997b44244f034b57fa08fda43a3c4f566c50e4b43d",
+      "signedManifestSha256": "e3cb51b55a94c255fd844a173d2347f3604feda288d2887e59fc50f6ecee05e7",
+      "archiveSha256": "6e17a061e69e88b8b6228f7261d585d3228470847ba62a1116e7328b600548ea"
+    }
+  ],
+  "acceptedOperation": {
+    "id": "107830186526908416",
+    "pluginID": "object-storage",
+    "generation": "1",
+    "accepted": true
+  },
+  "installationVerified": true,
+  "coreReadyStatus": 200,
+  "binarySha256": {
+    "webdock-migrate": "d6bc97d2a7efbb0ae93fb32eeb8c3784edd70bae40bae7e78bfac4dccdaf948f",
+    "webdock-bootstrap-operator": "9519d9451c2f7e6371ffd95bc2e9d25c2aeea984686c650b43ba5dd0feca5706",
+    "webdock-enroll-agent": "623248869c6db76f07fef7a3540cb40308ac678da1136f4f169d314be4cd790a",
+    "webdock-bootstrap-plugins": "dd40dd9aaf705cea8a11572b4e115472807b9bab841ec46cdec1185e350d4882",
+    "webdock-control-plane": "29a1333058667a94edc2cb3019efc9d593104ac710b1edf4d45edac483d25b8e",
+    "webdock-plugin-control": "f726a25a5b829ad611718e4c2b95068ffc87a834955d2317fac50f983a0e526d",
+    "webdock-plugin-controller": "9e794aac26bb6fe4b066248417107caa5ce4294832bc340bbaf22dca0a532d82",
+    "webdock-agent-control": "37851b265311122b9f9e66b5475679906ee85408f47204db92825f0185b5862e",
+    "webdock-agent": "3965c1eea8aef80ba7474e54591a5c944a85df6b5971454619cb37bd08252d1a"
+  },
+  "containers": [
+    {
+      "name": "wd-object-k3s-b3a9617ce204",
+      "id": "1a156056fecb94b2fa25abd617167b62be8cf6fa43cdcde08722c2b620cc0ccc",
+      "status": "removed",
+      "anonymousVolumes": [
+        "b9e1cb8c4a1e90d5a1ff89966cf41fbcf3285ba88f61ef6cbdd7d60003dba3ed",
+        "82ecca6fffa4296a2ba1d71af9940ccb2a4f78bf73c2710408e8b8a55b9c0237",
+        "9025909a07e2f5d21b001beedb09ad2ba66d0bc58318ac8fa044980eb191ea07",
+        "38a9caa8b967d7794fa10168427f74c0c2af8eecad4b3e1d14c8c54e96130a84"
+      ]
+    },
+    {
+      "name": "wd-object-platform-b3a9617ce204",
+      "id": "33b3a8ac82b07e508f561a7bc77b289ee6af5aef08ae067c7f199e42607b99b5",
+      "status": "removed",
+      "anonymousVolumes": [
+        "e57f1d925005ab87b23408f1d8855bbc62e5dd6a23308beae26113459a63052a"
+      ]
+    },
+    {
+      "name": "wd-object-metadata-b3a9617ce204",
+      "id": "268c36c66868a4f75721a786c4915d57e2f729926f85cd02c9d2138565ba3e2e",
+      "status": "removed",
+      "anonymousVolumes": [
+        "0a489aff3e3b26241b578ed4c817f24b6477725bf70e7335089f2ebd93d712c0"
+      ]
+    },
+    {
+      "name": "wd-object-registry-b3a9617ce204",
+      "id": "67ea398b6d9ac035aaa0337ec071241d9c02fd40fc4cae10b6562f62d51c2472",
+      "status": "removed",
+      "anonymousVolumes": [
+        "6eb13b2989b2499af11119f184122ff1eedc31be888745f2c561274169fdd9bf"
+      ]
+    },
+    {
+      "name": "wd-object-proxy-b3a9617ce204",
+      "id": "54c1449c6de644d20d7ba56e5753f1bc1c76e47f2ffa698ef2120b2e500dd4f9",
+      "status": "removed",
+      "anonymousVolumes": []
+    },
+    {
+      "name": "wd-object-callback-b3a9617ce204",
+      "id": "675ca19a34b6d69e3fa07a27ef88488449e560b18d6d058782ece42ca5135ad7",
+      "status": "removed",
+      "anonymousVolumes": []
+    }
+  ],
+  "runtimes": [],
+  "transportProof": null,
+  "dataProof": null,
+  "lifecycleProof": null,
+  "browserProof": null,
+  "binaryBrowserProof": {
+    "version": "0.3.0",
+    "realConsoleCoreNativeProducer": true,
+    "realCreateLostResponseRetry": true,
+    "identicalCreateInputAndBothIDs": true,
+    "exactlyOneResourceCreated": true,
+    "uploadBytes": 98304,
+    "sha256": "b84c5ea4b50c99b748814db3c9fcc7cc2e7da518dd7c618adb3d25925582453b",
+    "browserBlobUpload": true,
+    "browserVerifiedBlobDownload": true,
+    "explicitUnknownChecksumDownload": true,
+    "wrongKnownChecksumDenied": true,
+    "privateTargetsAbsentFromBrowser": true,
+    "wrongTenantDenied": true,
+    "readonlyUploadDenied": true,
+    "revokedOriginalCookieDenied": true,
+    "observedNullVersionOverwriteDenied": true,
+    "widths": [
+      375,
+      1280
+    ],
+    "horizontalOverflow": false,
+    "pageErrors": 0,
+    "readonlyAuthority": "authenticated-preview-without-project-plugin-entitlement",
+    "readonlyPluginViewDenied": true,
+    "projectReaderMembershipQualified": true
+  },
+  "projectReaderBrowserProof": {
+    "supportedInvitationActivationAndPkce": true,
+    "realNativeMembership": true,
+    "memberRole": "member",
+    "projectRole": "member",
+    "principalIsPreview": false,
+    "pluginEntitlementVerified": true,
+    "uploadControlAbsent": true,
+    "uploadWriteDenied": true,
+    "actualInspectedObjectDownload": true,
+    "knownShaVerifiedBeforeSave": true,
+    "noForgedRows": true,
+    "pageErrors": 0,
+    "membershipID": "107832936186781696"
+  },
+  "cleanupRegressionProof": null,
+  "nativeResourceCleanup": {
+    "resourceID": "9d09449f-6fc9-4573-92ae-273d15e76cbb",
+    "deactivated": true,
+    "keysRevoked": true,
+    "purged": true,
+    "bucketDeleted": true,
+    "allOwnedResources": [
+      "c9c1439d-e332-4947-9b2e-e706e283ee60",
+      "9d09449f-6fc9-4573-92ae-273d15e76cbb"
+    ],
+    "allPrivateStatesDeleted": true,
+    "coreResourceCount": 0,
+    "remoteBucketUserPolicyAbsenceObserved": true,
+    "mcExtractionContainerRemoved": true
+  },
+  "cleanup": {
+    "exactContainerIDsRemoved": true,
+    "anonymousVolumesRemoved": true,
+    "ownedNetworkRemoved": true,
+    "recordedProcessesStopped": true,
+    "existingMinioStillRunning": true,
+    "privateEvidenceRetained": true
+  },
+  "limits": {
+    "coreTransferBytes": 536870912,
+    "concurrentTransfers": 4,
+    "aggregateStagingBytes": 2147483648,
+    "planSeconds": 300,
+    "fixtureProxyBytes": 16777216
+  },
+  "productionActions": false,
+  "wasabiQualified": false,
+  "buildCacheAdded": false,
+  "signedReleaseIdentity": {
+    "signerPublicKeySha256": "753a509c5d5280922e98c461dc999b6dfa6f63c4ed730d0fc20c630727f66aa6",
+    "releases": [
+      {
+        "pluginID": "object-storage",
+        "version": "0.3.0",
+        "signedEnvelopeSha256": "96a3b8afb455093e323c9a04f60b4ab76171a65849ecb2e3c1fb4e06b5d6a5b1"
+      },
+      {
+        "pluginID": "object-storage",
+        "version": "0.4.0",
+        "signedEnvelopeSha256": "76452f2b67d3982050516a76fbdfa7942bf8e912f20c366519b78cbe1b5cecfe"
+      }
+    ]
+  },
+  "kernelIdentity": {
+    "authorityCertificateSha256": "41cef47ff1e7a5b0adb15e16892792ab590fc557b23cabeba918bf5e2e769a06",
+    "coreCertificateSha256": "f3254fd874da4e3b1ef155f6d27d387ce130802f7292ce66d5ddaae3608321a3",
+    "oneKernelAuthorityAndCoreLeaf": true
+  },
+  "privateReportSha256": "fa3528a39a754593d016f1a9b66c41bdc53542f7eb679c54bee16bb3b9f5fb77"
+}

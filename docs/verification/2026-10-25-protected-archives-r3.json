@@ -1,0 +1,164 @@
+{
+  "date": "2026-10-25",
+  "status": "three-confirmed-review-fixes-red-green-native-browser-qualified-and-exactly-cleaned",
+  "fixtureRun": "9facb9e2fa21",
+  "releaseVersion": "0.2.0",
+  "reviewFixes": {
+    "legacyPostgres": {
+      "redObserved": true,
+      "managedSourceRequiredForEveryObservedReceipt": true,
+      "historicalReadyReceiptAndIssuedTicketDenied": true,
+      "realCoreReaderWithoutDatabaseManageDenied": true,
+      "authorizedExactDeletionPassed": true,
+      "actualSignedExecutable": true,
+      "fixtureFeatureCompiled": true,
+      "beforeTransportOrBackend": true,
+      "privateProbeFilesRemoved": true,
+      "actualSignedRuntime": true,
+      "evenForOperator": true,
+      "noSourceID": true
+    },
+    "retainedCommittedSource": {
+      "redObservedAfterActualProjectsUpdate": true,
+      "issuedDescriptorDeniedOnManagedMode": true,
+      "currentQualifiedNativeOperatorAllowed": true,
+      "rawOperatorRoleWithoutNativeMappingDenied": true,
+      "originalApiTokenRevocationPreserved": true,
+      "rotatedCoreRepositoryGenerationDeniesOldReference": true,
+      "freshBindingObservesRotation": true,
+      "exactJobAndCancellationLineagePreserved": true
+    },
+    "deleteAfterFailedGenerate": {
+      "redObservedInRealComponent": true,
+      "generateRetryIdentityFrozen": true,
+      "deleteSupersedesWithSeparateFrozenIdentity": true,
+      "deleteRetryIdentityFrozen": true,
+      "actualAcceptedNativeGenerateReplyLost": true,
+      "actualExplicitNativeDeleteSucceeded": true
+    }
+  },
+  "artifacts": [
+    {
+      "version": "0.2.0",
+      "digest": "sha256:f214b02d9accede88aebeb8188453457bb869badcc56181576880dd6c80c3898",
+      "configDigest": "sha256:7d20f1a7235cc7af42a820dd4559ca871eccff402c5f9c57f8b5199e6cd61697",
+      "manifestSha256": "38852da71e8bb550d299865206828a9245ac01b1d87ec2bcfc54efc26b2c41e0",
+      "archiveSha256": "cbc5bfd0b10473eee5194a0cddf368178c6e6eee525a07551417211d719fa9c4"
+    }
+  ],
+  "binaryHashes": {
+    "webdock-migrate": "068bfd11835831ffb79bb87783a16827d0edd226543d9bf3a6f8a12da34a357d",
+    "webdock-bootstrap-operator": "4c95ad6e7cbd903907bc3f5a7d0a2850209826bbb40a3335447e064fe782f507",
+    "webdock-enroll-agent": "f44a590f2e272672a0155e52189d77187e70cdd3345cca089f8bade44c81cea5",
+    "webdock-bootstrap-plugins": "0a6fce0a639a601521e647a6544a816a10a1bf88695c3eaa7bbcd84b7360ca5f",
+    "webdock-control-plane": "1c70422e007dd9ee0ab812e5ce8e276cfd434260580309e8ed1dbfbc922d0d44",
+    "webdock-plugin-control": "11ec2455173a6a7d880ee40e1faface1da91436e39bce27ee662758fd77fd3b1",
+    "webdock-plugin-controller": "7d91ed33e2f387860214011df3318c313c1a09c5654c687aa0f2002b8707515b",
+    "webdock-agent-control": "93b0dd9acd1ea31ec1cb2ea1a0da757028e3477ec0e8e940beafcd9ea18b4ac6",
+    "webdock-agent": "8563941db224f9f9be5d6225bb62a38039aa0b35ab187eb419b45e54ea3babd1"
+  },
+  "frozenSchema": {
+    "0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+    "0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f",
+    "0050_archive_source_leases.sql": "2d3e22026c7ad792234ecce7f5a286a856eac681a22af504c23351d2de86a714",
+    "0051_database_backup_transitions.sql": "a4f16036e77bd2617f61cecc7c7881bb1abfceb920a16309e092770094ed7767"
+  },
+  "nativeDataProof": {
+    "actualNormalSignedImage": true,
+    "realCoreDurableJob": true,
+    "realCoreObservedReport": true,
+    "producerReadonlyMetadata": true,
+    "coreBinaryGateway": true,
+    "bytes": 112,
+    "sha256": "5244c210b7a9189d01c83926d7902d41a50af6cbeb530bd9ac576e7666e120a0",
+    "foreignTenantDenied": true,
+    "publicDescriptorHasNoProviderURL": true,
+    "artifactID": "73b75d2a-38bb-404d-b042-1a64f76f9d42",
+    "jobID": "job-cd5bc7e9f5b69550e816052682e45cbaab8a33386721683d9a73a9e4a061a9a0"
+  },
+  "browserProof": {
+    "realConsoleAndCore": true,
+    "actualOperatorPasswordTotpPkce": true,
+    "customNativeResourceUI": true,
+    "customCreateGenerateStatusDownloadDelete": true,
+    "acceptedGenerateReplyLost": true,
+    "deleteSupersedesFailedGenerateWithOwnIdentity": true,
+    "widths": [
+      375,
+      1280
+    ],
+    "knownSHAAuthenticatedBlobGET": true,
+    "blobBytesVerified": 112,
+    "hideRetiresObjectURL": true,
+    "noHorizontalOverflow": true,
+    "pageErrors": 0,
+    "screenshotsPrivate": true
+  },
+  "expiryProof": {
+    "actualNativeJob": true,
+    "boundedAccessSeconds": 15,
+    "descriptorClippedToExpiry": true,
+    "oldDescriptorDenied": true,
+    "newDownloadDenied": true,
+    "expiredResourceExplicitlyDeleted": true
+  },
+  "deletionProof": {
+    "explicitCompletedDeletion": true,
+    "oldOpaqueDescriptorDenied": true
+  },
+  "fixtureResourceProfile": {
+    "memoryBoundBytes": 4294967296,
+    "cpus": 3,
+    "effectiveEvictionHard": {
+      "imagefs.available": "1%",
+      "imagefs.inodesFree": "1%",
+      "memory.available": "100Mi",
+      "nodefs.available": "1%",
+      "nodefs.inodesFree": "1%"
+    },
+    "effectiveTransition": "10s",
+    "nodeHealthObserved": {
+      "MemoryPressure": "False",
+      "DiskPressure": "False",
+      "PIDPressure": "False",
+      "Ready": "True"
+    },
+    "onlyOwnedNodeChanged": true,
+    "signedOciReimportedWithoutMutation": true,
+    "originalInstallOperation": "107868900179320832",
+    "originalOperationObservedSucceeded": true,
+    "privateAgentReconnectedWithRetainedEnrollmentAndState": true
+  },
+  "tests": {
+    "ordinaryPlugin": 8,
+    "ownedMetadataMinioReadonlyCore": 3,
+    "coreRepositoryAuthority": 1,
+    "archivesComponent": 3,
+    "consoleSuite": 101,
+    "strictPluginClippyLocalAndNativePassed": true,
+    "strictBuildServiceClippyPassed": true,
+    "isolatedNoDefaultBuildCheckPassed": true,
+    "consoleTscAndOwnedEslintPassed": true
+  },
+  "cleanup": {
+    "exactContainerIDsRemoved": true,
+    "anonymousVolumesRemoved": true,
+    "ownedNetworkRemoved": true,
+    "recordedProcessesStopped": true,
+    "existingMinioStillRunning": true,
+    "privateEvidenceRetained": true
+  },
+  "minioCleanup": {
+    "exactOwnedBucketUserPolicyRemoved": true,
+    "incompleteUploadsAbortedAndAbsent": true
+  },
+  "allCustodyEntriesRemoved": true,
+  "limits": [
+    "Production activation and production provider qualification remain gated.",
+    "Native MinIO profile retains only the already documented explicit ACL and multipart lifecycle exceptions.",
+    "No fresh managed-PG Native rotation was provisioned this round; prior actual managed-PG rotation/pause evidence remains separate and unchanged.",
+    "Root owns the full repository quality run."
+  ]
+}

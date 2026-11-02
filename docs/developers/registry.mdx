@@ -1,11 +1,11 @@
 ---
 title: "Registry REST API"
-description: "Query customer, project and CMS inventory with the same OAuth resource used by MCP."
+description: "Query customer, project and audit inventory with the existing OAuth resource."
 ---
 
-<Note>This page covers customer/project inventory. For the separate Tabularium plugin registry, see [Webdock plugins](/developers/plugins).</Note>
+<Note>This page covers customer/project inventory. For the separate plugin release registry, see [Spitzli Cloud plugins](/developers/plugins).</Note>
 
-The registry API accepts OAuth bearer tokens for the Webdock MCP resource and the corresponding registry scopes. Browser cookies are not registry API authorization.
+The registry API accepts OAuth bearer tokens for the Spitzli Cloud MCP resource and the corresponding registry scopes. Browser cookies are not registry API authorization.
 
 ## Discover the contract
 
@@ -25,16 +25,15 @@ curl --fail-with-body \
 | GET | `/api/registry/{collection}/{id}` | Read one record |
 | POST | `/api/registry/customers` | Create a customer |
 | POST | `/api/registry/projects` | Create a project |
-| POST | `/api/registry/cms-instances` | Record an existing CMS connection |
 | PUT | `/api/registry/{collection}/{id}` | Update a writable record |
 | PATCH | `/api/registry/customers/{id}` | Archive or restore a customer |
 | PATCH | `/api/registry/projects/{id}` | Archive or restore a project |
 
-Collections are `customers`, `projects`, `cms-instances` and read-only `audit-events`. Recording a CMS requires the documented `data` body and `confirmExisting: true`; it does not deploy a website.
+Current native collections are `customers`, `projects` and read-only `audit-events`. Older `cms-instances` examples belong to the retained TypeScript contract and are not part of this native discovery response. Creating a project does not deploy a website.
 
 ## Filtering and pagination
 
-Lists support validated `search`, `page`, `limit`, `status` and `sort` parameters. The maximum list limit is 50. Projects accept a `customer` filter; CMS connections accept `project`; audit activity accepts `targetCollection` and `targetID`.
+Lists support validated `search`, `page`, `limit`, `status` and `sort` parameters. The maximum list limit is 50. Use the discovery schema for collection-specific filters; unsupported filters are rejected.
 
 ```bash
 curl --fail-with-body \
@@ -45,3 +44,5 @@ curl --fail-with-body \
 Keep IDs as strings. Unknown fields, unsupported filters and duplicate query parameters are rejected. JSON request bodies are limited to 64 KiB.
 
 <Warning>Registry creates are not idempotent. After an ambiguous timeout, inspect existing records before retrying. Registry archive/restore does not implement infrastructure deletion.</Warning>
+
+Source: native Registry resource adapter (`crates/control-plane/src/resource_registry.rs`) and query contract (`crates/registry/src/query.rs`).

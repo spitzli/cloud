@@ -1,0 +1,22 @@
+{
+  "scope": "Actual local matched Mail backup and source-unavailable transition; cold restore remains pending",
+  "prefixQualified": true,
+  "prefixReportSHA256": "2cd6916a9010c4bcf8f553fbb86cfff8386d923b19ce68817db581f2ee4c03a3",
+  "backupAndSourceUnavailableReached": true,
+  "backupCase": "b19208b72220",
+  "reportSHA256": "d122473b328cc3f6979335a2fea744f6fb8cbacf99ec5a0875d2500d1aa4cd89",
+  "independentClosureSHA256": "6abdbe70f842c74cd37224915ea3988d67671dd2ac01b90040a4d652a104f267",
+  "stopAt": "Fresh cold storage helper exited before typed identity; original startup error not retained in that run",
+  "fixesQualifiedSeparately": [
+    "Mail-only test snapshotter overlayfs avoids measured native ephemeral-storage eviction",
+    "Actual operator/RLS/audit adoption of preconfigured sending transport",
+    "CE negative-only local DNS prerequisite",
+    "Agent native runtime explicit replicas field manager",
+    "Migration56 SQL alias disambiguation with actual PostgreSQL42702 RED/zero GREEN",
+    "Exact-UID read-only snapshot helper zero-grace cleanup within unchanged deadline"
+  ],
+  "wholeMailQualified": false,
+  "productionOrWasabiQualified": false,
+  "MinioRestoredStopped": true,
+  "noObligations": true
+}

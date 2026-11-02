@@ -1,35 +1,39 @@
 ---
 title: "Applications and deployments"
-description: "Manage application configuration, deployment operations and runtime state."
+description: "Inspect application health, change configuration and follow rollout operations."
 ---
 
-Managed applications belong to a customer and project. Creating or changing one requires enabled hosting, sufficient allowance and a compatible execution target.
+Open the application's project in [Console](https://console.spitzli.cloud). Applications have their own configuration, runtime state, operations and logs. Hosting must be enabled and assigned before you can create or change a workload.
 
-Use [guided application setup](/guides/project-setup) to connect a source and services where this feature is enabled.
+For a new workload, follow [Set up an application](/guides/project-setup).
 
-## Lifecycle
+## Check the application
 
-Use the application page to inspect configuration, runtime state, recent operations and logs. Start, stop, restart and deployment actions run as operations. Wait for the outcome and check application health before treating a change as complete.
+Review its observed state, recent operation and expected endpoint. Use logs to investigate a startup or healthcheck failure. An accepted operation is still in progress until its result and runtime observation are available.
 
-| State | What to do |
+| State | Next step |
 | --- | --- |
 | Running or ready | Check application health and the expected endpoint |
-| Change in progress | Follow the current operation rather than submitting it again |
-| Stopped | Start the application when needed, subject to permissions and limits |
-| Failed or review required | Read the operation error and resolve the reported condition |
+| Change in progress | Follow the existing operation |
+| Stopped | Use **Start application** when needed and permitted |
+| Failed or needs review | Read the operation error and resolve the reported condition |
 
-## Deploy from Git
+Where authorized, use **Stop application**, **Start application** or **Restart application**. Wait for the current operation before requesting another change. If the result is uncertain, use the existing request's retry or ask an operator to reconcile it.
 
-Where Git deployments are enabled, connect an authorized repository and configure a supported build target. Repository selection and deployment authorization are separate checks. A saved repository URL alone does not enable deployments.
+## Configure the runtime
 
-Deployments use immutable artifacts. After a failure, inspect the existing deployment and operation before retrying. Rollback selects a retained artifact; it does not restore application data or reverse database migrations.
+Use the application's available settings for its image, resources, healthcheck and environment. Keep secrets in private environment fields. An image must be pinned to an immutable digest supported by the assigned runtime.
 
-## Environment and data
+Durable files belong on approved [persistent storage](/guides/storage), mounted at `/data` in the fixed-volume model. Process restarts retain that volume; the container's temporary filesystem is not durable storage.
 
-Configure environment values through authorized Console controls. Keep credentials out of source files and logs. Use [persistent storage](/guides/storage) for data that must survive process restarts.
+Default public project addresses use `spitzli.site` where address allocation is enabled. Use the exact HTTPS address displayed in Console. A custom domain requires its own configuration and verification.
 
-<Warning>Application deletion and permanent storage deletion are separate operations. Review the current deletion preview and retained data before confirming either action.</Warning>
+## Builds and publication
 
-## Bring your own infrastructure
+For explicitly activated repository sources, use [Git builds and deployments](/guides/git-deployments). Git self-service is not generally available. Build success confirms build output; publication and application readiness have separate states.
 
-For an existing cluster or Vercel team, start with [BYOK setup](/guides/byok). Existing-workload management and provider permissions are enabled separately from managed hosting.
+Redeploying a retained version does not restore application data or reverse migrations. Review compatibility before deploying an older image.
+
+<Warning>Deleting an application and permanently purging its storage are separate operations. Review the current deletion preview and retained data before confirming either action.</Warning>
+
+For customer-owned infrastructure, see [Bring your own accounts](/guides/byok). Connecting a provider does not automatically deploy an application.

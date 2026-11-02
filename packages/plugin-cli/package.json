@@ -1,1 +1,1 @@
-{"name":"@webdock/cli","version":"0.1.0","type":"module","bin":{"webdock":"src/cli.js"},"files":["src","templates"],"dependencies":{"@webdock/plugin-sdk":"0.1.0"},"engines":{"node":">=24"},"scripts":{"test":"node --test tests/*.test.js"}}
+{"name":"@webdock/cli","version":"0.1.0","type":"module","bin":{"webdock":"src/cli.js"},"files":["src","templates"],"dependencies":{"@webdock/plugin-sdk":"0.1.0"},"engines":{"bun": ">=1.4.3"},"scripts":{"test":"bun test ./tests"}}

@@ -42,7 +42,7 @@ test("Hosting provider adapters depend on public contracts, never the Hosting ru
 });
 test("Hosting control-plane compatibility paths contain composition instead of SQL service logic", () => {
   for (const file of files(
-    resolve(root, "apps/control-plane/src/modules/hosting"),
+    resolve(root, "legacy/control-plane/src/modules/hosting"),
   )) {
     const source = readFileSync(file, "utf8");
     assert.doesNotMatch(

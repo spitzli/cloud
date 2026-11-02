@@ -1,0 +1,38 @@
+# Private operator bootstrap, overlay on pinned metrics-values.yaml.
+grafana:
+  admin:
+    existingSecret: obs-grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
+  grafana.ini:
+    server:
+      domain: grafana.webdock.dev
+      root_url: https://grafana.webdock.dev
+    security:
+      cookie_secure: true
+    auth:
+      disable_login_form: false
+    auth.anonymous:
+      enabled: false
+  persistence:
+    storageClassName: webdock-obs-grafana-v1
+  extraSecretMounts:
+  - name: obs-loki-datasource
+    secretName: obs-loki-datasource
+    defaultMode: 288
+    mountPath: /etc/grafana/provisioning/datasources/webdock-loki.yaml
+    subPath: loki.yaml
+    readOnly: true
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: webdock-obs-alertmanager-v1
+prometheus:
+  prometheusSpec:
+    externalUrl: https://prometheus.webdock.dev
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: webdock-obs-prometheus-v1

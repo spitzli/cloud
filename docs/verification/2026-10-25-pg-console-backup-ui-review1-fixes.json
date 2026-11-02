@@ -1,0 +1,326 @@
+{
+  "date": "2026-10-25",
+  "status": "review1-five-p2-fixed-frontend-gates-green-ready-for-independent-review2",
+  "priorCheckpoint": {
+    "path": "docs/verification/2026-10-25-pg-console-backup-ui.json",
+    "sha256": "7f5d38aa1ddca4b6afcf2f152159c8f8d968e38715a36ca0811fd77fef14671f",
+    "unchangedHistoricalEvidence": true
+  },
+  "ownership": "Part A client fixes only. No Rust/Core/Agent/SQL/proto/Cargo/Rootlock/dependency edits, new Core/native bootstrap, production/Wasabi/email/existing-service changes, delegation or commits.",
+  "changedPaths": [
+    "apps/console/src/DatabaseBackups.tsx",
+    "apps/console/src/ManagedDatabases.tsx",
+    "apps/console/src/database-backup-observation.ts",
+    "apps/console/src/database-backup-request.ts",
+    "apps/console/src/use-database-backup-history.ts",
+    "apps/console/tests/database-backup-browser.mjs",
+    "apps/console/tests/database-backup-observation.test.ts",
+    "apps/console/tests/database-backup-state.test.tsx",
+    "apps/console/tests/support/database-backup-fixture.ts",
+    "docs/operations/managed-postgresql.md",
+    "docs/verification/2026-10-25-pg-console-backup-ui-review1-fixes.json"
+  ],
+  "changedSourceSHA256": {
+    "apps/console/src/DatabaseBackups.tsx": "1faf482a726ac4a4b2c5f05bff7bc0a9dcc43e76754330b2b579a68d8c335ce5",
+    "apps/console/src/ManagedDatabases.tsx": "0318830abe2d74d77a6f0ae9ec59856e5db9187d83fced7d1626057278fedd41",
+    "apps/console/src/database-backup-observation.ts": "f242d9952d9497c13f57d755ca359915ba06c1273359c4d8b416e3cec47658b7",
+    "apps/console/src/database-backup-request.ts": "08b9cb1c3c8cfb26fa33ff353d590c11d317d23aeac4a44ebe2714dcf93cc8fa",
+    "apps/console/src/use-database-backup-history.ts": "494a8dc26fe77891ff1a18044a78c28aef84df2843e932469bd6ce8d626bead6",
+    "apps/console/tests/database-backup-browser.mjs": "61f87ea78327eb1ccde9b5ca676e8ebd70c710ed7094a850294a9a8516a36e86",
+    "apps/console/tests/database-backup-observation.test.ts": "2422f4ca7e5939dcce0047c354e06e5598beb5dda9ff3e0ee5177242ddf56af0",
+    "apps/console/tests/database-backup-state.test.tsx": "300dc6279650b362ae856a69161617759addffb1a6e09f894b8836401fa74380",
+    "apps/console/tests/support/database-backup-fixture.ts": "0b88c6203cdcf1a8f7092d68ae687516c3d1e418f5118926c04da6e33d7aedee",
+    "docs/operations/managed-postgresql.md": "b8eb0356f5984fdc7a44a4c9a5e59203b09ff0b8ee351d5b957b5bc826fe0927"
+  },
+  "reviewSourceSHA256": {
+    "apps/console/src/DatabaseBackupControls.tsx": "5edf8c5a76fda3be3c2dd5b9650cf2a801fabacef92d717572a24b58317ab7d7",
+    "apps/console/src/DatabaseBackups.tsx": "1faf482a726ac4a4b2c5f05bff7bc0a9dcc43e76754330b2b579a68d8c335ce5",
+    "apps/console/src/ManagedDatabases.tsx": "0318830abe2d74d77a6f0ae9ec59856e5db9187d83fced7d1626057278fedd41",
+    "apps/console/src/database-backup-observation.ts": "f242d9952d9497c13f57d755ca359915ba06c1273359c4d8b416e3cec47658b7",
+    "apps/console/src/database-backup-request.ts": "08b9cb1c3c8cfb26fa33ff353d590c11d317d23aeac4a44ebe2714dcf93cc8fa",
+    "apps/console/src/use-database-backup-history.ts": "494a8dc26fe77891ff1a18044a78c28aef84df2843e932469bd6ce8d626bead6",
+    "apps/console/tests/database-backup-browser.mjs": "61f87ea78327eb1ccde9b5ca676e8ebd70c710ed7094a850294a9a8516a36e86",
+    "apps/console/tests/database-backup-observation.test.ts": "2422f4ca7e5939dcce0047c354e06e5598beb5dda9ff3e0ee5177242ddf56af0",
+    "apps/console/tests/database-backup-proof.tsx": "3545e96992400b4ada8af6f2f5b215f2c345061b2576e7fe0620a4a6886326c1",
+    "apps/console/tests/database-backup-state.test.tsx": "300dc6279650b362ae856a69161617759addffb1a6e09f894b8836401fa74380",
+    "apps/console/tests/support/database-backup-fixture.ts": "0b88c6203cdcf1a8f7092d68ae687516c3d1e418f5118926c04da6e33d7aedee",
+    "docs/operations/managed-postgresql.md": "b8eb0356f5984fdc7a44a4c9a5e59203b09ff0b8ee351d5b957b5bc826fe0927",
+    "packages/hosting-contracts/src/database-backup.test.ts": "b3581d11303165cee70efdec0eedd34c8d778cea5c52f98ee868c30391185686",
+    "packages/hosting-contracts/src/databases.ts": "a1321d5f85b9d5b0ab837f5d00a596e12ad15b5ed8e031e6eb9d9231c54d5e29",
+    "packages/i18n/compiled/de.json": "ff98fbb3a778e63af309f33e53431d4e59285845a88700cd90b962f8a7d4e044",
+    "packages/i18n/locales/de/managed-postgresql.po": "d307b783a4e2c73f6e0ca328dd4a84759bb3c720573d6cefebcb119e00bae941",
+    "packages/i18n/locales/webdock.pot": "0c0c50891c88084d9545226964dad2f471b3cc4a81d0eba6a910aaeac49a832e"
+  },
+  "reviewSourceAggregateSHA256": "700de4060bf15262e4fbda375a974358f952416c6f5e83b769b0aa57464f84a9",
+  "sourceURLs": {
+    "currentPermissions": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/apps/console/src/ManagedDatabases.tsx:107",
+    "monotonicUncertainty": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/apps/console/src/database-backup-request.ts:28",
+    "independentPolicyTarget": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/apps/console/src/database-backup-request.ts:35",
+    "freshObservation": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/apps/console/src/database-backup-observation.ts:6",
+    "latchedReadRetirement": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/apps/console/src/use-database-backup-history.ts:7"
+  },
+  "red": {
+    "command": "bun test apps/console/tests/database-backup-state.test.tsx",
+    "log": "/tmp/webdock-pg-console-review1-all-red.log",
+    "result": "17 passed,6 failed: all5 findings, with separate finding1 dispatch and pending-registration probes",
+    "additionalProjectLatchRed": "/tmp/webdock-pg-console-review1-project-red.log"
+  },
+  "green": {
+    "log": "/tmp/webdock-pg-console-review1-green.log",
+    "result": "25 parent component cases+2 freshness cases passed before final overlapping-refresh characterization; final full Console includes26 parent cases+2 freshness cases",
+    "overlappingRefreshCharacterization": "Existing implementation already denied cached cancellation as reauthorization; additional probe passed, no extra behavior change."
+  },
+  "findings": [
+    {
+      "id": 1,
+      "priority": "P2",
+      "fix": "Use current permissions.isSuccess rather than cached flags; disable parent list/detail reads on project read denial, abort pending requests and unmount/wipe credential and policy drafts. Scope identity binds principal/project/resource; changing read/write flags does not discard an unresolved same-principal registration identity.",
+      "proof": "Actual parent permission200→403 denies backup dispatch; pending transport aborts; late destination receipt suppressed; unsent and detached fields wiped."
+    },
+    {
+      "id": 2,
+      "priority": "P2",
+      "fix": "Attempt ambiguity is monotonic and separate from local validation errors. Invalid re-entry, refresh and same-principal fresh reauthorization retain original digest/key; only matching successful receipt resolves it. No secret material is retained to retry.",
+      "proof": "Lost committed response→invalid HTTP endpoint→refresh→original input replay keeps identical SHA/key/body and one fixture mutation; separate parent reauthorization probe keeps the same hash."
+    },
+    {
+      "id": 3,
+      "priority": "P2",
+      "fix": "Current proof requires matching policy/view ID+revision+observedRevision, nonnull timestamp within strict90s on client clock, suspension, desired/observed control equality, matching resource evidence and effective revocation where required. Manual dispatch rechecks freshness at event time.",
+      "proof": "Same-revision observedAt=NULL,91s age, missing controls, revision/suspension mismatch and foreign resource evidence deny current status/manual action. Literal time-edge tests at89999/90000ms and future clock; no UTC synchronization promise."
+    },
+    {
+      "id": 4,
+      "priority": "P2",
+      "fix": "Track highest required policy revision/revocation independently of latest display receipt. Destination/manual receipts cannot clear it; lower fresh policy revision cannot satisfy a higher target.",
+      "proof": "Accept rev3→destination receipt→still pending; accept rev4→observe rev3→still pending; observe matching fresh rev4→manual permitted. Effective revoke is separately required."
+    },
+    {
+      "id": 5,
+      "priority": "P2",
+      "fix": "Latch history read failure; cancel/purge backup history cache, unmount/wipe forms, abort pending transport and stop polling/focus/reconnect/retry/invalidation source reads. Explicit refresh revalidates current permissions then obtains a new history read; project/principal scope and read generation fences suppress obsolete results.",
+      "proof": "Actual Chrome source read counts stay unchanged for requested10.25s per width after denial. Detached secret values empty and no archive/base/material in backup history cache. Fresh readonly reauthorization restores observations without write controls; project latch isolation and overlapping refresh checks pass."
+    }
+  ],
+  "checks": [
+    {
+      "command": "bun run --cwd apps/console test",
+      "result": "129 passed / 0 failed; all original17 plus9 review component cases and2 pure freshness tests",
+      "log": "/tmp/webdock-pg-console-review1-console-final.log"
+    },
+    {
+      "command": "bun run --cwd packages/hosting-contracts test",
+      "result": "28 passed / 0 failed; Root status/commands/legacy compatibility unchanged",
+      "log": "/tmp/webdock-pg-console-review1-contract-tests.log"
+    },
+    {
+      "command": "bun run --cwd packages/i18n test",
+      "result": "12 passed / 0 failed; generated catalog freshness verified",
+      "log": "/tmp/webdock-pg-console-review1-i18n.log"
+    },
+    {
+      "command": "bun --no-env-file test tools/tests/native-plugin-fixture.test.mjs",
+      "result": "54 passed / 0 failed; mocked safety/unit fixtures only, no native bootstrap",
+      "log": "/tmp/webdock-pg-console-review1-fixture-unit.log"
+    },
+    {
+      "command": "bun run --cwd apps/console lint",
+      "result": "passed, full Console+plugin UI",
+      "log": "/tmp/webdock-pg-console-review1-lint-final.log"
+    },
+    {
+      "command": "bun run --cwd apps/console typecheck",
+      "result": "passed",
+      "log": "/tmp/webdock-pg-console-review1-tsc-final.log"
+    },
+    {
+      "command": "bun run --cwd apps/console build",
+      "result": "passed; existing large Monaco/runtime chunk warning remains",
+      "log": "/tmp/webdock-pg-console-review1-build.log"
+    },
+    {
+      "command": "WEBDOCK_PREVIEW_PORT=0 bun run --cwd apps/console test:browser",
+      "result": "16 configured suites passed; controlled HTTP only; no Core/Native claim",
+      "log": "/tmp/webdock-pg-console-review1-browser16.log"
+    }
+  ],
+  "frontendGate": "Executed the current tools/quality frontend plan commands directly, avoiding a Rust quality-tool compilation while backend/compiler wiring remains held.",
+  "controlledBrowser": {
+    "status": "controlled-http-only",
+    "widths": [
+      375,
+      1280
+    ],
+    "assertions": [
+      "list-detail-contract",
+      "on-demand-receipt",
+      "separate-controls",
+      "revision-fences",
+      "pending-effective-revoke",
+      "member-preview-readonly",
+      "restore-disabled",
+      "ephemeral-destination-registration",
+      "grant-pending-observed",
+      "conflict-explicit-refresh",
+      "forbidden-locked",
+      "english-german",
+      "no-horizontal-overflow"
+    ],
+    "review1Transitions": [
+      {
+        "width": 375,
+        "registrationMutations": 1,
+        "identicalReplay": true,
+        "deniedAutomaticReadWaitMs": 10250,
+        "deniedReadCountsStable": true,
+        "cacheAndDetachedSecretRetired": true,
+        "freshReadonlyReauthorization": true,
+        "parentPermissionsDenial": true,
+        "sameRevisionInvalidation": true
+      },
+      {
+        "width": 1280,
+        "registrationMutations": 1,
+        "identicalReplay": true,
+        "deniedAutomaticReadWaitMs": 10250,
+        "deniedReadCountsStable": true,
+        "cacheAndDetachedSecretRetired": true,
+        "freshReadonlyReauthorization": true,
+        "parentPermissionsDenial": true,
+        "sameRevisionInvalidation": true
+      }
+    ],
+    "nativeProof": false,
+    "consoleErrors": 0
+  },
+  "browserArtifacts": [
+    {
+      "path": "/tmp/webdock-pg-console-http-fpbCAr/backup-1280.png",
+      "sha256": "06d4be4f1f0b791a28ec769e3fae16d27f1c368487322e3110a9f50939a42b6f"
+    },
+    {
+      "path": "/tmp/webdock-pg-console-http-fpbCAr/backup-375.png",
+      "sha256": "35ad3c3a95cc6741e56d0e58d8d8f0a39804c646538e36950bd1229576e27832"
+    },
+    {
+      "path": "/tmp/webdock-pg-console-http-fpbCAr/backup-de-1280.png",
+      "sha256": "44172c45bdce93177e5d7bb4491b5a1d9cf89e318ce6184d2b44fc5a4e069f78"
+    },
+    {
+      "path": "/tmp/webdock-pg-console-http-fpbCAr/backup-de-375.png",
+      "sha256": "10e19583091110085434238fc8dcd19fcc01d1d81f9ba0a8bf57e41ec8323935"
+    }
+  ],
+  "cleanup": {
+    "backupFixture": {
+      "ownedHttpListenerAbsent": true,
+      "browserDisconnected": true,
+      "viteCacheAbsent": true,
+      "nativeCoreFixtureStarted": false,
+      "existingServicesTouched": false,
+      "allBackupProofViteCachesAbsent": true
+    },
+    "configuredBrowser16": {
+      "previewListeners": [
+        {
+          "port": 33845,
+          "listenerAbsent": true
+        },
+        {
+          "port": 34705,
+          "listenerAbsent": true
+        },
+        {
+          "port": 35969,
+          "listenerAbsent": true
+        },
+        {
+          "port": 36489,
+          "listenerAbsent": true
+        },
+        {
+          "port": 36681,
+          "listenerAbsent": true
+        },
+        {
+          "port": 36731,
+          "listenerAbsent": true
+        },
+        {
+          "port": 37225,
+          "listenerAbsent": true
+        },
+        {
+          "port": 39689,
+          "listenerAbsent": true
+        },
+        {
+          "port": 42157,
+          "listenerAbsent": true
+        },
+        {
+          "port": 42839,
+          "listenerAbsent": true
+        },
+        {
+          "port": 43281,
+          "listenerAbsent": true
+        },
+        {
+          "port": 43525,
+          "listenerAbsent": true
+        },
+        {
+          "port": 43799,
+          "listenerAbsent": true
+        },
+        {
+          "port": 45489,
+          "listenerAbsent": true
+        },
+        {
+          "port": 45809,
+          "listenerAbsent": true
+        }
+      ],
+      "allAbsent": true,
+      "nativeBootstrap": false
+    },
+    "standardGeneratedArtifactsRetained": [
+      "apps/console/dist",
+      ".runtime-test controlled browser screenshots and shared preview build caches"
+    ],
+    "newNativeOrCoreFixtures": 0
+  },
+  "preservedFailureEvidence": {
+    "logs": [
+      "/tmp/webdock-pg-console-review1-red.log",
+      "/tmp/webdock-pg-console-review1-all-red.log",
+      "/tmp/webdock-pg-console-review1-retry-target-green.log",
+      "/tmp/webdock-pg-console-review1-authority-green.log",
+      "/tmp/webdock-pg-console-review1-project-red.log",
+      "/tmp/webdock-pg-console-review1-browser.log",
+      "/tmp/webdock-pg-console-review1-browser-r2.log",
+      "/tmp/webdock-pg-console-review1-browser-r3.log"
+    ],
+    "browserCauses": [
+      "Chromium retried a deliberately closed connection with the identical key, so unknown-outcome browser proof uses502 after fixture commit; in-memory lost-reply probe still uses TypeError.",
+      "Replaced unrelated networkidle waiting on an aborted request with actual source read-counter stability after settling.",
+      "Empty newly granted fixture had no completed backup history; reauthorization proof waits for actual desired controls rather than fabricating a completion."
+    ],
+    "allOldPartAAndNativeEvidencePreserved": true
+  },
+  "preservedContracts": [
+    "Root strict status/commands and legacy five disabled fields unchanged",
+    "Public/operator Restore disabled; exact production-qualification-required and false/null commitments unchanged",
+    "Historical offers, prices, billing and independent schedule/WAL/retention semantics unchanged"
+  ],
+  "limits": [
+    "Controlled fixture registration mutation is not a real Core/native mutation proof. All16 browser suites are controlled HTTP; previous PG/PITR/Core evidence remains historical.",
+    "Client freshness is an advisory conservative local-clock gate; clock skew can make status pending and no UTC/RPO/RTO/SLA guarantee is made. Core authorization remains authoritative.",
+    "Provider strings exist transiently in request/JS frames and cannot be reliably zeroized; only digest/key and non-secret frozen commands are intentionally retained.",
+    "PartB backend/Cargo/SQL/proto/Rootlock changes and fresh Core/native acceptance remain held until Root0054 freeze plus a new explicit release.",
+    "No production activation or complete-handover approval."
+  ],
+  "nextAction": "Parent to start NEW independent review r2 from these source hashes. No delegation or backend edits by this implementation agent."
+}

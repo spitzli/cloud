@@ -7,5 +7,6 @@
   "domains": [
     "webdock.dev",
     "www.webdock.dev"
-  ]
+  ],
+  "enabled": false
 }

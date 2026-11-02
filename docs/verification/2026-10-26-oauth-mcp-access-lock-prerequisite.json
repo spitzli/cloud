@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-26",
+  "status": "Source/API stable; normal offline suites and scoped compiler/lints pass; independent OAuth review and real database regression execution pending",
+  "head": "819041524049117bc50e11dfd96a6a29407804b8",
+  "scope": "One defensive OAuth prerequisite for native PG REST/MCP authority; no database-domain wiring or approval",
+  "ownedChanges": [
+    "crates/oauth/src/service.rs",
+    "crates/oauth/src/mcp_authority.rs",
+    "crates/oauth/tests/mcp_authority.rs",
+    "crates/oauth/tests/retained.rs",
+    "docs/verification/2026-10-26-oauth-mcp-access-lock-prerequisite.json"
+  ],
+  "baselineSHA256": {
+    "crates/oauth/src/service.rs": "34f31794fda22ecbc39df12f8d175691ca6920f733aa73f275ffca37bd26d541",
+    "crates/oauth/src/mcp_authority.rs": "e0ed4e81b64238e9c8bfff3f50e903e5ca3bd43a9b3781da34de364ea02f1291"
+  },
+  "sourceSHA256": {
+    "crates/oauth/src/service.rs": "245a0f2c4b0c4f1be4193833fd7444f4a0351589ae8df8685c3e883b8f78df3b",
+    "crates/oauth/src/mcp_authority.rs": "14dc5194c696a22d01445c442778cbdc3a229bfb6b24dda7587d6f0d029bd71d",
+    "crates/oauth/tests/mcp_authority.rs": "3c0aded9cc1cbc9b0d21a936dc3bd85436e433a6ee81f06d9c82b6380beae151",
+    "crates/oauth/tests/retained.rs": "becf5de42a7a19f942928e1c37e16d51c2c29b7234835dafd30932aa68d47dc0"
+  },
+  "untouchedLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+  "mechanism": [
+    "One private OAuthService::lock_access_record helper, accessible to the existing nested MCP module, is shared by inspect_scoped, authorize_mcp_reference and revalidate_mcp_authority_in.",
+    "Discovery does not retain an access-row lock. For active discovery the helper locks issuer client, then native user/session, then the exact access row by id and stored token hash FOR SHARE. It reloads and compares id, token hash, issuer, subject and session. Missing/replaced/changed ownership returns None; database errors propagate.",
+    "Native initially missing access rows still reach the legacy JWT fallback when appropriate. A row lost after discovery returns inactive directly and cannot fall back to JWT or refresh introspection. Initially inactive discovery stays inactive, preserving conservative native inspection behavior.",
+    "MCP creates its server-owned reference from the current reloaded row and only returns it after existing claims, resource, role, scope and tenant-preview checks. Stored references discover using access id and hash without raw tokens, then compare the current record hash and existing issuer/subject/session/role/issued-at/expiry/write claims after the same helper.",
+    "Caller authentication/client locks remain in place. Resource relationship/policy locking remains in the existing validation path with deterministic issuer/caller resource grant ordering. No new early resource locks or access-first locks were introduced.",
+    "Existing McpGuard and caller-owned revalidation transactions retain the access/identity locks until their transaction ends. No new guard type, public inspector, wire field, authentication signature or generated ABI was introduced."
+  ],
+  "additiveAPI": {
+    "signature": "McpAuthority::expires_at(&self) -> i64",
+    "meaning": "Original stored MCP reference expiry in Unix seconds; native lease consumers may cap a normal deadline at this verified expiry.",
+    "trustBoundary": "The getter never authorizes. A deserialized reference, including the parser fixtures, is untrusted until real revalidation; callers must retain the actual guard/transaction through their protected operation."
+  },
+  "observedChecks": [
+    {
+      "phase": "Baseline",
+      "command": "cargo test --offline --locked -p webdock-oauth -p webdock-browser-session -j2 --lib",
+      "result": "Exit 0: BrowserSessions 1 passed; OAuth 0 unit tests"
+    },
+    {
+      "phase": "Baseline",
+      "command": "cargo test --offline --locked -p webdock-oauth -p webdock-browser-session -j2",
+      "result": "Exit 0: 4 passed, 0 failed, 3 database-dependent fixtures ignored"
+    },
+    {
+      "phase": "RED before production changes",
+      "command": "cargo test --offline --locked -p webdock-oauth --test mcp_authority -j2",
+      "result": "Exit 101: E0599 at the typed expires_at() call because the method did not exist. This is an API compile-time RED, not an observed SQL-order or runtime authorization regression."
+    },
+    {
+      "phase": "GREEN final",
+      "command": "cargo test --offline --locked -p webdock-oauth -p webdock-browser-session -j2",
+      "result": "Exit 0: 6 passed, 0 failed, 3 database-dependent fixtures ignored; includes both new MCP expiry/wire/parser tests and compilation of the extended retained fixture"
+    },
+    {
+      "command": "cargo check --offline --locked -p webdock-oauth -p webdock-browser-session -p webdock-control-plane -j2",
+      "result": "Exit 0"
+    },
+    {
+      "command": "cargo clippy --offline --locked -p webdock-oauth -p webdock-browser-session --all-targets -j2 -- -D warnings",
+      "result": "Exit 0"
+    },
+    {
+      "command": "cargo clippy --offline --locked -p webdock-control-plane --lib --test bootstrap -j2 -- -D warnings",
+      "result": "Exit 0"
+    },
+    {
+      "command": "rustfmt --check --edition 2024 --config skip_children=true crates/oauth/src/service.rs crates/oauth/src/mcp_authority.rs crates/oauth/tests/mcp_authority.rs crates/oauth/tests/retained.rs",
+      "result": "Exit 0; only owned files formatted"
+    },
+    {
+      "command": "git diff --check -- crates/oauth/src/service.rs crates/oauth/src/mcp_authority.rs crates/oauth/tests/mcp_authority.rs crates/oauth/tests/retained.rs",
+      "result": "Exit 0"
+    }
+  ],
+  "actualPureCoverage": [
+    "Typed exact i64 expiry round-trip across minimum, negative, zero, ordinary timestamp and maximum values, preserving the existing camelCase wire shape and existing accessors. Parsing such values alone does not authenticate them.",
+    "Unexpected rawToken field, absent expiry and malformed null/string/fractional/out-of-range expiry values are rejected by the existing stored-reference parser.",
+    "Existing ordinary OAuth protocol/configuration/hash and BrowserSessions wire, origin/redirect and seal tests still pass."
+  ],
+  "preparedButUnexecutedDatabaseRegression": {
+    "test": "crates/oauth/tests/retained.rs::real_oidc_pkce_consent_refresh_and_mcp_authority",
+    "status": "Compiled only; existing ignore retained. No environment credentials read and no fixture started.",
+    "method": [
+      "Use the fixture's actual local-account/password-change/TOTP enrollment and confirmation, OAuth provisioning, consent, S256 PKCE and code exchange to obtain an MCP access token/reference.",
+      "For both MCP reference creation and stored-reference revalidation, hold the genuine native user row in a separate transaction and observe the verifier waiting using pg_blocking_pids. A separate exact access-row FOR UPDATE NOWAIT probe must still succeed while identity is blocked. All waits are bounded.",
+      "During the creation probe, commit a one-second-shorter expiry on the actual issued row before releasing identity; the returned reference getter must use this reloaded current expiry.",
+      "After stored-reference verification returns but before its transaction commits, an independent exact access-row NOWAIT probe must fail specifically with PostgreSQL 55P03 (lock_not_available); other database errors cannot count as success.",
+      "Keep the existing tampered-subject/expiry/refresh/replay checks and the existing initial-missing legacy JWT behavior coverage."
+    ],
+    "fixtureLimits": [
+      "The existing fixture explicitly provisions an operator via create_local_account(..., true), marks its email verified with setup SQL, provisions signing/client records through existing offline APIs, and includes pre-existing role downgrade/restore and expiry mutation probes. It is not a clean HTTP signup/bootstrap acceptance proof.",
+      "It requires an owned retained-schema restricted localhost PostgreSQL fixture, privileged observer visibility, allocator capacity and separate connections. This session did not establish those prerequisites or execute it.",
+      "No synthetic session, operator role, Ready state or scope seed was added. New probes operate on the actual token issued by existing service flows.",
+      "No SQL-order RED/GREEN, reload race, retained-lock lifetime, disappeared/replaced-row, cross-client grant concurrency or live MCP/Database/native acceptance is claimed. Source review and a coordinated candidate fixture window remain necessary."
+    ]
+  },
+  "constraints": [
+    "No delegation, commits, pushes, production/provider/Agent/Kubernetes starts or credential reads; prohibited handover/demo-owner files were not read.",
+    "No Cargo manifest, lock, feature, dependency, migration, proto, route, Database-domain or Control Plane support/hook edits. Intentional unrelated shared-tree changes were preserved.",
+    "No provider-filtered Host race case, protocol intermediary, traffic interception or production timing hooks were added or retried.",
+    "RTK.md was absent at the worktree root and checked ancestor locations; no replacement policy was invented.",
+    "Root received the compiler/API-stable handback before this evidence record was written. New independent OAuth review remains pending; this is not full MCP, Database, native or production approval."
+  ]
+}

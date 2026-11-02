@@ -67,6 +67,51 @@ export const databasePlanSchema = z
         : plan.monthlyPriceCents > 0,
     "Zero-price plans require a sponsorship customer.",
   );
+export const databaseBackupStatusSchema = z.object({
+  status: z.enum(["not-configured", "configuration-pending", "configured", "suspension-pending", "suspended"]),
+  policyID: id.optional(),
+  revision: revision.min(1).optional(),
+  observedRevision: z.number().int().nonnegative().optional(),
+  walEnabled: z.boolean().optional(),
+  retentionDelete: z.boolean().optional(),
+  observedControls: z.object({
+    schedule: z.string().regex(/^0 [0-5]?[0-9] (?:[01]?[0-9]|2[0-3]) \* \* \*$/),
+    walEnabled: z.boolean(),
+    retentionDelete: z.boolean(),
+    retentionDays: z.number().int().min(1).max(3650),
+    scheduledBackupResourceVersion: z.string().min(1).max(256),
+    clusterResourceVersion: z.string().min(1).max(256),
+    objectStoreUID: z.string().min(1).max(256),
+    objectStoreResourceVersion: z.string().min(1).max(256),
+  }).strict().nullable(),
+  lastSuccessAt: z.iso.datetime({ offset: true }).nullable(),
+  recoverableUntil: z.null(),
+  lastRestoreTestAt: z.null(),
+  publicRecoveryAvailable: z.literal(false),
+  disabledReason: z.literal("production-qualification-required"),
+  rpoSeconds: z.null(),
+  rtoSeconds: z.null(),
+}).strict();
+export type DatabaseBackupStatus = z.infer<typeof databaseBackupStatusSchema>;
+const backupResourcesSchema = z.object({ cpuMillicores: z.number().int().min(100).max(64000), memoryBytes: z.number().int().min(134217728).max(1099511627776), ephemeralBytes: z.number().int().min(134217728).max(1099511627776) }).strict();
+export const databaseBackupPolicyViewSchema = z.object({
+  policy: z.object({
+    id, revision: revision.min(1), revokedAt: z.iso.datetime({ offset: true }).nullable(),
+    observedRevision: revision, observedSuspended: z.boolean().nullable(), observedAt: z.iso.datetime({ offset: true }).nullable(),
+    observedControls: databaseBackupStatusSchema.shape.observedControls,
+    revocationEffective: z.boolean(),
+    spec: z.object({
+      id, installationID: id, customerID: id, projectID: id, sourceCnpgUID: z.string().min(1).max(256),
+      revision: revision.min(1), resourceRevision: revision.min(1),
+      destination: z.object({ id, endpointURL: z.string().max(512), region: z.string().max(63), bucket: z.string().max(63), archivePath: z.string().max(512), serverName: z.string().max(256), credentialID: id, credentialRevision: revision.min(1), recoveryCredentialID: id, recoveryCredentialRevision: revision.min(1), keyRecoveryID: id }).strict(),
+      schedule: z.string().regex(/^0 [0-5]?[0-9] (?:[01]?[0-9]|2[0-3]) \* \* \*$/),
+      suspended: z.boolean(), walEnabled: z.boolean(), retentionDays: z.number().int().min(1).max(3650), retentionDelete: z.boolean(),
+      sidecar: backupResourcesSchema, recoveryJob: backupResourcesSchema,
+    }).strict(),
+  }).strict().nullable(),
+  backups: z.array(z.object({ id, policyID: id, baseBackupID: z.string().min(1).max(256), completedAt: z.iso.datetime({ offset: true }) }).strict()).max(100),
+}).strict();
+export type DatabaseBackupPolicyView = z.infer<typeof databaseBackupPolicyViewSchema>;
 export const databaseViewSchema = z
   .object({
     ...resourceShape,
@@ -87,14 +132,7 @@ export const databaseViewSchema = z
       })
       .strict()
       .nullable(),
-    backup: z
-      .object({
-        status: z.literal("not-configured"),
-        lastSuccessAt: z.null(),
-        recoverableUntil: z.null(),
-        lastRestoreTestAt: z.null(),
-      })
-      .strict(),
+    backup: databaseBackupStatusSchema,
     operationID: id.nullable(),
     observedAt: z.iso.datetime().nullable(),
     usage: z
@@ -115,7 +153,45 @@ export const databaseViewSchema = z
         (v.kind === "shared" ? "measured-logical" : "bounded-filesystem"),
   );
 const target = { databaseID: id, revision, idempotencyKey: key };
+const copyTarget = {
+  sourceDatabaseID: id,
+  targetProjectID: id,
+  name,
+  restorePointID: id,
+  targetOrderID: id,
+  revision,
+  idempotencyKey: key,
+};
+const backupSchedule = z.string().regex(/^0 [0-5]?[0-9] (?:[01]?[0-9]|2[0-3]) \* \* \*$/);
+const backupPolicy = {
+  ...target,
+  revision: revision.min(1),
+  schedule: backupSchedule,
+  retentionDays: z.number().int().min(1).max(3650),
+  retentionDelete: z.boolean(),
+};
+const backupCredentials = z.object({
+  accessKeyId: z.string().min(3).max(128),
+  secretAccessKey: z.string().min(16).max(512),
+  readOnly: z.boolean(),
+}).strict();
 export const databaseCommands = [
+  z.object({ action: z.literal("databases.backupPolicies.get"), databaseID: id }).strict(),
+  z.object({ action: z.literal("databases.backupPolicies.grant"), ...backupPolicy, destinationID: id }).strict(),
+  z.object({
+    action: z.literal("databases.backupPolicies.update"), ...backupPolicy,
+    policyRevision: revision.min(1), suspended: z.boolean(), walEnabled: z.boolean(),
+  }).strict(),
+  z.object({
+    action: z.literal("databases.backupPolicies.revoke"), ...target,
+    revision: revision.min(1), policyRevision: revision.min(1),
+  }).strict(),
+  z.object({
+    action: z.literal("databases.backupDestinations.register"),
+    endpointURL: z.string().max(512), region: z.string().max(63), bucket: z.string().max(63),
+    keyRecoveryID: id, writeCredentials: backupCredentials, recoveryCredentials: backupCredentials,
+    idempotencyKey: key,
+  }).strict(),
   z
     .object({ action: z.literal("databases.migrations.list"), databaseID: id })
     .strict(),
@@ -208,20 +284,13 @@ export const databaseCommands = [
   ).map((action) =>
     z.object({ action: z.literal(`databases.${action}`), ...target }).strict(),
   ),
-  ...(["restore", "clone"] as const).map((action) =>
-    z
-      .object({
-        action: z.literal(`databases.${action}`),
-        sourceDatabaseID: id,
-        targetProjectID: id,
-        name,
-        restorePointID: id,
-        targetOrderID: id,
-        revision,
-        idempotencyKey: key,
-      })
-      .strict(),
-  ),
+  z.object({
+    action: z.literal("databases.restore"), ...copyTarget,
+    targetTime: z.iso.datetime({ offset: true }),
+    timeline: revision.min(1), credentialRevision: revision.min(1),
+    verificationSHA256: z.string().regex(/^[a-f0-9]{64}$/),
+  }).strict(),
+  z.object({ action: z.literal("databases.clone"), ...copyTarget }).strict(),
   z
     .object({
       action: z.literal("databases.resize"),
@@ -277,6 +346,7 @@ export const databaseCommandSchema = z.discriminatedUnion(
   databaseCommands,
 );
 export const databaseReadActions = [
+  "databases.backupPolicies.get",
   "databases.projects.list",
   "databases.migrations.list",
   "databases.migrationPurgePreview",

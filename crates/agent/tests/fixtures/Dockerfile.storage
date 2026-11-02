@@ -1,0 +1,6 @@
+# Disposable acceptance fixture: no host filesystem or Docker socket mounts.
+FROM docker.io/library/ubuntu@sha256:c098726dd9b9733f3e885f8de0ef375206a311b0a317eadc40d347b1115fb944
+RUN apt-get update && apt-get install -y --no-install-recommends e2fsprogs util-linux mount docker.io ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY storage-test /usr/local/bin/storage-test
+ENV WEBDOCK_DISPOSABLE_STORAGE_TEST=yes
+ENTRYPOINT ["/usr/local/bin/storage-test", "disposable_filesystem", "--ignored", "--nocapture"]

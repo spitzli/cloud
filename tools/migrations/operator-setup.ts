@@ -277,8 +277,12 @@ export async function startOperatorSetup(options: SetupOptions) {
       outcome = { status: "success", summary };
       reply(res, 200, { created: true, securitySetupRequired: true });
     } catch (error) {
-      if (error instanceof RequestError)
+      if (error instanceof RequestError) {
+        // An unread body leaves the connection out of sync; never reuse it for the next request.
+        if (error.status === 408 || error.status === 413) res.setHeader("Connection", "close");
         reply(res, error.status, { error: error.message });
+        if (error.status === 408 || error.status === 413) res.on("finish", () => req.socket.destroy());
+      }
       else if (error instanceof OperatorSetupError) {
         options.diagnostic?.(error.message);
         if (error instanceof OperatorRunError && error.commitUncertain) {

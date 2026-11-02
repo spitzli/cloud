@@ -1,0 +1,425 @@
+{
+  "key": "provider",
+  "label": "Protocol providers",
+  "description": "Catalog-only provider artifacts. Activation requires explicit Core protocol binding and descriptor authentication; the generic extension installer cannot install these entries.",
+  "publicPageEnabled": true,
+  "manifestSchema": {
+    "oneOf": [
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+          },
+          "kind": {
+            "const": "provider"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 280
+          },
+          "image": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*(?::[0-9]{1,5})?/(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*@sha256:[a-f0-9]{64}$",
+            "not": {
+              "pattern": "@sha256:0{64}$"
+            }
+          },
+          "sourceRepo": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+          },
+          "revision": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[a-f0-9]{40}$"
+          },
+          "protocol": {
+            "const": "webdock.repository.v1"
+          },
+          "catalogOnly": {
+            "const": true
+          },
+          "runtimeBinding": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "status": {
+                "enum": [
+                  "required-before-activation",
+                  "configured"
+                ]
+              },
+              "protocol": {
+                "const": "webdock.repository.v1"
+              },
+              "authenticity": {
+                "const": "publisher-signed-descriptor"
+              },
+              "genericExtensionInstaller": {
+                "const": false
+              },
+              "transport": {
+                "enum": [
+                  "unix-peer-uid",
+                  "mutual-tls-leaf-pin"
+                ]
+              },
+              "descriptor": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "sha256": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[a-f0-9]{64}$",
+                    "not": {
+                      "const": "0000000000000000000000000000000000000000000000000000000000000000"
+                    }
+                  },
+                  "publisherPublicKeySha256": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[a-f0-9]{64}$",
+                    "not": {
+                      "const": "0000000000000000000000000000000000000000000000000000000000000000"
+                    }
+                  },
+                  "signerKeyID": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[a-z][a-z0-9-]*$"
+                  },
+                  "domain": {
+                    "const": "webdock.repository.descriptor.v1"
+                  },
+                  "boundManifestSha256": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[a-f0-9]{64}$",
+                    "not": {
+                      "const": "0000000000000000000000000000000000000000000000000000000000000000"
+                    }
+                  },
+                  "imageBindingRequired": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "sha256",
+                  "publisherPublicKeySha256",
+                  "signerKeyID",
+                  "domain",
+                  "boundManifestSha256",
+                  "imageBindingRequired"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "protocol",
+              "authenticity",
+              "genericExtensionInstaller"
+            ],
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "configured"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "descriptor",
+                    "transport"
+                  ]
+                },
+                "else": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "descriptor"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "transport"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "icon": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "readme": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "screenshots": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "caption": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "alt": {
+                  "type": "string",
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "url"
+              ]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "kind",
+          "description",
+          "image",
+          "sourceRepo",
+          "revision",
+          "protocol",
+          "catalogOnly",
+          "runtimeBinding"
+        ]
+      },
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+          },
+          "kind": {
+            "const": "provider"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 280
+          },
+          "image": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*(?::[0-9]{1,5})?/(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*@sha256:[a-f0-9]{64}$",
+            "not": {
+              "pattern": "@sha256:0{64}$"
+            }
+          },
+          "sourceRepo": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+          },
+          "revision": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[a-f0-9]{40}$"
+          },
+          "protocol": {
+            "const": "webdock.mail.v1"
+          },
+          "catalogOnly": {
+            "const": true
+          },
+          "runtimeBinding": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "status": {
+                "enum": [
+                  "required-before-activation",
+                  "configured"
+                ]
+              },
+              "protocol": {
+                "const": "webdock.mail.v1"
+              },
+              "authenticity": {
+                "const": "core-descriptor-hash"
+              },
+              "genericExtensionInstaller": {
+                "const": false
+              },
+              "transport": {
+                "enum": [
+                  "unix-peer-uid",
+                  "mutual-tls-leaf-pin"
+                ]
+              },
+              "descriptor": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "sha256": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[a-f0-9]{64}$",
+                    "not": {
+                      "const": "0000000000000000000000000000000000000000000000000000000000000000"
+                    }
+                  },
+                  "authority": {
+                    "const": "core"
+                  },
+                  "signedLeaseDescriptorMatchRequired": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "sha256",
+                  "authority",
+                  "signedLeaseDescriptorMatchRequired"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "protocol",
+              "authenticity",
+              "genericExtensionInstaller"
+            ],
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "configured"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "descriptor",
+                    "transport"
+                  ]
+                },
+                "else": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "descriptor"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "transport"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "icon": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "readme": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "screenshots": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "caption": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "alt": {
+                  "type": "string",
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "url"
+              ]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "kind",
+          "description",
+          "image",
+          "sourceRepo",
+          "revision",
+          "protocol",
+          "catalogOnly",
+          "runtimeBinding"
+        ]
+      }
+    ]
+  }
+}

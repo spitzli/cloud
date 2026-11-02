@@ -1,0 +1,1 @@
+../../mail/migrations/0002_provider_binding.sql

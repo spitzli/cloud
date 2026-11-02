@@ -1,0 +1,31 @@
+{
+  "scope": "Root independent genuine MCP metadata read qualification closure",
+  "candidate": ".runtime-test/pg-read-foundation-e92bec7955db",
+  "resultSHA256": "db293e42373861685491240adf1dd3f15f57f7326adb80450403c47027268772",
+  "runnerStatus": "failed only because the outer marker assertion searched stdout while Rust eprintln markers were on stderr",
+  "actualFoundationTest": "1 passed, 0 failed",
+  "phaseMarkersInStderr": {
+    "actual_oauth_consent_required": 2,
+    "actual_pkce_token_issued": 2,
+    "available_metadata_mutation_denial_revocation_complete": 2,
+    "genuine_metadata_token_revoke_complete": 1
+  },
+  "positiveMetadataReads": 16,
+  "discoveredTools": 7,
+  "mutationAndSecretDenials": 10,
+  "actualRevokedDenials": 4,
+  "missingObjectProbes404ExplicitlyUnqualified": 6,
+  "positiveDatabaseObjectReads": 0,
+  "fullSevenObjectRecipeQualified": false,
+  "nativeRecoveryQualified": false,
+  "beforeAfterJournalsExactNativeRows": 54,
+  "maxVersion": 55,
+  "no56Journal": true,
+  "exactContainerID": "ff71f90ce5e466cd2394dd00b1bd5200fbaf83c99f2a6d1d877742810367bbcd",
+  "rootIndependentExactAbsence": true,
+  "privateAbsent": true,
+  "volumes": 0,
+  "obligations": [],
+  "productReadOrAuthFailure": false,
+  "pcShutdownCancelled": true
+}

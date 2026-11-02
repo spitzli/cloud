@@ -1,0 +1,19 @@
+# No default deployment or credential material. Supply reviewed operator values explicitly.
+image: ''
+existingSecret: ''
+locationEvidence: ''
+s3:
+  endpoint: ''
+  region: ''
+  bucket: ''
+  port: 443
+objectStoreCIDRs: []
+clientNamespaceSelector: {}
+clientPodSelector: {}
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: '1'
+    memory: 512Mi

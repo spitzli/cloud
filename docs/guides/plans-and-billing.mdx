@@ -1,10 +1,30 @@
 ---
-title: "Resource allowances"
-description: "Understand retained workspace limits without a built-in billing provider."
+title: "Plan and usage"
+description: "Check configured workspace limits, resource reservations and reported usage."
 ---
 
-Workspace plans and extras define local resource allowances. Operators manage those allowances in Console; enabling a plugin does not automatically grant resources or provision infrastructure.
+Open your workspace's **Plan and usage** page in [Console](https://console.spitzli.cloud). It shows the assigned plan, configured allowances, reserved resources and available usage samples.
 
-Billing checkout, payment provider connections, subscription management and invoice summaries have been removed. No replacement billing plugin is currently included. Historical billing records remain retained for existing installations; this change does not cancel external subscriptions or delete provider data.
+## Understand what is shown
 
-Review active service usage before reducing allowances. Suspending a service can retain storage and data. Use the relevant service workflow for explicit deletion or handover.
+| Value | Meaning |
+| --- | --- |
+| Workspace limit | A configured allowance for the workspace |
+| Reserved resources | Capacity assigned to services, which can include retained storage |
+| Reported usage | Observed consumption for services that report telemetry |
+| No workspace plan | No plan is assigned; service-specific restrictions may still apply |
+| Unreported usage | No usable telemetry is available; it does not mean zero consumption |
+
+Operators configure plans and customer-specific overrides. Availability also depends on the service's own permissions, capacity and limits. A plugin installation or plan assignment does not provision infrastructure.
+
+## Request a change
+
+Ask your operator to review the relevant allowance when a resource action is blocked. Before reducing a limit, review active services and retained data. Stopping an application or deleting its configuration can leave storage allocated.
+
+There is no universal free resource quota promised by this documentation. Use the limits shown for your workspace. A missing workspace limit does not remove provider quotas or service restrictions.
+
+## Provider billing
+
+Your own Neon, turboSMTP and Vercel accounts retain their provider charges and quotas. A provider connection does not transfer billing to Spitzli Cloud or cancel subscriptions.
+
+Console does not currently include built-in checkout, subscription management or invoice summaries. Any existing external billing arrangement remains separate.

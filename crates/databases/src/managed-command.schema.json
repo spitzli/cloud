@@ -1,0 +1,1339 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.migrations.list"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.migrationPurgePreview"
+        },
+        "migrationID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "migrationID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.purgeMigrationSource"
+        },
+        "migrationID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "confirmName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "planHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "migrationID",
+        "revision",
+        "confirmName",
+        "planHash",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.projects.list"
+        },
+        "customerID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "customerID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.list"
+        },
+        "projectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "projectID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.permissions"
+        },
+        "projectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "projectID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.get"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.plans.list"
+        },
+        "projectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.plans.create"
+        },
+        "plan": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "shared",
+                "dedicated"
+              ]
+            },
+            "postgresMajor": {
+              "type": "number",
+              "const": 18
+            },
+            "cpuMillicores": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 64000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "memoryBytes": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 67108864,
+                  "maximum": 1099511627776
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "volumeBytes": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 67108864,
+                  "maximum": 1099511627776
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "logicalStorageAllowanceBytes": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 67108864,
+                  "maximum": 1099511627776
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "monthlyPriceCents": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "sponsoredCustomerID": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "currency": {
+              "type": "string",
+              "const": "EUR"
+            },
+            "connectionLimit": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 100
+            },
+            "terms": {
+              "type": "string",
+              "minLength": 40,
+              "maxLength": 6000
+            }
+          },
+          "required": [
+            "kind",
+            "postgresMajor",
+            "cpuMillicores",
+            "memoryBytes",
+            "volumeBytes",
+            "logicalStorageAllowanceBytes",
+            "name",
+            "monthlyPriceCents",
+            "currency",
+            "connectionLimit",
+            "terms"
+          ],
+          "additionalProperties": false
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "plan",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.plans.setAvailability"
+        },
+        "planRevisionID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "disabled",
+            "pilot",
+            "public"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "planRevisionID",
+        "availability",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.offers.create"
+        },
+        "projectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "planRevisionID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "projectID",
+        "planRevisionID",
+        "name",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.acceptOrder"
+        },
+        "offerID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "projectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "confirmInterruption": {
+          "type": "boolean"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "offerID",
+        "projectID",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.create"
+        },
+        "projectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "planRevisionID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "orderID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "shared",
+            "dedicated"
+          ]
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "projectID",
+        "name",
+        "planRevisionID",
+        "orderID",
+        "kind",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.pause"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.resume"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.restart"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.backup"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.rotateCredentials"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.requestCancellation"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.reconcile"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.restore"
+        },
+        "sourceDatabaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "targetProjectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "restorePointID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "targetOrderID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "targetTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timeline": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483646
+        },
+        "verificationSHA256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "credentialRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483646
+        }
+      },
+      "required": [
+        "action",
+        "sourceDatabaseID",
+        "targetProjectID",
+        "name",
+        "restorePointID",
+        "targetOrderID",
+        "revision",
+        "idempotencyKey",
+        "targetTime",
+        "timeline",
+        "verificationSHA256",
+        "credentialRevision"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.clone"
+        },
+        "sourceDatabaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "targetProjectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "restorePointID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "targetOrderID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "sourceDatabaseID",
+        "targetProjectID",
+        "name",
+        "restorePointID",
+        "targetOrderID",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.resize"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "targetPlanRevisionID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "targetOrderID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey",
+        "targetPlanRevisionID",
+        "targetOrderID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.deletionPreview"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.purgePreview"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.delete"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "confirmName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "planHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey",
+        "confirmName",
+        "planHash"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.purge"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "confirmName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "planHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey",
+        "confirmName",
+        "planHash"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.pools.register"
+        },
+        "clusterID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "node": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]{0,252}$"
+        },
+        "poolID": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "clusterID",
+        "node",
+        "poolID",
+        "revision",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.installations.list"
+        },
+        "clusterID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "clusterID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "const": "databases.installations.create"
+        },
+        "clusterID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "node": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]{0,252}$"
+        },
+        "poolID": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+        },
+        "profile": {
+          "type": "string",
+          "const": "shared"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "clusterID",
+        "node",
+        "poolID",
+        "profile",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "databases.backupPolicies.get"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "databases.backupPolicies.grant"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "destinationID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483646
+        },
+        "schedule": {
+          "type": "string",
+          "pattern": "^0 [0-5]?[0-9] (?:[01]?[0-9]|2[0-3]) \\* \\* \\*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3650
+        },
+        "retentionDelete": {
+          "type": "boolean"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "destinationID",
+        "revision",
+        "schedule",
+        "retentionDays",
+        "retentionDelete",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "databases.backupPolicies.revoke"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483646
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483646
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "idempotencyKey",
+        "policyRevision"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "databases.backupDestinations.register"
+        },
+        "endpointURL": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "region": {
+          "type": "string",
+          "maxLength": 63
+        },
+        "bucket": {
+          "type": "string",
+          "maxLength": 63
+        },
+        "keyRecoveryID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "writeCredentials": {
+          "type": "object",
+          "properties": {
+            "accessKeyId": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 128
+            },
+            "secretAccessKey": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 512
+            },
+            "readOnly": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "accessKeyId",
+            "secretAccessKey",
+            "readOnly"
+          ],
+          "additionalProperties": false
+        },
+        "recoveryCredentials": {
+          "type": "object",
+          "properties": {
+            "accessKeyId": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 128
+            },
+            "secretAccessKey": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 512
+            },
+            "readOnly": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "accessKeyId",
+            "secretAccessKey",
+            "readOnly"
+          ],
+          "additionalProperties": false
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "endpointURL",
+        "region",
+        "bucket",
+        "keyRecoveryID",
+        "writeCredentials",
+        "recoveryCredentials",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "databases.backupPolicies.update"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483646
+        },
+        "schedule": {
+          "type": "string",
+          "pattern": "^0 [0-5]?[0-9] (?:[01]?[0-9]|2[0-3]) \\* \\* \\*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3650
+        },
+        "retentionDelete": {
+          "type": "boolean"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483646
+        },
+        "suspended": {
+          "type": "boolean"
+        },
+        "walEnabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "revision",
+        "schedule",
+        "retentionDays",
+        "retentionDelete",
+        "idempotencyKey",
+        "policyRevision",
+        "suspended",
+        "walEnabled"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "databases.operations.get"
+        },
+        "databaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "operationID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "action",
+        "databaseID",
+        "operationID"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

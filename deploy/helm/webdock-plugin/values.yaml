@@ -1,0 +1,29 @@
+name: ""
+image: ""
+labels: {}
+revision: 1
+generation: 1
+specHash: ""
+arguments: []
+replicas: 1
+port: 3443
+healthPath: null
+healthHost: null
+ephemeralBytes: 16777216
+resources:
+  requests:
+    cpu: 100m
+    memory: "33554432"
+    ephemeral-storage: "16777216"
+  limits:
+    cpu: 100m
+    memory: "33554432"
+    ephemeral-storage: "16777216"
+volume:
+  enabled: false
+  sizeBytes: 0
+
+plugin: null
+mounts: []
+
+imagePullSecrets: []

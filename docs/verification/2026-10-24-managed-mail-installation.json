@@ -1,0 +1,151 @@
+{
+  "date": "2026-10-24",
+  "base": "8f4f1efa678a9b1db480d8bc1eea0a1338863cfb",
+  "scope": "Native managed Mail installation and compatible generation lifecycle",
+  "status": "verified_locally",
+  "product": {
+    "runtime": "Existing Mail executable with strict Unix or pinned mTLS transport",
+    "storage": "Verified TLS private PostgreSQL; plaintext only on loopback",
+    "startup": "Discovery before initial callback connectivity; ordinary current-runtime authorization before customer reconciliation; direct shutdown cancellation independent of graceful drain",
+    "schema": {
+      "logical": 1,
+      "readable": [
+        1,
+        1
+      ],
+      "physicalMigrations": [
+        1,
+        2,
+        3
+      ],
+      "changed": false
+    },
+    "coreInstaller": "Generic signed catalog/recipe/retained storage and generation promotion; no Mail-specific Core branch",
+    "nativeMigrationsChanged": false
+  },
+  "focusedVerification": {
+    "mailDefaultPassed": 22,
+    "mailFixtureIgnored": 8,
+    "runtimePassed": 22,
+    "kitPassed": 7,
+    "postgresDefaultPassed": 4,
+    "ownedProcessAndInstallerPassed": 5,
+    "diagnosticsPassed": 1,
+    "reviews": "Product startup and process trust/diagnostic fixes approved; fixture safety/guard fixes approved",
+    "rootOwnedInitialProcessReplayPassed": 5,
+    "rootMailDefaultReplayPassed": 22,
+    "rootRuntimeAndKitReplayPassed": 29,
+    "qualityToolPassed": 20,
+    "fixturePurePassed": 54,
+    "rootOwnedFinalProcessReplayPassed": 5,
+    "browserFixtureDiagnostics": "Optional unmocked endpoints logged refused local proxy connections; the browser suite exited 0. The native Mail acceptance used real Core separately."
+  },
+  "localFixture": {
+    "runID": "b9ba568ed31d",
+    "supportedFreshBootstrap": true,
+    "operatorCustomerRuntimeSeeding": false,
+    "signedMailVersions": [
+      "0.1.0",
+      "0.2.0"
+    ],
+    "importedManifestAndCriIdentityVerified": true,
+    "initialRetainedK3sState": "exited",
+    "privateCallbackContainer": true,
+    "minimalReadOnlyCallbackMounts": true,
+    "fixtureOwnedStableManagementGateway": true,
+    "gatewayHealthAndUpstreamHttpVerified": true,
+    "currentPhase": "complete; owned fixture removed",
+    "genuineConsoleLifecycle": "passed: install generation1, update generation2, rollback generation3",
+    "customerEnginePvcMailboxRetention": "passed, including original mailbox login and retained local JMAP draft after suspend/resume",
+    "operations": {
+      "install": "107544614130425856",
+      "update": "107545195075084288",
+      "rollback": "107545370959028224"
+    },
+    "proof": {
+      "generations": [
+        1,
+        2,
+        3
+      ],
+      "metadataAndCiphertextsRetained": true,
+      "originalMailboxCredentialUnseals": true,
+      "sentinelRetained": true,
+      "suspendResume": true,
+      "sameCustomerReuse": true,
+      "foreignDenied": true,
+      "outgoingDeliveryClaimed": false,
+      "rootOriginalMailboxLoginAndDraftRead": true
+    },
+    "releases": [
+      {
+        "version": "0.1.0",
+        "digest": "sha256:f62b185c8cd57835ccde60466c662eae2d27266bec795b668af1dc41ce25d21d",
+        "manifestSha256": "c75a625f0f3a5830ff5d8d789eb9965f548d893189f4b5fd8a80ebd760b6b593",
+        "binarySha256": "0a04563ce260fb8fffc502938b485d4f654655104b466d59c2fff3848998118f"
+      },
+      {
+        "version": "0.2.0",
+        "digest": "sha256:332f572abd078f78487090d00905bed4dbb5388848a0da9ab77fb9fa463e252b",
+        "manifestSha256": "dc6a50c282f96cb04b0dba350b723fc30afe48631d3570eb0d5c36209b097860",
+        "binarySha256": "0a04563ce260fb8fffc502938b485d4f654655104b466d59c2fff3848998118f"
+      }
+    ],
+    "foreignScopeDenial": {
+      "httpStatus": 403,
+      "noResourceOrCredentialResponse": true,
+      "harnessExpected404ReconciledWithoutRepeatingMutations": true
+    },
+    "visualReview": {
+      "viewports": [
+        375,
+        1280
+      ],
+      "screensInspected": 6,
+      "credentialValuesVisible": false,
+      "overflowOrClippingObserved": false,
+      "knownLimitation": "Existing mobile Mail client-host column wraps long hostnames tightly"
+    },
+    "cleanup": {
+      "ownedAssetsRemaining": 0,
+      "retainedK3sRestored": "exited",
+      "sameNodeAndMounts": true,
+      "kubeconfigUnchanged": true,
+      "privateRunFilesScrubbed": true
+    }
+  },
+  "limits": [
+    "No public reception, engine-to-Turbo relay, Webmail/outbox completion, real provider delivery or production/Contabo action",
+    "Local loopback SMTP transport remains unused; no positive outgoing delivery claim",
+    "Same-schema/code-only update and rollback; no physical down migration",
+    "Installing or outgoing-only use creates no customer Stalwart engine; first mailbox request is explicit incoming activation",
+    "Existing legacy incoming data requires separate operator migration; quarantine/send fail-closed preserved"
+  ],
+  "finalGates": {
+    "fullQuality": {
+      "command": "bun run quality",
+      "exitCode": 0,
+      "checks": 47
+    },
+    "wholeChangeReview": "approved; no findings in whole-change or final harness review",
+    "ownedCleanup": "passed; both runs removed, 11 reviewed fixture copies removed, original stopped node restored",
+    "signedIntegration": "Post-commit signature and remote-head verification are recorded in Git history and the local run handoff."
+  },
+  "operationsGuide": "../operations/native-mail-plugin-installation.md",
+  "priorPartialAttempt": {
+    "runID": "99fd05032042",
+    "signedInitialInstall": {
+      "operationID": "107520761584951296",
+      "generation": "1",
+      "imageObserved": true,
+      "zeroEngineAllocation": true
+    },
+    "agentAppliedCeAndBoundPvc": true,
+    "retentionEstablished": false,
+    "cleanup": {
+      "ownedAssetsRemaining": 0,
+      "retainedK3sRestored": "exited",
+      "mountsAndKubeconfigPreserved": true
+    }
+  }
+}

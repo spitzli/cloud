@@ -1,0 +1,292 @@
+---
+title: "Self-host Webdock"
+description: "Install the alpha core with external PostgreSQL, offline initialization and your own HTTPS ingress."
+---
+
+<Note>These instructions target `v0.1.0-alpha.2`. Use the matching source revision and verified artifacts from [GitHub Releases](https://github.com/spitzli/webdock/releases). An alpha installation requires operator-managed PostgreSQL, secrets and ingress; release artifacts do not configure a production environment for you.</Note>
+
+The core installation runs three services: the bundled core API, the core Console and the Auth frontend. API and Console core images exclude product runtime packages. The separate offline migrator retains the source, dependencies and complete historical database baseline, including product schemas and restricted roles. Installing that baseline creates no customer product service and enables no product. The small JavaScript API bundle is not the total container size: the image also contains Bun and its base operating system.
+
+The default browser provider is local Better Auth. CMS and Billing are unavailable in the active core. Mail, Hosting, Databases and Storage require a separately configured full distribution or compatible plugins. No npm publication of a public `@webdock/core` package is implied by this container release.
+
+## License and alternative terms
+
+Original Webdock code is available under **AGPL-3.0-only**, including commercial use that complies with its conditions. If you modify the program and let users interact with it over a network, follow the license's corresponding-source requirements; a link to unmodified upstream code does not supply your modifications. Read the [complete license](https://github.com/spitzli/webdock/blob/main/LICENSE).
+
+Spitzli Development can separately agree commercial or special terms for code it owns or may sublicense. Only a separate written agreement grants those alternative rights; buying hosting or support does not automatically replace the AGPL. Third-party components retain their own licenses. See [commercial licensing](https://github.com/spitzli/webdock/blob/main/COMMERCIAL-LICENSING.md).
+
+## Optional source-plugin installer
+
+Version `0.1.0-alpha.2` adds operator installation from GitHub, HTTPS Git URLs and ZIP archives. Upgrade with the matching offline migration image, including `0046_plugin_sources.sql` and `0047_plugin_source_actions.sql`, before the API and Console. Keep the existing signing material and runtime bindings.
+
+Source installation is a separate opt-in service, not part of the three-service Core startup. It needs an operator-owned private GitHub Actions build repository, an artifact-only publisher on the existing application node, an image registry and a restricted Kubernetes runtime namespace. Source code does not execute on the application node; no additional KVM build host or application-node Docker socket is required. A Compose-only installation needs a Kubernetes target before enabling this feature.
+
+The [plugin guide](/developers/plugins) covers the private workflow template, App permissions, exact manifest/capability approval, background activation and UI TLS options. Without this configuration, Console reports **Installer setup required**. The artifact publisher and trusted workflow helpers are supplied in the matching source tag; there is no new installer image in the nine-image release bundle.
+
+## Obtain the matching images
+
+The release contains nine image archives: `api-core`, `console-core`, `auth`, `migrate`, plus the full `api`, `console`, `worker`, `agent` and `mail-runtime` images. Verify the signed checksum list, expected signing identity, manifest and archive digests before importing artifacts. Use registry digests when registry images are available; otherwise import the verified OCI archives with an OCI-aware tool such as `skopeo`. Never substitute an unrelated moving tag.
+
+### Verify a downloaded release
+
+Download `SHA256SUMS`, `SHA256SUMS.sigstore.json`, `manifest.json` and `architecture-evidence.json` from [v0.1.0-alpha.2](https://github.com/spitzli/webdock/releases/tag/v0.1.0-alpha.2). Keep all four files in one directory. Verify the signature and the downloaded metadata before selecting registry images:
+
+```sh
+cosign verify-blob --bundle SHA256SUMS.sigstore.json \
+  --certificate-identity https://github.com/spitzli/webdock/.github/workflows/distribution.yml@refs/heads/main \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com SHA256SUMS
+sha256sum --check --ignore-missing SHA256SUMS
+jq -e '.supportedArchitectures == ["linux/amd64"]' manifest.json
+```
+
+The checksum command checks only downloaded files. For direct registry pulls, the verified manifest supplies the executable image digests:
+
+```sh
+export WEBDOCK_API_CORE_IMAGE="ghcr.io/spitzli/webdock/api-core@$(jq -r '.artifacts[] | select(.file == "api-core.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
+export WEBDOCK_CONSOLE_CORE_IMAGE="ghcr.io/spitzli/webdock/console-core@$(jq -r '.artifacts[] | select(.file == "console-core.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
+export WEBDOCK_AUTH_IMAGE="ghcr.io/spitzli/webdock/auth@$(jq -r '.artifacts[] | select(.file == "auth.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
+export WEBDOCK_MIGRATE_IMAGE="ghcr.io/spitzli/webdock/migrate@$(jq -r '.artifacts[] | select(.file == "migrate.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
+```
+
+These public packages require no registry login. The migrator is used only during offline administration, not as a running Core service.
+
+For archive import instead, additionally download `api-core.oci.tar`, `console-core.oci.tar`, `auth.oci.tar` and `migrate.oci.tar`, and run the checksum command again before importing. To validate the complete release with `bun tools/release/manifest.mjs verify`, download all nine archives and both charts too.
+
+For local Docker import, repeat for each selected image:
+
+```sh
+skopeo copy oci-archive:api-core.oci.tar docker-daemon:webdock-api-core:0.1.0-alpha.2
+export WEBDOCK_API_CORE_IMAGE="$(docker image inspect webdock-api-core:0.1.0-alpha.2 --format '{{.Id}}')"
+```
+
+This selects an immutable local image ID. For registry pulls, use `artifacts[].oci.registryDigest`, also recorded in `architectureEvidence.imageRegistryDigests`. This is the validated single root image/index digest that is published to the registry. Older releases without these fields can use the signed executable digest in `artifacts[].oci.manifests[]` for your architecture, or a separately verified registry root digest. **Do not use `oci.indexDigest` as a registry pull reference**: it identifies the archive's `index.json`, which can differ from the registry's root manifest.
+
+For a local evaluation build from the pinned source revision:
+
+```sh
+docker build -f deploy/docker/Dockerfile --target api-core -t webdock-api-core:local .
+docker build -f deploy/docker/Dockerfile --target console-core -t webdock-console-core:local .
+docker build -f deploy/docker/Dockerfile --target auth -t webdock-auth:local .
+docker build -f deploy/docker/Dockerfile --target migrate -t webdock-migrate:local .
+```
+
+Build from the repository root. Bun 1.4.3 and the root `bun.lock` define the toolchain. Do not supply deployment secrets or provider credentials during builds. The migration image is an offline tool, not a fourth long-running core service.
+
+## Install the empty database
+
+Use an empty, dedicated PostgreSQL **18** database. The first installation also requires that the Webdock role names do not already exist anywhere in that PostgreSQL cluster. The installer refuses an existing schema, public tables or role collision instead of adopting them. It does not support an automatic migration from an unrelated database.
+
+Prepare a private environment for the offline command:
+
+| Variable | Initial installation value |
+| --- | --- |
+| `DATABASE_URL_UNPOOLED` | Direct administrator URL for this empty database |
+| `DATABASE_CA_CERT` | Trusted PEM CA for the database server; required outside loopback |
+| `DATABASE_CONTEXT_SECRET` | Random signing secret of at least 32 bytes, retained across upgrades |
+| `WEBDOCK_BOOTSTRAP_EMPTY_DATABASE` | `true` for this first operation only |
+| `MIGRATION_ROLE_PASSWORDS` | JSON object with a distinct strong password for every role below |
+
+The role-password object must contain exactly these keys, each with a different 24–256-character password without whitespace:
+
+```text
+webdock_auth_bootstrap
+webdock_auth_runtime
+webdock_worker_runtime
+webdock_admin_runtime
+webdock_registry_runtime
+webdock_runtime
+webdock_browser_website
+webdock_cms_archive_runtime
+webdock_offline_migrate
+```
+
+Store credentials in a secret manager or owner-only files (`0600`), never in source control or build arguments. For the source-based offline commands, install dependencies with `bun install --frozen-lockfile`, export the private environment explicitly, and pass the exact database hostname, port and database name:
+
+```sh
+bun --no-env-file tools/migrations/install.ts db.example.com:5432/webdock
+```
+
+After success, change `DATABASE_URL_UNPOOLED` to the new **`webdock_offline_migrate`** login. Remove `WEBDOCK_BOOTSTRAP_EMPTY_DATABASE` and `MIGRATION_ROLE_PASSWORDS` from the command environment. Keep the same CA and context signing secret. Subsequent schema upgrades use this restricted offline login, never the original administrator.
+
+Initialize the empty plugin installation state before any API startup. Schema installation alone is insufficient:
+
+```sh
+export WEBDOCK_MODULES='{"configVersion":1,"modules":{}}'
+bun --no-env-file tools/plugins/bootstrap.ts db.example.com:5432/webdock fresh
+```
+
+Now complete [initial operator setup](/developers/initial-setup) using that offline login. Choose three distinct HTTPS origins for Auth, the Studio protocol identity and Console before running setup. Retain its private output: the API needs the generated OAuth client and cookie secrets. Setup seeds the verified operator address as the default support address and disables the retained CMS setting when no explicit setting exists. Configure your own SMTP sender before sending invitations or recovery mail.
+
+## Configure the core services
+
+Use `deploy/compose/compose.core.yaml` from the matching source tag. Place private `api.env`, `console.env`, `auth.env` and `migrator.env` files beside it. Retain the four verified image selectors from the preceding step (or the immutable local IDs after archive import), and set the exact migration target:
+
+```sh
+export WEBDOCK_MIGRATION_TARGET='db.example.com:5432/webdock'
+```
+
+The API requires four distinct HTTPS origins: `WEBDOCK_API_ORIGIN`, `BETTER_AUTH_URL`, `WEBDOCK_STUDIO_ORIGIN` and `WEBDOCK_CONSOLE_ORIGIN`. Use your own hostnames consistently. Production connections require verified database TLS and these separate role URLs:
+
+| API variable | Database login or value |
+| --- | --- |
+| `DATABASE_URL` | `webdock_auth_runtime` |
+| `AUTH_DATABASE_URL` | `webdock_auth_bootstrap` |
+| `DATABASE_WORKER_URL` | `webdock_worker_runtime`; core API also uses this scoped pool |
+| `REGISTRY_DATABASE_URL` | `webdock_registry_runtime` |
+| `DATABASE_CA_CERT` | The trusted database CA |
+| `DATABASE_POOL_MAX`, `REGISTRY_POOL_MAX` | `2` each |
+| `DATABASE_RLS_SECRET` | Exactly the installer's `DATABASE_CONTEXT_SECRET` |
+| `BETTER_AUTH_SECRET` | A separate random secret of at least 32 characters |
+| `WEBDOCK_AUTH_PROVIDER` | `{"provider":"better-auth"}` |
+| `WEBDOCK_OAUTH_PROVIDER` | `better-auth` |
+| `WEBDOCK_INGRESS_SECRET` | A separate random secret of at least 32 characters |
+| `WEBDOCK_TRUSTED_PROXIES` | Exact CIDRs of the actual reverse-proxy peers |
+
+Copy the initial operator output's `environment` values into **API configuration only**, including issuer, Studio/Console origins, matching client IDs, client secret and SSO cookie secret. Never give API or either frontend the offline database URL. Preserve signing and encryption secrets across restarts and upgrades.
+
+For authentication mail, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and an explicit operator-owned `SMTP_FROM`. Ports other than 465 require STARTTLS; 465 uses implicit TLS. Test delivery from your own domain. This transport is independent of the customer Mail product. First login, password change and TOTP setup do not require sending mail, but invitations and recovery do.
+
+Both frontends need `WEBDOCK_API_ORIGIN`; use the reachable **HTTPS** API origin, not an internal `http://api:3130` URL. Auth also needs `BETTER_AUTH_URL` and `WEBDOCK_CONSOLE_ORIGIN`. Console needs `WEBDOCK_STUDIO_ORIGIN` and `WEBDOCK_CONSOLE_ORIGIN`. Do not give either frontend database, Better Auth or SSO sealing secrets. The core Compose file fixes API domains to `auth,portal,registry` and the module selection to empty; it needs no worker or Redis image.
+
+If running offline commands through the migration image, its default entrypoint runs schema installation. For plugin initialization, explicitly override it after replacing bootstrap credentials in `migrator.env` with the offline login:
+
+```sh
+docker compose -f deploy/compose/compose.core.yaml --profile migration run --rm migrate
+docker compose -f deploy/compose/compose.core.yaml --profile migration run --rm \
+  --entrypoint bun -e WEBDOCK_MODULES='{"configVersion":1,"modules":{}}' migrate \
+  --no-env-file tools/plugins/bootstrap.ts db.example.com:5432/webdock fresh
+```
+
+Do not run the first command twice with bootstrap credentials. Finish [operator setup](/developers/initial-setup), configure the runtime environments and prepare ingress before starting the services:
+
+```sh
+docker compose -f deploy/compose/compose.core.yaml config --quiet
+docker compose -f deploy/compose/compose.core.yaml up -d api auth console
+```
+
+Compose binds ports 3130, 3125 and 3120 to host loopback. Containers run with read-only filesystems, dropped capabilities and temporary caches; Console core's cache path is `/app/.core-build/console/.next/cache`.
+
+## Route the public origins
+
+Your reverse proxy terminates TLS. Route Auth `/api/auth` and related `/.well-known` endpoints to API; route Auth pages to the Auth frontend. Route Console and Studio `/api/sso` and API protocol paths (`/v1`, and `/api/mcp` only when explicitly configured) to API. Route Console pages and static assets to Console. Keep the Studio callback at `/api/sso/callback` reachable: the API preserves that protocol identity and redirects browser entry points to Console.
+
+For every API-bound request, replace client-supplied forwarding headers with:
+
+| Header | Trusted proxy value |
+| --- | --- |
+| `X-Forwarded-Host` | Exact public hostname, including port when non-default |
+| `X-Forwarded-Proto` | `https` |
+| `X-Forwarded-For` | One validated client IP, not a comma-separated chain |
+| `X-Webdock-Ingress-Token` | The API's `WEBDOCK_INGRESS_SECRET` |
+
+Remove inbound `X-Webdock-Client-IP`; API derives it after verification. Allow only the reviewed proxy peers to reach API. Unverified direct production requests are rejected, except container-loopback `/healthz` and `/readyz` probes. Frontend server-to-API calls must also pass through this trusted HTTPS ingress.
+
+For frontend-bound requests, preserve the public `Host` and matching `X-Forwarded-Host`. Next.js Server Action origin allowlists are evaluated when building the standalone server; runtime environment variables do not rewrite that generated configuration. Environment-free release builds rely on matching request origins and public hosts. Do not bake deployment-specific `NEXT_PUBLIC_*` values into a reusable image. An installation requiring additional cross-origin Server Actions needs a separately reviewed build/configuration, not a wildcard.
+
+## Authentication and product boundaries
+
+Finish the operator's real password replacement and authenticator enrollment at Auth `/account` before using Console. No synthetic session, SQL MFA toggle or automatic email linking is part of setup.
+
+Clerk is optional and requires explicit verified external-subject mappings; follow [authentication adapters](/developers/auth-adapters). Keep the local Better Auth default for the core setup above. Existing installations combining Clerk browser sessions with Better Auth OAuth retain their deliberate configuration; installing these artifacts does not switch their provider. No container startup changes existing identities.
+
+The core API refuses retained product resources or enabled built-in products. Do not point it at an existing full installation merely by disabling menu entries. Review [installation modules](/developers/modules) and retained-data checks before choosing the full images or adding a plugin.
+
+## Kubernetes
+
+`deploy/helm/webdock` is the existing full-distribution chart and requires immutable images and one preexisting Secret per component. For core images, adapt the Console cache mount to `/app/.core-build/console/.next/cache` and use an empty module object; the dedicated core Compose file already includes this mount. The chart is not a turnkey core installer. The chart creates no database, secret, cluster role or hosting agent. Its network policy denies all ingress and egress until you supply explicit rules for ingress, service communication, DNS, PostgreSQL and enabled providers. Services are ClusterIP only.
+
+```sh
+helm template webdock deploy/helm/webdock -f private-values.yaml
+```
+
+Review rendered resources before installation. Run migrations as a separate release step with `migration.enabled`, its own existing Secret, immutable image and exact target. The migration is deliberately not an automatic Helm hook. Keep application deployment disabled until this job succeeds; on an upgrade, quiesce incompatible writers first.
+
+Set `modules` in Helm values as a structured object, not an escaped JSON string. Its generated schema validates exactly the configured runtime manifests. API and worker receive the same serialized JSON. Workers remain disabled by default; enable them only with matching active modules and worker domain ownership.
+
+```yaml
+modules:
+  configVersion: 1
+  modules:
+    mail:
+      enabled: false
+```
+
+Prepare namespace, existing Secrets and reviewed migration egress first. Render only the Job so application Deployments cannot start before migration. Use a unique release name per migration run to avoid reusing a completed Job:
+
+```sh
+helm template webdock-migration-001 deploy/helm/webdock \
+  -f private-values.yaml -f private-migration-values.yaml \
+  --set migration.enabled=true --show-only templates/migration.yaml > migration-job.yaml
+kubectl apply -n webdock -f migration-job.yaml
+kubectl wait -n webdock --for=condition=complete \
+  job/webdock-migration-001-migrate-1 --timeout=600s
+helm upgrade --install webdock deploy/helm/webdock -n webdock \
+  -f private-values.yaml --set migration.enabled=false
+```
+
+`private-migration-values.yaml` supplies the migration image digest, dedicated Secret name and exact `host:port/database`. Inspect Job status/logs on failure and stop; do not continue to Helm rollout. The `--show-only` render omits network policy too, so use an already reviewed namespace migration egress policy. These are operator-run deployment commands, not actions performed by the release workflow. Roll the API before Console when module contracts change. Back up the database and retained storage before an upgrade; schema rollback is not implied by reverting images.
+
+## Hosting and incoming Mail
+
+The separate `webdock-agent` chart is disabled by default. Enabling it requires a pre-enrolled BYOK identity, a persistent state claim and an explicit allowlist of existing application namespaces. It grants read-only cluster inventory and bounded application operations matching the existing BYOK agent. The agent stores its sequence on the persistent claim, uses one replica with a recreate strategy and never receives API database credentials. Re-enrollment requires an explicit private state replacement while stopped.
+
+Managed hosting continues to use the node-local agent installation under `agents/kubernetes`. The BYOK chart does not replace node-local storage services or grant managed provisioning capabilities.
+
+Incoming Mail requires explicit activation for each customer. Its isolated Stalwart Community Edition runtime is built from `infra/mail/Dockerfile`; neither platform chart nor Compose starts Stalwart. Outgoing-only accounts do not allocate an instance. Deactivation retains data; deletion is separate. Public SMTP routing, relay and Webmail require their own verified operational readiness.
+
+## Optional native database gateway
+
+The control plane can authorize database access without embedding database credentials in Console. Deploy the gateway separately only when this capability is selected. Its image includes the existing Tabularis runtime recorded in `vendor/tabularis-web-ui.json`; no new upstream source is assumed.
+
+For a local build, first obtain and verify the runtime image matching the vendor record, and set `TABULARIS_IMAGE` to its immutable registry digest:
+
+```sh
+docker build -f deploy/docker/database-gateway.Dockerfile \
+  --build-arg "TABULARIS_IMAGE=$TABULARIS_IMAGE" \
+  -t webdock-database-gateway:local .
+```
+
+For a release candidate, supply an immutable runtime image digest matching that vendor record. Set `WEBDOCK_RELEASE_DATABASES=true` and `TABULARIS_IMAGE` before running the release builder. It includes `database-gateway.oci.tar`, `tabularis-runtime.oci.tar` and the `webdock-databases` chart only after the packaged gateway passes the native PostgreSQL/TLS test. The default nine-image candidate does not contain these optional artifacts.
+
+The optional Compose file uses a separate private `database-gateway.env` and the `databases` profile:
+
+```sh
+docker compose -f deploy/compose/compose.databases.yaml --profile databases up -d
+```
+
+Set `WEBDOCK_DATABASE_GATEWAY_IMAGE` to the verified gateway digest and `TABULARIS_EXPECTED_COMMIT` to the recorded full source commit. The private environment includes the canonical `WEBDOCK_AUTH_ORIGIN`, `WEBDOCK_DATABASE_GATEWAY_ORIGIN`, allowed `WEBDOCK_DATABASE_BROWSER_ORIGINS`, and the server-only `WEBDOCK_DATABASE_GATEWAY_SECRET` shared with the API. The Auth origin must route the existing `/api/databases/gateway` control endpoint to the API. Keep browser and gateway origins same-site for the strict session cookie.
+
+For Kubernetes, render the separate `deploy/helm/webdock-databases` chart. It is disabled by default and requires an existing Secret, immutable image and explicit ingress/egress rules. `managedRuntimes: true` enables the existing per-session process manager; choose a tested `runtimeCapacity`. Registered databases continue using individually provisioned, allowlisted runtime origins. Use `runtimeCAConfigMap` for an existing registered-runtime trust bundle when needed; never disable TLS verification.
+
+Neither deployment creates database servers, roles or grants. Managed processes share a container and UID; their private directories isolate application state, not a compromised process. Existing per-user/per-profile runtime deployments remain available where a stronger process boundary is required. Database credentials stay in the gateway/runtime and never enter public launch data.
+
+## Release candidates
+
+| Target | Candidate verification | Publication status |
+| --- | --- | --- |
+| Linux AMD64 | Exact-image fresh core database/bootstrap/readiness and frontend asset checks; complete native release gate required | Consult the signed release manifest |
+| Linux ARM64 | No configured CI runner or local verification; native build and every image check required | Unsupported by current evidence |
+
+
+```sh
+bun test tools/release/manifest.test.mjs
+bun tools/release/generate-chart-schema.ts --check
+python3 tools/release/check-charts.py
+python3 tools/release/check-compose.py
+tools/release/build.sh 0.1.0-alpha.2 ./release-candidate linux/amd64
+bun tools/release/manifest.mjs verify ./release-candidate
+```
+
+Release builds require a clean checkout so the recorded revision matches the source. Candidates require native architecture execution of every selected image before the manifest marks that architecture supported. OCI index and image digests, SDK/protocol versions and the exact tested image identities are included. ARM64 has not been verified locally and has no CI runner configured here. The candidate workflow runs only on manually selected, ephemeral EU self-hosted runners. It produces nine OCI image archives, optional verified database artifacts, OCI-compatible chart packages, a source revision manifest, checksums and a Sigstore checksum signature. Publishing is a separate explicit operator action using `tools/release/publish.sh`; public GitHub release assets and any registry publication are separate from deployment. Verify the expected signing workflow identity and issuer before trusting a candidate.
+
+The alpha does not certify every provider integration. Additional cloud services, including AWS/GCP integrations, are outside this release scope.
+
+## What the release checks prove
+
+`tools/release/smoke-core-images.mjs` accepts the core API, core Console, Auth and migration image references. It resolves their image IDs, creates an owned isolated PostgreSQL 18 fixture with verified TLS, runs the packaged installer, initializes empty plugin state, provisions an operator and requires the actual production core API's `/readyz` to pass. Both exact frontend images must serve static chunks with read-only filesystems. Fixture credentials are generated per run and removed with the owned fixture.
+
+This image smoke does **not** claim browser login, public HTTPS ingress or SMTP delivery. The separate opt-in `WEBDOCK_TEST_OPERATOR=true bun --no-env-file test tools/migrations/operator.integration.test.ts` exercises real password replacement, TOTP and OAuth/PKCE against its disposable fixture. Before exposing your installation, verify these flows through your own HTTPS origins, test Console customer/project access, foreign-origin rejection, logout revocation and recovery email. The local tests do not certify your DNS, proxy or provider configuration.
+
+## Core job queues
+
+Platform workers now require `WEBDOCK_JOBS_REDIS_URL` and use BullMQ for durable dispatch. Give each installation a distinct `WEBDOCK_JOBS_PREFIX`, persistent Redis storage, `noeviction`, and restricted network access. The Compose workers profile supplies `jobs-redis`; Helm workers read the connection URL from their existing Secret. Existing PostgreSQL operation journals and leases must be retained. See [plugin background jobs](/developers/plugin-jobs) for the separate plugin-facing interface and current deployment limitations.

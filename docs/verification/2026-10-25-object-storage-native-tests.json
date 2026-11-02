@@ -1,0 +1,83 @@
+{
+  "rustVersion": "1.94.0",
+  "manifestSha256": "40907a03a60bf94f61a8227435b963c2ded81ff834b493904cdd6abba624ea72",
+  "transferAbiSha256": "759a412f74f8a7436e9a87b6d0f2e1e68151c0d37fa6a483aea5467b943f45e9",
+  "sdkSha256": "93865fe2c94144bea4f81eea342be3172c3d01eebfcb7b67595e50434b8763e6",
+  "minioHelperSha256": "81c1dab42eeeabcf00a0465dcebd67392e2351e474647fb4bbf0f94778fe86a0",
+  "pluginLockSha256": "e37397e754758866052595feffe7598234fd7a781eff8d07c50506d347ca6f62",
+  "records": [
+    {
+      "name": "rust-local-fixture",
+      "result": "passed",
+      "passedGroups": [
+        7,
+        3,
+        1
+      ],
+      "sha256": "8a5131e59465c738a71444ccc433c9458bc05fc7daadb339e3dc5c60b0a578f5",
+      "privateLog": "test-evidence/rust-local-fixture.log"
+    },
+    {
+      "name": "rust-default",
+      "result": "passed",
+      "passedGroups": [
+        7,
+        3,
+        1
+      ],
+      "sha256": "bb0efd5ada44e26a3b8bf74a90c36bc2ba96638c08bbc6a1174bb03fccc3fc46",
+      "privateLog": "test-evidence/rust-default.log"
+    },
+    {
+      "name": "catalog",
+      "result": "passed",
+      "passedGroups": [
+        4
+      ],
+      "sha256": "b4bd5bea020dbbd9682776e6b41b72a53f8ed37c67224e983be78a449ef4c869",
+      "privateLog": "test-evidence/catalog.log"
+    },
+    {
+      "name": "helpers",
+      "result": "passed",
+      "passedGroups": null,
+      "sha256": "b8d6fb59f9917ad8adb80bceb11c2a3c8ee95e53429b88238dfd789bbba3dc4d",
+      "privateLog": "test-evidence/helpers.log"
+    },
+    {
+      "name": "proxy-policy",
+      "result": "passed",
+      "passedGroups": null,
+      "sha256": "fb184ea57734512b1f088f9181209901b9cd46df3eb7eaa2500ea9e48dde20b5",
+      "privateLog": "test-evidence/proxy-policy.log"
+    },
+    {
+      "name": "default-build",
+      "result": "passed",
+      "passedGroups": null,
+      "sha256": "e698f1f81aa0e22e5f4cd89905e73825856cda4a1d96deae5b4d3f1d99fcf97c",
+      "privateLog": "test-evidence/default-build.log"
+    },
+    {
+      "name": "no-default-check",
+      "result": "passed",
+      "passedGroups": null,
+      "sha256": "dda7980e8da1041233b9bd7cd86f479320cbe44ef953019bb06c5f1c023ea622",
+      "privateLog": "test-evidence/no-default-check.log"
+    },
+    {
+      "name": "startup-red",
+      "result": "expected failure reproduced",
+      "passedGroups": null,
+      "sha256": "d68d377accce05e2e464c076a08c7e8b7ae353fa0ccd1c49c08ebd5b2bc068f6",
+      "privateLog": "test-evidence/startup-red.log"
+    },
+    {
+      "name": "cache-file-red",
+      "result": "expected failure reproduced",
+      "passedGroups": null,
+      "sha256": "6b2c79de64b01a69543be30c99db0058742d7804bbecce19accf052b2f17b6d4",
+      "privateLog": "test-evidence/cache-file-red.log"
+    }
+  ]
+}

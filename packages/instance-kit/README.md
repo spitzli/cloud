@@ -1,6 +1,6 @@
 # Instance policy
 
-Canonical source for the small per-instance Users policy. Webdock apps import this npm workspace package at build time; there is no runtime dependency on a central CMS. External website repositories retain pinned vendored copies. Update those copies intentionally and run each instance’s access checks.
+Canonical source for the small per-instance Users policy. Webdock apps import this workspace package at build time; there is no runtime dependency on a central CMS. External website repositories retain pinned vendored copies. Update those copies intentionally and run each instance’s access checks.
 
 The visible `operator` role is reserved to the platform owner. Customer admins cannot update/delete the operator, change its credentials, or assign/promote operator roles. Public first-user creation is blocked, including on an empty database. Protected deletion is blocked even through ordinary local APIs; database-level emergency recovery remains with the hosting operator. Field/collection permissions are enforced server-side.
 

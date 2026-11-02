@@ -3,11 +3,16 @@
 This package currently provides the runtime-neutral `@webdock/plugin-sdk/contracts`
 entry point: strict manifest validation, capability/method metadata, lifecycle
 DTOs and a generated Tabularium extension schema. It builds compiled ESM and TypeScript
-declarations; `npm pack` is tested in an empty directory with an offline install.
+declarations; `bun pm pack` output is tested in an empty directory without a registry.
 
-The server, UI and testing entry points, host services and scaffolding CLI are not
-implemented yet. Method catalog entries describe the planned wire protocol, not
-available adapters. Do not publish this package as a complete developer platform.
+The server entry point provides invocation verification and scoped host-service
+clients; the companion CLI scaffolds action runtimes. Method catalog entries do
+not establish that every host service is implemented. Native installation, jobs
+and complete third-party UI acceptance remain separate platform work.
+
+Signed invocations require `customerID` alongside `projectID`. Core derives the
+customer from the admitted project; plugins use this signed identity for shared
+customer infrastructure and never accept a customer ID from action input.
 
 ```ts
 import { parsePluginManifest } from '@webdock/plugin-sdk/contracts';
@@ -24,7 +29,7 @@ checksum verification and execution belong to the future verified migration serv
 From the repository root:
 
 ```sh
-npm run build -w @webdock/plugin-sdk
-npm run test:modules
-node --import tsx tools/plugins/generate-schema.ts --check
+bun run --filter @webdock/plugin-sdk build
+bun run test:modules
+bun tools/plugins/generate-schema.ts --check
 ```

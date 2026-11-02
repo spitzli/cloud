@@ -15,6 +15,7 @@ import time
 ROOT = Path(__file__).resolve().parents[3]
 LABEL = "dev.webdock.cms-acceptance"
 PREFIX = "webdock-cms-acceptance-"
+BUN_IMAGE = "oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288"
 
 
 def clean_environment(environment):
@@ -99,6 +100,10 @@ class Fixture:
     def cleanup(self, remove_directory=False):
         for resource in reversed(self.resources):
             self.remove(resource)
+        for resource in self.resources:
+            if self.inspect(resource["kind"], resource.get("id") or resource["name"]) is not None:
+                raise RuntimeError("Owned fixture resource remained after cleanup")
+        print(f"Owned CMS fixture {self.run_id}: {len(self.resources)} exact resources confirmed absent after cleanup.", flush=True)
         if remove_directory:
             shutil.rmtree(fixture_path(self.directory, self.run_id))
 
@@ -121,14 +126,25 @@ class Fixture:
         self.remove(container)
 
 
-def main():
+def main(s3_config=None, mc=None, access=None):
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--s3", action="store_true", help="Fresh private S3 media using existing MinIO; source process recreation")
     parser.add_argument("--image", help="Already built local CMS image; never rebuilt or deployed")
     parser.add_argument("--keep", action="store_true", help="Retain this fixture; use --image for a browser endpoint")
     parser.add_argument("--cleanup", type=Path, help="Remove only resources owned by a retained fixture")
     parser.add_argument("--postgres-image", default="postgres:18-alpine")
-    parser.add_argument("--node-image", help="Node 24 image (defaults to the local Node version)")
+    parser.add_argument("--bun-image", default=BUN_IMAGE, help="Bun runtime image for migrations and tests")
     args = parser.parse_args()
+    if args.s3 and args.cleanup:
+        raise RuntimeError("--s3 and --cleanup are separate operations")
+    if args.s3 and args.keep:
+        raise RuntimeError("S3 fixture has bounded lifetime; --keep is not supported")
+    if args.s3 and s3_config is None:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("owned_s3", ROOT / "tools/tests/object-storage.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.main(callback=lambda config, admin, key: main(config, admin, key), registry=True)
     if args.cleanup:
         manifest = args.cleanup / "fixture.json"
         if manifest.stat().st_uid != os.getuid() or manifest.stat().st_mode & 0o077:
@@ -140,12 +156,6 @@ def main():
         Fixture(directory, state["run_id"], state["resources"]).cleanup(True)
         print("Owned fixture removed.")
         return
-    node = shutil.which("node")
-    if not node:
-        raise RuntimeError("Node 24 must be on PATH")
-    version = subprocess.check_output([node, "--version"], env=clean_environment(os.environ), text=True).strip()
-    if not re.fullmatch(r"v24\.\d+\.\d+", version):
-        raise RuntimeError("Node 24 must be on PATH; inherited application environment is ignored")
     run_id = secrets.token_hex(8)
     directory = Path(tempfile.mkdtemp(prefix=PREFIX))
     exact = directory.with_name(PREFIX + run_id)
@@ -154,26 +164,26 @@ def main():
     fixture = Fixture(exact, run_id)
     completed = False
     try:
-        node_image = args.node_image or f"node:{version[1:]}-bookworm-slim"
+        bun_image = args.bun_image
         resolved_images = {}
-        for image in (args.postgres_image, node_image):
+        for image in (args.postgres_image, bun_image):
             inspected = fixture.run("inspect-image", ["docker", "image", "inspect", image], check=False)
             if inspected.returncode:
                 print(f"Pulling test image {image}…", flush=True)
                 fixture.run("pull-image", ["docker", "pull", image], timeout=600)
                 inspected = fixture.run("inspect-image", ["docker", "image", "inspect", image])
             resolved_images[image] = json.loads(inspected.stdout)[0]["Id"]
-        node_image, postgres_image = resolved_images[node_image], resolved_images[args.postgres_image]
+        bun_image, postgres_image = resolved_images[bun_image], resolved_images[args.postgres_image]
         image_id = None
         if args.image:
             candidate = json.loads(fixture.run("inspect-candidate", ["docker", "image", "inspect", args.image]).stdout)[0]
             if candidate["Config"]["User"] != "65532:65532":
                 raise RuntimeError("CMS candidate image must configure UID/GID 65532:65532")
             image_id = candidate["Id"]
-        network = fixture.create("network", PREFIX + run_id, [] if args.keep else ["--internal"])["id"]
+        network = fixture.create("network", PREFIX + run_id, [] if args.keep or args.s3 else ["--internal"])["id"]
         volume = fixture.create("volume", PREFIX + run_id, [])["id"]
         # Check both container runtimes independently of the host PATH version.
-        fixture.job("node-version", node_image, ["node", "-e", "if(process.versions.node.split('.')[0]!=='24')process.exit(1)"], memory="256m")
+        fixture.job("bun-version", bun_image, ["bun", "-e", "if(!Bun.version.startsWith('1.4.'))process.exit(1)"], memory="256m")
         pg_version = fixture.run("postgres-version", ["docker", "run", "--rm", "--label", f"{LABEL}={run_id}", "--entrypoint", "postgres", postgres_image, "--version"]).stdout
         if not re.search(r"PostgreSQL\) 18\.", pg_version):
             raise RuntimeError("PostgreSQL 18 is required")
@@ -184,11 +194,11 @@ def main():
         certs.mkdir(mode=0o755)
         fixture.run("certificate", ["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout", str(certs / "server.key"), "-out", str(certs / "server.crt"), "-days", "2", "-subj", "/CN=postgres", "-addext", "subjectAltName=DNS:postgres,DNS:localhost,IP:127.0.0.1"])
         os.chmod(certs / "server.key", 0o600)
-        fixture.job("certificate-owner", node_image, ["sh", "-c", f"chown {pg_uid}:{pg_uid} /tls/server.key && chmod 600 /tls/server.key"], mounts=[f"{certs}:/tls"], user="0", memory="256m")
+        fixture.job("certificate-owner", bun_image, ["sh", "-c", f"chown {pg_uid}:{pg_uid} /tls/server.key && chmod 600 /tls/server.key"], mounts=[f"{certs}:/tls"], user="0", memory="256m")
         passwords = [secrets.token_hex(32) for _ in range(3)]
         fixture.redactions += passwords
         pg_env = fixture.private("postgres.env", f"POSTGRES_PASSWORD={passwords[0]}\nPOSTGRES_INITDB_ARGS=--auth-host=scram-sha-256\n")
-        postgres = fixture.create("container", f"{PREFIX}{run_id}-postgres", ["--network", network, "--network-alias", "postgres", "--env-file", str(pg_env), "--memory", "512m", "--memory-swap", "512m", "--cpus", "1", "--pids-limit", "256", "--volume", f"{certs}:/tls:ro", postgres_image, "-c", "ssl=on", "-c", "ssl_cert_file=/tls/server.crt", "-c", "ssl_key_file=/tls/server.key", "-c", "shared_buffers=32MB", "-c", "max_connections=30"])
+        postgres = fixture.create("container", f"{PREFIX}{run_id}-postgres", ["--network", network, "--network-alias", "postgres", *(["--publish", "127.0.0.1::5432"] if args.s3 else []), "--env-file", str(pg_env), "--memory", "512m", "--memory-swap", "512m", "--cpus", "1", "--pids-limit", "256", "--volume", f"{certs}:/tls:ro", postgres_image, "-c", "ssl=on", "-c", "ssl_cert_file=/tls/server.crt", "-c", "ssl_key_file=/tls/server.key", "-c", "shared_buffers=32MB", "-c", "max_connections=30"])
         fixture.run("start-postgres", ["docker", "start", postgres["id"]])
         for attempt in range(120):
             if not fixture.run("postgres-ready", ["docker", "exec", postgres["id"], "pg_isready", "-h", "127.0.0.1", "-U", "postgres"], check=False).returncode:
@@ -204,36 +214,103 @@ def main():
         fixture.redactions += [common["PAYLOAD_SECRET"], common["CMS_BRIDGE_SECRET"]]
         def envfile(name, values):
             return fixture.private(name, "".join(f"{key}={value}\n" for key, value in values.items()))
+        database_host = "postgres:5432"
+        job_network = network
+        if args.s3:
+            port = fixture.inspect("container", postgres["id"])["NetworkSettings"]["Ports"]["5432/tcp"][0]["HostPort"]
+            database_host = f"127.0.0.1:{port}"
+            job_network = "host"
+            storage = json.loads(Path(s3_config).read_text())
+            credentials = storage["credentials"]
+            fixture.redactions += list(credentials.values())
+            common.update({"CMS_MEDIA_STORAGE":"s3", "CMS_ENVIRONMENT_ID":"fixture", "CMS_MEDIA_S3_RESOURCE_ID": "bbba0aa0-2f38-4fb0-a870-81808ccbd1b0", "CMS_MEDIA_S3_ENDPOINT":storage["config"]["endpoint"], "CMS_MEDIA_S3_REGION":storage["config"]["region"], "CMS_MEDIA_S3_BUCKET":storage["config"]["bucket"], "CMS_MEDIA_S3_LOOPBACK_TEST":"true"})
         def dburl(role, password):
-            return f"postgresql://{role}:{password}@postgres:5432/cms?sslmode=verify-full&sslrootcert=/tls/ca.crt"
-        migration_env = envfile("migration.env", {**common, "CMS_MIGRATING": "true", "CMS_MIGRATION_DATABASE_URL": dburl("cms_migrate", passwords[1]), "CMS_BOOTSTRAP_SUBJECT": f"bootstrap-{run_id}", "CMS_BOOTSTRAP_ROLE": "admin"})
-        runtime = {**common, "DATABASE_URL": dburl("cms_runtime", passwords[2]), "CMS_ACCEPTANCE_RUN": "true", "TSX_DISABLE_CACHE": "1"}
+            return f"postgresql://{role}:{password}@{database_host}/cms?sslmode=verify-full&sslrootcert=/tls/ca.crt"
+        migration_env = envfile("migration.env", {**common, "CMS_MIGRATING": "true", "CMS_MIGRATION_DATABASE_URL": dburl("cms_migrate", passwords[1]), "CMS_BOOTSTRAP_SUBJECT": f"bootstrap-{run_id}", "CMS_BOOTSTRAP_ROLE": "admin", **({"CMS_MEDIA_INITIALIZE_STORAGE":"true"} if args.s3 else {})})
+        runtime = {**common, "DATABASE_URL": dburl("cms_runtime", passwords[2]), "CMS_ACCEPTANCE_RUN": "true"}
+        if args.s3:
+            runtime.update({"CMS_S3_ACCEPTANCE":"true", "CMS_MEDIA_S3_ACCESS_KEY_ID":credentials["accessKeyId"], "CMS_MEDIA_S3_SECRET_ACCESS_KEY":credentials["secretAccessKey"]})
         runtime_env = envfile("runtime.env", runtime)
         mounts = [f"{ROOT}:/app:ro", f"{certs / 'server.crt'}:/tls/ca.crt:ro", f"{volume}:/data"]
-        fixture.job("source-volume-owner", node_image, ["sh", "-c", f"mkdir -p /data/media /data/transfers && chown -R {os.getuid()}:{os.getgid()} /data"], mounts=[f"{volume}:/data"], user="0", memory="256m")
+        fixture.job("source-volume-owner", bun_image, ["sh", "-c", f"mkdir -p /data/media /data/transfers && chown -R {os.getuid()}:{os.getgid()} /data"], mounts=[f"{volume}:/data"], user="0", memory="256m")
+        if not args.s3:
+            print("Seeding a preexisting local file and row on the old schema…", flush=True)
+            fixture.job("seed-legacy-media", bun_image, ["bun", "apps/cms-instance/scripts/seed-legacy-media.ts"], migration_env, mounts, f"{os.getuid()}:{os.getgid()}", job_network)
         print("Running explicit schema migration with migration-only credentials…", flush=True)
-        migration_image = image_id or node_image
-        migration_command = ["node", "/app/migrate.mjs"] if image_id else ["node", "--import", "tsx", "apps/cms-instance/src/migrate.ts"]
-        fixture.job("migrate", migration_image, migration_command, migration_env, mounts if not image_id else [f"{certs / 'server.crt'}:/tls/ca.crt:ro"], network=network)
-        fixture.job("migrate-idempotent", migration_image, migration_command, migration_env, mounts if not image_id else [f"{certs / 'server.crt'}:/tls/ca.crt:ro"], network=network)
+        migration_image = image_id or bun_image
+        migration_command = ["bun", "/app/migrate.mjs"] if image_id else ["bun", "apps/cms-instance/src/migrate.ts"]
+        fixture.job("migrate", migration_image, migration_command, migration_env, mounts if not image_id else [f"{certs / 'server.crt'}:/tls/ca.crt:ro"], network=job_network)
+        fixture.job("migrate-idempotent", migration_image, migration_command, migration_env, mounts if not image_id else [f"{certs / 'server.crt'}:/tls/ca.crt:ro"], network=job_network)
         print("Running existing source acceptance and editor safety tests with DML-only credentials…", flush=True)
-        fixture.job("source-tests", node_image, ["node", "--import", "tsx", "--test", "apps/cms-instance/tests/acceptance.test.ts", "apps/cms-instance/tests/editor-safety.test.ts", "apps/cms-instance/tests/media-trash.test.ts"], runtime_env, mounts, f"{os.getuid()}:{os.getgid()}", network)
+        if not args.s3:
+            runtime["CMS_LEGACY_ACCEPTANCE"] = "true"
+            runtime_env = envfile("runtime.env", runtime)
+        mismatch = {**runtime, "CMS_BINDING_REJECTION": "true", "CMS_MEDIA_STORAGE": "s3", "CMS_ENVIRONMENT_ID": "fixture", "CMS_MEDIA_S3_RESOURCE_ID": "bbba0aa0-2f38-4fb0-a870-81808ccbd1b0", "CMS_MEDIA_S3_ENDPOINT": "https://storage.invalid", "CMS_MEDIA_S3_REGION": "test", "CMS_MEDIA_S3_BUCKET": f"owned-mismatch-{run_id}", "CMS_MEDIA_S3_ACCESS_KEY_ID": "unused-fixture", "CMS_MEDIA_S3_SECRET_ACCESS_KEY": "unused-fixture"}
+        mismatch_env = envfile("binding-mismatch.env", mismatch)
+        fixture.job("binding-rejection", bun_image, ["bun", "test", "./apps/cms-instance/tests/startup-real.test.ts"], mismatch_env, mounts, f"{os.getuid()}:{os.getgid()}", job_network)
+        files = "acceptance editor-safety s3-media" if args.s3 else "legacy-media acceptance editor-safety media-trash"
+        fixture.job("source-tests", bun_image, ["sh", "-c", f"status=0; for file in {files}; do bun test ./apps/cms-instance/tests/$file.test.ts || status=1; done; exit $status"], runtime_env, mounts, f"{os.getuid()}:{os.getgid()}", job_network)
+        if args.s3:
+            def s3_phase(phase):
+                phase_env = envfile(f"s3-{phase}.env", {**runtime, "CMS_S3_PHASE":phase})
+                fixture.job(f"s3-{phase}", bun_image, ["bun", "test", "./apps/cms-instance/tests/s3-media.test.ts"], phase_env, mounts, f"{os.getuid()}:{os.getgid()}", job_network)
+            s3_phase("read")
+            mc("admin", "user", "disable", "fixture", access)
+            try:
+                s3_phase("denied")
+            finally:
+                mc("admin", "user", "enable", "fixture", access)
+            s3_phase("read")
+            s3_phase("prepare-purge")
+            deny_policy = f"wd-cms-deny-delete-{run_id}"
+            deny = {"Version": "2012-10-17", "Statement": [{"Effect": "Deny", "Action": ["s3:DeleteObject"], "Resource": [f"arn:aws:s3:::{storage['config']['bucket']}/*"]}]}
+            created = attached = False
+            try:
+                mc("admin", "policy", "create", "fixture", deny_policy, "/dev/stdin", input_text=json.dumps(deny))
+                created = True
+                mc("admin", "policy", "attach", "fixture", deny_policy, "--user", access)
+                attached = True
+                s3_phase("denied-purge")
+                # Object bytes remain reachable by the fixture administrator while public metadata is trashed.
+                remaining = mc("ls", "--recursive", "--json", f"fixture/{storage['config']['bucket']}")
+                if not remaining.strip():
+                    raise RuntimeError("Denied purge lost all provider objects")
+            finally:
+                if attached:
+                    mc("admin", "policy", "detach", "fixture", deny_policy, "--user", access)
+                if created:
+                    mc("admin", "policy", "remove", "fixture", deny_policy)
+            s3_phase("purge")
+            print("Private S3 media process recreation, exact bytes, trash/restore, denied access and hash mismatch passed.", flush=True)
         origin = None
         if image_id:
-            fixture.job("image-volume-owner", node_image, ["sh", "-c", "chown -R 65532:65532 /data"], mounts=[f"{volume}:/data"], user="0", memory="256m")
-            image_env = envfile("image.env", {**runtime, "PORT": "3000", "HOSTNAME": "0.0.0.0", "CMS_IMAGE_TEST_ORIGIN": "http://cms:3000"})
-            def start_image(suffix):
-                container = fixture.create("container", f"{PREFIX}{run_id}-cms-{suffix}", ["--network", network, "--network-alias", "cms", "--read-only", "--tmpfs", "/tmp:rw,noexec,nosuid,size=64m", "--env-file", str(image_env), "--memory", "768m", "--memory-swap", "768m", "--cpus", "2", "--pids-limit", "256", *(["--publish", "127.0.0.1::3000"] if args.keep else []), "--volume", f"{certs / 'server.crt'}:/tls/ca.crt:ro", "--volume", f"{volume}:/data", image_id])
+            fixture.job("image-volume-owner", bun_image, ["sh", "-c", "chown -R 65532:65532 /data"], mounts=[f"{volume}:/data"], user="0", memory="256m")
+            image_port = 3000
+            image_origin = "http://cms:3000"
+            if args.s3:
+                import socket
+                with socket.socket() as listener:
+                    listener.bind(("127.0.0.1", 0))
+                    image_port = listener.getsockname()[1]
+                image_origin = f"http://127.0.0.1:{image_port}"
+            image_env = envfile("image.env", {**runtime, "PORT": str(image_port), "HOSTNAME": "127.0.0.1" if args.s3 else "0.0.0.0", "CMS_IMAGE_TEST_ORIGIN": image_origin})
+            def start_image(suffix, environment=image_env):
+                container = fixture.create("container", f"{PREFIX}{run_id}-cms-{suffix}", ["--network", job_network, *([] if args.s3 else ["--network-alias", "cms"]), "--read-only", "--tmpfs", "/tmp:rw,noexec,nosuid,size=64m", "--env-file", str(environment), "--memory", "768m", "--memory-swap", "768m", "--cpus", "2", "--pids-limit", "256", *(["--publish", "127.0.0.1::3000"] if args.keep else []), "--volume", f"{certs / 'server.crt'}:/tls/ca.crt:ro", "--volume", f"{volume}:/data", image_id])
                 fixture.run("start-image", ["docker", "start", container["id"]])
                 return container
+            rejected_env = envfile("image-rejected.env", {**mismatch, "PORT": str(image_port), "HOSTNAME": "127.0.0.1" if args.s3 else "0.0.0.0"})
+            rejected = start_image("rejected", rejected_env)
+            probe_env = envfile("image-rejected-probe.env", {**runtime, "CMS_IMAGE_TEST_ORIGIN": image_origin, "CMS_IMAGE_ACCEPTANCE_PHASE": "binding-rejection"})
+            fixture.job("image-binding-rejection", bun_image, ["bun", "test", "./apps/cms-instance/tests/image-acceptance.test.ts"], probe_env, mounts, "65532:65532", job_network)
+            fixture.remove(rejected)
             container = start_image("first")
             for phase in ("write", "read"):
                 if phase == "read":
                     fixture.remove(container)
                     container = start_image("recreated")
-                phase_env = envfile(f"image-{phase}.env", {**runtime, "CMS_IMAGE_TEST_ORIGIN": "http://cms:3000", "CMS_IMAGE_ACCEPTANCE_PHASE": phase})
+                phase_env = envfile(f"image-{phase}.env", {**runtime, "CMS_IMAGE_TEST_ORIGIN": image_origin, "CMS_IMAGE_ACCEPTANCE_PHASE": phase})
                 print(f"Running image HTTP {phase} acceptance…", flush=True)
-                fixture.job(f"image-{phase}", node_image, ["node", "--import", "tsx", "--test", "apps/cms-instance/tests/image-acceptance.test.ts"], phase_env, mounts, "65532:65532", network)
+                fixture.job(f"image-{phase}", bun_image, ["bun", "test", "./apps/cms-instance/tests/image-acceptance.test.ts"], phase_env, mounts, "65532:65532", job_network)
             if args.keep:
                 current = fixture.inspect("container", container["id"])
                 bindings = current["NetworkSettings"]["Ports"].get("3000/tcp")

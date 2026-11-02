@@ -1,0 +1,65 @@
+{
+  "milestone": "native-plugin-update-and-rollback",
+  "date": "2026-10-24",
+  "sourceBase": "da7d1f8",
+  "productionChanged": false,
+  "environment": "owned native-bootstrap PostgreSQL services and isolated generation namespaces on retained local webdock-dev Kubernetes",
+  "releaseVersions": [
+    "0.1.0",
+    "0.2.0",
+    "0.1.0"
+  ],
+  "runtimeGenerations": [
+    "1",
+    "2",
+    "3"
+  ],
+  "schemaHighWater": 1,
+  "artifacts": [
+    {
+      "version": "0.1.0",
+      "imageManifestSha256": "f14debf8708d135d2a83a0034530d10200b0d750a378c1b87dc383d115d8d297"
+    },
+    {
+      "version": "0.2.0",
+      "imageManifestSha256": "740d6afb973b8db659c891f1a1f02157eeff94f9fbf31a7001d64dcd241041a9"
+    }
+  ],
+  "artifactScope": "two distinct signed OCI configurations with identical reviewed PostgreSQL executable/filesystem; compatible code-only lifecycle, not physical schema migration",
+  "acceptance": {
+    "initialNativeCLIBootstrapMfaPkceAndConsoleInstall": "passed",
+    "customerDedicatedPostgreSQL17": "passed",
+    "verifiedTlsSqlWriteRead": "passed",
+    "consoleDisableDrainAndReviewedUpdate": "passed",
+    "rollbackOldReleaseIntoFreshGeneration3": "passed",
+    "previousGenerationsObservedZeroReplicasAndNoPods": "passed",
+    "metadataRowsCustomerPasswordAndSqlRetained": "passed",
+    "versionHistory375And1280": "passed; screenshots inspected",
+    "fullQuality": "bun run quality passed",
+    "freshRestrictedLifecycleTests": "2 passed",
+    "logicalReaderCompatibility": "old H and reserved H required; rejected before allocation in restricted regression",
+    "unknownStartupWatermark": "reserved H is monotonic; schema1-only rollback denied after schema2 reservation and pre-start failure",
+    "operatorAndScopedHttpBoundary": "native/first-party, ordinary/read-only/acting/demoted denials passed"
+  },
+  "review": {
+    "initialCritical": 0,
+    "initialImportant": 1,
+    "initialMinor": 1,
+    "allFindingsAddressed": true,
+    "scopedIndependentRereview": "clean"
+  },
+  "migration0042Sha256": "bf5684976152f1bdacc20a41c7d50f6a7b9c1c3a1f937a785e119a78d7d7dfb0",
+  "migration0043Sha256": "b2abcb2be829a46186b29efbd0f6166abea9ab878460e34d05c8c60a4dd50c59",
+  "fixtureObservations": [
+    "initial callback environment and short Unix socket wiring corrected without replacing the admitted release or data",
+    "exact v2 CRI cache reference was restored from verified retained OCI blobs; cache-loss cause unproven",
+    "one redundant final resource-page wait timed out; fresh UI and complete retained-data confirmation passed"
+  ],
+  "limits": [
+    "trusted reviewed publishers declare logical schema compatibility; no independent physical migration/checksum attestation or SQL undo",
+    "same configuration, target/placement and capability approvals only; permission expansion is unsupported",
+    "unknown or incomplete shutdown custody blocks rather than starting another writer",
+    "superseded runtime namespaces/material retained until a separate purge feature",
+    "jobs, Mail/Hosting installer expansion and automatic kernel certificate rotation remain future work"
+  ]
+}

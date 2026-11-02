@@ -1,0 +1,16 @@
+# Offline only. The API runtime never receives the migrator's credentials.
+name: webdock-native-migration
+services:
+  migrate:
+    image: ${WEBDOCK_MIGRATE_IMAGE:?Set the reviewed immutable native migration image}
+    restart: 'no'
+    user: '65532:65532'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/tmp:rw,nosuid,size=64m,mode=1777']
+    pids_limit: 256
+    mem_limit: 1g
+    cpus: 1
+    env_file: [./migrator.env]
+    command: ['--target', '${WEBDOCK_MIGRATION_TARGET:?Set exact host:port/database}']

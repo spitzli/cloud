@@ -9,6 +9,14 @@ import { up } from "../../../apps/website/src/migrations-instance/20261018_18000
 import { CHUNK_BYTES, MEDIA_BYTES } from "../src/types.ts";
 import type { BridgeScope } from "../src/types.ts";
 
+// Named steps share one disposable container; a failure names the step it happened in.
+const step = async (name: string, run: () => Promise<void>) => {
+  try {
+    await run();
+  } catch (error) {
+    throw new Error(`${name} failed`, { cause: error });
+  }
+};
 const scope: BridgeScope = {
   instance: "binding-1",
   project: "project-1",
@@ -36,7 +44,7 @@ const encodedRequest = (size = 30_000, media = false) =>
 test(
   "Postgres transfers survive independent handlers and enforce scoped durable bounds",
   { timeout: 120_000 },
-  async (t) => {
+  async () => {
     const container = `webdock-bridge-test-${randomUUID().slice(0, 8)}`;
     execFileSync(
       "docker",
@@ -88,9 +96,9 @@ test(
         max: 4,
       });
       await pool.query(
-        `CREATE SCHEMA webdock; CREATE ROLE webdock_runtime LOGIN PASSWORD 'fixture-runtime'; GRANT USAGE ON SCHEMA webdock TO webdock_runtime; CREATE TABLE webdock.users (id serial PRIMARY KEY);`,
+        `CREATE ROLE webdock_website_owner; CREATE ROLE webdock_browser_website; CREATE SCHEMA webdock AUTHORIZATION webdock_website_owner; CREATE ROLE webdock_runtime LOGIN PASSWORD 'fixture-runtime'; GRANT USAGE ON SCHEMA webdock TO webdock_runtime; CREATE TABLE webdock.users (id serial PRIMARY KEY);`,
       );
-      await up({ db: drizzle(pool) } as never);
+      await up({ db: drizzle({ client: pool }) } as never);
       runtimePool = new pg.Pool({
         connectionString: `postgresql://webdock_runtime:fixture-runtime@127.0.0.1:${port}/postgres`,
         max: 4,
@@ -126,7 +134,7 @@ test(
           });
         return transfer;
       }
-      await t.test(
+      await step(
         "DML permission is granted only to the runtime role",
         async () => {
           const {
@@ -138,7 +146,7 @@ test(
           assert.equal(row.public_read, false);
         },
       );
-      await t.test(
+      await step(
         "continuity, scoped denial, serialized append, digest, and replay",
         async () => {
           const bytes = encodedRequest(),
@@ -240,7 +248,7 @@ test(
           await clear();
         },
       );
-      await t.test(
+      await step(
         "executing is committed before effects and ambiguity never retries",
         async () => {
           const transfer = await upload(encodedRequest());
@@ -270,7 +278,7 @@ test(
           await clear();
         },
       );
-      await t.test(
+      await step(
         "reader GET releases final response and errors release allocation",
         async () => {
           const reader = { ...scope, role: "reader" as const };
@@ -314,7 +322,7 @@ test(
           );
         },
       );
-      await t.test(
+      await step(
         "active quota is atomic across handlers, expired rows are reclaimed",
         async () => {
           const input = {
@@ -359,7 +367,7 @@ test(
           await clear();
         },
       );
-      await t.test("receipts and reserved storage are bounded", async () => {
+      await step("receipts and reserved storage are bounded", async () => {
         const bytes = encodedRequest(1);
         for (let i = 0; i < 127; i++) {
           const id = await upload(bytes);
@@ -409,7 +417,7 @@ test(
         assert.ok(allocated > 0 && allocated < 16);
         await clear();
       });
-      await t.test(
+      await step(
         "large base64 requests and responses use bounded chunks",
         async () => {
           const bytes = encodedRequest(MEDIA_BYTES, true),

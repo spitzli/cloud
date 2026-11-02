@@ -13,6 +13,6 @@ export function createManifest(image:string){
   protocolVersion:1,sdkVersion:1,dataProtocolVersion:1,coreVersion:">=0.1.0 <1.0.0",schemaVersion:1,readableSchema:{min:1,max:1},
   capabilities:["plugin.apps.read","plugin.apps.provision","plugin.http.read","plugin.http.request"],services:{required:[{name:"http",version:1}],optional:[{name:"apps",version:1}]},httpBindings:["cms"],
   configuration:object({}),actions,navigation:[{id:"cms",label:"CMS",path:"/ui/cms"}],api:[],mcp:[],jobs:[],events:[],slots:[],tables:[],migrations:[],dependencies:[],secrets:[],
-  homepage:"https://github.com/spitzli/webdock/tree/main/extensions/managed-cms",documentation_url:"https://docs.webdock.dev/guides/managed-cms",readme:"README.md",
+  homepage:"https://github.com/spitzli/webdock/tree/main/extensions/managed-cms",documentation_url:"https://github.com/spitzli/cloud-plugin-managed-cms/blob/HEAD/README.md",readme:"README.md",icon:"assets/icon.svg",screenshots:[{"url":"screenshots/cms-draft-editor.png","caption":"Actual CMS editor with synthetic draft content and a read-only fixture transport. No content was saved or published.","alt":"CMS page editor with title, page address, introduction and draft controls"},{"url":"screenshots/cms-draft-mobile.png","caption":"Actual CMS editor at 320px with synthetic content; no save or publish operation.","alt":"Responsive CMS page editor and Spitzli Cloud wordmark at 320px"}],
  });
 }

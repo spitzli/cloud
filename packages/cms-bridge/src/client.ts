@@ -129,8 +129,9 @@ export function createBridgeTransport(
         })) as TransferResult,
       );
     }
-    const body = new Uint8Array(await request.arrayBuffer()),
-      contentType = request.headers.get("content-type") ?? "";
+    // Bun materializes multipart headers lazily; retain them before consuming a large body.
+    const contentType = request.headers.get("content-type") ?? "";
+    const body = new Uint8Array(await request.arrayBuffer());
     const kind = contentType.startsWith("multipart/form-data;")
       ? "media"
       : "json";

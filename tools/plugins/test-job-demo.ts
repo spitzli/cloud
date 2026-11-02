@@ -12,7 +12,7 @@ const dir = resolve(process.argv[2] ?? "");
 const port = Number(process.env.WEBDOCK_TEST_REDIS_PORT);
 if (!process.argv[2] || !port)
   throw Error(
-    "Usage: WEBDOCK_TEST_REDIS_PORT=... node --import tsx tools/plugins/test-job-demo.ts <built-plugin-dir>",
+    "Usage: WEBDOCK_TEST_REDIS_PORT=... bun tools/plugins/test-job-demo.ts <built-plugin-dir>",
   );
 const manifest = JSON.parse(
   await readFile(resolve(dir, "tabularium.json"), "utf8"),

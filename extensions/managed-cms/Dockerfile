@@ -1,11 +1,9 @@
 # Build with the repository root as context. Only the compiled plugin enters the runtime.
-FROM oven/bun@sha256:ec06c3b6cea04192ae6770c434f668ca41d343ad19fa6472216c7b48be39c598 AS bun
-FROM node:24.21.0-bookworm-slim AS build
-COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
+FROM oven/bun:1.4.3 AS build
 WORKDIR /app
 COPY . .
-RUN npm ci --ignore-scripts --no-audit --no-fund && npm run build -w @webdock/plugin-sdk && bun extensions/managed-cms/build.ts
-FROM bun
+RUN bun install --frozen-lockfile --ignore-scripts && bun run --filter @webdock/plugin-sdk build && bun extensions/managed-cms/build.ts
+FROM oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288
 WORKDIR /app
 LABEL org.opencontainers.image.source="https://github.com/spitzli/webdock"
 COPY --from=build --chown=65532:65532 /app/extensions/managed-cms/dist ./

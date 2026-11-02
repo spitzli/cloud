@@ -1,0 +1,2 @@
+# Bound deeply nested control flow while allowing protocol and transaction handlers.
+excessive-nesting-threshold = 6

@@ -50,11 +50,11 @@ All six products are gated at their applicable API mounts, direct paths, Studio 
 ## Local verification
 
 ```sh
-npm run test:modules
-npm run test:unit -w @webdock/api
-npm run test -w @webdock/admin
-npm run check -w @webdock/api
-npm run check -w @webdock/admin
+bun run test:modules
+bun run --filter @webdock/api test:unit
+bun run --filter @webdock/admin test
+bun run --filter @webdock/api check
+bun run --filter @webdock/admin check
 ```
 
 The existing API fixture scripts provision isolated loopback Docker PostgreSQL databases for provider/Studio regression tests and restricted-role preflight tests. They must not be pointed at customer databases. Provider regressions inject responses and block external network access.

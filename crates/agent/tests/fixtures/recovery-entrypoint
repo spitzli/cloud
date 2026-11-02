@@ -1,0 +1,28 @@
+#!/bin/sh
+# Exact owned nested Engine only; no host Docker socket, cluster or trust mutation.
+set -eu
+umask 077
+test "${WEBDOCK_OWNED_RECOVERY_FIXTURE:-}" = yes
+test -f /.dockerenv
+test "$(id -u)" = 0
+mkdir -p /var/lib/webdock-owned-engine /var/run/webdock-owned-engine
+chmod 700 /var/lib/webdock-owned-engine /var/run/webdock-owned-engine
+dockerd --host=unix:///run/webdock-owned-docker.sock \
+  --data-root=/var/lib/webdock-owned-engine \
+  --exec-root=/var/run/webdock-owned-engine \
+  --pidfile=/var/run/webdock-owned-engine/docker.pid \
+  --storage-driver=vfs --bridge=none --iptables=false --ip6tables=false \
+  > /var/run/webdock-owned-engine/private-dockerd.log 2>&1 &
+engine_pid=$!
+cleanup() {
+  kill -TERM "$engine_pid" 2>/dev/null || true
+  wait "$engine_pid" 2>/dev/null || true
+}
+trap cleanup EXIT INT TERM
+attempt=0
+until docker info >/dev/null 2>&1; do
+  attempt=$((attempt+1))
+  test "$attempt" -lt 120
+  sleep 1
+done
+"$@"

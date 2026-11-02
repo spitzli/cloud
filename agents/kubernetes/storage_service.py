@@ -17,11 +17,14 @@ def dispatch(message):
     if action in ['database.capability','database.ensure','database.retained','database.purge','database.state']:
         from database_storage import dispatch as database_dispatch
         return database_dispatch(action,value)
+    if action=='info':
+        if value is not None:raise ValueError('Invalid information request')
+        return storage.configuration()
     if action=='capability':
         if not isinstance(value,list) or len(value)>200 or any(not isinstance(v,str) or len(v)>253 for v in value):raise ValueError('Invalid nodes')
         capacity=storage.capability(value)
         return {"capacityBytes":capacity or 0,"ready":capacity is not None}
-    if action not in ['ensure','retained','purge'] or not isinstance(value,dict) or set(value)!={'appID','projectID','clusterID','revision','leaseUntil','spec'}:raise ValueError('Invalid storage operation')
+    if action not in ['ensure','retained','purge','state'] or not isinstance(value,dict) or set(value)!={'appID','projectID','clusterID','revision','leaseUntil','spec'}:raise ValueError('Invalid storage operation')
     for key in ['appID','projectID','clusterID']:
         if not isinstance(value[key],str) or not re.fullmatch(r'[1-9][0-9]{0,18}',value[key]):raise ValueError('Invalid owner')
     if type(value['revision']) is not int or value['revision']<1:raise ValueError('Invalid revision')

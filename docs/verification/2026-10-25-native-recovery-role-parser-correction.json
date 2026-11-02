@@ -1,0 +1,86 @@
+{
+  "status": "narrow strict-Serde parser correction complete; full recovery remains paused/unqualified",
+  "createdUTC": "2026-10-25T22:36:30.038554+00:00",
+  "change": "RecoveryVolumeRole PG unit variants changed to empty struct variants; only matching patterns updated elsewhere. Valid tag-only JSON and all legacy packet/record formats preserved.",
+  "beforeSHA256": {
+    "crates/agent/src/storage/recovery_pool.rs": "01f19e0a64ba9aaa25f0eb23a96e183a17de7a432442845fd89600aab4c47982",
+    "crates/agent/src/recovery/docker.rs": "2e7cee24a6291dcd11ca72f8ecae3765419160394c065f8cc54da98377128f1e",
+    "crates/agent/src/recovery/mail.rs": "324d62390bd0424fdf5b55fbe3cad0125901962698deab3b86a807201fdc7347"
+  },
+  "afterSHA256": {
+    "crates/agent/src/storage/recovery_pool.rs": "08c0fc150c93e6c81b0768aae816192bd7d1730e92d5a67843f1aade35006d2f",
+    "crates/agent/src/recovery/docker.rs": "f5a061a20b6e958f92421f0edd6a97f2f6ac5acfede5c301cb21784c85c33d8c",
+    "crates/agent/src/recovery/mail.rs": "366e4f4586c9b46ab3bcaeb3c4acd1a7e15f0b01166fcaff16f6083fc2bbfb5d"
+  },
+  "unchangedSQLAndRootLockSHA256": {
+    "Cargo.lock": "c6f2848cdeeeb1f63ebf38bf9c8faba12cbb9247b336c1b999427e643901a576",
+    "crates/persistence/migrations/0054_source_recovery_fences.sql": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+    "crates/persistence/migrations/0055_native_operator_allowances.sql": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de"
+  },
+  "checkpoint": {
+    "path": "docs/verification/2026-10-25-native-recovery-54-integration-checkpoint.json",
+    "sha256": "bb565df0638ef31a8a6200c91ecf30688a43d9941d4df9eea3aa0d3dc61184e7",
+    "totalSourceFiles": 59,
+    "explicitScopedChangedPaths": [
+      "crates/agent/src/recovery/docker.rs",
+      "crates/agent/src/recovery/mail.rs",
+      "crates/agent/src/storage/recovery_pool.rs"
+    ],
+    "unchangedSourceFileCount": 56,
+    "originalCheckpointRewritten": false
+  },
+  "red": {
+    "command": "cargo test --offline --locked -p webdock-agent --features local-recovery-fixture --lib storage::recovery_pool::tests::postgres_roles_reject_extra_customer_project_and_arbitrary_fields -- --exact",
+    "exitCode": 101,
+    "observed": "Both PG variants accepted originalCustomerID, customerID, projectID and arbitrary fields (8 total accepted invalid cases)."
+  },
+  "green": [
+    {
+      "command": "cargo test --offline --locked -p webdock-agent --features local-recovery-fixture --lib storage::recovery_pool::tests",
+      "exitCode": 0,
+      "passed": 4,
+      "ignored": 1,
+      "ignoredReason": "Privileged filesystem fixture was intentionally not run in this narrow followup."
+    },
+    {
+      "command": "cargo test --offline --locked -p webdock-agent --features local-recovery-fixture --test storage legacy_pool_and_volume_wire_fields_round_trip_without_identity_changes -- --exact",
+      "exitCode": 0,
+      "passed": 1
+    },
+    {
+      "command": "cargo run --manifest-path tools/quality/Cargo.toml --offline --locked -- contracts",
+      "exitCode": 0,
+      "result": "Rust architecture, lint policy, strict Serde contracts and frozen migrations passed."
+    },
+    {
+      "command": "rustfmt --edition 2024 --config skip_children=true --check crates/agent/src/storage/recovery_pool.rs crates/agent/src/recovery/docker.rs crates/agent/src/recovery/mail.rs",
+      "exitCode": 0
+    },
+    {
+      "command": "cargo clippy --offline --locked -p webdock-agent --features local-recovery-fixture --lib --bins --tests -- -D warnings",
+      "exitCode": 0,
+      "seconds": 8.19
+    },
+    {
+      "command": "cargo check --offline --locked -p webdock-control-plane -p webdock-agent-control -p webdock-agent",
+      "exitCode": 0,
+      "seconds": 9.24
+    }
+  ],
+  "scope": {
+    "productionFilesChanged": [
+      "crates/agent/src/storage/recovery_pool.rs",
+      "crates/agent/src/recovery/docker.rs",
+      "crates/agent/src/recovery/mail.rs"
+    ],
+    "sqlEdited": false,
+    "quotaSemanticsEdited": false,
+    "legacyPacketOrRecordWireEdited": false,
+    "protoOrDependenciesEdited": false,
+    "providersOrDataTouched": false,
+    "nativeOrCoreFixturesStarted": false,
+    "allowanceOwnerCopiedCandidatesChanged": false,
+    "fullRecoveryResumed": false,
+    "finalMigrationFreeze": false
+  }
+}

@@ -1,0 +1,48 @@
+@import 'tailwindcss';
+@source '../../../plugins/*/ui/**/*.tsx';
+@font-face { font-family: 'Space Grotesk Variable'; src: url('/fonts/space-grotesk-latin-variable.woff2') format('woff2'); font-weight: 300 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'JetBrains Mono Variable'; src: url('/fonts/jetbrains-mono-latin-variable.woff2') format('woff2'); font-weight: 100 800; font-style: normal; font-display: swap; }
+:root { color-scheme: light; --bg: oklch(98% .004 290); --panel: oklch(100% 0 0); --sidebar: oklch(96% .006 290); --ink: oklch(22% .012 290); --muted: oklch(47% .02 290); --line: oklch(90% .012 290); --line-strong: oklch(81% .02 290); --soft: oklch(94% .012 290); --accent: oklch(46% .22 291); --on-accent: oklch(100% 0 0); --brand: oklch(52% .26 291); --logo-paper: oklch(18% .009 290); --focus: oklch(46% .22 291); --ring: oklch(52% .26 291 / .22); --success: #18794e; --success-bg: #e9f8ef; --error: #c62a2f; --error-bg: #fdeced; --warning: #a35200; --mono: 'JetBrains Mono Variable', ui-monospace, monospace; --font-body: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif; --font-display: 'JetBrains Mono Variable', ui-monospace, monospace; font-family: var(--font-body); font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+:root[data-theme='dark'] { color-scheme: dark; --bg: oklch(18% .009 290); --panel: oklch(22% .01 290); --sidebar: oklch(18% .009 290); --ink: oklch(96% .006 290); --muted: oklch(72% .015 290); --line: oklch(32% .013 290); --line-strong: oklch(42% .013 290); --soft: oklch(26% .011 290); --accent: oklch(78% .13 295); --on-accent: oklch(18% .009 290); --focus: oklch(83% .12 295); --ring: oklch(78% .13 295 / .28); --success: #4cc38a; --success-bg: #0f2a1d; --error: #ff6369; --error-bg: #2e1215; --warning: #f1a10d; }
+@theme inline { --color-page: var(--bg); --color-surface: var(--panel); --color-subtle: var(--sidebar); --color-foreground: var(--ink); --color-muted: var(--muted); --color-outline: var(--line); --color-outline-strong: var(--line-strong); --color-soft: var(--soft); --color-accent: var(--accent); --color-on-accent: var(--on-accent); --color-brand: var(--brand); --color-logo: var(--logo-paper); --color-focus: var(--focus); --color-ring: var(--ring); --color-success: var(--success); --color-success-soft: var(--success-bg); --color-danger: var(--error); --color-danger-soft: var(--error-bg); --color-warning: var(--warning); --font-sans: var(--font-body); --font-mono: var(--mono); }
+@keyframes page-progress { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+@layer base {
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--bg); font-size: 14px; line-height: 1.5; }
+button, input, select, textarea { font: inherit; }
+input, select, textarea { accent-color: var(--accent); }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button, a { touch-action: manipulation; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+button:disabled, input:disabled, select:disabled { cursor: not-allowed; opacity: .55; }
+input:not([type=checkbox],[type=radio]):focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px var(--ring); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+h1 { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: -.025em; line-height: 1.25; }
+h2 { font-size: 16px; font-weight: 600; letter-spacing: -.01em; }
+h3 { font-size: 14px; font-weight: 600; }
+p { max-width: 76ch; }
+code, kbd { font-family: var(--mono); }
+input:user-invalid, select:user-invalid, textarea:user-invalid { border-color: var(--error); outline-color: var(--error); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+}
+/* Classes rendered by the shared database module (credentials panel, workbench) and kept as test hooks.
+   Console code styles itself with ./ui.ts recipes and utilities. */
+@layer components {
+.muted { color: var(--muted); }
+.error { color: var(--error); }
+.success { color: var(--success); }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 12px; min-height: 36px; background: var(--panel); border: 1px solid var(--line-strong); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--ink); white-space: nowrap; transition: background-color .15s, border-color .15s; }
+.button:hover:not(:disabled) { background: var(--soft); text-decoration: none; }
+.button svg { width: 16px; height: 16px; flex-shrink: 0; }
+.button.primary { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
+.button.primary:hover:not(:disabled) { background: var(--accent); opacity: .86; }
+.button.quiet { background: transparent; border-color: transparent; }
+.button.quiet:hover:not(:disabled) { background: var(--soft); }
+.database-tenants{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}.database-view .database-workbench{height:calc(100dvh - 210px);min-height:500px;overflow:hidden;border:1px solid var(--line);border-radius:10px}.row-actions{display:flex;gap:.5rem;align-items:center}.form-grid .checkbox-label{display:flex;gap:.5rem;align-items:flex-start}.checkbox-label input{width:auto;margin-top:.2rem}@media(max-width:700px){.database-view .database-workbench{height:calc(100dvh - 190px);min-height:400px}.database-tenants{gap:.35rem}.row-actions{flex-wrap:wrap}}
+@media(max-width:700px){.database-view .database-workbench{height:720px;min-height:720px}.database-workbench .tabularis-workspace>div{flex-direction:column}.database-workbench .tabularis-workspace>div>aside{width:100%!important;height:185px;border-right:0;border-bottom:1px solid var(--line)}.database-workbench .tabularis-workspace>div>aside>div.cursor-col-resize{display:none}.database-workbench .tabularis-workspace>div>main{min-height:400px}}
+.database-order,.database-details,.database-catalog{margin-top:1.5rem;border-top:1px solid var(--line);padding-top:1.25rem}.database-order-review{margin-top:1rem;padding:1.25rem;border:1px solid var(--line);border-radius:.65rem;display:grid;gap:.8rem}.database-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.database-facts dt{font-size:.8rem;color:var(--muted)}.database-facts dd{margin:0;overflow-wrap:anywhere}.database-wide{grid-column:1/-1}.database-catalog summary{cursor:pointer;font-weight:600}.database-details .panel{margin-top:1.5rem}.database-details .panel fieldset{display:grid;gap:.75rem;margin:1rem 0;border:1px solid var(--line);border-radius:.5rem;padding:1rem}.database-details .panel .field{display:grid;gap:.35rem}.database-details .panel .button{margin-right:.5rem;margin-top:.5rem}@media(max-width:700px){.database-facts{grid-template-columns:1fr}.database-order-review{padding:.8rem}}
+.database-management>.page-heading{margin-bottom:1rem}.database-management label{display:grid;gap:.4rem;font-size:13px;font-weight:500}.database-management input:not([type=checkbox]),.database-management select,.database-management textarea{width:100%;min-height:38px;padding:.55rem .7rem;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}.database-management textarea{min-height:95px;resize:vertical}.database-management>.database-project{max-width:420px}.database-management .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:.8rem}.database-management .form-actions{grid-column:1/-1;display:flex;gap:.65rem;align-items:center;flex-wrap:wrap}.database-management .checkbox-label{display:flex;align-items:flex-start;gap:.6rem}.database-management .checkbox-label input{margin-top:.3rem}.database-management .database-order>h3,.database-management .database-catalog>h3{margin-bottom:.8rem}.database-management>.security-list{margin-top:1rem}.database-management .row-actions{margin-top:1rem;flex-wrap:wrap}.database-management .database-catalog>.security-list{max-height:320px;overflow:auto;margin-bottom:1.2rem}.database-management .database-details{display:grid;gap:1rem}.database-management .database-catalog .security-list label{min-width:150px}.database-management .panel .allowance-list{display:flex;gap:1.25rem;flex-wrap:wrap}@media(max-width:700px){.database-management .form-grid{grid-template-columns:1fr}.database-management .security-list>li{align-items:flex-start;gap:.8rem}.database-management .database-catalog .security-list label{min-width:120px}.database-management .row-actions{gap:.5rem}}
+.database-workspace-picker{display:grid;gap:.4rem;max-width:420px;margin-bottom:1.5rem;font-size:13px;font-weight:500}.database-workspace-picker select{min-height:38px;padding:.55rem .7rem;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
+}

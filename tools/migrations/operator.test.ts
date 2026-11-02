@@ -109,7 +109,7 @@ test("private input rejects public permissions and symlinks", async () => {
 });
 test("password and OAuth hashing match the installed Better Auth SDK without creating auth sessions", async () => {
   const require = createRequire(
-    new URL("../../apps/control-plane/package.json", import.meta.url),
+    new URL("../../legacy/control-plane/package.json", import.meta.url),
   );
   const crypto = await import(require.resolve("better-auth/crypto"));
   const password = await initialPasswordHash(profile.password);

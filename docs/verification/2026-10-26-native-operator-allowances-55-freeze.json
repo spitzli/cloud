@@ -1,0 +1,21 @@
+{
+  "status": "Migration0055 frozen after genuine schema/authority/receipt tests and independent foundation review2;0054 remains draft",
+  "frozenUTC": "2026-10-25T23:29:06.925081+00:00",
+  "file": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/crates/persistence/migrations/0055_native_operator_allowances.sql",
+  "sha256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+  "frozenManifestSHA256": "eb0c929dfca6df1f5af9d9a8df2563d4a0e2efbdf6f9dade5d321677928e6b78",
+  "basis": {
+    "baseEvidence": "docs/verification/2026-10-25-native-operator-allowances.json",
+    "reviewFixEvidence": "docs/verification/2026-10-26-native-operator-allowances-review1-fixes.json",
+    "reviewFixEvidenceSHA256": "e5756f714f8b38e8458f5f7fbd9815a3678772a8d6cf253c5b9cb0a3001c1d7f",
+    "independentReviewTask": "node:delegated-task:command%3Amcp%3A2f6fbc0a-1750-43a4-a82a-b298790aba13%3Adelegate-task%3As3-native-operator-allowances-review-20261026-r2",
+    "verdict": "No confirmed P1/P2; all46 checked source/evidence/binary files unchanged; scoped foundation source/contract review only"
+  },
+  "constraints": [
+    "Never rewrite0055; correction requires newly coordinated forward migration",
+    "0054 remains editable at owning recovery phase;notfinalfrozen/recoveryqualified",
+    "No production/provider/IAM/signing/key/RPO/RTO/fullRoot approval",
+    "Additional Host race fixture not rerun after provider rejection;ordinary defaultnative functionality48.14s only",
+    "0046\u20130053 all frozen hashes unchanged;Cargo.lock804 registry pins unchanged"
+  ]
+}

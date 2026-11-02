@@ -1,27 +1,29 @@
 ---
-title: "Your Vercel team"
-description: "Connect a customer-owned team and limit access to selected projects."
+title: "Connect your Vercel team"
+description: "Authorize a customer-owned Vercel team and select permitted projects."
 ---
 
-You need the workspace's Vercel BYOK permission and authority to install the configured integration in your Vercel team. The Webdock operator must have configured the customer integration before this flow is available.
+<Info>This flow requires separate Vercel integration activation and workspace permission. Native activation is separate release work; do not assume every Console workspace can connect Vercel. Ask your operator to confirm availability.</Info>
+
+You need authority to install the configured integration in the customer-owned Vercel team.
 
 <Steps>
-  <Step title="Start in Console">Open the customer's **Your infrastructure** area and start the Vercel connection. The authorization flow is bound to your current account and session.</Step>
-  <Step title="Authorize the correct team">Select the customer-owned team in Vercel. Webdock verifies the returned team, installation, integration and granted scopes. The platform's own team and a team already assigned to another customer are rejected.</Step>
-  <Step title="Select projects">Choose which authorized projects Webdock may use. Changing this list requires the current connection revision and rechecks the provider's available projects.</Step>
-  <Step title="Inspect resources">Open a selected project to view the permitted deployment and domain information. Reconnect when the provider grant no longer includes the access your action requires.</Step>
+  <Step title="Start the connection">Where enabled, open **Your infrastructure** in Console and choose **Connect Vercel**. Start a fresh flow from Console so it is bound to your current account and session.</Step>
+  <Step title="Authorize the correct team">Select your team in Vercel. Spitzli Cloud verifies the returned team, installation and permissions. The platform's team and a team already assigned to another customer are rejected.</Step>
+  <Step title="Choose projects">Select the authorized projects Spitzli Cloud may use. Changing the selection rechecks current provider access.</Step>
+  <Step title="Inspect resources">Review the permitted deployment and domain information. Reconnect if the provider grant no longer covers the access you need.</Step>
 </Steps>
 
-## Supported management actions
+## Available management
 
-The connection can inspect selected projects and their resources. With the required provider write scopes, Webdock can set the project's default Function region to Frankfurt (`fra1`) and cancel a deployment that is still queued, initializing or building.
+The integration supports selected-project inspection. With the required write permissions, it can set the default Function region to Frankfurt (`fra1`) and cancel a deployment that is still queued, initializing or building.
 
-Setting the default region does not move an already deployed Function. It also does not make global CDN, control-plane or logging services EU-only. Check the actual deployment after a new release.
+Changing the default region does not move an existing deployment. It does not establish EU-only CDN, logging or control-plane processing. Check the actual deployment after your next release.
 
-Connecting a team is not authorization for arbitrary provider operations or an automatic application deployment. Git deployment setup is a separate flow.
+Connecting a team does not deploy an application or authorize arbitrary Vercel operations. Repository deployment setup is separate, and Vercel retains your provider charges and quotas.
 
 ## Disconnect
 
-Disconnecting removes Webdock's stored connection. Your Vercel projects and deployments remain in the provider account. Review or revoke the provider-side installation separately if it should lose access there too.
+Disconnecting removes the stored Spitzli Cloud connection. Vercel projects and deployments remain in your account. Revoke the provider-side installation separately if it should lose access there too.
 
-<Note>The browser uses Console, while existing registered OAuth callback addresses remain compatible. Start connection attempts in Console rather than manually changing callback hostnames.</Note>
+<Note>Registered callback URLs remain compatibility contracts. Start authorization from Console; do not manually replace callback hostnames.</Note>

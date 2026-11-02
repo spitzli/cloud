@@ -1,0 +1,193 @@
+{{- $name := required "Approved workload name required" .Values.name -}}
+{{- $image := required "Approved digest image required" .Values.image -}}
+{{- if not (regexMatch "^[a-z0-9.-]+(:[0-9]{1,5})?/[a-z0-9_./-]+@sha256:[a-f0-9]{64}$" $image) -}}
+{{- fail "Image must be pinned by SHA-256 digest" -}}
+{{- end -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $name }}
+  labels: {{ .Values.labels | toJson }}
+automountServiceAccountToken: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels: {{ .Values.labels | toJson }}
+  annotations:
+    webdock.dev/revision: {{ .Values.revision | quote }}
+    webdock.dev/generation: {{ .Values.generation | quote }}
+    webdock.dev/spec-sha256: {{ .Values.specHash | quote }}
+spec:
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels: {{ .Values.labels | toJson }}
+  template:
+    metadata:
+      labels: {{ .Values.labels | toJson }}
+      annotations:
+        webdock.dev/revision: {{ .Values.revision | quote }}
+        webdock.dev/spec-sha256: {{ .Values.specHash | quote }}
+    spec:
+      serviceAccountName: {{ $name }}
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ . | quote }}
+        {{- end }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 20
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: runtime
+          image: {{ $image | quote }}
+          imagePullPolicy: IfNotPresent
+          args: {{ .Values.arguments | toJson }}
+          ports:
+            - name: runtime
+              containerPort: {{ .Values.port }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          {{- if .Values.plugin }}
+          env:
+            - name: WEBDOCK_PLUGIN_ID
+              value: {{ .Values.plugin.pluginId | quote }}
+            - name: WEBDOCK_PLUGIN_VERSION
+              value: {{ .Values.plugin.version | quote }}
+            - name: WEBDOCK_PLUGIN_GENERATION
+              value: {{ .Values.plugin.runtimeGeneration | quote }}
+            - name: WEBDOCK_PLUGIN_MANIFEST_SHA256
+              value: {{ .Values.plugin.manifestSha256 | quote }}
+          {{- end }}
+          resources: {{ .Values.resources | toJson }}
+          {{- if .Values.healthPath }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthPath | quote }}
+              port: runtime
+              {{- if .Values.healthHost }}
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.healthHost | quote }}
+              {{- end }}
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 3
+          {{- end }}
+          volumeMounts:
+            - name: temporary
+              mountPath: /tmp
+            {{- if .Values.volume.enabled }}
+            - name: retained
+              mountPath: /data
+            {{- end }}
+            {{- range .Values.mounts }}
+            - name: secret-{{ .name }}
+              mountPath: /run/secrets/{{ .name }}
+              subPath: value
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: temporary
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.ephemeralBytes | quote }}
+        {{- if .Values.volume.enabled }}
+        - name: retained
+          persistentVolumeClaim:
+            claimName: {{ $name }}-data
+        {{- end }}
+        {{- range .Values.mounts }}
+        - name: secret-{{ .name }}
+          secret:
+            secretName: {{ .secretName }}
+            defaultMode: 0440
+            items:
+              - key: value
+                path: value
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels: {{ .Values.labels | toJson }}
+spec:
+  type: ClusterIP
+  selector: {{ .Values.labels | toJson }}
+  ports:
+    - name: runtime
+      port: {{ .Values.port }}
+      targetPort: runtime
+{{- if .Values.volume.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $name }}-data
+  labels: {{ .Values.labels | toJson }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: {{ .Values.volume.sizeBytes | quote }}
+{{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $name }}
+  labels: {{ .Values.labels | toJson }}
+spec:
+  podSelector:
+    matchLabels: {{ .Values.labels | toJson }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              webdock.dev/role: control-plane
+          podSelector:
+            matchLabels:
+              webdock.dev/component: control-plane
+      ports:
+        - protocol: TCP
+          port: {{ .Values.port }}
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              webdock.dev/role: control-plane
+          podSelector:
+            matchLabels:
+              webdock.dev/component: control-plane
+      ports:
+        - protocol: TCP
+          port: 443
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

@@ -1,0 +1,60 @@
+{
+  "status": "SOURCE_STABLE_PREPARATION_ONLY; runtime requires Root named release",
+  "sourceSHA256": {
+    "crates/control-plane/tests/support/recovery_admission.rs": "8e70c2979d70a1d275fc8bcc727ec5d8ea767b6871e78a78424ac1427d49ab67",
+    "tools/tests/recovery-admission-component.py": "0d4ac6e62c348664479665fd81fa71b7d6956286dc87f52bc86d8777f0da348f",
+    "tools/tests/test_recovery_fixture_artifacts.py": "954f43c26dfba1c097c578cad49e611ca0fe82edb2cf8bddb80102cf6a84c2f3"
+  },
+  "changes": [
+    "Actual4legacy outgoing payload helpers validated together with real public parse_command; Docker/Kube project variants covered.",
+    "Truthful verificationEvidence from actual heartbeat/runtime/node numeric resources/storage observation and finite requested reservation; explicitly no production/physical-restore qualification.",
+    "Prepare uses only allowed draft spec fields; deploy supplies required full custom image spec.",
+    "Recovery route kept separate: exact409 domain message required; parser/auth/transport errors fail fixture; combined unconfigured/draft denial only.",
+    "Runner changes ONLY5baked constants; all function ASTs/binding/loaders/finalizer unchanged."
+  ],
+  "checks": {
+    "rustPurePassed": 9,
+    "rustInfraIgnored": 2,
+    "pythonPassed": 51,
+    "realDTOBatchRed": [
+      "clusters.activate",
+      "apps.prepare",
+      "apps.deploy"
+    ],
+    "tests": "offline --locked -j2 bootstrap",
+    "strictClippy": "PASS",
+    "noRun": "PASS",
+    "fmtSyntax": "PASS",
+    "rustLogSHA256": "123114c2fb4b7f84850724457d2e54a4f75a30e30e22b0b069370a075f638556",
+    "pythonLogSHA256": "d7dc6b61766225f6649bbc8aafe7c0fb9818bedc28a15dd8a6fdecd16a404bca",
+    "contractsRedSHA256": "3b71f0a82e57103b8f9dd87fbba19ce8843569e5d49e73454ef6dbba0f250105",
+    "clippyLogSHA256": "6b827212e3dc86fe51722c44f8f843438dd8e3da507d2c916c1dd40ed9bfe74d"
+  },
+  "manifest": ".runtime-test/recovery-diagnostics-source-component-418bcae3f910/pin.json",
+  "manifestSHA256": "d90ac3538e23e65f948cd624a186a3e19e5828761627b680b82586576446843f",
+  "newTestSHA256": "e64d3a6f87d91390b831d8307e72d2e980961f5e98535bbb63b7405ccd16ecd8",
+  "testSourceArchiveSHA256": "49b96aa89a0118b32fc28b2ab3ccc6a4a3ee35a2c5787d640048f0be751a21d6",
+  "testCompilationSHA256": "7d201886a90ba95e02d5e7c2121285323538fde0c2ef5a12f72461b3c9222a21",
+  "originalBasePinSHA256": "1bbbdd07c56540bff34faa1a8a7dd0ef97493061f9005f0b2cb5d5e54426e11e",
+  "original12Unchanged": true,
+  "overlay": ".runtime-test/recovery-source-input-overlay-f435ef50b1fb/overlay.json",
+  "overlaySHA256": "f435ef50b1fb2aa30dddee8479f2d37eb21de783addd9fa4d65988bc0c6b3954",
+  "sourceArchivesCopiedAndVerifiedSeparately": true,
+  "runnerFunctionsASTUnchanged": true,
+  "historicalPreserved": [
+    "2ad/e5d/0569/e668",
+    "d43unknowncause",
+    "6223/old664",
+    "c517/1bc509"
+  ],
+  "rootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+  "native54SHA256": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+  "native55SHA256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+  "diffSHA256": {
+    "fixture": "69d0ec1b106b803867997d5806307ab39d6d3265ba10406a1bfeeae9509b25f4",
+    "runnerConstants": "2db81cacaf8d675cc82ae9b9427d2438cccad2d4c02e701a57bcb9c00ab10f2d"
+  },
+  "runtimeActions": 0,
+  "noMainCargo": true,
+  "limits": "Pure syntactic DTO IDs/observations are not authorization or physical proof. No hosting production changes, no source admission/full recovery/54freeze claim. New runtime not run."
+}

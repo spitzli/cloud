@@ -1,0 +1,87 @@
+---
+title: "Run the core distribution"
+description: "Build the admin shell and control-plane API without product packages, and select a trusted authentication plugin."
+---
+
+The core distribution contains authentication, local identities, workspaces, projects, permissions, audit and runtime plugin capabilities. Its API and Console artifacts do not include Mail, Hosting, Databases, Storage, CMS or Billing product packages. The full distribution remains available for existing installations that manage those products.
+
+## Public developer alpha
+
+[v0.1.0-alpha.2](https://github.com/spitzli/webdock/releases/tag/v0.1.0-alpha.2) provides separate Core and Full images for Linux AMD64, signed checksums and native execution evidence. Start with the [selfhosting guide](/developers/self-hosting) to verify the release and select pinned public image digests.
+
+The released API JavaScript bundle is 8,270,267 bytes (7.89 MiB). Its OCI download is 74.05 MiB, including Bun and the base image; Console Core's OCI download is 104.47 MiB. These are download sizes, not RAM requirements or the total disk footprint. Auth, the offline migrator and your PostgreSQL deployment have separate footprints. The full API archive is 508.45 MiB and is not needed for an empty Core runtime.
+
+Original Webdock code is AGPL-3.0-only, with separate written commercial/special licenses available for rights owned or sublicensable by Spitzli Development. Dependencies retain their own terms; see [licensing](https://github.com/spitzli/webdock/blob/main/COMMERCIAL-LICENSING.md).
+
+## Build
+
+Use Bun 1.4.3, the version pinned in `package.json`.
+
+```sh
+bun install --frozen-lockfile
+bun run build:core
+bun run build:core:console
+bun run test:core-boundary
+```
+
+The API artifact is `apps/control-plane/dist-core/core.js`; its adjacent manifest records its checksum. It starts with Bun without a source tree or workspace packages. The Console build uses the existing shared pages, layouts and authentication components, with explicit core contributions and a reviewed route inventory. Its standalone server is `.core-build/console/.next/standalone/.core-build/console/server.js`.
+
+Both builds reject product imports during resolution. The Console standalone output is also checked for product files. Account pages retain their real API dependency: serving a static asset does not prove authenticated access.
+
+```sh
+docker build -f deploy/docker/Dockerfile --target api-core -t webdock-api-core:local .
+docker build -f deploy/docker/Dockerfile --target console-core -t webdock-console-core:local .
+```
+
+The existing `api` and `console` targets retain the full distribution. No production deployment is performed by these build commands.
+
+## Initialize and start
+
+Use the existing [self-hosting](/developers/self-hosting) migration and dedicated-role setup, then explicitly initialize plugin state with an empty selection. Runtime startup never creates database roles or upgrades schemas. Historical migration tables remain retained; removing them is a separate data migration.
+
+```sh
+WEBDOCK_MODULES='{"configVersion":1,"modules":{}}'
+WEBDOCK_API_DOMAINS='auth,portal,registry'
+```
+
+Only `auth`, `portal`, `registry` and optional `mcp` are valid core domains. Product selections are rejected by the core entry rather than silently ignored. Runtime plugins still use signed manifests, explicit grants, isolated execution and the [plugin API and MCP contract](/developers/plugin-api-mcp).
+
+A core start refuses an existing installation that still has active built-in product metadata or retained product resources. This includes disabled metadata with retained inventory. The check requires the installation-preflight RLS policies; missing read authority is an error, not an empty inventory. Apply the current policies through the offline migration workflow. Keep the full distribution running until retained services are resolved; do not delete metadata to bypass this guard.
+
+## Select authentication
+
+Better Auth and Clerk are trusted startup plugins. They establish identity before project plugins are allowed to run. Changing providers does not automatically link accounts or transfer permissions.
+
+Better Auth remains the compatibility default. Follow [initial setup](/developers/initial-setup) for the first operator and real MFA enrollment.
+
+For ordinary Clerk browser sessions, select the explicit native session mode in both API and Console environments:
+
+```json
+{
+  "provider": "clerk",
+  "issuer": "https://your-instance.clerk.accounts.dev",
+  "authorizedParties": ["https://console.example.com"],
+  "tokenMode": "session"
+}
+```
+
+Use this JSON as `WEBDOCK_AUTH_PROVIDER`. Configure the Clerk server keys and a shared `WEBDOCK_CONSOLE_SERVICE_KEY` of at least 32 characters. The Console also needs its public publishable key. Keep secret keys server-side. Provision the exact issuer/user-to-local-ID mapping before allowing access; email matching is never a fallback.
+
+Native session mode does not require an audience claim. It still checks the signature, issuer, authorized browser origin, active provider session, verified user and current local mapping. Existing configurations with `audience` continue to require that audience. Supplying both native session mode and an audience is rejected.
+
+Clerk core startup does not need a Better Auth secret. Legacy OAuth APIs and MCP token issuance are a separate, explicit compatibility capability: select `WEBDOCK_OAUTH_PROVIDER=better-auth` and provide its reviewed configuration if needed. Otherwise those endpoints remain unavailable; Clerk session tokens are not reinterpreted as OAuth access tokens.
+
+## Local acceptance
+
+The disposable fixture uses loopback ports and restricted PostgreSQL roles. It can install a synthetic signed plugin and run the actual core API artifact and assembled Console. It blocks application dotenv discovery and checks ownership before cleanup.
+
+```sh
+WEBDOCK_BROWSER_PLUGINS=true \
+WEBDOCK_BROWSER_CORE_BUNDLE=true \
+WEBDOCK_BROWSER_CORE_CONSOLE=true \
+  bun --no-env-file tools/tests/core-browser-fixture.ts
+```
+
+The command prints its private fixture directory and creates a cleanup script there. Do not commit its credentials. Use only owned development Clerk users for external login tests, and remove them after testing.
+
+For explicit development-only loopback testing, Clerk configuration can add `allowLocalHTTP: true`; the issuer must still use HTTPS. Plugin UI can opt into loopback HTTP with `WEBDOCK_PLUGIN_UI_ALLOW_LOCAL_HTTP=true`. Both exceptions reject production use and non-loopback HTTP. Private plugin actions and host callbacks still use verified TLS.

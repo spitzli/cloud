@@ -1,0 +1,1 @@
+../../browser-session/migrations/0001_browser_sessions.sql

@@ -1,0 +1,63 @@
+{
+  "status": "cleanup REVIEW2 fixes SOURCE-STABLE for NEW independent REVIEW3; execution STOP remains; NOT Main54/full recovery acceptance",
+  "createdUTC": "2026-10-26T03:04:01.799335+00:00",
+  "fixtureSHA256": {
+    "tools/tests/recovery_fixture_custody.py": "b54fffe42bbb0486f968217d68105e4b9501ba29a4abb6277cc1ff8e753ddcfb",
+    "tools/tests/test_recovery_fixture_custody.py": "1e86182bbdc62ed469f04c745f26faea930cda7bf5dd9bc33143b46fc6c621cb",
+    "tools/tests/recovery-admission-component.py": "b5916b31d5ea05a9cf899a291abe9e377b7f182935f9ab0e21423e5bc6e2485c",
+    "tools/tests/test_recovery_fixture_runner.py": "fa508e38337b4e60764b33a402c6de9dd4394ed34cd4a49c9c5ca74de081b475"
+  },
+  "frozenRustSHA256": {
+    "crates/hosting/src/native_provider.rs": "7ac82e6e69efd1018cc2f9bf195d60e41e1a478e47457e85b1e342482f7166f9",
+    "crates/hosting/src/management.rs": "29d2aa3269b446f2448c8a412e16e7b0b94a29fe425ef90d7949f1af57d590b3",
+    "crates/hosting/src/service.rs": "f14d964a19deb1a325d33507717dda41e5b68ea337bd8281dc556f1f050d16c9",
+    "crates/hosting/src/capacity.rs": "493210ec368dcd8a01d408b387b2dca8b7a2f014122a4f7882bec0db67bca2f4",
+    "crates/hosting/src/recovery.rs": "2e43c8149ad78d928657fd2fead3b53c0f0bc510a05f701ca75591a54d8560de",
+    "crates/control-plane/src/plugin_bootstrap/agent.rs": "757f723e1b87a4b9ecee0dc002c345149815efc4f2152ca76605bfe11a359459"
+  },
+  "responses": {
+    "P2retryEvidenceOverwrite": "Every command records a fresh full UUID attempt ID before invocation. Stdout/stderr/exception/metadata files use that unique prefix with exclusive writes and explicit cross-reference in per-attempt metadata plus final report. Separate exception attempts also use unique IDs. Failed copy then success retains every original raw output and partial directory.",
+    "P2evidenceWriteENOSPC": "Provider/cleanup outcome and primary error status are recorded IN MEMORY before writing evidence. Recording failure is secondary, retained as nonsecret in-memory artifact/error-type entries, cannot mask the original timeout or stop later independent cleanup. Successful cleanup commands still return inspected provider data when logging fails. Acquisition/retention close if evidence was not recorded. Final report writing is guarded; failure sets memory overallFAIL/incomplete and emits only a fixed nonsecret fallback. No claim of durable evidence when the filesystem cannot accept a write.",
+    "retentionGap": "Both required logical files stage and preflight.log must contain non-whitespace bytes. Their actual bytes/hashes remain in the retention manifest; empty/whitespace cases deny retention and diagnostic volume removal."
+  },
+  "observedTDD": {
+    "red": {
+      "command": "python3 -m unittest discover -s tools/tests -p test_recovery_fixture_runner.py",
+      "tests": 19,
+      "failures": 5,
+      "errors": 1,
+      "reproduced": [
+        "failed-copy retry erased first raw output",
+        "ENOSPC masked original command timeout",
+        "actual runner cleanup attempt skipped second cleanup when exception record failed",
+        "actual runner final report ENOSPC escaped without safe failure fallback",
+        "zero/whitespace required files counted as retained"
+      ]
+    },
+    "green": {
+      "command": "python3 -m unittest discover -s tools/tests -p 'test_recovery_fixture_*.py'",
+      "passed": 28,
+      "failed": 0,
+      "runnerTests": 21,
+      "originalImageGuardTests": 7,
+      "seconds": 0.013
+    },
+    "syntax": {
+      "command": "python3 -m py_compile tools/tests/recovery_fixture_custody.py tools/tests/test_recovery_fixture_custody.py tools/tests/recovery-admission-component.py tools/tests/test_recovery_fixture_runner.py",
+      "exitCode": 0
+    },
+    "diffCheck": {
+      "exitCode": 0
+    }
+  },
+  "scope": {
+    "testsUse": "fake completed/timeout commands, extracted real runner finalizer code, mocked ENOSPC evidence writes and private temporary files only",
+    "realDiskFill": false,
+    "DockerImageContainerOrComponentActions": false,
+    "RustOrSQLOrDependencyChanges": false,
+    "protectedInputsRead": false,
+    "additionalDelegation": false
+  },
+  "custody": "No new live fixture created. Original aca remains overallFAIL; prior compensation cleanup and unavailable original stderr/incomplete historical alias limits unchanged.",
+  "next": "Root arranges a NEW independent review3 from this exact source inventory; do not reuse review2 child or infer execution release."
+}

@@ -1,0 +1,28 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Spitzli Cloud Console\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-01 00:00+0100\n"
+"PO-Revision-Date: 2026-11-01 00:00+0100\n"
+"Last-Translator: Spitzli Cloud\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "No resource reservations have been reported yet."
+msgstr "Es wurden noch keine reservierten Ressourcen gemeldet."
+
+msgid "reserved · no plan limit"
+msgstr "reserviert · kein Tariflimit"
+
+msgid "No workspace plan is assigned. Service-specific limits may still apply."
+msgstr "Diesem Arbeitsbereich ist kein Tarif zugewiesen. Für einzelne Dienste können weiterhin Limits gelten."
+
+msgid "No service usage has been reported yet."
+msgstr "Es wurden noch keine Nutzungsdaten der Dienste gemeldet."
+
+msgid "Your provider must connect and authorize a Git repository for this project before you can start builds."
+msgstr "Dein Anbieter muss zuerst ein Git-Repository für dieses Projekt verbinden und freigeben. Danach kannst du Builds starten."

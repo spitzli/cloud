@@ -357,3 +357,186 @@ msgstr "Datenbankbereiche"
 
 msgid "Browse data"
 msgstr "Daten durchsuchen"
+
+msgid "Backups are not configured"
+msgstr "Backups sind nicht eingerichtet"
+
+msgid "Backup configuration pending observation"
+msgstr "Backup-Konfiguration wartet auf Bestätigung"
+
+msgid "Backup configuration observed"
+msgstr "Backup-Konfiguration bestätigt"
+
+msgid "Backup suspension pending observation"
+msgstr "Backup-Aussetzung wartet auf Bestätigung"
+
+msgid "Backup schedule suspension observed"
+msgstr "Aussetzung des Backup-Zeitplans bestätigt"
+
+msgid "Backup observation unavailable. Refresh before making changes."
+msgstr "Backup-Beobachtung nicht verfügbar. Vor Änderungen aktualisieren."
+
+msgid "Backup request accepted. Waiting for agent observation."
+msgstr "Backup-Auftrag angenommen. Bestätigung durch den Agent steht aus."
+
+msgid "Public recovery is unavailable. No recovery window or RPO/RTO commitment is included."
+msgstr "Öffentliche Wiederherstellung ist nicht verfügbar. Ein Wiederherstellungszeitraum oder eine RPO-/RTO-Zusage ist nicht enthalten."
+
+msgid "Restore database"
+msgstr "Datenbank wiederherstellen"
+
+msgid "Operator restore requires a separately reviewed recovery order. This Console flow is not available yet."
+msgstr "Die Wiederherstellung durch Betreiber erfordert einen separat geprüften Wiederherstellungsauftrag. Dieser Ablauf ist in der Console noch nicht verfügbar."
+
+msgid "Shared PostgreSQL backup, restore and clone are unavailable."
+msgstr "Backup, Wiederherstellung und Klonen für Shared PostgreSQL sind nicht verfügbar."
+
+msgid "Historical last completed backup"
+msgstr "Zuletzt historisch abgeschlossenes Backup"
+
+msgid "Desired controls"
+msgstr "Gewünschte Einstellungen"
+
+msgid "Daily schedule"
+msgstr "Täglicher Zeitplan"
+
+msgid "WAL archiving"
+msgstr "WAL-Archivierung"
+
+msgid "Retention deletion permission"
+msgstr "Löschberechtigung nach Aufbewahrungsregel"
+
+msgid "Retention days"
+msgstr "Aufbewahrungstage"
+
+msgid "Backup grant revocation observed. WAL and retention permissions remain separate."
+msgstr "Widerruf der Backup-Berechtigung bestätigt. WAL- und Aufbewahrungsberechtigungen bleiben unabhängig."
+
+msgid "Backup grant revocation is pending observation. WAL and retention permissions remain separate."
+msgstr "Widerruf der Backup-Berechtigung wartet auf Bestätigung. WAL- und Aufbewahrungsberechtigungen bleiben unabhängig."
+
+msgid "Observed controls"
+msgstr "Beobachtete Einstellungen"
+
+msgid "Previous observations — not current confirmation"
+msgstr "Frühere Beobachtungen – keine aktuelle Bestätigung"
+
+msgid "No agent observation is available."
+msgstr "Es liegt keine Beobachtung durch einen Agent vor."
+
+msgid "Historical completed backups"
+msgstr "Historisch abgeschlossene Backups"
+
+msgid "Restore point"
+msgstr "Wiederherstellungspunkt"
+
+msgid "The latest 100 recorded completions are shown. A completed backup alone does not establish a recovery window."
+msgstr "Die letzten 100 aufgezeichneten Abschlüsse werden angezeigt. Ein abgeschlossenes Backup allein belegt keinen Wiederherstellungszeitraum."
+
+msgid "Request reference"
+msgstr "Auftragsreferenz"
+
+msgid "Registered destination ID"
+msgstr "ID des registrierten Ziels"
+
+msgid "Accepted operation"
+msgstr "Angenommener Vorgang"
+
+msgid "Backup policy"
+msgstr "Backup-Richtlinie"
+
+msgid "Check the backup request fields. Refresh before trying again."
+msgstr "Die Felder des Backup-Auftrags prüfen. Vor einem erneuten Versuch aktualisieren."
+
+msgid "Retry the original unchanged request. Re-enter the identical credentials for a destination registration."
+msgstr "Den ursprünglichen Auftrag unverändert wiederholen. Bei der Zielregistrierung dieselben Zugangsdaten erneut eingeben."
+
+msgid "Backup request conflicts with current state. Refresh before trying again."
+msgstr "Der Backup-Auftrag steht im Konflikt mit dem aktuellen Zustand. Vor einem erneuten Versuch aktualisieren."
+
+msgid "Backup authority is no longer available. Sign in again or request current operator access."
+msgstr "Die Backup-Berechtigung ist nicht mehr verfügbar. Erneut anmelden oder aktuelle Betreiberberechtigung anfordern."
+
+msgid "The response was lost. The request may have been accepted. Retry only the identical request with its retained reference."
+msgstr "Die Antwort ging verloren. Der Auftrag wurde möglicherweise angenommen. Nur denselben Auftrag mit seiner beibehaltenen Referenz wiederholen."
+
+msgid "Retry same request"
+msgstr "Denselben Auftrag wiederholen"
+
+msgid "Refresh backup status"
+msgstr "Backup-Status aktualisieren"
+
+msgid "Backup policy settings"
+msgstr "Einstellungen der Backup-Richtlinie"
+
+msgid "Change backup policy"
+msgstr "Backup-Richtlinie ändern"
+
+msgid "Grant backup policy"
+msgstr "Backup-Richtlinie genehmigen"
+
+msgid "Six fields: 0 minute hour * * *. Provider schedule timezone applies."
+msgstr "Sechs Felder: 0 Minute Stunde * * *. Es gilt die Zeitzone des Anbieterzeitplans."
+
+msgid "Suspend scheduled backups"
+msgstr "Geplante Backups aussetzen"
+
+msgid "Allow WAL archiving"
+msgstr "WAL-Archivierung erlauben"
+
+msgid "A new grant enables the daily schedule and WAL archiving."
+msgstr "Eine neue Genehmigung aktiviert den täglichen Zeitplan und die WAL-Archivierung."
+
+msgid "Allow deletion under the retention policy"
+msgstr "Löschung gemäß Aufbewahrungsrichtlinie erlauben"
+
+msgid "Schedule suspension, WAL archiving and retention deletion are independent. Stop the schedule before disabling WAL."
+msgstr "Zeitplanaussetzung, WAL-Archivierung und Aufbewahrungslöschung sind unabhängig. Vor dem Deaktivieren von WAL den Zeitplan stoppen."
+
+msgid "Apply backup policy"
+msgstr "Backup-Richtlinie anwenden"
+
+msgid "Back up now"
+msgstr "Jetzt sichern"
+
+msgid "Revoke the backup grant? Recurrence stops only after agent observation. WAL and retention deletion permissions are unchanged."
+msgstr "Backup-Berechtigung widerrufen? Die Wiederholung stoppt erst nach Bestätigung durch den Agent. WAL- und Aufbewahrungslöschberechtigungen bleiben unverändert."
+
+msgid "Revoke backup grant"
+msgstr "Backup-Berechtigung widerrufen"
+
+msgid "Register backup destination"
+msgstr "Backup-Ziel registrieren"
+
+msgid "Provide separate writer and read-only recovery credentials. Credentials are sent once and cleared from this form. A recovery key reference does not establish key escrow."
+msgstr "Separate Schreib- und schreibgeschützte Wiederherstellungszugangsdaten angeben. Sie werden einmal gesendet und aus diesem Formular gelöscht. Eine Wiederherstellungsschlüsselreferenz belegt keine Schlüsselhinterlegung."
+
+msgid "HTTPS S3 endpoint"
+msgstr "HTTPS-S3-Endpunkt"
+
+msgid "S3 region"
+msgstr "S3-Region"
+
+msgid "Private bucket"
+msgstr "Privater Bucket"
+
+msgid "Retained recovery key reference"
+msgstr "Referenz des separat aufbewahrten Wiederherstellungsschlüssels"
+
+msgid "Writer access key"
+msgstr "Schreibzugriffsschlüssel"
+
+msgid "Writer secret key"
+msgstr "Geheimer Schreibschlüssel"
+
+msgid "Recovery access key"
+msgstr "Wiederherstellungszugriffsschlüssel"
+
+msgid "Recovery secret key"
+msgstr "Geheimer Wiederherstellungsschlüssel"
+
+msgid "Re-enter identical credentials and retry registration"
+msgstr "Dieselben Zugangsdaten erneut eingeben und Registrierung wiederholen"
+
+msgid "Register destination"
+msgstr "Ziel registrieren"

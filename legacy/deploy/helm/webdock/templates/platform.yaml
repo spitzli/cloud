@@ -1,0 +1,88 @@
+{{- range $name, $component := .Values.components }}
+{{- if or (ne $name "worker") $component.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-{{ $name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/instance: {{ $.Release.Name }}, app.kubernetes.io/component: {{ $name }}}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/instance: {{ $.Release.Name }}, app.kubernetes.io/component: {{ $name }}}
+      annotations:
+        webdock.dev/modules-checksum: {{ $.Values.modules | toJson | sha256sum | quote }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: {{ $name }}
+          image: {{ required (printf "components.%s.image is required" $name) $component.image | quote }}
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: {{ required (printf "components.%s.existingSecret is required" $name) $component.existingSecret }}
+          env:
+            - {name: WEBDOCK_MODULES, value: {{ $.Values.modules | toJson | quote }}}
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          resources: {{ $.Values.resources | toJson }}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            {{- if or (eq $name "console") (eq $name "auth") }}
+            - {name: next-cache, mountPath: /app/apps/{{ if eq $name "console" }}console{{ else }}auth{{ end }}/.next/cache}
+            {{- end }}
+          {{- if $component.port }}
+          ports:
+            - {name: http, containerPort: {{ $component.port }}}
+          readinessProbe:
+            {{- if eq $name "api" }}
+            exec:
+              command: [bun, -e, "if(!(await fetch('http://127.0.0.1:3130/readyz')).ok)process.exit(1)"]
+            {{- else }}
+            tcpSocket: {port: http}
+            {{- end }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          {{- end }}
+      volumes:
+        - name: tmp
+          emptyDir: {sizeLimit: 64Mi}
+        {{- if or (eq $name "console") (eq $name "auth") }}
+        - name: next-cache
+          emptyDir: {sizeLimit: 128Mi}
+        {{- end }}
+{{- if $component.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-{{ $name }}
+spec:
+  type: ClusterIP
+  selector: {app.kubernetes.io/instance: {{ $.Release.Name }}, app.kubernetes.io/component: {{ $name }}}
+  ports:
+    - {name: http, port: {{ $component.port }}, targetPort: http}
+{{- end }}
+{{- end }}
+{{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-control-plane
+spec:
+  podSelector:
+    matchLabels: {app.kubernetes.io/instance: {{ .Release.Name }}}
+  policyTypes: [Ingress, Egress]
+  ingress: {{ .Values.networkPolicy.ingress | toJson }}
+  egress: {{ .Values.networkPolicy.egress | toJson }}

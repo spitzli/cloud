@@ -1,7 +1,12 @@
 import { configureOAuthSession } from '@webdock/oauth-session'
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { afterEach, test } from 'node:test'
 import { adminSSORedirect, safeAdminReturnTo, configurePayloadSSO, intersectRoles, validateIdentity } from './index.ts'
+
+// Each test may replace fetch; the real one comes back afterwards.
+const realFetch = globalThis.fetch
+const stubFetch = (stub: (input: Request | URL | string, init?: RequestInit) => Promise<Response>) => { globalThis.fetch = stub as typeof fetch }
+afterEach(() => { globalThis.fetch = realFetch })
 
 test('Studio return paths are explicitly allowed without widening ordinary CMS redirects', () => {
   const paths = ['/tenants/123/mail', '/offers/opaque-token', '/people?q=person'];
@@ -92,7 +97,7 @@ test('rejects insecure configuration and external redirect paths', () => {
   }
 })
 
-test('OIDC flow verifies signed identity, introspects every request, and never links by email', async (t) => {
+test('OIDC flow verifies signed identity, introspects every request, and never links by email', async () => {
   const { generateKeyPairSync, sign } = await import('node:crypto')
   const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 })
   const jwk = { ...publicKey.export({ format: 'jwk' }), kid: 'test-key', alg: 'RS256', use: 'sig' }
@@ -111,7 +116,7 @@ test('OIDC flow verifies signed identity, introspects every request, and never l
   let centralRole = claims.webdock_role
   const issuer = options.issuer
   const json = (value: object) => new Response(JSON.stringify(value), { headers: { 'content-type': 'application/json' } })
-  t.mock.method(globalThis, 'fetch', async (input: Request | URL | string, init?: RequestInit) => {
+  stubFetch(async (input: Request | URL | string, init?: RequestInit) => {
     const url = String(input)
     if (url.includes('.well-known/openid-configuration')) return json({
       issuer, authorization_endpoint: `${issuer}/oauth2/authorize`, token_endpoint: `${issuer}/oauth2/token`,
@@ -258,10 +263,10 @@ test('local HTTP is explicitly gated and forbidden for production or remote host
   }
 })
 
-test('central logout reaches the provider for new and pre-upgrade browser sessions', async (t) => {
+test('central logout reaches the provider for new and pre-upgrade browser sessions', async () => {
   const { sealData } = await import('iron-session')
   const endpoint = `${options.issuer}/oauth2/end-session`
-  t.mock.method(globalThis, 'fetch', async () => Response.json({
+  stubFetch(async () => Response.json({
     issuer: options.issuer, end_session_endpoint: endpoint, jwks_uri: `${options.issuer}/jwks`,
     introspection_endpoint: `${options.issuer}/oauth2/introspect`,
     authorization_endpoint: `${options.issuer}/oauth2/authorize`, token_endpoint: `${options.issuer}/oauth2/token`,
@@ -286,15 +291,15 @@ test('central logout reaches the provider for new and pre-upgrade browser sessio
   const foreign = await sso.logout(new Request(`${options.appOrigin}/api/sso/logout`, { method: 'POST', headers: { origin: 'https://other.example.test' } }))
   assert.equal(foreign.status, 403)
   assert.equal(foreign.headers.has('set-cookie'), false)
-  t.mock.method(globalThis, 'fetch', async () => { throw Error('Provider unavailable') })
+  stubFetch(async () => { throw Error('Provider unavailable') })
   const unavailable = await configurePayloadSSO({ ...options, centralLogout: true }).logout(new Request(`${options.appOrigin}/api/sso/logout`, { method: 'POST', headers: { origin: options.appOrigin } }))
   assert.equal(unavailable.headers.get('location'), `${options.appOrigin}/login`)
   assert.ok(unavailable.headers.getSetCookie().every(cookie => cookie.includes('Max-Age=0')), 'Provider downtime must still clear local credentials')
 })
 
-test('local HTTP login uses unprefixed, non-Secure development cookies', async (t) => {
+test('local HTTP login uses unprefixed, non-Secure development cookies', async () => {
   const issuer = 'http://localhost:3125/api/auth'
-  t.mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({
+  stubFetch(async () => new Response(JSON.stringify({
     issuer, authorization_endpoint: `${issuer}/oauth2/authorize`, token_endpoint: `${issuer}/oauth2/token`,
     introspection_endpoint: `${issuer}/oauth2/introspect`, jwks_uri: `${issuer}/jwks`,
     response_types_supported: ['code'], subject_types_supported: ['public'], id_token_signing_alg_values_supported: ['RS256'],
@@ -319,7 +324,7 @@ test('SSO collection hooks block native JWT refresh and preserve effective role 
   assert.equal(me?.exp, now + 300)
 })
 
-test('callback accepts a proxy-normalized URL only with the registered raw Host and uses the exact redirect URI', async (t) => {
+test('callback accepts a proxy-normalized URL only with the registered raw Host and uses the exact redirect URI', async () => {
   const { generateKeyPairSync, sign } = await import('node:crypto')
   const { sealData } = await import('iron-session')
   const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 })
@@ -332,7 +337,7 @@ test('callback accepts a proxy-normalized URL only with the registered raw Host 
     .map(value => Buffer.from(JSON.stringify(value)).toString('base64url')).join('.')
   const idToken = `${input}.${sign('RSA-SHA256', Buffer.from(input), privateKey).toString('base64url')}`
   const json = (value: object) => Response.json(value)
-  t.mock.method(globalThis, 'fetch', async (input: Request | URL | string, init?: RequestInit) => {
+  stubFetch(async (input: Request | URL | string, init?: RequestInit) => {
     const url = String(input)
     if (url.includes('.well-known/openid-configuration')) return json({ issuer,
       authorization_endpoint: `${issuer}/oauth2/authorize`, token_endpoint: `${issuer}/oauth2/token`,
@@ -356,12 +361,12 @@ test('callback accepts a proxy-normalized URL only with the registered raw Host 
   assert.equal((await sso.callback(new Request(internalURL.replace('/api/sso/callback', '/other'), { headers: { host: '127.0.0.1:3120', cookie } }))).status, 401)
 })
 
-test('portal mapping can use the verified central session without a Payload runtime', async t => {
+test('portal mapping can use the verified central session without a Payload runtime', async () => {
   const { sealData } = await import('iron-session')
   const exp = Math.floor(Date.now() / 1000) + 300
   const cookie = `__Host-webdock-sso=${await sealData({ kind: 'session', accessToken: 'opaque', sub: 'subject-123', exp }, { password: options.cookieSecret, ttl: 28800 })}`
   let active = true
-  t.mock.method(globalThis, 'fetch', async (input: Request | URL | string) => {
+  stubFetch(async (input: Request | URL | string) => {
     if (String(input).includes('.well-known/openid-configuration')) return Response.json({issuer: options.issuer,
       authorization_endpoint: options.issuer+'/oauth2/authorize', token_endpoint: options.issuer+'/oauth2/token', introspection_endpoint: options.issuer+'/oauth2/introspect', jwks_uri: options.issuer+'/jwks',
       response_types_supported:['code'],subject_types_supported:['public'],id_token_signing_alg_values_supported:['RS256']})

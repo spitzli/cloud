@@ -1,0 +1,40 @@
+{
+  "baselineApply": {
+    "exitCode": 3,
+    "logSHA256": "0c90864f0882e7cffd0651e69d29df1d3cc2eb620961b7fae88c28b6f42949ea",
+    "seconds": 0.036
+  },
+  "candidate": ".runtime-test/pg-restore-review1-945f155d53ba",
+  "containerID": "b014f54556e098c2753eda54c40851fe9e4122e9a8affa7afcf232864495a023",
+  "independentExactAbsence": true,
+  "logicRedGreenClaimed": false,
+  "nativeMigration": {
+    "exitCode": 0,
+    "logSHA256": "b769eea8af041b174d7a17ba0f7b4b1a4c10aea4d65cace330cb6dce078b51c5",
+    "seconds": 0.471
+  },
+  "primitiveTestsExecuted": 0,
+  "privateAbsent": true,
+  "remainingObligations": [],
+  "resultSHA256": "07c91a37c8a4b9bb995d04d1f5bb5f4f5cdc683455a0b661d469cef66752ecbd",
+  "scope": "Root independent read-only closure of945f harness SQL-parse failure",
+  "serverDiagnostics": {
+    "complete": false,
+    "errors": [
+      {
+        "exitCode": 1,
+        "phase": "server-state"
+      }
+    ],
+    "logsCaptured": true,
+    "stateCaptured": false
+  },
+  "startupGate": {
+    "attempts": 3,
+    "authenticatedSelect1": true,
+    "seconds": 0.514,
+    "target": "127.0.0.1:33276/webdock_rls_test",
+    "transport": "host-tcp"
+  },
+  "volumes": 0
+}

@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Unlinked native PostgreSQL restore-order command candidate",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "databases.restoreOrder.prepare"
+        },
+        "sourceDatabaseID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483646
+        },
+        "restorePointID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "credentialRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483646
+        },
+        "targetTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timeline": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295
+        },
+        "verificationSHA256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "targetProjectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "targetPlanRevisionID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "\\S"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "sourceDatabaseID",
+        "revision",
+        "restorePointID",
+        "credentialRevision",
+        "targetTime",
+        "timeline",
+        "verificationSHA256",
+        "targetProjectID",
+        "targetPlanRevisionID",
+        "name",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "action": {
+          "const": "databases.restoreOrder.accept"
+        },
+        "offerID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "projectID": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "intentHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "confirmPrice": {
+          "const": true
+        },
+        "reviewedPrice": {
+          "type": "object",
+          "properties": {
+            "monthlyPriceCents": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "currency": {
+              "const": "EUR"
+            },
+            "billing": {
+              "enum": [
+                "sponsored",
+                "monthly-net-fixed"
+              ]
+            },
+            "billingStarts": {
+              "const": "observed-ready"
+            }
+          },
+          "required": [
+            "monthlyPriceCents",
+            "currency",
+            "billing",
+            "billingStarts"
+          ],
+          "additionalProperties": false
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "required": [
+        "action",
+        "offerID",
+        "projectID",
+        "intentHash",
+        "confirmPrice",
+        "reviewedPrice",
+        "idempotencyKey"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

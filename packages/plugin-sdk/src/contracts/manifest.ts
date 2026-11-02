@@ -19,6 +19,8 @@ const name = z
   .min(1)
   .max(64)
   .regex(/^[a-z][a-z0-9_.-]*$/);
+const fieldName = z.string().min(1).max(64).regex(/^[a-z][a-zA-Z0-9_.-]*$/)
+  .refine((v) => !v.split(/[.-]/).some((p) => ["__proto__", "constructor", "prototype"].includes(p)));
 const exactVersion = z
   .string()
   .max(40)
@@ -73,8 +75,8 @@ function schemaAtDepth(depth: number): z.ZodType<ValueSchema> {
         "boolean",
         "null",
       ]),
-      properties: z.record(name, nested).optional(),
-      required: z.array(name).max(64).refine(unique).optional(),
+      properties: z.record(fieldName, nested).optional(),
+      required: z.array(fieldName).max(64).refine(unique).optional(),
       additionalProperties: z.literal(false).optional(),
       items: nested.optional(),
       enum: z.array(literal).min(1).max(64).optional(),

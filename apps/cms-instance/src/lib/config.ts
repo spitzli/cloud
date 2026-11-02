@@ -1,3 +1,4 @@
+import { loadMediaStorage } from "./media-config.ts";
 export function loadCMSConfig(
   env: Record<string, string | undefined> = process.env,
 ) {
@@ -26,6 +27,11 @@ export function loadCMSConfig(
   if (secret.length < 32 || bridgeSecret.length < 32 || secret === bridgeSecret)
     throw Error("CMS secrets must be distinct and at least 32 characters");
   const migrating = env.CMS_MIGRATING === "true";
+  const environment = env.CMS_ENVIRONMENT_ID ?? null;
+  if (env.CMS_MEDIA_INITIALIZE_STORAGE && !migrating)
+    throw Error(
+      "Media initialization belongs only in the explicit migration job",
+    );
   if (
     !migrating &&
     (env.CMS_MIGRATION_DATABASE_URL || env.PAYLOAD_MIGRATING === "true")
@@ -49,6 +55,7 @@ export function loadCMSConfig(
   return {
     instance,
     project,
+    environment,
     origin: origin.origin,
     siteName: required("CMS_SITE_NAME"),
     secret,
@@ -56,6 +63,12 @@ export function loadCMSConfig(
     databaseURL,
     databaseCA: env.DATABASE_CA_CERT,
     migrating,
+    mediaStorage: loadMediaStorage(env, {
+      instance,
+      project,
+      environment,
+      migrating,
+    }),
     mediaDirectory: "/data/media",
     transferDirectory: "/data/transfers",
   };

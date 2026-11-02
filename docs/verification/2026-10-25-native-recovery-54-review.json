@@ -1,0 +1,135 @@
+{
+  "status": "SOURCE REVIEW-READY; draft54; neither final migration/compiler freeze nor full recovery acceptance",
+  "createdUTC": "2026-10-25T18:44:07.766926+00:00",
+  "migration54SHA256": "71fec2ff01c25683b89b5893205bf76dc6548b1d5e4e4542efdf9029c1f1c988",
+  "lockSHA256": "c6f2848cdeeeb1f63ebf38bf9c8faba12cbb9247b336c1b999427e643901a576",
+  "protectedMigrations46Through53": {
+    "crates/persistence/migrations/0046_remote_build_artifacts.sql": "f8e7ad73e06b020e589c19fb37788f15a69ff1126c570b597daab2680d61489f",
+    "crates/persistence/migrations/0047_resource_create_reservations.sql": "d7e0c08e1e7753b9536ff74345a80105a98c71527ff7e61e87ef638dc7e43290",
+    "crates/persistence/migrations/0048_database_backups.sql": "8c6a28a667069797c2f589730020b7914b2d5f5a0cd04fb4825981bb89750092",
+    "crates/persistence/migrations/0049_plugin_storage_transfers.sql": "0555989ae9843d8007deb92e283b5c023512529bb60d829fb0d336bda4485f9f",
+    "crates/persistence/migrations/0050_archive_source_leases.sql": "2d3e22026c7ad792234ecce7f5a286a856eac681a22af504c23351d2de86a714",
+    "crates/persistence/migrations/0051_database_backup_transitions.sql": "a4f16036e77bd2617f61cecc7c7881bb1abfceb920a16309e092770094ed7767",
+    "crates/persistence/migrations/0052_native_recovery.sql": "c472a56bf4e5f90bc023778985f3191b56626e6b149c70d5c2439059816b0c20",
+    "crates/persistence/migrations/0053_frontend_output_retention.sql": "3ef35e7f191b15c7b9aa3d007a59247e587fcc2ecb081c72a84441c9f13a458c"
+  },
+  "sourceSHA256": {
+    "crates/agent-control/src/lib.rs": "949cb9757151703e6282f225d726f04c72bfdaa030a9f27f907780948dcdc7e5",
+    "crates/agent-control/src/recovery.rs": "2444b29ab20fe096b89a95f5413300588bd7b44ad277432dea48bea631a1aa6f",
+    "crates/agent-control/tests/native_database.rs": "71d5e9adafa6a012b4fcc6c78738d70698061791263cfdfc1a3e5cdfb34d47d8",
+    "crates/agent-protocol/build.rs": "d29e7804eef34ad6f000e783413b61278ec75f05ed39993d381539eb7a79b8bf",
+    "crates/agent-protocol/src/recovery.rs": "60e9dcae3edc13dddac2e0088e175a1c8cf75e0e493b1aa3958aa1e6c90db5a7",
+    "crates/agent-protocol/src/recovery/custody.rs": "a6a18f5a5757f05c3bcd7670b6bf68326b500ba379c0bc9570173a9505ac4b70",
+    "crates/agent/src/bin/webdock-recovery-gateway.rs": "335ff4fc80942b52fdb51a78e215204bd36dcbd07d4abffb08e685c3d7bba955",
+    "crates/agent/src/bin/webdock-recovery.rs": "7de31493f51f458e0f679e68412e19b81584d4c4019807a7862f705eb6fef050",
+    "crates/agent/src/config.rs": "04eca6262c4777c44d261fe25d1038665ca01fd189f0400eefc27a07dbd9a016",
+    "crates/agent/src/lib.rs": "e1505d630c9f6db25ae285118bbbd8c3f5ace34d1ef2e466e15b0c318bf398ec",
+    "crates/agent/src/management.rs": "32c9de530ccc8888a9a7a194683d842568abf7730d984efa56dbfcef3871be18",
+    "crates/agent/src/management/recovery.rs": "5f5b59135daad05951e1d3876b82d1d550f274c8c051ef63f79fa31a328ad2e6",
+    "crates/agent/src/outbox.rs": "fccc96a52aebb494de0bd27c7765a4491924dde3496f3fb11b3fb0d05cf2e3f8",
+    "crates/agent/src/recovery.rs": "929b1614449703a4e36d47a3cdb224b21d6b4ee0068b2a0d087cd5a02b2211c7",
+    "crates/agent/src/recovery/archive.rs": "bc9cd2a7df25223a1ce971aa376dba5040b1a73071046d5080d9132b32d0e768",
+    "crates/agent/src/recovery/capsule.rs": "2a9b0483942b4927e6421a137f9bfca88913034fec82fe1d5aa58d1fe2ef983e",
+    "crates/agent/src/recovery/config.rs": "afa0e61b1a4820ad071047ad85e339e0e34216446223c66655526273950f5c8f",
+    "crates/agent/src/recovery/docker.rs": "e07e65f6191378b89aa87eefa2648ea590e5dfa3a8f28c900914b08d8d4f074d",
+    "crates/agent/src/recovery/effect_fence.rs": "002761cee9737c796dc2d11ef0b1e31f651c9e03346c4232847d83fdc0f998da",
+    "crates/agent/src/recovery/gateway.rs": "a3d4235898b02147d750d6f3e97bcb395aafb09cb501b4b2ee365acde49b1ae4",
+    "crates/agent/src/recovery/kubernetes.rs": "e72fa1a70247a0d7d950538612b3b6c988addaf31bcf88c6d3c9f65887ffcaa0",
+    "crates/agent/src/recovery/mail.rs": "bf424bd1c39372fe907ed15ff624b9a961d929390d716028a5020dd81c127681",
+    "crates/agent/src/storage.rs": "1584704def9addc9337ce1f8fdbd1c838264a13b3f6bbc54ae85f17765a808bc",
+    "crates/agent/src/storage/recovery.rs": "1295e1e2a958ae36ca977a65b691fd497b3b3bdf46a0250f2e60d1f453604f82",
+    "crates/agent/src/storage/recovery_io.rs": "956c88ffc88898aa24335054c8993faf9caedb157a6c21a7a5e9257f9a7f13ed",
+    "crates/agent/src/workloads.rs": "b5949ea98d83c21713c4c4d058e86eb9ba3b89c8bf08192231af68b5de154860",
+    "crates/agent/tests/application_recovery.rs": "01c9d949ae2326a13efd8fb11f2242bd21e7b795e14e83077cca87b50e7b45bc",
+    "crates/agent/tests/management.rs": "d4dd1e3d6fc5c82e9485a4cf2dbb5900e24861b97b7fc7c65c147c91ca0fc88e",
+    "crates/agent/tests/recovery_capsule.rs": "9e42529c7bf13d68d7a1ed0e42436c0c6aca6482584edb604179d3121933b78b",
+    "crates/control-plane/src/app.rs": "01edb58fc1c250a91c9ab503ee48bce289ab8d22aa932684b2218d21857be652",
+    "crates/control-plane/src/hosting.rs": "c48e326dbd1b1bd7c516702d5e29c4586722a64e5c3d6e120e92614eab28fb5b",
+    "crates/control-plane/src/recovery.rs": "4b329c33e26c951830bf44bde1e97328d7887f4d1b3ac90550af0406cedc9cb4",
+    "crates/hosting/src/apps.rs": "c14b0d21ade538ea25a08a8749fd373ae3de994aee959a30fb648d07a21a172c",
+    "crates/hosting/src/lib.rs": "07ccc0f022d31491fe22e9486a73bd3af7f26bf2451c91b81792e0b6b9d12226",
+    "crates/hosting/src/recovery.rs": "8d6b539fed664525a2382b7287ea9d6c4a7340bbb55b093a808951bf67eaab78",
+    "crates/hosting/src/recovery_signing.rs": "0e2823fb353bf20bc6b106226b793dc0efb3dd26717d5c8d8f6cdeac37224c55",
+    "crates/hosting/src/service.rs": "f9bd91e712ba5bbcb47eeff223a0039ecb353ee3f11e46ef5cb936c697e978e4",
+    "crates/mail-runtime/src/secrets.rs": "f42843d1fbeb185a2f04dce88d486fc4d733d8e622c3fd7feb09c9fc5d1f449c",
+    "crates/mail/src/authority.rs": "af4c30e27437b9e823c9b04f954a8be889ebd35c5caf19b188aaaf0949373ea4",
+    "crates/mail/src/incoming/agent.rs": "2f00c2fd916b797060cf17193ff862f902a76a7da94c54ee3fa67166a707e1be",
+    "crates/mail/src/recovery.rs": "c2f85e0ff6365605f4420cfdf482b5d1a1e3a924dd01eabe9f753a60367df6ab",
+    "crates/persistence/migrations/0054_source_recovery_fences.sql": "71fec2ff01c25683b89b5893205bf76dc6548b1d5e4e4542efdf9029c1f1c988",
+    "plugins/mail/src/executor.rs": "93f2d94ccc428e4544c2eab6d7bbf1b6f51b65397c586d72a936f8c81b6b321b",
+    "plugins/mail/src/lib.rs": "37cbd6d6498291aa2843f1c74f2151a2d8e55787035a9c4148e22db5c21d97fe",
+    "plugins/mail/src/mailboxes.rs": "96478d89c3b3f07991373d2d9b175a6b9fa8517102089ad02c7d04bebd9e9570",
+    "plugins/mail/src/payload.rs": "a4516af7a8dd5c115c8052d8f8b1b5468fe83e8eb326829b16bbfffd0528cf6f",
+    "plugins/mail/src/recovery.rs": "9deeaed9297508cd8339583305e9b18d205533c65f0454557b51e85638e340d7",
+    "plugins/mail/src/recovery.sql": "c0e0a8e3b1f8734a0cfda790cd80d92ae9772b3c2e2698af63dfd16b884ae9d6",
+    "plugins/mail/src/store.rs": "ac92ebdf46618a6d8faca63b0d79a6b1247af395af0a3e6983918f2a4170fc0a",
+    "plugins/mail/tests/recovery.rs": "c39cfdc5ec065c28391bd5a5fd5a016022880a57d49c5a7c1d812485c5506947",
+    "proto/webdock/agent/v1/recovery.proto": "c4c013fe5eea999d8264c16a2b486d86b3abc0d506c5c434331397c85145b8f0",
+    "tools/tests/native-recovery-schema.py": "a2343cda727d3d0b7cf5b6a48912c00cb5d79a1e5481ec89a161f2bf9e76f1f2"
+  },
+  "checks": [
+    {
+      "command": "cargo metadata --offline --locked --all-features --format-version 1 > /dev/null",
+      "exitCode": 0
+    },
+    {
+      "command": "cargo check --offline --locked -p webdock-control-plane -p webdock-agent-control -p webdock-agent",
+      "exitCode": 0,
+      "seconds": 7.83
+    },
+    {
+      "command": "cargo clippy --offline --locked -p webdock-agent --features local-recovery-fixture --lib --bins --tests -p webdock-hosting -p webdock-agent-control -p webdock-control-plane -- -D warnings",
+      "exitCode": 0,
+      "seconds": 4.17
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exitCode": 0
+    },
+    {
+      "command": "cargo test --offline --locked -p webdock-agent --features local-recovery-fixture --lib --test application_recovery --test recovery_capsule --test config --test outbox --test storage --test management",
+      "exitCode": 0,
+      "passed": 65,
+      "ignoredPrivilegedCases": 3
+    },
+    {
+      "command": "python3 tools/tests/native-recovery-schema.py --max-version 54 --evidence docs/verification/2026-10-25-native-recovery-54-schema-draft.json",
+      "exitCode": 0,
+      "runtimeRoleDenials": 16,
+      "freshJournal": "53|54",
+      "evidence": "docs/verification/2026-10-25-native-recovery-54-schema-draft.json"
+    }
+  ],
+  "failureEvidence": [
+    {
+      "test": "management::outbound_unix_dispatch_revalidates_reads_and_replays_committed_work_after_restart",
+      "before": "Reproduced SIGABRT stack overflow with recovery disabled at default stack; no raised RUST_MIN_STACK used",
+      "fix": "Box new recovery dispatch future at cycle boundary",
+      "after": "Exact isolated test and full focused management suite pass at default stack"
+    },
+    {
+      "test": "workloads::tests::captured_workload_released_after_fence_uses_real_executor_guard_before_provider_patch",
+      "observed": "Captured replicas1 intent released after local per-effect fence: guarded executor denied, zero provider PATCH; unguarded legacy executor emitted one PATCH. Controlled provider test, not actual Core admitted-fence acceptance."
+    }
+  ],
+  "knownLimits": [
+    "Independent review has not started or passed. Root arranges it after this implementation turn ends. No final54 SHA/compiler/ELF freeze yet.",
+    "Actual Core-admitted fence/CAS0 versus blocked pre-gate legacy executor and durable UNDRAINED->owned-stop/drained regression remains required. Current local provider test does not establish it.",
+    "Additional canonical enrolled executors currently hard-deny source capture. Explicit owned legacy worker stop/completion mapping is not implemented; unknown, cancelled or session-lost work must remain undrained.",
+    "No full real Core/private PostgreSQL/incoming CE/local SMTP/source-unavailable recovery demonstration yet. No confirmed/unknown SMTP no-replay acceptance claim and no full-workload RTO/RPO measurement.",
+    "Native quota-backed ntfy install is linked but privileged end-to-end TLS/auth/SQL/attachment URL+bytes/no-egress/capacity denial and exact fresh UUID ownership proof remains required;3 privileged fixture tests remain ignored.",
+    "Restore-peak arithmetic contract is not an independent durable reservation receipt; review actual helper allocation/staging and Core reservation ordering before full qualification.",
+    "Kubernetes source stop/snapshot and preserved data mount now wired, with controlled UID/RV/template/PVC denial tests; real CE source/target image/UID/permissions/TLS/config behavior and helper crash cleanup remain unqualified.",
+    "Operator config currently loads both backup writer and restore credentials; source-unavailable/read-only target credential minimization needs qualification/refinement. No source plaintext key files are read by restore paths, but independent custody availability is required.",
+    "Production remains disabled/unqualified pending independent key custody, signer and provider inputs. Capsule authorizes only one time/capacity/nonce/target-bound quarantine; local replay journal is not globally single-use and cannot know later source revocation/history."
+  ],
+  "custody": {
+    "ownLiveFixtures": [],
+    "ownCompilerSessionsAtHandoff": [],
+    "schemaContainerAndVolumesRemoved": true,
+    "schemaPrivateDirectoryRemoved": true,
+    "existingMinIOAndCachedImagesUntouched": true,
+    "existingKindK3sAndStoppedServicesUntouched": true,
+    "protectedCore52SnapshotUnchanged": "/home/newt/.cache/webdock-native-recovery-52-b8c696efe326ea8b"
+  }
+}

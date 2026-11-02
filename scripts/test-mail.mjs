@@ -27,7 +27,7 @@ process.once("SIGTERM", () => { cleanup(); process.exit(143); });
 try {
   console.log(`Starting isolated CE lab ${project} (no published ports, no internet egress).`);
   execFileSync("docker", [...args, "up", "-d"], { cwd: root, env: dockerEnv, stdio: "inherit", timeout: 60_000 });
-  const result = spawnSync(process.execPath, ["--test", "--test-concurrency=1", "apps/mail/tests/integration/*.test.ts"], {
+  const result = spawnSync(process.execPath, ["test", "./legacy/mail/tests/integration/"], {
     cwd: root, env: { ...dockerEnv, MAIL_TEST_PROJECT: project }, stdio: "inherit", timeout: 120_000,
   });
   process.exitCode = result.status ?? 1;

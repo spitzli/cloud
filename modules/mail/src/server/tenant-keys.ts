@@ -54,7 +54,7 @@ export function createTenantKeys(dependencies: Dependencies) {
       process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED === "true" &&
       !access.operator
     )
-      fail("Use Webdock Mail sending to manage native API keys.");
+      fail("Use Spitzli Cloud Mail sending to manage native API keys.");
     if (!access.canManage || access.tenant.status !== "active")
       fail("Active tenant administrator access is required.");
     return access;
@@ -162,7 +162,7 @@ export function createTenantKeys(dependencies: Dependencies) {
         ips = input.ips || [];
       if (input.action === "create") {
         if (process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED === "true")
-          fail("Use Webdock Mail sending to manage native API keys.");
+          fail("Use Spitzli Cloud Mail sending to manage native API keys.");
         if (
           isInternalMailKey(label) ||
           !label ||

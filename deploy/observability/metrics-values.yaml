@@ -1,0 +1,162 @@
+# OFFLINE CANDIDATE. Missing Secrets/storage and isolation intentionally prevent activation.
+fullnameOverride: obs-metrics
+defaultRules:
+  create: true
+grafana:
+  enabled: true
+  fullnameOverride: obs-grafana
+  image:
+    sha: 540b8afb775bf34aefce417e4329039daa5d44b6f2fbda6881397b1b247ca7df
+  defaultDashboardsEnabled: true
+  defaultDashboardsEditable: false
+  admin:
+    existingSecret: obs-grafana-admin-unconfigured
+    userKey: admin-user
+    passwordKey: admin-password
+  ingress:
+    enabled: false
+  service:
+    type: ClusterIP
+  grafana.ini:
+    auth.anonymous:
+      enabled: false
+    auth:
+      disable_login_form: true
+    users:
+      allow_sign_up: false
+    analytics:
+      reporting_enabled: false
+      check_for_updates: false
+      check_for_plugin_updates: false
+  persistence:
+    enabled: true
+    storageClassName: webdock-obs-storage-unqualified
+    size: 2Gi
+  initChownData:
+    enabled: false
+  testFramework:
+    enabled: false
+  rbac:
+    namespaced: true
+  sidecar:
+    image:
+      sha: 092dbe0c335fba9af414a27630ca68f34df6185784fa847d9954187e69dbfdd7
+    resources:
+      requests: {cpu: 25m, memory: 64Mi, ephemeral-storage: 64Mi}
+      limits: {cpu: 100m, memory: 128Mi, ephemeral-storage: 128Mi}
+    dashboards:
+      searchNamespace: webdock-observability
+      resource: configmap
+      sizeLimit: 32Mi
+    datasources:
+      searchNamespace: webdock-observability
+      resource: configmap
+      sizeLimit: 1Mi
+  resources:
+    requests: {cpu: 100m, memory: 256Mi, ephemeral-storage: 128Mi}
+    limits: {cpu: 500m, memory: 512Mi, ephemeral-storage: 256Mi}
+alertmanager:
+  ingress:
+    enabled: false
+  alertmanagerSpec:
+    image:
+      sha: 39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b
+    replicas: 1
+    retention: 120h
+    resources:
+      requests: {cpu: 25m, memory: 64Mi, ephemeral-storage: 64Mi}
+      limits: {cpu: 200m, memory: 256Mi, ephemeral-storage: 128Mi}
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: webdock-obs-storage-unqualified
+          accessModes: [ReadWriteOnce]
+          resources:
+            requests: {storage: 1Gi}
+prometheus:
+  ingress:
+    enabled: false
+  prometheusSpec:
+    image:
+      sha: 451a845bae1d51622b41af1780eb2ad911bbb79a9855bc8e9bb67fabbc03f934
+    replicas: 1
+    retention: 15d
+    retentionSize: 20GB
+    walCompression: true
+    enableRemoteWriteReceiver: false
+    enableAdminAPI: false
+    scrapeInterval: 60s
+    scrapeTimeout: 10s
+    enforcedSampleLimit: 10000
+    enforcedTargetLimit: 100
+    enforcedLabelLimit: 20
+    enforcedLabelValueLengthLimit: 256
+    additionalArgs:
+      - {name: query.max-concurrency, value: '2'}
+      - {name: query.max-samples, value: '5000000'}
+    serviceMonitorNamespaceSelector:
+      matchLabels: {kubernetes.io/metadata.name: webdock-observability}
+    podMonitorNamespaceSelector:
+      matchLabels: {kubernetes.io/metadata.name: webdock-observability}
+    ruleNamespaceSelector:
+      matchLabels: {kubernetes.io/metadata.name: webdock-observability}
+    serviceMonitorSelectorNilUsesHelmValues: true
+    podMonitorSelectorNilUsesHelmValues: true
+    resources:
+      requests: {cpu: 250m, memory: 1Gi, ephemeral-storage: 128Mi}
+      limits: {cpu: '1', memory: 2560Mi, ephemeral-storage: 256Mi}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: webdock-obs-storage-unqualified
+          accessModes: [ReadWriteOnce]
+          resources:
+            requests: {storage: 30Gi}
+prometheusOperator:
+  namespaces:
+    releaseNamespace: true
+    additional: []
+  image:
+    sha: c7edf0379b7271ef1705dce258d2bb73820e299cc95559369e9f6fc3321639ec
+  admissionWebhooks:
+    enabled: false
+  tls:
+    enabled: false
+  resources:
+    requests: {cpu: 50m, memory: 128Mi, ephemeral-storage: 64Mi}
+    limits: {cpu: 250m, memory: 256Mi, ephemeral-storage: 128Mi}
+  prometheusConfigReloader:
+    image:
+      sha: a1897c67478bc23434534e91ad3855280771196b1daf17144db9dbcb655bef71
+    resources:
+      requests: {cpu: 10m, memory: 32Mi, ephemeral-storage: 32Mi}
+      limits: {cpu: 50m, memory: 64Mi, ephemeral-storage: 64Mi}
+# Host mounts and remote-cluster collectors require separate reviewed qualification.
+nodeExporter:
+  enabled: false
+kubeStateMetrics:
+  enabled: true
+kube-state-metrics:
+  image:
+    sha: sha256:42cfe3723a5f058171c627537fb57a3ea0f26e4380fa18555a95cb1a1b4cfc5b
+  namespaces: [webdock-observability]
+  rbac:
+    useClusterRole: false
+  collectors: [deployments, pods, statefulsets, persistentvolumeclaims, resourcequotas]
+  resources:
+    requests: {cpu: 25m, memory: 64Mi, ephemeral-storage: 32Mi}
+    limits: {cpu: 100m, memory: 128Mi, ephemeral-storage: 64Mi}
+kubeApiServer:
+  enabled: false
+kubelet:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeEtcd:
+  enabled: false
+coreDns:
+  enabled: false

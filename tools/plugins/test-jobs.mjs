@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -21,7 +21,7 @@ function run(command, args, options = {}) {
   return r.stdout.trim();
 }
 try {
-  run("npm", ["run", "build", "-w", "@webdock/plugin-sdk"]);
+  run(process.execPath, ["run", "--filter", "@webdock/plugin-sdk", "build"]);
   run("docker", [
     "run",
     "-d",
@@ -50,34 +50,24 @@ try {
     run(
       process.execPath,
       [
-        "--import",
-        "tsx",
-        "--test",
-        "packages/core/tests/jobs/jobs.test.ts",
-        "packages/core/tests/jobs/integration.test.ts",
-        "packages/core/tests/jobs/core.integration.test.ts",
-        "packages/core/tests/jobs/schedules.integration.test.ts",
+        "test",
+        "./packages/core/tests/jobs/jobs.test.ts",
+        "./packages/core/tests/jobs/integration.test.ts",
+        "./packages/core/tests/jobs/core.integration.test.ts",
+        "./packages/core/tests/jobs/schedules.integration.test.ts",
       ],
       { env },
     ),
   );
-  run("npm", ["pack", "-w", "@webdock/plugin-sdk", "--pack-destination", temp]);
-  run("npm", ["pack", "-w", "@webdock/cli", "--pack-destination", temp]);
+  run(process.execPath, ["pm", "pack", "--destination", temp], { cwd: join(root, "packages/plugin-sdk") });
+  run(process.execPath, ["pm", "pack", "--destination", temp], { cwd: join(root, "packages/plugin-cli") });
   const sdk = join(temp, "webdock-plugin-sdk-0.1.0.tgz"),
     cli = join(temp, "webdock-cli-0.1.0.tgz"),
     authoring = join(temp, "authoring"),
     plugin = join(temp, "plugin");
-  run("npm", [
-    "install",
-    "--prefix",
-    authoring,
-    "--offline",
-    "--ignore-scripts",
-    "--no-audit",
-    "--no-fund",
-    sdk,
-    cli,
-  ]);
+  mkdirSync(authoring);
+  writeFileSync(join(authoring, "package.json"), "{}\n");
+  run(process.execPath, ["add", "--ignore-scripts", sdk, cli], { cwd: authoring });
   const command = join(authoring, "node_modules/@webdock/cli/src/cli.js");
   run(process.execPath, [
     command,
@@ -88,21 +78,7 @@ try {
     plugin,
     "--json",
   ]);
-  run(
-    "npm",
-    [
-      "install",
-      "--offline",
-      "--ignore-scripts",
-      "--no-audit",
-      "--no-fund",
-      "--no-save",
-      "--package-lock=false",
-      sdk,
-      cli,
-    ],
-    { cwd: plugin },
-  );
+  run(process.execPath, ["add", "--ignore-scripts", "--no-save", sdk, cli], { cwd: plugin });
   run(process.execPath, [command, "plugin", "validate", "--dir", plugin]);
   run(process.execPath, [command, "plugin", "build", "--dir", plugin]);
   // Packing fixture only: never represent this made-up image as a published runtime.
@@ -122,7 +98,7 @@ try {
   console.log(
     run(
       process.execPath,
-      ["--import", "tsx", "tools/plugins/test-job-demo.ts", plugin],
+      ["tools/plugins/test-job-demo.ts", plugin],
       { env },
     ),
   );

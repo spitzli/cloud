@@ -1,0 +1,96 @@
+{
+  "status": "SOURCE_STABLE_FOR_NEW_INDEPENDENT_ARTIFACT_BINDING_REVIEW2; execution STOP",
+  "scope": "Only runner/artifact tests and finite private overlay; no Rust/SQL/Cargo/lock/runtime/image changes.",
+  "priorReview1": {
+    "runnerSHA256": "6487372f0ffd59cb1b6ad1b8e17321d956e8caf0bde986504cfa993f649b4ebf",
+    "testsSHA256": "13a4d04363f47dd61ecdeb8bc2114dbde9bcc13a67ac4db5442eecfe3ce3310c",
+    "evidenceSHA256": "1f940b7c4e318d10273a49cd3b56ee8d9688f6e979001a352f8a53f9e63dc1f9",
+    "overlaySHA256": "b384b6d5ee31014177a7e592bd33a5701018847576c8617108211f79085f9eb0",
+    "unchangedHistorical": true
+  },
+  "base6223": {
+    "pin": ".runtime-test/recovery-current-source-component-6223d3e8baf0/pin.json",
+    "sha256": "1bbbdd07c56540bff34faa1a8a7dd0ef97493061f9005f0b2cb5d5e54426e11e",
+    "publicSourceArchiveSHA256": "c00ef395c5fd51359c7915665623c4eca1b2f529deff71419470cc7754fe4bdb",
+    "all13CopiedELFsRehashedUnchanged": true
+  },
+  "overlay": ".runtime-test/recovery-source-input-overlay-4d7e319eccd8/overlay.json",
+  "overlaySHA256": "4d7e319eccd87a376400765a923685b1496e00e0ba06fa5e81a67d80d9beee0a",
+  "overlayFiles": {
+    "agents/kubernetes/ntfy_recovery.py": "8e128954a3be894ebdf84166d25d7f48ebe20c75879d271dd495c78ab926baf1",
+    "deploy/helm/webdock-agent/Chart.yaml": "cf2da66338d5d397e1ea6894994b517c64b62075f83e0c27a214ea7c4c7f6d96",
+    "deploy/helm/webdock-agent/templates/agent.yaml": "e0ba67444f120602c3cd67cd77d083bb9db20cd9a39a3ee55c5debfe5f84ef24",
+    "deploy/helm/webdock-agent/values.schema.json": "981ab5e0eab751b7b75cd32798377a13f8cc76fbaa98a8db1c700d1894d0735a",
+    "deploy/helm/webdock-agent/values.yaml": "b25430e9e9394f140cf81d02e14c747f71d36e5524c674ba22f5e7ea109a4fbf",
+    "tools/tests/mail-application-recovery.py": "5247a1c471a296e2c34428c51f7829864d77105240fe9d5eb084e3293d0ce23a",
+    "tools/tests/recovery-admission-component.py": "b8c76a74bebcf12fa25d180fad4050e3a43be900f2f1fe787bea3ddf1fdbab50",
+    "tools/tests/recovery_fixture_custody.py": "4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c"
+  },
+  "sourceSHA256": {
+    "tools/tests/recovery-admission-component.py": "b8c76a74bebcf12fa25d180fad4050e3a43be900f2f1fe787bea3ddf1fdbab50",
+    "tools/tests/test_recovery_fixture_artifacts.py": "5c0023690fc77c50f29c2a98f805205b663157ac40e187c4014ae35afb477d38",
+    "tools/tests/recovery_fixture_custody.py": "4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c",
+    "tools/tests/test_recovery_fixture_runner.py": "d672c7fea60a641d56fb3e99a0a10ba51e17b9d9304d125b417b47222c455778",
+    "tools/tests/test_recovery_fixture_custody.py": "1e86182bbdc62ed469f04c745f26faea930cda7bf5dd9bc33143b46fc6c621cb"
+  },
+  "reviewResponses": [
+    {
+      "finding": 1,
+      "red": "Actual main loader executed live replacement fixture; preselected ntfy dependency could also resolve mutable/cached module.",
+      "fix": "Cache both Python sources as bytes from the verified overlay descriptors; finite loader compiles those cached bytes and binds the ntfy import to the verified module even if sys.modules/live/overlay paths change; restore helper sys.path side effect.",
+      "green": "Actual main loader block executes original admitted fixture and dependency despite replacements of both source paths and untrusted existing sys.modules entry; exact ELF copy remains valid."
+    },
+    {
+      "finding": 2,
+      "red": "Both base and overlay manifest post-verification FIFO/same-content symlink replacements reached unchecked read_bytes, reproduced by bounded pathname guard without blocking.",
+      "fix": "verified_file returns bounded bytes read from its verified no-follow descriptor; JSON parses those exact bytes, no pathname reopen.",
+      "green": "All four FIFO/symlink boundary cases parse the original verified bytes; no unchecked read_bytes called."
+    },
+    {
+      "finding": 3,
+      "red": "After select chmod0500 to0700 still copied successfully.",
+      "fix": "Retain expected mode and size from the pinned manifest in selected ELF entries; verify both using the same descriptor used for copy, before destination creation; check metadata stability after read and preserve postcopy SHA check.",
+      "green": "Changed Agent mode rejects before Agent destination exists, no acquisition."
+    }
+  ],
+  "checks": {
+    "command": "PYTHONPATH=tools/tests python3 -m unittest tools/tests/test_recovery_fixture_artifacts.py tools/tests/test_recovery_fixture_runner.py tools/tests/test_recovery_fixture_custody.py",
+    "passed": 44,
+    "failed": 0,
+    "prior41Preserved": true,
+    "oldArtifactMethodsASTUnchanged": true,
+    "reviewedFinalizerASTUnchanged": true,
+    "syntax": "python3 -m py_compile tools/tests/recovery-admission-component.py tools/tests/test_recovery_fixture_artifacts.py PASS",
+    "actualFixtureDefinitionsLoadedFromVerifiedBytesWithoutCommands": true,
+    "redLogSHA256": "07568d82765555cb77cb5b916ba9f568dcfdba3974dc8ae627c74b310434f991",
+    "importPathRedLogSHA256": "ec0df09fdf3d69497b715e122687647c1210418b0f49abbfee601509b63c2b1a",
+    "greenLogSHA256": "536c61ab8873a501e7014875f23dcc0f770b9dfa886461dd7f411b43a72ddabd",
+    "runnerDiffSHA256": "7791140094478e28c566191e82c97147d5524a20edf11d3b6dcbb1dbfcd0da0d",
+    "testsDiffSHA256": "3443a60cb54554f578682f43356107d176ce006a3e302ee683d0ae59b71bf503"
+  },
+  "copiedELFs": {
+    "bootstrap-test": "6643718329135d108f3685fdc6993d5bb09395a7eb657cc3dfe4a09910e3e74a",
+    "webdock-agent": "d8208a7e7984ee47caeed8b1f69c2ff74879a8f1a413072c7dce50a55d997270",
+    "webdock-storage": "1f2bc06b80cc68c81a5bb392ead2358e66d8c34d971837af2df1128ed72e2301"
+  },
+  "currentRootLockSHA256": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+  "current54SHA256": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+  "frozen55SHA256": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+  "runtime": {
+    "dockerCommands": 0,
+    "imageActions": 0,
+    "providerCalls": 0,
+    "runtimeStarts": 0,
+    "newBuilds": 0,
+    "newRuntimeCleanupObligations": 0
+  },
+  "limits": [
+    "Runtime STOP remains until new independent review2 and Root window release.",
+    "No genuine Core/admission/full Mail/CE/SMTP/ntfy recovery acceptance and no final54 freeze.",
+    "Preflight-only historical metadata mode remains distinct; this reviewed binding/verified-byte loader is mandatory in whole mode."
+  ],
+  "budgetFreeBytes": {
+    "home": 10125438976,
+    "tmp": 5678202880
+  }
+}

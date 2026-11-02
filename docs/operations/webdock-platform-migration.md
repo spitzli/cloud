@@ -9,7 +9,7 @@ a backup product, delete the source, or automate production writes.
 
 ## Prerequisites and private configuration
 
-Use Node 24, repository dependencies, and PostgreSQL 18 `pg_dump`/`pg_restore`.
+Use Bun, repository dependencies, and PostgreSQL 18 `pg_dump`/`pg_restore`.
 The utility is `scripts/platform-database-migration/migrate.mjs`. All output paths
 must be new private paths outside Git. Dump files contain customer data; logs and
 manifests are also private. Generated files use mode 0600 and existing artifacts
@@ -55,7 +55,7 @@ name starting `wd_migration_test_`; never use it for a rollout.
 
 ### Prepare the managed target
 
-Generate root bootstrap artifacts with `node scripts/platform-database-migration/roles.mjs /private/role-config.json /private/new-roles-directory`.
+Generate root bootstrap artifacts with `bun scripts/platform-database-migration/roles.mjs /private/role-config.json /private/new-roles-directory`.
 The production role config contains only `{"caFile":"/private/managed-postgres-ca.crt"}`;
 the host, direct port 32000, logical database and managed owner are pinned.
 Review and execute `bootstrap.sql` through root's Kubernetes/psql channel on the
@@ -76,7 +76,7 @@ verification. Apply the reviewed additive Mail product migrations using the
 offline login, then run:
 
 ```sh
-node --import tsx apps/auth/scripts/install-platform-rls.ts /private/new-roles-directory/installer.env
+bun apps/auth/scripts/install-platform-rls.ts /private/new-roles-directory/installer.env
 ```
 
 This installs FORCE RLS, signed-context/OLD-row checks, scoped Mail and capacity
@@ -109,8 +109,8 @@ would affect unrelated customers. Freeze DDL throughout export and cutover.
 Generate SQL using a read-only source connection:
 
 ```sh
-node scripts/platform-database-migration/migrate.mjs fence-sql /private/config.json /private/platform-fence.sql
-node scripts/platform-database-migration/migrate.mjs unfence-sql /private/config.json /private/platform-unfence.sql
+bun scripts/platform-database-migration/migrate.mjs fence-sql /private/config.json /private/platform-fence.sql
+bun scripts/platform-database-migration/migrate.mjs unfence-sql /private/config.json /private/platform-unfence.sql
 ```
 
 Review the exact source identity and table list, then execute the fence SQL
@@ -141,9 +141,9 @@ platform table, so inspect those dependencies before the production freeze.
 ## Consistent export, restore and verification
 
 ```sh
-node scripts/platform-database-migration/migrate.mjs export /private/config.json /private/platform-final.dump
-node scripts/platform-database-migration/migrate.mjs restore /private/config.json /private/platform-final.dump
-node scripts/platform-database-migration/migrate.mjs verify /private/config.json /private/platform-final.dump
+bun scripts/platform-database-migration/migrate.mjs export /private/config.json /private/platform-final.dump
+bun scripts/platform-database-migration/migrate.mjs restore /private/config.json /private/platform-final.dump
+bun scripts/platform-database-migration/migrate.mjs verify /private/config.json /private/platform-final.dump
 ```
 
 Export refuses any selected table without the expected always-enabled write fence.
@@ -204,8 +204,8 @@ randomly named `wd_migration_test_*` databases on an explicitly selected local
 PostgreSQL 18 container. It never accesses the restored rehearsal database.
 
 ```sh
-node --test scripts/platform-database-migration/migrate.test.mjs
-MIGRATION_TEST_CONTAINER=<local-pg18-container> MIGRATION_TEST_ENV=/private/local-postgres.env node --test scripts/platform-database-migration/migrate.test.mjs
+bun test scripts/platform-database-migration/migrate.test.mjs
+MIGRATION_TEST_CONTAINER=<local-pg18-container> MIGRATION_TEST_ENV=/private/local-postgres.env bun test scripts/platform-database-migration/migrate.test.mjs
 ```
 
 The private test env file contains the container's POSTGRES_USER,
@@ -242,7 +242,7 @@ ssh -o BatchMode=yes root@178.104.141.95 'kubectl -n webdock-databases get deplo
 Prepare noncredential patches using the public managed CA:
 
 ```sh
-node scripts/platform-database-migration/tabularis.mjs prepare /private/live-before.json /private/managed-ca.crt /private/patches-new
+bun scripts/platform-database-migration/tabularis.mjs prepare /private/live-before.json /private/managed-ca.crt /private/patches-new
 ```
 
 This writes a dedicated `db-webdock-operator-database-ca` ConfigMap, adds only its
@@ -258,7 +258,7 @@ At execution time only, create a private mode-0600 JSON credential file with exa
 provisioned password; never synthesize a placeholder and apply it.
 
 ```sh
-node scripts/platform-database-migration/tabularis.mjs credentials /private/live-before.json /private/browser-credentials.json /private/patches-new
+bun scripts/platform-database-migration/tabularis.mjs credentials /private/live-before.json /private/browser-credentials.json /private/patches-new
 ```
 
 It changes only Secret `data["connections.json"]`, preserving its envelope,

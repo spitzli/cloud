@@ -1,0 +1,12 @@
+# The CloudNativePG operator for dedicated PostgreSQL instances, installed by k3s on start.
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: cloudnative-pg
+  namespace: kube-system
+spec:
+  repo: https://cloudnative-pg.github.io/charts
+  chart: cloudnative-pg
+  version: 0.29.1
+  targetNamespace: cnpg-system
+  createNamespace: true

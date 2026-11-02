@@ -1,0 +1,82 @@
+
+# Disposable qualification overlay appended to the exact maintained Dockerfile.
+# It exports only proof; it is never the registry runtime image target.
+FROM runtime AS runtime-admission-smoke
+RUN <<'SMOKE'
+set -eu
+export DATABASE_URL=:memory:
+export JWT_SECRET=isolated-runtime-qualification-secret
+export TOKEN_ENC_KEY=0000000000000000000000000000000000000000000000000000000000000000
+export BASE_URL=http://127.0.0.1:3000
+export CACHE_DRIVER=memory
+export LOG_LEVEL=error
+bun - <<'TEST'
+import assert from 'node:assert/strict';
+import { dirname } from 'node:path';
+import { db, connectDB } from './src/db/index.ts';
+import { migrate } from 'drizzle-orm/bun-sqlite/migrator';
+import { initSettings, setSetting } from './src/lib/settings.ts';
+import { createKind, getKind } from './src/lib/kinds.ts';
+import { parseManifestText } from './src/lib/manifest.ts';
+import { buildMergedSchema } from './src/lib/manifest-schema.ts';
+import { validateManifest } from '@tabularium/manifest';
+await connectDB(':memory:');
+migrate(db, { migrationsFolder: './src/db/migrations' });
+await initSettings();
+const manifestSchema = { oneOf: [1, 2].map(n => ({ type:'object', additionalProperties:false,
+  properties:{name:{type:'string'},version:{type:'string'},kind:{const:'extension'},protocolVersion:{const:n},sdkVersion:{const:n},dataProtocolVersion:{const:n}},
+  required:['name','version','kind','protocolVersion','sdkVersion','dataProtocolVersion'] })) };
+await createKind({key:'extension',label:'Extensions',description:null,manifestSchema});
+const manifest={name:'runtime-fixture',version:'1.0.0',kind:'extension',protocolVersion:2,sdkVersion:2,dataProtocolVersion:2};
+assert.deepEqual(parseManifestText(JSON.stringify(manifest)),manifest);
+assert.throws(()=>parseManifestText(JSON.stringify({...manifest,privileged:true})));
+assert.throws(()=>parseManifestText(JSON.stringify({...manifest,sdkVersion:1})));
+assert.equal(validateManifest(manifest,buildMergedSchema()).ok,true);
+for(const raw of ['', '{', '{}', 'null', 'true', '[null]', '[{}]']){
+  await setSetting('plugin_kinds',raw);
+  assert.throws(()=>getKind('extension'));
+  assert.throws(()=>parseManifestText(JSON.stringify({...manifest,privileged:true})));
+}
+const productionPackages={};
+for(const name of ['ajv','elysia','@modelcontextprotocol/sdk']){
+  const entry=name==='@modelcontextprotocol/sdk'?name+'/server/index.js':name;
+  const owner=name==='ajv'?'/app/packages/manifest':process.cwd();
+  let directory=dirname(Bun.resolveSync(entry,owner));
+  while(true){
+    const file=Bun.file(directory+'/package.json');
+    if(await file.exists()){
+      const value=await file.json();
+      if(value.name===name){productionPackages[name]=value.version;break;}
+    }
+    const parent=dirname(directory);
+    assert.notEqual(parent,directory,'Installed package metadata missing');
+    directory=parent;
+  }
+}
+await Bun.write('/tmp/runtime-admission-smoke.json',JSON.stringify({productionDependencies:true,productionPackages,isolatedInMemoryDatabase:true,strictNativeTuple:true,unknownPrivilegeRejected:true,kindlessDiscovery:true,persistedCorruptionCases:7,bun:Bun.version},null,2)+'\n');
+TEST
+export CONFIG_PATH=/tmp/isolated-runtime-config.json
+export DATA_DIR=/tmp/isolated-runtime-data
+bun src/index.ts >/tmp/isolated-runtime-startup.log 2>&1 &
+runtime_pid=$!
+trap 'kill "$runtime_pid" 2>/dev/null || true' EXIT
+healthy=false
+for attempt in $(seq 1 60); do
+  if wget -q -O /tmp/runtime-health.json http://127.0.0.1:3000/healthz; then
+    healthy=true
+    break
+  fi
+  if ! kill -0 "$runtime_pid" 2>/dev/null; then
+    echo 'Isolated runtime exited before health verification' >&2
+    exit 1
+  fi
+  sleep 0.5
+done
+test "$healthy" = true
+bun -e 'import assert from "node:assert/strict"; assert.equal((await Bun.file("/tmp/runtime-health.json").json()).ok,true); const proof=await Bun.file("/tmp/runtime-admission-smoke.json").json(); proof.setupModeHttpHealth=true; await Bun.write("/tmp/runtime-admission-smoke.json",JSON.stringify(proof,null,2)+"\n")'
+kill "$runtime_pid"
+wait "$runtime_pid" || true
+SMOKE
+
+FROM scratch AS runtime-admission-evidence
+COPY --from=runtime-admission-smoke /tmp/runtime-admission-smoke.json /runtime-admission-smoke.json

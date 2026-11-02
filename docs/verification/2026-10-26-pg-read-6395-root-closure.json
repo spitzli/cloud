@@ -1,0 +1,16 @@
+{
+  "actualMcpTokenReads": 0,
+  "afterJournalReached": false,
+  "beforeJournalPinnedNativeRows": 54,
+  "candidate": ".runtime-test/pg-read-foundation-6395d0cbd366",
+  "exactContainerID": "60e07354b1cfc6846e1d81f683bc51b35b94b2cff1bae4a290d50abb9b324af1",
+  "failedBoundary": "test helper expects barearray but real Browser envelope is data array",
+  "independentExactAbsence": true,
+  "obligations": [],
+  "pcShutdownCancelled": true,
+  "privateAbsent": true,
+  "productAuthorizationFailureClaimed": false,
+  "resultSHA256": "477275b412b0f4737047815d27ad6352c249fc812995c468a45f943611d0b639",
+  "scope": "Root independent genuine-read failed helper closure",
+  "volumes": 0
+}

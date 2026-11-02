@@ -10,7 +10,7 @@ import { createRequire } from "node:module";
 import { Pool } from "pg";
 import { createServer } from "node:net";
 import { once } from "node:events";
-import { initializePluginState } from "../../apps/control-plane/src/modules/plugins/bootstrap";
+import { initializePluginState } from "../../legacy/control-plane/src/modules/plugins/bootstrap";
 import { runtimeRoles } from "./config";
 import { oauthSecretHash } from "./operator-provision";
 import { startOperatorSetup } from "./operator-setup";
@@ -88,7 +88,7 @@ test(
         env: Record<string, string>,
       ) =>
         spawnSync(
-          root + "node_modules/.bin/bun",
+          process.execPath,
           ["--no-env-file", "tools/migrations/" + script, target, ...args],
           {
             cwd: root,
@@ -184,7 +184,7 @@ test(
       assert.equal(settings?.supportEmail, "operator@example.test", "Fresh support address belongs to the installation owner");
       assert.equal(settings?.cmsEnabled, false, "Removed CMS is not enabled by initial setup");
       const require = createRequire(
-        new URL("../../apps/control-plane/package.json", import.meta.url),
+        new URL("../../legacy/control-plane/package.json", import.meta.url),
       );
       const crypto = await import(require.resolve("better-auth/crypto"));
       assert.equal(
@@ -251,7 +251,7 @@ test(
       // The admin core must function without the removed CMS inventory table.
       await owner.query("DROP TABLE webdock_admin.cms_instances CASCADE");
       const login = spawnSync(
-        root + "node_modules/.bin/bun",
+        process.execPath,
         ["--no-env-file", "tools/migrations/operator-auth-fixture.ts"],
         {
           cwd: root,
@@ -286,7 +286,7 @@ test(
       const inventoryOwner = new URL(url.href);
       inventoryOwner.username = "postgres";
       inventoryOwner.password = password;
-      const inventory = spawnSync(root + "node_modules/.bin/bun", ["--no-env-file", "tools/migrations/core-inventory-fixture.ts"], {
+      const inventory = spawnSync(process.execPath, ["--no-env-file", "tools/migrations/core-inventory-fixture.ts"], {
         cwd: root, encoding: "utf8", env: {
           ...env, ...secrets.environment, WEBDOCK_TEST_OPERATOR: "true", NODE_ENV: "development",
           BETTER_AUTH_SECRET: randomBytes(48).toString("hex"),
@@ -345,8 +345,8 @@ test(
             randomBytes(48).toString("hex");
         }
         const child = spawn(
-          root + "node_modules/.bin/bun",
-          ["--no-env-file", "apps/control-plane/src/core.ts"],
+          process.execPath,
+          ["--no-env-file", "legacy/control-plane/src/core.ts"],
           {
             cwd: root,
             env: runtimeEnv,

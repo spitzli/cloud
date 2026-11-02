@@ -11,6 +11,7 @@ const claims = {
   generation: 1,
   action: "stats",
   projectID: "123",
+  customerID: "101",
   iat: 1000,
   exp: 1060,
 };
@@ -44,6 +45,9 @@ test("rejects tampering, other runtimes, expired and long-lived invocations", ()
     { ...claims, exp: 1000 },
     { ...claims, exp: 1061 },
     { ...claims, iat: 1002 },
+    { ...claims, customerID: undefined },
+    { ...claims, customerID: "01" },
+    { ...claims, customerID: "other" },
   ])
     assert.throws(() => verifyInvocation(token(c), opts));
   assert.throws(() => verifyInvocation(token(claims) + "x", opts));

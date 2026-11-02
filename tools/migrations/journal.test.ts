@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { createHash } from "node:crypto";
 import type { PoolClient } from "pg";
-import { applyApiMigrations } from "../../apps/control-plane/scripts/lib/apply-migrations";
+import { applyApiMigrations } from "../../legacy/control-plane/scripts/lib/apply-migrations";
 test("migration journal refuses removed or changed history and keeps legacy equal-number files independent", async () => {
   const dir = await mkdtemp(join(tmpdir(), "webdock-journal-"));
   try {

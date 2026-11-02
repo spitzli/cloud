@@ -1,0 +1,16 @@
+# cert-manager for workload certificates, installed by k3s on start. Local dev issues from its own
+# CA (ClusterIssuer webdock-dev-ca, created by `bun tools/dev/local.mjs cluster-ca`).
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: cert-manager
+  namespace: kube-system
+spec:
+  repo: https://charts.jetstack.io
+  chart: cert-manager
+  version: v1.21.2
+  targetNamespace: cert-manager
+  createNamespace: true
+  valuesContent: |-
+    crds:
+      enabled: true

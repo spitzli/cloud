@@ -12,3602 +12,3602 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: apps/auth/src/lib/i18n-labels.ts:3 apps/auth/src/app/people/page.tsx:144
-#: apps/auth/src/app/tenants/page.tsx:20
+#: legacy/auth/src/lib/i18n-labels.ts:3 legacy/auth/src/app/people/page.tsx:144
+#: legacy/auth/src/app/tenants/page.tsx:20
 msgid "Platform operator"
 msgstr "Plattformbetreiber"
 
-#: apps/auth/src/lib/i18n-labels.ts:3
+#: legacy/auth/src/lib/i18n-labels.ts:3
 msgid "Owner"
 msgstr "Inhaber"
 
-#: apps/auth/src/lib/i18n-labels.ts:3
+#: legacy/auth/src/lib/i18n-labels.ts:3
 msgid "Tenant admin"
 msgstr "Arbeitsbereich-Admin"
 
-#: apps/auth/src/lib/i18n-labels.ts:3
+#: legacy/auth/src/lib/i18n-labels.ts:3
 msgid "Member"
 msgstr "Mitglied"
 
-#: apps/auth/src/lib/i18n-labels.ts:3
+#: legacy/auth/src/lib/i18n-labels.ts:3
 msgid "Reader"
 msgstr "Leser"
 
-#: apps/auth/src/lib/i18n-labels.ts:3
+#: legacy/auth/src/lib/i18n-labels.ts:3
 msgid "Editor"
 msgstr "Editor"
 
-#: apps/auth/src/lib/i18n-labels.ts:4 apps/auth/src/app/connections/page.tsx:16
-#: apps/auth/src/app/people/page.tsx:144
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:37
+#: legacy/auth/src/lib/i18n-labels.ts:4 legacy/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/people/page.tsx:144
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:37
 msgid "Active"
 msgstr "Aktiv"
 
-#: apps/auth/src/lib/i18n-labels.ts:4
+#: legacy/auth/src/lib/i18n-labels.ts:4
 msgid "Pending"
 msgstr "Ausstehend"
 
-#: apps/auth/src/lib/i18n-labels.ts:4
+#: legacy/auth/src/lib/i18n-labels.ts:4
 msgid "Accepted"
 msgstr "Angenommen"
 
-#: apps/auth/src/lib/i18n-labels.ts:4
+#: legacy/auth/src/lib/i18n-labels.ts:4
 msgid "Declined"
 msgstr "Abgelehnt"
 
-#: apps/auth/src/lib/i18n-labels.ts:4
+#: legacy/auth/src/lib/i18n-labels.ts:4
 msgid "Cancelled"
 msgstr "Abgebrochen"
 
-#: apps/auth/src/lib/i18n-labels.ts:4 apps/auth/src/app/people/page.tsx:179
+#: legacy/auth/src/lib/i18n-labels.ts:4 legacy/auth/src/app/people/page.tsx:179
 msgid "Revoked"
 msgstr "Widerrufen"
 
-#: apps/auth/src/lib/i18n-labels.ts:4 apps/auth/src/app/people/page.tsx:210
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:41
+#: legacy/auth/src/lib/i18n-labels.ts:4 legacy/auth/src/app/people/page.tsx:210
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:41
 msgid "Expired"
 msgstr "Abgelaufen"
 
-#: apps/auth/src/lib/i18n-labels.ts:4 apps/auth/src/app/tenants/page.tsx:20
+#: legacy/auth/src/lib/i18n-labels.ts:4 legacy/auth/src/app/tenants/page.tsx:20
 msgid "Archived"
 msgstr "Archiviert"
 
-#: apps/auth/src/lib/i18n-labels.ts:4
+#: legacy/auth/src/lib/i18n-labels.ts:4
 msgid "Outdated"
 msgstr "Veraltet"
 
-#: apps/auth/src/lib/i18n-labels.ts:5
+#: legacy/auth/src/lib/i18n-labels.ts:5
 msgid "Ready"
 msgstr "Bereit"
 
-#: apps/auth/src/lib/i18n-labels.ts:5
+#: legacy/auth/src/lib/i18n-labels.ts:5
 msgid "Setting up"
 msgstr "Wird eingerichtet"
 
-#: apps/auth/src/lib/i18n-labels.ts:5
+#: legacy/auth/src/lib/i18n-labels.ts:5
 msgid "Review required"
 msgstr "Prüfung erforderlich"
 
-#: apps/auth/src/lib/i18n-labels.ts:5
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
+#: legacy/auth/src/lib/i18n-labels.ts:5
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
 msgid "Verified"
 msgstr "Bestätigt"
 
-#: apps/auth/src/lib/i18n-labels.ts:5
+#: legacy/auth/src/lib/i18n-labels.ts:5
 msgid "Missing"
 msgstr "Fehlt"
 
-#: apps/auth/src/lib/i18n-labels.ts:5
+#: legacy/auth/src/lib/i18n-labels.ts:5
 msgid "Conflict"
 msgstr "Konflikt"
 
-#: apps/auth/src/lib/i18n-labels.ts:6
+#: legacy/auth/src/lib/i18n-labels.ts:6
 msgid "Succeeded"
 msgstr "Erfolgreich"
 
-#: apps/auth/src/lib/i18n-labels.ts:6
+#: legacy/auth/src/lib/i18n-labels.ts:6
 msgid "Failed"
 msgstr "Fehlgeschlagen"
 
-#: apps/auth/src/lib/i18n-labels.ts:6
+#: legacy/auth/src/lib/i18n-labels.ts:6
 msgid "Started"
 msgstr "Gestartet"
 
-#: apps/auth/src/lib/i18n-labels.ts:6
+#: legacy/auth/src/lib/i18n-labels.ts:6
 msgid "Denied"
 msgstr "Verweigert"
 
-#: apps/auth/src/lib/i18n-labels.ts:6
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:47
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/lib/i18n-labels.ts:6
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:47
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "Production"
 msgstr "Produktion"
 
-#: apps/auth/src/lib/i18n-labels.ts:6
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:47
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/lib/i18n-labels.ts:6
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:47
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "Preview"
 msgstr "Vorschau"
 
-#: apps/auth/src/lib/i18n-labels.ts:7 apps/auth/src/lib/i18n-messages.ts:130
+#: legacy/auth/src/lib/i18n-labels.ts:7 legacy/auth/src/lib/i18n-messages.ts:130
 msgid "Monthly"
 msgstr "Monatlich"
 
-#: apps/auth/src/lib/i18n-labels.ts:7 apps/auth/src/lib/i18n-messages.ts:88
+#: legacy/auth/src/lib/i18n-labels.ts:7 legacy/auth/src/lib/i18n-messages.ts:88
 msgid "Daily"
 msgstr "Täglich"
 
-#: apps/auth/src/lib/i18n-labels.ts:7
+#: legacy/auth/src/lib/i18n-labels.ts:7
 msgid "Weekly"
 msgstr "Wöchentlich"
 
-#: apps/auth/src/lib/i18n-labels.ts:7 apps/auth/src/lib/i18n-messages.ts:276
+#: legacy/auth/src/lib/i18n-labels.ts:7 legacy/auth/src/lib/i18n-messages.ts:276
 msgid "Yearly"
 msgstr "Jährlich"
 
-#: apps/auth/src/lib/i18n-labels.ts:8
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:14
+#: legacy/auth/src/lib/i18n-labels.ts:8
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:14
 msgid "SMTP sending"
 msgstr "SMTP-Versand"
 
-#: apps/auth/src/lib/i18n-labels.ts:8
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:15
+#: legacy/auth/src/lib/i18n-labels.ts:8
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:15
 msgid "API sending"
 msgstr "API-Versand"
 
-#: apps/auth/src/lib/i18n-labels.ts:8
+#: legacy/auth/src/lib/i18n-labels.ts:8
 msgid "Provider administration"
 msgstr "Anbieterverwaltung"
 
-#: apps/auth/src/lib/i18n-messages.ts:4
+#: legacy/auth/src/lib/i18n-messages.ts:4
 msgid "A mapped tracking domain belonging to this tenant is required."
 msgstr "Eine zugeordnete Tracking-Domain dieses Mandanten ist erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:5
+#: legacy/auth/src/lib/i18n-messages.ts:5
 msgid "A pending invitation already exists. Resend it, or cancel it before choosing another role."
 msgstr "Eine offene Einladung besteht bereits. Sende sie erneut oder widerrufe sie, bevor du eine andere Rolle auswählst."
 
-#: apps/auth/src/lib/i18n-messages.ts:6
+#: legacy/auth/src/lib/i18n-messages.ts:6
 msgid "A ready sending account is required."
 msgstr "Ein einsatzbereites Versandkonto ist erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:7
+#: legacy/auth/src/lib/i18n-messages.ts:7
 msgid "A ready sending account is required. Ask your operator to complete setup."
 msgstr "Ein einsatzbereites Versandkonto ist erforderlich. Bitte deinen Betreiber, die Einrichtung abzuschließen."
 
-#: apps/auth/src/lib/i18n-messages.ts:8
+#: legacy/auth/src/lib/i18n-messages.ts:8
 msgid "A secure canonical authentication URL is required."
 msgstr "Eine sichere, kanonische Authentifizierungs-URL ist erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:9
+#: legacy/auth/src/lib/i18n-messages.ts:9
 msgid "A sender-domain operation is already running. Refresh shortly."
 msgstr "Eine Aktion für die Absenderdomain läuft bereits. Aktualisiere die Ansicht in Kürze."
 
-#: apps/auth/src/lib/i18n-messages.ts:10
+#: legacy/auth/src/lib/i18n-messages.ts:10
 msgid "A tenant can manage up to 50 tracking domains."
 msgstr "Ein Mandant kann bis zu 50 Tracking-Domains verwalten."
 
-#: apps/auth/src/lib/i18n-messages.ts:11
+#: legacy/auth/src/lib/i18n-messages.ts:11
 msgid "Access saved and invitation email sent."
 msgstr "Zugriff gespeichert und Einladung per E-Mail versendet."
 
-#: apps/auth/src/lib/i18n-messages.ts:12
+#: legacy/auth/src/lib/i18n-messages.ts:12
 msgid "Active tenant administrator access is required."
 msgstr "Die Berechtigung eines aktiven Arbeitsbereich-Admins ist erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:13
+#: legacy/auth/src/lib/i18n-messages.ts:13
 msgid "Active tenant and platform operator access are required."
 msgstr "Ein aktiver Mandant und Betreiberrechte sind erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:14
+#: legacy/auth/src/lib/i18n-messages.ts:14
 msgid "Active tenant not found or access unavailable."
 msgstr "Der aktive Mandant wurde nicht gefunden oder der Zugriff ist nicht verfügbar."
 
-#: apps/auth/src/lib/i18n-messages.ts:15
+#: legacy/auth/src/lib/i18n-messages.ts:15
 msgid "Address line 1"
 msgstr "Adresszeile 1"
 
-#: apps/auth/src/lib/i18n-messages.ts:16
+#: legacy/auth/src/lib/i18n-messages.ts:16
 msgid "Address line 2"
 msgstr "Adresszeile 2"
 
-#: apps/auth/src/lib/i18n-messages.ts:17
+#: legacy/auth/src/lib/i18n-messages.ts:17
 msgid "Allowances exceed the supported range."
 msgstr "Die Kontingente überschreiten den unterstützten Bereich."
 
-#: apps/auth/src/lib/i18n-messages.ts:18
+#: legacy/auth/src/lib/i18n-messages.ts:18
 msgid "Allowances must be nonnegative numbers within the supported range."
 msgstr "Kontingente müssen nichtnegative Zahlen innerhalb des unterstützten Bereichs sein."
 
-#: apps/auth/src/lib/i18n-messages.ts:19
+#: legacy/auth/src/lib/i18n-messages.ts:19
 msgid "Allowances must use whole bytes or whole counts."
 msgstr "Kontingente müssen als ganze Bytes oder ganze Anzahlen angegeben werden."
 
-#: apps/auth/src/lib/i18n-messages.ts:20
+#: legacy/auth/src/lib/i18n-messages.ts:20
 msgid "An account is already reserved. Refresh it or reconcile it using Link; do not provision again."
 msgstr "Ein Konto ist bereits reserviert. Aktualisiere es oder gleiche es über die Verknüpfung ab; lege es nicht erneut an."
 
-#: apps/auth/src/lib/i18n-messages.ts:21
+#: legacy/auth/src/lib/i18n-messages.ts:21
 msgid "An active, ready Mail account is required."
 msgstr "Ein aktives, einsatzbereites Mail-Konto ist erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:22
+#: legacy/auth/src/lib/i18n-messages.ts:22
 msgid "An existing tracking domain was found and linked. Review it, then use Remove tracking domain if you want to delete it."
 msgstr "Eine vorhandene Tracking-Domain wurde gefunden und verknüpft. Prüfe sie und verwende bei Bedarf „Tracking-Domain entfernen“."
 
-#: apps/auth/src/lib/i18n-messages.ts:23
+#: legacy/auth/src/lib/i18n-messages.ts:23
 msgid "An operator must reconcile this account before reading or changing provider settings."
 msgstr "Ein Betreiber muss dieses Konto abgleichen, bevor Anbietereinstellungen gelesen oder geändert werden können."
 
-#: apps/auth/src/lib/i18n-messages.ts:24
+#: legacy/auth/src/lib/i18n-messages.ts:24
 msgid "Another tracking change is in progress. Refresh before continuing."
 msgstr "Eine andere Tracking-Änderung läuft gerade. Aktualisiere die Ansicht, bevor du fortfährst."
 
-#: apps/auth/src/lib/i18n-messages.ts:25
+#: legacy/auth/src/lib/i18n-messages.ts:25
 msgid "Ask your operator to review the tracking domain count."
 msgstr "Bitte deinen Betreiber, die Anzahl der Tracking-Domains zu prüfen."
 
-#: apps/auth/src/lib/i18n-messages.ts:26
+#: legacy/auth/src/lib/i18n-messages.ts:26
 msgid "Assign a plan before adding extra allowances."
 msgstr "Weise zuerst einen Tarif zu, bevor du weitere Kontingente hinzufügst."
 
-#: apps/auth/src/lib/i18n-messages.ts:27
+#: legacy/auth/src/lib/i18n-messages.ts:27
 msgid "Assign plan"
 msgstr "Tarif zuweisen"
 
-#: apps/auth/src/lib/i18n-messages.ts:28
+#: legacy/auth/src/lib/i18n-messages.ts:28
 msgid "Assign this website to a customer first."
 msgstr "Weise diese Website zuerst einem Kunden zu."
 
-#: apps/auth/src/lib/i18n-messages.ts:29
+#: legacy/auth/src/lib/i18n-messages.ts:29
 msgid "Change saved."
 msgstr "Änderung gespeichert."
 
-#: apps/auth/src/lib/i18n-messages.ts:30
+#: legacy/auth/src/lib/i18n-messages.ts:30
 msgid "Choose EU or global sending infrastructure."
 msgstr "Wähle die europäische oder globale Versandinfrastruktur."
 
-#: apps/auth/src/lib/i18n-messages.ts:31
+#: legacy/auth/src/lib/i18n-messages.ts:31
 msgid "Choose a default mail limit from 0 to 1,000,000,000."
 msgstr "Wähle ein Standard-Mail-Limit zwischen 0 und 1.000.000.000."
 
-#: apps/auth/src/lib/i18n-messages.ts:32
+#: legacy/auth/src/lib/i18n-messages.ts:32
 msgid "Choose a mail limit from 0 to 1,000,000,000."
 msgstr "Wähle ein Mail-Limit zwischen 0 und 1.000.000.000."
 
-#: apps/auth/src/lib/i18n-messages.ts:33
+#: legacy/auth/src/lib/i18n-messages.ts:33
 msgid "Choose a single DNS label such as links."
 msgstr "Wähle einen einzelnen DNS-Namen, zum Beispiel links."
 
-#: apps/auth/src/lib/i18n-messages.ts:34
+#: legacy/auth/src/lib/i18n-messages.ts:34
 msgid "Choose a valid record."
 msgstr "Wähle einen gültigen Eintrag."
 
-#: apps/auth/src/lib/i18n-messages.ts:35
+#: legacy/auth/src/lib/i18n-messages.ts:35
 msgid "Choose a verified, registered sender domain belonging to this tenant."
 msgstr "Wähle eine bestätigte, registrierte Absenderdomain dieses Mandanten."
 
-#: apps/auth/src/lib/i18n-messages.ts:36
+#: legacy/auth/src/lib/i18n-messages.ts:36
 msgid "Choose active or paused."
 msgstr "Wähle aktiv oder pausiert."
 
-#: apps/auth/src/lib/i18n-messages.ts:37
+#: legacy/auth/src/lib/i18n-messages.ts:37
 msgid "Choose administrator or member."
 msgstr "Wähle Admin oder Mitglied."
 
-#: apps/auth/src/lib/i18n-messages.ts:38
+#: legacy/auth/src/lib/i18n-messages.ts:38
 msgid "Choose an enabled customer website, not the operator studio."
 msgstr "Wähle eine aktivierte Kundenwebsite, nicht das Betreiber-Studio."
 
-#: apps/auth/src/lib/i18n-messages.ts:39
+#: legacy/auth/src/lib/i18n-messages.ts:39
 msgid "Choose enabled or disabled."
 msgstr "Wähle aktiviert oder deaktiviert."
 
-#: apps/auth/src/lib/i18n-messages.ts:40
+#: legacy/auth/src/lib/i18n-messages.ts:40
 msgid "Choose person or company."
 msgstr "Wähle Person oder Unternehmen."
 
-#: apps/auth/src/lib/i18n-messages.ts:41
+#: legacy/auth/src/lib/i18n-messages.ts:41
 msgid "Choose reader, editor or administrator."
 msgstr "Wähle Leser, Redakteur oder Admin."
 
-#: apps/auth/src/lib/i18n-messages.ts:42
+#: legacy/auth/src/lib/i18n-messages.ts:42
 msgid "Choose the permitted sending access for this credential."
 msgstr "Wähle die erlaubten Versandberechtigungen für diese Zugangsdaten."
 
-#: apps/auth/src/lib/i18n-messages.ts:43
+#: legacy/auth/src/lib/i18n-messages.ts:43
 msgid "City"
 msgstr "Ort"
 
-#: apps/auth/src/lib/i18n-messages.ts:44
+#: legacy/auth/src/lib/i18n-messages.ts:44
 msgid "Click tracking"
 msgstr "Klick-Tracking"
 
-#: apps/auth/src/lib/i18n-messages.ts:45
+#: legacy/auth/src/lib/i18n-messages.ts:45
 msgid "Clients are registered through the operator provisioning tool."
 msgstr "Clients werden über das Bereitstellungswerkzeug des Betreibers registriert."
 
-#: apps/auth/src/lib/i18n-messages.ts:46
+#: legacy/auth/src/lib/i18n-messages.ts:46
 msgid "Combined allowance exceeds the supported range."
 msgstr "Das Gesamtkontingent überschreitet den unterstützten Bereich."
 
-#: apps/auth/src/lib/i18n-messages.ts:47
+#: legacy/auth/src/lib/i18n-messages.ts:47
 msgid "Company name"
 msgstr "Unternehmensname"
 
-#: apps/auth/src/lib/i18n-messages.ts:48
+#: legacy/auth/src/lib/i18n-messages.ts:48
 msgid "Complete operator security setup first."
 msgstr "Schließe zuerst die Sicherheitseinrichtung des Betreiberkontos ab."
 
-#: apps/auth/src/lib/i18n-messages.ts:49
+#: legacy/auth/src/lib/i18n-messages.ts:49
 msgid "Complete your account security setup before managing passkeys."
 msgstr "Schließe die Sicherheitseinrichtung deines Kontos ab, bevor du Passkeys verwaltest."
 
-#: apps/auth/src/lib/i18n-messages.ts:50
+#: legacy/auth/src/lib/i18n-messages.ts:50
 msgid "Confirm an existing account matching the reserved email and provider ID."
 msgstr "Bestätige ein vorhandenes Konto, dessen E-Mail-Adresse und Anbieter-ID zur Reservierung passen."
 
-#: apps/auth/src/lib/i18n-messages.ts:51
+#: legacy/auth/src/lib/i18n-messages.ts:51
 msgid "Confirm removal of this local domain entry."
 msgstr "Bestätige das Entfernen dieses lokalen Domain-Eintrags."
 
-#: apps/auth/src/lib/i18n-messages.ts:52
+#: legacy/auth/src/lib/i18n-messages.ts:52
 msgid "Confirm removal of this provider sender domain."
 msgstr "Bestätige das Entfernen dieser Absenderdomain beim Anbieter."
 
-#: apps/auth/src/lib/i18n-messages.ts:53
+#: legacy/auth/src/lib/i18n-messages.ts:53
 msgid "Confirm removal of this tracking domain."
 msgstr "Bestätige das Entfernen dieser Tracking-Domain."
 
-#: apps/auth/src/lib/i18n-messages.ts:54
+#: legacy/auth/src/lib/i18n-messages.ts:54
 msgid "Confirm revocation of this credential."
 msgstr "Bestätige den Widerruf dieser Zugangsdaten."
 
-#: apps/auth/src/lib/i18n-messages.ts:55
+#: legacy/auth/src/lib/i18n-messages.ts:55
 msgid "Confirm that you want to accept this offer and assign the plan."
 msgstr "Bestätige, dass du dieses Angebot annehmen und den Tarif zuweisen möchtest."
 
-#: apps/auth/src/lib/i18n-messages.ts:56
+#: legacy/auth/src/lib/i18n-messages.ts:56
 msgid "Confirm that you want to remove the saved Mail credentials."
 msgstr "Bestätige, dass du die gespeicherten Mail-Zugangsdaten entfernen möchtest."
 
-#: apps/auth/src/lib/i18n-messages.ts:57
+#: legacy/auth/src/lib/i18n-messages.ts:57
 msgid "Confirm your identity with your device PIN or biometrics."
 msgstr "Bestätige deine Identität mit deiner Geräte-PIN oder biometrisch."
 
-#: apps/auth/src/lib/i18n-messages.ts:58
+#: legacy/auth/src/lib/i18n-messages.ts:58
 msgid "Connect storage"
 msgstr "Speicher verbinden"
 
-#: apps/auth/src/lib/i18n-messages.ts:59
+#: legacy/auth/src/lib/i18n-messages.ts:59
 msgid "Connect the mail provider in Webdock administration first."
 msgstr "Verbinde zuerst den Mail-Anbieter in der Webdock-Verwaltung."
 
-#: apps/auth/src/lib/i18n-messages.ts:60
+#: legacy/auth/src/lib/i18n-messages.ts:60
 msgid "Contact email"
 msgstr "Kontakt-E-Mail"
 
-#: apps/auth/src/lib/i18n-messages.ts:61
+#: legacy/auth/src/lib/i18n-messages.ts:61
 msgid "Contact name"
 msgstr "Kontaktperson"
 
-#: apps/auth/src/lib/i18n-messages.ts:62
+#: legacy/auth/src/lib/i18n-messages.ts:62
 msgid "Copied."
 msgstr "Kopiert."
 
-#: apps/auth/src/lib/i18n-messages.ts:63
+#: legacy/auth/src/lib/i18n-messages.ts:63
 msgid "Copy failed. Select and copy the values above."
 msgstr "Kopieren fehlgeschlagen. Markiere und kopiere die Werte oben."
 
-#: apps/auth/src/lib/i18n-messages.ts:64
+#: legacy/auth/src/lib/i18n-messages.ts:64
 msgid "Could not accept this offer. Please try again."
 msgstr "Das Angebot konnte nicht angenommen werden. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:65
+#: legacy/auth/src/lib/i18n-messages.ts:65
 msgid "Could not complete authorization. Try again."
 msgstr "Die Genehmigung konnte nicht abgeschlossen werden. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:66
+#: legacy/auth/src/lib/i18n-messages.ts:66
 msgid "Could not complete this Mail change. Refresh and review the current state before taking another action."
 msgstr "Die Mail-Änderung konnte nicht abgeschlossen werden. Aktualisiere die Ansicht und prüfe den aktuellen Stand, bevor du eine weitere Aktion ausführst."
 
-#: apps/auth/src/lib/i18n-messages.ts:67
+#: legacy/auth/src/lib/i18n-messages.ts:67
 msgid "Could not complete this change. Refresh and review the current state before retrying."
 msgstr "Die Änderung konnte nicht abgeschlossen werden. Aktualisiere die Ansicht und prüfe den aktuellen Stand, bevor du es erneut versuchst."
 
-#: apps/auth/src/lib/i18n-messages.ts:68
+#: legacy/auth/src/lib/i18n-messages.ts:68
 msgid "Could not complete this credential change. Refresh before retrying."
 msgstr "Die Zugangsdaten konnten nicht geändert werden. Aktualisiere die Ansicht, bevor du es erneut versuchst."
 
-#: apps/auth/src/lib/i18n-messages.ts:69
+#: legacy/auth/src/lib/i18n-messages.ts:69
 msgid "Could not complete this credential change. Refresh the list before retrying; a creation may have completed."
 msgstr "Die Zugangsdaten konnten nicht geändert werden. Aktualisiere zuerst die Liste; die Erstellung könnte bereits abgeschlossen sein."
 
-#: apps/auth/src/lib/i18n-messages.ts:70
+#: legacy/auth/src/lib/i18n-messages.ts:70
 msgid "Could not complete this request. Check your operator session and Mail configuration, then try again."
 msgstr "Die Anfrage konnte nicht abgeschlossen werden. Prüfe deine Betreiber-Sitzung und die Mail-Konfiguration und versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:71
+#: legacy/auth/src/lib/i18n-messages.ts:71
 msgid "Could not complete tracking setup. Refresh to check the current state."
 msgstr "Die Tracking-Einrichtung konnte nicht abgeschlossen werden. Aktualisiere die Ansicht, um den aktuellen Stand zu prüfen."
 
-#: apps/auth/src/lib/i18n-messages.ts:72
+#: legacy/auth/src/lib/i18n-messages.ts:72
 msgid "Could not load credentials. Contact your operator if this persists."
 msgstr "Die Zugangsdaten konnten nicht geladen werden. Wende dich an deinen Betreiber, wenn das Problem bestehen bleibt."
 
-#: apps/auth/src/lib/i18n-messages.ts:73
+#: legacy/auth/src/lib/i18n-messages.ts:73
 msgid "Could not respond to this invitation. Try again or contact your Webdock administrator."
 msgstr "Auf die Einladung konnte nicht geantwortet werden. Versuche es erneut oder wende dich an deinen Webdock-Admin."
 
-#: apps/auth/src/lib/i18n-messages.ts:74
+#: legacy/auth/src/lib/i18n-messages.ts:74
 msgid "Could not save this change. Please try again."
 msgstr "Die Änderung konnte nicht gespeichert werden. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:75
+#: legacy/auth/src/lib/i18n-messages.ts:75
 msgid "Could not save this plan change. Please try again."
 msgstr "Die Tarifänderung konnte nicht gespeichert werden. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:76
+#: legacy/auth/src/lib/i18n-messages.ts:76
 msgid "Country code (two letters)"
 msgstr "Ländercode (zwei Buchstaben)"
 
-#: apps/auth/src/lib/i18n-messages.ts:77
+#: legacy/auth/src/lib/i18n-messages.ts:77
 msgid "Create offer link"
 msgstr "Angebotslink erstellen"
 
-#: apps/auth/src/lib/i18n-messages.ts:78
+#: legacy/auth/src/lib/i18n-messages.ts:78
 msgid "Credential created. Save the secret now; it cannot be retrieved again."
 msgstr "Zugangsdaten erstellt. Speichere das Secret jetzt; es kann später nicht erneut abgerufen werden."
 
-#: apps/auth/src/lib/i18n-messages.ts:79
+#: legacy/auth/src/lib/i18n-messages.ts:79
 msgid "Credential not found in this tenant account."
 msgstr "Die Zugangsdaten wurden in diesem Mandantenkonto nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:80
+#: legacy/auth/src/lib/i18n-messages.ts:80
 msgid "Credential revoked. Applications using it have lost access."
 msgstr "Zugangsdaten widerrufen. Anwendungen, die sie verwenden, haben keinen Zugriff mehr."
 
-#: apps/auth/src/lib/i18n-messages.ts:81
+#: legacy/auth/src/lib/i18n-messages.ts:81
 msgid "Current operator authorization is required."
 msgstr "Aktuelle Betreiberberechtigung erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:82
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:32
+#: legacy/auth/src/lib/i18n-messages.ts:82
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:32
 msgid "Custom tracking domains"
 msgstr "Eigene Tracking-Domains"
 
-#: apps/auth/src/lib/i18n-messages.ts:83
+#: legacy/auth/src/lib/i18n-messages.ts:83
 msgid "Custom tracking setting confirmed. Domain availability is shown separately below."
 msgstr "Die Einstellung für eigenes Tracking wurde bestätigt. Die Verfügbarkeit der Domains wird unten separat angezeigt."
 
-#: apps/auth/src/lib/i18n-messages.ts:84
+#: legacy/auth/src/lib/i18n-messages.ts:84
 msgid "Customer access record not found."
 msgstr "Kundenzugriff nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:85
+#: legacy/auth/src/lib/i18n-messages.ts:85
 msgid "Customer assignment changed. Refresh and try again."
 msgstr "Die Kundenzuordnung hat sich geändert. Aktualisiere die Ansicht und versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:86
+#: legacy/auth/src/lib/i18n-messages.ts:86
 msgid "Customer membership not found."
 msgstr "Kundenmitgliedschaft nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:87 apps/auth/src/app/people/page.tsx:50
+#: legacy/auth/src/lib/i18n-messages.ts:87 legacy/auth/src/app/people/page.tsx:50
 msgid "Customer name"
 msgstr "Kundenname"
 
-#: apps/auth/src/lib/i18n-messages.ts:89
+#: legacy/auth/src/lib/i18n-messages.ts:89
 msgid "Dedicated to this sender domain"
 msgstr "Dieser Absenderdomain zugeordnet"
 
-#: apps/auth/src/lib/i18n-messages.ts:90
+#: legacy/auth/src/lib/i18n-messages.ts:90
 msgid "Disconnect storage"
 msgstr "Speicher trennen"
 
-#: apps/auth/src/lib/i18n-messages.ts:91
+#: legacy/auth/src/lib/i18n-messages.ts:91
 msgid "Domain added. Publish the DNS records and check ownership to continue."
 msgstr "Domain hinzugefügt. Veröffentliche die DNS-Einträge und prüfe die Inhaberschaft, um fortzufahren."
 
-#: apps/auth/src/lib/i18n-messages.ts:92
+#: legacy/auth/src/lib/i18n-messages.ts:92
 msgid "Domain enabled"
 msgstr "Domain aktiviert"
 
-#: apps/auth/src/lib/i18n-messages.ts:93
+#: legacy/auth/src/lib/i18n-messages.ts:93
 msgid "Domain is already verified by another tenant."
 msgstr "Diese Domain wurde bereits von einem anderen Mandanten bestätigt."
 
-#: apps/auth/src/lib/i18n-messages.ts:94
+#: legacy/auth/src/lib/i18n-messages.ts:94
 msgid "Domain not found in this tenant."
 msgstr "Domain in diesem Mandanten nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:95
+#: legacy/auth/src/lib/i18n-messages.ts:95
 msgid "Domain not found."
 msgstr "Domain nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:96
+#: legacy/auth/src/lib/i18n-messages.ts:96
 msgid "Domain ownership verified. You can now register this domain for sending."
 msgstr "Domain-Inhaberschaft bestätigt. Du kannst diese Domain jetzt für den Versand registrieren."
 
-#: apps/auth/src/lib/i18n-messages.ts:97
+#: legacy/auth/src/lib/i18n-messages.ts:97
 msgid "Editors"
 msgstr "Redakteure"
 
-#: apps/auth/src/lib/i18n-messages.ts:98
+#: legacy/auth/src/lib/i18n-messages.ts:98
 msgid "Enter a customer name."
 msgstr "Gib einen Kundennamen ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:99
+#: legacy/auth/src/lib/i18n-messages.ts:99
 msgid "Enter a name and valid email address."
 msgstr "Gib einen Namen und eine gültige E-Mail-Adresse ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:100
+#: legacy/auth/src/lib/i18n-messages.ts:100
 msgid "Enter a name for this passkey."
 msgstr "Gib einen Namen für diesen Passkey ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:101
+#: legacy/auth/src/lib/i18n-messages.ts:101
 msgid "Enter a name of up to 160 characters."
 msgstr "Gib einen Namen mit höchstens 160 Zeichen ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:102
+#: legacy/auth/src/lib/i18n-messages.ts:102
 msgid "Enter a platform name of up to 80 characters."
 msgstr "Gib einen Plattformnamen mit höchstens 80 Zeichen ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:103
+#: legacy/auth/src/lib/i18n-messages.ts:103
 msgid "Enter a public domain name without a scheme or path."
 msgstr "Gib einen öffentlichen Domainnamen ohne Protokoll oder Pfad ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:104
+#: legacy/auth/src/lib/i18n-messages.ts:104
 msgid "Enter a readable label of up to 100 characters."
 msgstr "Gib eine verständliche Bezeichnung mit höchstens 100 Zeichen ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:105
+#: legacy/auth/src/lib/i18n-messages.ts:105
 msgid "Enter a valid account email."
 msgstr "Gib eine gültige Konto-E-Mail-Adresse ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:106
+#: legacy/auth/src/lib/i18n-messages.ts:106
 msgid "Enter a valid contact email."
 msgstr "Gib eine gültige Kontakt-E-Mail-Adresse ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:107
+#: legacy/auth/src/lib/i18n-messages.ts:107
 msgid "Enter a valid email address."
 msgstr "Gib eine gültige E-Mail-Adresse ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:108
+#: legacy/auth/src/lib/i18n-messages.ts:108
 msgid "Enter a valid support email."
 msgstr "Gib eine gültige Support-E-Mail-Adresse ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:109
+#: legacy/auth/src/lib/i18n-messages.ts:109
 msgid "Enter both provider keys without whitespace."
 msgstr "Gib beide Anbieterschlüssel ohne Leerzeichen ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:110
+#: legacy/auth/src/lib/i18n-messages.ts:110
 msgid "Enter both the consumer key and consumer secret to replace the saved credentials."
 msgstr "Gib Consumer-Key und Consumer-Secret ein, um die gespeicherten Zugangsdaten zu ersetzen."
 
-#: apps/auth/src/lib/i18n-messages.ts:111
+#: legacy/auth/src/lib/i18n-messages.ts:111
 msgid "Enter valid offer or plan details."
 msgstr "Gib gültige Angebots- oder Tarifdaten ein."
 
-#: apps/auth/src/lib/i18n-messages.ts:112
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:62
+#: legacy/auth/src/lib/i18n-messages.ts:112
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:62
 msgid "First name"
 msgstr "Vorname"
 
-#: apps/auth/src/lib/i18n-messages.ts:113
-#: apps/auth/src/lib/i18n-messages.ts:292
+#: legacy/auth/src/lib/i18n-messages.ts:113
+#: legacy/auth/src/lib/i18n-messages.ts:292
 msgid "If an account exists for that email address, you’ll receive a password reset link. Check your inbox and spam folder."
 msgstr "Wenn für diese E-Mail-Adresse ein Konto besteht, erhältst du einen Link zum Zurücksetzen des Passworts. Prüfe deinen Posteingang und Spam-Ordner."
 
-#: apps/auth/src/lib/i18n-messages.ts:114
+#: legacy/auth/src/lib/i18n-messages.ts:114
 msgid "Invalid Studio request."
 msgstr "Ungültige Studio-Anfrage."
 
-#: apps/auth/src/lib/i18n-messages.ts:115
+#: legacy/auth/src/lib/i18n-messages.ts:115
 msgid "Invalid account status."
 msgstr "Ungültiger Kontostatus."
 
-#: apps/auth/src/lib/i18n-messages.ts:116
+#: legacy/auth/src/lib/i18n-messages.ts:116
 msgid "Invitation email sent. Access starts after acceptance."
 msgstr "Einladung per E-Mail versendet. Der Zugriff beginnt nach der Annahme."
 
-#: apps/auth/src/lib/i18n-messages.ts:117
+#: legacy/auth/src/lib/i18n-messages.ts:117
 msgid "Keep at least one customer administrator."
 msgstr "Mindestens ein Kunden-Admin muss erhalten bleiben."
 
-#: apps/auth/src/lib/i18n-messages.ts:118
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:63
+#: legacy/auth/src/lib/i18n-messages.ts:118
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:63
 msgid "Last name"
 msgstr "Nachname"
 
-#: apps/auth/src/lib/i18n-messages.ts:119
+#: legacy/auth/src/lib/i18n-messages.ts:119
 msgid "Local mapping removed. Stored files are unchanged."
 msgstr "Lokale Zuordnung entfernt. Gespeicherte Dateien bleiben unverändert."
 
-#: apps/auth/src/lib/i18n-messages.ts:120
+#: legacy/auth/src/lib/i18n-messages.ts:120
 msgid "Mail change saved."
 msgstr "Mail-Änderung gespeichert."
 
-#: apps/auth/src/lib/i18n-messages.ts:121
+#: legacy/auth/src/lib/i18n-messages.ts:121
 msgid "Mail credential encryption is not configured."
 msgstr "Die Verschlüsselung der Mail-Zugangsdaten ist nicht konfiguriert."
 
-#: apps/auth/src/lib/i18n-messages.ts:122
+#: legacy/auth/src/lib/i18n-messages.ts:122
 msgid "Mail credentials removed. New live Mail operations are unavailable until credentials are configured again."
 msgstr "Mail-Zugangsdaten entfernt. Neue Mail-Aktionen sind nicht verfügbar, bis Zugangsdaten erneut eingerichtet wurden."
 
-#: apps/auth/src/lib/i18n-messages.ts:123
+#: legacy/auth/src/lib/i18n-messages.ts:123
 msgid "Mail credentials saved."
 msgstr "Mail-Zugangsdaten gespeichert."
 
-#: apps/auth/src/lib/i18n-messages.ts:124
+#: legacy/auth/src/lib/i18n-messages.ts:124
 msgid "Mail is disabled by the platform operator."
 msgstr "Mail wurde vom Plattformbetreiber deaktiviert."
 
-#: apps/auth/src/lib/i18n-messages.ts:125
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:21
+#: legacy/auth/src/lib/i18n-messages.ts:125
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:21
 msgid "Mail is disabled."
 msgstr "Mail ist deaktiviert."
 
-#: apps/auth/src/lib/i18n-messages.ts:126
+#: legacy/auth/src/lib/i18n-messages.ts:126
 msgid "Mail is disabled. Existing credentials can still be listed and revoked."
 msgstr "Mail ist deaktiviert. Vorhandene Zugangsdaten können weiterhin angezeigt und widerrufen werden."
 
-#: apps/auth/src/lib/i18n-messages.ts:127
+#: legacy/auth/src/lib/i18n-messages.ts:127
 msgid "Mail messages"
 msgstr "Mail-Nachrichten"
 
-#: apps/auth/src/lib/i18n-messages.ts:128
+#: legacy/auth/src/lib/i18n-messages.ts:128
 msgid "Mail operation failed. Retry reads safely; ask an operator to review uncertain provider changes."
 msgstr "Die Mail-Aktion ist fehlgeschlagen. Leseabfragen können sicher wiederholt werden; bitte einen Betreiber, unklare Änderungen beim Anbieter zu prüfen."
 
-#: apps/auth/src/lib/i18n-messages.ts:129
+#: legacy/auth/src/lib/i18n-messages.ts:129
 msgid "Match sender domain"
 msgstr "Absenderdomain abgleichen"
 
-#: apps/auth/src/lib/i18n-messages.ts:131
+#: legacy/auth/src/lib/i18n-messages.ts:131
 msgid "Multiple matching provider domains were found. Ask your operator to reconcile this reservation."
 msgstr "Mehrere passende Anbieterdomains wurden gefunden. Bitte deinen Betreiber, diese Reservierung abzugleichen."
 
-#: apps/auth/src/lib/i18n-messages.ts:132
+#: legacy/auth/src/lib/i18n-messages.ts:132
 msgid "No mapped provider account exists. An operator must provision or link it first."
 msgstr "Es besteht keine Zuordnung zu einem Anbieterkonto. Ein Betreiber muss zuerst eines erstellen oder verknüpfen."
 
-#: apps/auth/src/lib/i18n-messages.ts:133
+#: legacy/auth/src/lib/i18n-messages.ts:133
 msgid "No mapped provider sender domain exists."
 msgstr "Es besteht keine Zuordnung zu einer Absenderdomain beim Anbieter."
 
-#: apps/auth/src/lib/i18n-messages.ts:134
+#: legacy/auth/src/lib/i18n-messages.ts:134
 msgid "Offer accepted. Your plan allocation has been updated; no payment was charged."
 msgstr "Angebot angenommen. Dein Tarifkontingent wurde aktualisiert; es wurde keine Zahlung belastet."
 
-#: apps/auth/src/lib/i18n-messages.ts:135
+#: legacy/auth/src/lib/i18n-messages.ts:135
 msgid "Offer already accepted."
 msgstr "Angebot bereits angenommen."
 
-#: apps/auth/src/lib/i18n-messages.ts:136
+#: legacy/auth/src/lib/i18n-messages.ts:136
 msgid "Offer created. Copy the private link now; it is only shown once."
 msgstr "Angebot erstellt. Kopiere den privaten Link jetzt; er wird nur einmal angezeigt."
 
-#: apps/auth/src/lib/i18n-messages.ts:137
+#: legacy/auth/src/lib/i18n-messages.ts:137
 msgid "Offer expiry must be between 1 and 90 days."
 msgstr "Die Angebotsgültigkeit muss zwischen 1 und 90 Tagen liegen."
 
-#: apps/auth/src/lib/i18n-messages.ts:138
+#: legacy/auth/src/lib/i18n-messages.ts:138
 msgid "Offer not found."
 msgstr "Angebot nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:139
+#: legacy/auth/src/lib/i18n-messages.ts:139
 msgid "Only a platform operator may change existing memberships."
 msgstr "Nur ein Plattformbetreiber darf bestehende Mitgliedschaften ändern."
 
-#: apps/auth/src/lib/i18n-messages.ts:140
+#: legacy/auth/src/lib/i18n-messages.ts:140
 msgid "Only an unmapped reservation older than 15 minutes can be cancelled. Refresh to reconcile it first."
 msgstr "Nur eine nicht zugeordnete Reservierung, die älter als 15 Minuten ist, kann aufgehoben werden. Aktualisiere zuerst die Ansicht, um sie abzugleichen."
 
-#: apps/auth/src/lib/i18n-messages.ts:141
+#: legacy/auth/src/lib/i18n-messages.ts:141
 msgid "Only this tenant's customer administrator can accept the offer."
 msgstr "Nur der Kunden-Admin dieses Mandanten kann das Angebot annehmen."
 
-#: apps/auth/src/lib/i18n-messages.ts:142
+#: legacy/auth/src/lib/i18n-messages.ts:142
 msgid "Open tracking"
 msgstr "Öffnungs-Tracking"
 
-#: apps/auth/src/lib/i18n-messages.ts:143
+#: legacy/auth/src/lib/i18n-messages.ts:143
 msgid "Operator access with completed security setup is required."
 msgstr "Betreiberzugriff mit abgeschlossener Sicherheitseinrichtung ist erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:144
+#: legacy/auth/src/lib/i18n-messages.ts:144
 msgid "Operator or suspended accounts cannot receive customer invitations."
 msgstr "Betreiberkonten und gesperrte Konten können keine Kundeneinladungen erhalten."
 
-#: apps/auth/src/lib/i18n-messages.ts:145
+#: legacy/auth/src/lib/i18n-messages.ts:145
 msgid "Passkey added. You can use it the next time you sign in."
 msgstr "Passkey hinzugefügt. Du kannst ihn bei deiner nächsten Anmeldung verwenden."
 
-#: apps/auth/src/lib/i18n-messages.ts:146
+#: legacy/auth/src/lib/i18n-messages.ts:146
 msgid "Passkey removed. Remove its saved entry from your device or password manager too."
 msgstr "Passkey entfernt. Entferne auch den gespeicherten Eintrag auf deinem Gerät oder in deinem Passwortmanager."
 
-#: apps/auth/src/lib/i18n-messages.ts:147
+#: legacy/auth/src/lib/i18n-messages.ts:147
 msgid "Passkey sign-in failed. Try again or use your password."
 msgstr "Die Passkey-Anmeldung ist fehlgeschlagen. Versuche es erneut oder verwende dein Passwort."
 
-#: apps/auth/src/lib/i18n-messages.ts:148
+#: legacy/auth/src/lib/i18n-messages.ts:148
 msgid "Passkey sign-in was cancelled. Try again or use your password."
 msgstr "Die Passkey-Anmeldung wurde abgebrochen. Versuche es erneut oder verwende dein Passwort."
 
-#: apps/auth/src/lib/i18n-messages.ts:149
+#: legacy/auth/src/lib/i18n-messages.ts:149
 msgid "Password changed. Other sessions have been signed out."
 msgstr "Passwort geändert. Andere Sitzungen wurden abgemeldet."
 
-#: apps/auth/src/lib/i18n-messages.ts:150
+#: legacy/auth/src/lib/i18n-messages.ts:150
 msgid "Pending invitation not found."
 msgstr "Offene Einladung nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:151
+#: legacy/auth/src/lib/i18n-messages.ts:151
 msgid "Pending offer not found."
 msgstr "Offenes Angebot nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:152
+#: legacy/auth/src/lib/i18n-messages.ts:152
 msgid "Phone"
 msgstr "Telefon"
 
-#: apps/auth/src/lib/i18n-messages.ts:153
+#: legacy/auth/src/lib/i18n-messages.ts:153
 msgid "Plan change saved."
 msgstr "Tarifänderung gespeichert."
 
-#: apps/auth/src/lib/i18n-messages.ts:154
+#: legacy/auth/src/lib/i18n-messages.ts:154
 msgid "Plan not found."
 msgstr "Tarif nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:155
+#: legacy/auth/src/lib/i18n-messages.ts:155
 msgid "Platform operator access is required."
 msgstr "Plattformbetreiberrechte sind erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:156
+#: legacy/auth/src/lib/i18n-messages.ts:156
 msgid "Platform operator accounts are protected."
 msgstr "Plattformbetreiberkonten sind geschützt."
 
-#: apps/auth/src/lib/i18n-messages.ts:157
+#: legacy/auth/src/lib/i18n-messages.ts:157
 msgid "Postal code"
 msgstr "Postleitzahl"
 
-#: apps/auth/src/lib/i18n-messages.ts:158
+#: legacy/auth/src/lib/i18n-messages.ts:158
 msgid "Provide a Blob store ID and its matching read/write token."
 msgstr "Gib eine Blob-Speicher-ID und den dazugehörigen Lese-/Schreib-Token an."
 
-#: apps/auth/src/lib/i18n-messages.ts:159
+#: legacy/auth/src/lib/i18n-messages.ts:159
 msgid "Provide a readable project label and production or preview environment."
 msgstr "Gib eine verständliche Projektbezeichnung sowie die Umgebung Produktion oder Vorschau an."
 
-#: apps/auth/src/lib/i18n-messages.ts:160
+#: legacy/auth/src/lib/i18n-messages.ts:160
 msgid "Provide both names, accept the provider policy, and configure the assigned sending IP."
 msgstr "Gib beide Namen an, akzeptiere die Anbieterrichtlinie und konfiguriere die zugewiesene Versand-IP."
 
-#: apps/auth/src/lib/i18n-messages.ts:161
+#: legacy/auth/src/lib/i18n-messages.ts:161
 msgid "Provider account email does not match."
 msgstr "Die E-Mail-Adresse des Anbieterkontos stimmt nicht überein."
 
-#: apps/auth/src/lib/i18n-messages.ts:162
+#: legacy/auth/src/lib/i18n-messages.ts:162
 msgid "Provider returned an unexpected account."
 msgstr "Der Anbieter hat ein unerwartetes Konto zurückgegeben."
 
-#: apps/auth/src/lib/i18n-messages.ts:163
+#: legacy/auth/src/lib/i18n-messages.ts:163
 msgid "Provider sender domain removed. Local ownership proof is retained."
 msgstr "Absenderdomain beim Anbieter entfernt. Der lokale Inhaberschaftsnachweis bleibt erhalten."
 
-#: apps/auth/src/lib/i18n-messages.ts:164
+#: legacy/auth/src/lib/i18n-messages.ts:164
 msgid "Provisioning needs operator review. The provider may have created the account; reconcile it before continuing."
 msgstr "Die Bereitstellung muss vom Betreiber geprüft werden. Der Anbieter könnte das Konto bereits erstellt haben; gleiche es ab, bevor du fortfährst."
 
-#: apps/auth/src/lib/i18n-messages.ts:165
+#: legacy/auth/src/lib/i18n-messages.ts:165
 msgid "Public DNS lookup failed."
 msgstr "Die öffentliche DNS-Abfrage ist fehlgeschlagen."
 
-#: apps/auth/src/lib/i18n-messages.ts:166
+#: legacy/auth/src/lib/i18n-messages.ts:166
 msgid "Public DNS lookup timed out."
 msgstr "Zeitüberschreitung bei der öffentlichen DNS-Abfrage."
 
-#: apps/auth/src/lib/i18n-messages.ts:167
+#: legacy/auth/src/lib/i18n-messages.ts:167
 msgid "Public DNS response too large."
 msgstr "Die öffentliche DNS-Antwort ist zu groß."
 
-#: apps/auth/src/lib/i18n-messages.ts:168
+#: legacy/auth/src/lib/i18n-messages.ts:168
 msgid "Reconnect the mail provider."
 msgstr "Verbinde den Mail-Anbieter erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:169
+#: legacy/auth/src/lib/i18n-messages.ts:169
 msgid "Refresh measurement"
 msgstr "Messung aktualisieren"
 
-#: apps/auth/src/lib/i18n-messages.ts:170
+#: legacy/auth/src/lib/i18n-messages.ts:170
 msgid "Region"
 msgstr "Region"
 
-#: apps/auth/src/lib/i18n-messages.ts:171
+#: legacy/auth/src/lib/i18n-messages.ts:171
 msgid "Remove associated tracking domains before removing this sender domain."
 msgstr "Entferne die zugehörigen Tracking-Domains, bevor du diese Absenderdomain entfernst."
 
-#: apps/auth/src/lib/i18n-messages.ts:172
+#: legacy/auth/src/lib/i18n-messages.ts:172
 msgid "Remove or reconcile the sending registration before removing its local domain entry."
 msgstr "Entferne oder prüfe die Versandregistrierung, bevor du den lokalen Domain-Eintrag entfernst."
 
-#: apps/auth/src/lib/i18n-messages.ts:173
+#: legacy/auth/src/lib/i18n-messages.ts:173
 msgid "Revoke offer"
 msgstr "Angebot widerrufen"
 
-#: apps/auth/src/lib/i18n-messages.ts:174
+#: legacy/auth/src/lib/i18n-messages.ts:174
 msgid "Save extras"
 msgstr "Zusatzkontingente speichern"
 
-#: apps/auth/src/lib/i18n-messages.ts:175
+#: legacy/auth/src/lib/i18n-messages.ts:175
 msgid "Sender domain registered. Provider DNS verification is still pending."
 msgstr "Absenderdomain registriert. Die DNS-Bestätigung beim Anbieter steht noch aus."
 
-#: apps/auth/src/lib/i18n-messages.ts:176
+#: legacy/auth/src/lib/i18n-messages.ts:176
 msgid "Sender-domain operation could not be confirmed using the tenant account. The provider may have applied it; refresh before retrying."
 msgstr "Die Aktion für die Absenderdomain konnte über das Mandantenkonto nicht bestätigt werden. Der Anbieter könnte sie bereits ausgeführt haben; aktualisiere die Ansicht, bevor du es erneut versuchst."
 
-#: apps/auth/src/lib/i18n-messages.ts:177
+#: legacy/auth/src/lib/i18n-messages.ts:177
 msgid "Sender-domain ownership or account mapping changed. Refresh before retrying."
 msgstr "Die Inhaberschaft oder Kontozuordnung der Absenderdomain hat sich geändert. Aktualisiere die Ansicht, bevor du es erneut versuchst."
 
-#: apps/auth/src/lib/i18n-messages.ts:178
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:21
+#: legacy/auth/src/lib/i18n-messages.ts:178
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:21
 msgid "Sending is paused."
 msgstr "Der Versand ist pausiert."
 
-#: apps/auth/src/lib/i18n-messages.ts:179
+#: legacy/auth/src/lib/i18n-messages.ts:179
 msgid "Sending is paused. Existing credentials can still be listed and revoked."
 msgstr "Der Versand ist pausiert. Vorhandene Zugangsdaten können weiterhin angezeigt und widerrufen werden."
 
-#: apps/auth/src/lib/i18n-messages.ts:180
+#: legacy/auth/src/lib/i18n-messages.ts:180
 msgid "Set a recovery password before removing a passkey."
 msgstr "Lege ein Passwort zur Wiederherstellung fest, bevor du einen Passkey entfernst."
 
-#: apps/auth/src/lib/i18n-messages.ts:181
+#: legacy/auth/src/lib/i18n-messages.ts:181
 msgid "Sign in again to reconnect this client."
 msgstr "Melde dich erneut an, um diesen Client wieder zu verbinden."
 
-#: apps/auth/src/lib/i18n-messages.ts:182
+#: legacy/auth/src/lib/i18n-messages.ts:182
 msgid "Sign in and complete account setup first."
 msgstr "Melde dich an und schließe zuerst die Kontoeinrichtung ab."
 
-#: apps/auth/src/lib/i18n-messages.ts:183
+#: legacy/auth/src/lib/i18n-messages.ts:183
 msgid "Sign in before managing passkeys."
 msgstr "Melde dich an, bevor du Passkeys verwaltest."
 
-#: apps/auth/src/lib/i18n-messages.ts:184
+#: legacy/auth/src/lib/i18n-messages.ts:184
 msgid "Sign in first."
 msgstr "Melde dich zuerst an."
 
-#: apps/auth/src/lib/i18n-messages.ts:185
+#: legacy/auth/src/lib/i18n-messages.ts:185
 msgid "Sign in to Studio again."
 msgstr "Melde dich erneut bei Studio an."
 
-#: apps/auth/src/lib/i18n-messages.ts:186
+#: legacy/auth/src/lib/i18n-messages.ts:186
 msgid "Sign in to view your websites."
 msgstr "Melde dich an, um deine Websites anzusehen."
 
-#: apps/auth/src/lib/i18n-messages.ts:187
+#: legacy/auth/src/lib/i18n-messages.ts:187
 msgid "Sign-in failed. Check your email and password."
 msgstr "Anmeldung fehlgeschlagen. Prüfe deine E-Mail-Adresse und dein Passwort."
 
-#: apps/auth/src/lib/i18n-messages.ts:188
+#: legacy/auth/src/lib/i18n-messages.ts:188
 msgid "Something went wrong. Try again."
 msgstr "Etwas ist schiefgelaufen. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:189
+#: legacy/auth/src/lib/i18n-messages.ts:189
 msgid "Storage (MB)"
 msgstr "Speicher (MB)"
 
-#: apps/auth/src/lib/i18n-messages.ts:190
+#: legacy/auth/src/lib/i18n-messages.ts:190
 msgid "Storage mapping and complete inventory saved."
 msgstr "Speicherzuordnung und vollständiger Bestand gespeichert."
 
-#: apps/auth/src/lib/i18n-messages.ts:191
+#: legacy/auth/src/lib/i18n-messages.ts:191
 msgid "Storage mapping changed. Refresh and retry."
 msgstr "Die Speicherzuordnung hat sich geändert. Aktualisiere die Ansicht und versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:192
+#: legacy/auth/src/lib/i18n-messages.ts:192
 msgid "Storage mapping not found."
 msgstr "Speicherzuordnung nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:193
+#: legacy/auth/src/lib/i18n-messages.ts:193
 msgid "Storage operation failed. No credentials are shown; check the mapping and retry."
 msgstr "Die Speicheraktion ist fehlgeschlagen. Es werden keine Zugangsdaten angezeigt; prüfe die Zuordnung und versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:194
+#: legacy/auth/src/lib/i18n-messages.ts:194
 msgid "Stored domain is invalid."
 msgstr "Die gespeicherte Domain ist ungültig."
 
-#: apps/auth/src/lib/i18n-messages.ts:195
+#: legacy/auth/src/lib/i18n-messages.ts:195
 msgid "Stored mail credentials could not be opened. Reconnect the provider."
 msgstr "Die gespeicherten Mail-Zugangsdaten konnten nicht geöffnet werden. Verbinde den Anbieter erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:196
+#: legacy/auth/src/lib/i18n-messages.ts:196
 msgid "Studio request is too large."
 msgstr "Die Studio-Anfrage ist zu groß."
 
-#: apps/auth/src/lib/i18n-messages.ts:197
+#: legacy/auth/src/lib/i18n-messages.ts:197
 msgid "Tenant administrator access is required."
 msgstr "Arbeitsbereich-Admin-Berechtigung erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:198
+#: legacy/auth/src/lib/i18n-messages.ts:198
 msgid "Tenant not found or access unavailable."
 msgstr "Mandant nicht gefunden oder Zugriff nicht verfügbar."
 
-#: apps/auth/src/lib/i18n-messages.ts:199
+#: legacy/auth/src/lib/i18n-messages.ts:199
 msgid "Tenant not found."
 msgstr "Mandant nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:200
+#: legacy/auth/src/lib/i18n-messages.ts:200
 msgid "The Mail account could not be verified."
 msgstr "Das Mail-Konto konnte nicht bestätigt werden."
 
-#: apps/auth/src/lib/i18n-messages.ts:201
+#: legacy/auth/src/lib/i18n-messages.ts:201
 msgid "The client could not be registered. Check your operator session and try again."
 msgstr "Der Client konnte nicht registriert werden. Prüfe deine Betreiber-Sitzung und versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:202
+#: legacy/auth/src/lib/i18n-messages.ts:202
 msgid "The code could not be verified. Try again."
 msgstr "Der Code konnte nicht bestätigt werden. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:203
+#: legacy/auth/src/lib/i18n-messages.ts:203
 msgid "The domain is still present. Refresh before retrying removal."
 msgstr "Die Domain ist noch vorhanden. Aktualisiere die Ansicht, bevor du das Entfernen erneut versuchst."
 
-#: apps/auth/src/lib/i18n-messages.ts:204
+#: legacy/auth/src/lib/i18n-messages.ts:204
 msgid "The domain operation expired. Refresh before retrying."
 msgstr "Die Domain-Aktion ist abgelaufen. Aktualisiere die Ansicht, bevor du es erneut versuchst."
 
-#: apps/auth/src/lib/i18n-messages.ts:205
+#: legacy/auth/src/lib/i18n-messages.ts:205
 msgid "The exact mapped provider sender domain could not be confirmed."
 msgstr "Die genau zugeordnete Absenderdomain beim Anbieter konnte nicht bestätigt werden."
 
-#: apps/auth/src/lib/i18n-messages.ts:206
+#: legacy/auth/src/lib/i18n-messages.ts:206
 msgid "The new passwords do not match."
 msgstr "Die neuen Passwörter stimmen nicht überein."
 
-#: apps/auth/src/lib/i18n-messages.ts:207
+#: legacy/auth/src/lib/i18n-messages.ts:207
 msgid "The operation could not be completed. Some changes may have been saved. Refresh and review access or invitation status before retrying."
 msgstr "Die Aktion konnte nicht abgeschlossen werden. Einige Änderungen wurden möglicherweise gespeichert. Aktualisiere die Ansicht und prüfe Zugriff oder Einladungsstatus, bevor du es erneut versuchst."
 
-#: apps/auth/src/lib/i18n-messages.ts:208
+#: legacy/auth/src/lib/i18n-messages.ts:208
 msgid "The passkey could not be added. Try again."
 msgstr "Der Passkey konnte nicht hinzugefügt werden. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:209
+#: legacy/auth/src/lib/i18n-messages.ts:209
 msgid "The passkey could not be removed."
 msgstr "Der Passkey konnte nicht entfernt werden."
 
-#: apps/auth/src/lib/i18n-messages.ts:210
+#: legacy/auth/src/lib/i18n-messages.ts:210
 msgid "The provider did not confirm the requested domain setting. The displayed state reflects its response."
 msgstr "Der Anbieter hat die angeforderte Domain-Einstellung nicht bestätigt. Der angezeigte Stand entspricht seiner Antwort."
 
-#: apps/auth/src/lib/i18n-messages.ts:211
+#: legacy/auth/src/lib/i18n-messages.ts:211
 msgid "The provider did not confirm the requested tracking setting. The displayed state reflects its response."
 msgstr "Der Anbieter hat die angeforderte Tracking-Einstellung nicht bestätigt. Der angezeigte Stand entspricht seiner Antwort."
 
-#: apps/auth/src/lib/i18n-messages.ts:212
+#: legacy/auth/src/lib/i18n-messages.ts:212
 msgid "The provider did not confirm this exact sender domain. Refresh before retrying."
 msgstr "Der Anbieter hat diese genaue Absenderdomain nicht bestätigt. Aktualisiere die Ansicht, bevor du es erneut versuchst."
 
-#: apps/auth/src/lib/i18n-messages.ts:213
+#: legacy/auth/src/lib/i18n-messages.ts:213
 msgid "The provider has not confirmed sender-domain removal. Refresh before retrying."
 msgstr "Der Anbieter hat das Entfernen der Absenderdomain nicht bestätigt. Aktualisiere die Ansicht, bevor du es erneut versuchst."
 
-#: apps/auth/src/lib/i18n-messages.ts:214
+#: legacy/auth/src/lib/i18n-messages.ts:214
 msgid "The provider rejected account creation. Correct the provider configuration or account details, then submit again."
 msgstr "Der Anbieter hat die Kontoerstellung abgelehnt. Korrigiere die Anbieterkonfiguration oder Kontodaten und sende sie anschließend erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:215
+#: legacy/auth/src/lib/i18n-messages.ts:215
 msgid "The provider verified SPF, DKIM and DMARC."
 msgstr "Der Anbieter hat SPF, DKIM und DMARC bestätigt."
 
-#: apps/auth/src/lib/i18n-messages.ts:216
+#: legacy/auth/src/lib/i18n-messages.ts:216
 msgid "The public DNS ownership token does not match yet."
 msgstr "Der öffentliche DNS-Nachweis stimmt noch nicht überein."
 
-#: apps/auth/src/lib/i18n-messages.ts:217
+#: legacy/auth/src/lib/i18n-messages.ts:217
 msgid "The request failed. Try again."
 msgstr "Die Anfrage ist fehlgeschlagen. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:218
+#: legacy/auth/src/lib/i18n-messages.ts:218
 msgid "The sender domain is changing. Refresh before creating a tracking domain."
 msgstr "Die Absenderdomain wird gerade geändert. Aktualisiere die Ansicht, bevor du eine Tracking-Domain erstellst."
 
-#: apps/auth/src/lib/i18n-messages.ts:219
+#: legacy/auth/src/lib/i18n-messages.ts:219
 msgid "The sending account could not be verified."
 msgstr "Das Versandkonto konnte nicht bestätigt werden."
 
-#: apps/auth/src/lib/i18n-messages.ts:220
+#: legacy/auth/src/lib/i18n-messages.ts:220
 msgid "The sending account could not be verified. Contact your operator."
 msgstr "Das Versandkonto konnte nicht bestätigt werden. Wende dich an deinen Betreiber."
 
-#: apps/auth/src/lib/i18n-messages.ts:221
+#: legacy/auth/src/lib/i18n-messages.ts:221
 msgid "The subscription changed. Refresh and try again."
 msgstr "Das Abonnement hat sich geändert. Aktualisiere die Ansicht und versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:222
+#: legacy/auth/src/lib/i18n-messages.ts:222
 msgid "This account or domain is already registered or verified elsewhere."
 msgstr "Dieses Konto oder diese Domain ist bereits an anderer Stelle registriert oder bestätigt."
 
-#: apps/auth/src/lib/i18n-messages.ts:223
+#: legacy/auth/src/lib/i18n-messages.ts:223
 msgid "This browser does not support passkeys. Sign in with your password."
 msgstr "Dieser Browser unterstützt keine Passkeys. Melde dich mit deinem Passwort an."
 
-#: apps/auth/src/lib/i18n-messages.ts:224
+#: legacy/auth/src/lib/i18n-messages.ts:224
 msgid "This browser does not support passkeys. Try a current browser on your phone or computer."
 msgstr "Dieser Browser unterstützt keine Passkeys. Versuche es mit einem aktuellen Browser auf deinem Smartphone oder Computer."
 
-#: apps/auth/src/lib/i18n-messages.ts:225
+#: legacy/auth/src/lib/i18n-messages.ts:225
 msgid "This exact account was not found under the configured provider master."
 msgstr "Dieses Konto wurde unter dem konfigurierten Hauptkonto des Anbieters nicht gefunden."
 
-#: apps/auth/src/lib/i18n-messages.ts:226
+#: legacy/auth/src/lib/i18n-messages.ts:226
 msgid "This invitation has already been answered or cancelled. Refresh the page."
 msgstr "Diese Einladung wurde bereits beantwortet oder widerrufen. Aktualisiere die Seite."
 
-#: apps/auth/src/lib/i18n-messages.ts:227
+#: legacy/auth/src/lib/i18n-messages.ts:227
 msgid "This invitation is unavailable. It may have expired, been answered, or been sent to another email address."
 msgstr "Diese Einladung ist nicht verfügbar. Sie ist möglicherweise abgelaufen, wurde bereits beantwortet oder an eine andere E-Mail-Adresse gesendet."
 
-#: apps/auth/src/lib/i18n-messages.ts:228
+#: legacy/auth/src/lib/i18n-messages.ts:228
 msgid "This offer is expired, revoked or stale. Request a new offer."
 msgstr "Dieses Angebot ist abgelaufen, widerrufen oder nicht mehr aktuell. Fordere ein neues Angebot an."
 
-#: apps/auth/src/lib/i18n-messages.ts:229
+#: legacy/auth/src/lib/i18n-messages.ts:229
 msgid "This password reset could not be completed. Check your password or request a new reset link."
 msgstr "Das Passwort konnte nicht zurückgesetzt werden. Prüfe dein Passwort oder fordere einen neuen Link an."
 
-#: apps/auth/src/lib/i18n-messages.ts:230
+#: legacy/auth/src/lib/i18n-messages.ts:230
 msgid "This person is already a member. Contact an operator to change their role."
 msgstr "Diese Person ist bereits Mitglied. Wende dich an einen Betreiber, um ihre Rolle zu ändern."
 
-#: apps/auth/src/lib/i18n-messages.ts:231
+#: legacy/auth/src/lib/i18n-messages.ts:231
 msgid "This reservation has already been reconciled."
 msgstr "Diese Reservierung wurde bereits abgeglichen."
 
-#: apps/auth/src/lib/i18n-messages.ts:232
+#: legacy/auth/src/lib/i18n-messages.ts:232
 msgid "This reservation has already changed. Refresh before reconciling it again."
 msgstr "Diese Reservierung hat sich bereits geändert. Aktualisiere die Ansicht, bevor du sie erneut abgleichst."
 
-#: apps/auth/src/lib/i18n-messages.ts:233
-#: apps/auth/src/lib/i18n-messages.ts:294
+#: legacy/auth/src/lib/i18n-messages.ts:233
+#: legacy/auth/src/lib/i18n-messages.ts:294
 msgid "This reset link is invalid or has expired. Request a new link to reset your password."
 msgstr "Dieser Link ist ungültig oder abgelaufen. Fordere einen neuen Link zum Zurücksetzen deines Passworts an."
 
-#: apps/auth/src/lib/i18n-messages.ts:234
+#: legacy/auth/src/lib/i18n-messages.ts:234
 msgid "This sign-in request has expired or is no longer valid. Start a new sign-in from Studio."
 msgstr "Diese Anmeldeanfrage ist abgelaufen oder nicht mehr gültig. Starte eine neue Anmeldung über Studio."
 
-#: apps/auth/src/lib/i18n-messages.ts:235
+#: legacy/auth/src/lib/i18n-messages.ts:235
 msgid "This store or overlapping folder is already mapped. Remove its existing mapping first."
 msgstr "Dieser Speicher oder ein überlappender Ordner ist bereits zugeordnet. Entferne zuerst die vorhandene Zuordnung."
 
-#: apps/auth/src/lib/i18n-messages.ts:236
+#: legacy/auth/src/lib/i18n-messages.ts:236
 msgid "This tracking domain is already reserved. Refresh to reconcile its status."
 msgstr "Diese Tracking-Domain ist bereits reserviert. Aktualisiere die Ansicht, um ihren Status abzugleichen."
 
-#: apps/auth/src/lib/i18n-messages.ts:237
+#: legacy/auth/src/lib/i18n-messages.ts:237
 msgid "This tracking setting is required by account policy and cannot be changed here."
 msgstr "Diese Tracking-Einstellung wird durch die Kontorichtlinie vorgeschrieben und kann hier nicht geändert werden."
 
-#: apps/auth/src/lib/i18n-messages.ts:238
+#: legacy/auth/src/lib/i18n-messages.ts:238
 msgid "This website already belongs to a customer. Ownership transfers require a separate review."
 msgstr "Diese Website gehört bereits zu einem Kunden. Eine Übertragung erfordert eine gesonderte Prüfung."
 
-#: apps/auth/src/lib/i18n-messages.ts:239
+#: legacy/auth/src/lib/i18n-messages.ts:239
 msgid "Tracking authorization, account state or operation lease changed. Refresh before continuing."
 msgstr "Tracking-Berechtigung, Kontostatus oder Aktionssperre haben sich geändert. Aktualisiere die Ansicht, bevor du fortfährst."
 
-#: apps/auth/src/lib/i18n-messages.ts:240
+#: legacy/auth/src/lib/i18n-messages.ts:240
 msgid "Tracking could not be completed for this account. Refresh before retrying; an uncertain creation needs reconciliation. Your operator can check account support."
 msgstr "Tracking konnte für dieses Konto nicht abgeschlossen werden. Aktualisiere die Ansicht vor einem erneuten Versuch; eine unklare Erstellung muss abgeglichen werden. Dein Betreiber kann den Kontosupport prüfen."
 
-#: apps/auth/src/lib/i18n-messages.ts:241
+#: legacy/auth/src/lib/i18n-messages.ts:241
 msgid "Tracking domain created. Open and click tracking settings were not changed."
 msgstr "Tracking-Domain erstellt. Die Einstellungen für Öffnungs- und Klick-Tracking wurden nicht geändert."
 
-#: apps/auth/src/lib/i18n-messages.ts:242
+#: legacy/auth/src/lib/i18n-messages.ts:242
 msgid "Tracking domain identity changed. Refresh and ask your operator to reconcile it."
 msgstr "Die Identität der Tracking-Domain hat sich geändert. Aktualisiere die Ansicht und bitte deinen Betreiber um einen Abgleich."
 
-#: apps/auth/src/lib/i18n-messages.ts:243
+#: legacy/auth/src/lib/i18n-messages.ts:243
 msgid "Tracking domain response did not match this tenant’s domain."
 msgstr "Die Antwort zur Tracking-Domain passt nicht zur Domain dieses Mandanten."
 
-#: apps/auth/src/lib/i18n-messages.ts:244
+#: legacy/auth/src/lib/i18n-messages.ts:244
 msgid "Tracking state refreshed from the provider."
 msgstr "Tracking-Stand vom Anbieter aktualisiert."
 
-#: apps/auth/src/lib/i18n-messages.ts:245
+#: legacy/auth/src/lib/i18n-messages.ts:245
 msgid "Transfer (GB)"
 msgstr "Transfer (GB)"
 
-#: apps/auth/src/lib/i18n-messages.ts:246
+#: legacy/auth/src/lib/i18n-messages.ts:246
 msgid "Unauthorized"
 msgstr "Nicht autorisiert"
 
-#: apps/auth/src/lib/i18n-messages.ts:247
+#: legacy/auth/src/lib/i18n-messages.ts:247
 msgid "Unknown action."
 msgstr "Unbekannte Aktion."
 
-#: apps/auth/src/lib/i18n-messages.ts:248
+#: legacy/auth/src/lib/i18n-messages.ts:248
 msgid "Unknown administration action."
 msgstr "Unbekannte Verwaltungsaktion."
 
-#: apps/auth/src/lib/i18n-messages.ts:249
+#: legacy/auth/src/lib/i18n-messages.ts:249
 msgid "Unknown credential action."
 msgstr "Unbekannte Zugangsdaten-Aktion."
 
-#: apps/auth/src/lib/i18n-messages.ts:250
+#: legacy/auth/src/lib/i18n-messages.ts:250
 msgid "Unknown mail action."
 msgstr "Unbekannte Mail-Aktion."
 
-#: apps/auth/src/lib/i18n-messages.ts:251
+#: legacy/auth/src/lib/i18n-messages.ts:251
 msgid "Unknown plan action."
 msgstr "Unbekannte Tarifaktion."
 
-#: apps/auth/src/lib/i18n-messages.ts:252
+#: legacy/auth/src/lib/i18n-messages.ts:252
 msgid "Unknown sender-domain action."
 msgstr "Unbekannte Absenderdomain-Aktion."
 
-#: apps/auth/src/lib/i18n-messages.ts:253
+#: legacy/auth/src/lib/i18n-messages.ts:253
 msgid "Unknown storage action."
 msgstr "Unbekannte Speicheraktion."
 
-#: apps/auth/src/lib/i18n-messages.ts:254
+#: legacy/auth/src/lib/i18n-messages.ts:254
 msgid "Unknown tenant action."
 msgstr "Unbekannte Mandantenaktion."
 
-#: apps/auth/src/lib/i18n-messages.ts:255
+#: legacy/auth/src/lib/i18n-messages.ts:255
 msgid "Unknown tracking action."
 msgstr "Unbekannte Tracking-Aktion."
 
-#: apps/auth/src/lib/i18n-messages.ts:256
+#: legacy/auth/src/lib/i18n-messages.ts:256
 msgid "Unknown tracking setting."
 msgstr "Unbekannte Tracking-Einstellung."
 
-#: apps/auth/src/lib/i18n-messages.ts:257
+#: legacy/auth/src/lib/i18n-messages.ts:257
 msgid "Use POST."
 msgstr "Verwende POST."
 
-#: apps/auth/src/lib/i18n-messages.ts:258
+#: legacy/auth/src/lib/i18n-messages.ts:258
 msgid "Use a name and an exact HTTPS callback URL (HTTP is allowed only on loopback)."
 msgstr "Gib einen Namen und eine exakte HTTPS-Callback-URL an. HTTP ist nur für lokale Loopback-Adressen erlaubt."
 
-#: apps/auth/src/lib/i18n-messages.ts:259
+#: legacy/auth/src/lib/i18n-messages.ts:259
 msgid "Use a relative folder prefix, or leave it empty for the whole store."
 msgstr "Verwende ein relatives Ordnerpräfix oder lasse das Feld für den gesamten Speicher leer."
 
-#: apps/auth/src/lib/i18n-messages.ts:260
+#: legacy/auth/src/lib/i18n-messages.ts:260
 msgid "Use a two-letter country code."
 msgstr "Verwende einen Ländercode mit zwei Buchstaben."
 
-#: apps/auth/src/lib/i18n-messages.ts:261
+#: legacy/auth/src/lib/i18n-messages.ts:261
 msgid "Use individual IPv4 or IPv6 addresses, without CIDR ranges."
 msgstr "Verwende einzelne IPv4- oder IPv6-Adressen ohne CIDR-Bereiche."
 
-#: apps/auth/src/lib/i18n-messages.ts:262
+#: legacy/auth/src/lib/i18n-messages.ts:262
 msgid "Use the IPv4 sending address assigned by the mail provider."
 msgstr "Verwende die vom Mail-Anbieter zugewiesene IPv4-Versandadresse."
 
-#: apps/auth/src/lib/i18n-messages.ts:263
+#: legacy/auth/src/lib/i18n-messages.ts:263
 msgid "Use your tenant portal to manage customer access."
 msgstr "Verwalte Kundenzugriffe über dein Mandantenportal."
 
-#: apps/auth/src/lib/i18n-messages.ts:264
+#: legacy/auth/src/lib/i18n-messages.ts:264
 msgid "Verify domain ownership before configuring sending."
 msgstr "Bestätige die Domain-Inhaberschaft, bevor du den Versand einrichtest."
 
-#: apps/auth/src/lib/i18n-messages.ts:265
+#: legacy/auth/src/lib/i18n-messages.ts:265
 msgid "Verify your email before signing in."
 msgstr "Bestätige deine E-Mail-Adresse, bevor du dich anmeldest."
 
-#: apps/auth/src/lib/i18n-messages.ts:266
+#: legacy/auth/src/lib/i18n-messages.ts:266
 msgid "We couldn’t connect. Please try again."
 msgstr "Die Verbindung ist fehlgeschlagen. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:267
+#: legacy/auth/src/lib/i18n-messages.ts:267
 msgid "We couldn’t connect. Try again."
 msgstr "Die Verbindung ist fehlgeschlagen. Versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:268
+#: legacy/auth/src/lib/i18n-messages.ts:268
 msgid "We couldn’t connect. Try signing in again."
 msgstr "Die Verbindung ist fehlgeschlagen. Versuche erneut, dich anzumelden."
 
-#: apps/auth/src/lib/i18n-messages.ts:269
+#: legacy/auth/src/lib/i18n-messages.ts:269
 msgid "We couldn’t connect. Try verifying your code again."
 msgstr "Die Verbindung ist fehlgeschlagen. Versuche erneut, deinen Code zu bestätigen."
 
-#: apps/auth/src/lib/i18n-messages.ts:270
+#: legacy/auth/src/lib/i18n-messages.ts:270
 msgid "We couldn’t load this invitation. Reload the page to try again."
 msgstr "Diese Einladung konnte nicht geladen werden. Lade die Seite neu, um es erneut zu versuchen."
 
-#: apps/auth/src/lib/i18n-messages.ts:271
-#: apps/auth/src/lib/i18n-messages.ts:291
+#: legacy/auth/src/lib/i18n-messages.ts:271
+#: legacy/auth/src/lib/i18n-messages.ts:291
 msgid "We couldn’t load your account. Please reload this page."
 msgstr "Dein Konto konnte nicht geladen werden. Bitte lade diese Seite neu."
 
-#: apps/auth/src/lib/i18n-messages.ts:272
+#: legacy/auth/src/lib/i18n-messages.ts:272
 msgid "We couldn’t request a password reset. Please try again later."
 msgstr "Das Zurücksetzen des Passworts konnte nicht angefordert werden. Bitte versuche es später erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:273
+#: legacy/auth/src/lib/i18n-messages.ts:273
 msgid "We couldn’t update your passkeys. Try again."
 msgstr "Deine Passkeys konnten nicht aktualisiert werden. Bitte versuche es erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:274
+#: legacy/auth/src/lib/i18n-messages.ts:274
 msgid "Webdock settings saved."
 msgstr "Webdock-Einstellungen gespeichert."
 
-#: apps/auth/src/lib/i18n-messages.ts:275
+#: legacy/auth/src/lib/i18n-messages.ts:275
 msgid "Websites"
 msgstr "Websites"
 
-#: apps/auth/src/lib/i18n-messages.ts:277
+#: legacy/auth/src/lib/i18n-messages.ts:277
 msgid "Your authenticator is ready."
 msgstr "Deine Authenticator-App ist bereit."
 
-#: apps/auth/src/lib/i18n-messages.ts:278
-#: apps/auth/src/lib/i18n-messages.ts:293
+#: legacy/auth/src/lib/i18n-messages.ts:278
+#: legacy/auth/src/lib/i18n-messages.ts:293
 msgid "Your password has been updated and your previous sessions have been signed out. Sign in with your new password."
 msgstr "Dein Passwort wurde aktualisiert und deine bisherigen Sitzungen wurden abgemeldet. Melde dich mit deinem neuen Passwort an."
 
-#: apps/auth/src/lib/i18n-messages.ts:279
+#: legacy/auth/src/lib/i18n-messages.ts:279
 msgid "Customer view is read-only. Exit the preview first."
 msgstr "Die Kundenansicht ist schreibgeschützt. Bitte zuerst die Vorschau verlassen."
 
-#: apps/auth/src/lib/i18n-messages.ts:280
+#: legacy/auth/src/lib/i18n-messages.ts:280
 msgid "An active operator session with completed security setup is required."
 msgstr "Eine aktive Betreiber-Sitzung mit vollständiger Sicherheitskonfiguration ist erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:281
+#: legacy/auth/src/lib/i18n-messages.ts:281
 msgid "Tenant unavailable."
 msgstr "Mandant nicht verfügbar."
 
-#: apps/auth/src/lib/i18n-messages.ts:282
+#: legacy/auth/src/lib/i18n-messages.ts:282
 msgid "An active mapped tenant is required."
 msgstr "Ein aktiver, zugeordneter Mandant ist erforderlich."
 
-#: apps/auth/src/lib/i18n-messages.ts:283
+#: legacy/auth/src/lib/i18n-messages.ts:283
 msgid "Customer view has expired or is no longer available. Exit the preview."
 msgstr "Die Kundenansicht ist abgelaufen oder nicht mehr verfügbar. Bitte die Vorschau verlassen."
 
-#: apps/auth/src/lib/i18n-messages.ts:284
+#: legacy/auth/src/lib/i18n-messages.ts:284
 msgid "Customer view ended."
 msgstr "Kundenansicht beendet."
 
-#: apps/auth/src/lib/i18n-messages.ts:285 apps/auth/src/app/consent/page.tsx:50
+#: legacy/auth/src/lib/i18n-messages.ts:285 legacy/auth/src/app/consent/page.tsx:50
 msgid "Application"
 msgstr "Anwendung"
 
-#: apps/auth/src/lib/i18n-messages.ts:286
-#: apps/auth/src/components/auth-forms.tsx:689
+#: legacy/auth/src/lib/i18n-messages.ts:286
+#: legacy/auth/src/components/auth-forms.tsx:689
 msgid "Email verified"
 msgstr "E-Mail-Adresse bestätigt"
 
-#: apps/auth/src/lib/i18n-messages.ts:287
-#: apps/auth/src/components/auth-forms.tsx:689
+#: legacy/auth/src/lib/i18n-messages.ts:287
+#: legacy/auth/src/components/auth-forms.tsx:689
 msgid "Profile picture"
 msgstr "Profilbild"
 
-#: apps/auth/src/lib/i18n-messages.ts:288
-#: apps/auth/src/components/auth-forms.tsx:682
+#: legacy/auth/src/lib/i18n-messages.ts:288
+#: legacy/auth/src/components/auth-forms.tsx:682
 msgid "Confirm your identity"
 msgstr "Deine Identität bestätigen"
 
-#: apps/auth/src/lib/i18n-messages.ts:289
-#: apps/auth/src/components/auth-forms.tsx:682
+#: legacy/auth/src/lib/i18n-messages.ts:289
+#: legacy/auth/src/components/auth-forms.tsx:682
 msgid "Basic profile"
 msgstr "Grundlegendes Profil"
 
-#: apps/auth/src/lib/i18n-messages.ts:290
+#: legacy/auth/src/lib/i18n-messages.ts:290
 msgid "Offer accepted."
 msgstr "Angebot angenommen."
 
-#: apps/auth/src/lib/i18n-messages.ts:295
+#: legacy/auth/src/lib/i18n-messages.ts:295
 msgid "Invalid email or password"
 msgstr "Ungültige E-Mail-Adresse oder ungültiges Passwort"
 
-#: apps/auth/src/lib/i18n-messages.ts:296
+#: legacy/auth/src/lib/i18n-messages.ts:296
 msgid "Invalid password"
 msgstr "Ungültiges Passwort"
 
-#: apps/auth/src/lib/i18n-messages.ts:297
+#: legacy/auth/src/lib/i18n-messages.ts:297
 msgid "Email not verified"
 msgstr "E-Mail-Adresse nicht bestätigt"
 
-#: apps/auth/src/lib/i18n-messages.ts:298
+#: legacy/auth/src/lib/i18n-messages.ts:298
 msgid "Invalid code"
 msgstr "Ungültiger Code"
 
-#: apps/auth/src/lib/i18n-messages.ts:299
+#: legacy/auth/src/lib/i18n-messages.ts:299
 msgid "Invalid backup code"
 msgstr "Ungültiger Wiederherstellungscode"
 
-#: apps/auth/src/lib/i18n-messages.ts:300
+#: legacy/auth/src/lib/i18n-messages.ts:300
 msgid "Too many attempts. Please request a new code."
 msgstr "Zu viele Versuche. Bitte fordere einen neuen Code an."
 
-#: apps/auth/src/lib/i18n-messages.ts:301
+#: legacy/auth/src/lib/i18n-messages.ts:301
 msgid "Too many failed verification attempts. Your account is temporarily locked. Please try again later."
 msgstr "Zu viele fehlgeschlagene Bestätigungsversuche. Dein Konto ist vorübergehend gesperrt. Bitte versuche es später erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:302
+#: legacy/auth/src/lib/i18n-messages.ts:302
 msgid "Invalid two factor cookie"
 msgstr "Die Sitzung zur Zwei-Faktor-Bestätigung ist ungültig. Starte die Anmeldung erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:303
+#: legacy/auth/src/lib/i18n-messages.ts:303
 msgid "Too many requests. Please try again later."
 msgstr "Zu viele Anfragen. Bitte versuche es später erneut."
 
-#: apps/auth/src/lib/i18n-messages.ts:304
+#: legacy/auth/src/lib/i18n-messages.ts:304
 msgid "Password is too short"
 msgstr "Das Passwort ist zu kurz."
 
-#: apps/auth/src/lib/i18n-messages.ts:305
+#: legacy/auth/src/lib/i18n-messages.ts:305
 msgid "Password is too long"
 msgstr "Das Passwort ist zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:306
+#: legacy/auth/src/lib/i18n-messages.ts:306
 msgid "OTP not enabled"
 msgstr "Einmalcodes sind nicht aktiviert."
 
-#: apps/auth/src/lib/i18n-messages.ts:307
+#: legacy/auth/src/lib/i18n-messages.ts:307
 msgid "OTP is not available"
 msgstr "Einmalcodes sind nicht verfügbar."
 
-#: apps/auth/src/lib/i18n-messages.ts:308
+#: legacy/auth/src/lib/i18n-messages.ts:308
 msgid "OTP has expired"
 msgstr "Der Einmalcode ist abgelaufen."
 
-#: apps/auth/src/lib/i18n-messages.ts:309
+#: legacy/auth/src/lib/i18n-messages.ts:309
 msgid "TOTP not enabled"
 msgstr "Authenticator-Codes sind nicht aktiviert."
 
-#: apps/auth/src/lib/i18n-messages.ts:310
+#: legacy/auth/src/lib/i18n-messages.ts:310
 msgid "TOTP is already enabled"
 msgstr "Authenticator-Codes sind bereits aktiviert."
 
-#: apps/auth/src/lib/i18n-messages.ts:311
+#: legacy/auth/src/lib/i18n-messages.ts:311
 msgid "TOTP is not available"
 msgstr "Authenticator-Codes sind nicht verfügbar."
 
-#: apps/auth/src/lib/i18n-messages.ts:312
+#: legacy/auth/src/lib/i18n-messages.ts:312
 msgid "Two factor isn't enabled"
 msgstr "Die Zwei-Faktor-Authentifizierung ist nicht aktiviert."
 
-#: apps/auth/src/lib/i18n-messages.ts:313
+#: legacy/auth/src/lib/i18n-messages.ts:313
 msgid "Backup codes aren't enabled"
 msgstr "Wiederherstellungscodes sind nicht aktiviert."
 
-#: apps/auth/src/lib/i18n-messages.ts:314
+#: legacy/auth/src/lib/i18n-messages.ts:314
 msgid "Customer name is invalid or too long."
 msgstr "Kundenname ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:315
+#: legacy/auth/src/lib/i18n-messages.ts:315
 msgid "First name is invalid or too long."
 msgstr "Vorname ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:316
+#: legacy/auth/src/lib/i18n-messages.ts:316
 msgid "Last name is invalid or too long."
 msgstr "Nachname ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:317
+#: legacy/auth/src/lib/i18n-messages.ts:317
 msgid "Company name is invalid or too long."
 msgstr "Unternehmensname ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:318
+#: legacy/auth/src/lib/i18n-messages.ts:318
 msgid "Contact name is invalid or too long."
 msgstr "Kontaktperson ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:319
+#: legacy/auth/src/lib/i18n-messages.ts:319
 msgid "Contact email is invalid or too long."
 msgstr "Kontakt-E-Mail ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:320
+#: legacy/auth/src/lib/i18n-messages.ts:320
 msgid "Phone is invalid or too long."
 msgstr "Telefon ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:321
+#: legacy/auth/src/lib/i18n-messages.ts:321
 msgid "Address line 1 is invalid or too long."
 msgstr "Adresszeile 1 ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:322
+#: legacy/auth/src/lib/i18n-messages.ts:322
 msgid "Address line 2 is invalid or too long."
 msgstr "Adresszeile 2 ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:323
+#: legacy/auth/src/lib/i18n-messages.ts:323
 msgid "Postal code is invalid or too long."
 msgstr "Postleitzahl ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:324
+#: legacy/auth/src/lib/i18n-messages.ts:324
 msgid "City is invalid or too long."
 msgstr "Ort ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:325
+#: legacy/auth/src/lib/i18n-messages.ts:325
 msgid "Region is invalid or too long."
 msgstr "Region ist ungültig oder zu lang."
 
-#: apps/auth/src/lib/i18n-messages.ts:326
+#: legacy/auth/src/lib/i18n-messages.ts:326
 msgid "Country code (two letters) is invalid or too long."
 msgstr "Ländercode (zwei Buchstaben) ist ungültig oder zu lang."
 
-#: apps/auth/src/app/layout.tsx:19
+#: legacy/auth/src/app/layout.tsx:19
 msgid "Webdock Account"
 msgstr "Webdock-Konto"
 
-#: apps/auth/src/app/layout.tsx:31
+#: legacy/auth/src/app/layout.tsx:31
 msgid "Skip to content"
 msgstr "Zum Inhalt springen"
 
-#: apps/auth/src/app/layout.tsx:36
+#: legacy/auth/src/app/layout.tsx:36
 msgid "Account"
 msgstr "Konto"
 
-#: apps/auth/src/app/layout.tsx:37
+#: legacy/auth/src/app/layout.tsx:37
 msgid "Account & security"
 msgstr "Konto & Sicherheit"
 
-#: apps/auth/src/app/layout.tsx:38
+#: legacy/auth/src/app/layout.tsx:38
 msgid "Connected apps"
 msgstr "Verbundene Apps"
 
-#: apps/auth/src/app/layout.tsx:39
+#: legacy/auth/src/app/layout.tsx:39
 msgid "Open Studio"
 msgstr "Studio öffnen"
 
-#: apps/auth/src/app/layout.tsx:44
+#: legacy/auth/src/app/layout.tsx:44
 msgid "Your {name} sign-in and account security."
 msgstr "Deine Anmeldung und Kontosicherheit bei {name}."
 
-#: apps/auth/src/app/layout.tsx:45
+#: legacy/auth/src/app/layout.tsx:45
 msgid "Support"
 msgstr "Support"
 
-#: apps/auth/src/app/layout.tsx:46
+#: legacy/auth/src/app/layout.tsx:46
 msgid "Privacy"
 msgstr "Datenschutz"
 
-#: apps/auth/src/app/page.tsx:8
+#: legacy/auth/src/app/page.tsx:8
 msgid "Your Webdock account"
 msgstr "Dein Webdock-Konto"
 
-#: apps/auth/src/app/page.tsx:10
+#: legacy/auth/src/app/page.tsx:10
 msgid "Manage your sign-in and account security in one place."
 msgstr "Verwalte Anmeldung und Kontosicherheit an einem Ort."
 
-#: apps/auth/src/app/page.tsx:12
+#: legacy/auth/src/app/page.tsx:12
 msgid "Manage account"
 msgstr "Konto verwalten"
 
-#: apps/auth/src/components/invitation.tsx:51
-#: apps/auth/src/app/invitation/page.tsx:10
+#: legacy/auth/src/components/invitation.tsx:51
+#: legacy/auth/src/app/invitation/page.tsx:10
 msgid "Organization invitation"
 msgstr "Einladung zur Organisation"
 
-#: apps/auth/src/components/invitation.tsx:52
+#: legacy/auth/src/components/invitation.tsx:52
 msgid "Loading your invitation…"
 msgstr "Deine Einladung wird geladen…"
 
-#: apps/auth/src/components/invitation.tsx:55
+#: legacy/auth/src/components/invitation.tsx:55
 msgid "You have joined {value1}."
 msgstr "Du bist {value1} beigetreten."
 
-#: apps/auth/src/components/invitation.tsx:55
+#: legacy/auth/src/components/invitation.tsx:55
 msgid "You have declined this invitation."
 msgstr "Du hast diese Einladung abgelehnt."
 
-#: apps/auth/src/components/invitation.tsx:56
+#: legacy/auth/src/components/invitation.tsx:56
 msgid "Your administrator manages access to individual projects and websites."
 msgstr "Dein Admin verwaltet den Zugriff auf einzelne Projekte und Websites."
 
-#: apps/auth/src/components/invitation.tsx:57
+#: legacy/auth/src/components/invitation.tsx:57
 msgid "Go to your tenants"
 msgstr "Zu deinen Mandanten"
 
-#: apps/auth/src/components/invitation.tsx:59
+#: legacy/auth/src/components/invitation.tsx:59
 msgid "You have been invited to join "
 msgstr "Du wurdest eingeladen, beizutreten: "
 
-#: apps/auth/src/components/invitation.tsx:60
+#: legacy/auth/src/components/invitation.tsx:60
 msgid "For "
 msgstr "Für "
 
-#: apps/auth/src/components/invitation.tsx:60
+#: legacy/auth/src/components/invitation.tsx:60
 msgid "Organization role: "
 msgstr "Organisationsrolle: "
 
-#: apps/auth/src/components/invitation.tsx:62
+#: legacy/auth/src/components/invitation.tsx:62
 msgid "Accept invitation"
 msgstr "Einladung annehmen"
 
-#: apps/auth/src/components/invitation.tsx:63
+#: legacy/auth/src/components/invitation.tsx:63
 msgid "Decline"
 msgstr "Ablehnen"
 
-#: apps/auth/src/components/invitation.tsx:66
+#: legacy/auth/src/components/invitation.tsx:66
 msgid "Sign in with the email address the invitation was sent to. Contact your Webdock administrator if you need help."
 msgstr "Melde dich mit der E-Mail-Adresse an, an die die Einladung gesendet wurde. Wende dich an deinen Webdock-Admin, wenn du Hilfe benötigst."
 
-#: apps/auth/src/components/passkeys.tsx:39
-#: apps/auth/src/components/auth-forms.tsx:490
+#: legacy/auth/src/components/passkeys.tsx:39
+#: legacy/auth/src/components/auth-forms.tsx:490
 msgid "Passkeys"
 msgstr "Passkeys"
 
-#: apps/auth/src/components/passkeys.tsx:41
+#: legacy/auth/src/components/passkeys.tsx:41
 msgid "Sign in using your device PIN, fingerprint, face or security key. Your device confirmation completes sign-in without an extra authenticator code. Signing in with your password still requires your authenticator when enabled."
 msgstr "Melde dich mit Geräte-PIN, Fingerabdruck, Gesichtserkennung oder Sicherheitsschlüssel an. Die Bestätigung auf deinem Gerät schließt die Anmeldung ohne zusätzlichen Authenticator-Code ab. Bei der Anmeldung mit Passwort bleibt die Authenticator-App erforderlich, sofern sie aktiviert ist."
 
-#: apps/auth/src/components/passkeys.tsx:48
+#: legacy/auth/src/components/passkeys.tsx:48
 msgid "Loading passkeys…"
 msgstr "Passkeys werden geladen…"
 
-#: apps/auth/src/components/passkeys.tsx:50
+#: legacy/auth/src/components/passkeys.tsx:50
 msgid "We couldn’t load your passkeys."
 msgstr "Deine Passkeys konnten nicht geladen werden."
 
-#: apps/auth/src/components/passkeys.tsx:52
-#: apps/auth/src/components/auth-forms.tsx:276
+#: legacy/auth/src/components/passkeys.tsx:52
+#: legacy/auth/src/components/auth-forms.tsx:276
 msgid "Try again"
 msgstr "Erneut versuchen"
 
-#: apps/auth/src/components/passkeys.tsx:57
+#: legacy/auth/src/components/passkeys.tsx:57
 msgid "Passkey"
 msgstr "Passkey"
 
-#: apps/auth/src/components/passkeys.tsx:59
+#: legacy/auth/src/components/passkeys.tsx:59
 msgid "Added "
 msgstr "Hinzugefügt am "
 
-#: apps/auth/src/components/passkeys.tsx:63
+#: legacy/auth/src/components/passkeys.tsx:63
 msgid "Remove this passkey? You can still use your password."
 msgstr "Diesen Passkey entfernen? Du kannst weiterhin dein Passwort verwenden."
 
-#: apps/auth/src/components/passkeys.tsx:87
+#: legacy/auth/src/components/passkeys.tsx:87
 msgid "Confirm removal"
 msgstr "Entfernen bestätigen"
 
-#: apps/auth/src/components/passkeys.tsx:93
+#: legacy/auth/src/components/passkeys.tsx:93
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: apps/auth/src/components/passkeys.tsx:99
+#: legacy/auth/src/components/passkeys.tsx:99
 msgid "passkey"
 msgstr "Passkey"
 
-#: apps/auth/src/components/passkeys.tsx:99
+#: legacy/auth/src/components/passkeys.tsx:99
 msgid "Remove {value1}"
 msgstr "{value1} entfernen"
 
-#: apps/auth/src/components/passkeys.tsx:101
+#: legacy/auth/src/components/passkeys.tsx:101
 msgid "Remove"
 msgstr "Entfernen"
 
-#: apps/auth/src/components/passkeys.tsx:104
+#: legacy/auth/src/components/passkeys.tsx:104
 msgid "You have no passkeys yet."
 msgstr "Du hast noch keine Passkeys."
 
-#: apps/auth/src/components/passkeys.tsx:132
+#: legacy/auth/src/components/passkeys.tsx:132
 msgid "Passkey name"
 msgstr "Passkey-Name"
 
-#: apps/auth/src/components/passkeys.tsx:135
+#: legacy/auth/src/components/passkeys.tsx:135
 msgid "For example, personal laptop"
 msgstr "Zum Beispiel: privater Laptop"
 
-#: apps/auth/src/components/passkeys.tsx:145
+#: legacy/auth/src/components/passkeys.tsx:145
 msgid "Please wait…"
 msgstr "Bitte warten…"
 
-#: apps/auth/src/components/passkeys.tsx:145
+#: legacy/auth/src/components/passkeys.tsx:145
 msgid "Add passkey"
 msgstr "Passkey hinzufügen"
 
-#: apps/auth/src/components/passkeys.tsx:149
+#: legacy/auth/src/components/passkeys.tsx:149
 msgid "If your session is too old, sign out and sign in again before adding a passkey. Keep your password and recovery codes in a safe place."
 msgstr "Melde dich ab und erneut an, wenn deine Sitzung zu alt ist, um einen Passkey hinzuzufügen. Bewahre dein Passwort und deine Wiederherstellungscodes sicher auf."
 
-#: apps/auth/src/components/auth-forms.tsx:99
+#: legacy/auth/src/components/auth-forms.tsx:99
 msgid "Sign in to Webdock"
 msgstr "Bei Webdock anmelden"
 
-#: apps/auth/src/components/auth-forms.tsx:100
+#: legacy/auth/src/components/auth-forms.tsx:100
 msgid "One account for your workspace and websites."
 msgstr "Ein Konto für deinen Arbeitsbereich und deine Websites."
 
-#: apps/auth/src/components/auth-forms.tsx:103
-#: apps/auth/src/components/auth-forms.tsx:555
-#: apps/auth/src/components/auth-forms.tsx:682
-#: apps/auth/src/components/auth-forms.tsx:689
-#: apps/auth/src/app/people/page.tsx:53
+#: legacy/auth/src/components/auth-forms.tsx:103
+#: legacy/auth/src/components/auth-forms.tsx:555
+#: legacy/auth/src/components/auth-forms.tsx:682
+#: legacy/auth/src/components/auth-forms.tsx:689
+#: legacy/auth/src/app/people/page.tsx:53
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: apps/auth/src/components/auth-forms.tsx:109
+#: legacy/auth/src/components/auth-forms.tsx:109
 msgid "Password"
 msgstr "Passwort"
 
-#: apps/auth/src/components/auth-forms.tsx:114
-#: apps/auth/src/components/auth-forms.tsx:206
+#: legacy/auth/src/components/auth-forms.tsx:114
+#: legacy/auth/src/components/auth-forms.tsx:206
 msgid "Start a new sign-in"
 msgstr "Neue Anmeldung starten"
 
-#: apps/auth/src/components/auth-forms.tsx:116
+#: legacy/auth/src/components/auth-forms.tsx:116
 msgid "Signing in…"
 msgstr "Anmeldung läuft…"
 
-#: apps/auth/src/components/auth-forms.tsx:116
-#: apps/auth/src/components/auth-forms.tsx:289
-#: apps/auth/src/components/auth-forms.tsx:612
-#: apps/auth/src/app/sign-in/page.tsx:5
-#: apps/auth/src/app/invitation/page.tsx:21
+#: legacy/auth/src/components/auth-forms.tsx:116
+#: legacy/auth/src/components/auth-forms.tsx:289
+#: legacy/auth/src/components/auth-forms.tsx:612
+#: legacy/auth/src/app/sign-in/page.tsx:5
+#: legacy/auth/src/app/invitation/page.tsx:21
 msgid "Sign in"
 msgstr "Anmelden"
 
-#: apps/auth/src/components/auth-forms.tsx:148
+#: legacy/auth/src/components/auth-forms.tsx:148
 msgid "Sign in with a passkey"
 msgstr "Mit Passkey anmelden"
 
-#: apps/auth/src/components/auth-forms.tsx:150
+#: legacy/auth/src/components/auth-forms.tsx:150
 msgid "You can add a passkey in your account after signing in."
 msgstr "Du kannst nach der Anmeldung in deinem Konto einen Passkey hinzufügen."
 
-#: apps/auth/src/components/auth-forms.tsx:151
+#: legacy/auth/src/components/auth-forms.tsx:151
 msgid "Forgot your password?"
 msgstr "Passwort vergessen?"
 
-#: apps/auth/src/components/auth-forms.tsx:153
+#: legacy/auth/src/components/auth-forms.tsx:153
 msgid "Access is by invitation. If you need access or help with your account, contact your Webdock administrator."
 msgstr "Der Zugang erfolgt auf Einladung. Wende dich an deinen Webdock-Admin, wenn du Zugang oder Hilfe zu deinem Konto benötigst."
 
-#: apps/auth/src/components/auth-forms.tsx:187
-#: apps/auth/src/components/auth-forms.tsx:219
+#: legacy/auth/src/components/auth-forms.tsx:187
+#: legacy/auth/src/components/auth-forms.tsx:219
 msgid "Use a recovery code"
 msgstr "Wiederherstellungscode verwenden"
 
-#: apps/auth/src/components/auth-forms.tsx:187
+#: legacy/auth/src/components/auth-forms.tsx:187
 msgid "Verify your sign-in"
 msgstr "Deine Anmeldung bestätigen"
 
-#: apps/auth/src/components/auth-forms.tsx:189
+#: legacy/auth/src/components/auth-forms.tsx:189
 msgid "Enter one of the recovery codes you saved. Each code works once."
 msgstr "Gib einen deiner gespeicherten Wiederherstellungscodes ein. Jeder Code kann nur einmal verwendet werden."
 
-#: apps/auth/src/components/auth-forms.tsx:189
+#: legacy/auth/src/components/auth-forms.tsx:189
 msgid "Enter the six-digit code from your authenticator app."
 msgstr "Gib den sechsstelligen Code aus deiner Authenticator-App ein."
 
-#: apps/auth/src/components/auth-forms.tsx:193
+#: legacy/auth/src/components/auth-forms.tsx:193
 msgid "Recovery code"
 msgstr "Wiederherstellungscode"
 
-#: apps/auth/src/components/auth-forms.tsx:193
-#: apps/auth/src/components/auth-forms.tsx:474
+#: legacy/auth/src/components/auth-forms.tsx:193
+#: legacy/auth/src/components/auth-forms.tsx:474
 msgid "Authenticator code"
 msgstr "Authenticator-Code"
 
-#: apps/auth/src/components/auth-forms.tsx:208
+#: legacy/auth/src/components/auth-forms.tsx:208
 msgid "Verifying…"
 msgstr "Wird bestätigt…"
 
-#: apps/auth/src/components/auth-forms.tsx:208
+#: legacy/auth/src/components/auth-forms.tsx:208
 msgid "Verify"
 msgstr "Bestätigen"
 
-#: apps/auth/src/components/auth-forms.tsx:219
+#: legacy/auth/src/components/auth-forms.tsx:219
 msgid "Use an authenticator code"
 msgstr "Authenticator-Code verwenden"
 
-#: apps/auth/src/components/auth-forms.tsx:264
-#: apps/auth/src/components/auth-forms.tsx:270
-#: apps/auth/src/components/auth-forms.tsx:281
-#: apps/auth/src/components/auth-forms.tsx:299
-#: apps/auth/src/app/account/page.tsx:5
+#: legacy/auth/src/components/auth-forms.tsx:264
+#: legacy/auth/src/components/auth-forms.tsx:270
+#: legacy/auth/src/components/auth-forms.tsx:281
+#: legacy/auth/src/components/auth-forms.tsx:299
+#: legacy/auth/src/app/account/page.tsx:5
 msgid "Your account"
 msgstr "Dein Konto"
 
-#: apps/auth/src/components/auth-forms.tsx:265
+#: legacy/auth/src/components/auth-forms.tsx:265
 msgid "Loading your account…"
 msgstr "Dein Konto wird geladen…"
 
-#: apps/auth/src/components/auth-forms.tsx:282
+#: legacy/auth/src/components/auth-forms.tsx:282
 msgid "Sign in to manage your password and account security."
 msgstr "Melde dich an, um dein Passwort und deine Kontosicherheit zu verwalten."
 
-#: apps/auth/src/components/auth-forms.tsx:317
+#: legacy/auth/src/components/auth-forms.tsx:317
 msgid "Sign out"
 msgstr "Abmelden"
 
-#: apps/auth/src/components/auth-forms.tsx:319
+#: legacy/auth/src/components/auth-forms.tsx:319
 msgid "Workspace shortcuts"
 msgstr "Arbeitsbereich-Verknüpfungen"
 
-#: apps/auth/src/components/auth-forms.tsx:319
+#: legacy/auth/src/components/auth-forms.tsx:319
 msgid "My tenants"
 msgstr "Meine Mandanten"
 
-#: apps/auth/src/components/auth-forms.tsx:319
-#: apps/auth/src/app/tenants/page.tsx:22
+#: legacy/auth/src/components/auth-forms.tsx:319
+#: legacy/auth/src/app/tenants/page.tsx:22
 msgid "My websites"
 msgstr "Meine Websites"
 
-#: apps/auth/src/components/auth-forms.tsx:319
-#: apps/auth/src/app/people/page.tsx:10 apps/auth/src/app/people/page.tsx:28
+#: legacy/auth/src/components/auth-forms.tsx:319
+#: legacy/auth/src/app/people/page.tsx:10 legacy/auth/src/app/people/page.tsx:28
 msgid "People & access"
 msgstr "Personen & Zugriff"
 
-#: apps/auth/src/components/auth-forms.tsx:319
-#: apps/auth/src/app/admin/page.tsx:9 apps/auth/src/app/admin/page.tsx:22
+#: legacy/auth/src/components/auth-forms.tsx:319
+#: legacy/auth/src/app/admin/page.tsx:9 legacy/auth/src/app/admin/page.tsx:22
 msgid "Webdock administration"
 msgstr "Webdock-Verwaltung"
 
-#: apps/auth/src/components/auth-forms.tsx:321
+#: legacy/auth/src/components/auth-forms.tsx:321
 msgid "Complete your account security setup before continuing to your workspace."
 msgstr "Schließe die Sicherheitseinrichtung deines Kontos ab, bevor du zu deinem Arbeitsbereich wechselst."
 
-#: apps/auth/src/components/auth-forms.tsx:325
-#: apps/auth/src/components/auth-forms.tsx:371
+#: legacy/auth/src/components/auth-forms.tsx:325
+#: legacy/auth/src/components/auth-forms.tsx:371
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: apps/auth/src/components/auth-forms.tsx:327
+#: legacy/auth/src/components/auth-forms.tsx:327
 msgid "Replace your temporary password with a password only you know."
 msgstr "Ersetze dein vorläufiges Passwort durch ein Passwort, das nur du kennst."
 
-#: apps/auth/src/components/auth-forms.tsx:327
-#: apps/auth/src/components/auth-forms.tsx:622
+#: legacy/auth/src/components/auth-forms.tsx:327
+#: legacy/auth/src/components/auth-forms.tsx:622
 msgid "Use a unique password with at least 12 characters."
 msgstr "Verwende ein einzigartiges Passwort mit mindestens 12 Zeichen."
 
-#: apps/auth/src/components/auth-forms.tsx:354
-#: apps/auth/src/components/auth-forms.tsx:403
+#: legacy/auth/src/components/auth-forms.tsx:354
+#: legacy/auth/src/components/auth-forms.tsx:403
 msgid "Current password"
 msgstr "Aktuelles Passwort"
 
-#: apps/auth/src/components/auth-forms.tsx:359
-#: apps/auth/src/components/auth-forms.tsx:625
+#: legacy/auth/src/components/auth-forms.tsx:359
+#: legacy/auth/src/components/auth-forms.tsx:625
 msgid "New password"
 msgstr "Neues Passwort"
 
-#: apps/auth/src/components/auth-forms.tsx:365
-#: apps/auth/src/components/auth-forms.tsx:631
+#: legacy/auth/src/components/auth-forms.tsx:365
+#: legacy/auth/src/components/auth-forms.tsx:631
 msgid "Confirm new password"
 msgstr "Neues Passwort bestätigen"
 
-#: apps/auth/src/components/auth-forms.tsx:375
+#: legacy/auth/src/components/auth-forms.tsx:375
 msgid "Two-factor authentication"
 msgstr "Zwei-Faktor-Authentifizierung"
 
-#: apps/auth/src/components/auth-forms.tsx:376
+#: legacy/auth/src/components/auth-forms.tsx:376
 msgid "Your authenticator is enabled."
 msgstr "Deine Authenticator-App ist aktiviert."
 
-#: apps/auth/src/components/auth-forms.tsx:378
+#: legacy/auth/src/components/auth-forms.tsx:378
 msgid "Protect your account with a code from an authenticator app. Required for Webdock operators."
 msgstr "Schütze dein Konto mit einem Code aus einer Authenticator-App. Für Webdock-Betreiber ist dies erforderlich."
 
-#: apps/auth/src/components/auth-forms.tsx:408
+#: legacy/auth/src/components/auth-forms.tsx:408
 msgid "Set up authenticator"
 msgstr "Authenticator einrichten"
 
-#: apps/auth/src/components/auth-forms.tsx:410
+#: legacy/auth/src/components/auth-forms.tsx:410
 msgid "Add Webdock to your authenticator"
 msgstr "Webdock zur Authenticator-App hinzufügen"
 
-#: apps/auth/src/components/auth-forms.tsx:412
+#: legacy/auth/src/components/auth-forms.tsx:412
 msgid "Choose “Enter a setup key” in your app. Use your email as the account name and select a time-based code."
 msgstr "Wähle in deiner App „Einrichtungsschlüssel eingeben“. Verwende deine E-Mail-Adresse als Kontonamen und wähle einen zeitbasierten Code."
 
-#: apps/auth/src/components/auth-forms.tsx:414
+#: legacy/auth/src/components/auth-forms.tsx:414
 msgid "Setup key"
 msgstr "Einrichtungsschlüssel"
 
-#: apps/auth/src/components/auth-forms.tsx:423
+#: legacy/auth/src/components/auth-forms.tsx:423
 msgid "Full authenticator URI"
 msgstr "Vollständige Authenticator-URI"
 
-#: apps/auth/src/components/auth-forms.tsx:426
+#: legacy/auth/src/components/auth-forms.tsx:426
 msgid "Save your recovery codes"
 msgstr "Wiederherstellungscodes sichern"
 
-#: apps/auth/src/components/auth-forms.tsx:428
+#: legacy/auth/src/components/auth-forms.tsx:428
 msgid "Store these somewhere safe. You will need a recovery code if you lose your authenticator."
 msgstr "Bewahre diese Codes sicher auf. Du benötigst einen Wiederherstellungscode, falls du den Zugriff auf deine Authenticator-App verlierst."
 
-#: apps/auth/src/components/auth-forms.tsx:434
+#: legacy/auth/src/components/auth-forms.tsx:434
 msgid "Hide recovery codes"
 msgstr "Wiederherstellungscodes ausblenden"
 
-#: apps/auth/src/components/auth-forms.tsx:434
+#: legacy/auth/src/components/auth-forms.tsx:434
 msgid "Show recovery codes"
 msgstr "Wiederherstellungscodes anzeigen"
 
-#: apps/auth/src/components/auth-forms.tsx:472
+#: legacy/auth/src/components/auth-forms.tsx:472
 msgid "I have saved my recovery codes."
 msgstr "Ich habe meine Wiederherstellungscodes sicher gespeichert."
 
-#: apps/auth/src/components/auth-forms.tsx:484
+#: legacy/auth/src/components/auth-forms.tsx:484
 msgid "Verify and enable"
 msgstr "Bestätigen und aktivieren"
 
-#: apps/auth/src/components/auth-forms.tsx:492
+#: legacy/auth/src/components/auth-forms.tsx:492
 msgid "Complete your password and authenticator setup before adding a passkey."
 msgstr "Schließe die Passwort- und Authenticator-Einrichtung ab, bevor du einen Passkey hinzufügst."
 
-#: apps/auth/src/components/auth-forms.tsx:495
+#: legacy/auth/src/components/auth-forms.tsx:495
 msgid "Continue to your workspace"
 msgstr "Weiter zu deinem Arbeitsbereich"
 
-#: apps/auth/src/components/auth-forms.tsx:497
+#: legacy/auth/src/components/auth-forms.tsx:497
 msgid "Once your account is ready, continue the sign-in you started or return to Webdock."
 msgstr "Sobald dein Konto bereit ist, kannst du die begonnene Anmeldung fortsetzen oder zu Webdock zurückkehren."
 
-#: apps/auth/src/components/auth-forms.tsx:516
+#: legacy/auth/src/components/auth-forms.tsx:516
 msgid "Continue"
 msgstr "Weiter"
 
-#: apps/auth/src/components/auth-forms.tsx:549
-#: apps/auth/src/app/forgot-password/page.tsx:5
+#: legacy/auth/src/components/auth-forms.tsx:549
+#: legacy/auth/src/app/forgot-password/page.tsx:5
 msgid "Reset your password"
 msgstr "Passwort zurücksetzen"
 
-#: apps/auth/src/components/auth-forms.tsx:552
+#: legacy/auth/src/components/auth-forms.tsx:552
 msgid "Enter your account’s email address to request a reset link."
 msgstr "Gib die E-Mail-Adresse deines Kontos ein, um einen Link zum Zurücksetzen anzufordern."
 
-#: apps/auth/src/components/auth-forms.tsx:562
+#: legacy/auth/src/components/auth-forms.tsx:562
 msgid "Requesting link…"
 msgstr "Link wird angefordert…"
 
-#: apps/auth/src/components/auth-forms.tsx:562
+#: legacy/auth/src/components/auth-forms.tsx:562
 msgid "Send reset link"
 msgstr "Link zum Zurücksetzen senden"
 
-#: apps/auth/src/components/auth-forms.tsx:566
+#: legacy/auth/src/components/auth-forms.tsx:566
 msgid "Back to sign in"
 msgstr "Zurück zur Anmeldung"
 
-#: apps/auth/src/components/auth-forms.tsx:608
+#: legacy/auth/src/components/auth-forms.tsx:608
 msgid "Password updated"
 msgstr "Passwort aktualisiert"
 
-#: apps/auth/src/components/auth-forms.tsx:608
-#: apps/auth/src/app/reset-password/page.tsx:5
+#: legacy/auth/src/components/auth-forms.tsx:608
+#: legacy/auth/src/app/reset-password/page.tsx:5
 msgid "Choose a new password"
 msgstr "Neues Passwort wählen"
 
-#: apps/auth/src/components/auth-forms.tsx:619
-#: apps/auth/src/components/auth-forms.tsx:641
+#: legacy/auth/src/components/auth-forms.tsx:619
+#: legacy/auth/src/components/auth-forms.tsx:641
 msgid "Request a new link"
 msgstr "Neuen Link anfordern"
 
-#: apps/auth/src/components/auth-forms.tsx:638
+#: legacy/auth/src/components/auth-forms.tsx:638
 msgid "Updating password…"
 msgstr "Passwort wird aktualisiert…"
 
-#: apps/auth/src/components/auth-forms.tsx:638
+#: legacy/auth/src/components/auth-forms.tsx:638
 msgid "Update password"
 msgstr "Passwort aktualisieren"
 
-#: apps/auth/src/components/auth-forms.tsx:676
-#: apps/auth/src/app/consent/page.tsx:9
+#: legacy/auth/src/components/auth-forms.tsx:676
+#: legacy/auth/src/app/consent/page.tsx:9
 msgid "Authorize access"
 msgstr "Zugriff genehmigen"
 
-#: apps/auth/src/components/auth-forms.tsx:678
+#: legacy/auth/src/components/auth-forms.tsx:678
 msgid " is requesting access to your account."
 msgstr " möchte auf dein Konto zugreifen."
 
-#: apps/auth/src/components/auth-forms.tsx:679
+#: legacy/auth/src/components/auth-forms.tsx:679
 msgid "Requested permissions"
 msgstr "Angeforderte Berechtigungen"
 
-#: apps/auth/src/components/auth-forms.tsx:682
+#: legacy/auth/src/components/auth-forms.tsx:682
 msgid "Read customers, projects, CMS connections and activity"
 msgstr "Kunden, Projekte, CMS-Verbindungen und Aktivitäten lesen"
 
-#: apps/auth/src/components/auth-forms.tsx:682
+#: legacy/auth/src/components/auth-forms.tsx:682
 msgid "Create and update registry records"
 msgstr "Verzeichniseinträge erstellen und aktualisieren"
 
-#: apps/auth/src/components/auth-forms.tsx:682
+#: legacy/auth/src/components/auth-forms.tsx:682
 msgid "Automatically renew access during your working session"
 msgstr "Zugriff während deiner Arbeitssitzung automatisch erneuern"
 
-#: apps/auth/src/components/auth-forms.tsx:686
+#: legacy/auth/src/components/auth-forms.tsx:686
 msgid "Requested profile fields"
 msgstr "Angeforderte Profilfelder"
 
-#: apps/auth/src/components/auth-forms.tsx:689
-#: apps/auth/src/components/plan-fields.tsx:27
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:34
+#: legacy/auth/src/components/auth-forms.tsx:689
+#: legacy/auth/src/components/plan-fields.tsx:27
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:34
 msgid "Name"
 msgstr "Name"
 
-#: apps/auth/src/components/auth-forms.tsx:700
+#: legacy/auth/src/components/auth-forms.tsx:700
 msgid "Allow access"
 msgstr "Zugriff erlauben"
 
-#: apps/auth/src/components/auth-forms.tsx:706
+#: legacy/auth/src/components/auth-forms.tsx:706
 msgid "Deny"
 msgstr "Verweigern"
 
-#: apps/auth/src/components/plan-fields.tsx:15
+#: legacy/auth/src/components/plan-fields.tsx:15
 msgid "Blank fields add zero. Extras are added to the assigned plan."
 msgstr "Leere Felder addieren null. Zusatzkontingente werden zum zugewiesenen Tarif hinzugefügt."
 
-#: apps/auth/src/components/plan-fields.tsx:15
+#: legacy/auth/src/components/plan-fields.tsx:15
 msgid "Blank fields are unmetered. Enter 0 for no allocation."
 msgstr "Leere Felder sind unbegrenzt. Gib 0 ein, wenn kein Kontingent vorgesehen ist."
 
-#: apps/auth/src/components/plan-fields.tsx:15
+#: legacy/auth/src/components/plan-fields.tsx:15
 msgid " MB and GB use decimal units."
 msgstr " MB und GB verwenden Dezimaleinheiten."
 
-#: apps/auth/src/components/plan-fields.tsx:22
+#: legacy/auth/src/components/plan-fields.tsx:22
 msgid "Unmetered"
 msgstr "Unbegrenzt"
 
-#: apps/auth/src/components/plan-fields.tsx:27
+#: legacy/auth/src/components/plan-fields.tsx:27
 msgid "Description"
 msgstr "Beschreibung"
 
-#: apps/auth/src/app/two-factor/page.tsx:5
+#: legacy/auth/src/app/two-factor/page.tsx:5
 msgid "Verify sign-in"
 msgstr "Anmeldung bestätigen"
 
-#: apps/auth/src/app/consent/page.tsx:27
+#: legacy/auth/src/app/consent/page.tsx:27
 msgid "Request unavailable"
 msgstr "Anfrage nicht verfügbar"
 
-#: apps/auth/src/app/consent/page.tsx:29
+#: legacy/auth/src/app/consent/page.tsx:29
 msgid "This authorization request is invalid or has expired. Return to the application and start signing in again."
 msgstr "Diese Zugriffsanfrage ist ungültig oder abgelaufen. Kehre zur Anwendung zurück und starte die Anmeldung erneut."
 
-#: apps/auth/src/app/invitation/page.tsx:17
+#: legacy/auth/src/app/invitation/page.tsx:17
 msgid "Invitation unavailable"
 msgstr "Einladung nicht verfügbar"
 
-#: apps/auth/src/app/invitation/page.tsx:17
+#: legacy/auth/src/app/invitation/page.tsx:17
 msgid "This invitation link is incomplete. Open the original link or contact your Webdock administrator."
 msgstr "Dieser Einladungslink ist unvollständig. Öffne den ursprünglichen Link oder wende dich an deinen Webdock-Admin."
 
-#: apps/auth/src/app/invitation/page.tsx:19
+#: legacy/auth/src/app/invitation/page.tsx:19
 msgid "Sign in to view your invitation"
 msgstr "Anmelden, um deine Einladung anzusehen"
 
-#: apps/auth/src/app/invitation/page.tsx:20
+#: legacy/auth/src/app/invitation/page.tsx:20
 msgid "Sign in with your existing Webdock account, then review this invitation."
 msgstr "Melde dich mit deinem vorhandenen Webdock-Konto an und prüfe anschließend diese Einladung."
 
-#: apps/auth/src/app/invitation/page.tsx:22
+#: legacy/auth/src/app/invitation/page.tsx:22
 msgid "If this is your first visit, use the password setup link in your invitation email. Ask your administrator to resend it if the link has expired."
 msgstr "Nutze bei deinem ersten Besuch den Link zur Passwort-Einrichtung in der Einladungs-E-Mail. Bitte deinen Admin um einen neuen Link, falls er abgelaufen ist."
 
-#: apps/auth/src/app/invitation/page.tsx:24
+#: legacy/auth/src/app/invitation/page.tsx:24
 msgid "Verify your email first"
 msgstr "Zuerst E-Mail-Adresse bestätigen"
 
-#: apps/auth/src/app/invitation/page.tsx:24
+#: legacy/auth/src/app/invitation/page.tsx:24
 msgid "Your account’s email address must be verified before you can view or respond to this invitation. Contact your Webdock administrator for help."
 msgstr "Die E-Mail-Adresse deines Kontos muss bestätigt sein, bevor du diese Einladung ansehen oder beantworten kannst. Wende dich an deinen Webdock-Admin, wenn du Hilfe benötigst."
 
-#: apps/auth/src/app/invitation/page.tsx:24
+#: legacy/auth/src/app/invitation/page.tsx:24
 msgid "Go to your account"
 msgstr "Zu deinem Konto"
 
-#: apps/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/connections/page.tsx:16
 msgid "Operator connections"
 msgstr "Betreiber-Verbindungen"
 
-#: apps/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/connections/page.tsx:16
 msgid "Connect your tools"
 msgstr "Deine Werkzeuge verbinden"
 
-#: apps/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/connections/page.tsx:16
 msgid "Let an MCP client read your Webdock registry or manage records with your permission."
 msgstr "Erlaube einem MCP-Client, dein Webdock-Verzeichnis zu lesen oder mit deiner Zustimmung Einträge zu verwalten."
 
-#: apps/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/connections/page.tsx:16
 msgid "Server URL: "
 msgstr "Server-URL: "
 
-#: apps/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/connections/page.tsx:16
 msgid "Registered clients"
 msgstr "Registrierte Clients"
 
-#: apps/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/connections/page.tsx:16
 msgid "MCP client"
 msgstr "MCP-Client"
 
-#: apps/auth/src/app/connections/page.tsx:16
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:43
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:54
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
+#: legacy/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:54
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: apps/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/connections/page.tsx:16
 msgid "Disable access"
 msgstr "Zugriff deaktivieren"
 
-#: apps/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/connections/page.tsx:16
 msgid "No MCP clients registered yet."
 msgstr "Noch keine MCP-Clients registriert."
 
-#: apps/auth/src/app/connections/page.tsx:16
+#: legacy/auth/src/app/connections/page.tsx:16
 msgid "Back to account"
 msgstr "Zurück zum Konto"
 
-#: apps/auth/src/app/connections/form.tsx:9
+#: legacy/auth/src/app/connections/form.tsx:9
 msgid "Client name"
 msgstr "Client-Name"
 
-#: apps/auth/src/app/connections/form.tsx:9
+#: legacy/auth/src/app/connections/form.tsx:9
 msgid "My MCP client"
 msgstr "Mein MCP-Client"
 
-#: apps/auth/src/app/connections/form.tsx:10
+#: legacy/auth/src/app/connections/form.tsx:10
 msgid "Exact callback URL"
 msgstr "Exakte Callback-URL"
 
-#: apps/auth/src/app/connections/form.tsx:11
+#: legacy/auth/src/app/connections/form.tsx:11
 msgid "Copy this URL from your MCP client. Wildcards are not supported."
 msgstr "Kopiere diese URL aus deinem MCP-Client. Platzhalter werden nicht unterstützt."
 
-#: apps/auth/src/app/connections/form.tsx:12
+#: legacy/auth/src/app/connections/form.tsx:12
 msgid " Allow registry changes"
 msgstr " Änderungen am Verzeichnis erlauben"
 
-#: apps/auth/src/app/connections/form.tsx:13
+#: legacy/auth/src/app/connections/form.tsx:13
 msgid " Allow automatic token renewal for remote work"
 msgstr " Automatische Token-Erneuerung für den Fernzugriff erlauben"
 
-#: apps/auth/src/app/connections/form.tsx:14
+#: legacy/auth/src/app/connections/form.tsx:14
 msgid "Optional: stay connected during your working session. Signing out of Webdock or disabling this client stops access."
 msgstr "Optional: Bleibe während deiner Arbeitssitzung verbunden. Wenn du dich von Webdock abmeldest oder diesen Client deaktivierst, endet der Zugriff."
 
-#: apps/auth/src/app/connections/form.tsx:15
+#: legacy/auth/src/app/connections/form.tsx:15
 msgid " This client can securely store a client secret"
 msgstr " Dieser Client kann einen Client-Schlüssel sicher speichern"
 
-#: apps/auth/src/app/connections/form.tsx:16
+#: legacy/auth/src/app/connections/form.tsx:16
 msgid "Desktop and public clients normally use PKCE without a secret. You will still approve access during sign-in."
 msgstr "Desktop- und öffentliche Clients verwenden üblicherweise PKCE ohne Schlüssel. Du bestätigst den Zugriff weiterhin bei der Anmeldung."
 
-#: apps/auth/src/app/connections/form.tsx:18
+#: legacy/auth/src/app/connections/form.tsx:18
 msgid "Registering…"
 msgstr "Wird registriert…"
 
-#: apps/auth/src/app/connections/form.tsx:18
+#: legacy/auth/src/app/connections/form.tsx:18
 msgid "Register MCP client"
 msgstr "MCP-Client registrieren"
 
-#: apps/auth/src/app/connections/form.tsx:19
+#: legacy/auth/src/app/connections/form.tsx:19
 msgid "Client registered"
 msgstr "Client registriert"
 
-#: apps/auth/src/app/connections/form.tsx:19
+#: legacy/auth/src/app/connections/form.tsx:19
 msgid "Client ID"
 msgstr "Client-ID"
 
-#: apps/auth/src/app/connections/form.tsx:19
+#: legacy/auth/src/app/connections/form.tsx:19
 msgid "Client secret — save it now. It will not be shown again."
 msgstr "Client-Schlüssel — jetzt sicher speichern. Er wird nicht erneut angezeigt."
 
-#: apps/auth/src/app/people/form.tsx:32 apps/auth/src/app/tenants/form.tsx:15
-#: apps/auth/src/app/admin/form.tsx:43 apps/auth/src/app/admin/form.tsx:57
-#: apps/auth/src/app/admin/plans/form.tsx:12
+#: legacy/auth/src/app/people/form.tsx:32 legacy/auth/src/app/tenants/form.tsx:15
+#: legacy/auth/src/app/admin/form.tsx:43 legacy/auth/src/app/admin/form.tsx:57
+#: legacy/auth/src/app/admin/plans/form.tsx:12
 msgid "Saving…"
 msgstr "Wird gespeichert …"
 
-#: apps/auth/src/app/people/form.tsx:41
+#: legacy/auth/src/app/people/form.tsx:41
 msgid "Website role"
 msgstr "Website-Rolle"
 
-#: apps/auth/src/app/people/form.tsx:42
+#: legacy/auth/src/app/people/form.tsx:42
 msgid "Reader — view content"
 msgstr "Leser — Inhalte ansehen"
 
-#: apps/auth/src/app/people/form.tsx:43
+#: legacy/auth/src/app/people/form.tsx:43
 msgid "Editor — edit and publish content"
 msgstr "Redakteur — Inhalte bearbeiten und veröffentlichen"
 
-#: apps/auth/src/app/people/form.tsx:44
+#: legacy/auth/src/app/people/form.tsx:44
 msgid "Administrator — manage, delete and restore content"
 msgstr "Admin — Inhalte verwalten, löschen und wiederherstellen"
 
-#: apps/auth/src/app/people/page.tsx:30
+#: legacy/auth/src/app/people/page.tsx:30
 msgid "Invite customers and control access to each website."
 msgstr "Lade Kunden ein und steuere den Zugriff auf jede Website."
 
-#: apps/auth/src/app/people/page.tsx:33 apps/auth/src/app/sites/page.tsx:49
-#: apps/auth/src/app/tenants/page.tsx:18 apps/auth/src/app/admin/page.tsx:23
+#: legacy/auth/src/app/people/page.tsx:33 legacy/auth/src/app/sites/page.tsx:49
+#: legacy/auth/src/app/tenants/page.tsx:18 legacy/auth/src/app/admin/page.tsx:23
 msgid "My account"
 msgstr "Mein Konto"
 
-#: apps/auth/src/app/people/page.tsx:41
+#: legacy/auth/src/app/people/page.tsx:41
 msgid "Back to Studio"
 msgstr "Zurück zu Studio"
 
-#: apps/auth/src/app/people/page.tsx:45
+#: legacy/auth/src/app/people/page.tsx:45
 msgid "Invite to a website"
 msgstr "Zu einer Website einladen"
 
-#: apps/auth/src/app/people/page.tsx:47
+#: legacy/auth/src/app/people/page.tsx:47
 msgid "New customers receive a secure link to choose their password. Existing accounts receive an invitation. Website access starts when customer membership is accepted."
 msgstr "Neue Kunden erhalten einen sicheren Link, um ihr Passwort festzulegen. Bestehende Konten erhalten eine Einladung. Der Website-Zugriff beginnt, sobald die Kundenmitgliedschaft angenommen wurde."
 
-#: apps/auth/src/app/people/page.tsx:48
+#: legacy/auth/src/app/people/page.tsx:48
 msgid "Save access and send invitation"
 msgstr "Zugriff speichern und Einladung senden"
 
-#: apps/auth/src/app/people/page.tsx:62
+#: legacy/auth/src/app/people/page.tsx:62
 msgid "Website"
 msgstr "Website"
 
-#: apps/auth/src/app/people/page.tsx:64
+#: legacy/auth/src/app/people/page.tsx:64
 msgid "Select a website"
 msgstr "Website auswählen"
 
-#: apps/auth/src/app/people/page.tsx:72 apps/auth/src/app/people/page.tsx:104
+#: legacy/auth/src/app/people/page.tsx:72 legacy/auth/src/app/people/page.tsx:104
 msgid "Customer"
 msgstr "Kunde"
 
-#: apps/auth/src/app/people/page.tsx:80
+#: legacy/auth/src/app/people/page.tsx:80
 msgid "These roles never grant Studio, infrastructure or platform-operator access. Sending again updates the selected website role and resends a pending invitation."
 msgstr "Diese Rollen gewähren niemals Zugriff auf Studio, Infrastruktur oder Plattformverwaltung. Erneutes Senden aktualisiert die ausgewählte Website-Rolle und sendet eine offene Einladung erneut."
 
-#: apps/auth/src/app/people/page.tsx:83
+#: legacy/auth/src/app/people/page.tsx:83
 msgid "Customers & websites"
 msgstr "Kunden & Websites"
 
-#: apps/auth/src/app/people/page.tsx:85
+#: legacy/auth/src/app/people/page.tsx:85
 msgid "Group website access by customer. Public sign-up remains closed."
 msgstr "Bündele den Website-Zugriff nach Kunden. Die öffentliche Registrierung bleibt geschlossen."
 
-#: apps/auth/src/app/people/page.tsx:88
+#: legacy/auth/src/app/people/page.tsx:88
 msgid "Create customer group"
 msgstr "Kundengruppe erstellen"
 
-#: apps/auth/src/app/people/page.tsx:91
+#: legacy/auth/src/app/people/page.tsx:91
 msgid "Customer group name"
 msgstr "Name der Kundengruppe"
 
-#: apps/auth/src/app/people/page.tsx:101
+#: legacy/auth/src/app/people/page.tsx:101
 msgid "Assign customer"
 msgstr "Kunde zuweisen"
 
-#: apps/auth/src/app/people/page.tsx:106
+#: legacy/auth/src/app/people/page.tsx:106
 msgid "Select a customer"
 msgstr "Kunden auswählen"
 
-#: apps/auth/src/app/people/page.tsx:121
+#: legacy/auth/src/app/people/page.tsx:121
 msgid "Find a person"
 msgstr "Person suchen"
 
-#: apps/auth/src/app/people/page.tsx:126
+#: legacy/auth/src/app/people/page.tsx:126
 msgid "Name or email"
 msgstr "Name oder E-Mail"
 
-#: apps/auth/src/app/people/page.tsx:129
+#: legacy/auth/src/app/people/page.tsx:129
 msgid "Search"
 msgstr "Suchen"
 
-#: apps/auth/src/app/people/page.tsx:130
+#: legacy/auth/src/app/people/page.tsx:130
 msgid "Clear"
 msgstr "Leeren"
 
-#: apps/auth/src/app/people/page.tsx:133
+#: legacy/auth/src/app/people/page.tsx:133
 msgid "Accounts"
 msgstr "Konten"
 
-#: apps/auth/src/app/people/page.tsx:135
+#: legacy/auth/src/app/people/page.tsx:135
 msgid "Up to 100 matching accounts. Platform operators are protected from suspension here."
 msgstr "Bis zu 100 passende Konten. Plattformbetreiber sind hier vor einer Sperrung geschützt."
 
-#: apps/auth/src/app/people/page.tsx:144
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:37
+#: legacy/auth/src/app/people/page.tsx:144
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:37
 msgid "Suspended"
 msgstr "Gesperrt"
 
-#: apps/auth/src/app/people/page.tsx:144
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:37
+#: legacy/auth/src/app/people/page.tsx:144
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:37
 msgid "Setup pending"
 msgstr "Einrichtung ausstehend"
 
-#: apps/auth/src/app/people/page.tsx:149
+#: legacy/auth/src/app/people/page.tsx:149
 msgid "Restore account"
 msgstr "Konto wiederherstellen"
 
-#: apps/auth/src/app/people/page.tsx:149
+#: legacy/auth/src/app/people/page.tsx:149
 msgid "Suspend account"
 msgstr "Konto sperren"
 
-#: apps/auth/src/app/people/page.tsx:151
+#: legacy/auth/src/app/people/page.tsx:151
 msgid "Suspend access to all websites and sign out this person"
 msgstr "Website-Zugriff sperren und diese Person abmelden"
 
-#: apps/auth/src/app/people/page.tsx:164
+#: legacy/auth/src/app/people/page.tsx:164
 msgid "No matching accounts."
 msgstr "Keine passenden Konten."
 
-#: apps/auth/src/app/people/page.tsx:167
+#: legacy/auth/src/app/people/page.tsx:167
 msgid "Website permissions"
 msgstr "Website-Berechtigungen"
 
-#: apps/auth/src/app/people/page.tsx:169
+#: legacy/auth/src/app/people/page.tsx:169
 msgid "Up to 200 matching permissions. Customer membership and an active account are also required."
 msgstr "Bis zu 200 passende Berechtigungen. Eine Kundenmitgliedschaft und ein aktives Konto sind ebenfalls erforderlich."
 
-#: apps/auth/src/app/people/page.tsx:179
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:43
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:54
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
+#: legacy/auth/src/app/people/page.tsx:179
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:54
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
 msgid "Enabled"
 msgstr "Aktiviert"
 
-#: apps/auth/src/app/people/page.tsx:183
+#: legacy/auth/src/app/people/page.tsx:183
 msgid "Update role"
 msgstr "Rolle aktualisieren"
 
-#: apps/auth/src/app/people/page.tsx:183
+#: legacy/auth/src/app/people/page.tsx:183
 msgid "Restore access"
 msgstr "Zugriff wiederherstellen"
 
-#: apps/auth/src/app/people/page.tsx:190
+#: legacy/auth/src/app/people/page.tsx:190
 msgid "Revoke website access"
 msgstr "Website-Zugriff widerrufen"
 
-#: apps/auth/src/app/people/page.tsx:191
+#: legacy/auth/src/app/people/page.tsx:191
 msgid "Remove this website access"
 msgstr "Diesen Website-Zugriff entfernen"
 
-#: apps/auth/src/app/people/page.tsx:198
+#: legacy/auth/src/app/people/page.tsx:198
 msgid "No website permissions yet."
 msgstr "Noch keine Website-Berechtigungen."
 
-#: apps/auth/src/app/people/page.tsx:201
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:41
+#: legacy/auth/src/app/people/page.tsx:201
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:41
 msgid "Invitations"
 msgstr "Einladungen"
 
-#: apps/auth/src/app/people/page.tsx:203
+#: legacy/auth/src/app/people/page.tsx:203
 msgid "Up to 100 matching invitations. Resend from the invitation form above."
 msgstr "Bis zu 100 passende Einladungen. Sende sie bei Bedarf über das Einladungsformular oben erneut."
 
-#: apps/auth/src/app/people/page.tsx:214
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:42
+#: legacy/auth/src/app/people/page.tsx:214
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:42
 msgid "Cancel invitation"
 msgstr "Einladung widerrufen"
 
-#: apps/auth/src/app/people/page.tsx:215
+#: legacy/auth/src/app/people/page.tsx:215
 msgid "Cancel this invitation and withdraw pending website access for this customer group"
 msgstr "Diese Einladung widerrufen und den ausstehenden Website-Zugriff für diese Kundengruppe zurückziehen"
 
-#: apps/auth/src/app/people/page.tsx:223
+#: legacy/auth/src/app/people/page.tsx:223
 msgid "Recent access changes"
 msgstr "Letzte Zugriffsänderungen"
 
-#: apps/auth/src/app/people/page.tsx:231
+#: legacy/auth/src/app/people/page.tsx:231
 msgid "UTC"
 msgstr "UTC"
 
-#: apps/auth/src/app/sites/page.tsx:9 apps/auth/src/app/sites/page.tsx:26
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:28
+#: legacy/auth/src/app/sites/page.tsx:9 legacy/auth/src/app/sites/page.tsx:26
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:28
 msgid "Your websites"
 msgstr "Deine Websites"
 
-#: apps/auth/src/app/sites/page.tsx:27
+#: legacy/auth/src/app/sites/page.tsx:27
 msgid "Open a website to edit its content with your Webdock account."
 msgstr "Öffne eine Website, um ihre Inhalte mit deinem Webdock-Konto zu bearbeiten."
 
-#: apps/auth/src/app/sites/page.tsx:30 apps/auth/src/app/tenants/page.tsx:19
+#: legacy/auth/src/app/sites/page.tsx:30 legacy/auth/src/app/tenants/page.tsx:19
 msgid "Invitation to "
 msgstr "Einladung zu "
 
-#: apps/auth/src/app/sites/page.tsx:35 apps/auth/src/app/tenants/page.tsx:19
+#: legacy/auth/src/app/sites/page.tsx:35 legacy/auth/src/app/tenants/page.tsx:19
 msgid "Review invitation"
 msgstr "Einladung prüfen"
 
-#: apps/auth/src/app/sites/page.tsx:43
+#: legacy/auth/src/app/sites/page.tsx:43
 msgid "Open content manager"
 msgstr "Content-Manager öffnen"
 
-#: apps/auth/src/app/sites/page.tsx:47
+#: legacy/auth/src/app/sites/page.tsx:47
 msgid "No website access yet. Accept a pending invitation above or contact your administrator."
 msgstr "Noch kein Website-Zugriff. Nimm oben eine offene Einladung an oder wende dich an deinen Admin."
 
-#: apps/auth/src/app/tenants/form.tsx:20
+#: legacy/auth/src/app/tenants/form.tsx:20
 msgid "Tenant role"
 msgstr "Mandantenrolle"
 
-#: apps/auth/src/app/tenants/form.tsx:21
+#: legacy/auth/src/app/tenants/form.tsx:21
 msgid "Member — view customer profile"
 msgstr "Mitglied — Kundenprofil ansehen"
 
-#: apps/auth/src/app/tenants/form.tsx:21
+#: legacy/auth/src/app/tenants/form.tsx:21
 msgid "Administrator — edit profile and invite people"
 msgstr "Admin — Profil bearbeiten und Personen einladen"
 
-#: apps/auth/src/app/tenants/page.tsx:9 apps/auth/src/app/tenants/page.tsx:18
+#: legacy/auth/src/app/tenants/page.tsx:9 legacy/auth/src/app/tenants/page.tsx:18
 msgid "Your tenants"
 msgstr "Deine Mandanten"
 
-#: apps/auth/src/app/tenants/page.tsx:18
+#: legacy/auth/src/app/tenants/page.tsx:18
 msgid "Customer details, people and assigned websites."
 msgstr "Kundendaten, Personen und zugewiesene Websites."
 
-#: apps/auth/src/app/tenants/page.tsx:19
+#: legacy/auth/src/app/tenants/page.tsx:19
 msgid "Tenant role: "
 msgstr "Mandantenrolle: "
 
-#: apps/auth/src/app/tenants/page.tsx:21
+#: legacy/auth/src/app/tenants/page.tsx:21
 msgid "No active tenant memberships yet. Accept your emailed invitation to get started."
 msgstr "Noch keine aktiven Mandantenmitgliedschaften. Nimm die Einladung aus deiner E-Mail an, um loszulegen."
 
-#: apps/auth/src/app/admin/page.tsx:22
-#: apps/auth/src/app/admin/plans/page.tsx:17
+#: legacy/auth/src/app/admin/page.tsx:22
+#: legacy/auth/src/app/admin/plans/page.tsx:17
 msgid "Root admin"
 msgstr "Plattformverwaltung"
 
-#: apps/auth/src/app/admin/page.tsx:22
+#: legacy/auth/src/app/admin/page.tsx:22
 msgid "Platform identity and Mail configuration for all tenants."
 msgstr "Plattformdarstellung und Mail-Konfiguration für alle Mandanten."
 
-#: apps/auth/src/app/admin/page.tsx:25
+#: legacy/auth/src/app/admin/page.tsx:25
 msgid "Plans and allowances"
 msgstr "Tarife und Kontingente"
 
-#: apps/auth/src/app/admin/page.tsx:27
+#: legacy/auth/src/app/admin/page.tsx:27
 msgid "Only platform operators can change these settings. Tenant administrators manage their own tenant. Account registration remains invitation-only."
 msgstr "Nur Plattformbetreiber können diese Einstellungen ändern. Arbeitsbereich-Admins verwalten ihren eigenen Mandanten. Konten werden weiterhin nur auf Einladung erstellt."
 
-#: apps/auth/src/app/admin/form.tsx:26
+#: legacy/auth/src/app/admin/form.tsx:26
 msgid "Platform settings"
 msgstr "Plattformeinstellungen"
 
-#: apps/auth/src/app/admin/form.tsx:29
+#: legacy/auth/src/app/admin/form.tsx:29
 msgid "Display name"
 msgstr "Anzeigename"
 
-#: apps/auth/src/app/admin/form.tsx:30
+#: legacy/auth/src/app/admin/form.tsx:30
 msgid "Support email"
 msgstr "Support-E-Mail"
 
-#: apps/auth/src/app/admin/form.tsx:31
+#: legacy/auth/src/app/admin/form.tsx:31
 msgid "Used for account branding and authentication emails."
 msgstr "Wird für die Kontodarstellung und Authentifizierungs-E-Mails verwendet."
 
-#: apps/auth/src/app/admin/form.tsx:32
+#: legacy/auth/src/app/admin/form.tsx:32
 msgid "CMS"
 msgstr "CMS"
 
-#: apps/auth/src/app/admin/form.tsx:33
+#: legacy/auth/src/app/admin/form.tsx:33
 msgid " Enable CMS access for customers"
 msgstr " CMS-Zugriff für Kunden aktivieren"
 
-#: apps/auth/src/app/admin/form.tsx:34
+#: legacy/auth/src/app/admin/form.tsx:34
 msgid "Controls customer sign-in and editing access to connected content managers. Public websites and operator maintenance access stay available."
 msgstr "Steuert Anmeldung und Bearbeitungszugriff für Kunden in verbundenen Content-Managern. Öffentliche Websites und Wartungszugriffe des Betreibers bleiben verfügbar."
 
-#: apps/auth/src/app/admin/form.tsx:35
+#: legacy/auth/src/app/admin/form.tsx:35
 msgid "Tenant Mail"
 msgstr "Mandanten-Mail"
 
-#: apps/auth/src/app/admin/form.tsx:36
+#: legacy/auth/src/app/admin/form.tsx:36
 msgid " Enable Mail for tenants"
 msgstr " Mail für Mandanten aktivieren"
 
-#: apps/auth/src/app/admin/form.tsx:37
+#: legacy/auth/src/app/admin/form.tsx:37
 msgid "Controls tenant Mail operations. Turning this off does not disable account verification, password reset or invitation emails."
 msgstr "Steuert Mail-Aktionen der Mandanten. Das Deaktivieren betrifft nicht E-Mails zur Kontobestätigung, Passwortzurücksetzung oder Einladung."
 
-#: apps/auth/src/app/admin/form.tsx:38
+#: legacy/auth/src/app/admin/form.tsx:38
 msgid "Assigned sending IPv4 address"
 msgstr "Zugewiesene IPv4-Versandadresse"
 
-#: apps/auth/src/app/admin/form.tsx:39
+#: legacy/auth/src/app/admin/form.tsx:39
 msgid "Use the sending IP assigned by turboSMTP. It is required before provisioning tenant Mail accounts."
 msgstr "Verwende die von turboSMTP zugewiesene Versand-IP. Sie ist erforderlich, bevor Mail-Konten für Mandanten erstellt werden können."
 
-#: apps/auth/src/app/admin/form.tsx:40
+#: legacy/auth/src/app/admin/form.tsx:40
 msgid "Default email limit"
 msgstr "Standard-E-Mail-Limit"
 
-#: apps/auth/src/app/admin/form.tsx:41
+#: legacy/auth/src/app/admin/form.tsx:41
 msgid "Mail region"
 msgstr "Mail-Region"
 
-#: apps/auth/src/app/admin/form.tsx:41
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:40
+#: legacy/auth/src/app/admin/form.tsx:41
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:40
 msgid "Europe"
 msgstr "Europa"
 
-#: apps/auth/src/app/admin/form.tsx:41
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:40
+#: legacy/auth/src/app/admin/form.tsx:41
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:40
 msgid "Global"
 msgstr "Global"
 
-#: apps/auth/src/app/admin/form.tsx:43
+#: legacy/auth/src/app/admin/form.tsx:43
 msgid "Save settings"
 msgstr "Einstellungen speichern"
 
-#: apps/auth/src/app/admin/form.tsx:47
+#: legacy/auth/src/app/admin/form.tsx:47
 msgid "Mail provider"
 msgstr "Mail-Anbieter"
 
-#: apps/auth/src/app/admin/form.tsx:48
+#: legacy/auth/src/app/admin/form.tsx:48
 msgid "Connect the turboSMTP master account used to manage tenant Mail accounts."
 msgstr "Verbinde das turboSMTP-Hauptkonto, mit dem die Mail-Konten der Mandanten verwaltet werden."
 
-#: apps/auth/src/app/admin/form.tsx:49
+#: legacy/auth/src/app/admin/form.tsx:49
 msgid "Open turboSMTP dashboard ↗"
 msgstr "turboSMTP-Dashboard öffnen ↗"
 
-#: apps/auth/src/app/admin/form.tsx:50
+#: legacy/auth/src/app/admin/form.tsx:50
 msgid " · Key ending in {value1}"
 msgstr " · Schlüssel endet auf {value1}"
 
-#: apps/auth/src/app/admin/form.tsx:50
+#: legacy/auth/src/app/admin/form.tsx:50
 msgid "Credentials configured{value1}"
 msgstr "Zugangsdaten konfiguriert{value1}"
 
-#: apps/auth/src/app/admin/form.tsx:50
+#: legacy/auth/src/app/admin/form.tsx:50
 msgid "No credentials configured"
 msgstr "Keine Zugangsdaten konfiguriert"
 
-#: apps/auth/src/app/admin/form.tsx:53
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/admin/form.tsx:53
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "Consumer key"
 msgstr "Consumer-Key"
 
-#: apps/auth/src/app/admin/form.tsx:54
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
+#: legacy/auth/src/app/admin/form.tsx:54
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
 msgid "Consumer secret"
 msgstr "Consumer-Secret"
 
-#: apps/auth/src/app/admin/form.tsx:55
+#: legacy/auth/src/app/admin/form.tsx:55
 msgid "Saved credentials are never displayed. Leave these fields untouched to keep the current credentials; saving platform settings does not replace them."
 msgstr "Gespeicherte Zugangsdaten werden nie angezeigt. Lasse diese Felder unverändert, um die vorhandenen Zugangsdaten beizubehalten; das Speichern der Plattformeinstellungen ersetzt sie nicht."
 
-#: apps/auth/src/app/admin/form.tsx:57
+#: legacy/auth/src/app/admin/form.tsx:57
 msgid "Save credentials"
 msgstr "Zugangsdaten speichern"
 
-#: apps/auth/src/app/admin/form.tsx:61
+#: legacy/auth/src/app/admin/form.tsx:61
 msgid "Test the saved connection by reading the provider account list. No email is sent."
 msgstr "Teste die gespeicherte Verbindung durch Abruf der Kontoliste beim Anbieter. Es wird keine E-Mail versendet."
 
-#: apps/auth/src/app/admin/form.tsx:63
+#: legacy/auth/src/app/admin/form.tsx:63
 msgid "Testing…"
 msgstr "Wird getestet…"
 
-#: apps/auth/src/app/admin/form.tsx:63
+#: legacy/auth/src/app/admin/form.tsx:63
 msgid "Test connection"
 msgstr "Verbindung testen"
 
-#: apps/auth/src/app/admin/form.tsx:67 apps/auth/src/app/admin/form.tsx:71
+#: legacy/auth/src/app/admin/form.tsx:67 legacy/auth/src/app/admin/form.tsx:71
 msgid "Remove credentials"
 msgstr "Zugangsdaten entfernen"
 
-#: apps/auth/src/app/admin/form.tsx:68
+#: legacy/auth/src/app/admin/form.tsx:68
 msgid "Removing master credentials disables new live Mail operations. Existing provider accounts are not deleted. Revoke the key separately in turboSMTP if it should no longer be valid."
 msgstr "Das Entfernen der Hauptzugangsdaten verhindert neue Mail-Aktionen beim Anbieter. Bestehende Anbieterkonten werden nicht gelöscht. Widerrufe den Schlüssel separat bei turboSMTP, wenn er nicht mehr gültig sein soll."
 
-#: apps/auth/src/app/admin/form.tsx:69
+#: legacy/auth/src/app/admin/form.tsx:69
 msgid " I want to remove the saved Mail credentials."
 msgstr " Ich möchte die gespeicherten Mail-Zugangsdaten entfernen."
 
-#: apps/auth/src/app/admin/form.tsx:71
+#: legacy/auth/src/app/admin/form.tsx:71
 msgid "Removing…"
 msgstr "Wird entfernt…"
 
-#: apps/auth/src/app/offers/[token]/form.tsx:9
+#: legacy/auth/src/app/offers/[token]/form.tsx:9
 msgid "View your assigned plan"
 msgstr "Zugewiesenen Tarif ansehen"
 
-#: apps/auth/src/app/offers/[token]/form.tsx:10
+#: legacy/auth/src/app/offers/[token]/form.tsx:10
 msgid "I accept this offer and its stated terms, and want to assign this plan to my tenant."
 msgstr "Ich nehme dieses Angebot und die genannten Bedingungen an und möchte meinem Mandanten diesen Tarif zuweisen."
 
-#: apps/auth/src/app/offers/[token]/form.tsx:12
+#: legacy/auth/src/app/offers/[token]/form.tsx:12
 msgid "Accepting…"
 msgstr "Wird angenommen…"
 
-#: apps/auth/src/app/offers/[token]/form.tsx:12
+#: legacy/auth/src/app/offers/[token]/form.tsx:12
 msgid "Accept offer and assign plan"
 msgstr "Angebot annehmen und Tarif zuweisen"
 
-#: apps/auth/src/app/offers/[token]/page.tsx:12
+#: legacy/auth/src/app/offers/[token]/page.tsx:12
 msgid "Your offer"
 msgstr "Dein Angebot"
 
-#: apps/auth/src/app/offers/[token]/page.tsx:20
+#: legacy/auth/src/app/offers/[token]/page.tsx:20
 msgid "Offer for "
 msgstr "Angebot für "
 
-#: apps/auth/src/app/offers/[token]/page.tsx:20
+#: legacy/auth/src/app/offers/[token]/page.tsx:20
 msgid "Tenant plan"
 msgstr "Mandantentarif"
 
-#: apps/auth/src/app/offers/[token]/page.tsx:21
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:43
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:33
+#: legacy/auth/src/app/offers/[token]/page.tsx:21
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:33
 msgid " · Expires "
 msgstr " · Gültig bis "
 
-#: apps/auth/src/app/offers/[token]/page.tsx:21
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:46
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:90
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:43
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:33
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:20
+#: legacy/auth/src/app/offers/[token]/page.tsx:21
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:46
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:90
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:20
 msgid " UTC"
 msgstr " UTC"
 
-#: apps/auth/src/app/offers/[token]/page.tsx:22
+#: legacy/auth/src/app/offers/[token]/page.tsx:22
 msgid "Offered plan"
 msgstr "Angebotener Tarif"
 
-#: apps/auth/src/app/offers/[token]/page.tsx:22
+#: legacy/auth/src/app/offers/[token]/page.tsx:22
 msgid "Preserved extras"
 msgstr "Beibehaltene Zusatzkontingente"
 
-#: apps/auth/src/app/offers/[token]/page.tsx:22
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:30
+#: legacy/auth/src/app/offers/[token]/page.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:30
 msgid "Effective allowances"
 msgstr "Wirksame Kontingente"
 
-#: apps/auth/src/app/offers/[token]/page.tsx:23
+#: legacy/auth/src/app/offers/[token]/page.tsx:23
 msgid "Commercial terms"
 msgstr "Vertragsbedingungen"
 
-#: apps/auth/src/app/offers/[token]/page.tsx:23
+#: legacy/auth/src/app/offers/[token]/page.tsx:23
 msgid "No additional commercial terms specified."
 msgstr "Keine zusätzlichen Vertragsbedingungen angegeben."
 
-#: apps/auth/src/app/offers/[token]/page.tsx:23
+#: legacy/auth/src/app/offers/[token]/page.tsx:23
 msgid "Acceptance assigns the displayed plan and preserves the displayed extras. This page does not collect payment. Storage and transfer limits are configured allocations and are not yet enforced; Mail sending uses the provider quota."
 msgstr "Die Annahme weist den angezeigten Tarif zu und behält die angezeigten Zusatzkontingente bei. Auf dieser Seite wird keine Zahlung abgewickelt. Speicher- und Transferlimits sind konfigurierte Kontingente und werden noch nicht durchgesetzt; für den Mail-Versand gilt das Anbieterlimit."
 
-#: apps/auth/src/app/offers/[token]/page.tsx:24
+#: legacy/auth/src/app/offers/[token]/page.tsx:24
 msgid "Offer accepted. The agreed allocation was assigned to your tenant. No payment was collected here."
 msgstr "Angebot angenommen. Das vereinbarte Kontingent wurde deinem Mandanten zugewiesen. Hier wurde keine Zahlung abgewickelt."
 
-#: apps/auth/src/app/offers/[token]/page.tsx:24
+#: legacy/auth/src/app/offers/[token]/page.tsx:24
 msgid "Only an authorized administrator of this tenant can accept an active offer. If the plan has changed, ask your operator for a new offer."
 msgstr "Nur ein berechtigter Admin dieses Mandanten kann ein aktives Angebot annehmen. Hat sich der Tarif geändert, bitte deinen Betreiber um ein neues Angebot."
 
-#: apps/auth/src/app/offers/[token]/page.tsx:24
+#: legacy/auth/src/app/offers/[token]/page.tsx:24
 msgid "This offer is no longer available for acceptance."
 msgstr "Dieses Angebot kann nicht mehr angenommen werden."
 
-#: apps/auth/src/app/admin/plans/page.tsx:10
-#: apps/auth/src/app/admin/plans/page.tsx:17
+#: legacy/auth/src/app/admin/plans/page.tsx:10
+#: legacy/auth/src/app/admin/plans/page.tsx:17
 msgid "Plans"
 msgstr "Tarife"
 
-#: apps/auth/src/app/admin/plans/page.tsx:17
+#: legacy/auth/src/app/admin/plans/page.tsx:17
 msgid "Reusable allocations for your customers. Assign a plan or prepare an individual offer from a tenant’s usage page."
 msgstr "Wiederverwendbare Kontingente für deine Kunden. Weise über die Verbrauchsseite eines Mandanten einen Tarif zu oder erstelle ein individuelles Angebot."
 
-#: apps/auth/src/app/admin/plans/page.tsx:17
+#: legacy/auth/src/app/admin/plans/page.tsx:17
 msgid "Administration"
 msgstr "Verwaltung"
 
-#: apps/auth/src/app/admin/plans/page.tsx:18
+#: legacy/auth/src/app/admin/plans/page.tsx:18
 msgid "Create a reusable plan"
 msgstr "Wiederverwendbaren Tarif erstellen"
 
-#: apps/auth/src/app/admin/plans/page.tsx:18
+#: legacy/auth/src/app/admin/plans/page.tsx:18
 msgid "Create plan"
 msgstr "Tarif erstellen"
 
-#: apps/auth/src/app/admin/plans/page.tsx:19
+#: legacy/auth/src/app/admin/plans/page.tsx:19
 msgid "Plan library"
 msgstr "Tarifbibliothek"
 
-#: apps/auth/src/app/admin/plans/page.tsx:19
+#: legacy/auth/src/app/admin/plans/page.tsx:19
 msgid "Choose a tenant to assign a plan"
 msgstr "Wähle einen Mandanten für die Tarifzuweisung"
 
-#: apps/auth/src/app/admin/plans/page.tsx:19
+#: legacy/auth/src/app/admin/plans/page.tsx:19
 msgid "No plans yet. Create your first plan above."
 msgstr "Noch keine Tarife. Erstelle oben deinen ersten Tarif."
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:10
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:10
 msgid "Tenant details"
 msgstr "Mandantendetails"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:20
 msgid "Customer profile and tenant access"
 msgstr "Kundenprofil und Mandantenzugriff"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:20
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:33
 msgid "Archived tenant — changes disabled"
 msgstr "Archivierter Mandant — Änderungen deaktiviert"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:20
 msgid "All tenants"
 msgstr "Alle Mandanten"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:21
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:13
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:24
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:21
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:13
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:24
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:33
 msgid "Mail"
 msgstr "Mail"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:21
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:14
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:21
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:14
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:29
 msgid "Plan and usage"
 msgstr "Tarif und Verbrauch"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:22
 msgid "Customer profile"
 msgstr "Kundenprofil"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:23
 msgid "Save profile"
 msgstr "Profil speichern"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:24
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:27
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:24
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:27
 msgid "Customer type"
 msgstr "Kundentyp"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:24
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:27
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:24
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:27
 msgid "Person"
 msgstr "Person"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:24
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:27
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:24
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:27
 msgid "Company"
 msgstr "Unternehmen"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:26
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:26
 msgid "Contact details do not change anyone’s sign-in email or permissions."
 msgstr "Kontaktdaten ändern weder die Anmelde-E-Mail-Adresse noch die Berechtigungen einer Person."
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:28
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:28
 msgid "Website permissions are assigned separately by your Webdock operator."
 msgstr "Website-Berechtigungen werden separat von deinem Webdock-Betreiber zugewiesen."
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:29
 msgid "No websites are currently authorized for your account in this tenant."
 msgstr "Für dein Konto sind derzeit keine Websites in diesem Mandanten freigegeben."
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:30
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:30
 msgid "Manage website permissions"
 msgstr "Website-Berechtigungen verwalten"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:33
 msgid "Invite a person"
 msgstr "Person einladen"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:33
 msgid "New people receive a secure link to choose their password. Tenant access starts after they accept the invitation."
 msgstr "Neue Personen erhalten einen sicheren Link, um ihr Passwort festzulegen. Der Mandantenzugriff beginnt, nachdem sie die Einladung angenommen haben."
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:34
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:34
 msgid "Send invitation"
 msgstr "Einladung senden"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:34
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:34
 msgid "Email"
 msgstr "E-Mail"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:36
 msgid "People"
 msgstr "Personen"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:36
 msgid "Administrators can edit this profile and invite people. Existing role changes and removals are managed by your Webdock operator."
 msgstr "Admins können dieses Profil bearbeiten und Personen einladen. Bestehende Rollen ändern und Mitgliedschaften entfernen kann dein Webdock-Betreiber."
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:38
 msgid "Update tenant role"
 msgstr "Mandantenrolle aktualisieren"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:38
 msgid "Remove membership"
 msgstr "Mitgliedschaft entfernen"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:38
 msgid "Remove this person’s tenant and website access"
 msgstr "Mandanten- und Website-Zugriff dieser Person entfernen"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:40
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:40
 msgid "No customer members yet. Invite the first person with the Administrator role."
 msgstr "Noch keine Kundenmitglieder. Lade die erste Person mit der Admin-Rolle ein."
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:42
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:42
 msgid "Resend invitation"
 msgstr "Einladung erneut senden"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:42
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:42
 msgid "Cancel the invitation and pending website access"
 msgstr "Einladung und ausstehenden Website-Zugriff widerrufen"
 
-#: apps/auth/src/app/tenants/[customerID]/page.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/page.tsx:43
 msgid "No invitations yet."
 msgstr "Noch keine Einladungen."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/form.tsx:18
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:22
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:19
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/form.tsx:12
+#: legacy/auth/src/app/tenants/[customerID]/mail/form.tsx:18
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:19
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/form.tsx:12
 msgid "Working…"
 msgstr "Wird ausgeführt…"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:24
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:33
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:24
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:29
 msgid "Back to tenant"
 msgstr "Zurück zum Mandanten"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:33
 msgid "Sending account and domains"
 msgstr "Versandkonto und Domains"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:34
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:34
 msgid "Root Mail settings"
 msgstr "Zentrale Mail-Einstellungen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:35
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:35
 msgid "Custom tracking"
 msgstr "Eigenes Tracking"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:36
 msgid "Manage SMTP / API credentials"
 msgstr "SMTP-/API-Zugangsdaten verwalten"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:37
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:37
 msgid "Mail is disabled for tenants. "
 msgstr "Mail ist für Mandanten deaktiviert. "
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:37
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:37
 msgid "Enable Mail in Root settings to manage tenant accounts and domains."
 msgstr "Aktiviere Mail in den zentralen Einstellungen, um Mandantenkonten und Domains zu verwalten."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:37
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:37
 msgid "Contact your Webdock operator to enable Mail."
 msgstr "Wende dich an deinen Webdock-Betreiber, um Mail zu aktivieren."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:38
 msgid "Mail provider credentials are not configured. "
 msgstr "Die Zugangsdaten des Mail-Anbieters sind nicht konfiguriert. "
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:38
 msgid "Connect the master account in Root Mail settings."
 msgstr "Verbinde das Hauptkonto in den zentralen Mail-Einstellungen."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:38
 msgid "Your Webdock operator must complete the Mail connection."
 msgstr "Dein Webdock-Betreiber muss die Mail-Verbindung fertig einrichten."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:39
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:39
 msgid "Sending account"
 msgstr "Versandkonto"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:40
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:40
 msgid "Region: "
 msgstr "Region: "
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:42
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:61
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:71
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:42
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:61
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:71
 msgid "Account email"
 msgstr "Konto-E-Mail"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:42
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:42
 msgid "Setup"
 msgstr "Einrichtung"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:42
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:42
 msgid "Operator review required"
 msgstr "Betreiberprüfung erforderlich"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:43
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:54
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:54
 msgid "Sending status"
 msgstr "Versandstatus"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:43
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:44
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:44
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "Not checked"
 msgstr "Nicht geprüft"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:44
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:55
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:44
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:55
 msgid "Email limit"
 msgstr "E-Mail-Limit"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:44
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:44
 msgid "Emails sent"
 msgstr "Gesendete E-Mails"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:45
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:45
 msgid "Usage interval"
 msgstr "Verbrauchszeitraum"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:46
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:46
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "Last checked"
 msgstr "Zuletzt geprüft"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:47
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:70
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:47
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:70
 msgid "Provider account ID"
 msgstr "Anbieterkonto-ID"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:50
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:50
 msgid "Account creation is in progress. If this state persists, ask an operator to investigate before making further changes. Do not create a second account."
 msgstr "Das Konto wird gerade erstellt. Bleibt dieser Zustand bestehen, bitte einen Betreiber um Prüfung, bevor du weitere Änderungen vornimmst. Erstelle kein zweites Konto."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:51
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:51
 msgid "Account creation needs reconciliation. An operator must review the provider dashboard and link the existing account. Do not create a second account."
 msgstr "Die Kontoerstellung muss abgeglichen werden. Ein Betreiber muss das Anbieter-Dashboard prüfen und das vorhandene Konto verknüpfen. Erstelle kein zweites Konto."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:52
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:52
 msgid "Refresh account status"
 msgstr "Kontostatus aktualisieren"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:54
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:54
 msgid "Update sending status"
 msgstr "Versandstatus aktualisieren"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:55
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:55
 msgid "Update email limit"
 msgstr "E-Mail-Limit aktualisieren"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:57
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:57
 msgid "No Mail account has been set up for this tenant."
 msgstr "Für diesen Mandanten wurde noch kein Mail-Konto eingerichtet."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:59
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:60
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:59
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:60
 msgid "Create sending account"
 msgstr "Versandkonto erstellen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:59
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:59
 msgid "Create a dedicated turboSMTP subaccount for this tenant with an initial limit of "
 msgstr "Erstelle ein eigenes turboSMTP-Unterkonto für diesen Mandanten mit einem anfänglichen Limit von "
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:59
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:68
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:59
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:68
 msgid " emails."
 msgstr " E-Mails."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:64
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:64
 msgid "I am authorized to create this provider subaccount and accept its "
 msgstr "Ich bin berechtigt, dieses Anbieter-Unterkonto zu erstellen, und akzeptiere dessen "
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:64
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:64
 msgid "terms"
 msgstr "Bedingungen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:64
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:64
 msgid " for this setup."
 msgstr " für diese Einrichtung."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:68
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:68
 msgid "Link an existing account"
 msgstr "Vorhandenes Konto verknüpfen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:68
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:68
 msgid "Use the account ID and email from the turboSMTP dashboard. The account will be checked before it is linked to this tenant. Its sending limit will be set to the platform default of "
 msgstr "Verwende Konto-ID und E-Mail-Adresse aus dem turboSMTP-Dashboard. Das Konto wird vor der Verknüpfung mit diesem Mandanten geprüft. Das Versandlimit wird auf den Plattformstandard gesetzt: "
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:69
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:69
 msgid "Link existing account"
 msgstr "Vorhandenes Konto verknüpfen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:69
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:69
 msgid "I have checked that this provider account belongs to this tenant."
 msgstr "Ich habe geprüft, dass dieses Anbieterkonto zu diesem Mandanten gehört."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:75
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:75
 msgid "Sender domains"
 msgstr "Absenderdomains"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:76
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:76
 msgid "Add your domain, publish the DNS records below and verify ownership. Then register it for sending directly in Webdock."
 msgstr "Füge deine Domain hinzu, veröffentliche die unten aufgeführten DNS-Einträge und bestätige die Inhaberschaft. Registriere sie anschließend direkt in Webdock für den Versand."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:77
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:77
 msgid "Add domain"
 msgstr "Domain hinzufügen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:77
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:77
 msgid "Domain"
 msgstr "Domain"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:80
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:80
 msgid "Ownership verified"
 msgstr "Inhaberschaft bestätigt"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:80
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:80
 msgid "Ownership verification pending"
 msgstr "Bestätigung der Inhaberschaft ausstehend"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:81
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:81
 msgid "Sending: "
 msgstr "Versand: "
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:81
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:81
 msgid "SPF, DKIM and DMARC verified"
 msgstr "SPF, DKIM und DMARC bestätigt"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:81
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:81
 msgid "Provider verification pending"
 msgstr "Anbieterbestätigung ausstehend"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:81
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:81
 msgid "Not registered yet"
 msgstr "Noch nicht registriert"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:85
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:85
 msgid "Type"
 msgstr "Typ"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:85
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:85
 msgid "Full record name"
 msgstr "Vollständiger Eintragsname"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:85
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:85
 msgid "Value"
 msgstr "Wert"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:86
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:86
 msgid "Currently published records"
 msgstr "Derzeit veröffentlichte Einträge"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:87
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:87
 msgid "Resolve the existing record conflict before changing DNS. Keep the services and policies you already use."
 msgstr "Behebe den bestehenden Eintragskonflikt, bevor du DNS änderst. Behalte die bereits genutzten Dienste und Richtlinien bei."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:89
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:89
 msgid "Use the full record names above. If your DNS host appends the zone automatically, enter only the part before that zone. Update an existing SPF record instead of adding a second one."
 msgstr "Verwende die vollständigen Eintragsnamen oben. Hängt dein DNS-Anbieter die Zone automatisch an, gib nur den Teil davor ein. Aktualisiere einen vorhandenen SPF-Eintrag, statt einen zweiten anzulegen."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:90
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:90
 msgid "Sending verification checked: "
 msgstr "Versandbestätigung geprüft: "
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:91
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:91
 msgid "A domain operation is in progress."
 msgstr "Eine Domain-Aktion wird gerade ausgeführt."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:93
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:93
 msgid "Check DNS ownership"
 msgstr "DNS-Inhaberschaft prüfen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:94
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:94
 msgid "Recheck sending DNS"
 msgstr "Versand-DNS erneut prüfen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:94
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:94
 msgid "Register sending domain"
 msgstr "Absenderdomain registrieren"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:95
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:95
 msgid "Remove sending registration"
 msgstr "Versandregistrierung entfernen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:95
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:95
 msgid "Remove this domain from the sending provider. Applications may no longer send from it."
 msgstr "Entferne diese Domain beim Versandanbieter. Anwendungen können möglicherweise nicht mehr über sie senden."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:96
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:96
 msgid "Remove domain"
 msgstr "Domain entfernen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:96
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:96
 msgid "Remove this local domain entry. DNS records remain unchanged."
 msgstr "Entferne diesen lokalen Domain-Eintrag. DNS-Einträge bleiben unverändert."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/page.tsx:99
+#: legacy/auth/src/app/tenants/[customerID]/mail/page.tsx:99
 msgid "No sender domains added yet."
 msgstr "Noch keine Absenderdomains hinzugefügt."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:26
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:26
 msgid "Change result"
 msgstr "Ergebnis der Änderung"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:29
 msgid "Shareable offer link"
 msgstr "Teilbarer Angebotslink"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:29
 msgid "Copied"
 msgstr "Kopiert"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:29
 msgid "Copy link"
 msgstr "Link kopieren"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:29
 msgid "Copy this link now. It is shown only after creation and disappears after your next action. Share it with this tenant’s administrator."
 msgstr "Kopiere diesen Link jetzt. Er wird nur nach der Erstellung angezeigt und verschwindet nach der nächsten Aktion. Teile ihn mit dem Admin dieses Mandanten."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:31
 msgid "Assign a plan"
 msgstr "Tarif zuweisen"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:31
 msgid "Applies immediately. Existing extras are preserved."
 msgstr "Gilt sofort. Vorhandene Zusatzkontingente bleiben erhalten."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:32
 msgid "Plan"
 msgstr "Tarif"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:32
 msgid "Choose a plan"
 msgstr "Tarif auswählen"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:32
 msgid "Create a reusable plan in the plan library first."
 msgstr "Erstelle zuerst einen wiederverwendbaren Tarif in der Tarifbibliothek."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:33
 msgid "Additional allowances"
 msgstr "Zusätzliche Kontingente"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:33
 msgid "Save the total extras for this tenant. This replaces the previous extras."
 msgstr "Speichere die gesamten Zusatzkontingente für diesen Mandanten. Die vorherigen Zusatzkontingente werden dadurch ersetzt."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:33
 msgid "Assign a plan before adding extras."
 msgstr "Weise zuerst einen Tarif zu, bevor du Zusatzkontingente hinzufügst."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:34
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:34
 msgid "Create an individual offer"
 msgstr "Individuelles Angebot erstellen"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:34
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:34
 msgid "Prepare adjusted plan allowances and optional commercial terms for the customer to accept. Acceptance assigns these allowances and preserves the extras shown below. This does not collect payment."
 msgstr "Bereite angepasste Tarifkontingente und optionale Vertragsbedingungen zur Annahme durch den Kunden vor. Die Annahme weist diese Kontingente zu und behält die unten angezeigten Zusatzkontingente bei. Es wird keine Zahlung abgewickelt."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:36
 msgid "Start from a plan"
 msgstr "Mit einem Tarif beginnen"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:36
 msgid "Custom offer"
 msgstr "Individuelles Angebot"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:38
 msgid "Commercial terms (optional)"
 msgstr "Vertragsbedingungen (optional)"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:38
 msgid "Agreed price, service scope, or other terms"
 msgstr "Vereinbarter Preis, Leistungsumfang oder weitere Bedingungen"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:39
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:39
 msgid "Expires after (days)"
 msgstr "Gültigkeitsdauer (Tage)"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:40
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:40
 msgid "Extras preserved on acceptance"
 msgstr "Bei Annahme beibehaltene Zusatzkontingente"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:43
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:33
 msgid "Offers"
 msgstr "Angebote"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:43
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:43
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:33
 msgid "No offers yet."
 msgstr "Noch keine Angebote."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:44
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:44
 msgid "Storage connections"
 msgstr "Speicherverbindungen"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:44
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:44
 msgid "Connect each Blob store or a tenant’s exclusive path prefix. Credentials are saved privately and are never displayed. Production and preview storage are measured separately."
 msgstr "Verbinde jeden Blob-Speicher oder das exklusive Pfadpräfix eines Mandanten. Zugangsdaten werden vertraulich gespeichert und nie angezeigt. Produktiv- und Vorschau-Speicher werden getrennt erfasst."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:46
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:13
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:46
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:13
 msgid "Label"
 msgstr "Bezeichnung"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:47
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:47
 msgid "Environment"
 msgstr "Umgebung"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:48
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:48
 msgid "Blob store ID"
 msgstr "Blob-Speicher-ID"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:49
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:49
 msgid "Path prefix (optional)"
 msgstr "Pfadpräfix (optional)"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:49
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:49
 msgid "Blank measures the entire store. Use an exclusive prefix for a shared store."
 msgstr "Ein leeres Feld erfasst den gesamten Speicher. Verwende bei gemeinsam genutztem Speicher ein exklusives Pfadpräfix."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:50
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:50
 msgid "Blob read/write token"
 msgstr "Blob-Token mit Lese-/Schreibzugriff"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:52
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:52
 msgid "Whole store"
 msgstr "Gesamter Speicher"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/form.tsx:52
+#: legacy/auth/src/app/tenants/[customerID]/usage/form.tsx:52
 msgid "Remove this measurement connection. Stored files remain unchanged."
 msgstr "Entferne diese Messverbindung. Gespeicherte Dateien bleiben unverändert."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:17
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:17
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "Unavailable"
 msgstr "Nicht verfügbar"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:17
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:17
 msgid "{value1} MB"
 msgstr "{value1} MB"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:30
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:30
 msgid "No plan assigned"
 msgstr "Kein Tarif zugewiesen"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:30
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:30
 msgid "Base plan and extras"
 msgstr "Basistarif und Zusatzkontingente"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:30
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:30
 msgid "Base plan"
 msgstr "Basistarif"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:30
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:30
 msgid "Extras"
 msgstr "Zusatzkontingente"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:30
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:30
 msgid "Your operator can assign a plan or send you an individual offer."
 msgstr "Dein Betreiber kann dir einen Tarif zuweisen oder ein individuelles Angebot senden."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:30
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:30
 msgid "These are configured allocations. Storage and transfer limits are not yet enforced. Mail sending is governed by the provider’s actual quota."
 msgstr "Dies sind konfigurierte Kontingente. Speicher- und Transferlimits werden noch nicht durchgesetzt. Für den Mail-Versand gilt das tatsächliche Kontingent des Anbieters."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Measured storage"
 msgstr "Gemessener Speicherverbrauch"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Production: "
 msgstr "Produktion: "
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid " of "
 msgstr " von "
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid " configured"
 msgstr " konfiguriert"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Production storage against configured allowance"
 msgstr "Produktivspeicher im Verhältnis zum konfigurierten Kontingent"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Production storage exceeds the configured allocation."
 msgstr "Der Produktivspeicher überschreitet das konfigurierte Kontingent."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Snapshots of connected stores. Missing or failed measurements are unavailable, never counted as zero. Preview storage is shown separately."
 msgstr "Gespeicherte Messstände verbundener Speicher. Fehlende oder fehlgeschlagene Messungen gelten als nicht verfügbar und werden niemals als null gezählt. Vorschau-Speicher wird separat angezeigt."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Mail provider usage"
 msgstr "Mail-Verbrauch beim Anbieter"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid " sent · Provider limit: "
 msgstr " gesendet · Anbieterlimit: "
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Mail sent against provider quota"
 msgstr "Gesendete E-Mails im Verhältnis zum Anbieterlimit"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Period: "
 msgstr "Zeitraum: "
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Not reported"
 msgstr "Nicht gemeldet"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:20
 msgid "Last checked: "
 msgstr "Zuletzt geprüft: "
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "{value1} UTC"
 msgstr "{value1} UTC"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Mail usage is more than 24 hours old."
 msgstr "Der Mail-Verbrauchsstand ist älter als 24 Stunden."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "View Mail usage and provider quota"
 msgstr "Mail-Verbrauch und Anbieterlimit ansehen"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:31
 msgid "Transfer usage is not currently measured here."
 msgstr "Der Transferverbrauch wird hier derzeit nicht gemessen."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "Storage measurements"
 msgstr "Speichermessungen"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "No storage connections yet. Usage is unavailable until a store is connected and measured."
 msgstr "Noch keine Speicherverbindungen. Der Verbrauch ist erst verfügbar, wenn ein Speicher verbunden und gemessen wurde."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "Stored data"
 msgstr "Gespeicherte Daten"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "Objects"
 msgstr "Objekte"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:32
 msgid "This snapshot is more than 24 hours old. Refresh it before relying on these figures."
 msgstr "Dieser Messstand ist älter als 24 Stunden. Aktualisiere ihn, bevor du dich auf diese Zahlen verlässt."
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:34
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:34
 msgid "Manage reusable plans"
 msgstr "Wiederverwendbare Tarife verwalten"
 
-#: apps/auth/src/app/tenants/[customerID]/usage/page.tsx:34
+#: legacy/auth/src/app/tenants/[customerID]/usage/page.tsx:34
 msgid "This tenant is archived. Changes are disabled."
 msgstr "Dieser Mandant ist archiviert. Änderungen sind deaktiviert."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:12
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:12
 msgid "Revoke this credential. Applications using it will immediately lose access."
 msgstr "Diese Zugangsdaten widerrufen. Anwendungen, die sie verwenden, verlieren sofort den Zugriff."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:13
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:13
 msgid "Production website"
 msgstr "Produktive Website"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:16
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:16
 msgid "Provider administration (operator only)"
 msgstr "Anbieterverwaltung (nur Betreiber)"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:17
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:17
 msgid "Allowed IP addresses (optional)"
 msgstr "Erlaubte IP-Adressen (optional)"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:17
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:17
 msgid "Individual IPv4 or IPv6 addresses, separated by commas or spaces. Blank allows any IP address."
 msgstr "Einzelne IPv4- oder IPv6-Adressen, getrennt durch Kommas oder Leerzeichen. Ein leeres Feld erlaubt jede IP-Adresse."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:19
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:19
 msgid "Revoke credential"
 msgstr "Zugangsdaten widerrufen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:19
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:19
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:22
 msgid "Create credential"
 msgstr "Zugangsdaten erstellen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
 msgid "Save your new credential"
 msgstr "Neue Zugangsdaten sicher speichern"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
 msgid "This secret is shown only now. Store it securely before leaving or dismissing this panel."
 msgstr "Dieses Secret wird nur jetzt angezeigt. Speichere es sicher, bevor du diese Ansicht verlässt oder ausblendest."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
 msgid "Copy credentials"
 msgstr "Zugangsdaten kopieren"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/form.tsx:22
 msgid "Dismiss secret"
 msgstr "Secret ausblenden"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:10
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:17
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:18
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:10
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:17
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:18
 msgid "Mail credentials"
 msgstr "Mail-Zugangsdaten"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:17
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:18
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:17
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:17
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:18
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:17
 msgid "Back to Mail"
 msgstr "Zurück zu Mail"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:19
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:19
 msgid "Manage this tenant’s SMTP and API credentials directly in Webdock. Secrets are shown once when created and cannot be retrieved later."
 msgstr "Verwalte die SMTP- und API-Zugangsdaten dieses Mandanten direkt in Webdock. Secrets werden bei der Erstellung einmal angezeigt und können später nicht erneut abgerufen werden."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "Connection details"
 msgstr "Verbindungsdaten"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "SMTP server"
 msgstr "SMTP-Server"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "Port and encryption"
 msgstr "Port und Verschlüsselung"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "587 with STARTTLS, or 465 with TLS"
 msgstr "587 mit STARTTLS oder 465 mit TLS"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "SMTP username"
 msgstr "SMTP-Benutzername"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "Your credential’s Consumer key"
 msgstr "Der Consumer-Key deiner Zugangsdaten"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "SMTP password"
 msgstr "SMTP-Passwort"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "The Consumer secret shown when you create that credential"
 msgstr "Das bei der Erstellung dieser Zugangsdaten angezeigte Consumer-Secret"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "Sending API"
 msgstr "Versand-API"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:20
 msgid "Select SMTP sending or API sending when creating the credential for your application."
 msgstr "Wähle beim Erstellen der Zugangsdaten für deine Anwendung SMTP-Versand oder API-Versand."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:21
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:21
 msgid " You can still view and revoke existing credentials."
 msgstr " Vorhandene Zugangsdaten können weiterhin angezeigt und widerrufen werden."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "Existing credentials"
 msgstr "Vorhandene Zugangsdaten"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "To rotate a credential, create a replacement, update your application, then revoke the old credential."
 msgstr "Erstelle zum Wechsel der Zugangsdaten zuerst einen Ersatz, aktualisiere deine Anwendung und widerrufe anschließend die alten Zugangsdaten."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "Created"
 msgstr "Erstellt"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "Permissions"
 msgstr "Berechtigungen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "None"
 msgstr "Keine"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "Allowed IPs"
 msgstr "Erlaubte IPs"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "Any IP address"
 msgstr "Beliebige IP-Adresse"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "Legacy credential"
 msgstr "Ältere Zugangsdaten"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
+#: legacy/auth/src/app/tenants/[customerID]/mail/keys/page.tsx:23
 msgid "No credentials created yet."
 msgstr "Noch keine Zugangsdaten erstellt."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:9
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:17
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:9
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:17
 msgid "Mail tracking"
 msgstr "Mail-Tracking"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:17
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:17
 msgid " · Track opens and clicks with your own domain."
 msgstr " · Öffnungen und Klicks mit deiner eigenen Domain erfassen."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:18
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:18
 msgid " Contact your Webdock operator to complete setup."
 msgstr " Wende dich an deinen Webdock-Betreiber, um die Einrichtung abzuschließen."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:19
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:19
 msgid "Values show the last successful provider check. No email is sent from this screen."
 msgstr "Die Werte zeigen die letzte erfolgreiche Anbieterprüfung. Auf dieser Seite wird keine E-Mail versendet."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:21
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:21
 msgid "Refresh tracking status"
 msgstr "Tracking-Status aktualisieren"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:22
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:22
 msgid "Tracking settings"
 msgstr "Tracking-Einstellungen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
 msgid "Status unavailable — refresh to check"
 msgstr "Status nicht verfügbar — zum Prüfen aktualisieren"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:28
 msgid " · Required by account policy"
 msgstr " · Durch die Kontorichtlinie vorgeschrieben"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:41
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:41
 msgid "Update {value1}"
 msgstr "{value1} aktualisieren"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
 msgid "Choose state"
 msgstr "Status auswählen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:41
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:29
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:41
 msgid "Select a state"
 msgstr "Status auswählen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:31
 msgid "All custom domains are disabled."
 msgstr "Alle eigenen Domains sind deaktiviert."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:31
 msgid "At least one custom domain is enabled."
 msgstr "Mindestens eine eigene Domain ist aktiviert."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:31
 msgid "No default tracking domain is selected."
 msgstr "Keine Standard-Tracking-Domain ausgewählt."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:31
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:31
 msgid "A default tracking domain is selected."
 msgstr "Eine Standard-Tracking-Domain ist ausgewählt."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:32
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:32
 msgid "Use a subdomain of a verified sender domain. Creating it does not enable open or click tracking."
 msgstr "Verwende eine Subdomain einer bestätigten Absenderdomain. Die Erstellung aktiviert kein Öffnungs- oder Klick-Tracking."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
 msgid "Create tracking domain"
 msgstr "Tracking-Domain erstellen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
 msgid "Sender domain"
 msgstr "Absenderdomain"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
 msgid "Subdomain prefix"
 msgstr "Subdomain-Präfix"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
 msgid "For example, links with example.com creates links.example.com."
 msgstr "Zum Beispiel ergibt links zusammen mit example.com die Adresse links.example.com."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:33
 msgid "Add and verify a sender domain in Mail before creating a tracking domain."
 msgstr "Füge unter Mail eine Absenderdomain hinzu und bestätige sie, bevor du eine Tracking-Domain erstellst."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:35
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:35
 msgid "Creation needs reconciliation. Refresh to find the reserved domain; do not create another copy."
 msgstr "Die Erstellung muss abgeglichen werden. Aktualisiere die Ansicht, um die reservierte Domain zu finden; erstelle keine weitere Kopie."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:35
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:35
 msgid "Cancel unused reservation"
 msgstr "Ungenutzte Reservierung aufheben"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:35
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:35
 msgid "Cancel this reservation only if the provider confirms no matching tracking domain exists."
 msgstr "Hebe diese Reservierung nur auf, wenn der Anbieter bestätigt, dass keine passende Tracking-Domain existiert."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:35
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:35
 msgid "An unused reservation can be cancelled after 15 minutes, once a fresh provider check confirms that no domain was created."
 msgstr "Eine ungenutzte Reservierung kann nach 15 Minuten aufgehoben werden, sobald eine erneute Anbieterprüfung bestätigt, dass keine Domain erstellt wurde."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
 msgid "Status not checked"
 msgstr "Status nicht geprüft"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
 msgid "DNS verification pending"
 msgstr "DNS-Bestätigung ausstehend"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
 msgid "HTTPS not checked"
 msgstr "HTTPS nicht geprüft"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
 msgid "HTTPS ready"
 msgstr "HTTPS bereit"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:36
 msgid "HTTPS pending"
 msgstr "HTTPS ausstehend"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
 msgid "Sending status not checked"
 msgstr "Versandstatus nicht geprüft"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
 msgid "Domain mode not checked"
 msgstr "Domain-Modus nicht geprüft"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
 msgid "Default domain"
 msgstr "Standarddomain"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:37
 msgid "Dedicated domain"
 msgstr "Dedizierte Domain"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:38
 msgid "Add both CNAME records at your DNS host, then verify. Your DNS host may append the parent domain automatically."
 msgstr "Lege beide CNAME-Einträge bei deinem DNS-Anbieter an und bestätige sie anschließend. Dein DNS-Anbieter hängt die übergeordnete Domain möglicherweise automatisch an."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:38
 msgid "CNAME name"
 msgstr "CNAME-Name"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:38
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:38
 msgid "CNAME target"
 msgstr "CNAME-Ziel"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:40
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:40
 msgid "Verify tracking domain"
 msgstr "Tracking-Domain bestätigen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:41
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:41
 msgid "Yes"
 msgstr "Ja"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:41
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:41
 msgid "No"
 msgstr "Nein"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:42
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:42
 msgid "Remove tracking domain"
 msgstr "Tracking-Domain entfernen"
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:42
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:42
 msgid "Remove this tracking domain from the sending account. Existing tracked links may stop working."
 msgstr "Entferne diese Tracking-Domain aus dem Versandkonto. Vorhandene Tracking-Links funktionieren möglicherweise nicht mehr."
 
-#: apps/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:45
+#: legacy/auth/src/app/tenants/[customerID]/mail/tracking/page.tsx:45
 msgid "No custom tracking domains yet."
 msgstr "Noch keine eigenen Tracking-Domains."
 

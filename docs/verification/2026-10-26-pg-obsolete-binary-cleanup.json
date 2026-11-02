@@ -1,0 +1,28 @@
+{
+  "scope": "Remove only hash-verified executable copies from eight completed, superseded PG candidates",
+  "removedLogicalBytes": 11113287192,
+  "physicalFreeBefore": "5.1 GiB",
+  "physicalFreeAfter": "6.2 GiB",
+  "removedCandidates": {
+    ".runtime-test/pg-read-foundation-6395d0cbd366/candidate": ["foundation-test", "host-psql", "webdock-migrate"],
+    ".runtime-test/pg-read-foundation-e92bec7955db/candidate": ["foundation-test", "host-psql", "webdock-migrate"],
+    ".runtime-test/pg-restore-review1-a74e0ecf33c5/candidate": ["database-primitives", "webdock-migrate"],
+    ".runtime-test/pg-restore-review1-a8258c4cbfe9/candidate": ["database-primitives", "webdock-migrate"],
+    ".runtime-test/pg-restore-review1-945f155d53ba/candidate": ["database-primitives", "host-psql", "webdock-migrate"],
+    ".runtime-test/pg-restore-review1-add07af8cd4b/candidate": ["database-primitives", "host-psql", "webdock-migrate"],
+    ".runtime-test/pg-restore-review1-2a4493018f31/candidate": ["database-primitives", "host-psql", "webdock-migrate"],
+    ".runtime-test/pg-restore-review1-94eeed5a569c/candidate": ["database-primitives", "host-psql", "webdock-migrate"],
+    ".runtime-test/builtin-revocation-e6215c159300/red1": ["bootstrap-test", "webdock-bootstrap-operator", "webdock-migrate"],
+    ".runtime-test/oauth-mcp-component-0bab694c6b8b/candidate": ["oauth-retained", "webdock-migrate"]
+  },
+  "validation": "Every removed regular owned non-symlink file matched its pin.json SHA-256 and byte count before deletion",
+  "preserved": [
+    "Every candidate pin.json",
+    "Every copied source inventory",
+    "All logs, results, failures and review evidence",
+    ".runtime-test/pg-read-foundation-12b2ffc30a76 current guard-smoke candidate",
+    "Shared Cargo targets, Mail cache and protected VM/pin artifacts",
+    "Builtin-revocation and OAuth component pins, sources, logs, results and cleanup evidence"
+  ],
+  "recoverability": "Executable copies were removed; their pins and build/source evidence remain, but recreating binaries requires rebuilding or another verified copy"
+}

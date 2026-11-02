@@ -1,0 +1,451 @@
+{
+  "status": "ONE_SOURCE_ATTEMPT_FAILED; WINDOW_ENDED; exact custody closed",
+  "run": "acada723f4f0",
+  "launch": "0f6812ab97ce",
+  "result": {
+    "wrapperExit": 1,
+    "outerExit": 101,
+    "elapsedAttemptSeconds": 65.048,
+    "testSeconds": 21.52,
+    "failedBoundary": "Agent/native execution after source_deploy_queued",
+    "publicAppStatus": "failed",
+    "publicLastError": "Cluster execution failed. Inspect and reconcile before retrying.",
+    "actualStaticAgentErrorCode": "not retained; Core normalization drops it",
+    "exactCause": "UNKNOWN; image digest availability is unproven hypothesis only"
+  },
+  "actualSuccessMarkers": [
+    "offline_bootstrap_succeeded",
+    "password_signin_succeeded",
+    "password_change_succeeded",
+    "totp_enrollment_succeeded",
+    "totp_verification_succeeded",
+    "pkce_s256_console_operator_succeeded",
+    "builtin_hosting_activation_succeeded",
+    "registry_customer_creation_succeeded",
+    "registry_project_creation_succeeded",
+    "finite_allowance_succeeded",
+    "offline_agent_enrollment_succeeded",
+    "control_socket_bound",
+    "storage_initialize_succeeded",
+    "agent_process_spawned",
+    "actual_agent_heartbeat_observed",
+    "cluster_capacity_activation_succeeded",
+    "hosting_project_creation_succeeded",
+    "source_draft_prepared",
+    "unconfigured_draft_policy_denial_observed",
+    "source_deploy_queued"
+  ],
+  "sourceReadyOrUIDObserved": false,
+  "sqlstateDiagnosticsObserved": [],
+  "sourceFailureCapture": {
+    "receiptSHA256": "f587164dd4392bbb0c17913cdbd17282fe05c2424fe7176c42ac82ed79f915c5",
+    "processes": {
+      "agent": {
+        "state": "running"
+      },
+      "helper": {
+        "state": "running"
+      },
+      "controlFinished": false,
+      "controlResult": "not_consumed",
+      "heartbeatConfirmed": true,
+      "phase": "source_deploy"
+    },
+    "logBytes": {
+      "agent-first.stdout": 0,
+      "agent-first.stderr": 0,
+      "storage.stdout": 0,
+      "storage.stderr": 0
+    },
+    "rawBodiesRetained": false
+  },
+  "provenance": {
+    "driver": "docker",
+    "artifactPin": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-diagnostics-source-component-0e7b45a96c12/pin.json",
+    "artifactPinSHA256": "fe9612af157a298df6ef95e5b42af7f7063e8ec38b4e56e62b1270445500ee2b",
+    "overlay": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/recovery-source-input-overlay-52fa139a5a8f/overlay.json",
+    "overlaySHA256": "52fa139a5a8f6ff30336d636070da09d0d795c1dc12983408adc5ba5af30bb07"
+  },
+  "binaries": {
+    "bootstrap-test": {
+      "sourceSHA256": "d0f85603a3a69f979cc3456f7f7f0d8136760d4adfd0eacc5c619db1631efc99",
+      "copiedSHA256": "d0f85603a3a69f979cc3456f7f7f0d8136760d4adfd0eacc5c619db1631efc99"
+    },
+    "webdock-agent": {
+      "sourceSHA256": "d8208a7e7984ee47caeed8b1f69c2ff74879a8f1a413072c7dce50a55d997270",
+      "copiedSHA256": "d8208a7e7984ee47caeed8b1f69c2ff74879a8f1a413072c7dce50a55d997270"
+    },
+    "webdock-storage": {
+      "sourceSHA256": "1f2bc06b80cc68c81a5bb392ead2358e66d8c34d971837af2df1128ed72e2301",
+      "copiedSHA256": "1f2bc06b80cc68c81a5bb392ead2358e66d8c34d971837af2df1128ed72e2301"
+    }
+  },
+  "cleanup": {
+    "checks": [
+      {
+        "kind": "container",
+        "reference": "3ea29aaca22ba943a05c2b3a6ce5ef5b455f3011bfad40e73df45d5929ff8fe4",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "container",
+        "reference": "wd-recovery-k3s-help-4507a66abfe74824",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "container",
+        "reference": "5111ec06ba7ec5f474c8409eccdfbea080079c0cb78d28818952cdd6c62fb0eb",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "container",
+        "reference": "wd-recovery-preflight-4507a66abfe74824",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "volume",
+        "reference": "8743af0f215a0ae11de9926b541ced5e3a7296e602f4be8b805f528d87a76e6a",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "volume",
+        "reference": "1e7b6efd1f7d3abcd98d9ddbc44e9daaf669c1e1bac441c5d751f88290b45e53",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "volume",
+        "reference": "a12db09d460d6c4ef696d34ad496286d366844c11f1fef63c68b2e425b3fbddc",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "volume",
+        "reference": "00080f9945fb9e4a83a585cb52081268d9937f664af6607b01b51632830882f6",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "volume",
+        "reference": "wd-recovery-preflight-logs-acada723f4f0",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "image",
+        "reference": "wd-owned-recovery-component:acada723f4f0",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "image",
+        "reference": "sha256:56127f4464fb7e93af47ee6b6d223901c6df767f2e59ac9a94c0db0f9be24abb",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "image",
+        "reference": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "image",
+        "reference": "sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "cgroup",
+        "reference": "/sys/fs/cgroup/system.slice/docker-5111ec06ba7ec5f474c8409eccdfbea080079c0cb78d28818952cdd6c62fb0eb.scope/owned-init",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "cgroup",
+        "reference": "/sys/fs/cgroup/system.slice/docker-5111ec06ba7ec5f474c8409eccdfbea080079c0cb78d28818952cdd6c62fb0eb.scope",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "own transient artifact",
+        "reference": "build",
+        "positiveAbsence": true
+      },
+      {
+        "kind": "own transient artifact",
+        "reference": "images.tar",
+        "positiveAbsence": true
+      }
+    ],
+    "containers": [
+      {
+        "name": "wd-recovery-k3s-help-4507a66abfe74824",
+        "id": "3ea29aaca22ba943a05c2b3a6ce5ef5b455f3011bfad40e73df45d5929ff8fe4"
+      },
+      {
+        "name": "wd-recovery-preflight-4507a66abfe74824",
+        "id": "5111ec06ba7ec5f474c8409eccdfbea080079c0cb78d28818952cdd6c62fb0eb"
+      }
+    ],
+    "volumes": [
+      "8743af0f215a0ae11de9926b541ced5e3a7296e602f4be8b805f528d87a76e6a",
+      "1e7b6efd1f7d3abcd98d9ddbc44e9daaf669c1e1bac441c5d751f88290b45e53",
+      "a12db09d460d6c4ef696d34ad496286d366844c11f1fef63c68b2e425b3fbddc",
+      "00080f9945fb9e4a83a585cb52081268d9937f664af6607b01b51632830882f6"
+    ],
+    "diagnosticVolume": "wd-recovery-preflight-logs-acada723f4f0",
+    "image": {
+      "run": "acada723f4f0",
+      "reference": "wd-owned-recovery-component:acada723f4f0",
+      "imageID": "sha256:56127f4464fb7e93af47ee6b6d223901c6df767f2e59ac9a94c0db0f9be24abb",
+      "requiredLabels": {
+        "webdock.recovery-component-run": "acada723f4f0",
+        "webdock.recovery-component-kind": "native-recovery-component"
+      }
+    },
+    "pause": {
+      "pinnedK3s": "rancher/k3s@sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb",
+      "requiredVersionFromHelp": "rancher/mirrored-pause:3.10.2",
+      "resolvedPlatformDescriptor": {
+        "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+        "digest": "sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17",
+        "size": 501,
+        "platform": {
+          "architecture": "amd64",
+          "os": "linux"
+        }
+      },
+      "importReference": "rancher/mirrored-pause@sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17",
+      "imageID": "sha256:412c4a7219cb8a299a37337f3d87810c5340095322e15594a1637785adad0f17",
+      "configurationID": "sha256:4a83b15d3ecfe0d916b2d0a7991bc2854a629b8097017c2ee1ff65b30ae4c07c",
+      "absentBefore": true
+    },
+    "cgroup": "/system.slice/docker-5111ec06ba7ec5f474c8409eccdfbea080079c0cb78d28818952cdd6c62fb0eb.scope/owned-init",
+    "cachedBefore": {
+      "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe": {
+        "Id": "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe",
+        "RepoTags": [
+          "webdock-rust-storage-test:owned"
+        ],
+        "RepoDigests": [
+          "webdock-rust-storage-test@sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe"
+        ],
+        "Descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe",
+          "size": 856
+        }
+      },
+      "rancher/k3s@sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb": {
+        "Id": "sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb",
+        "RepoTags": [
+          "rancher/k3s:v1.36.5-k3s1"
+        ],
+        "RepoDigests": [
+          "rancher/k3s@sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb"
+        ],
+        "Descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb",
+          "size": 2382
+        }
+      },
+      "binwiederhier/ntfy@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da": {
+        "Id": "sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da",
+        "RepoTags": [
+          "binwiederhier/ntfy:latest"
+        ],
+        "RepoDigests": [
+          "binwiederhier/ntfy@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da"
+        ],
+        "Descriptor": {
+          "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+          "digest": "sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da",
+          "size": 1411
+        }
+      },
+      "postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911": {
+        "Id": "sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+        "RepoTags": [
+          "postgres:18-alpine"
+        ],
+        "RepoDigests": [
+          "postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911"
+        ],
+        "Descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+          "size": 10293
+        }
+      }
+    },
+    "cachedAfter": {
+      "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe": {
+        "Id": "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe",
+        "RepoTags": [
+          "webdock-rust-storage-test:owned"
+        ],
+        "RepoDigests": [
+          "webdock-rust-storage-test@sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe"
+        ],
+        "Descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:60e7c44155bbcb84ec27c1f3d20997c12f6246e1d079a9a0225601b72c4c7bbe",
+          "size": 856
+        }
+      },
+      "rancher/k3s@sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb": {
+        "Id": "sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb",
+        "RepoTags": [
+          "rancher/k3s:v1.36.5-k3s1"
+        ],
+        "RepoDigests": [
+          "rancher/k3s@sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb"
+        ],
+        "Descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:057cfd5a9d51b89f1f0ee139c28d5d5fdd5aa7ddeac2742a0ba90c6dbc0329bb",
+          "size": 2382
+        }
+      },
+      "binwiederhier/ntfy@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da": {
+        "Id": "sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da",
+        "RepoTags": [
+          "binwiederhier/ntfy:latest"
+        ],
+        "RepoDigests": [
+          "binwiederhier/ntfy@sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da"
+        ],
+        "Descriptor": {
+          "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+          "digest": "sha256:6ef4b819f722fccdc036af611c4774cfdc2de821ab74fdd48bbf4c9d6f8973da",
+          "size": 1411
+        }
+      },
+      "postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911": {
+        "Id": "sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+        "RepoTags": [
+          "postgres:18-alpine"
+        ],
+        "RepoDigests": [
+          "postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911"
+        ],
+        "Descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911",
+          "size": 10293
+        }
+      }
+    },
+    "all4FullMetadataEqual": true,
+    "all21DiagnosticsVerified": true,
+    "diagnosticFiles": {
+      "containerd-import.log": {
+        "bytes": 1162,
+        "sha256": "a055ce251d2aafb5ba6789f176e10493922e5b59db0bb2f46cbb9e7074da4eae"
+      },
+      "engine-error": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "engine-info": {
+        "bytes": 1216,
+        "sha256": "3c32f0a237b01c4d063defb96428b1892ded6ac58a447a313ef3d28d0b768ae6"
+      },
+      "engine.log": {
+        "bytes": 17541,
+        "sha256": "abd0c001e6e4bb6ce18e6bcb0f056e68737ec9506a5a4e75b7774904fa3d9a9d"
+      },
+      "image-tag.log": {
+        "bytes": 105,
+        "sha256": "73994152ea980c96c6667ee0d65fda12d55227873767c794ade4b5ad7d39a90a"
+      },
+      "import.log": {
+        "bytes": 340,
+        "sha256": "f509bd37a55f1ea7c092bc729e4c0c46c0a7c12a947a27ffc7a9198890e4f631"
+      },
+      "k3s.log": {
+        "bytes": 83505,
+        "sha256": "e45f1530608de6314aa51b943ea5a6f2a8e4c369c9388dfd187fd407c1c97090"
+      },
+      "kubectl-error": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native-source-c6ab4893eec2464cbb23a21347786f9b/agent-first.stderr.json": {
+        "bytes": 317,
+        "sha256": "8b4b8fff55ce8ce18df2979b885a13f14edfd4748f2660c6be72125a658c5cb3"
+      },
+      "native-source-c6ab4893eec2464cbb23a21347786f9b/agent-first.stdout.json": {
+        "bytes": 317,
+        "sha256": "8b4b8fff55ce8ce18df2979b885a13f14edfd4748f2660c6be72125a658c5cb3"
+      },
+      "native-source-c6ab4893eec2464cbb23a21347786f9b/receipt.json": {
+        "bytes": 2079,
+        "sha256": "f587164dd4392bbb0c17913cdbd17282fe05c2424fe7176c42ac82ed79f915c5"
+      },
+      "native-source-c6ab4893eec2464cbb23a21347786f9b/storage.stderr.json": {
+        "bytes": 317,
+        "sha256": "8b4b8fff55ce8ce18df2979b885a13f14edfd4748f2660c6be72125a658c5cb3"
+      },
+      "native-source-c6ab4893eec2464cbb23a21347786f9b/storage.stdout.json": {
+        "bytes": 317,
+        "sha256": "8b4b8fff55ce8ce18df2979b885a13f14edfd4748f2660c6be72125a658c5cb3"
+      },
+      "node-wait.log": {
+        "bytes": 32,
+        "sha256": "58eeadc783f8dcac5b8f09e8cffb097c9d768fc4eec420773a279824c7bffdb2"
+      },
+      "nodes.json": {
+        "bytes": 5710,
+        "sha256": "043edfec93829205935ba43ac2b329158f685c7921214e02b50684380235c1b8"
+      },
+      "postgres-error": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "postgres-result": {
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      "preflight.log": {
+        "bytes": 7365,
+        "sha256": "ec2daff0d96bcdfcff113706e0893eb4617a2f842f5d0854968296c5f8923462"
+      },
+      "server-help.log": {
+        "bytes": 20136,
+        "sha256": "abf9536834913fa7fe0509ab5e552898688b5b4ccef62b953132114f30588f00"
+      },
+      "stage": {
+        "bytes": 40,
+        "sha256": "6145f2151a02f6d7ae6faca2c913f23ab263bae2f14f76e7ec9272d4eaebe1c8"
+      },
+      "test.log": {
+        "bytes": 2110,
+        "sha256": "f1fe98797c6413bb5c0f08546cc42ed5aaaf2a92222dbf5e7d67328d6815bf3f"
+      }
+    },
+    "storageClosure": {
+      "ownedPoolPathScope": "/tmp/.tmptxl1as/pool",
+      "privateNamespaceRemovedWithOuterContainer": true,
+      "ownedParentCgroupAbsent": true,
+      "hostMountReferencesToOwnedScope": 0,
+      "loopDeviceCount": 10,
+      "unboundLoopDevices": 10,
+      "unreadableLoopEntries": 0,
+      "backingAssociationsBefore": 0,
+      "backingAssociationsAfter": 0,
+      "noRemainingLoopBackingAssociation": true,
+      "volumeCreationProven": false,
+      "exactCreatedUUIDOrTransientLoopReceipt": "not retained; no physical-volume qualification claim",
+      "loopProbeSHA256": "e5ceac53eb0515e072f82abb35bc57ffff4401fcbdb5675e80cd10ca612623d8",
+      "noLoopDetachOrForeignMutation": true
+    },
+    "remainingRuntimeObligations": [],
+    "recordingFailures": [],
+    "readonlyOnly": true
+  },
+  "evidence": {
+    "privateRun": ".runtime-test/recovery-admission-acada723f4f0",
+    "reportSHA256": "a97421c1a49ea95f4a07e7ebcdf7a4c6fb6b08e49297c08807e076c3192c7302",
+    "pinSHA256": "c160f636daa808f1cfc8c65bfeded05084d37373e4fbabeff7f2cf778b03d743",
+    "retentionManifestSHA256": "d96644c4df40de67dee2edd065e0c36457f4050f1009e0c3013837476d91e836",
+    "testSHA256": "f1fe98797c6413bb5c0f08546cc42ed5aaaf2a92222dbf5e7d67328d6815bf3f",
+    "sourceReceiptSHA256": "f587164dd4392bbb0c17913cdbd17282fe05c2424fe7176c42ac82ed79f915c5",
+    "independentClosureSHA256": "e00d7ba0b1f6b98cba987e6ac70314b5b90e331f15410a65c3dc84a7af6be033",
+    "cachedAfterSHA256": "4d486f1285bf2d992930476575b20f3653d71252e847f9e0524443e33dbf35e5"
+  },
+  "nextAuthorizedPrepOnly": "Static whitelisted completion-code diagnostic and exact pinned innerEngine digest metadata precondition; no speculative provider/image/verification change.",
+  "limits": "No persistent volume creation/SourceReady/full54/Mail/SMTP/restore/RPO/RTO qualification. Historicalfailures unchanged. PCkeptON."
+}

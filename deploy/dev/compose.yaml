@@ -1,0 +1,79 @@
+# Local development database for the root Tiltfile. Loopback only; credentials are generated in .dev-local/.
+name: webdock-dev
+services:
+  postgres:
+    image: postgres:18-alpine
+    env_file: [../../.dev-local/postgres.env]
+    environment:
+      POSTGRES_DB: webdock
+    ports: ['127.0.0.1:${WEBDOCK_DEV_POSTGRES_PORT:-55440}:5432']
+    volumes: [postgres:/var/lib/postgresql]
+    healthcheck:
+      test: [CMD, pg_isready, -U, postgres, -d, webdock]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  # Shared customer database server for the postgres plugin. Customer databases only, never platform data.
+  shared-postgres:
+    image: postgres:18-alpine
+    env_file: [../../.dev-local/shared-postgres.env]
+    ports: ['127.0.0.1:${WEBDOCK_DEV_SHARED_POSTGRES_PORT:-55441}:5432']
+    volumes: [shared-postgres:/var/lib/postgresql]
+    healthcheck:
+      test: [CMD, pg_isready, -U, postgres]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  # Local Kubernetes for plugin workloads: k3s with its bundled Traefik. Apps answer on
+  # http://<name>.apps.localhost:55480. `local.mjs kubeconfig` copies the admin config to .dev-local/k3s.
+  # A fixed node name keeps pods and local volumes on the same node when the container is recreated.
+  # metrics-server comes from webdock-metrics-server.yaml, configured for the container's kubelet.
+  k3s:
+    image: rancher/k3s:v1.36.5-k3s1
+    command: [server, --node-name=webdock-dev, --disable=metrics-server, --tls-san=127.0.0.1, --write-kubeconfig-mode=600]
+    privileged: true
+    tmpfs: [/run, /var/run]
+    volumes:
+      - k3s:/var/lib/rancher/k3s
+      - ./k3s/cnpg.yaml:/var/lib/rancher/k3s/server/manifests/webdock-cnpg.yaml:ro
+      - ./k3s/traefik.yaml:/var/lib/rancher/k3s/server/manifests/webdock-traefik.yaml:ro
+      - ./k3s/cert-manager.yaml:/var/lib/rancher/k3s/server/manifests/webdock-cert-manager.yaml:ro
+      - ./k3s/metrics-server.yaml:/var/lib/rancher/k3s/server/manifests/webdock-metrics-server.yaml:ro
+    ports:
+      - '127.0.0.1:${WEBDOCK_DEV_K3S_API_PORT:-56443}:6443'
+      - '127.0.0.1:${WEBDOCK_DEV_K3S_HTTP_PORT:-55480}:80'
+      - '127.0.0.1:${WEBDOCK_DEV_K3S_HTTPS_PORT:-55481}:443'
+      - '127.0.0.1:${WEBDOCK_DEV_K3S_POSTGRES_PORT:-55442}:5432'
+      - '127.0.0.1:${WEBDOCK_DEV_K3S_IMAPS_PORT:-55993}:993'
+      - '127.0.0.1:${WEBDOCK_DEV_K3S_SUBMISSIONS_PORT:-55465}:465'
+  # Local OCI registry for plugin images; plain HTTP is accepted by Docker only on loopback.
+  registry:
+    image: registry:3
+    ports: ['127.0.0.1:${WEBDOCK_DEV_REGISTRY_PORT:-5005}:5000']
+    volumes: [registry:/var/lib/registry]
+  # Catch-all for account mail from Core (activation, invitations); nothing leaves this machine.
+  mailpit:
+    image: axllent/mailpit:v1.27.11
+    ports: ['127.0.0.1:${WEBDOCK_DEV_SMTP_PORT:-55025}:1025', '127.0.0.1:${WEBDOCK_DEV_MAILPIT_PORT:-55026}:8025']
+  minio:
+    image: webdock-dev-minio:local
+    build: {context: ./minio}
+    pull_policy: build
+    env_file: [../../.dev-local/minio.env]
+    environment:
+      MINIO_SITE_REGION: us-east-1
+      MINIO_BROWSER_REDIRECT_URL: 'http://127.0.0.1:${WEBDOCK_DEV_MINIO_CONSOLE_PORT:-55901}'
+    command: [server, /data, --address, ':9000', --console-address, ':9001']
+    ports: ['127.0.0.1:${WEBDOCK_DEV_S3_PORT:-55900}:9000', '127.0.0.1:${WEBDOCK_DEV_MINIO_CONSOLE_PORT:-55901}:9001']
+    volumes: [minio:/data]
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, http://127.0.0.1:9000/minio/health/ready]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+volumes:
+  k3s:
+  postgres:
+  shared-postgres:
+  registry:
+  minio:

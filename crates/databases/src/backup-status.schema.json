@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Native PostgreSQL backup status",
+  "type": "object",
+  "properties": {
+    "status": {
+      "enum": [
+        "not-configured",
+        "configuration-pending",
+        "configured",
+        "suspension-pending",
+        "suspended"
+      ]
+    },
+    "policyID": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,18}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "observedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "walEnabled": {
+      "type": "boolean"
+    },
+    "retentionDelete": {
+      "type": "boolean"
+    },
+    "observedControls": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/controls"
+        }
+      ]
+    },
+    "lastSuccessAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "recoverableUntil": {
+      "type": "null"
+    },
+    "lastRestoreTestAt": {
+      "type": "null"
+    },
+    "publicRecoveryAvailable": {
+      "const": false
+    },
+    "disabledReason": {
+      "const": "production-qualification-required"
+    },
+    "rpoSeconds": {
+      "type": "null"
+    },
+    "rtoSeconds": {
+      "type": "null"
+    }
+  },
+  "required": [
+    "status",
+    "observedControls",
+    "lastSuccessAt",
+    "recoverableUntil",
+    "lastRestoreTestAt",
+    "publicRecoveryAvailable",
+    "disabledReason",
+    "rpoSeconds",
+    "rtoSeconds"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "controls": {
+      "type": "object",
+      "properties": {
+        "schedule": {
+          "type": "string",
+          "pattern": "^0 [0-5]?[0-9] (?:[01]?[0-9]|2[0-3]) \\* \\* \\*$"
+        },
+        "walEnabled": {
+          "type": "boolean"
+        },
+        "retentionDelete": {
+          "type": "boolean"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3650
+        },
+        "scheduledBackupResourceVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "clusterResourceVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "objectStoreUID": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "objectStoreResourceVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "schedule",
+        "walEnabled",
+        "retentionDelete",
+        "retentionDays",
+        "scheduledBackupResourceVersion",
+        "clusterResourceVersion",
+        "objectStoreUID",
+        "objectStoreResourceVersion"
+      ]
+    }
+  }
+}

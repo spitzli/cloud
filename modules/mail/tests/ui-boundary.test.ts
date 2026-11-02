@@ -18,7 +18,7 @@ test("Mail UI depends on explicit actions/data/shell ports, never application im
   }
   const actions = await readFile(
     new URL(
-      "../../../apps/console/src/components/mail/product-actions.ts",
+      "../../../legacy/console/src/components/mail/product-actions.ts",
       import.meta.url,
     ),
     "utf8",

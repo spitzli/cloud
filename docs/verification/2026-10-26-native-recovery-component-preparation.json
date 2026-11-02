@@ -1,0 +1,260 @@
+{
+  "status": "WIP; cleanup guards under independent readonly review/execution held; NOT review54r2 ready/finalfreeze/full acceptance",
+  "createdUTC": "2026-10-26T00:22:12.379638+00:00",
+  "currentSHA256": {
+    "Cargo.lock": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+    "crates/persistence/migrations/0054_source_recovery_fences.sql": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+    "crates/persistence/migrations/0055_native_operator_allowances.sql": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de",
+    "crates/control-plane/src/plugin_bootstrap/agent.rs": "757f723e1b87a4b9ecee0dc002c345149815efc4f2152ca76605bfe11a359459",
+    "crates/control-plane/tests/support/plugin_builtins.rs": "6edf2cfe9db3d9318558ce9ec1ac55084bba85aec8428a19ceed3f86c81a4c00",
+    "crates/control-plane/tests/support/recovery_admission.rs": "f947608e790449fa1db29d5d369fe355984dc989c7e8b34c4ead48ab7c8f485a",
+    "crates/hosting/src/native_provider.rs": "abd02dee52155100d5ea7e273ca23ffd5fab28a66868d89d442e2f547f89d086",
+    "crates/hosting/src/management.rs": "e9a6748778fa6892b9582518096e4964b3c8907a2115081344a529aa2e3059e5",
+    "crates/hosting/src/capacity.rs": "b530fcaa8d8a936d3c597f3a90f678ca49c50b5b161262204ff7f44b78b00c84",
+    "crates/hosting/src/service.rs": "456a2d2e612e8884211c0c226bd6d31854d6e7c790f81e95b03f1b26452f0110",
+    "crates/hosting/src/recovery_reservations.rs": "31b6fb0c732f820dce9bf393b1a8f95fee7520031f87ec5f197a72a26e8436ad",
+    "tools/tests/recovery_fixture_custody.py": "c5742ea136e08ae95ef48e5ffa0da07783cf4ed0a7e58ec9860dea79ad82ccdd",
+    "tools/tests/test_recovery_fixture_custody.py": "1e86182bbdc62ed469f04c745f26faea930cda7bf5dd9bc33143b46fc6c621cb",
+    "tools/tests/recovery-admission-component.py": "113b63e3781ef117a8ce95de6edd2da2d24763a3d65dfb1eccfbbbc055c52f8d"
+  },
+  "coreAccountingChange": "Conservatively charge canonical cluster volume demand, already including retained/uncertain legacy and recovery demand, against each recovery pool; do not add recovery twice. Actual Core races pending.",
+  "observedChecks": {
+    "poolRegression": {
+      "redFailed": 2,
+      "greenPassed": 2,
+      "command": "cargo test --offline --locked -j2 -p webdock-hosting --lib pool_capacity_tests"
+    },
+    "contracts": {
+      "exitCode": 0
+    },
+    "latestStrictCoreLibBootstrapClippy": {
+      "exitCode": 0,
+      "seconds": 1.63
+    },
+    "latestCoreBootstrapTestCompileBeforeGraphHold": {
+      "exitCode": 0,
+      "seconds": 17.5
+    }
+  },
+  "attempts": {
+    "c8ec04625fbe": {
+      "scope": "genuine Core/native source admission component, not matched Mail/restore/RTO acceptance",
+      "exitCode": null,
+      "passed": false,
+      "stage": null,
+      "cleanup": {
+        "exactOwnedContainersAbsent": true,
+        "exactAnonymousVolumesAbsent": 4,
+        "ownedComponentImageRemoved": false,
+        "ownedPauseReferenceRemoved": true,
+        "existingImageIDsUnchanged": true,
+        "existingServicesChanged": false
+      },
+      "sourceSnapshot": null,
+      "imageID": null
+    },
+    "61fd9a29b9ab": {
+      "scope": "genuine Core/native source admission component, not matched Mail/restore/RTO acceptance",
+      "exitCode": null,
+      "passed": false,
+      "stage": null,
+      "cleanup": {
+        "exactOwnedContainersAbsent": true,
+        "exactAnonymousVolumesAbsent": 4,
+        "ownedComponentImageRemoved": false,
+        "ownedPauseReferenceRemoved": true,
+        "existingImageIDsUnchanged": true,
+        "existingServicesChanged": false
+      },
+      "sourceSnapshot": null,
+      "imageID": null
+    },
+    "c3eb22337c6b": {
+      "scope": "genuine Core/native source admission component, not matched Mail/restore/RTO acceptance",
+      "exitCode": 1,
+      "passed": false,
+      "stage": null,
+      "cleanup": {
+        "exactOwnedContainersAbsent": true,
+        "exactAnonymousVolumesAbsent": 4,
+        "ownedComponentImageRemoved": true,
+        "ownedPauseReferenceRemoved": true,
+        "existingImageIDsUnchanged": true,
+        "existingServicesChanged": false
+      },
+      "sourceSnapshot": null,
+      "imageID": "sha256:9803c3bc85ccdd4a3d54be954d59ed01094c764ae1fab3236bc10cba2f3f095f"
+    },
+    "509c749df668": {
+      "scope": "genuine Core/native source admission component, not matched Mail/restore/RTO acceptance",
+      "exitCode": 1,
+      "passed": false,
+      "stage": null,
+      "cleanup": {
+        "exactOwnedContainersAbsent": true,
+        "exactAnonymousVolumesAbsent": 4,
+        "ownedComponentImageRemoved": true,
+        "ownedPauseReferenceRemoved": true,
+        "existingImageIDsUnchanged": true,
+        "existingServicesChanged": false
+      },
+      "sourceSnapshot": "a94846410f0ca93040abe730d24ff4490a070bc886ed56d46af68803c466334b",
+      "imageID": "sha256:00cc24cc864a8d973c107f12c446342abe008525949181590530d189a7c672e1"
+    },
+    "c9894bf7c0d7": {
+      "scope": "minimal nested-tool preflight only; NO Core/PG/Agent admission execution",
+      "exitCode": 1,
+      "passed": false,
+      "stage": null,
+      "cleanup": {
+        "exactOwnedContainersAbsent": true,
+        "exactAnonymousVolumesAbsent": 4,
+        "ownedComponentImageRemoved": true,
+        "ownedPauseReferenceRemoved": true,
+        "existingImageIDsUnchanged": true,
+        "existingServicesChanged": false,
+        "ownedDiagnosticVolumeAbsent": true
+      },
+      "sourceSnapshot": "63f6f356efc709e04cea1360890e8480b9947d6882a6bf239dd8cb30c52bd394",
+      "imageID": "sha256:1c050d039c92323cd3173f23f0876d66724bc2e1578482c37ac73ffa443e8f97"
+    },
+    "7f91844a715a": {
+      "scope": "minimal nested-tool preflight only; NO Core/PG/Agent admission execution",
+      "exitCode": 1,
+      "passed": false,
+      "stage": "k3s_node_readiness",
+      "cleanup": {
+        "exactOwnedContainersAbsent": true,
+        "exactAnonymousVolumesAbsent": 4,
+        "ownedComponentImageRemoved": true,
+        "ownedPauseReferenceRemoved": true,
+        "existingImageIDsUnchanged": true,
+        "existingServicesChanged": false,
+        "ownedDiagnosticVolumeAbsent": true
+      },
+      "sourceSnapshot": "bc4c31cb960d7007a263e211a52036fffa64fd5dbbb78260d43e0f58582e91f1",
+      "imageID": "sha256:ce3d5b9a2f170c1f0139f55737e76152b9496b6a3cf5125f8c5515091e239d59"
+    },
+    "4696d5d6cc50": {
+      "scope": "minimal nested-tool preflight only; NO Core/PG/Agent admission execution",
+      "exitCode": 1,
+      "passed": false,
+      "stage": "k3s_node_readiness",
+      "cleanup": {
+        "exactOwnedContainersAbsent": true,
+        "exactAnonymousVolumesAbsent": 4,
+        "ownedComponentImageRemoved": true,
+        "ownedPauseReferenceRemoved": true,
+        "existingImageIDsUnchanged": true,
+        "existingServicesChanged": false,
+        "ownedDiagnosticVolumeAbsent": true
+      },
+      "sourceSnapshot": "491b16b065219c0d0e123a23d9af7efd759e4189262d2d9bb1b0d97d5b122e95",
+      "imageID": "sha256:8d520cb7f762af7c8d992056cdf64f1586be92fea9fb3b597b7af3d2cba81d00"
+    },
+    "69755f688cd5": {
+      "scope": "minimal nested-tool preflight only; NO Core/PG/Agent admission execution",
+      "exitCode": 0,
+      "passed": true,
+      "stage": "nested_tool_boundary_ready",
+      "cleanup": {
+        "exactOwnedContainersAbsent": true,
+        "exactAnonymousVolumesAbsent": 4,
+        "ownedComponentImageRemoved": true,
+        "ownedPauseReferenceRemoved": true,
+        "existingImageIDsUnchanged": true,
+        "existingServicesChanged": false,
+        "ownedDiagnosticVolumeAbsent": true,
+        "ownedHostCgroupAbsent": true
+      },
+      "sourceSnapshot": "5df4e9e71728284b8fe4ed9153e1fb8ffcf6c86966ea30b46282001f8a1e2cbd",
+      "imageID": "sha256:7f776fd84f813456625b505d216335233bcde74284f5358c1a44c676aa9a51fe"
+    },
+    "4a1226980d22": {
+      "scope": "minimal nested-tool preflight including isolated PG connectivity; NO Core/Agent admission execution",
+      "exitCode": 125,
+      "passed": false,
+      "stage": "private_postgres_connectivity",
+      "cleanup": {
+        "exactOwnedContainersAbsent": true,
+        "exactAnonymousVolumesAbsent": 4,
+        "ownedComponentImageRemoved": true,
+        "ownedPauseReferenceRemoved": true,
+        "existingImageIDsUnchanged": true,
+        "existingServicesChanged": false,
+        "ownedDiagnosticVolumeAbsent": true,
+        "ownedHostCgroupAbsent": true
+      },
+      "sourceSnapshot": "4575b7275028cc80f8f71384711bdab7bec0fe76251ebec5865bcb5eed228424",
+      "imageID": "sha256:7c57d73d2b3aa646b6f05f2316380396ee1212758ab44ea897441642d859edc0"
+    }
+  },
+  "limits": [
+    "No actual Core/native source/admitted recovery/physical signed grants/restore/SMTP/CE acceptance has run in this preparation turn.",
+    "Native ntfy recipe is Docker-source-only; optional reviewed local Docker offline enrollment implemented/pure tested. Canonical provider mapping approved but still at RED baseline pending genuine API repro.",
+    "Existing canonical native k3s ceilings must keep counting all native demand and Docker-specific ceilings additionally count actual Docker; SQL/RLS remains frozen.",
+    "Own runtime-image tmpfs requires exec; helper application/PG data ext4 stays noexec. No host cgroup/sysctl/mount-propagation/securityfs expansion.",
+    "69755 preflight establishes tools/private cgroup/node/import/socket only. Import-only0ca succeeds; aca adds actual canonical names and dynamic private bind visibility but cleanup failure makes whole attempt FAIL.",
+    "Kube-proxy disabled: no ClusterIP/service-routing acceptance.",
+    "All12 r1 responses still require genuine admitted positive/races/signed capacity/physical PG+CE/SMTP/ntfy source-unavailable proof and NEW independent review54r2 before final54freeze."
+  ],
+  "cleanup": "All listed attempts report exact owned resources removed; no live owned provider/compiler fixture at this checkpoint; existing MinIO/Kind/k3s/services and protected source files untouched.",
+  "updatedUTC": "2026-10-26T01:59:05.708715+00:00",
+  "currentObservedChecks": {
+    "offlineLocalEnrollment": {
+      "passed": 3,
+      "seconds": 11.81,
+      "scope": "pure actual serde/default reviewed bytes/checksum/certificate validation/FIFO no-read; no PG enrollment acceptance yet"
+    },
+    "strictHostingCoreLibBootstrapClippy": {
+      "exitCode": 0,
+      "seconds": 9.67
+    },
+    "canonicalProviderRegression": {
+      "failed": 2,
+      "status": "intentional test-first RED; real API CHECK repro and final behavior fix pending"
+    },
+    "cleanupGuardRegression": {
+      "initialRedFailed": 4,
+      "latestGreenPassed": 7,
+      "executedImages": false
+    },
+    "newStandaloneMailBuild": {
+      "exitCode": 0,
+      "seconds": 3.16,
+      "pinDirectory": ".runtime-test/recovery-mail-artifact-32175bec67a1",
+      "qualification": "not signed image/runtime source acceptance"
+    }
+  },
+  "executionHold": {
+    "reason": "explicit Root hold pending independent cleanup guard review",
+    "filesFrozen": {
+      "tools/tests/recovery_fixture_custody.py": "c5742ea136e08ae95ef48e5ffa0da07783cf4ed0a7e58ec9860dea79ad82ccdd",
+      "tools/tests/test_recovery_fixture_custody.py": "1e86182bbdc62ed469f04c745f26faea930cda7bf5dd9bc33143b46fc6c621cb",
+      "tools/tests/recovery-admission-component.py": "113b63e3781ef117a8ce95de6edd2da2d24763a3d65dfb1eccfbbbc055c52f8d"
+    },
+    "liveOwnedFixture": false
+  },
+  "lateAttemptIntegrity": {
+    "aca7967d86be": {
+      "overall": "FAIL despite functional0, compensation cleanup subsequently closed",
+      "originalFailedCommand": [
+        "docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "image",
+        "rm",
+        "binwiederhier/ntfy:latest"
+      ],
+      "rawOriginalStderr": "unavailable; old helper discarded it",
+      "priorFullAliasHistory": "not captured; no no-intermediate-mutation claim",
+      "currentRawNtfyConfigID": "sha256:f22fb212dc2e08a70135153566666ccd279eb7c12313cb7424ace76264147762",
+      "cachedCurrentTagAndDigest": "verified equal recorded root/platform/config chain and Root readonly inspection; no repair/retag/pull",
+      "closurePath": ".runtime-test/recovery-admission-aca7967d86be/cleanup-recovery.json",
+      "independentRootRecords": [
+        "docs/verification/2026-10-26-recovery-fixture-cleanup-integrity.json",
+        "docs/verification/2026-10-26-recovery-fixture-cleanup-closure.json"
+      ]
+    }
+  }
+}

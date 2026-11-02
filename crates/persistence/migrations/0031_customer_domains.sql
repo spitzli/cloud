@@ -1,0 +1,1 @@
+../../access/migrations/0004_customer_domains.sql

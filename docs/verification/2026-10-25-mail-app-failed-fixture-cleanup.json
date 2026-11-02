@@ -1,0 +1,22 @@
+{
+  "scope": "three failed attempts of tools/tests/mail-application-recovery.py; unique wdrestore producer, exact GetObject-only fixture policy matched before removal",
+  "principals": [
+    {
+      "principalSHA256": "20783bdc1eef6681713c684a3fdc5a80bbba124fb5262f1175dc78e6ecce230e",
+      "policyGetOnly": true,
+      "exactRemoved": true
+    },
+    {
+      "principalSHA256": "8532c685d56f8585474a13943100866194cb6814e858f5f5942540f3e94f75d1",
+      "policyGetOnly": true,
+      "exactRemoved": true
+    },
+    {
+      "principalSHA256": "ee5bba32a61ad53d3b75ac92d8f570823d4530b7302b9c066e7a76ff9c77af69",
+      "policyGetOnly": true,
+      "exactRemoved": true
+    }
+  ],
+  "verifiedAbsent": true,
+  "activeFixtureExcluded": true
+}

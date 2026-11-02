@@ -1,0 +1,38 @@
+{
+  "scope": "Existing read-only inventory SQL on fresh empty compiled schema53; no user/session/domain rows fabricated; no provider listing or object-byte qualification",
+  "migratorSHA256": "3e0a67c28f47948a35b1c0a730775c769d10e8d4041b39363d1eb276e0411523",
+  "sqlSHA256": "66f685ecb65a0c9b05f085e295642ce915cacadfa6f7d22c46cfaa57c7e29997",
+  "runtimeRolesDenied": [
+    "webdock_auth_runtime",
+    "webdock_worker_runtime"
+  ],
+  "priorAttempt": {
+    "scope": "Existing read-only inventory SQL on fresh empty compiled schema53; no user/session/domain rows fabricated; no provider listing or object-byte qualification",
+    "migratorSHA256": "3e0a67c28f47948a35b1c0a730775c769d10e8d4041b39363d1eb276e0411523",
+    "sqlSHA256": "66f685ecb65a0c9b05f085e295642ce915cacadfa6f7d22c46cfaa57c7e29997",
+    "runtimeRolesDenied": [],
+    "cleanup": {
+      "containerID": "5333f85f196553932ce69380a716747abd00f48fb535c5190b7841daec846042",
+      "containerAbsent": true,
+      "volumeIDs": [],
+      "volumesAbsent": true,
+      "privateDirectoryAbsent": true
+    },
+    "status": "Fixture prerequisite failed before migration; DATABASE_RLS_SECRET omitted by one-off harness, confirmed required in migrator source; no SQL success claimed"
+  },
+  "schemaMaxVersion": 53,
+  "privilegedReadOnlySnapshot": {
+    "version": 1,
+    "builds": 0,
+    "references": 0,
+    "capturedAt": 1792968874
+  },
+  "status": "SQL schema/privileged-read/RLS-denial checks passed; empty-data scope only",
+  "cleanup": {
+    "containerID": "4fc2352ad5acfe2980e8ba56330381f69e923d4b7f80b301e31c6024c79d954d",
+    "containerAbsent": true,
+    "volumeIDs": [],
+    "volumesAbsent": true,
+    "privateDirectoryAbsent": true
+  }
+}

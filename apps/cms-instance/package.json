@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "24.x"
+    "bun": ">=1.4.3"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && node build-migration.mjs",
-    "start": "next start",
-    "test": "node --import tsx --test tests/*.test.ts",
-    "payload": "node ../../node_modules/payload/bin.js",
-    "migrate": "node --import tsx src/migrate.ts"
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build && bun build-migration.mjs",
+    "start": "bun --bun next start",
+    "test": "bun test --isolate ./tests/*.test.ts",
+    "payload": "bun ../../node_modules/payload/bin.js --disable-transpile",
+    "migrate": "bun src/migrate.ts"
   },
   "dependencies": {
     "next": "16.3.8",
@@ -21,6 +21,7 @@
     "payload": "4.0.0-canary.37",
     "@payloadcms/next": "4.0.0-canary.37",
     "@payloadcms/db-postgres": "4.0.0-canary.37",
+    "@payloadcms/storage-s3": "4.0.0-canary.37",
     "sharp": "0.35.5",
     "graphql": "16.14.2",
     "@webdock/cms-ui": "*",
@@ -33,7 +34,6 @@
   },
   "devDependencies": {
     "typescript": "^5",
-    "tsx": "^4.23.15",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

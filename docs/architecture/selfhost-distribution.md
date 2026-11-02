@@ -24,7 +24,7 @@ The build context currently includes the source workspaces in the API image, inc
 
 ## Verification gates
 
-Run `python3 tools/release/check-charts.py` for positive and negative chart/schema assertions and `node --test tools/release/manifest.test.mjs` for integrity assertions. Full image builds and isolated fresh/existing-database migration tests must pass before release. A schema-valid chart with default-deny networking is not an operational deployment. Live TLS ingress, provider credentials, SMTP routing, actual runner EU location, release signatures and remote registry publishing require separate operational evidence.
+Run `python3 tools/release/check-charts.py` for positive and negative chart/schema assertions and `bun test tools/release/manifest.test.mjs` for integrity assertions. Full image builds and isolated fresh/existing-database migration tests must pass before release. A schema-valid chart with default-deny networking is not an operational deployment. Live TLS ingress, provider credentials, SMTP routing, actual runner EU location, release signatures and remote registry publishing require separate operational evidence.
 
 ## Local build evidence
 

@@ -1,30 +1,31 @@
 ---
 title: "Console and workspaces"
-description: "Understand workspaces, projects and resources in Webdock Console."
+description: "Find your workspace, projects, connections and resource usage."
 ---
 
-Open [Webdock Console](https://console.webdock.dev) to manage your resources. Console is the current browser application; older documents and integration URLs may still use Studio.
+Open [Spitzli Cloud Console](https://console.spitzli.cloud) and select your workspace. The main website is [spitzli.cloud](https://spitzli.cloud).
 
-## Resource hierarchy
+## Find the right resource
 
-| Concept | What it represents |
+| Resource | What it represents |
 | --- | --- |
-| Workspace | The customer account, members, enabled services and allowances |
-| Project | A grouping of related resources belonging to a customer |
-| Website | An independently running website with its own CMS and content |
-| Application | A managed workload with configuration, runtime state and operations |
-| Database | A provisioned database service associated with a project |
+| Workspace | Your customer account, members, enabled services and limits |
+| Project | A group of related resources within a workspace |
+| Application | A running workload with configuration, deployments and logs |
+| Website | An independent website with its own content and CMS |
+| Database service | An existing database with its own access and lifecycle |
+| Connection | Permission to access a provider account, such as Neon |
 
-A project is an organizational record. Provisioning a website, application or database is a separate action.
+Creating a project does not provision a database or application. Connecting Neon lists authorized projects; it does not deploy a database.
 
-## Customer and operator views
+Use **Connections** to connect your own Neon account, **Plan and usage** to review workspace limits, **Domains** for domain management and **Members** for permitted membership changes. Product entries depend on your workspace's enabled services.
 
-Customers see their assigned workspaces and resources. Platform operators also manage customers, infrastructure, plans, integrations and operations. Workspace administrator access does not grant platform operator access.
+## Customer and operator access
 
-Operators can enter a time-limited, read-only customer view. It preserves the operator identity and blocks changes, purchases and payment management. Leave that view before performing an authorized administrative change.
+Customers see their assigned workspaces and resources. Platform operators also manage infrastructure, customers and service permissions. An operator's read-only customer preview blocks changes. If an operator is explicitly acting as a customer owner, the displayed customer permissions apply; this is a separate mode.
 
-## Operation state
+## Follow an action to completion
 
-An accepted action can start an asynchronous operation. Open its details to see whether it finished. A queued restart or deployment is not evidence that the application is healthy.
+An accepted action may create an operation. Open its details and wait for the final result, then check the resource itself. A queued restart or successful build does not establish that an application is serving traffic.
 
-<Tip>Keep resource and operation IDs when reporting a failure. Do not include API keys or private connection strings.</Tip>
+<Tip>When reporting a problem, include the resource and operation IDs. Remove API keys, cookies and private connection strings.</Tip>

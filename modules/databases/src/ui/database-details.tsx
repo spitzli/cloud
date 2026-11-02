@@ -1,13 +1,11 @@
 "use client";
 import * as React from "react";
-import type { ComponentProps } from "react";
 import { resourceScope as hostingUIScope } from "@webdock/console-kit/resource-scope";
 import { useState, useTransition } from "react";
 import { useI18n } from "@webdock/i18n/react";
 import type { DatabaseCredentials } from "../ui-types";
 import { useDatabaseActions } from "./actions";
-function DatabaseCredentialPanelState({ databaseID }: { databaseID: string }) {
-  const { revealDatabaseCredentials } = useDatabaseActions();
+export function DatabaseCredentialPanelWithActions({ databaseID, revealDatabaseCredentials }: { databaseID: string; revealDatabaseCredentials: ReturnType<typeof useDatabaseActions>["revealDatabaseCredentials"] }): React.JSX.Element {
 
   const { t, error } = useI18n();
   const [value, setValue] = useState<DatabaseCredentials | null>(null);
@@ -126,9 +124,8 @@ function DatabaseCredentialPanelState({ databaseID }: { databaseID: string }) {
 }
 
 export function DatabaseCredentialPanel(
-  props: ComponentProps<typeof DatabaseCredentialPanelState>,
+  props: { databaseID: string },
 ) {
-  return (
-    <DatabaseCredentialPanelState key={hostingUIScope(props)} {...props} />
-  );
+  const { revealDatabaseCredentials } = useDatabaseActions();
+  return <DatabaseCredentialPanelWithActions key={hostingUIScope(props)} {...props} revealDatabaseCredentials={revealDatabaseCredentials} />;
 }

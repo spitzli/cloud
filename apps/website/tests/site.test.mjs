@@ -6,14 +6,16 @@ test('Landing page serves English content, matching FAQ data and SEO assets', as
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /<html[^>]+lang="en"/);
-  assert.match(html, /<link rel="canonical" href="https:\/\/webdock.dev"/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/spitzli\.cloud\/?"/);
   assert.match(html, /href="https:\/\/spitzli.dev"/);
-  assert.match(html, /<a[^>]+href="https:\/\/console\.webdock\.dev\/waitlist"[^>]*>Waitlist/);
-  assert.match(html, /<a[^>]+href="https:\/\/console\.webdock\.dev\/login"[^>]*>Login/);
-  assert.doesNotMatch(html, />Register|>Join the waitlist/);
+  assert.match(html, /<a[^>]+href="https:\/\/console\.spitzli\.cloud\/waitlist"[^>]*>Waitlist/);
+  assert.match(html, /<a[^>]+href="https:\/\/console\.spitzli\.cloud"[^>]*>Login/);
+  assert.doesNotMatch(html, />Register/);
+  assert.match(html, /class="button" href="https:\/\/console\.spitzli\.cloud\/waitlist">Join the waitlist/);
+  assert.doesNotMatch(html, /moon\.webdock\.dev|id="managed-analytics"/);
   assert.doesNotMatch(html, /class="spitzli-section"|Meet Spitzli|A human on your side/);
   assert.match(html, /Access by invitation only\./);
-  assert.doesNotMatch(html, /href="https:\/\/accounts\.webdock\.dev\/sign-up"/);
+  assert.doesNotMatch(html, /href="https:\/\/accounts\.spitzli\.cloud\/sign-up"/);
   assert.match(html, /href="mailto:[^"]+"/);
   assert.equal((html.match(/<h1[ >]/g) || []).length, 1);
   const data = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);
@@ -26,10 +28,10 @@ test('Landing page serves English content, matching FAQ data and SEO assets', as
     assert.ok(visibleFAQ.includes(escapeHTML(item.name)));
     assert.ok(visibleFAQ.includes(escapeHTML(item.acceptedAnswer.text)));
   }
-  for (const path of ['/robots.txt', '/sitemap.xml', '/icon.svg', '/og.png', '/favicon.ico']) {
+  for (const path of ['/robots.txt', '/sitemap.xml', '/icon.svg', '/og', '/favicon.ico']) {
     const asset = await fetch(origin + path);
     assert.equal(asset.status, 200, path);
     assert.ok((await asset.arrayBuffer()).byteLength > 30, path);
   }
-  assert.match(await (await fetch(origin + '/sitemap.xml')).text(), /https:\/\/webdock.dev/);
+  assert.match(await (await fetch(origin + '/sitemap.xml')).text(), /https:\/\/spitzli.cloud/);
 });

@@ -1,0 +1,26 @@
+{
+  "scope": "Actual local pinned Stalwart CE management wire calibration only",
+  "image": "webdock.local/mail-stalwart@sha256:09460db6473d8d7103836c806603096bc6d9b59ad3d90ce8276d553e88e2c1ad",
+  "result": "PASS",
+  "steps": [
+    "bootstrap read/write",
+    "persistent configuration across process restart",
+    "real admin account setup",
+    "HTTP/IMAP/submission listeners",
+    "certificate and system settings",
+    "restart without temporary recovery administrator",
+    "old temporary credential HTTP401",
+    "permanent administrator Domain/get HTTP200"
+  ],
+  "receiptSHA256": "fbfb62880a6aec88f5bcdc08911a2dd620888ea8968ed14a3760eabdcc324ffe",
+  "independentClosureSHA256": "0130b79381c26ecf1748a7fdca367f927bbbc79928eba0bf656efd045273325c",
+  "network": "none; HTTP over only own container loopback",
+  "actualCEAPI": true,
+  "actualPluginEngineConsumerQualified": false,
+  "actualCoreWorkloadAndKubernetesQualified": false,
+  "noCorePGProviderServices": true,
+  "noProductRebuild": true,
+  "privatePKIErased": true,
+  "cachedImageMetadataUnchanged": true,
+  "productionIncomingMailQualified": false
+}

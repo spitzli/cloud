@@ -14,11 +14,39 @@ playwright-report/
 .DS_Store
 *.pem
 # Generated from the pinned dependency by Auth prebuild/predev.
-apps/auth/public/vendor/scalar/
+legacy/auth/public/vendor/scalar/
 
 .core-build/
 
-apps/control-plane/dist-core/
+legacy/control-plane/dist-core/
 
 # Local test credentials, operator snapshots and verification caches.
 .cache/
+
+# Rust build output and disposable runtime verification state.
+/target/
+/.runtime-test/
+
+# Local Tilt development state (generated credentials and database bootstrap output).
+/.dev-local/
+
+# Process core dumps
+core.[0-9]*
+
+# Python bytecode is local cache, never source.
+__pycache__/
+*.py[cod]
+
+# An old local snapshot is excluded; the selected Maylily dependency is external.
+/crates/maylily/
+
+# Rebuild intermediates are local; graph/report/source manifest are committed.
+/graphify-out/cache/
+/graphify-out/.graphify*
+.neon
+
+# Bundled private SDK adapter build output
+/apps/realtime-sealer/dist/
+
+# Regenerate legacy release artifacts; never commit bundled executables.
+/legacy/console/public/hosting-agent.zip

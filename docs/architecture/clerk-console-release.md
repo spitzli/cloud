@@ -22,8 +22,8 @@ The code review/test evidence is in [the checkpoint](../verification/2026-10-15-
 ## Before the owner's production switch
 
 1. Keep this PR open against `main`; no merge/deploy now. Record its reviewed SHA
-   and fresh test results. Run builds with Node 24 and repository Bun 1.4.3
-   (`npm run …` uses the pinned local binary, unlike `~/.bun/bin/bun`).
+   and fresh test results. Run builds with Bun 1.4.3
+   (`bun run …` uses the pinned local binary, unlike `~/.bun/bin/bun`).
 2. Inspect the existing Vercel Git integration before merging: a main push may
    start a production deployment. Prepare the API/worker first, and control Console
    promotion explicitly so the merge cannot accidentally activate Clerk early.
@@ -76,7 +76,7 @@ artifact with production values; do not promote the local development-key artifa
 The delegation key is random, at least 32 bytes, shared only by authorized runtimes.
 
 The Vercel CLI is not installed in the current environment. Install it with
-`npm i -g vercel` before the Vercel release steps to use `vercel env pull`,
+`bun add -g vercel` before the Vercel release steps to use `vercel env pull`,
 `vercel deploy` and `vercel logs`. Confirm project/team/environment before commands;
 never dump pulled secret files. This does not replace the existing Kubernetes rollout.
 

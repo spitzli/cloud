@@ -1,0 +1,12 @@
+{
+  "now": 1792411200,
+  "password": "fixture-retained-cookie-secret-long-enough",
+  "value": {
+    "kind": "session",
+    "accessToken": "fixture-opaque-access",
+    "sub": "123",
+    "exp": 1792414800,
+    "idToken": "fixture-id-token"
+  },
+  "token": "Fe26.2*1*0707070707070707070707070707070707070707070707070707070707070707*BwcHBwcHBwcHBwcHBwcHBw*4gV_SkOJMB2xHIUL6z-f8w2ArqZLTo_PifaW5oWYEqrX72cofhNi0WrgVm3bqr0GvkEY5NoFiNeQv1vqNAE6ucK7IFCstHlewH1L5RcA8ziKS_mN8XSOylZQ9XT_Da4zuSFe22IXsQjaFtKRLqoJ-PRNWGy8wrf0YaA5VQ9yNlw*1792414800000*0707070707070707070707070707070707070707070707070707070707070707*S22NqPTwswN3VnaN0QVJoGAt2QKLYgxLESO8FCI9nCs~2"
+}

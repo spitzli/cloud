@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-25",
+  "scope": "Read-only operator correlation of Core build references and explicit provider listing",
+  "status": "Focused independent review findings fixed with RED-GREEN; offline tool only",
+  "authority": "No network/delete/upload/abort/migration capability; candidates are not deletion authority",
+  "commands": [
+    {
+      "command": "python3 -B -m unittest discover -s tools/tests -p 'test_build_storage_inventory.py'",
+      "result": "10 passed after3confirmed review defects reproduced and fixed"
+    },
+    {
+      "command": "python3 -B -m unittest discover -s tools/tests -p 'test_*storage*.py'",
+      "result": "16 passed"
+    }
+  ],
+  "reviewFixes": [
+    "Explicit version metadata suppresses every candidate even without duplicate keys",
+    "Null/local-only receipts validate build existence and customer ownership before branching",
+    "FIFO open uses O_NONBLOCK plus O_NOFOLLOW and descriptor regular-file checks; bounded child regression no longer hangs"
+  ],
+  "preservation": [
+    "Any Core reference is protected regardless retained flag",
+    "Foreign-binding/local migration copies, active/future generations and unknown builds/key shapes are held",
+    "Invalid references, size mismatch and duplicate/versioned/error listing suppress all candidates",
+    "Unknown strings are hashed; no provider URL/credential fields copied to report"
+  ],
+  "limits": [
+    "SQL not executed in this operator-tool check; an authorized privileged readonly inspection connection is required",
+    "No claim of provider listing completeness or content SHA verification",
+    "No actual orphan deletion, globalGC, TTL, old-store migration or commercial retention decision"
+  ],
+  "sha256": {
+    "tools/operations/build-object-inventory.py": "03766da71f72849eaa434fd17438ef90b5a4fd6c649903f842a87fb38275ddd5",
+    "tools/operations/build-object-ledger.sql": "66f685ecb65a0c9b05f085e295642ce915cacadfa6f7d22c46cfaa57c7e29997",
+    "tools/operations/build-object-inventory.md": "a753d0eb91239a9812395d691780b38d128c66828fb22b37a3a45b561f733324",
+    "tools/tests/test_build_storage_inventory.py": "d6e05c9e906a50921b73a62e25669f8aefcfe971371621e3fe12eaa5cddc8203"
+  }
+}

@@ -1,0 +1,691 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "sequence": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991
+    },
+    "generation": {
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "nodes": {
+      "maxItems": 200,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "server",
+              "agent"
+            ]
+          },
+          "architecture": {
+            "type": "string",
+            "enum": [
+              "amd64",
+              "arm64"
+            ]
+          },
+          "cpuMillicores": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "memoryBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "role",
+          "architecture",
+          "cpuMillicores",
+          "memoryBytes"
+        ]
+      }
+    },
+    "capacity": {
+      "type": "object",
+      "properties": {
+        "apps": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cpuMillicores": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "memoryBytes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "volumeBytes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ephemeralBytes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replicasPerApp": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "concurrentDeployments": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "networkIsolation": {
+          "type": "boolean"
+        },
+        "restrictedPods": {
+          "type": "boolean"
+        },
+        "storage": {
+          "type": "boolean"
+        },
+        "ingress": {
+          "type": "boolean"
+        },
+        "environment": {
+          "type": "boolean"
+        },
+        "pluginRuntimeVersion": {
+          "type": "number",
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "serviceBindingsVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "storageVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "provisioningGuardVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "databaseVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "databasePools": {
+          "maxItems": 200,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "node": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "poolID": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "capacityBytes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "availableBytes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "ready": {
+                "type": "boolean"
+              },
+              "requestedCpuMillicores": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "requestedMemoryBytes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "observedDatabases": {
+                "maxItems": 1000,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "installationID": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]{0,18}$"
+                    },
+                    "cpuMillicores": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "memoryBytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "installationID",
+                    "cpuMillicores",
+                    "memoryBytes"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "allocatedBytes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "allocations": {
+                "maxItems": 1000,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "installationID": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]{0,18}$"
+                    },
+                    "volumeBytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "installationID",
+                    "volumeBytes"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "node",
+              "poolID",
+              "capacityBytes",
+              "availableBytes",
+              "ready",
+              "requestedCpuMillicores",
+              "requestedMemoryBytes"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "databaseNodePorts": {
+          "maxItems": 2768,
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 30000,
+            "maximum": 32767
+          }
+        },
+        "nativeMail": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "number",
+              "const": 1
+            },
+            "configurationVersion": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "const": 1
+                },
+                {
+                  "type": "number",
+                  "const": 2
+                },
+                {
+                  "type": "number",
+                  "const": 3
+                }
+              ]
+            },
+            "image": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9.:-]+\\/[A-Za-z0-9_./-]+@sha256:[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "version",
+            "image"
+          ],
+          "additionalProperties": false
+        },
+        "publicRoutingVersion": {"type":"number","const":1},
+        "registryVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "databaseBackupVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "nativeRecovery": {
+          "type": "object",
+          "properties": {
+            "appEffectFenceVersion": {
+              "type": "integer",
+              "const": 1
+            },
+            "version": {
+              "enum": [
+                1,
+                2
+              ]
+            },
+            "profiles": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,64}$"
+                  },
+                  "profile": {
+                    "enum": [
+                      "mail-installation-v1",
+                      "ntfy-sqlite-offline-v1"
+                    ]
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "keyCustodyID": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,64}$"
+                  },
+                  "productionQualified": {
+                    "const": false
+                  },
+                  "storageIdentity": {
+                    "$ref": "#/$defs/recoveryPoolIdentity"
+                  }
+                },
+                "required": [
+                  "id",
+                  "profile",
+                  "sha256",
+                  "keyCustodyID",
+                  "productionQualified"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "targets": {
+              "type": "array",
+              "maxItems": 16,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,64}$"
+                  },
+                  "profile": {
+                    "enum": [
+                      "mail-installation-v1",
+                      "ntfy-sqlite-offline-v1"
+                    ]
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "nonce": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "capacityBytes": {
+                    "type": "integer",
+                    "minimum": 67108864,
+                    "maximum": 68719476736
+                  },
+                  "runtime": {
+                    "type": [
+                      "object",
+                      "null"
+                    ]
+                  },
+                  "storageIdentity": {
+                    "$ref": "#/$defs/recoveryPoolIdentity"
+                  },
+                  "volumePlan": {
+                    "type": "object",
+                    "maxProperties": 102,
+                    "propertyNames": {
+                      "pattern": "^[A-Za-z0-9_-]{1,64}$"
+                    },
+                    "additionalProperties": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "role": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "role": {
+                              "enum": [
+                                "core-ledger-postgres",
+                                "private-mail-postgres",
+                                "incoming-ce"
+                              ]
+                            },
+                            "originalCustomerID": {
+                              "type": "string",
+                              "pattern": "^[1-9][0-9]{0,18}$"
+                            }
+                          },
+                          "required": [
+                            "role"
+                          ],
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": {
+                                  "role": {
+                                    "const": "incoming-ce"
+                                  }
+                                }
+                              },
+                              "then": {
+                                "required": [
+                                  "originalCustomerID"
+                                ]
+                              },
+                              "else": {
+                                "not": {
+                                  "required": [
+                                    "originalCustomerID"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "bytes": {
+                          "type": "integer",
+                          "minimum": 67108864,
+                          "maximum": 68719476736
+                        },
+                        "image": {
+                          "type": "string",
+                          "pattern": "^.+@sha256:[a-f0-9]{64}$"
+                        },
+                        "uid": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 65535
+                        },
+                        "gid": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 65535
+                        },
+                        "cpuMillicores": {
+                          "type": "integer",
+                          "minimum": 100,
+                          "maximum": 8000
+                        },
+                        "memoryBytes": {
+                          "type": "integer",
+                          "minimum": 134217728,
+                          "maximum": 8589934592
+                        },
+                        "tmpBytes": {
+                          "type": "integer",
+                          "minimum": 1048576,
+                          "maximum": 1073741824
+                        }
+                      },
+                      "required": [
+                        "role",
+                        "bytes",
+                        "image",
+                        "uid",
+                        "gid",
+                        "cpuMillicores",
+                        "memoryBytes",
+                        "tmpBytes"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "id",
+                  "profile",
+                  "sha256",
+                  "nonce",
+                  "capacityBytes",
+                  "runtime"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "version",
+            "profiles",
+            "targets"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "version": {
+                    "const": 2
+                  }
+                },
+                "required": [
+                  "version"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "profiles": {
+                    "items": {
+                      "required": [
+                        "storageIdentity"
+                      ]
+                    }
+                  },
+                  "targets": {
+                    "items": {
+                      "required": [
+                        "storageIdentity"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "networkIsolation",
+        "restrictedPods",
+        "storage",
+        "ingress"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "sequence",
+    "generation",
+    "observedAt",
+    "version",
+    "nodes",
+    "capacity",
+    "capabilities"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "recoveryPoolIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "configuration": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "root": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048,
+              "pattern": "^/"
+            },
+            "node": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 253
+            },
+            "clusterID": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "poolID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "capacityBytes": {
+              "type": "integer",
+              "minimum": 67108864,
+              "maximum": 1099511627776
+            },
+            "reserveBytes": {
+              "type": "integer",
+              "minimum": 67108864,
+              "maximum": 1099511627776
+            }
+          },
+          "required": [
+            "root",
+            "node",
+            "clusterID",
+            "poolID",
+            "capacityBytes",
+            "reserveBytes"
+          ]
+        },
+        "poolUID": {
+          "type": "string",
+          "pattern": "^[a-f0-9-]{36}:[0-9]+:[0-9]+$",
+          "maxLength": 128
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "configuration",
+        "poolUID",
+        "revision"
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+syntax = "proto3";
+package webdock.export.v1;
+// Separate private extension. Existing PluginRuntime, storage and database backup ABIs are unchanged.
+service ExportSources {
+ rpc Sources(Invocation) returns (Choices);
+ rpc Bind(SourceRequest) returns (Binding);
+ rpc Database(SourceRequest) returns (DatabaseMaterial);
+ rpc Stream(SourceRequest) returns (stream Chunk);
+ rpc Validate(Validation) returns (Active);
+}
+message Invocation {string invocation_token=1;}
+message Choices {bytes choices_json=1;}
+message SourceRequest {
+ string invocation_token=1;
+ string kind=2;
+ string source_id=3;
+ bytes reference_json=4;
+}
+message Binding {bytes reference_json=1;}
+// Confidential in-memory RPC material. Never a public action result, persisted plan or job payload.
+message DatabaseMaterial {
+ string host=1;
+ uint32 port=2;
+ string database=3;
+ string username=4;
+ string password=5;
+ string ca_certificate=6;
+ int64 expires_at=7;
+ string binding=8;
+}
+message Chunk {bytes data=1;bytes reference_json=2;}
+message Validation {string invocation_token=1;bytes storage_authorization_json=2;bytes reference_json=3;string producer_job_id=4;}
+message Active {bool active=1;}

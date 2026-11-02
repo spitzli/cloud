@@ -1,0 +1,5 @@
+{
+  "domain": "spitzli.site",
+  "ingressClass": "traefik",
+  "clusterIssuer": "webdock-cms-acme"
+}

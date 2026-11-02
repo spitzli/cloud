@@ -1,0 +1,30 @@
+syntax = "proto3";
+package webdock.mail.v1;
+// Separate tenant/job authority; never an ordinary project Invoke token.
+service MailRuntime {
+ rpc Describe(DescribeRequest) returns (DescriptorReply);
+ rpc Submit(stream SendFrame) returns (SendReceipt);
+}
+message DescribeRequest {}
+message DescriptorReply { string plugin_id=1; string version=2; uint64 generation=3; string protocol=4; uint32 protocol_version=5; string descriptor_sha256=6; }
+service MailAuthority {
+ rpc Guard(LeaseProof) returns (GuardReply);
+ // Commits the one-use attempt before returning provider-only configuration.
+ rpc BeginAttempt(LeaseProof) returns (AttemptReply);
+}
+message LeaseProof { string lease_token=1; }
+message GuardReply { bool active=1; }
+message AttemptReply { bool admitted=1; bytes private_configuration_json=2; }
+message SendHeader { string lease_token=1; bytes metadata_json=2; }
+message SendFrame { uint64 offset=1; bytes data=2; optional SendHeader header=3; }
+message SendReceipt {
+ enum State { UNKNOWN=0; ACCEPTED=1; REJECTED=2; }
+ State state=1;
+ string provider_id=2;
+}
+// Fixed native Mail control lane on the existing authenticated Core plugin listener.
+service NativeMailControl {
+ rpc Call(NativeMailControlRequest) returns (NativeMailControlReply);
+}
+message NativeMailControlRequest { string plugin_id=1; uint64 generation=2; bytes command_json=3; }
+message NativeMailControlReply { bytes result_json=1; }

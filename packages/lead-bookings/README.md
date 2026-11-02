@@ -4,4 +4,4 @@ Native Payload 4 plugin for independent demonstration sites. Add `leadBookings()
 
 No email, payment or availability provider is involved. Anonymous native REST access and native creates are denied. CMS staff can inspect; editors/admins/operators can mark reviewed/archived. Submission fields are immutable. Database uniqueness handles idempotency races.
 
-Independent sites vendor `src/` under `src/webdock-lead-bookings/`. From Webdock root run `node packages/lead-bookings/sync.mjs /absolute/site/root`, then typecheck/test the site. `npm test -w @webdock/lead-bookings` checks validation, native access, HTTP boundaries and retry/race handling. Deployments still require database migration and HTTP persistence smoke checks.
+Independent sites vendor `src/` under `src/webdock-lead-bookings/`. From Webdock root run `bun packages/lead-bookings/sync.mjs /absolute/site/root`, then typecheck/test the site. `bun run --filter @webdock/lead-bookings test` checks validation, native access, HTTP boundaries and retry/race handling. Deployments still require database migration and HTTP persistence smoke checks.

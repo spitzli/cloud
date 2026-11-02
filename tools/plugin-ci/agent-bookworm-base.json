@@ -1,0 +1,9 @@
+{
+  "verifiedDate": "2026-11-01",
+  "source": "official Docker Hub library/rust via https://registry-1.docker.io/v2/library/rust/manifests/1.98.1-slim-bookworm",
+  "tag": "docker.io/library/rust:1.98.1-slim-bookworm",
+  "indexDigest": "sha256:ff521445a372125ed4f76e1453a1f8098f2d05332d1601d30db1c1f62757e730",
+  "linuxAMD64Digest": "sha256:dacc9e51f252243eb59d2fb4cb4ad8b0d3f607b6a82c398cf8a321e59ff778a7",
+  "rawIndexSHA256MatchesRegistryHeader": true,
+  "purpose": "Ubuntu24-compatible trusted frozen-source agent candidate; no production activation"
+}

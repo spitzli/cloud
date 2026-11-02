@@ -1,32 +1,40 @@
 ---
 title: "Authentication"
-description: "Keep browser sessions, OAuth tokens and Mail API keys separate."
+description: "Use managed sign-in and the correct credential for each integration."
 ---
+
+Spitzli Cloud uses Neon Managed Auth for all users, with Core-owned MFA, passkeys, local identities and authorization. Browser sign-in does not create an API key or grant workspace access. See [identity and session boundaries](/developers/auth-adapters).
 
 ## Protocol addresses
 
 | Surface | Address |
 | --- | --- |
-| Browser Console | `https://console.webdock.dev` |
+| Browser Console | `https://console.spitzli.cloud` |
 | OAuth issuer | `https://auth.webdock.dev/api/auth` |
 | Registry and MCP resource | `https://studio.webdock.dev/api/mcp` |
 | Registry REST base | `https://studio.webdock.dev/api/registry` |
-| Mail REST base | `https://api.webdock.dev/api/mail/v1` |
+| Mail REST base | `https://api.spitzli.cloud/api/mail/v1` |
 
-The Mail API uses `api.webdock.dev`; `https://auth.webdock.dev/api/mail/v1` remains a compatible alias for existing clients. Both hosts use the same keys, quotas and idempotency state, without redirecting requests.
+New Mail integrations use `api.spitzli.cloud`; `https://auth.webdock.dev/api/mail/v1` remains a compatible alias for existing clients. Existing API/Auth hosts are compatibility addresses; keep the same message identity and idempotency key when changing a client base URL.
 
 The browser moved to Console. Registered OAuth callbacks, the MCP resource audience and legacy bearer API addresses remain protocol identities. Do not substitute the Console hostname in token requests.
 
 ## OAuth clients
 
-Register a client in [Connections](https://auth.webdock.dev/connections). Use the exact callback URL supplied by your client. Public/native clients use PKCE without a secret; confidential server clients can use a client secret. Dynamic anonymous registration is disabled.
+Use an OAuth client registered by the installation operator. Keep the exact callback URL supplied by your client. The retained protocol supports existing registrations; the old Connections screen is not a promise of current self-service client registration. Public/native clients use PKCE without a secret; confidential server clients can use a client secret. Dynamic anonymous registration is disabled.
 
 Consent and granted scopes limit the token. The server also checks current session, account and resource permissions. Disabling the client or signing out can invalidate access before nominal token expiry.
 
 Clients explicitly enabled for remote renewal can request `offline_access`. Store refresh tokens in the client's credential store, serialize renewal, and replace a token after rotation. Reconnect when the session or refresh grant expires.
 
+## Workspace API tokens
+
+Console can create workspace-scoped API tokens for server automation. These tokens use the member's current workspace authority and an explicit write ceiling. Use them only with the [workspace API](/developers/plugin-api-mcp). They are not OAuth tokens, provider keys or Mail keys.
+
 ## Mail keys
 
-Mail uses its own bearer keys, created for a workspace and connection. `sending_access` supports sending; `full_access` permits the broader Mail API subject to resource restrictions. Restrict the sender domain where possible. A provider credential is not a Webdock Mail API key.
+Mail uses its own bearer keys, created for a workspace and connection. `sending_access` supports sending; `full_access` permits the broader Mail API subject to resource restrictions. Restrict the sender domain where possible. A provider credential is not a Spitzli Cloud Mail API key.
 
 <Warning>Never place a Mail key, OAuth client secret or private CMS bridge credential in browser code, a public repository or a documentation example.</Warning>
+
+Source: native OAuth (`crates/oauth`), browser sessions (`crates/browser-session`) and workspace API (`crates/control-plane/src/api.rs`).

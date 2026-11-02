@@ -1,0 +1,1 @@
+../../plugin-host/migrations/0008_logs.sql

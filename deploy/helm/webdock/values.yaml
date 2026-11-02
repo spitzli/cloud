@@ -1,37 +1,50 @@
-# Required: external database roles/schema/CA and secrets are provisioned separately.
-externalDatabase: true
-modules:
-  configVersion: 1
-  modules: {}
-components:
-  console:
-    image: ''
-    existingSecret: ''
-    port: 3120
-  auth:
-    image: ''
-    existingSecret: ''
-    port: 3125
-  api:
-    image: ''
-    existingSecret: ''
-    port: 3130
-  # existingSecret must contain WEBDOCK_JOBS_REDIS_URL (redis:// or rediss://).
-  # Redis is operator-provisioned with persistence, noeviction and restricted egress.
-  worker:
-    enabled: false
-    image: ''
-    existingSecret: ''
-    port: 0
-migration:
-  enabled: false
-  image: ''
-  existingSecret: ''
-  target: ''
+# Reviewed immutable Core image and private native runtime environment, supplied by the operator.
+image: ''
+existingSecret: ''
+# Authority (host and optional port) of WEBDOCK_API_ORIGIN, used by the HTTP probes.
+apiHost: ''
+# Private routing preserves the certificate's DNS identity; never disable DB TLS verification.
+databaseCAConfigMap: ''
+databaseHostAliases: []
 resources:
-  requests: {cpu: 100m, memory: 256Mi}
-  limits: {cpu: '1', memory: 1Gi}
-# Supply explicit ingress controller selectors and database/provider egress rules.
-networkPolicy:
-  ingress: []
-  egress: []
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: '1'
+    memory: 1Gi
+
+# Optional trusted infrastructure only; no controller resources are emitted by default.
+buildController:
+  enabled: false
+  # Preexisting EXCLUSIVE namespace, different from the Core release namespace.
+  namespace: ''
+  namespaceProfile: '' # explicit trusted-controller-root-tmpfs-v1 acknowledgment
+  existingPrivatePVC: ''
+  credentialConfigExistingSecret: ''
+  # Review reference only: worker.json must use this exact canonical HTTPS base.
+  privateControlURL: ''
+  privateCoreTLSExistingService: ''
+  privateCoreTLSNamespace: ''
+  network:
+    dnsIPv4: []
+    coreHTTPSIPv4: []
+    buildAPIIPv4: []
+    registryHTTPSIPv4: []
+    stagingHTTPSIPv4: []
+  tlsUpload:
+    enabled: false
+    image: '' # docker.io/library/caddy@sha256:...; independently qualified
+    existingTLSSecret: ''
+    host: ''
+    # Exact BUILD source ranges allowed to the private ClusterIP, not public ingress.
+    sourceIPv4CIDRs: []
+
+# Core's separately supervised existing Hosting-agent RPC listener, not a new agent.
+agentControl:
+  enabled: false
+  existingEnvSecret: '' # dedicated least-privilege environment, distinct from HTTP
+  existingPrivatePVC: '' # preprovisioned UID65532 private files; mounted readOnly
+  privateMTLSReviewed: false # /private/agent-control.json: kind=mtls, address port3131
+  networkAdmissionExistingPolicy: '' # operator-owned egress/admission envelope
+  privateSourceIPv4: [] # literal RFC1918 agent source hosts, rendered as /32

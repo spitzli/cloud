@@ -155,6 +155,9 @@
   " — create, update and explicitly delete managed projects. Platform administrators only.": [
     " — verwaltete Projekte erstellen, aktualisieren und ausdrücklich löschen. Nur für Plattformadministratoren."
   ],
+  "(optional)": [
+    "(optional)"
+  ],
   "+ Exception": [
     "+ Ausnahme"
   ],
@@ -377,6 +380,15 @@
   "A mapped tracking domain belonging to this tenant is required.": [
     "Eine zugeordnete Tracking-Domain dieses Mandanten ist erforderlich."
   ],
+  "A new grant enables the daily schedule and WAL archiving.": [
+    "Eine neue Genehmigung aktiviert den täglichen Zeitplan und die WAL-Archivierung."
+  ],
+  "A new public website or application without its own domain gets an available project address. The address belongs to that project; other customers cannot claim it.": [
+    "Eine neue öffentliche Website oder Anwendung ohne eigene Domain bekommt eine verfügbare Projektadresse. Die Adresse gehört zu diesem Projekt und kann nicht von anderen Kunden beansprucht werden."
+  ],
+  "A newer commit replaced this queued build.": [
+    "Ein neuerer Commit hat diesen eingeplanten Build ersetzt."
+  ],
   "A pending invitation already exists. Resend it, or cancel it before choosing another role.": [
     "Eine offene Einladung besteht bereits. Sende sie erneut oder widerrufe sie, bevor du eine andere Rolle auswählst."
   ],
@@ -397,6 +409,9 @@
   ],
   "A ready sending account is required. Ask your operator to complete setup.": [
     "Ein einsatzbereites Versandkonto ist erforderlich. Bitte deinen Betreiber, die Einrichtung abzuschließen."
+  ],
+  "A requested build will appear here once it has been recorded.": [
+    "Ein angeforderter Build erscheint hier, sobald die Anfrage erfasst wurde."
   ],
   "A secure canonical authentication URL is required.": [
     "Eine sichere, kanonische Authentifizierungs-URL ist erforderlich."
@@ -424,6 +439,9 @@
   ],
   "API & MCP": [
     "API & MCP"
+  ],
+  "API key scope": [
+    "Geltungsbereich des API-Schlüssels"
   ],
   "API keys": [
     "API-Schlüssel"
@@ -466,6 +484,9 @@
   ],
   "Accepted messages": [
     "Angenommene Nachrichten"
+  ],
+  "Accepted operation": [
+    "Angenommener Vorgang"
   ],
   "Accepted orders start billing only after confirmed provisioning. Invoice handling remains manual.": [
     "Die Abrechnung bestätigter Bestellungen beginnt erst nach nachgewiesener Bereitstellung. Die Rechnungsstellung erfolgt weiterhin manuell."
@@ -535,6 +556,9 @@
   ],
   "Account invitations and security emails are sent through turboSMTP. When Mail is enabled for a customer, we process account and domain details, sender and recipient addresses, message contents and attachments, delivery events, usage and suppression records. Enabled incoming mail uses a separate Stalwart instance for that customer; outgoing-only service does not require one. Mailbox contents and forwarding are processed only for the enabled service.": [
     "Kontoeinladungen und Sicherheitsnachrichten versenden wir über turboSMTP. Ist Mail für einen Kunden aktiviert, verarbeiten wir Konto- und Domaindaten, Absender- und Empfängeradressen, Nachrichteninhalte und Anhänge, Zustellereignisse, Nutzung und Sperrlisten. Aktivierter E-Mail-Empfang nutzt eine eigene Stalwart-Instanz für diesen Kunden; reiner Versand benötigt keine solche Instanz. Postfachinhalte und Weiterleitungen werden nur für den aktivierten Dienst verarbeitet."
+  ],
+  "Account invitations and security emails use the configured authentication provider or sending connection. When Mail is enabled for a customer, we process account and domain details, sender and recipient addresses, message contents and attachments, delivery events, usage and suppression records. Enabled incoming mail uses a separate Stalwart instance for that customer; outgoing-only service does not require one. Mailbox contents and forwarding are processed only for the enabled service.": [
+    "Kontoeinladungen und Sicherheits-E-Mails verwenden den eingerichteten Authentifizierungsanbieter oder die Versandverbindung. Bei aktiviertem Mail-Dienst verarbeiten wir Konto- und Domainangaben, Absender- und Empfängeradressen, Nachrichteninhalte und Anhänge, Zustellereignisse, Nutzung und Sperrlisten. Aktivierter E-Mail-Empfang verwendet eine eigene Stalwart-Instanz für den jeweiligen Kunden; reiner Versand benötigt keine. Postfachinhalte und Weiterleitungen werden nur für den aktivierten Dienst verarbeitet."
   ],
   "Account invitations and security messages are sent through turboSMTP using the recipient’s email address and the message contents, which may include time-limited account-setup links.": [
     "Kontoeinladungen und Sicherheitsnachrichten werden über turboSMTP versendet. Dabei werden die E-Mail-Adresse des Empfängers und der Nachrichteninhalt verwendet; dieser kann zeitlich begrenzte Links zur Kontoeinrichtung enthalten."
@@ -839,8 +863,14 @@
   "Allocated": [
     "Zugewiesen"
   ],
+  "Allocated and pending reservations describe configured resources, not live measurements. Replicas per app shows the maximum in each state.": [
+    "Zugewiesene und ausstehende Reservierungen beschreiben konfigurierte Ressourcen, keine Live-Messwerte. Replikas pro Anwendung zeigt jeweils den Höchstwert."
+  ],
   "Allocated resources, reservations and measured usage are tracked separately.": [
     "Zugewiesene Ressourcen, Reservierungen und gemessene Nutzung werden getrennt erfasst."
+  ],
+  "Allow WAL archiving": [
+    "WAL-Archivierung erlauben"
   ],
   "Allow access": [
     "Zugriff erlauben"
@@ -850,6 +880,9 @@
   ],
   "Allow changes in the selected area": [
     "Änderungen im ausgewählten Bereich erlauben"
+  ],
+  "Allow deletion under the retention policy": [
+    "Löschung gemäß Aufbewahrungsrichtlinie erlauben"
   ],
   "Allow new purchases": [
     "Neue Käufe erlauben"
@@ -872,6 +905,9 @@
   "Allow repository builds and custom container images": [
     "Repository-Builds und eigene Container-Images erlauben"
   ],
+  "Allow signed repository pushes to start builds. Publication approval remains separate.": [
+    "Signierte Repository-Pushes dürfen Builds starten. Die Freigabe zur Veröffentlichung wird unabhängig davon verwaltet."
+  ],
   "Allowances exceed the supported range.": [
     "Die Kontingente überschreiten den unterstützten Bereich."
   ],
@@ -892,6 +928,9 @@
   ],
   "Allowed namespaces": [
     "Freigegebene Namespaces"
+  ],
+  "Already invited?": [
+    "Bereits eingeladen?"
   ],
   "Also allow this project's images on a shared cluster (applications share the host kernel)": [
     "Images dieses Projekts auch auf einem gemeinsamen Cluster erlauben (Anwendungen teilen den Host-Kernel)"
@@ -961,6 +1000,9 @@
   ],
   "An owner or admin sets up the connection, domain and API key. You can view messages and delivery results.": [
     "Ein Owner oder Admin richtet Verbindung, Domain und API-Key ein. Du kannst Nachrichten und Zustellergebnisse ansehen."
+  ],
+  "An owner, administrator or authorized operator manages Neon connections.": [
+    "Eigentümer, Administratoren oder berechtigte Plattformbetreiber verwalten Neon-Verbindungen."
   ],
   "An unused reservation can be cancelled after 15 minutes, once a fresh provider check confirms that no domain was created.": [
     "Eine ungenutzte Reservierung kann nach 15 Minuten aufgehoben werden, sobald eine erneute Anbieterprüfung bestätigt, dass keine Domain erstellt wurde."
@@ -1037,6 +1079,9 @@
   "Application environment encryption is not configured.": [
     "Die Verschlüsselung für Umgebungsvariablen ist nicht eingerichtet."
   ],
+  "Application hosting": [
+    "Anwendungshosting"
+  ],
   "Application is deleted.": [
     "Die Anwendung wurde gelöscht."
   ],
@@ -1100,6 +1145,9 @@
   "Apply": [
     "Anwenden"
   ],
+  "Apply backup policy": [
+    "Backup-Richtlinie anwenden"
+  ],
   "Apply filters": [
     "Filter anwenden"
   ],
@@ -1130,11 +1178,23 @@
   "Appointments and enquiries setup": [
     "Termine & Anfragen einrichten"
   ],
+  "Approve": [
+    "Freigeben"
+  ],
+  "Approve publication": [
+    "Veröffentlichung freigeben"
+  ],
   "Approve release": [
     "Release freigeben"
   ],
   "Approve this exact release in Deployments to continue.": [
     "Gib dieses Release unter Deployments frei, um fortzufahren."
+  ],
+  "Approved": [
+    "Freigegeben"
+  ],
+  "Approving…": [
+    "Wird freigegeben…"
   ],
   "Apps and bots": [
     "Apps und Bots"
@@ -1163,6 +1223,9 @@
   "Archived tenant — changes disabled": [
     "Archivierter Mandant — Änderungen deaktiviert"
   ],
+  "Are hosted websites public?": [
+    "Sind gehostete Websites öffentlich?"
+  ],
   "Are project previews public?": [
     "Sind Projektvorschauen öffentlich?"
   ],
@@ -1174,6 +1237,9 @@
   ],
   "Argument": [
     "Argument"
+  ],
+  "Arrange an export of needed data before the service ends. We coordinate return or deletion under the service and data-processing agreements and applicable law. Deactivation or suspension is not deletion; retained data remains protected. Removing a Spitzli Cloud connection does not automatically cancel or revoke your account with a third-party provider.": [
+    "Vereinbare vor dem Vertragsende den Export benötigter Daten. Rückgabe oder Löschung stimmen wir nach Leistungs- und Auftragsverarbeitungsvertrag sowie geltendem Recht ab. Deaktivierung oder Sperrung ist keine Löschung; zurückbehaltene Daten bleiben geschützt. Das Entfernen einer Spitzli Cloud-Verbindung kündigt oder widerruft nicht automatisch dein Konto bei einem Drittanbieter."
   ],
   "Arrange an export of needed data before the service ends. We coordinate return or deletion under the service and data-processing agreements and applicable law. Deactivation or suspension is not deletion; retained data remains protected. Removing a Webdock connection does not automatically cancel or revoke your account with a third-party provider.": [
     "Vereinbare vor dem Vertragsende den Export benötigter Daten. Rückgabe oder Löschung stimmen wir nach Leistungs- und Auftragsverarbeitungsvertrag sowie geltendem Recht ab. Deaktivierung oder Sperrung ist keine Löschung; zurückbehaltene Daten bleiben geschützt. Das Entfernen einer Webdock-Verbindung kündigt oder widerruft nicht automatisch dein Konto bei einem Drittanbieter."
@@ -1202,6 +1268,9 @@
   "Ask your operator to review the tracking domain count.": [
     "Bitte deinen Betreiber, die Anzahl der Tracking-Domains zu prüfen."
   ],
+  "Ask your provider to connect your GitHub account and authorize repositories for this workspace.": [
+    "Bitte deinen Anbieter, dein GitHub-Konto zu verbinden und Repositories für diesen Arbeitsbereich freizugeben."
+  ],
   "Assign a dedicated Tabularis runtime with a verified database role for this person.": [
     "Dieser Person eine eigene Tabularis-Instanz mit geprüfter Datenbankrolle zuweisen."
   ],
@@ -1213,6 +1282,9 @@
   ],
   "Assign a plan before adding extras.": [
     "Weise zuerst einen Tarif zu, bevor du Zusatzkontingente hinzufügst."
+  ],
+  "Assign an HTTPS address under": [
+    "Eine HTTPS-Adresse vergeben unter"
   ],
   "Assign customer": [
     "Kunde zuweisen"
@@ -1238,6 +1310,9 @@
   "Assign website": [
     "Website zuweisen"
   ],
+  "Assigned addresses": [
+    "Zugewiesene Adressen"
+  ],
   "Assigned sending IPv4 address": [
     "Zugewiesene IPv4-Versandadresse"
   ],
@@ -1258,6 +1333,9 @@
   ],
   "Attachments (up to 10 MiB)": [
     "Anhänge (bis zu 10 MiB)"
+  ],
+  "Attempt": [
+    "Versuch"
   ],
   "Attempts": [
     "Versuche"
@@ -1283,6 +1361,12 @@
   "Authorize access": [
     "Zugriff genehmigen"
   ],
+  "Authorized repository": [
+    "Freigegebenes Repository"
+  ],
+  "Automatic": [
+    "Automatisch"
+  ],
   "Automatically publish successful builds": [
     "Erfolgreiche Builds automatisch veröffentlichen"
   ],
@@ -1307,6 +1391,9 @@
   "Available resources": [
     "Verfügbare Ressourcen"
   ],
+  "Awaiting approval": [
+    "Wartet auf Freigabe"
+  ],
   "Awaiting first deployment": [
     "Wartet auf das erste Deployment"
   ],
@@ -1315,6 +1402,9 @@
   ],
   "Awaiting provisioning": [
     "Wartet auf Bereitstellung"
+  ],
+  "Awaiting publication": [
+    "Wartet auf Veröffentlichung"
   ],
   "BYOK connection setup": [
     "BYOK-Verbindung einrichten"
@@ -1364,17 +1454,59 @@
   "Back to {type}": [
     "Zurück zu {type}"
   ],
+  "Back up now": [
+    "Jetzt sichern"
+  ],
   "Background": [
     "Hintergrund"
   ],
   "Backup TODO": [
     "Backups: noch offen"
   ],
+  "Backup authority is no longer available. Sign in again or request current operator access.": [
+    "Die Backup-Berechtigung ist nicht mehr verfügbar. Erneut anmelden oder aktuelle Betreiberberechtigung anfordern."
+  ],
   "Backup codes aren't enabled": [
     "Wiederherstellungscodes sind nicht aktiviert."
   ],
+  "Backup configuration observed": [
+    "Backup-Konfiguration bestätigt"
+  ],
+  "Backup configuration pending observation": [
+    "Backup-Konfiguration wartet auf Bestätigung"
+  ],
+  "Backup grant revocation is pending observation. WAL and retention permissions remain separate.": [
+    "Widerruf der Backup-Berechtigung wartet auf Bestätigung. WAL- und Aufbewahrungsberechtigungen bleiben unabhängig."
+  ],
+  "Backup grant revocation observed. WAL and retention permissions remain separate.": [
+    "Widerruf der Backup-Berechtigung bestätigt. WAL- und Aufbewahrungsberechtigungen bleiben unabhängig."
+  ],
+  "Backup observation unavailable. Refresh before making changes.": [
+    "Backup-Beobachtung nicht verfügbar. Vor Änderungen aktualisieren."
+  ],
+  "Backup policy": [
+    "Backup-Richtlinie"
+  ],
+  "Backup policy settings": [
+    "Einstellungen der Backup-Richtlinie"
+  ],
+  "Backup request accepted. Waiting for agent observation.": [
+    "Backup-Auftrag angenommen. Bestätigung durch den Agent steht aus."
+  ],
+  "Backup request conflicts with current state. Refresh before trying again.": [
+    "Der Backup-Auftrag steht im Konflikt mit dem aktuellen Zustand. Vor einem erneuten Versuch aktualisieren."
+  ],
+  "Backup schedule suspension observed": [
+    "Aussetzung des Backup-Zeitplans bestätigt"
+  ],
+  "Backup suspension pending observation": [
+    "Backup-Aussetzung wartet auf Bestätigung"
+  ],
   "Backups": [
     "Datensicherungen"
+  ],
+  "Backups are not configured": [
+    "Backups sind nicht eingerichtet"
   ],
   "Backups are not configured. No recovery window is included.": [
     "Backups sind nicht eingerichtet. Ein Wiederherstellungszeitraum ist nicht enthalten."
@@ -1493,6 +1625,9 @@
   "Bring forward": [
     "Nach vorn"
   ],
+  "Bring your projects, their services and their public addresses together in one workspace.": [
+    "Bringe deine Projekte, ihre Dienste und ihre öffentlichen Adressen in einem Workspace zusammen."
+  ],
   "Broaden your filters to see more workspace activity.": [
     "Erweitere deine Filter, um mehr Aktivitäten im Arbeitsbereich anzuzeigen."
   ],
@@ -1511,11 +1646,20 @@
   "Browse tables and query your project data.": [
     "Tabellen durchsuchen und Projektdaten abfragen."
   ],
+  "Build after GitHub workflow succeeds": [
+    "Builds nach erfolgreichem GitHub-Workflow starten"
+  ],
   "Build and deploy from your repository.": [
     "Aus deinem Repository bauen und bereitstellen."
   ],
   "Build application": [
     "Anwendung bauen"
+  ],
+  "Build cluster access must be enabled for this project.": [
+    "Der Build-Cluster muss für dieses Projekt freigeschaltet sein."
+  ],
+  "Build context": [
+    "Build-Kontext"
   ],
   "Build environment exceeds the allowed size.": [
     "Die Build-Umgebung überschreitet die zulässige Größe."
@@ -1526,11 +1670,26 @@
   "Build environment variables": [
     "Build-Umgebungsvariablen"
   ],
+  "Build execution": [
+    "Build-Ausführung"
+  ],
+  "Build execution did not complete. Review the retained logs.": [
+    "Die Build-Ausführung wurde nicht abgeschlossen. Prüfe die gespeicherten Protokolle."
+  ],
+  "Build execution ended before output was retained.": [
+    "Die Build-Ausführung endete, bevor ein Ergebnis gespeichert wurde."
+  ],
+  "Build failed": [
+    "Build fehlgeschlagen"
+  ],
   "Build failed. Review the build logs before retrying.": [
     "Der Build ist fehlgeschlagen. Prüfe vor dem nächsten Versuch die Build-Logs."
   ],
   "Build failed. Review the logs and setup requirements.": [
     "Build fehlgeschlagen. Prüfe die Protokolle und Einrichtungsvoraussetzungen."
+  ],
+  "Build history": [
+    "Build-Verlauf"
   ],
   "Build latest commit": [
     "Neuesten Commit bauen"
@@ -1540,6 +1699,15 @@
   ],
   "Build logs": [
     "Build-Protokolle"
+  ],
+  "Build logs are unavailable.": [
+    "Build-Protokolle sind nicht verfügbar."
+  ],
+  "Build on GitHub pushes": [
+    "Builds bei GitHub-Pushes starten"
+  ],
+  "Build output is retained and awaiting publication. Registry publication has not been confirmed.": [
+    "Das Build-Ergebnis wurde gespeichert und wartet auf die Veröffentlichung. Die Übertragung in die Registry wurde noch nicht bestätigt."
   ],
   "Build pages": [
     "Build-Seiten"
@@ -1553,8 +1721,23 @@
   "Build recipe": [
     "Build-Verfahren"
   ],
+  "Build repository commits, review their output, and follow publication separately.": [
+    "Baue Repository-Commits, prüfe die Ergebnisse und verfolge die Veröffentlichung separat."
+  ],
   "Build settings": [
     "Build-Einstellungen"
+  ],
+  "Build status": [
+    "Build-Status"
+  ],
+  "Build strategy": [
+    "Build-Strategie"
+  ],
+  "Build succeeded": [
+    "Build erfolgreich"
+  ],
+  "Build success confirms the build output. Deployment has its own status and approval.": [
+    "Ein erfolgreicher Build bestätigt das Build-Ergebnis. Status und Freigabe der Bereitstellung werden separat geführt."
   ],
   "Build variables must be explicitly approved and cannot contain provider credentials.": [
     "Build-Variablen müssen ausdrücklich freigegeben sein und dürfen keine Anbieter-Zugangsdaten enthalten."
@@ -1562,11 +1745,17 @@
   "Build worker endpoint is unavailable.": [
     "Der Build-Worker-Endpunkt ist nicht verfügbar."
   ],
+  "Build {commit}": [
+    "Build {commit}"
+  ],
   "Building": [
     "Wird erstellt"
   ],
   "Builds": [
     "Builds"
+  ],
+  "Builds are unavailable": [
+    "Builds sind nicht verfügbar"
   ],
   "Built and managed by Spitzli Development.": [
     "Entwickelt und betreut von Spitzli Development."
@@ -1592,6 +1781,9 @@
   "Button label": [
     "Schaltflächentext"
   ],
+  "By invitation": [
+    "Auf Einladung"
+  ],
   "CMS": [
     "CMS"
   ],
@@ -1601,8 +1793,8 @@
   "CMS areas": [
     "CMS-Bereiche"
   ],
-  "CMS by Webdock": [
-    "CMS von Webdock"
+  "CMS by Spitzli Cloud": [
+    "CMS von Spitzli Cloud"
   ],
   "CMS connection": [
     "CMS-Verbindung"
@@ -1621,6 +1813,9 @@
   ],
   "CMS record": [
     "CMS-Eintrag"
+  ],
+  "CMS — Spitzli Cloud": [
+    "CMS — Spitzli Cloud"
   ],
   "CMS — Webdock": [
     "CMS — Webdock"
@@ -1703,6 +1898,9 @@
   "Change": [
     "Änderung"
   ],
+  "Change backup policy": [
+    "Backup-Richtlinie ändern"
+  ],
   "Change in progress": [
     "Änderung läuft"
   ],
@@ -1766,11 +1964,20 @@
   "Check sending status": [
     "Versandstatus prüfen"
   ],
+  "Check the backup request fields. Refresh before trying again.": [
+    "Die Felder des Backup-Auftrags prüfen. Vor einem erneuten Versuch aktualisieren."
+  ],
+  "Check the branch and relative root directory.": [
+    "Prüfe den Branch und das relative Stammverzeichnis."
+  ],
   "Check the database configuration fields.": [
     "Bitte prüfe die Angaben zur Datenbank."
   ],
   "Check the image URL and whether the file is available.": [
     "Prüfe die Bildadresse oder die Erreichbarkeit der Datei."
+  ],
+  "Check the relative context and Dockerfile paths.": [
+    "Prüfe die relativen Pfade für Build-Kontext und Dockerfile."
   ],
   "Check the token, its scopes and your workspace permissions.": [
     "Prüfe das Token, seine Scopes und deine Berechtigungen im Arbeitsbereich."
@@ -1988,6 +2195,9 @@
   "Clients are registered through the operator provisioning tool.": [
     "Clients werden über das Bereitstellungswerkzeug des Betreibers registriert."
   ],
+  "Cloning": [
+    "Repository wird geklont"
+  ],
   "Close": [
     "Schließen"
   ],
@@ -2150,6 +2360,9 @@
   "Configure deployments": [
     "Deployments einrichten"
   ],
+  "Configure hosting for this project before connecting a repository source.": [
+    "Richte Hosting für dieses Projekt ein, bevor du ein Repository verbindest."
+  ],
   "Configure sending": [
     "Versand einrichten"
   ],
@@ -2189,6 +2402,9 @@
   "Configured resources": [
     "Konfigurierte Ressourcen"
   ],
+  "Confirm Neon disconnection": [
+    "Trennung von Neon bestätigen"
+  ],
   "Confirm an existing account matching the reserved email and provider ID.": [
     "Bestätige ein vorhandenes Konto, dessen E-Mail-Adresse und Anbieter-ID zur Reservierung passen."
   ],
@@ -2197,6 +2413,9 @@
   ],
   "Confirm archive": [
     "Archivierung bestätigen"
+  ],
+  "Confirm disconnect": [
+    "Trennung bestätigen"
   ],
   "Confirm new password": [
     "Neues Passwort bestätigen"
@@ -2273,6 +2492,9 @@
   "Connect GitHub interactively in Studio.": [
     "Verbinde GitHub über den Anmeldedialog in Studio."
   ],
+  "Connect Neon": [
+    "Neon verbinden"
+  ],
   "Connect Team": [
     "Connect Team"
   ],
@@ -2287,6 +2509,15 @@
   ],
   "Connect Vercel in Webdock before deleting this project.": [
     "Verbinde Vercel in Webdock, bevor du dieses Projekt löschst."
+  ],
+  "Connect a domain you own when your project is ready. Your application and its data stay in place.": [
+    "Verbinde deine eigene Domain, wenn dein Projekt bereit ist. Deine Anwendung und ihre Daten bleiben erhalten."
+  ],
+  "Connect a repository": [
+    "Repository verbinden"
+  ],
+  "Connect a repository source to this project before starting a build.": [
+    "Verbinde ein Repository mit diesem Projekt, bevor du einen Build startest."
   ],
   "Connect a repository to configure Git deployments.": [
     "Verbinde ein Repository, um Git-Deployments zu konfigurieren."
@@ -2336,6 +2567,9 @@
   "Connect repository": [
     "Repository verbinden"
   ],
+  "Connect selected Vercel projects to Spitzli Cloud Studio with read-only access.": [
+    "Verbinde ausgewählte Vercel-Projekte mit Spitzli Cloud Studio über einen Lesezugriff."
+  ],
   "Connect selected Vercel projects to Webdock Studio with read-only access.": [
     "Verbinde ausgewählte Vercel-Projekte mit Webdock Studio über einen Lesezugriff."
   ],
@@ -2377,6 +2611,9 @@
   ],
   "Connect your own Kubernetes cluster, Vercel team or turboSMTP account. Your provider bills you directly.": [
     "Verbinde dein eigenes Kubernetes-Cluster, Vercel-Team oder turboSMTP-Konto. Dein Anbieter rechnet direkt mit dir ab."
+  ],
+  "Connect your own Neon account to this customer workspace.": [
+    "Verbinde dein eigenes Neon-Konto mit diesem Kundenarbeitsbereich."
   ],
   "Connect your own Vercel team to choose its projects.": [
     "Verbinde dein eigenes Vercel-Team und wähle dessen Projekte aus."
@@ -2452,6 +2689,9 @@
   ],
   "Connection name": [
     "Verbindungsname"
+  ],
+  "Connection revision": [
+    "Verbindungsrevision"
   ],
   "Connection settings": [
     "Verbindungseinstellungen"
@@ -2754,6 +2994,9 @@
   "Create a draft. The existing website is unchanged.": [
     "Legen Sie einen Entwurf an. Die bestehende Website bleibt dabei unverändert."
   ],
+  "Create a key in your Neon account. The key is stored encrypted on the server and is never shown again. It is cleared from this form on every submission.": [
+    "Erstelle einen Schlüssel in deinem Neon-Konto. Er wird auf dem Server verschlüsselt gespeichert und nicht erneut angezeigt. Bei jedem Absenden wird er aus diesem Formular entfernt."
+  ],
   "Create a project": [
     "Projekt erstellen"
   ],
@@ -2771,6 +3014,9 @@
   ],
   "Create an application first.": [
     "Erstelle zuerst eine Anwendung."
+  ],
+  "Create an application in this project before connecting a repository.": [
+    "Erstelle in diesem Projekt eine Anwendung, bevor du ein Repository verbindest."
   ],
   "Create an individual offer": [
     "Individuelles Angebot erstellen"
@@ -2946,6 +3192,9 @@
   "Customer access record not found.": [
     "Kundenzugriff nicht gefunden."
   ],
+  "Customer allowance": [
+    "Kontingent des Arbeitsbereichs"
+  ],
   "Customer allowances": [
     "Kundenkontingente"
   ],
@@ -2990,6 +3239,9 @@
   ],
   "Customer preview is read-only.": [
     "Die Kundenansicht ist schreibgeschützt."
+  ],
+  "Customer preview is read-only. Build history and retained logs remain available.": [
+    "Die Kundenvorschau ist schreibgeschützt. Build-Verlauf und gespeicherte Protokolle bleiben verfügbar."
   ],
   "Customer profile": [
     "Kundenprofil"
@@ -3045,6 +3297,9 @@
   "Customer-owned cluster": [
     "Kundeneigenes Cluster"
   ],
+  "Customer-wide hosting allowances. Project or provider limits may be stricter.": [
+    "Hosting-Kontingente für den gesamten Arbeitsbereich. Projekt- oder Anbieterlimits können strenger sein."
+  ],
   "Customers": [
     "Kunden"
   ],
@@ -3077,6 +3332,9 @@
   ],
   "Daily recipients": [
     "Empfänger pro Tag"
+  ],
+  "Daily schedule": [
+    "Täglicher Zeitplan"
   ],
   "Dark": [
     "Dunkel"
@@ -3285,11 +3543,20 @@
   "Deploy release": [
     "Release bereitstellen"
   ],
+  "Deploying": [
+    "Bereitstellung läuft"
+  ],
+  "Deployment ready": [
+    "Bereitgestellt"
+  ],
   "Deployment settings": [
     "Bereitstellungseinstellungen"
   ],
   "Deployment source": [
     "Deployment-Quelle"
+  ],
+  "Deployment status": [
+    "Bereitstellungsstatus"
   ],
   "Deployment target": [
     "Deployment-Ziel"
@@ -3314,6 +3581,9 @@
   ],
   "Design pages freely and preview drafts live.": [
     "Seiten frei gestalten und Entwürfe live ansehen."
+  ],
+  "Desired controls": [
+    "Gewünschte Einstellungen"
   ],
   "Desktop": [
     "Desktop"
@@ -3372,6 +3642,9 @@
   "Disconnect GitHub": [
     "GitHub trennen"
   ],
+  "Disconnect Neon": [
+    "Neon trennen"
+  ],
   "Disconnect Vercel": [
     "Vercel trennen"
   ],
@@ -3386,6 +3659,9 @@
   ],
   "Disconnect from application": [
     "Von Anwendung trennen"
+  ],
+  "Disconnect in Studio to delete its stored access token. Also uninstall Spitzli Cloud Studio in your Vercel team’s integration settings to revoke permission at Vercel. Project mappings and audit records remain; contact us if you need them removed.": [
+    "Trenne die Verbindung in Studio, um den dort gespeicherten Zugriffstoken zu löschen. Deinstalliere Spitzli Cloud Studio zusätzlich in den Integrationseinstellungen deines Vercel-Teams, um die Berechtigung bei Vercel zu widerrufen. Projektzuordnungen und Prüfprotokolle bleiben erhalten. Kontaktiere uns, wenn sie entfernt werden sollen."
   ],
   "Disconnect in Studio to delete its stored access token. Also uninstall Webdock Studio in your Vercel team’s integration settings to revoke permission at Vercel. Project mappings and audit records remain; contact us if you need them removed.": [
     "Trenne die Verbindung in Studio, um den dort gespeicherten Zugriffstoken zu löschen. Deinstalliere Webdock Studio zusätzlich in den Integrationseinstellungen deines Vercel-Teams, um die Berechtigung bei Vercel zu widerrufen. Projektzuordnungen und Prüfprotokolle bleiben erhalten. Kontaktiere uns, wenn sie entfernt werden sollen."
@@ -3426,6 +3702,9 @@
   "Discount": [
     "Rabatt"
   ],
+  "Discuss your project": [
+    "Über dein Projekt sprechen"
+  ],
   "Dismiss secret": [
     "Secret ausblenden"
   ],
@@ -3441,8 +3720,17 @@
   "Do not bypass access controls, access another organisation’s data without permission, disrupt the service, or use it unlawfully. Access may be restricted or suspended where reasonably necessary to protect users, data or the service.": [
     "Umgehe keine Zugriffskontrollen, greife nicht ohne Erlaubnis auf Daten einer anderen Organisation zu, störe den Dienst nicht und nutze ihn nicht rechtswidrig. Der Zugang kann eingeschränkt oder ausgesetzt werden, soweit dies zum Schutz von Nutzern, Daten oder des Dienstes angemessen erforderlich ist."
   ],
+  "Do not upload credentials.json or share a login callback URL or code. Spitzli does not run the CLI for you.": [
+    "Lade keine credentials.json hoch und teile weder die Rückleitungsadresse noch den Anmeldecode. Spitzli führt die CLI nicht für dich aus."
+  ],
   "Do not use media": [
     "Kein Medium verwenden"
+  ],
+  "Dockerfile": [
+    "Dockerfile"
+  ],
+  "Dockerfile path": [
+    "Dockerfile-Pfad"
   ],
   "Does every project run on Vercel?": [
     "Läuft jedes Projekt auf Vercel?"
@@ -3636,6 +3924,9 @@
   "Element": [
     "Element"
   ],
+  "Eligible for retry after {date}": [
+    "Erneuter Versuch frühestens ab {date}"
+  ],
   "Email": [
     "E-Mail"
   ],
@@ -3786,6 +4077,9 @@
   "Enter a valid email address.": [
     "Gib eine gültige E-Mail-Adresse ein."
   ],
+  "Enter a valid email and accept the privacy policy.": [
+    "Gib eine gültige E-Mail-Adresse ein und stimme der Datenschutzerklärung zu."
+  ],
   "Enter a valid resource amount.": [
     "Gib einen gültigen Ressourcenwert ein."
   ],
@@ -3927,6 +4221,9 @@
   "Existing images cannot be replaced. Upload a new image in Media, then select it in your content.": [
     "Vorhandene Bilder können nicht ersetzt werden. Lade unter Medien ein neues Bild hoch und wähle es anschließend in deinem Inhalt aus."
   ],
+  "Existing isolated worker": [
+    "Bisheriger isolierter Worker"
+  ],
   "Existing linked items are preserved. New choices shown from {collection}.": [
     "Vorhandene Verknüpfungen bleiben erhalten. Neue Auswahlmöglichkeiten stammen aus {collection}."
   ],
@@ -3960,11 +4257,17 @@
   "Expires at": [
     "Gültig bis"
   ],
+  "Explore Spitzli Cloud": [
+    "Spitzli Cloud entdecken"
+  ],
   "Explore Webdock": [
     "Webdock entdecken"
   ],
   "Explore project data with Tabularis.": [
     "Projektdaten mit Tabularis erkunden."
+  ],
+  "Extension plan and workload usage": [
+    "Erweiterungstarif und Ressourcennutzung"
   ],
   "External backups, WAL archiving, PITR and restore verification are deferred. No backup service is active.": [
     "Externe Backups, WAL-Archivierung, zeitpunktbezogene Wiederherstellung und Wiederherstellungstests sind zurückgestellt. Es ist kein Backupdienst aktiv."
@@ -4059,6 +4362,9 @@
   "Finish the installation and return to Studio. Match an active Studio project to its Vercel project in Integrations.": [
     "Schließe die Installation ab und kehre zu Studio zurück. Ordne unter Integrationen ein aktives Studio-Projekt seinem Vercel-Projekt zu."
   ],
+  "Finished": [
+    "Abgeschlossen"
+  ],
   "First Vercel projects": [
     "Erste Vercel-Projekte"
   ],
@@ -4145,6 +4451,9 @@
   ],
   "From the first preview to the finished website. Webdock gives your project a place to call home.": [
     "Von der ersten Vorschau bis zur fertigen Website. Webdock gibt deinem Projekt ein Zuhause."
+  ],
+  "From your idea\nto your application.": [
+    "Von deiner Idee\nzu deiner Anwendung."
   ],
   "From “take a look”\nto “we’re live”.": [
     "Von „Schau mal rein“\nbis „Wir sind online“."
@@ -4305,6 +4614,9 @@
   "Grant access": [
     "Zugriff gewähren"
   ],
+  "Grant backup policy": [
+    "Backup-Richtlinie genehmigen"
+  ],
   "Grant mailbox access": [
     "Postfachzugriff gewähren"
   ],
@@ -4328,6 +4640,9 @@
   ],
   "HTTP status (0 = unfinished)": [
     "HTTP-Status (0 = nicht abgeschlossen)"
+  ],
+  "HTTPS S3 endpoint": [
+    "HTTPS-S3-Endpunkt"
   ],
   "HTTPS not checked": [
     "HTTPS nicht geprüft"
@@ -4371,6 +4686,12 @@
   "Hide value": [
     "Wert verbergen"
   ],
+  "Historical completed backups": [
+    "Historisch abgeschlossene Backups"
+  ],
+  "Historical last completed backup": [
+    "Zuletzt historisch abgeschlossenes Backup"
+  ],
   "History for record ": [
     "Verlauf für Eintrag "
   ],
@@ -4397,6 +4718,9 @@
   ],
   "Hosting allowances": [
     "Hosting-Kontingente"
+  ],
+  "Hosting allowances and reservations, plus project and extension usage.": [
+    "Hosting-Kontingente und Reservierungen sowie die Nutzung von Projekten und Erweiterungen."
   ],
   "Hosting and resource limits": [
     "Hosting und Ressourcenlimits"
@@ -4427,6 +4751,12 @@
   ],
   "Hosting is disabled by default. Enter whole units or unlimited explicitly.": [
     "Hosting ist standardmäßig gesperrt. Ganze Einheiten oder ausdrücklich unlimited eingeben."
+  ],
+  "Hosting is not configured": [
+    "Hosting ist nicht eingerichtet"
+  ],
+  "Hosting is not enabled for this installation.": [
+    "Hosting ist für diese Installation nicht aktiviert."
   ],
   "Hosting is unavailable. Check the current state before retrying.": [
     "Hosting ist nicht erreichbar. Vor einem erneuten Versuch den aktuellen Zustand prüfen."
@@ -4473,17 +4803,26 @@
   "How Plausible processes visitor data": [
     "So verarbeitet Plausible Besucherdaten"
   ],
+  "How Spitzli Cloud processes personal data, uses service providers and protects your rights.": [
+    "Wie Spitzli Cloud personenbezogene Daten verarbeitet, Dienstleister einsetzt und deine Rechte wahrt."
+  ],
   "How Webdock handles account, customer, tenant and Vercel integration data.": [
     "Wie Webdock mit Konto-, Kunden-, Mandanten- und Vercel-Integrationsdaten umgeht."
   ],
   "How Webdock processes personal data, uses service providers and protects your rights.": [
     "Wie Webdock personenbezogene Daten verarbeitet, Dienstleister einsetzt und deine Rechte wahrt."
   ],
+  "How do I access Spitzli Cloud?": [
+    "Wie bekomme ich Zugang zu Spitzli Cloud?"
+  ],
   "How do I access Webdock Studio?": [
     "Wie bekomme ich Zugang zu Webdock Studio?"
   ],
   "How do I get a Webdock subdomain?": [
     "Wie bekomme ich eine Webdock-Subdomain?"
+  ],
+  "How does a spitzli.site address work?": [
+    "Wie funktioniert eine Adresse auf spitzli.site?"
   ],
   "I accept the displayed price, included services, website and agreement terms.": [
     "Ich akzeptiere den angezeigten Preis, die enthaltenen Leistungen, die zugeordnete Website und die Vertragsbedingungen."
@@ -4499,6 +4838,9 @@
   ],
   "I agree to interrupt database connections for this upgrade now.": [
     "Ich stimme zu, Datenbankverbindungen für dieses Upgrade jetzt zu unterbrechen."
+  ],
+  "I agree to the": [
+    "Ich stimme der"
   ],
   "I am authorized to create this provider subaccount and accept its": [
     "Ich bin berechtigt, dieses Anbieter-Unterkonto zu erstellen, und akzeptiere dessen"
@@ -4553,6 +4895,9 @@
   ],
   "Illustration: a preview, a website and a custom domain connected to Webdock.": [
     "Illustration: eine Vorschau, eine Website und eine eigene Domain, die mit Webdock verbunden sind."
+  ],
+  "Illustration: a workspace, an application and its domain connected through Spitzli Cloud.": [
+    "Illustration: Ein Workspace, eine Anwendung und ihre Domain — verbunden über Spitzli Cloud."
   ],
   "Image": [
     "Bild"
@@ -5046,6 +5391,9 @@
   "Keep this record and its history, and remove it from the active list. You can restore it later.": [
     "Behalte diesen Eintrag samt Verlauf bei und entferne ihn aus der aktiven Liste. Du kannst ihn später wiederherstellen."
   ],
+  "Keep your projects connected.": [
+    "Deine Projekte bleiben verbunden."
+  ],
   "Keep your website up to date.": [
     "Halte deine Website aktuell."
   ],
@@ -5129,6 +5477,9 @@
   ],
   "Legal notice": [
     "Impressum"
+  ],
+  "Legal notice — Spitzli Cloud": [
+    "Impressum — Spitzli Cloud"
   ],
   "Legal notice — Webdock": [
     "Impressum — Webdock"
@@ -5217,8 +5568,26 @@
   "Load repositories": [
     "Repositories laden"
   ],
+  "Loading GitHub connections…": [
+    "GitHub-Verbindungen werden geladen…"
+  ],
   "Loading Mail…": [
     "Mail wird geladen…"
+  ],
+  "Loading access requests…": [
+    "Zugangsanfragen werden geladen…"
+  ],
+  "Loading assigned addresses…": [
+    "Zugewiesene Adressen werden geladen…"
+  ],
+  "Loading build history…": [
+    "Build-Verlauf wird geladen…"
+  ],
+  "Loading build…": [
+    "Build wird geladen…"
+  ],
+  "Loading connections…": [
+    "Verbindungen werden geladen…"
   ],
   "Loading connection…": [
     "Verbindung wird geladen …"
@@ -5226,8 +5595,14 @@
   "Loading deployment information…": [
     "Deployment-Informationen werden geladen …"
   ],
+  "Loading hosting reservations…": [
+    "Hosting-Reservierungen werden geladen…"
+  ],
   "Loading hosting status…": [
     "Hosting-Zustand wird geladen…"
+  ],
+  "Loading logs…": [
+    "Protokolle werden geladen…"
   ],
   "Loading messages…": [
     "Nachrichten werden geladen…"
@@ -5237,6 +5612,18 @@
   ],
   "Loading projects…": [
     "Projekte werden geladen …"
+  ],
+  "Loading project…": [
+    "Projekt wird geladen…"
+  ],
+  "Loading publications…": [
+    "Veröffentlichungen werden geladen…"
+  ],
+  "Loading repositories…": [
+    "Repositories werden geladen…"
+  ],
+  "Loading sources…": [
+    "Quellen werden geladen…"
   ],
   "Loading workspace…": [
     "Arbeitsbereich wird geladen …"
@@ -5670,6 +6057,9 @@
   "Manage your sign-in and account security in one place.": [
     "Verwalte Anmeldung und Kontosicherheit an einem Ort."
   ],
+  "Manage your websites, applications and the services they use from one place.": [
+    "Verwalte deine Websites, Anwendungen und die zugehörigen Dienste an einem Ort."
+  ],
   "Managed": [
     "Verwaltet"
   ],
@@ -5696,6 +6086,9 @@
   ],
   "Managed applications": [
     "Verwaltete Anwendungen"
+  ],
+  "Managed build cluster": [
+    "Verwalteter Build-Cluster"
   ],
   "Managed by": [
     "Verwaltung"
@@ -5913,6 +6306,9 @@
   "My account": [
     "Mein Konto"
   ],
+  "My project with Spitzli Cloud": [
+    "Mein Projekt mit Spitzli Cloud"
+  ],
   "My project with Webdock": [
     "Mein Projekt mit Webdock"
   ],
@@ -5970,6 +6366,36 @@
   "Needs review": [
     "Prüfung erforderlich"
   ],
+  "Neon API key": [
+    "Neon-API-Schlüssel"
+  ],
+  "Neon bills your own account and applies its own quotas. This connection does not use the platform's free database allowance.": [
+    "Neon rechnet über dein eigenes Konto ab und wendet eigene Kontingente an. Diese Verbindung nutzt nicht das kostenlose Datenbankkontingent der Plattform."
+  ],
+  "Neon connected. Refresh projects to read your Neon inventory.": [
+    "Neon ist verbunden. Aktualisiere die Projekte, um deine Neon-Projekte abzurufen."
+  ],
+  "Neon disconnected. Your Neon projects and data are unchanged.": [
+    "Neon ist getrennt. Deine Neon-Projekte und Daten bleiben unverändert."
+  ],
+  "Neon inventory is unavailable. The key may be invalid or revoked, or Neon may be unavailable. Check the key and refresh; no fallback is used.": [
+    "Die Neon-Projektübersicht ist nicht verfügbar. Der Schlüssel könnte ungültig oder widerrufen sein oder Neon ist nicht erreichbar. Prüfe den Schlüssel und aktualisiere die Übersicht; es wird kein Ersatzanbieter verwendet."
+  ],
+  "Neon project ID (optional)": [
+    "Neon-Projekt-ID (optional)"
+  ],
+  "Neon project inventory": [
+    "Neon-Projektübersicht"
+  ],
+  "Neon project scope": [
+    "Neon-Projektbindung"
+  ],
+  "Neon projects (read only)": [
+    "Neon-Projekte (schreibgeschützt)"
+  ],
+  "Neon rejected this request or access is unavailable. Check your API key, Neon project ID and permissions. No alternative provider was used.": [
+    "Neon hat diese Anfrage abgelehnt oder der Zugriff ist nicht verfügbar. Prüfe deinen API-Schlüssel, die Neon-Projekt-ID und deine Berechtigungen. Es wurde kein anderer Anbieter verwendet."
+  ],
   "Neon’s data-processing agreement": [
     "Neons Vereinbarung zur Auftragsverarbeitung"
   ],
@@ -6009,11 +6435,20 @@
   "New records are created by the website in this content area.": [
     "Neue Datensätze in diesem Bereich werden von der Website erstellt."
   ],
+  "New requests will appear here.": [
+    "Neue Anfragen erscheinen hier."
+  ],
+  "New shared and self-hosted PostgreSQL orders are retired. For a new database, create a project in your own Neon account. Connect your Neon account in Connections. Existing databases remain available below.": [
+    "Neue Bestellungen für geteiltes und selbst gehostetes PostgreSQL sind eingestellt. Erstelle für eine neue Datenbank ein Projekt in deinem eigenen Neon-Konto. Verbinde dein Neon-Konto unter Verbindungen. Bestehende Datenbanken sind unten weiterhin verfügbar."
+  ],
   "New {type}": [
     "Neu: {type}"
   ],
   "Newest first": [
     "Neueste zuerst"
+  ],
+  "Newest requests": [
+    "Neueste Anfragen"
   ],
   "Next": [
     "Weiter"
@@ -6029,6 +6464,9 @@
   ],
   "Next page": [
     "Nächste Seite"
+  ],
+  "Next project page": [
+    "Nächste Projektseite"
   ],
   "Next repositories": [
     "Nächste Repositories"
@@ -6060,6 +6498,9 @@
   "No Mail account has been set up for this tenant.": [
     "Für diesen Mandanten wurde noch kein Mail-Konto eingerichtet."
   ],
+  "No Neon projects are available to this key.": [
+    "Für diesen Schlüssel sind keine Neon-Projekte verfügbar."
+  ],
   "No PostgreSQL installations.": [
     "Keine PostgreSQL-Installationen vorhanden."
   ],
@@ -6072,8 +6513,14 @@
   "No access assigned": [
     "Kein Zugriff zugewiesen"
   ],
+  "No access requests": [
+    "Keine Zugangsanfragen"
+  ],
   "No accessible installations found. Install the app on a GitHub account and choose the repositories to make available.": [
     "Keine zugänglichen Installationen gefunden. Installiere die App in einem GitHub-Konto und wähle die freizugebenden Repositories aus."
+  ],
+  "No active GitHub connection": [
+    "Keine aktive GitHub-Verbindung"
   ],
   "No active projects.": [
     "Keine aktiven Projekte."
@@ -6086,6 +6533,12 @@
   ],
   "No addresses saved.": [
     "Keine Adressen hinterlegt."
+  ],
+  "No agent observation is available.": [
+    "Es liegt keine Beobachtung durch einen Agent vor."
+  ],
+  "No application target": [
+    "Keine Zielanwendung"
   ],
   "No applications deployed yet.": [
     "Noch keine Anwendungen bereitgestellt."
@@ -6104,6 +6557,9 @@
   ],
   "No build output yet.": [
     "Noch keine Build-Ausgabe vorhanden."
+  ],
+  "No builds yet": [
+    "Noch keine Builds"
   ],
   "No builds yet.": [
     "Noch keine Builds vorhanden."
@@ -6129,8 +6585,14 @@
   "No credentials created yet.": [
     "Noch keine Zugangsdaten erstellt."
   ],
+  "No custom domains yet. Public apps can use an assigned address when public hosting is enabled.": [
+    "Noch keine eigenen Domains. Öffentliche Apps können bei aktiviertem öffentlichem Hosting eine zugewiesene Adresse verwenden."
+  ],
   "No custom tracking domains yet.": [
     "Noch keine eigenen Tracking-Domains."
+  ],
+  "No customer limit": [
+    "Kein Limit für den Arbeitsbereich"
   ],
   "No customer members yet. Invite the first person with the Administrator role.": [
     "Noch keine Kundenmitglieder. Lade die erste Person mit der Admin-Rolle ein."
@@ -6161,6 +6623,9 @@
   ],
   "No domain of your own? Your project can live on a Webdock subdomain. Easy to share, easy to find again.": [
     "Keine eigene Domain? Dein Projekt kann auf einer Webdock-Subdomain laufen. Einfach zu teilen und leicht wiederzufinden."
+  ],
+  "No domain of your own? Your public project gets an address on spitzli.site. Easy to share, easy to find again.": [
+    "Noch keine eigene Domain? Dein öffentliches Projekt bekommt eine Adresse auf spitzli.site. Einfach zu teilen und wiederzufinden."
   ],
   "No domain yet": [
     "Noch keine Domain"
@@ -6203,6 +6668,9 @@
   ],
   "No invitations yet.": [
     "Noch keine Einladungen."
+  ],
+  "No log output yet.": [
+    "Noch keine Protokollausgabe."
   ],
   "No log output.": [
     "Keine Protokollausgabe."
@@ -6327,20 +6795,32 @@
   "No releases yet.": [
     "Noch keine Releases vorhanden."
   ],
+  "No repositories are authorized for this account. Ask your provider to update its repository access.": [
+    "Für dieses Konto sind keine Repositories freigegeben. Bitte deinen Anbieter, den Repository-Zugriff zu aktualisieren."
+  ],
   "No repositories are available on this page. Review the app’s selected repositories on GitHub.": [
     "Auf dieser Seite sind keine Repositories verfügbar. Prüfe die für die App ausgewählten Repositories auf GitHub."
   ],
   "No repository linked": [
     "Kein Repository verknüpft"
   ],
+  "No repository source": [
+    "Kein Repository verbunden"
+  ],
   "No requests yet. New requests appear here.": [
     "Noch keine Anfragen. Neue Anfragen erscheinen hier."
+  ],
+  "No resource reservations have been reported yet.": [
+    "Es wurden noch keine reservierten Ressourcen gemeldet."
   ],
   "No resources match this view.": [
     "Keine Ressourcen passen zu dieser Ansicht."
   ],
   "No results. Try a different name or change the search scope.": [
     "Keine Ergebnisse. Versuche einen anderen Namen oder ändere den Suchbereich."
+  ],
+  "No retained build output has been submitted for publication.": [
+    "Noch kein Build-Ergebnis zur Veröffentlichung eingereicht."
   ],
   "No sender domains added yet.": [
     "Noch keine Absenderdomains hinzugefügt."
@@ -6350,6 +6830,9 @@
   ],
   "No sender domains yet. Add your domain below to get the DNS records.": [
     "Noch keine Absenderdomains. Füge unten deine Domain hinzu, um die DNS-Einträge zu erhalten."
+  ],
+  "No service usage has been reported yet.": [
+    "Es wurden noch keine Nutzungsdaten der Dienste gemeldet."
   ],
   "No services connected to applications yet.": [
     "Es sind noch keine Dienste mit Anwendungen verbunden."
@@ -6392,6 +6875,15 @@
   ],
   "No websites found": [
     "Keine Website gefunden"
+  ],
+  "No workspace plan is assigned. Service-specific limits may still apply.": [
+    "Diesem Arbeitsbereich ist kein Tarif zugewiesen. Für einzelne Dienste können weiterhin Limits gelten."
+  ],
+  "No. A public project can use an address such as your-project.spitzli.site. You can also connect a domain you own.": [
+    "Nein. Ein öffentliches Projekt kann eine Adresse wie dein-projekt.spitzli.site nutzen. Du kannst auch deine eigene Domain verbinden."
+  ],
+  "No. Spitzli Cloud uses supported hosting environments to suit each project. Your public address does not decide where the application runs.": [
+    "Nein. Spitzli Cloud nutzt passende unterstützte Hosting-Umgebungen für das jeweilige Projekt. Deine öffentliche Adresse bestimmt nicht, wo die Anwendung läuft."
   ],
   "No. Your project can live on a subdomain such as your-project.webdock.dev. If you would like to use your own domain, we will work out the right setup for your project.": [
     "Nein. Dein Projekt kann auf einer Subdomain wie your-project.webdock.dev laufen. Wenn du eine eigene Domain verwenden möchtest, finden wir die passende Einrichtung für dein Projekt."
@@ -6438,6 +6930,9 @@
   "Not selected": [
     "Nicht ausgewählt"
   ],
+  "Not started": [
+    "Noch nicht gestartet"
+  ],
   "Not verified": [
     "Nicht geprüft"
   ],
@@ -6461,6 +6956,9 @@
   ],
   "Objects": [
     "Objekte"
+  ],
+  "Observed controls": [
+    "Beobachtete Einstellungen"
   ],
   "Observed state": [
     "Gemeldeter Zustand"
@@ -6500,6 +6998,9 @@
   ],
   "Offers": [
     "Angebote"
+  ],
+  "Older requests": [
+    "Ältere Anfragen"
   ],
   "Oldest completed customer reconciliation": [
     "Ältester abgeschlossener Kundenabgleich"
@@ -6561,11 +7062,17 @@
   "Only select repositories": [
     "Nur ausgewählte Repositories"
   ],
+  "Only successful push runs of {workflow} may start automatic builds. Publication approval remains separate.": [
+    "Nur erfolgreiche, durch Push ausgelöste Läufe von {workflow} dürfen automatische Builds starten. Die Freigabe zur Veröffentlichung bleibt davon getrennt."
+  ],
   "Only the first 1,000 projects are shown. Narrow access in your Vercel integration if needed.": [
     "Die ersten 1.000 Projekte werden angezeigt. Begrenze bei Bedarf den Zugriff in deiner Vercel-Integration."
   ],
   "Only the functions and resources included in the accepted offer are owed. Preview or beta features are identified as such and do not expand the agreed service. We maintain and secure the services; maintenance, incidents and external providers can affect availability. A specific uptime, response time, backup schedule or recovery period applies only if agreed. This does not limit statutory rights concerning defects, security updates or non-performance.": [
     "Geschuldet sind die im angenommenen Angebot enthaltenen Funktionen und Ressourcen. Vorschau- oder Betafunktionen werden als solche kenntlich gemacht und erweitern die vereinbarte Leistung nicht. Wir warten und sichern die Dienste; Wartung, Störungen und externe Anbieter können die Verfügbarkeit beeinflussen. Bestimmte Verfügbarkeiten, Reaktionszeiten, Sicherungsintervalle oder Wiederherstellungsfristen gelten nur, wenn sie vereinbart wurden. Gesetzliche Rechte bei Mängeln, Sicherheitsupdates oder Nichterfüllung werden dadurch nicht eingeschränkt."
+  ],
+  "Only the most recent log output is displayed.": [
+    "Es wird nur die neueste Protokollausgabe angezeigt."
   ],
   "Only these build values reach repository code. Repository scripts can read them. Runtime variables are configured separately.": [
     "Nur diese Build-Werte werden an den Repository-Code weitergegeben. Repository-Skripte können sie lesen. Laufzeitvariablen werden separat konfiguriert."
@@ -6588,6 +7095,12 @@
   "Open Clerk administration": [
     "Clerk-Verwaltung öffnen"
   ],
+  "Open Console": [
+    "Console öffnen"
+  ],
+  "Open Neon Console": [
+    "Neon-Konsole öffnen"
+  ],
   "Open Studio": [
     "Studio öffnen"
   ],
@@ -6605,6 +7118,9 @@
   ],
   "Open cluster enrollment": [
     "Cluster-Anbindung öffnen"
+  ],
+  "Open connections": [
+    "Verbindungen öffnen"
   ],
   "Open content manager": [
     "Content-Manager öffnen"
@@ -6644,6 +7160,9 @@
   ],
   "Open repository ↗": [
     "Repository öffnen ↗"
+  ],
+  "Open the project applications to see all assigned addresses.": [
+    "Öffne die Projektanwendungen, um alle zugewiesenen Adressen zu sehen."
   ],
   "Open the project in Studio to view hosting details. Refresh to request the latest available status.": [
     "Öffne das Projekt in Studio, um die Hostingdetails anzusehen. Aktualisiere die Ansicht, um den neuesten verfügbaren Status abzurufen."
@@ -6744,6 +7263,9 @@
   "Operator registry": [
     "Plattformverwaltung"
   ],
+  "Operator restore requires a separately reviewed recovery order. This Console flow is not available yet.": [
+    "Die Wiederherstellung durch Betreiber erfordert einen separat geprüften Wiederherstellungsauftrag. Dieser Ablauf ist in der Console noch nicht verfügbar."
+  ],
   "Operator review of agreements and explicit manual releases.": [
     "Vereinbarungen prüfen und manuelle Freigaben ausdrücklich erteilen."
   ],
@@ -6756,6 +7278,9 @@
   "Optional /data storage: enter 0 to disable or at least 68 MB. One instance only. Filesystem overhead reduces usable space. Data and its allowance remain after application deletion.": [
     "Optionaler Speicher unter /data: 0 zum Deaktivieren oder mindestens 68 MB eingeben. Nur eine Instanz. Das Dateisystem benötigt einen Teil des Speicherplatzes. Daten und Speicherbelegung bleiben nach dem Löschen der Anwendung erhalten."
   ],
+  "Optional Vercel and GitHub connections provide authorisation data and information about selected projects or repositories, deployments, domains, branches and commits. Enabled build and deployment workflows also process the source code, build artefacts and configuration needed for those workflows. Access is limited by the connected account’s permissions and the selected function. Disconnecting in Spitzli Cloud and revoking access at the provider are separate actions.": [
+    "Optionale Vercel- und GitHub-Verbindungen liefern Berechtigungsdaten und Informationen über ausgewählte Projekte oder Repositories, Deployments, Domains, Branches und Commits. Aktivierte Build- und Deployment-Abläufe verarbeiten außerdem den dafür benötigten Quellcode, Build-Artefakte und Konfigurationen. Der Zugriff richtet sich nach den Berechtigungen des verbundenen Kontos und der gewählten Funktion. Das Trennen in Spitzli Cloud und der Widerruf des Zugriffs beim Anbieter sind getrennte Vorgänge."
+  ],
   "Optional Vercel and GitHub connections provide authorisation data and information about selected projects or repositories, deployments, domains, branches and commits. Enabled build and deployment workflows also process the source code, build artefacts and configuration needed for those workflows. Access is limited by the connected account’s permissions and the selected function. Disconnecting in Webdock and revoking access at the provider are separate actions.": [
     "Optionale Vercel- und GitHub-Verbindungen liefern Berechtigungsdaten und Informationen über ausgewählte Projekte oder Repositories, Deployments, Domains, Branches und Commits. Aktivierte Build- und Deployment-Abläufe verarbeiten außerdem den dafür benötigten Quellcode, Build-Artefakte und Konfigurationen. Der Zugriff richtet sich nach den Berechtigungen des verbundenen Kontos und der gewählten Funktion. Das Trennen in Webdock und der Widerruf des Zugriffs beim Anbieter sind getrennte Vorgänge."
   ],
@@ -6764,6 +7289,12 @@
   ],
   "Optional services must be enabled separately. Incoming Mail is provisioned only when explicitly activated; outgoing-only Mail does not include a mailbox. Successful handoff to a mail relay does not guarantee delivery to the recipient’s inbox. When you connect your own provider account, its contract and charges continue to apply. We remain responsible for the obligations we have agreed to perform.": [
     "Optionale Dienste müssen gesondert aktiviert werden. E-Mail-Empfang wird nur nach ausdrücklicher Aktivierung eingerichtet; reiner Versand enthält kein Postfach. Eine erfolgreiche Übergabe an ein Mail-Relay garantiert keine Zustellung im Posteingang des Empfängers. Bindest du ein eigenes Anbieterkonto an, gelten dessen Vertrag und Entgelte weiter. Für unsere vereinbarten Verpflichtungen bleiben wir verantwortlich."
+  ],
+  "Optional website analytics are disabled for this waitlist release. We do not load an analytics tracker, record sessions or create heatmaps on this website. Necessary service and security logs remain separate.": [
+    "Optionale Website-Analysen sind für diesen Wartelisten-Release deaktiviert. Wir laden auf dieser Website keinen Analyse-Tracker und erstellen weder Sitzungsaufzeichnungen noch Heatmaps. Notwendige Betriebs- und Sicherheitsprotokolle sind davon getrennt."
+  ],
+  "Optional: create a project key with the Neon CLI": [
+    "Optional: Projektschlüssel mit der Neon-CLI erstellen"
   ],
   "Optional: stay connected during your working session. Signing out of Webdock or disabling this client stops access.": [
     "Optional: Bleibe während deiner Arbeitssitzung verbunden. Wenn du dich von Webdock abmeldest oder diesen Client deaktivierst, endet der Zugriff."
@@ -6785,6 +7316,12 @@
   ],
   "Orders and payments on this website are simulated.": [
     "Bestellungen und Zahlungen werden in dieser Website simuliert."
+  ],
+  "Organization": [
+    "Organisation"
+  ],
+  "Organization ID (optional)": [
+    "Organisations-ID (optional)"
   ],
   "Organization access token": [
     "Zugriffstoken der Organisation"
@@ -7011,6 +7548,9 @@
   "Pending offer not found.": [
     "Offenes Angebot nicht gefunden."
   ],
+  "Pending reservation": [
+    "Ausstehende Reservierung"
+  ],
   "Pending webhook deliveries": [
     "Ausstehende Webhook-Zustellungen"
   ],
@@ -7064,6 +7604,9 @@
   ],
   "Person": [
     "Person"
+  ],
+  "Phase: {phase}": [
+    "Phase: {phase}"
   ],
   "Phone": [
     "Telefon"
@@ -7221,6 +7764,12 @@
   "Prepare managed sending": [
     "Verwalteten Versand vorbereiten"
   ],
+  "Preparing": [
+    "Wird vorbereitet"
+  ],
+  "Preparing build environment": [
+    "Build-Umgebung wird vorbereitet"
+  ],
   "Preserved extras": [
     "Beibehaltene Zusatzkontingente"
   ],
@@ -7257,8 +7806,14 @@
   "Previous accounts": [
     "Vorherige Konten"
   ],
+  "Previous build environment issue: {reason}": [
+    "Vorheriges Problem der Build-Umgebung: {reason}"
+  ],
   "Previous choices": [
     "Vorherige Auswahlmöglichkeiten"
+  ],
+  "Previous observations — not current confirmation": [
+    "Frühere Beobachtungen – keine aktuelle Bestätigung"
   ],
   "Previous repositories": [
     "Vorherige Repositorys"
@@ -7284,6 +7839,9 @@
   "Privacy notice": [
     "Datenschutzerklärung"
   ],
+  "Privacy — Spitzli Cloud": [
+    "Datenschutz — Spitzli Cloud"
+  ],
   "Privacy — Webdock": [
     "Datenschutz — Webdock"
   ],
@@ -7292,6 +7850,9 @@
   ],
   "Private": [
     "Privat"
+  ],
+  "Private bucket": [
+    "Privater Bucket"
   ],
   "Private offer created.": [
     "Privates Angebot erstellt."
@@ -7389,6 +7950,9 @@
   "Project ID": [
     "Projekt-ID"
   ],
+  "Project and extension usage": [
+    "Projekt- und Erweiterungsnutzung"
+  ],
   "Project areas": [
     "Projektbereiche"
   ],
@@ -7403,6 +7967,9 @@
   ],
   "Project extensions": [
     "Projekterweiterungen"
+  ],
+  "Project managers can connect an authorized repository below. Your provider must enable new GitHub account access.": [
+    "Projektverantwortliche können unten ein freigegebenes Repository verbinden. Neue GitHub-Konten muss dein Anbieter freischalten."
   ],
   "Project mappings are preserved. To revoke Vercel’s permission completely, remove this integration in Vercel.": [
     "Projektzuordnungen bleiben erhalten. Entferne diese Integration in Vercel, um die Berechtigung dort vollständig zu widerrufen."
@@ -7464,6 +8031,9 @@
   "Provide both names, accept the provider policy, and configure the assigned sending IP.": [
     "Gib beide Namen an, akzeptiere die Anbieterrichtlinie und konfiguriere die zugewiesene Versand-IP."
   ],
+  "Provide separate writer and read-only recovery credentials. Credentials are sent once and cleared from this form. A recovery key reference does not establish key escrow.": [
+    "Separate Schreib- und schreibgeschützte Wiederherstellungszugangsdaten angeben. Sie werden einmal gesendet und aus diesem Formular gelöscht. Eine Wiederherstellungsschlüsselreferenz belegt keine Schlüsselhinterlegung."
+  ],
   "Provider": [
     "Anbieter"
   ],
@@ -7490,6 +8060,9 @@
   ],
   "Provider callbacks have waited more than two minutes.": [
     "Provider-Callbacks warten seit mehr als zwei Minuten."
+  ],
+  "Provider of Spitzli Cloud pursuant to Section 5 DDG:": [
+    "Anbieter von Spitzli Cloud gemäß § 5 DDG:"
   ],
   "Provider of Webdock pursuant to Section 5 DDG:": [
     "Anbieter von Webdock gemäß § 5 DDG:"
@@ -7536,8 +8109,23 @@
   "Public HTTPS endpoint": [
     "Öffentlicher HTTPS-Endpunkt"
   ],
+  "Public address pending": [
+    "Öffentliche Adresse ausstehend"
+  ],
+  "Public address ready": [
+    "Öffentliche Adresse bereit"
+  ],
+  "Public address reserved": [
+    "Öffentliche Adresse reserviert"
+  ],
   "Public ordering requires a separate product release decision.": [
     "Öffentliche Bestellungen erfordern eine gesonderte Produktfreigabe."
+  ],
+  "Public recovery is unavailable. No recovery window or RPO/RTO commitment is included.": [
+    "Öffentliche Wiederherstellung ist nicht verfügbar. Ein Wiederherstellungszeitraum oder eine RPO-/RTO-Zusage ist nicht enthalten."
+  ],
+  "Public website or app": [
+    "Öffentliche Website oder App"
   ],
   "Publication": [
     "Veröffentlichung"
@@ -7551,8 +8139,14 @@
   "Publication in progress": [
     "Veröffentlichung läuft"
   ],
+  "Publication queued": [
+    "Veröffentlichung eingeplant"
+  ],
   "Publication requires observed health and verified target location.": [
     "Die Veröffentlichung erfordert eine bestätigte Funktionsprüfung und einen überprüften Zielstandort."
+  ],
+  "Publications": [
+    "Veröffentlichungen"
   ],
   "Publish": [
     "Veröffentlichen"
@@ -7602,6 +8196,9 @@
   "Pushes build the configured branch. Production publication requires approval of an exact artifact.": [
     "Pushes bauen den konfigurierten Branch. Die Veröffentlichung in Produktion erfordert die Freigabe eines bestimmten Artefakts."
   ],
+  "Pushing": [
+    "Wird übertragen"
+  ],
   "Quarantined": [
     "In Quarantäne"
   ],
@@ -7622,6 +8219,15 @@
   ],
   "RAM (bytes)": [
     "Arbeitsspeicher (Bytes)"
+  ],
+  "Railpack": [
+    "Railpack"
+  ],
+  "Re-enter identical credentials and retry registration": [
+    "Dieselben Zugangsdaten erneut eingeben und Registrierung wiederholen"
+  ],
+  "Re-enter the same API key and keep the original organization and Neon project IDs to retry the uncertain request.": [
+    "Gib denselben API-Schlüssel erneut ein und behalte die ursprüngliche Organisations- und Neon-Projekt-ID bei, um die Anfrage mit ungewissem Ergebnis zu wiederholen."
   ],
   "Read access": [
     "Lesezugriff"
@@ -7653,11 +8259,17 @@
   "Read-only": [
     "Nur lesen"
   ],
+  "Read-only view. Connection changes and provider inventory refresh are disabled.": [
+    "Schreibgeschützte Ansicht. Änderungen an Verbindungen und das Aktualisieren der Anbieterprojekte sind deaktiviert."
+  ],
   "Reader": [
     "Leser"
   ],
   "Reader — view content": [
     "Leser — Inhalte ansehen"
+  ],
+  "Reading Neon projects…": [
+    "Neon-Projekte werden abgerufen…"
   ],
   "Ready": [
     "Bereit"
@@ -7709,6 +8321,9 @@
   ],
   "Recipients": [
     "Empfänger"
+  ],
+  "Recommended for project-scoped API keys: enter the exact Neon project ID. Leave blank for account or organization keys to list their available projects.": [
+    "Für projektgebundene API-Schlüssel empfohlen: Gib die genaue Neon-Projekt-ID ein. Lasse das Feld bei Konto- oder Organisationsschlüsseln leer, um deren verfügbare Projekte aufzulisten."
   ],
   "Reconcile observed state": [
     "Beobachteten Zustand abgleichen"
@@ -7770,8 +8385,17 @@
   "Recorded status": [
     "Gespeicherter Status"
   ],
+  "Recording request…": [
+    "Anfrage wird erfasst…"
+  ],
+  "Recovery access key": [
+    "Wiederherstellungszugriffsschlüssel"
+  ],
   "Recovery code": [
     "Wiederherstellungscode"
+  ],
+  "Recovery secret key": [
+    "Geheimer Wiederherstellungsschlüssel"
   ],
   "Recurring module operation in addition to Website Plus, following project-specific setup. External calendar integration and payment processing are excluded.": [
     "Laufender Modulbetrieb zusätzlich zu Website Plus, nach projektspezifischer Einrichtung. Keine externe Kalenderintegration oder Zahlungsverarbeitung enthalten."
@@ -7784,6 +8408,9 @@
   ],
   "Redacted response": [
     "Bereinigte Antwort"
+  ],
+  "Redeploy this version": [
+    "Diese Version erneut bereitstellen"
   ],
   "Redo": [
     "Vor"
@@ -7803,8 +8430,14 @@
   "Refresh available services": [
     "Verfügbare Dienste aktualisieren"
   ],
+  "Refresh backup status": [
+    "Backup-Status aktualisieren"
+  ],
   "Refresh connection": [
     "Verbindung aktualisieren"
+  ],
+  "Refresh connections": [
+    "Verbindungen aktualisieren"
   ],
   "Refresh inventory": [
     "Ressourcen aktualisieren"
@@ -7815,6 +8448,12 @@
   "Refresh measurement": [
     "Messung aktualisieren"
   ],
+  "Refresh projects": [
+    "Projekte aktualisieren"
+  ],
+  "Refresh repositories": [
+    "Repositories aktualisieren"
+  ],
   "Refresh the cluster inventory before changing this application.": [
     "Aktualisiere die Ressourcenübersicht, bevor du diese Anwendung änderst."
   ],
@@ -7823,6 +8462,9 @@
   ],
   "Refresh the database connection before deployment.": [
     "Aktualisiere die Datenbankverbindung vor dem Deployment."
+  ],
+  "Refresh to read projects available to this key. No database resources are provisioned by connecting.": [
+    "Aktualisiere die Übersicht, um die für diesen Schlüssel verfügbaren Projekte abzurufen. Beim Verbinden werden keine Datenbankressourcen bereitgestellt."
   ],
   "Refresh tracking status": [
     "Tracking-Status aktualisieren"
@@ -7854,11 +8496,17 @@
   "Register a cluster": [
     "Cluster registrieren"
   ],
+  "Register backup destination": [
+    "Backup-Ziel registrieren"
+  ],
   "Register cluster": [
     "Cluster registrieren"
   ],
   "Register database": [
     "Datenbank registrieren"
+  ],
+  "Register destination": [
+    "Ziel registrieren"
   ],
   "Register sender domain": [
     "Versanddomain registrieren"
@@ -7872,6 +8520,9 @@
   "Registered clients": [
     "Registrierte Clients"
   ],
+  "Registered destination ID": [
+    "ID des registrierten Ziels"
+  ],
   "Registering…": [
     "Wird registriert…"
   ],
@@ -7880,6 +8531,15 @@
   ],
   "Registration starts provider verification. Configure the DNS records shown in your turboSMTP dashboard, then refresh here.": [
     "Die Registrierung startet die Anbieterprüfung. Richte die DNS-Einträge aus deinem turboSMTP-Dashboard ein und aktualisiere anschließend den Status hier."
+  ],
+  "Reject": [
+    "Ablehnen"
+  ],
+  "Rejected": [
+    "Abgelehnt"
+  ],
+  "Rejecting…": [
+    "Wird abgelehnt…"
   ],
   "Release health has not been verified.": [
     "Die Funktionsfähigkeit des Releases wurde noch nicht bestätigt."
@@ -7895,6 +8555,9 @@
   ],
   "Reload": [
     "Neu laden"
+  ],
+  "Reload settings": [
+    "Einstellungen neu laden"
   ],
   "Reload the CMS and try again.": [
     "Lade das CMS neu und versuche es erneut."
@@ -7934,6 +8597,9 @@
   ],
   "Remove membership": [
     "Mitgliedschaft entfernen"
+  ],
+  "Remove only the Spitzli connection and stored API key? Your Neon projects and data remain intact.": [
+    "Nur die Spitzli-Verbindung und den gespeicherten API-Schlüssel entfernen? Deine Neon-Projekte und Daten bleiben erhalten."
   ],
   "Remove or reconcile the sending registration before removing its local domain entry.": [
     "Entferne oder prüfe die Versandregistrierung, bevor du den lokalen Domain-Eintrag entfernst."
@@ -7998,6 +8664,9 @@
   "Renew approval": [
     "Freigabe erneuern"
   ],
+  "Replace connection key": [
+    "Verbindungsschlüssel ersetzen"
+  ],
   "Replace image": [
     "Bild ersetzen"
   ],
@@ -8052,6 +8721,15 @@
   "Repository permissions → Metadata → Read-only; Contents → Read-only": [
     "Repository-Berechtigungen → Metadaten → Nur lesen; Inhalte → Nur lesen"
   ],
+  "Repository provider adapter is unavailable.": [
+    "Die Anbindung des Repository-Anbieters ist nicht verfügbar."
+  ],
+  "Repository setup is unavailable": [
+    "Repository-Einrichtung nicht verfügbar"
+  ],
+  "Repository source": [
+    "Repository-Quelle"
+  ],
   "Repository suggestions": [
     "Vorschläge aus dem Repository"
   ],
@@ -8060,6 +8738,9 @@
   ],
   "Request a new link": [
     "Neuen Link anfordern"
+  ],
+  "Request approved. Invite this contact from workspace member management to grant access.": [
+    "Anfrage freigegeben. Lade diesen Kontakt über die Mitgliederverwaltung eines Workspaces ein, um Zugriff zu vergeben."
   ],
   "Request cancellation": [
     "Kündigung anfordern"
@@ -8076,14 +8757,29 @@
   "Request pages": [
     "Anfragenseiten"
   ],
+  "Request recorded.": [
+    "Anfrage erfasst."
+  ],
+  "Request reference": [
+    "Auftragsreferenz"
+  ],
+  "Request rejected.": [
+    "Anfrage abgelehnt."
+  ],
   "Request rollback": [
     "Rollback anfordern"
   ],
   "Request saved.": [
     "Anfrage gespeichert."
   ],
+  "Request to completion": [
+    "Von Anfrage bis Abschluss"
+  ],
   "Request unavailable": [
     "Anfrage nicht verfügbar"
+  ],
+  "Requested": [
+    "Angefordert"
   ],
   "Requested permissions": [
     "Angeforderte Berechtigungen"
@@ -8175,8 +8871,14 @@
   "Restore account": [
     "Konto wiederherstellen"
   ],
+  "Restore database": [
+    "Datenbank wiederherstellen"
+  ],
   "Restore original homepage": [
     "Ursprüngliche Startseite wiederherstellen"
+  ],
+  "Restore point": [
+    "Wiederherstellungspunkt"
   ],
   "Restore record": [
     "Datensatz wiederherstellen"
@@ -8211,8 +8913,14 @@
   "Retained data has been permanently removed. The storage allowance is available again.": [
     "Die aufbewahrten Daten wurden endgültig entfernt. Das Speicherkontingent steht wieder zur Verfügung."
   ],
+  "Retained logs": [
+    "Gespeicherte Protokolle"
+  ],
   "Retained migration sources": [
     "Aufbewahrte Migrationsquellen"
+  ],
+  "Retained recovery key reference": [
+    "Referenz des separat aufbewahrten Wiederherstellungsschlüssels"
   ],
   "Retained until": [
     "Aufbewahrt bis"
@@ -8220,17 +8928,38 @@
   "Retention and disconnection": [
     "Speicherdauer und Trennung der Verbindung"
   ],
+  "Retention days": [
+    "Aufbewahrungstage"
+  ],
+  "Retention deletion permission": [
+    "Löschberechtigung nach Aufbewahrungsregel"
+  ],
   "Retention has not expired.": [
     "Die Aufbewahrungsfrist ist noch nicht abgelaufen."
   ],
   "Retired": [
     "Abgelöst"
   ],
+  "Retries": [
+    "Wiederholungen"
+  ],
   "Retry Mail operation": [
     "E-Mail-Änderung erneut ausführen"
   ],
+  "Retry same connection": [
+    "Dieselbe Verbindung erneut versuchen"
+  ],
+  "Retry same disconnection": [
+    "Dieselbe Trennung erneut versuchen"
+  ],
+  "Retry same request": [
+    "Denselben Auftrag wiederholen"
+  ],
   "Retry setup": [
     "Einrichtung erneut versuchen"
+  ],
+  "Retry the original unchanged request. Re-enter the identical credentials for a destination registration.": [
+    "Den ursprünglichen Auftrag unverändert wiederholen. Bei der Zielregistrierung dieselben Zugangsdaten erneut eingeben."
   ],
   "Return this record to your active workspace.": [
     "Diesen Datensatz in deinen aktiven Arbeitsbereich zurückholen."
@@ -8252,6 +8981,9 @@
   ],
   "Review": [
     "Prüfung"
+  ],
+  "Review access requests. Approval permits onboarding; workspace access is assigned separately.": [
+    "Prüfe Zugangsanfragen. Die Freigabe ermöglicht die Einrichtung; Workspace-Zugriff wird separat vergeben."
   ],
   "Review agreement": [
     "Vereinbarung prüfen"
@@ -8322,6 +9054,9 @@
   "Revoke agent": [
     "Agent-Zugang widerrufen"
   ],
+  "Revoke backup grant": [
+    "Backup-Berechtigung widerrufen"
+  ],
   "Revoke credential": [
     "Zugangsdaten widerrufen"
   ],
@@ -8330,6 +9065,9 @@
   ],
   "Revoke offer": [
     "Angebot widerrufen"
+  ],
+  "Revoke the backup grant? Recurrence stops only after agent observation. WAL and retention deletion permissions are unchanged.": [
+    "Backup-Berechtigung widerrufen? Die Wiederholung stoppt erst nach Bestätigung durch den Agent. WAL- und Aufbewahrungslöschberechtigungen bleiben unverändert."
   ],
   "Revoke the existing agent before replacement.": [
     "Vor dem Austausch den bestehenden Agent-Zugang widerrufen."
@@ -8366,6 +9104,12 @@
   ],
   "Rollback reuses a retained artifact. It does not restore a database.": [
     "Ein Rollback verwendet ein aufbewahrtes Artefakt erneut. Eine Datenbank wird dabei nicht wiederhergestellt."
+  ],
+  "Rollout failed": [
+    "Bereitstellung fehlgeschlagen"
+  ],
+  "Rollout operation": [
+    "Bereitstellung ansehen"
   ],
   "Room for ideas": [
     "Raum für Ideen"
@@ -8409,6 +9153,9 @@
   "Run the configured workflow in GitHub Actions. Webdock imports successful builds automatically.": [
     "Starte den konfigurierten Workflow in GitHub Actions. Webdock importiert erfolgreiche Builds automatisch."
   ],
+  "Run the official Neon CLI on your own computer. The localhost login callback belongs to that same computer. Use that same project ID in the Neon project ID field above, then paste only the project API key into the form.": [
+    "Führe die offizielle Neon-CLI auf deinem eigenen Computer aus. Die lokale Anmelde-Rückleitung gehört zu diesem Computer. Trage dieselbe Projekt-ID in das Feld für die Neon-Projekt-ID oben ein und füge dann nur den Projekt-API-Schlüssel in das Formular ein."
+  ],
   "Run the simulator example": [
     "Simulator-Beispiel ausführen"
   ],
@@ -8423,6 +9170,9 @@
   ],
   "Runtime proxy secret": [
     "Proxy-Geheimnis der Instanz"
+  ],
+  "S3 region": [
+    "S3-Region"
   ],
   "SEO & contact": [
     "Suchmaschinen und Kontakt"
@@ -8492,6 +9242,9 @@
   ],
   "Save and publish": [
     "Speichern und veröffentlichen"
+  ],
+  "Save build settings": [
+    "Build-Einstellungen speichern"
   ],
   "Save change": [
     "Änderung speichern"
@@ -8616,6 +9369,9 @@
   "Schedule": [
     "Versandtermin"
   ],
+  "Schedule suspension, WAL archiving and retention deletion are independent. Stop the schedule before disabling WAL.": [
+    "Zeitplanaussetzung, WAL-Archivierung und Aufbewahrungslöschung sind unabhängig. Vor dem Deaktivieren von WAL den Zeitplan stoppen."
+  ],
   "Scheduled": [
     "Geplant"
   ],
@@ -8691,6 +9447,9 @@
   "Select SMTP sending or API sending when creating the credential for your application.": [
     "Wähle beim Erstellen der Zugangsdaten für deine Anwendung SMTP-Versand oder API-Versand."
   ],
+  "Select a GitHub account": [
+    "GitHub-Konto auswählen"
+  ],
   "Select a Vercel connection and project before enabling Git deployments.": [
     "Wähle eine Vercel-Verbindung und ein Projekt, bevor du Git-Deployments aktivierst."
   ],
@@ -8720,6 +9479,9 @@
   ],
   "Select a repository": [
     "Repository auswählen"
+  ],
+  "Select a repository already authorized for this workspace. Build access and publication are approved separately.": [
+    "Wähle ein für diesen Arbeitsbereich freigegebenes Repository. Die Freischaltung von Builds und die Veröffentlichung erfolgen separat."
   ],
   "Select a state": [
     "Status auswählen"
@@ -8774,6 +9536,9 @@
   ],
   "Selected": [
     "Ausgewählt"
+  ],
+  "Selected build": [
+    "Ausgewählter Build"
   ],
   "Selected content": [
     "Ausgewählter Inhalt"
@@ -9042,6 +9807,9 @@
   "Shared CPU and memory; measured logical storage allowance.": [
     "Gemeinsam genutzte CPU und RAM; gemessenes logisches Speicherkontingent."
   ],
+  "Shared PostgreSQL backup, restore and clone are unavailable.": [
+    "Backup, Wiederherstellung und Klonen für Shared PostgreSQL sind nicht verfügbar."
+  ],
   "Shared platform cluster": [
     "Gemeinsam genutztes Plattform-Cluster"
   ],
@@ -9102,6 +9870,9 @@
   "Sign in to": [
     "Melde dich bei"
   ],
+  "Sign in to Spitzli Cloud": [
+    "Bei Spitzli Cloud anmelden"
+  ],
   "Sign in to Studio again.": [
     "Melde dich erneut bei Studio an."
   ],
@@ -9135,6 +9906,9 @@
   "Sign in using your device PIN, fingerprint, face or security key. Your device confirmation completes sign-in without an extra authenticator code. Signing in with your password still requires your authenticator when enabled.": [
     "Melde dich mit Geräte-PIN, Fingerabdruck, Gesichtserkennung oder Sicherheitsschlüssel an. Die Bestätigung auf deinem Gerät schließt die Anmeldung ohne zusätzlichen Authenticator-Code ab. Bei der Anmeldung mit Passwort bleibt die Authenticator-App erforderlich, sofern sie aktiviert ist."
   ],
+  "Sign in with Spitzli Cloud": [
+    "Mit Spitzli Cloud anmelden"
+  ],
   "Sign in with Webdock": [
     "Mit Webdock anmelden"
   ],
@@ -9156,6 +9930,9 @@
   "Sign out failed. Please retry.": [
     "Abmelden fehlgeschlagen. Bitte erneut versuchen."
   ],
+  "Sign out of Spitzli Cloud?": [
+    "Von Spitzli Cloud abmelden?"
+  ],
   "Sign-in failed. Check your email and password.": [
     "Anmeldung fehlgeschlagen. Prüfe deine E-Mail-Adresse und dein Passwort."
   ],
@@ -9176,6 +9953,9 @@
   ],
   "Site builder": [
     "Site-Builder"
+  ],
+  "Six fields: 0 minute hour * * *. Provider schedule timezone applies.": [
+    "Sechs Felder: 0 Minute Stunde * * *. Es gilt die Zeitzone des Anbieterzeitplans."
   ],
   "Size": [
     "Größe"
@@ -9230,6 +10010,54 @@
   ],
   "Spicy": [
     "Scharf"
+  ],
+  "Spitzli Cloud Console brings your projects, applications and services together. Access is by invitation.": [
+    "Die Spitzli Cloud Console bringt deine Projekte, Anwendungen und Dienste zusammen. Der Zugang erfolgt auf Einladung."
+  ],
+  "Spitzli Cloud Studio": [
+    "Spitzli Cloud Studio"
+  ],
+  "Spitzli Cloud Studio · Integration guide": [
+    "Spitzli Cloud Studio · Integrationsanleitung"
+  ],
+  "Spitzli Cloud and Spitzli Development": [
+    "Spitzli Cloud und Spitzli Development"
+  ],
+  "Spitzli Cloud brings websites, applications and their services together. It is operated by Spitzli Development, with a direct connection to the person building your project.": [
+    "Spitzli Cloud bringt Websites, Anwendungen und ihre Dienste zusammen. Betrieben von Spitzli Development — mit direktem Kontakt zum Entwickler deines Projekts."
+  ],
+  "Spitzli Cloud could not be reached. Check your connection and try again.": [
+    "Spitzli Cloud ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut."
+  ],
+  "Spitzli Cloud home": [
+    "Spitzli Cloud-Startseite"
+  ],
+  "Spitzli Cloud is a service of Spitzli Development. These provider details apply to Spitzli Cloud’s own website and services. Independently operated customer websites are the responsibility of their respective providers.": [
+    "Spitzli Cloud ist ein Angebot von Spitzli Development. Diese Anbieterangaben gelten für die eigene Spitzli Cloud-Website und die Spitzli Cloud-Dienste. Für eigenständig betriebene Kundenwebsites sind deren jeweilige Anbieter verantwortlich."
+  ],
+  "Spitzli Cloud is currently invitation-only. Leave your contact details to request access.": [
+    "Spitzli Cloud ist derzeit nur auf Einladung verfügbar. Hinterlasse deine Kontaktdaten, um Zugang anzufragen."
+  ],
+  "Spitzli Cloud is run by Dominik at Spitzli Development. From your application to its infrastructure, you work directly with the person building it.": [
+    "Hinter Spitzli Cloud steht Dominik von Spitzli Development. Von deiner Anwendung bis zur Infrastruktur arbeitest du direkt mit dem Entwickler zusammen."
+  ],
+  "Spitzli Cloud project ": [
+    "Spitzli Cloud-Projekt "
+  ],
+  "Spitzli Cloud provider and contact details for Spitzli Development.": [
+    "Anbieter- und Kontaktangaben zu Spitzli Cloud von Spitzli Development."
+  ],
+  "Spitzli Cloud · Updated {date}": [
+    "Spitzli Cloud · Stand: {date}"
+  ],
+  "Spitzli Cloud — Project previews & client websites by Spitzli": [
+    "Spitzli Cloud — Projektvorschauen und Kundenwebsites von Spitzli"
+  ],
+  "Spitzli Cloud — Websites, applications and cloud services": [
+    "Spitzli Cloud — Websites, Anwendungen und Cloud-Dienste"
+  ],
+  "Spitzli Cloud — Your projects. One place.": [
+    "Spitzli Cloud — Deine Projekte. Ein Ort."
   ],
   "Spitzli Development admin ↗": [
     "Spitzli-Development-Verwaltung ↗"
@@ -9420,6 +10248,9 @@
   "Superadmin": [
     "Superadmin"
   ],
+  "Superseded": [
+    "Ersetzt"
+  ],
   "Support": [
     "Support"
   ],
@@ -9455,6 +10286,9 @@
   ],
   "Suspend incoming Mail": [
     "Mailempfang pausieren"
+  ],
+  "Suspend scheduled backups": [
+    "Geplante Backups aussetzen"
   ],
   "Suspended": [
     "Gesperrt"
@@ -9582,8 +10416,14 @@
   "Terms and conditions": [
     "Allgemeine Geschäftsbedingungen (AGB)"
   ],
+  "Terms and conditions — Spitzli Cloud": [
+    "AGB — Spitzli Cloud"
+  ],
   "Terms and conditions — Webdock": [
     "AGB — Webdock"
+  ],
+  "Terms for Spitzli Cloud services, including consumer cancellation and withdrawal rights.": [
+    "Bedingungen für Spitzli Cloud-Leistungen einschließlich Kündigung und Widerrufsrecht für Verbraucher."
   ],
   "Terms for Webdock services, including consumer cancellation and withdrawal rights.": [
     "Bedingungen für Webdock-Leistungen einschließlich Kündigung und Widerrufsrecht für Verbraucher."
@@ -9623,6 +10463,9 @@
   ],
   "That depends on how each project is configured. A subdomain alone does not restrict access. If a preview needs to stay private, access protection is arranged separately.": [
     "Das hängt von der Konfiguration des jeweiligen Projekts ab. Eine Subdomain allein beschränkt den Zugriff nicht. Soll eine Vorschau privat bleiben, wird der Zugriffsschutz gesondert eingerichtet."
+  ],
+  "The API key could not be prepared. Enter it again to retry.": [
+    "Der API-Schlüssel konnte nicht vorbereitet werden. Gib ihn erneut ein, um es noch einmal zu versuchen."
   ],
   "The CMS could not complete this request. Your changes were not confirmed.": [
     "Das CMS konnte diese Anfrage nicht abschließen. Deine Änderungen wurden nicht bestätigt."
@@ -9672,6 +10515,24 @@
   "The appointment has changed. Please reload.": [
     "Termin wurde geändert. Bitte neu laden."
   ],
+  "The build environment ran out of resources.": [
+    "In der Build-Umgebung waren nicht genügend Ressourcen verfügbar."
+  ],
+  "The build exceeded its memory limit.": [
+    "Der Build hat sein Arbeitsspeicherlimit überschritten."
+  ],
+  "The build exceeded its time limit.": [
+    "Der Build hat sein Zeitlimit überschritten."
+  ],
+  "The build failed. Review the retained logs.": [
+    "Der Build ist fehlgeschlagen. Prüfe die gespeicherten Protokolle."
+  ],
+  "The build node is temporarily unavailable.": [
+    "Der Build-Knoten ist vorübergehend nicht erreichbar."
+  ],
+  "The build service is temporarily unavailable.": [
+    "Der Build-Dienst ist vorübergehend nicht erreichbar."
+  ],
   "The calendar has changed. Please reload.": [
     "Kalender wurde geändert. Bitte neu laden."
   ],
@@ -9695,6 +10556,9 @@
   ],
   "The code could not be verified. Try again.": [
     "Der Code konnte nicht bestätigt werden. Bitte versuche es erneut."
+  ],
+  "The connection changed. Review the refreshed status before submitting a new request.": [
+    "Die Verbindung wurde geändert. Prüfe den aktualisierten Status, bevor du eine neue Anfrage sendest."
   ],
   "The connection check verifies read access. Publishing and payments require separate sandbox verification.": [
     "Die Verbindungsprüfung prüft den Lesezugriff. Veröffentlichung und Zahlungen benötigen eine separate Sandbox-Prüfung."
@@ -9768,8 +10632,17 @@
   "The isolated schema used by this deployed CMS.": [
     "Das isolierte Schema, das dieses bereitgestellte CMS verwendet."
   ],
+  "The latest 100 recorded completions are shown. A completed backup alone does not establish a recovery window.": [
+    "Die letzten 100 aufgezeichneten Abschlüsse werden angezeigt. Ein abgeschlossenes Backup allein belegt keinen Wiederherstellungszeitraum."
+  ],
   "The linked Vercel project could not be found.": [
     "Das verknüpfte Vercel-Projekt wurde nicht gefunden."
+  ],
+  "The log cursor moved backwards.": [
+    "Die Protokollposition ist zurückgesprungen."
+  ],
+  "The log event cursor is invalid.": [
+    "Die Position des Protokollereignisses ist ungültig."
   ],
   "The mail connection changed. Refresh it before retrying.": [
     "Die Mailverbindung hat sich geändert. Aktualisiere sie vor einem erneuten Versuch."
@@ -9891,6 +10764,12 @@
   "The response is too large.": [
     "Antwort zu groß."
   ],
+  "The response was lost. The request may have been accepted. Retry only the identical request with its retained reference.": [
+    "Die Antwort ging verloren. Der Auftrag wurde möglicherweise angenommen. Nur denselben Auftrag mit seiner beibehaltenen Referenz wiederholen."
+  ],
+  "The result is uncertain. Retry the same request. For a connection, re-enter the same API key; the original revision and request ID are retained.": [
+    "Das Ergebnis ist ungewiss. Wiederhole dieselbe Anfrage. Gib zum Verbinden denselben API-Schlüssel erneut ein; die ursprüngliche Revision und Anfrage-ID bleiben erhalten."
+  ],
   "The result is unknown. Check Drafts and Sent before composing this message again.": [
     "Das Ergebnis ist unklar. Prüfe Entwürfe und Gesendet, bevor du diese Nachricht erneut verfasst."
   ],
@@ -9921,6 +10800,9 @@
   "The service description and accepted offer determine what is supplied, the price, payment dates, term and any service-level agreement. A contract is formed when you accept our binding offer or we confirm your order. Website descriptions alone are not binding offers. Creating an account or connecting an integration does not itself create a paid subscription. We provide the agreed terms and required consumer information in a durable form, for example by email.": [
     "Leistungsbeschreibung und angenommenes Angebot bestimmen Leistungsumfang, Preis, Zahlungstermine, Laufzeit und gegebenenfalls zugesagte Servicelevels. Ein Vertrag entsteht, wenn du unser verbindliches Angebot annimmst oder wir deine Bestellung bestätigen. Website-Beschreibungen allein sind keine verbindlichen Angebote. Ein Konto oder eine angebundene Integration begründet für sich kein kostenpflichtiges Abonnement. Die vereinbarten Bedingungen und erforderlichen Verbraucherinformationen stellen wir auf einem dauerhaften Datenträger bereit, etwa per E-Mail."
   ],
+  "The service is not responding right now.": [
+    "Der Dienst antwortet gerade nicht."
+  ],
   "The session is unavailable. Please sign in again.": [
     "Die Sitzung ist nicht verfügbar. Bitte erneut anmelden."
   ],
@@ -9941,6 +10823,12 @@
   ],
   "The site builder response is too large.": [
     "Die Builder-Antwort ist zu groß."
+  ],
+  "The source changed before this build completed.": [
+    "Die Quelle wurde geändert, bevor dieser Build abgeschlossen war."
+  ],
+  "The source changed. Reload its settings before saving.": [
+    "Die Quelle wurde geändert. Lade ihre Einstellungen vor dem Speichern neu."
   ],
   "The stored Vercel credential remains until the connection is replaced or disconnected. Disconnecting in Studio deletes that credential from the active database. It does not uninstall the integration at Vercel: revoke that separately in Vercel’s integration settings. Project mappings remain until removed with the project or through an administrative deletion request.": [
     "Die gespeicherten Vercel-Zugangsdaten bleiben bestehen, bis die Verbindung ersetzt oder getrennt wird. Das Trennen in Studio löscht diese Zugangsdaten aus der aktiven Datenbank. Dadurch wird die Integration bei Vercel nicht deinstalliert; widerrufe sie gesondert in den Vercel-Integrationseinstellungen. Projektzuordnungen bleiben bestehen, bis sie zusammen mit dem Projekt oder im Rahmen einer administrativen Löschanfrage entfernt werden."
@@ -9996,11 +10884,17 @@
   "These keys can send mail and check their own submissions. They cannot read mailboxes.": [
     "Diese Schlüssel können E-Mails senden und ihre eigenen Versandvorgänge abfragen. Sie können keine Postfächer lesen."
   ],
+  "These plan meters cover projects and extensions. Workload measurements below belong to extensions; application hosting is shown separately.": [
+    "Diese Tarifwerte gelten für Projekte und Erweiterungen. Die Messwerte unten gehören zu Erweiterungen; das Anwendungshosting wird separat angezeigt."
+  ],
   "These providers operate internationally, including in the United States. An EU application region does not mean all support, network or service processing stays in the EU. Their published transfer safeguards and subprocessors are described in": [
     "Diese Anbieter sind international tätig, auch in den USA. Eine Anwendungsregion in der EU bedeutet nicht, dass sämtliche Support-, Netzwerk- oder Dienstverarbeitungen in der EU stattfinden. Ihre veröffentlichten Schutzmaßnahmen für Datenübermittlungen und Unterauftragsverarbeiter sind beschrieben in"
   ],
   "These roles never grant Studio, infrastructure or platform-operator access. Sending again updates the selected website role and resends a pending invitation.": [
     "Diese Rollen gewähren niemals Zugriff auf Studio, Infrastruktur oder Plattformverwaltung. Erneutes Senden aktualisiert die ausgewählte Website-Rolle und sendet eine offene Einladung erneut."
+  ],
+  "These terms apply to Spitzli Cloud services for consumers and businesses, including agreed website development, project management, hosting, databases and Mail. A consumer acts mainly outside their trade or profession. Individually agreed terms take precedence; mandatory consumer rights remain unaffected.": [
+    "Diese AGB gelten für Spitzli Cloud-Leistungen gegenüber Privat- und Geschäftskunden, insbesondere vereinbarte Website-Entwicklung, Projektverwaltung, Hosting, Datenbanken und Mail. Verbraucher handeln überwiegend außerhalb ihrer gewerblichen oder selbstständigen beruflichen Tätigkeit. Individuelle Vereinbarungen gehen vor; zwingende Verbraucherrechte bleiben unberührt."
   ],
   "These terms apply to Webdock services for consumers and businesses, including agreed website development, project management, hosting, databases and Mail. A consumer acts mainly outside their trade or profession. Individually agreed terms take precedence; mandatory consumer rights remain unaffected.": [
     "Diese AGB gelten für Webdock-Leistungen gegenüber Privat- und Geschäftskunden, insbesondere vereinbarte Website-Entwicklung, Projektverwaltung, Hosting, Datenbanken und Mail. Verbraucher handeln überwiegend außerhalb ihrer gewerblichen oder selbstständigen beruflichen Tätigkeit. Individuelle Vereinbarungen gehen vor; zwingende Verbraucherrechte bleiben unberührt."
@@ -10046,6 +10940,9 @@
   ],
   "This application has not been deployed yet.": [
     "Diese Anwendung wurde noch nicht bereitgestellt."
+  ],
+  "This application was deleted. Its address remains reserved.": [
+    "Diese Anwendung wurde gelöscht. Ihre Adresse bleibt reserviert."
   ],
   "This appointment is no longer available.": [
     "Dieser Termin ist nicht mehr verfügbar."
@@ -10131,6 +11028,9 @@
   "This formatted content is preserved. An administrator can edit it in Advanced tools.": [
     "Dieser formatierte Inhalt bleibt erhalten. Ein Administrator kann ihn über die erweiterten Werkzeuge bearbeiten."
   ],
+  "This hosting provider does not support repository source setup here.": [
+    "Dieser Hosting-Anbieter unterstützt hier keine Einrichtung von Repository-Quellen."
+  ],
   "This inventory is out of date. Refresh it before making changes.": [
     "Diese Ressourcenübersicht ist veraltet. Aktualisiere sie vor Änderungen."
   ],
@@ -10172,6 +11072,12 @@
   ],
   "This notice covers Webdock account and tenant management, the private Webdock Studio Vercel integration and these public information pages. It does not replace privacy information for independently operated customer websites or Vercel’s own service.": [
     "Dieser Hinweis gilt für die Konto- und Mandantenverwaltung von Webdock, die private Vercel-Integration von Webdock Studio und diese öffentlichen Informationsseiten. Er ersetzt weder die Datenschutzhinweise unabhängig betriebener Kundenwebsites noch diejenigen für Vercels eigenen Dienst."
+  ],
+  "This notice explains how we process personal data on Spitzli Cloud’s website and in its account, Console, hosting, database and Mail services. Customer-operated websites and applications have their own controllers and privacy notices.": [
+    "Diese Erklärung beschreibt, wie wir personenbezogene Daten auf der Website von Spitzli Cloud und in unseren Konto-, Console-, Hosting-, Datenbank- und Mail-Diensten verarbeiten. Für eigenständig betriebene Kundenwebsites und Anwendungen gelten deren eigene Verantwortlichkeiten und Datenschutzhinweise."
+  ],
+  "This notice explains how we process personal data on Spitzli Cloud’s website and in its account, Studio, hosting, database and Mail services. Customer-operated websites and applications have their own controllers and privacy notices.": [
+    "Diese Erklärung beschreibt, wie wir personenbezogene Daten auf der Spitzli Cloud-Website und in unseren Konto-, Studio-, Hosting-, Datenbank- und Mail-Diensten verarbeiten. Für eigenständig betriebene Kundenwebsites und Anwendungen gelten deren eigene Verantwortlichkeiten und Datenschutzhinweise."
   ],
   "This notice explains how we process personal data on Webdock’s website and in its account, Studio, hosting, database and Mail services. Customer-operated websites and applications have their own controllers and privacy notices.": [
     "Diese Erklärung beschreibt, wie wir personenbezogene Daten auf der Webdock-Website und in unseren Konto-, Studio-, Hosting-, Datenbank- und Mail-Diensten verarbeiten. Für eigenständig betriebene Kundenwebsites und Anwendungen gelten deren eigene Verantwortlichkeiten und Datenschutzhinweise."
@@ -10284,6 +11190,9 @@
   "This snapshot is more than 24 hours old. Refresh it before relying on these figures.": [
     "Dieser Messstand ist älter als 24 Stunden. Aktualisiere ihn, bevor du dich auf diese Zahlen verlässt."
   ],
+  "This source uses an external build provider.": [
+    "Diese Quelle verwendet einen externen Build-Anbieter."
+  ],
   "This store or overlapping folder is already mapped. Remove its existing mapping first.": [
     "Dieser Speicher oder ein überlappender Ordner ist bereits zugeordnet. Entferne zuerst die vorhandene Zuordnung."
   ],
@@ -10356,6 +11265,9 @@
   "Too many requests. Please try again later.": [
     "Zu viele Anfragen. Bitte versuche es später erneut."
   ],
+  "Too many requests. Please wait before trying again.": [
+    "Zu viele Anfragen. Bitte warte, bevor du es erneut versuchst."
+  ],
   "Total": [
     "Gesamt"
   ],
@@ -10410,6 +11322,9 @@
   "Tuesday": [
     "Dienstag"
   ],
+  "Turn this off for a private service. You can add your own domain separately.": [
+    "Für einen privaten Dienst ausschalten. Eine eigene Domain kannst du separat hinzufügen."
+  ],
   "Two factor isn't enabled": [
     "Die Zwei-Faktor-Authentifizierung ist nicht aktiviert."
   ],
@@ -10442,6 +11357,15 @@
   ],
   "UTC": [
     "UTC"
+  ],
+  "Unable to load": [
+    "Laden nicht möglich"
+  ],
+  "Unable to load hosting reservations": [
+    "Hosting-Reservierungen konnten nicht geladen werden"
+  ],
+  "Unable to review request": [
+    "Anfrage konnte nicht bearbeitet werden"
   ],
   "Unauthorized": [
     "Nicht autorisiert"
@@ -10872,6 +11796,9 @@
   "Vercel healthcheck path": [
     "Vercel-Healthcheck-Pfad"
   ],
+  "Vercel integration — Spitzli Cloud Studio": [
+    "Vercel-Integration — Spitzli Cloud Studio"
+  ],
   "Vercel integration — Webdock Studio": [
     "Vercel-Integration — Webdock Studio"
   ],
@@ -11046,6 +11973,9 @@
   "View full history": [
     "Gesamten Verlauf ansehen"
   ],
+  "View hosting information alongside your Spitzli Cloud project records: current production release, recent deployments, Git branch and commit, runtime settings, and domain verification.": [
+    "Sieh Hostinginformationen zusammen mit deinen Spitzli Cloud-Projektdaten: aktuelle Produktionsversion, letzte Deployments, Git-Branch und Commit, Laufzeiteinstellungen und Domainprüfung."
+  ],
   "View hosting information alongside your Webdock project records: current production release, recent deployments, Git branch and commit, runtime settings, and domain verification.": [
     "Sieh Hostinginformationen zusammen mit deinen Webdock-Projektdaten: aktuelle Produktionsversion, letzte Deployments, Git-Branch und Commit, Laufzeiteinstellungen und Domainprüfung."
   ],
@@ -11105,6 +12035,9 @@
   ],
   "Voucher": [
     "Gutschein"
+  ],
+  "WAL archiving": [
+    "WAL-Archivierung"
   ],
   "Wait at least five minutes and inspect the provider state. Confirm the exact pending domain to allow a new operation.": [
     "Warte mindestens fünf Minuten und prüfe den Zustand beim Anbieter. Bestätige die genaue ausstehende Domain, um einen neuen Auftrag zu erlauben."
@@ -11186,6 +12119,12 @@
   ],
   "We process data needed to provide an agreed service under Article 6(1)(b) GDPR where you are the contracting party. Administration of team access, hosting visibility and security auditing rely on our legitimate interests in operating a secure project-management service under Article 6(1)(f). Where a legal obligation requires retention or disclosure, Article 6(1)(c) applies. Connecting Vercel grants technical access; it is not blanket consent to unrelated processing.": [
     "Daten, die zur Erbringung einer vereinbarten Leistung erforderlich sind, verarbeiten wir auf Grundlage von Artikel 6 Absatz 1 Buchstabe b DSGVO, sofern du Vertragspartei bist. Die Verwaltung von Teamzugängen, die Anzeige von Hostinginformationen und Sicherheitsprotokollierung beruhen auf unserem berechtigten Interesse am sicheren Betrieb eines Projektverwaltungsdienstes gemäß Artikel 6 Absatz 1 Buchstabe f. Erfordert eine gesetzliche Pflicht die Aufbewahrung oder Offenlegung, gilt Artikel 6 Absatz 1 Buchstabe c. Das Verbinden mit Vercel gewährt technischen Zugriff und stellt keine pauschale Einwilligung in sachfremde Verarbeitungen dar."
+  ],
+  "We process your email address, optional name, privacy acknowledgement and request/review timestamps when you request early access. Operators review requests manually. Saving a waitlist request does not verify your email, create an account or grant access. We use these details to handle your access request, not to subscribe you to a marketing newsletter. You can withdraw your request by contacting us.": [
+    "Wenn du frühen Zugang anfragst, verarbeiten wir deine E-Mail-Adresse, deinen optionalen Namen, die Datenschutzbestätigung sowie die Zeitpunkte der Anfrage und Prüfung. Betreiber prüfen Anfragen manuell. Das Speichern einer Wartelistenanfrage bestätigt weder deine E-Mail-Adresse noch erstellt es ein Konto oder gewährt Zugang. Wir verwenden diese Angaben zur Bearbeitung deiner Zugangsanfrage und nicht zur Anmeldung für einen Marketing-Newsletter. Du kannst deine Anfrage zurückziehen, indem du uns kontaktierst."
+  ],
+  "We use Neon for the platform database and managed sign-in, Vercel for web application hosting, Contabo for server infrastructure, turboSMTP for configured email delivery, and Cloudflare for DNS services. Core retains workspace authorisation and its additional account-security controls. GitHub and other customer-selected providers are involved when their integrations are enabled. Retained migration copies remain subject to the retention rules below until deleted. Providers receive only the data needed for their role. We also disclose data where legally required, for example to tax advisers or competent authorities.": [
+    "Wir verwenden Neon für die Plattformdatenbank und die verwaltete Anmeldung, Vercel für das Hosting der Webanwendungen, Contabo für Server-Infrastruktur, turboSMTP für eingerichteten E-Mail-Versand und Cloudflare für DNS-Dienste. Core verwaltet weiterhin die Berechtigungen der Arbeitsbereiche und die zusätzlichen Kontosicherheitskontrollen. GitHub und weitere vom Kunden ausgewählte Anbieter kommen bei aktivierten Anbindungen hinzu. Verbliebene Migrationskopien unterliegen bis zur Löschung den unten beschriebenen Aufbewahrungsregeln. Dienstleister erhalten die für ihre Aufgabe benötigten Daten. Daneben geben wir Daten weiter, soweit dies rechtlich erforderlich ist, etwa an Steuerberater oder zuständige Behörden."
   ],
   "We use Vercel for web application hosting, Contabo for managed server, database and incoming-mail infrastructure, turboSMTP for email delivery, and Cloudflare for DNS services. GitHub and other customer-selected providers are involved when their integrations are enabled. Neon was the previous platform database provider; retained migration copies remain subject to the retention rules below until deleted. Providers receive only the data needed for their role. We also disclose data where legally required, for example to tax advisers or competent authorities.": [
     "Wir nutzen Vercel für das Hosting der Webanwendungen, Contabo für verwaltete Server-, Datenbank- und Empfangsmail-Infrastruktur, turboSMTP für den E-Mail-Versand und Cloudflare für DNS-Dienste. GitHub und weitere vom Kunden ausgewählte Anbieter kommen bei aktivierten Anbindungen hinzu. Neon war der bisherige Anbieter der Plattformdatenbank; verbliebene Migrationskopien unterliegen bis zur Löschung den unten beschriebenen Aufbewahrungsregeln. Dienstleister erhalten die für ihre Aufgabe benötigten Daten. Daneben geben wir Daten weiter, soweit dies rechtlich erforderlich ist, etwa an Steuerberater oder zuständige Behörden."
@@ -11382,6 +12321,12 @@
   "Websites": [
     "Websites"
   ],
+  "Websites, applications and cloud services by Spitzli Development.": [
+    "Websites, Anwendungen und Cloud-Dienste von Spitzli Development."
+  ],
+  "Websites, applications and the services behind them — connected in Spitzli Cloud.": [
+    "Websites, Anwendungen und die Dienste dahinter — verbunden in Spitzli Cloud."
+  ],
   "Websites, customers and content systems, in one place.": [
     "Websites, Kunden und Inhaltssysteme an einem Ort."
   ],
@@ -11406,6 +12351,9 @@
   "What does your application need?": [
     "Was benötigt deine Anwendung?"
   ],
+  "What is Spitzli Cloud?": [
+    "Was ist Spitzli Cloud?"
+  ],
   "What is Webdock?": [
     "Was ist Webdock?"
   ],
@@ -11423,6 +12371,9 @@
   ],
   "When requested by an authorised tenant administrator, sender and tracking domain names are registered with turboSMTP and their verification status is retrieved. Administrators explicitly control open and click tracking; enabling those features lets the provider record recipient opens and link clicks for that tenant’s sending activity. Webdock stores the selected tracking settings and domain verification state.": [
     "Auf Anforderung eines berechtigten Arbeitsbereich-Admins werden Absender- und Tracking-Domainnamen bei turboSMTP registriert und ihr Prüfstatus abgerufen. Administratoren steuern das Tracking von Öffnungen und Klicks ausdrücklich. Werden diese Funktionen aktiviert, kann der Anbieter Empfängeröffnungen und Linkklicks für die Versandaktivitäten dieses Mandanten erfassen. Webdock speichert die gewählten Tracking-Einstellungen und den Prüfstatus der Domains."
+  ],
+  "When you visit Spitzli Cloud, we and our hosting providers process technical request data, including IP address, requested URL, time, browser and operating-system information, to deliver the site, diagnose errors and prevent misuse. This is based on our legitimate interest in secure, reliable operation (Article 6(1)(f) GDPR). Fonts are served locally.": [
+    "Beim Besuch von Spitzli Cloud verarbeiten wir und unsere Hostinganbieter technische Anfragedaten wie IP-Adresse, aufgerufene URL, Zeitpunkt sowie Browser- und Betriebssysteminformationen. Das dient der Auslieferung, Fehleranalyse und Missbrauchsabwehr. Grundlage ist unser berechtigtes Interesse an einem sicheren, zuverlässigen Betrieb (Art. 6 Abs. 1 lit. f DSGVO). Schriftarten werden lokal ausgeliefert."
   ],
   "When you visit Webdock, we and our hosting providers process technical request data, including IP address, requested URL, time, browser and operating-system information, to deliver the site, diagnose errors and prevent misuse. This is based on our legitimate interest in secure, reliable operation (Article 6(1)(f) GDPR). Fonts are served locally.": [
     "Beim Besuch von Webdock verarbeiten wir und unsere Hostinganbieter technische Anfragedaten wie IP-Adresse, aufgerufene URL, Zeitpunkt sowie Browser- und Betriebssysteminformationen. Das dient der Auslieferung, Fehleranalyse und Missbrauchsabwehr. Grundlage ist unser berechtigtes Interesse an einem sicheren, zuverlässigen Betrieb (Art. 6 Abs. 1 lit. f DSGVO). Schriftarten werden lokal ausgeliefert."
@@ -11460,6 +12411,9 @@
   "Workspace ID": [
     "Arbeitsbereichs-ID"
   ],
+  "Workspace administrator access required": [
+    "Administratorzugriff auf den Arbeitsbereich erforderlich"
+  ],
   "Workspace areas": [
     "Bereiche des Arbeitsbereichs"
   ],
@@ -11495,6 +12449,12 @@
   ],
   "Write scope": [
     "Schreibberechtigung"
+  ],
+  "Writer access key": [
+    "Schreibzugriffsschlüssel"
+  ],
+  "Writer secret key": [
+    "Geheimer Schreibschlüssel"
   ],
   "X": [
     "X"
@@ -11565,6 +12525,9 @@
   "You will review and explicitly accept the price before anything is ordered.": [
     "Du prüfst und bestätigst den Preis ausdrücklich, bevor etwas bestellt wird."
   ],
+  "You're on the waitlist": [
+    "Du stehst auf der Warteliste"
+  ],
   "Your GitHub connection expired. Connect again to choose repositories.": [
     "Deine GitHub-Verbindung ist abgelaufen. Verbinde sie erneut, um Repositorys auszuwählen."
   ],
@@ -11583,8 +12546,14 @@
   "Your account’s email address must be verified before you can view or respond to this invitation. Contact your Webdock administrator for help.": [
     "Die E-Mail-Adresse deines Kontos muss bestätigt sein, bevor du diese Einladung ansehen oder beantworten kannst. Wende dich an deinen Webdock-Admin, wenn du Hilfe benötigst."
   ],
+  "Your address on spitzli.site. Or your own domain.": [
+    "Deine Adresse auf spitzli.site. Oder deine eigene Domain."
+  ],
   "Your administrator manages access to individual projects and websites.": [
     "Dein Admin verwaltet den Zugriff auf einzelne Projekte und Websites."
+  ],
+  "Your application": [
+    "Deine Anwendung"
   ],
   "Your application and service connections are ready.": [
     "Deine Anwendung und ihre Dienstverbindungen sind bereit."
@@ -11658,6 +12627,9 @@
   "Your operator must prepare a website before a plan can be purchased.": [
     "Dein Betreiber muss zuerst eine Website vorbereiten, bevor du einen Tarif buchen kannst."
   ],
+  "Your own domain can be added in workspace Domains.": [
+    "Eine eigene Domain kannst du unter Workspace → Domains hinzufügen."
+  ],
   "Your own turboSMTP account": [
     "Dein eigenes turboSMTP-Konto"
   ],
@@ -11667,14 +12639,38 @@
   "Your plan does not yet include own infrastructure. Your administrator can enable it here.": [
     "Eigene Infrastruktur ist noch nicht freigeschaltet. Dein Administrator kann sie hier aktivieren."
   ],
+  "Your project's access settings decide who can reach it. A hostname alone does not protect private content.": [
+    "Die Zugriffseinstellungen deines Projekts bestimmen, wer es erreichen kann. Ein Hostname allein schützt keine privaten Inhalte."
+  ],
   "Your project.\nWell docked.": [
     "Dein Projekt.\nGut angedockt."
+  ],
+  "Your project. Well docked. A home for project previews and client websites by Spitzli Development — on a Spitzli Cloud subdomain or your own domain.": [
+    "Dein Projekt. Gut angedockt. Ein Zuhause für Projektvorschauen und Kundenwebsites von Spitzli Development – auf einer Spitzli Cloud-Subdomain oder deiner eigenen Domain."
   ],
   "Your project. Well docked. A home for project previews and client websites by Spitzli Development — on a Webdock subdomain or your own domain.": [
     "Dein Projekt. Gut angedockt. Ein Zuhause für Projektvorschauen und Kundenwebsites von Spitzli Development – auf einer Webdock-Subdomain oder deiner eigenen Domain."
   ],
+  "Your projects in one place. Websites and applications by Spitzli — on spitzli.site or your own domain.": [
+    "Deine Projekte an einem Ort. Websites und Anwendungen von Spitzli — auf spitzli.site oder deiner eigenen Domain."
+  ],
+  "Your projects.\nA direct connection.": [
+    "Deine Projekte.\nEin direkter Draht."
+  ],
+  "Your projects.\nOne place.": [
+    "Deine Projekte.\nEin Ort."
+  ],
+  "Your projects. Connected.": [
+    "Deine Projekte. Verbunden."
+  ],
   "Your projects. One workspace.": [
     "Deine Projekte. Ein Arbeitsbereich."
+  ],
+  "Your provider must connect and authorize a Git repository for this project before you can start builds.": [
+    "Dein Anbieter muss zuerst ein Git-Repository für dieses Projekt verbinden und freigeben. Danach kannst du Builds starten."
+  ],
+  "Your request has been saved. We will review it before inviting you to Spitzli Cloud.": [
+    "Deine Anfrage wurde gespeichert. Wir prüfen sie, bevor wir dich zu Spitzli Cloud einladen."
   ],
   "Your role can view content but cannot change it.": [
     "Deine Rolle erlaubt das Ansehen, aber nicht das Ändern von Inhalten."
@@ -11702,6 +12698,9 @@
   ],
   "Your websites": [
     "Deine Websites"
+  ],
+  "Your workspace": [
+    "Dein Workspace"
   ],
   "Your workspace data is still saved. Retry this view, or return to your projects.": [
     "Die Daten deines Arbeitsbereichs sind weiterhin gespeichert. Lade diese Ansicht erneut oder kehre zu deinen Projekten zurück."
@@ -11787,6 +12786,9 @@
   "for its own processing.": [
     "für dessen eigene Datenverarbeitung."
   ],
+  "for processing my access request.": [
+    "zur Verarbeitung meiner Zugangsanfrage zu."
+  ],
   "for this setup.": [
     "für diese Einrichtung."
   ],
@@ -11823,6 +12825,9 @@
   "privacy notice": [
     "Datenschutzhinweis"
   ],
+  "privacy policy": [
+    "Datenschutzerklärung"
+  ],
   "project": [
     "Projekt"
   ],
@@ -11837,6 +12842,9 @@
   ],
   "ready": [
     "Bereit"
+  ],
+  "reserved · no plan limit": [
+    "reserviert · kein Tariflimit"
   ],
   "restoring": [
     "Wird wiederhergestellt"
@@ -11906,6 +12914,9 @@
     "{count} Eintrag",
     "{count} Einträge"
   ],
+  "{count} of 2": [
+    "{count} von 2"
+  ],
   "{count} place": [
     "{count} Platz",
     "{count} Plätze"
@@ -11925,6 +12936,12 @@
   ],
   "{label}: start {number}": [
     "{label}: Beginn {number}"
+  ],
+  "{project} builds": [
+    "Builds für {project}"
+  ],
+  "{seconds} s": [
+    "{seconds} s"
   ],
   "{start}–{end} of {total}": [
     "{start}–{end} von {total}"

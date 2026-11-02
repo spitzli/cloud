@@ -1,0 +1,40 @@
+{
+  "status": "Exact task-owned copied test executables removed AFTER independent review2 hash verification; source/pin/log/failure/cleanup records retained",
+  "createdUTC": "2026-10-25T23:31:34.149724+00:00",
+  "independentReviewTask": "s3-native-operator-allowances-review-20261026-r2",
+  "files": [
+    {
+      "path": "/tmp/webdock-allowance-r2-red-sr1_j7ud/bootstrap-tests",
+      "sha256": "48a1d671a7212ac58e9cb1f76dfbbd72d14ed489986e179cd9797b62c731aed4",
+      "sizeBytes": 761087152,
+      "absent": true
+    },
+    {
+      "path": "/tmp/webdock-allowance-r2-green-q_11alh1/bootstrap-tests",
+      "sha256": "b481b18d7105f6a28e2f7557ea3087d2fb4b0e73b6c69b4d9e1f0a905a837cbb",
+      "sizeBytes": 761615592,
+      "absent": true
+    },
+    {
+      "path": "/tmp/webdock-allowance-round6-uiwh6ipy/bootstrap-tests",
+      "sha256": "ae8e3a8220914d88e5c32649c66491403ff426b5a0028ab55138570ed0f90899",
+      "sizeBytes": 760005984,
+      "absent": true
+    },
+    {
+      "path": "/home/newt/.t3/worktrees/webdock/t3code-rust-platform-rewrite/.runtime-test/session-context-default-89956f819a3e/bootstrap-tests",
+      "sha256": "cfeced0a6471fb90cc2537e1b3dc0a7340fcec42a8bbc496bcd9286d71c3bbfe",
+      "sizeBytes": 761833744,
+      "absent": true
+    }
+  ],
+  "removedBytes": 3044542472,
+  "preserved": [
+    "All historical manifests/source copies/logs/pass-fail/cleanup records unchanged",
+    "Shared root target and frontend native53 pins",
+    "Baseline and retained qualified VM",
+    "Core52 protected snapshot",
+    "Existing services/data/volumes"
+  ],
+  "note": "Earlier evidence describes retention at its historical review boundary; this receipt records subsequent executable-only cleanup. No deleted test is rerun."
+}

@@ -1,0 +1,1 @@
+../../plugin-host/migrations/0010_log_cursor.sql

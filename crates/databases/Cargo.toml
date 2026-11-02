@@ -1,0 +1,40 @@
+[package]
+name = "webdock-databases"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+webdock-export-protocol={path="../export-protocol"}
+webdock-identity = { path = "../identity" }
+webdock-browser-session = { path = "../browser-session" }
+webdock-oauth = { path = "../oauth" }
+webdock-persistence = { path = "../persistence" }
+webdock-secrets = { path = "../secrets" }
+webdock-hosting = { path = "../hosting" }
+webdock-agent-protocol = { path = "../agent-protocol" }
+sea-orm.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+url.workspace = true
+tokio.workspace = true
+thiserror.workspace = true
+sha2 = "0.10"
+hmac = "0.12"
+subtle = "2.6"
+hex = "0.4"
+base64 = "0.22"
+getrandom = "0.2"
+jsonschema = { version = "0.59", default-features = false }
+x509-parser = "0.18"
+
+[dev-dependencies]
+rcgen = "0.14"
+webdock-ids = { path = "../ids" }
+totp-rs = { version = "=6.0.0", features = ["otpauth"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,145 @@
+{
+  "date": "2026-11-01",
+  "host": "167.86.75.144",
+  "providerRegion": "EU2",
+  "providerInstanceUUID": "e6d9884c-e6bd-4699-8a0c-99f2358ae8a1",
+  "locationEvidence": "Owner-verified Contabo provider inventory supplied before provisioning",
+  "runner": {
+    "runnerName": "cloud-plugin-eu2-trusted-01",
+    "group": "cloud-plugin-trusted-eu2",
+    "uid": 1001,
+    "labels": [
+      "spitzli-plugin-eu2",
+      "trusted-platform"
+    ],
+    "persistent": true,
+    "maximumConcurrentJobs": 1,
+    "tools": {
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "bun": "1.4.3",
+      "protoc": "libprotoc 3.21.12",
+      "gh": "gh version 2.45.0 (2025-07-18 Ubuntu 2.45.0-1ubuntu0.3)",
+      "buildctl": "buildctl github.com/moby/buildkit v0.34.1 f5b59a1f2fb25a0cb7072c398cab9aed7835da4e"
+    }
+  },
+  "github": {
+    "groupID": 3,
+    "group": "cloud-plugin-trusted-eu2",
+    "visibility": "selected",
+    "runners": [
+      {
+        "id": 39,
+        "name": "cloud-plugin-eu2-trusted-01",
+        "os": "Linux",
+        "status": "online",
+        "busy": false,
+        "version": "2.338.2",
+        "labels": [
+          {
+            "id": 0,
+            "name": "self-hosted",
+            "type": "read-only"
+          },
+          {
+            "id": 0,
+            "name": "Linux",
+            "type": "read-only"
+          },
+          {
+            "id": 0,
+            "name": "X64",
+            "type": "read-only"
+          },
+          {
+            "id": 0,
+            "name": "spitzli-plugin-eu2",
+            "type": "custom"
+          },
+          {
+            "id": 0,
+            "name": "trusted-platform",
+            "type": "custom"
+          }
+        ]
+      }
+    ],
+    "selectedRepositories": [
+      "spitzli/cloud-plugin-archives",
+      "spitzli/cloud-plugin-echo-demo",
+      "spitzli/cloud-plugin-github-repository",
+      "spitzli/cloud-plugin-hosting",
+      "spitzli/cloud-plugin-lumaserv-compute",
+      "spitzli/cloud-plugin-mail",
+      "spitzli/cloud-plugin-mail-relay",
+      "spitzli/cloud-plugin-object-storage",
+      "spitzli/cloud-plugin-postgres",
+      "spitzli/cloud-plugin-sdk"
+    ]
+  },
+  "network": {
+    "probes": [
+      {
+        "target": "127.0.0.1:22",
+        "blocked": true,
+        "errno": 113
+      },
+      {
+        "target": "167.86.75.144:22",
+        "blocked": true,
+        "errno": 113
+      },
+      {
+        "target": "10.83.0.1:6443",
+        "blocked": true,
+        "errno": 113
+      },
+      {
+        "target": "79.143.177.157:5432",
+        "blocked": true,
+        "errno": 113
+      },
+      {
+        "target": "169.254.169.254:80",
+        "blocked": true,
+        "errno": 113
+      },
+      {
+        "target": "::1:22",
+        "blocked": true,
+        "errno": 13
+      },
+      {
+        "target": "2a02:c207:3021:866::1:22",
+        "blocked": true,
+        "errno": 13
+      },
+      {
+        "stubDNS": "udp",
+        "response": true
+      },
+      {
+        "stubDNS": "tcp",
+        "response": true
+      },
+      {
+        "url": "https://api.github.com",
+        "status": 200
+      },
+      {
+        "url": "https://registry.webdock.dev/.well-known/registry-key.json",
+        "status": 200
+      }
+    ],
+    "nftCounterDeltas": {
+      "Exact host stub DNS": 5,
+      "Exact host stub DNS TCP": 5,
+      "Owner-approved shared RUN HTTPS ingress exception for release registry": 8,
+      "CI private metadata and platform IPv4 denied": 5,
+      "CI private metadata and platform IPv6 denied": 4
+    },
+    "passed": true
+  },
+  "repositoryActionsEnabledByThisSetup": false,
+  "customerBuildAdmissionChanged": false
+}

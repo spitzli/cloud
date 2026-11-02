@@ -1,0 +1,77 @@
+{
+  "status": "RUST provider correction SOURCE-STABLE for NEW provider review2; actual whole Core/native/API execution still held; not full54 acceptance",
+  "createdUTC": "2026-10-26T03:20:08.268242+00:00",
+  "correction": {
+    "withdrawnPremise": "The prior inventory incorrectly assumed baseline.sql was the complete provider constraint. It missed registered migration0008 because rg did not follow the SQL symlink. Main accepted that incomplete premise and introduced an unnecessary canonical-provider rewrite.",
+    "registeredMigration": "crates/persistence/migrations/0008_hosting_runtime.sql",
+    "symlinkTarget": "../../hosting/migrations/0001_runtime_kind.sql",
+    "actualTarget": "crates/hosting/migrations/0001_runtime_kind.sql",
+    "actualMigrationSHA256": "b12064658b045e6399c88e79f7da3ad2e0858d23a14b2e420193c22118a6d0e5",
+    "actualContract": "Registered0008 ALREADY permits raw k3s/docker/vercel; native projects have actual cluster+namespace. The existing authorized hosting_runtime_kind definer validates scoped actual driver truth.",
+    "withdrawnExpectation": "No genuine Docker project API CHECK failure was observed or remains expected. Do not run/claim a fabricated CHECK-RED milestone. Earlier canonical helper assertions represented the incorrect premise, not a demonstrated product defect.",
+    "historicalEvidence": "All earlier source/binary pins, including103034, and earlier preparation evidence remain unchanged historical records. This note supersedes their unexecuted CHECK-failure/canonical-write expectations.",
+    "historicalPinPath": ".runtime-test/recovery-provider-baseline-103034e48506/pin.json",
+    "historicalPinSHA256": "fefa7773c833d4c906382ecaf2bec1d4347f7c6461d5b1ac92640f6d2d22320d"
+  },
+  "implementation": {
+    "normalWrite": "Restore raw provider domain INSERT and original actual-runtime-kind mismatch validation through cluster_view and the existing scoped definer.",
+    "readAuthorization": "Remove mandatory direct-cluster projection from customer and Git authorization. Stored raw provider remains authoritative for view/quota backend identity; optional cluster display details may stay RLS-hidden without losing backend.",
+    "capacity": "Restore exact true per-provider lookup/allocation/filter semantics. Active, reserved and needs-reconciliation demand stays charged to its actual stored backend; the unsupported new cross-provider k3s aggregate rule is removed. Customer/project and cluster/native recovery accounting remain unchanged.",
+    "recovery": "Quota lookup reads stored project.provider directly; removes projection through RLS-hidden cluster rows. All other recovery hooks/transitions preserved.",
+    "deletedFile": "crates/hosting/src/native_provider.rs",
+    "kept": "Reviewed optional local Unix Docker AgentInput runtimeKind/runtimeProfile extension unchanged; no data rewrite, SQL/RLS/proto/dependency changes.",
+    "unsupportedCompatibility": "No evidenced legitimate canonical-k3s+Docker case is invented or auto-converted."
+  },
+  "currentSHA256": {
+    "crates/hosting/src/management.rs": "69f68df520f6b84ca51944a9aab57d2f056d16ea094cf92768902580f4a40a0e",
+    "crates/hosting/src/service.rs": "18489cb33f04c34f1fd8656daa3a18c99948a1e473b59b9da8c8ea7368f81cc2",
+    "crates/hosting/src/capacity.rs": "06c7b96eb3295ef0717ba75edc974b2a86884056a11b97f33e7ad23d32e2704e",
+    "crates/hosting/src/recovery.rs": "c544b83bf5fd760b2081282236d99aae18ed38e476619d6f2eb49e42f7eed37c",
+    "crates/control-plane/src/plugin_bootstrap/agent.rs": "757f723e1b87a4b9ecee0dc002c345149815efc4f2152ca76605bfe11a359459",
+    "crates/hosting/src/recovery_reservations.rs": "31b6fb0c732f820dce9bf393b1a8f95fee7520031f87ec5f197a72a26e8436ad",
+    "Cargo.lock": "e65e941b5e8f50b6faf6c54c43b455c3b541540debbdc4bbdcab429d7d44e5bf",
+    "crates/persistence/migrations/0054_source_recovery_fences.sql": "411827bcffb9b295e00cda6efee7680aa32d601cab99952be838456a45ba1f5c",
+    "crates/persistence/migrations/0055_native_operator_allowances.sql": "ab0179714067579917bd3eacd4065101d2d06f721457b6424f941f90642e47de"
+  },
+  "verification": {
+    "red": {
+      "command": "cargo test --offline --locked -j2 -p webdock-hosting --lib provider_",
+      "tests": 7,
+      "passed": 3,
+      "failed": 4,
+      "scope": "actual source/query guards reproduced dependency on cluster visibility; NOT executed PostgreSQL RLS acceptance"
+    },
+    "greenFocused": {
+      "command": "cargo test --offline --locked -j2 -p webdock-hosting --lib provider_",
+      "passed": 8,
+      "failed": 0,
+      "seconds": 4.97
+    },
+    "greenHostingLib": {
+      "command": "cargo test --offline --locked -j2 -p webdock-hosting --lib",
+      "passed": 16,
+      "ignored": 3,
+      "failed": 0,
+      "ignoredReason": "owned PG/query fixtures intentionally not started"
+    },
+    "strictClippy": {
+      "command": "cargo clippy --offline --locked -j2 -p webdock-hosting -p webdock-control-plane --lib --test bootstrap -- -D warnings",
+      "exitCode": 0,
+      "seconds": 5.16
+    },
+    "format": "Direct rustfmt skip_children check passed for four owned Hosting files.",
+    "limits": "Pure/source checks only; real customer RLS/Git/native API positive and concurrency acceptance remain unexecuted under hold."
+  },
+  "nextActualValidationAfterProviderReviewRelease": [
+    "Fresh genuine operator MFA/PKCE -> Registry -> finite allowance -> reviewed real Docker enrollment -> actual Docker heartbeat -> raw Docker project API positive/read/list/update/exact replay; no false CHECK failure.",
+    "Customer RLS and actual Git-worker scope with inaccessible hosting_cluster row: stored Docker/K8s/Vercel read/dispatch/quota semantics preserved.",
+    "Both real backend/provider ceilings, active/reserved/uncertain demand, current authority/revocation and foreign/mismatched runtime cases; preserve current native quotas."
+  ],
+  "custody": {
+    "DockerImageContainerOrRuntimeActionsInThisCorrection": false,
+    "commits": false,
+    "productionActions": false,
+    "cleanupGuardFiles": "Three remain byte-identical to accepted review3; runner has only separately approved neutral final-message wording edit.",
+    "noNewDelegation": true
+  }
+}

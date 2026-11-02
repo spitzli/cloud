@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-29",
+  "scope": "Local S3/native recovery acceptance; no production activation",
+  "worktreeBaseCommit": "819041524049117bc50e11dfd96a6a29407804b8",
+  "genuineMatchedMail": {
+    "scope": "actual-local-matched-PrivateMail-recovery-v1",
+    "wholeMailQualified": true,
+    "publicDeliveryQualified": false,
+    "nativeCoreIncoming10GiQualified": false,
+    "backupSourceUnavailableColdRestore": true,
+    "sourceReportSHA256": "d1c7012362137a5457ac73165b5d4bf1e153e876bbcc6ff78acb24e41091d33a",
+    "resultSHA256": "73e2781895826dd547236e07b61e1d7a03793d337075717455f6170c2a695f7c",
+    "scopeSHA256": "4bffef0f6106b21cba2db6dfade1131276ddd5a874e0922374c4fcdada004481",
+    "closureSHA256": "af59dc6a97a66cf7cf350e212b767a77087d4ba895aa6e820e8ff2eed9eb78c2",
+    "actualRestoreElapsedMillis": 150154,
+    "actualTwoSMTPOutcomesRetained": true,
+    "readonlyNoEgress": true,
+    "oldEnrollmentAndReplayDenied": true,
+    "allEightSignedRolesCompleted200": true,
+    "obligations": []
+  },
+  "physicalAndFunctionalProof": {
+    "sourceUnavailable": true,
+    "sourceAndColdCEVolumeBytes": 2147483648,
+    "coreAndPrivateTargetVolumeBytesEach": 536870912,
+    "targetPGDataWALAndActualTempRelationInsideApprovedRole": true,
+    "targetPGScratchAggregateBytesEach": 67108864,
+    "twoSMTPOutcomesRetained": true,
+    "authenticatedMailboxBodyVerified": true,
+    "anonymousSessionDenied": true,
+    "readonlyWriteDenied": true,
+    "noEgress": true,
+    "replayDenied": true
+  },
+  "checks": {
+    "RustQuality": {
+      "exitCode": 0,
+      "checkSteps": 52,
+      "testsPassed": 579,
+      "failures": 0,
+      "explicitIgnoredInfrastructureTests": 99
+    },
+    "ConsoleQuality": {
+      "exitCode": 0,
+      "fixtureTests": 54,
+      "consoleTests": 156,
+      "lint": true,
+      "typecheck": true,
+      "productionBuild": true,
+      "configuredBrowserSuites": true,
+      "browserScope": "controlled HTTP fixtures, separate from genuine native proof"
+    },
+    "Python": {
+      "tests": 203,
+      "failures": 0
+    },
+    "Migration56": "Actual PostgreSQL alias regression old42702/new0; schema56 smoke with16unowned mutation denials;54/55unchanged",
+    "quarantineGateway": "Actual real proxy oldanonymous200 RED/current401 and zero upstream calls GREEN; existing authenticated behavior and readonly method restrictions retained"
+  },
+  "limits": {
+    "MinioLocalOnly": true,
+    "WasabiProductionActivated": false,
+    "productionOrContaboChanged": false,
+    "nativeCoreIncoming10GiQualified": false,
+    "publicMailDeliveryQualified": false,
+    "localRestoreRTOObservedMillis": 150154,
+    "RTOIsNotAGeneralServiceGuarantee": true,
+    "oldEnrollmentProof": "Restored registry has zero active enrollments and a new quarantined epoch; local capsule replay is actually denied",
+    "positiveGenuinePostgreSQLObjectMCPRecipeQualified": false,
+    "PostgreSQLMCPReadScope": "Existing genuine OAuth/metadata path is qualified; historical 404 object probes are not positive-object evidence"
+  },
+  "cleanup": {
+    "independentObservations": 33,
+    "obligations": [],
+    "MinioRestoredStopped": true,
+    "allEnumeratedLoopsUnbound": true,
+    "cached5FullMetadataUnchanged": true,
+    "hostAndConntrackUnchanged": true,
+    "PC": "ON"
+  },
+  "logSHA256": {
+    "rust-final.stdout": "f5e1a3e34c936a9f7f2cab970188babdfc5a31351fc1aab442fffda3181149d7",
+    "rust-final.stderr": "87b86ae4d6a53f69bc2a1d64fbc109e7d55ef68b826a9ff534868edc4c705509",
+    "frontend.stdout": "9ad8e060b367a5c2524f216c5bd9ccbd421048adc937ad267615f328d0f97390",
+    "frontend.stderr": "2121206ed3d882f256eff81a7bfe415eacecdc3b575e79b698eea877e37e71ca",
+    "python.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "python.stderr": "f534602518e199f38db68d261489e9daaab6d4401d30250befdaa408b9d108b8"
+  },
+  "qualifiedSource": {
+    "compiledCore": "31eb1b9bb705a030412915e22b58927ba02f629bafd5ad3152e14c65fe6bcdad",
+    "matchedResult": "73e2781895826dd547236e07b61e1d7a03793d337075717455f6170c2a695f7c",
+    "targetVolumes": "64ef8100c83096b2c729ee94d472d3c274ee1a8992205c9c254fc38a4a251822",
+    "targetPGData": "3eb27607161491457ebd7097ece0586c4382df15435c128210a15defdf01b4fc"
+  },
+  "historicalFailures": "Retained unchanged with separate exact closure; later successful proof supersedes no old failure record"
+}

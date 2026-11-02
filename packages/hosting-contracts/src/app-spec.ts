@@ -1,4 +1,9 @@
 import { z } from "zod";
+const healthHost = z.string().max(259).regex(/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*(?::[1-9][0-9]{0,4})?$/).refine(value => {
+  const [host = "", port] = value.split(":");
+  try { return host.length <= 253 && (!port || Number(port) <= 65535) && new URL(`https://${value}`).hostname === host; }
+  catch { return false; }
+}).optional();
 export const healthcheckImage =
   "docker.io/rancher/mirrored-library-traefik@sha256:f86a2cab1b5c649070c49f883c743dd32d8485a56e3368c5f93b9e91f1e91259";
 export const appSpecSchema = z
@@ -16,6 +21,7 @@ export const appSpecSchema = z
       .string()
       .max(160)
       .regex(/^\/[a-zA-Z0-9/_-]*$/),
+    healthHost,
     cpuMillicores: z.number().int().min(10).max(64000),
     memoryBytes: z.number().int().min(16777216).max(1099511627776),
     ephemeralBytes: z.number().int().min(1048576).max(1099511627776),
@@ -39,6 +45,7 @@ export const preparedAppSpecSchema = z
     args: appSpecSchema.shape.args,
     port: appSpecSchema.shape.port,
     healthPath: appSpecSchema.shape.healthPath,
+    healthHost,
     cpuMillicores: appSpecSchema.shape.cpuMillicores,
     memoryBytes: appSpecSchema.shape.memoryBytes,
     ephemeralBytes: appSpecSchema.shape.ephemeralBytes,

@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-20",
+  "scope": "Database callback custody and daemon liveness correction",
+  "productionChanged": false,
+  "reproduction": {
+    "result": "failed as expected",
+    "seconds": 17.97,
+    "failure": "Revoking the actor session mid-execution caused an issued NeedsReconciliation receipt to block daemon reconnect."
+  },
+  "regression": {
+    "result": "passed",
+    "seconds": 128.78,
+    "log": ".runtime-test/runtime-native/database-delivery-regression.log",
+    "test": "stale_database_delivery_cannot_poison_unrelated_hosting_and_heartbeat",
+    "fixture": "Fresh uniquely named local PostgreSQL databases with existing restricted roles; real identity/domain/Core RPC/daemon; controlled runtime adapters, no Engine or Kubernetes mutations.",
+    "cases": [
+      "revoked actor session",
+      "expired execution lease",
+      "lost database capability",
+      "replacement operation generation",
+      "replacement database revision",
+      "expired first uncommitted checkpoint",
+      "expired first successful completion"
+    ],
+    "assertions": [
+      "exact issued specification and lease remain required under current enrollment",
+      "exact retired delivery replays without additional writes",
+      "stale checkpoint does not install backend UID or endpoint proof",
+      "late success does not confirm credentials, readiness or billing",
+      "replacement operation/database state is preserved",
+      "acknowledgement does not restore guard authority or renew expired lease",
+      "altered or forged envelopes are rejected",
+      "unknown private outbox envelope remains durable and blocks only database polling",
+      "unrelated authorized Hosting apps.create reaches Ready and subsequent heartbeats continue"
+    ]
+  },
+  "implementation": [
+    "Native receipt receivers separate custody from execution authority and durably record obsolete deliveries.",
+    "Current operation generation/token/backend/job revision and database operation_id/revision fence reconciliation state.",
+    "Strict live-authority successful transitions and terminal-success replay remain unchanged.",
+    "Database delivery retry uses the existing five-second RPC deadline plus five-second backoff; transport revocation remains global.",
+    "Authorization lease tokens remain private in durable callback envelopes; decrypted runtime material is never stored.",
+    "Agent-control constructor uses the shared original-backend runtime-role verifier."
+  ],
+  "checks": {
+    "scopedRustfmt": "passed",
+    "strictClippyAllTargets": [
+      "webdock-agent",
+      "webdock-agent-control",
+      "webdock-databases"
+    ],
+    "ordinaryRustTests": "passed; .runtime-test/runtime-native/database-delivery-unit-tests.log",
+    "architectureLintSerdeContracts": "passed",
+    "heavyKindRerun": "not performed; resource executor code was not changed"
+  },
+  "cleanup": {
+    "freshFixtureDatabasesRemaining": 0,
+    "rolesModified": false,
+    "retiredKindFixture": "kind-webdock-rust-fb6a448e",
+    "ownershipChecks": [
+      ".runtime-test/kind.json exact name/context",
+      "Docker Kind ownership label and exact control-plane node",
+      "only standard system pods and no active management/test processes",
+      "Mail owner confirmed no dependency"
+    ],
+    "retirement": "exact cluster deleted using explicit local Docker endpoint and explicit old kubeconfig; metadata marked retired",
+    "preservedKindFixture": "kind-webdock-rust-native-3c8064 remains running and Ready"
+  },
+  "sourceSha256": {
+    "crates/databases/src/service/agent/delivery.rs": "067d9bbf7373cecb51812b4fe21b0dc98d1ae379dc7f687c663facbea53c5230",
+    "crates/databases/src/service/agent.rs": "0d1b80bf03e4f62b9f11d8655e955b746063f5eef4daef089539cedb4872b417",
+    "crates/agent-control/src/database.rs": "74a2e5cbfa99000e970407fce1aa6288bad0a60dd8ca440b054f8c3ebffb1f90",
+    "crates/agent-control/src/lib.rs": "89ed8a72bd21de964769b2039e66e737f6e0fdcde5e6b11cfc11edab6fc7313c",
+    "crates/agent/src/management.rs": "3c70b465a5a96e2c7f1c823db9130a810a0ee79648c1d2105ed845dd47962526",
+    "crates/agent/src/management/database.rs": "d756904f82e40f20281692e093620c1e2131d7c9c7bb3d64cf168152c0c39bf8",
+    "crates/agent-control/tests/database_delivery.rs": "c291b141467a73fe02b23bcf831a302f9a8c5871310adce69661c4931b13cc1d",
+    "crates/agent-control/tests/support/database_common.rs": "443bd06e22d592c80ae28bafa0b0238d316313ab3aa23b096fd61d2d3952ce0e",
+    "proto/webdock/agent/v1/agent.proto": "52ea3dfd4c3926ae8396539d6764dc29bee2992954aea4ff3512f845550a938b"
+  },
+  "independentReview": "Completed: original P1 resolved; final source, all seven regression cases and passing log reviewed with no remaining finding in this correction. No heavy fixture rerun."
+}
