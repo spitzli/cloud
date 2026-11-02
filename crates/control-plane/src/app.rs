@@ -1,5 +1,5 @@
 use crate::{
-    config::runtime_config,
+    config::{AuthCompatibility, runtime_config},
     http::{Services, build_app_with_domains},
 };
 use async_trait::async_trait;
@@ -49,7 +49,10 @@ impl Hooks for WebdockApp {
         loco_rs::boot::run_app::<Self>(&mode, context).await
     }
     async fn before_routes(ctx: &AppContext) -> Result<Router<AppContext>> {
-        let config = PlatformConfig::from_map(&std::env::vars().collect())
+        let env = std::env::vars().collect();
+        let config = PlatformConfig::from_map(&env)
+            .map_err(|error| loco_rs::Error::Message(error.to_string()))?;
+        let auth_compatibility = AuthCompatibility::from_map(&env, &config)
             .map_err(|error| loco_rs::Error::Message(error.to_string()))?;
         crate::db::require_runtime_role(&ctx.db, "webdock_auth_bootstrap").await?;
         let secret = std::env::var("WEBDOCK_AUTH_SECRET")
@@ -95,15 +98,11 @@ impl Hooks for WebdockApp {
             let service = webdock_identity::IdentityService::new(ctx.db.clone(), cookies)
                 .with_secret_keys(keys)
                 .with_allocator(ids.clone())
-                .with_account_origin(
+                .with_passkeys_for_account(
                     url::Url::parse(&config.auth_origin)
                         .map_err(|_| loco_rs::Error::Message("Invalid account origin".into()))?,
+                    auth_compatibility.passkey_rp_origin,
                 )
-                .and_then(|service| {
-                    service.with_passkeys(
-                        url::Url::parse(&config.auth_origin).expect("validated origin"),
-                    )
-                })
                 .map_err(|_| {
                     loco_rs::Error::Message("Invalid native identity configuration".into())
                 })?;
@@ -150,7 +149,7 @@ impl Hooks for WebdockApp {
             })?,
         );
         let oauth_config = webdock_oauth::OAuthConfig::new(
-            &format!("{}/api/auth", config.auth_origin),
+            &auth_compatibility.oauth_issuer,
             &std::env::var("WEBDOCK_MCP_RESOURCE")
                 .unwrap_or_else(|_| format!("{}/api/mcp", config.studio_origin)),
             std::env::var("WEBDOCK_STUDIO_CLIENT_ID")
@@ -172,7 +171,7 @@ impl Hooks for WebdockApp {
                 .map_err(|_| loco_rs::Error::Message("Missing first-party cookie secret".into()))?;
             let browser_config = webdock_browser_session::BrowserConfig::new(
                 config.console_origin(),
-                &format!("{}/api/auth", config.auth_origin),
+                &auth_compatibility.oauth_issuer,
                 client_id,
                 client_secret,
             )
