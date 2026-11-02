@@ -3,7 +3,7 @@
     "fra1"
   ],
   "git": {
-    "deploymentEnabled": true
+    "deploymentEnabled": false
   },
   "buildCommand": "bun run build"
 }

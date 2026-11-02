@@ -1,6 +1,6 @@
-# Webdock
+# Spitzli Cloud
 
-Webdock is a Rust control plane with a React Console, local account security, workspaces, projects and explicitly enabled product plugins. Customer websites keep their own repositories and content stores.
+Spitzli Cloud is a Rust control plane with a React Console, local account security, workspaces, projects and explicitly enabled product plugins. Customer websites keep their own repositories and content stores.
 
 The active platform API is `crates/control-plane`. The Console and account UI share `apps/console` (`@webdock/console`, Vite). The old TypeScript Control Plane, Next.js Console/Auth and Mail service are preserved under `legacy/` and excluded from the active Bun workspace. Their plans and billing implementation are historical references; the native Core owns the active plans, limits and usage system. Billing is a future plugin.
 
@@ -62,4 +62,4 @@ Incoming Mail is explicitly activated per customer with one isolated Stalwart Co
 
 ## License
 
-Original Webdock code is **AGPL-3.0-only**. See [LICENSE](LICENSE), [alternative licensing](COMMERCIAL-LICENSING.md) and [contribution requirements](CONTRIBUTING.md). Third-party components keep their own licenses.
+Original Spitzli Cloud code is **AGPL-3.0-only**. See [LICENSE](LICENSE), [alternative licensing](COMMERCIAL-LICENSING.md) and [contribution requirements](CONTRIBUTING.md). Third-party components keep their own licenses.

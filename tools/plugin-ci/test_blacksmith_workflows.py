@@ -104,6 +104,13 @@ class BlacksmithWorkflows(unittest.TestCase):
                     for forbidden in ['--allow','docker.sock','--oci-worker-no-process-sandbox','unconfined','docker:dind']:
                         self.assertNotIn(forbidden,path.read_text())
 
+    def test_owned_vercel_app_roots_disable_automatic_git_builds(self):
+        # Vercel reads the project root configuration, not only the repository root.
+        for name in ['vercel.json', 'apps/website/vercel.json', 'apps/cms/vercel.json',
+                     'legacy/auth/vercel.json', 'legacy/console/vercel.json']:
+            with self.subTest(path=name):
+                self.assertIs(json.loads((ROOT / name).read_text())['git']['deploymentEnabled'], False)
+
     def test_release_readiness_rejects_skipped_or_incomplete_checks(self):
         fixture = {'status':'qualified','blacksmithInstalled':True,'qualifiedRegion':'us-east','regionProof':'reviewed-provider-evidence',
             'builder':dict(qualified=True,backend='blacksmith-managed',fallbackDisabled=True,proof='reviewed-builder-evidence'),
