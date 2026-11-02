@@ -8,7 +8,7 @@
  }
 }
 
-grafana.spitzli.cloud, grafana.webdock.dev {
+grafana.spitzli.cloud {
  header {
   Strict-Transport-Security "max-age=31536000"
   X-Content-Type-Options nosniff
@@ -21,7 +21,7 @@ grafana.spitzli.cloud, grafana.webdock.dev {
  }
 }
 
-prometheus.spitzli.cloud, prometheus.webdock.dev {
+prometheus.spitzli.cloud {
  header {
   Strict-Transport-Security "max-age=31536000"
   X-Content-Type-Options nosniff
@@ -37,4 +37,22 @@ prometheus.spitzli.cloud, prometheus.webdock.dev {
    header_up -Authorization
   }
  }
+}
+
+grafana.webdock.dev {
+ header {
+  Strict-Transport-Security "max-age=31536000"
+  X-Content-Type-Options nosniff
+  -Server
+ }
+ redir https://grafana.spitzli.cloud{uri} 308
+}
+
+prometheus.webdock.dev {
+ header {
+  Strict-Transport-Security "max-age=31536000"
+  X-Content-Type-Options nosniff
+  -Server
+ }
+ redir https://prometheus.spitzli.cloud{uri} 308
 }

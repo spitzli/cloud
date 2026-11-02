@@ -91,18 +91,34 @@ pub fn import_legacy_passkey(row: &LegacyPasskey) -> Result<Passkey> {
     }))
 }
 impl IdentityService {
-    pub fn with_passkeys(mut self, origin: url::Url) -> Result<Self> {
-        self = self.with_account_origin(origin.clone())?;
+    pub fn with_passkeys(self, origin: url::Url) -> Result<Self> {
+        self.with_passkeys_for_account(origin.clone(), origin)
+    }
+    pub fn with_passkeys_for_account(
+        mut self,
+        account_origin: url::Url,
+        rp_origin: url::Url,
+    ) -> Result<Self> {
+        crate::validate_account_origin(&rp_origin)?;
+        if account_origin.scheme() != rp_origin.scheme() {
+            return Err(IdentityError::Configuration);
+        }
+        self = self.with_account_origin(account_origin.clone())?;
+        let mut builder = WebauthnBuilder::new(
+            rp_origin.host_str().ok_or(IdentityError::Configuration)?,
+            &rp_origin,
+        )
+        .map_err(|_| IdentityError::Configuration)?;
+        // Retain credential RP IDs while accepting only the configured account origin.
+        if account_origin != rp_origin {
+            builder = builder.append_allowed_origin(&account_origin);
+        }
         self.webauthn = Some(
-            WebauthnBuilder::new(
-                origin.host_str().ok_or(IdentityError::Configuration)?,
-                &origin,
-            )
-            .map_err(|_| IdentityError::Configuration)?
-            .rp_name("Spitzli Cloud")
-            .timeout(Duration::from_secs(300))
-            .build()
-            .map_err(|_| IdentityError::Configuration)?,
+            builder
+                .rp_name("Spitzli Cloud")
+                .timeout(Duration::from_secs(300))
+                .build()
+                .map_err(|_| IdentityError::Configuration)?,
         );
         Ok(self)
     }
@@ -392,4 +408,97 @@ fn summary(row: &QueryResult) -> Result<PasskeySummary> {
         name: row.try_get("", "name")?,
         created_at: row.try_get("", "createdAt")?,
     })
+}
+
+#[cfg(test)]
+mod account_rp_migration {
+    use super::*;
+    use crate::CookiePolicy;
+    use sea_orm::DatabaseConnection;
+    use url::Url;
+
+    fn identity() -> IdentityService {
+        IdentityService::new(
+            DatabaseConnection::default(),
+            CookiePolicy::new(true, "account-rp-migration-test-secret-32-bytes").unwrap(),
+        )
+    }
+
+    #[test]
+    fn retained_rp_accepts_exactly_old_and_account_origins() {
+        let account = Url::parse("https://auth.spitzli.cloud").unwrap();
+        let rp = Url::parse("https://auth.webdock.dev").unwrap();
+        let service = identity()
+            .with_passkeys_for_account(account.clone(), rp.clone())
+            .unwrap();
+        assert_eq!(service.account_origin.as_ref(), Some(&account));
+        let webauthn = service.webauthn.as_ref().unwrap();
+        assert_eq!(webauthn.get_allowed_origins(), &[rp, account]);
+        for foreign in [
+            "https://foreign.example",
+            "https://sub.auth.spitzli.cloud",
+            "https://auth.spitzli.cloud:8443",
+        ] {
+            assert!(
+                !webauthn
+                    .get_allowed_origins()
+                    .contains(&Url::parse(foreign).unwrap())
+            );
+        }
+        let (options, _) = webauthn
+            .start_passkey_registration(uuid::Uuid::nil(), "user@example.test", "User", None)
+            .unwrap();
+        assert_eq!(options.public_key.rp.id, "auth.webdock.dev");
+    }
+
+    #[test]
+    fn existing_builder_keeps_one_origin_and_matching_rp() {
+        let origin = Url::parse("https://auth.webdock.dev").unwrap();
+        let service = identity().with_passkeys(origin.clone()).unwrap();
+        assert_eq!(service.account_origin.as_ref(), Some(&origin));
+        let webauthn = service.webauthn.as_ref().unwrap();
+        assert_eq!(webauthn.get_allowed_origins(), &[origin]);
+        let (options, _) = webauthn
+            .start_passkey_registration(uuid::Uuid::nil(), "user@example.test", "User", None)
+            .unwrap();
+        assert_eq!(options.public_key.rp.id, "auth.webdock.dev");
+    }
+
+    #[test]
+    fn rejects_invalid_account_and_rp_origins() {
+        let valid = Url::parse("https://auth.webdock.dev").unwrap();
+        for raw in [
+            "http://auth.webdock.dev",
+            "ftp://auth.webdock.dev",
+            "https://user@auth.webdock.dev",
+            "https://auth.webdock.dev/path",
+            "https://auth.webdock.dev?query=1",
+            "https://auth.webdock.dev#fragment",
+            "file:///tmp/auth",
+        ] {
+            let invalid = Url::parse(raw).unwrap();
+            assert!(
+                identity()
+                    .with_passkeys_for_account(invalid.clone(), valid.clone())
+                    .is_err()
+            );
+            assert!(
+                identity()
+                    .with_passkeys_for_account(valid.clone(), invalid)
+                    .is_err()
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_scheme_downgrade_in_either_direction() {
+        let https = Url::parse("https://localhost:3125").unwrap();
+        let http = Url::parse("http://localhost:3125").unwrap();
+        assert!(
+            identity()
+                .with_passkeys_for_account(https.clone(), http.clone())
+                .is_err()
+        );
+        assert!(identity().with_passkeys_for_account(http, https).is_err());
+    }
 }

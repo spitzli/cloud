@@ -139,17 +139,19 @@ def alias_hosts(c,values):
  return [urllib.parse.urlsplit(value).netloc for value in aliases]
 
 
-def native_https(c,api_public=True,api_aliases=None,navigation_aliases=None):
+def native_https(c,api_public=True,api_aliases=None,navigation_aliases=None,api_navigation_target=None):
  """Owned native Caddy edge when a cluster has no ingress controller."""
  validate(c)
  if not c['enabled']:raise ValueError('explicit enabled profile required')
  if type(api_public) is not bool:raise ValueError('explicit API activation boolean required')
  extra=alias_hosts(c,api_aliases)
+ target=origin(api_navigation_target) if api_navigation_target is not None else None
+ if target is not None and urllib.parse.urlsplit(target).netloc not in extra:raise ValueError('API navigation target must be an explicit alias')
  navigation={} if navigation_aliases is None else navigation_aliases
  if not isinstance(navigation,dict) or len(navigation)>4:raise ValueError('bounded explicit service navigation aliases required')
  nav_hosts=alias_hosts(c,list(navigation))
  targets=[origin(value) for value in navigation.values()]
- if any(value not in ['https://docs.webdock.dev','https://registry.webdock.dev'] for value in targets):raise ValueError('unreviewed service navigation destination')
+ if any(value not in ['https://docs.webdock.dev','https://registry.webdock.dev','https://docs.spitzli.cloud','https://registry.spitzli.cloud'] for value in targets):raise ValueError('unreviewed service navigation destination')
  if set(nav_hosts).intersection(extra):raise ValueError('navigation alias conflicts with an API alias')
  if (extra or navigation) and not api_public:raise ValueError('public aliases require explicit API activation')
  gateway=urllib.parse.urlsplit(origin(c['gatewayOrigin'])).netloc
@@ -162,17 +164,43 @@ def native_https(c,api_public=True,api_aliases=None,navigation_aliases=None):
  body=['  route {','    @private_worker path /api/hosting/git/worker*','    respond @private_worker 404','    @unsafe expression `{http.request.uri}.matches('+json.dumps(UNSAFE)+')`','    respond @unsafe 400','    @public path /healthz /readyz /v1/* /api/mcp /api/registry /api/registry/* /api/hosting /api/hosting/* /.well-known/oauth-protected-resource/api/mcp','    handle @public {','      reverse_proxy '+core+' {','        header_up Host '+api]
  body+=['        header_up -'+header for header in REMOVE]
  body+=['        flush_interval -1','        transport http {','          compression off','          dial_timeout 5s','          response_header_timeout 30s','        }','      }','    }','    respond 404','  }']
- for host in [api,*extra]:lines += [host+' {',*body,'}']
+ for host in [api,*extra]:
+  selected=list(body)
+  if host==api and target is not None:selected[1:1]=['    @root_navigation {','      method GET HEAD','      path /','    }','    redir @root_navigation '+target+'{uri} 307']
+  lines += [host+' {',*selected,'}']
  for host,target in zip(nav_hosts,targets):
   lines += [host+' {','  route {','    @protocol path /api /api/* /v1 /v1/* /.well-known /.well-known/* /auth /auth/* /mcp /mcp/*','    respond @protocol 404','    @navigation method GET HEAD','    handle @navigation {','      header Cache-Control no-store','      redir '+target+'{uri} 307','    }','    respond 404','  }','}']
  return '\n'.join(lines)+'\n'
 
 
-def vercel_output(c,surface,database_gateway=None,navigation_aliases=None,realtime_url=None):
+def compatibility_navigation_routes(target,aliases,surface):
+ """Page-only forward migration; credential/API/static resource requests stay compatible."""
+ target=origin(target)
+ if surface not in ['account','console'] or not isinstance(aliases,list) or len(aliases)>4:raise ValueError('bounded explicit surface aliases required')
+ aliases=[origin(value) for value in aliases]
+ if target in aliases or len(set(aliases))!=len(aliases):raise ValueError('legacy navigation must not loop')
+ routes=[]
+ for value in aliases:
+  match=[{'type':'host','value':{'eq':urllib.parse.urlsplit(value).netloc}}]
+  if surface=='account':routes.append({'src':'^/(api/auth/oauth2/authorize)$','has':match,'methods':['GET','HEAD'],'status':307,'headers':{'Location':target+'/$1','cache-control':'no-store'}})
+  routes.append({'src':r'^/((?!(?:api|v1|assets|\.well-known)(?:/|$)).*)$','has':match,'methods':['GET','HEAD'],'status':307,'headers':{'Location':target+'/$1','cache-control':'no-store'}})
+ return routes
+
+
+def vercel_output(c,surface,database_gateway=None,navigation_aliases=None,realtime_url=None,compatibility_aliases=None):
  """Build Output v3: static native UI, live protected APIs, exact Studio compatibility."""
  validate(c)
  if not c['enabled'] or surface not in ['account','console']:raise ValueError('explicit frontend surface required')
+ compatibility=[] if compatibility_aliases is None else compatibility_aliases
+ if not isinstance(compatibility,list) or len(compatibility)>4:raise ValueError('bounded explicit legacy protocol aliases required')
+ compatibility=[origin(value) for value in compatibility]
+ forbidden={origin(c[key]) for key in ['gatewayOrigin',*SURFACES.values()]}
+ if surface=='console':forbidden.remove(origin(c['studioOrigin']))
+ if len(set(compatibility))!=len(compatibility) or any(value in forbidden for value in compatibility):raise ValueError('legacy alias conflicts with a canonical surface')
+ compatible_hosts=[urllib.parse.urlsplit(value).netloc for value in compatibility]
+ if set(compatible_hosts).intersection(alias_hosts(c,navigation_aliases)):raise ValueError('navigation-only and protocol compatibility aliases overlap')
  connections=[origin(c[key]) for key in SURFACES.values()]
+ connections += [value for value in compatibility if value not in connections]
  frames=origin(database_gateway) if database_gateway else "'none'"
  if database_gateway:connections.append(frames)
  if realtime_url:
@@ -182,6 +210,7 @@ def vercel_output(c,surface,database_gateway=None,navigation_aliases=None,realti
  sockets=[v.replace('https://','wss://',1) for v in connections]
  csp="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; worker-src 'self' blob:; connect-src 'self' "+' '.join(connections+sockets)+"; frame-src "+frames+"; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'self'"
  routes=[{'src':'^/.*$','headers':{'content-security-policy':csp,'x-content-type-options':'nosniff','x-frame-options':'DENY','referrer-policy':'strict-origin-when-cross-origin','strict-transport-security':'max-age=31536000'},'continue':True}]
+ routes += compatibility_navigation_routes(c[SURFACES[surface]],compatibility,surface)
  for host in alias_hosts(c,navigation_aliases):
   match=[{'type':'host','value':{'eq':host}}]
   routes += [{'src':'^/(?:api|v1|\\.well-known)(?:/.*)?$','has':match,'status':404,'headers':{'cache-control':'no-store'}},{'src':'^/(.*)$','has':match,'status':307,'headers':{'Location':origin(c[SURFACES[surface]])+'/$1','cache-control':'no-store'}}]
