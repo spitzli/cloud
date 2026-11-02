@@ -1,5 +1,19 @@
 # Webdock TODO
 
+- [x] **Spitzli Cloud first-party rollout and internal address pilot (2026-10-31).** Website/Console/Login use the owned graphite/violet identity. Main/Console/API and operator Grafana/Prometheus HTTPS domains are live; existing-password/MFA/PKCE/operator browser flow passes on ordinary DNS/TLS. Exact `spitzli.site` allocation, per-host HTTPS, stop/start, deletion/no-reuse and unknown-host denial are verified. Wildcard DNS is active; admission is limited to the explicitly trusted internal customer. Existing customer domains/data are preserved. [Rollout and full file list](docs/operations/spitzli-cloud-rebrand-rollout-2026-10-31.md), [evidence](docs/verification/2026-10-31-spitzli-cloud-rollout.json).
+- [x] **Public Core activation (2026-10-31).** Dedicated Core HTTP/private agent-control image is pinned by digest, native schema65 entries/max version66, enrolled RUN agentv3 with monotonic identity/certificate/storage binding preserved. Original25 customers and Lunares/Schattenclan resources are retained; one owned QA customer/project is archived with no running app. Operator/Core/OBS1Password URLs are updated/read-back verified.
+- [ ] **Qualified canonical protocol/publication migration.** Auth/Studio/Registry retain original issuer/RP/MCP audience during the approved transition. New navigation aliases work without claiming new protocol authority. Publish the prepared Docs rebrand through its actual Mintlify deployment and qualify its canonical custom domain; do not silently rewrite retained passkeys, tokens, client secrets, signed registry URLs or customer URLs.
+- [ ] **Public customer address/build release gate.** Keep automatic addresses on the trusted internal pilot until browser/cookie/PSL and hostile multi-tenant qualification pass. Permanent Core BUILD dispatcher, production OCI registry/artifact/source binding and private Core-BUILD connection are not activated. The existing extension catalogue is not an OCI registry. No per-build VM was introduced.
+- [ ] **Native archived-project deletion.** Implement the guarded project lifecycle before physical deletion of archived project/customer metadata. Current native project DELETE returns405; customer DELETE protects its remaining project409. Own HTTPS qualification metadata110015806338760704/110015805512491008 is archived; app/Pod/Service/Ingress are deleted and its permanent hostname reservation is retained. Do not bypass this with direct provider/SQL deletion.
+
+- [ ] **Observability foundation (owner proposal, 2026-10-30).** Plan a separate single-node K3s observability server with Prometheus, Alertmanager, Grafana, Alloy and monolithic Loki using private S3 storage. Keep it independent of BUILD/RUN, retain authenticated tenant boundaries, bounded ingestion/retention and an external dead-man check. Size and price from measured ingestion before ordering a server; qualify Wasabi's minimum-duration billing for short-lived logs. Provision through the subsequent Pulumi work. See [the operating proposal](docs/architecture/observability-foundation.md); no server purchase or deployment is implied.
+  - Owner authorized and ordered a **12-month VPS6 EU**, instance `100210955`, after the offline proposal. [Purchase and pending SSH/1Password verification](docs/operations/observability-host.md). Do not buy a duplicate.
+  - Live continuation: dedicated OBS K3s, fixed volumes, scoped Wasabi, Grafana, Prometheus, Alertmanager and Loki are running. Operator HTTPS and 1Password URLs are verified; see [operator access](docs/operations/observability-access.md). Seventeen upstream dashboards exist; only OBS itself is collected. Fleet collection, paging, SSO/MFA and complete recovery qualification remain pending.
+  - **Reuse Grafana dashboards/panels before building custom monitoring charts (owner preference, 2026-10-30).** Select compatible maintained dashboards, adapt their queries to the actual metrics/labels, and version their definitions/provisioning in the repo. Use Grafana directly for operator monitoring. Build custom charts only for uncovered needs or necessary customer-facing product UX. Any later embedding must preserve authenticated tenant-scoped queries; never expose a shared operator datasource, anonymous panel or public snapshot as a customer isolation boundary.
+- [ ] **After the Kubernetes build multi-tenancy work — Pulumi infrastructure (owner request, 2026-10-30).** Create reproducible Pulumi definitions for the existing Webdock infrastructure, starting with the separate build cluster. Inventory and safely import existing resources before managing them; keep provisioning separate from application rollout, reference secrets securely, and document preview/apply, drift detection and recovery. Do not replace running resources or rotate live credentials implicitly. Follow the [build multi-tenancy plan](docs/superpowers/plans/2026-10-29-build-multitenancy.md) first.
+- [ ] **After the Kubernetes build multi-tenancy work — Managed service operating model (owner request, 2026-10-30).** Define how Webdock operates as a real managed service: ownership and support scope; OS/K3s/runtime/builder/application updates and security patches; version pinning, staging, maintenance windows, staged rollout and rollback; monitoring, alerts and incident response; tenant isolation, capacity and quotas; credential/certificate renewal; off-host backups, tested restores and disaster recovery; retention, customer communication and operating costs. Separate measured capabilities from future availability/support commitments and turn the concept into concrete runbooks and implementation tasks.
+  - **Concrete renewal gate (2026-10-31):** Core/RUN agent mTLS leaf certificates expire2027-01-29T11:07:09Z. Implement expiry alerts and rehearsed server/client renewal before this date, preserve enrollment generation/monotonic counters, verify negative peer tests and encrypted recovery/1Password backup. Current leaves are manually issued; automated renewal is not installed.
+
 - [x] **Act as customer (2026-10-23).** A platform operator can enter explicit customer-owner read/write mode with a visible banner and exit, retaining the original audit identity and exact session/customer epoch. Read-only preview remains separate. Identity/security, API-token management and public OAuth/MCP delegation stay outside acting mode. Native browser and restricted authority/queued-invitation regressions pass; see `docs/superpowers/plans/2026-10-23-act-as-customer.md`.
 - [x] **Customer-owned workloads and Mail isolation (2026-10-23).** One explicitly enabled incoming CE engine per customer, shared across projects, with retained suspension and restart reconciliation. Workloads, limits, domains, usage and notices support customer ownership independently of project lifetime. Legacy project engines need explicit migration; public reception, incoming relay and plugin Webmail/outbox parity remain open. See the dated customer-workload and Mail-isolation plans.
 
@@ -62,3 +76,94 @@ No implementation, published offer, provider purchase or final entitlement decis
 - [ ] **Enforce allowances predictably.** Server-side storage admission checks before upload, with concurrent reservations and final-size reconciliation. For outgoing mail, enforce provider-side child quotas wherever supported: direct customer SMTP/API credentials bypass a Webdock-only counter. Verify which limits are hard, their reset period, and how shared/auth mail is accounted for. Warn at e.g. 80% and 100%, expose upgrade/extra-capacity options, and require explicit agreement before paid overages. At a storage cap block new uploads while retaining existing content and allowing cleanup; at a sending cap reject new sends clearly rather than silently losing mail. For traffic spikes, investigate abuse/caching and notify the customer; do not automatically take down a live site based on delayed counters. Decide grace periods, spend protection and the response to sustained excess before selling the allowance. Do not promise a hard infrastructure spending cap unless the provider actually enforces it.
 - [ ] **Domains as an optional Webdock product.** First support connecting existing domains with readable DNS/verification status. Then research Namecheap versus reseller APIs for availability, registration, transfer, DNS, renewals and customer registrant details. Show first-year and renewal price per TLD, with registration separate from Website Mini; retain customer ownership and allow transfer out. Plan explicit purchase confirmation, auto-renew opt-in, expiry notices, failed-payment handling, transfer locks/codes and audit history. Scope DNS rights separately from read-only Vercel access. Provider suitability, margins, premium domains, taxes and obligations need research before enabling purchases.
 - [ ] **Incoming Mail / real mailboxes.** Treat the user's request as an idea for receiving email at an own-domain address, with clarification before implementation. Explore a separately priced mailbox add-on with IMAP/SMTP, webmail, aliases, spam filtering, mailbox storage, account/password management and migration. A candidate small mailbox might have 1–5 GB, but choose capacity and price only after provider/reseller cost research. Compare forwarding-only as a simpler, clearly labelled alternative; receiving email into an app/webhook is another distinct use case. Current Webdock Mail covers outgoing turboSMTP delivery and does not provide customer inboxes. Investigate a managed mailbox reseller rather than operating our own mail server. Keep mailbox storage/quotas distinct from website media and transactional send quotas; coordinate MX and SPF/DKIM/DMARC without overwriting an existing mail provider.
+
+- [ ] Neon Core operations: backup/restore drills, production-branch protection,
+  reviewed credential custody, connection/egress monitoring and branch TTL cleanup.
+  Keep native MFA/passkey identity and custom organization authorization.
+- [ ] Realtime capacity: benchmark revision invalidation/fanout before large tenant
+  counts; fixed counters currently intentionally contain no tenant/customer rows.
+- [ ] Existing agent lint debt outside the Neon/read-loop change:
+  `crates/agent/src/config.rs` collapsible-if and
+  `crates/agent/src/recovery/config.rs` large enum variant. No lint suppression
+  was added during the migration.
+
+### Customer UX verification — 2026-11-01
+
+- [ ] **Native GitHub onboarding is a release blocker for self-service Git builds.**
+  Port the existing authorized GitHub App connect/callback flow into the native
+  repository adapter boundary; preserve tenant/session binding, signed state,
+  installation ownership, exact repository permissions and reconnect/revocation.
+  `plugins/github-repository/README.md` currently explicitly leaves OAuth onboarding
+  pending. Configure the actual reachable project-scoped registry and repository
+  runtime before enabling `WEBDOCK_BUILD_REGISTRY_HOST`; never fabricate a
+  connection or use a global registry credential. Acceptance: a genuine customer
+  connects their selected repository, builds one exact SHA, sees durable logs and
+  deploys its digest; other customers' installations remain inaccessible.
+- [ ] **Complete retained service usage reporting.** Native workspace plans and
+  project limits work, but legacy Hosting applications are not plugin-unit usage
+  samples. Reconcile their allocations/measurements before presenting total
+  CPU/RAM/storage usage or selling combined hard limits. Empty telemetry must stay
+  labelled as unreported, never as no running applications.
+- [ ] **Database browser infrastructure as managed IaC.** Preserve the restored
+  per-subject runtime grants, TLS CA, project credentials and gateway secret in
+  Pulumi/secret references. Publish pinned images to the approved registry for
+  placement/failover instead of depending on the wd-eu-02 image cache. Add
+  certificate/health monitoring, retained browser-state policy and renewal drills.
+  Do not replace actual application/database PVCs. The old database.webdock.dev
+  bookmark still needs the separately controlled legacy DNS migration.
+- [ ] Refresh the existing 1Password runtime entry with the new database gateway
+  origin/private Host-config reference and retain the new invocation signer there.
+  The 1 November CLI request timed out; use the owner-encrypted audit custody and
+  exact read-back comparison, preserving every existing password/MFA field.
+- [ ] Embedded database editor accessibility: remove its nested main landmark in
+  the maintained UI package; keep the Console's skip-link/main region intact.
+
+### Build-Minuten je Kunde und Plan
+
+- [ ] Globales Standardkontingent für Build-Minuten festlegen; pro Kunde und über
+  kundenspezifische Pläne überschreibbar. Auch kostenlose Pläne mit manuell
+  zugewiesenen Build-Minuten unterstützen; keine Zahlung für einen Free-Plan
+  voraussetzen. Der Operator kann Kontingente zuweisen, Minuten zubuchen und
+  fehlerhafte Abzüge mit protokolliertem Grund korrigieren.
+- [ ] Tatsächliche Build-Laufzeit serverseitig messen und vom Kundenkontingent
+  abbuchen. Messbeginn/-ende, Abrechnungsperiode, Rundung sowie die Behandlung von
+  fehlgeschlagenen, abgebrochenen und wiederholten Builds transparent festlegen.
+  Warteschlangenzeit separat anzeigen. Reservierung und endgültigen Verbrauch
+  atomar verbuchen, auch bei parallelen Builds; Webhook-Duplikate, Wiederanläufe
+  und Dispatcher-Neustarts dürfen keine Doppelabbuchung verursachen.
+- [ ] In Kunden- und Operatoransicht enthaltene, verbrauchte, reservierte und
+  verbleibende Minuten sowie Ablauf/Erneuerung des Kontingents zeigen. Bei
+  ausgeschöpftem Limit neue Builds verständlich stoppen; bestehende Anwendungen
+  laufen weiter. Nachbuchung/Upgrade anbieten, aber keine automatische bezahlte
+  Erweiterung oder Belastung ohne ausdrückliche Vereinbarung.
+- [ ] Core agent-control rollout reliability: a Recreate Pod replacement can leave
+  the private systemd TCP pass-through stale. Current verified hook: after private
+  controller readiness, restart only `webdock-core-agent-control.service` on Core
+  and verify a fresh real RUN inspect. Keep the listening socket, mTLS, enrolled
+  generation and customer workloads unchanged. Qualify automatic connection
+  draining/reconnect through a disposable controller outage before removing this hook.
+
+## Independent plugin release follow-up (2026-11-01)
+
+- [ ] **Use Blacksmith exclusively for our own GitHub CI (owner instruction, 2026-11-01).** Migrate Spitzli platform/plugin/SDK GitHub Actions execution to [Blacksmith](https://www.blacksmith.sh/), including reusable workflows. The owner waived EU-only placement for our own Blacksmith GitHub CI on 2026-11-01; record and verify the configured/observed runner region (currently dashboard US West) and qualify the supported managed builder before migration. This exception does not change EU requirements or isolation for customer builds or other services. Blacksmith App installation and exact16-repository selection are confirmed; the isolated runner/build probe passed in `us-west` ([job](https://github.com/spitzli/cloud/actions/runs/41319592763/job/124886768224)). Complete source checks and normal workflow publication remain pending. The old root manual distribution workflow is disabled; the old runner/host remain unchanged. Do not configure an alternative runner fallback. This supersedes the earlier self-hosted runner choice for our own GitHub CI. Retire the existing trusted CI runner and its credentials/cache safely after replacement checks pass; update CI documentation and infrastructure plans. Customer build-cluster provisioning remains a separate workstream.
+- [ ] **Update documentation alongside the plugin migration (owner reminder, 2026-11-01).** Update public developer/customer docs and internal operations guides with canonical Spitzli plugin/SDK repositories, version pins, actual CI region and the own-Blacksmith exception, registry publication and signature verification, installation/update steps, and troubleshooting. Explain v1/v2 compatibility, provider catalog entries requiring separate runtime binding, and the maintenance-only Postgres policy with Neon BYOK as default. Refresh links and examples; distinguish published images from signed registry admission and actual activation. Validate navigation and links before marking complete.
+  Source overhaul and the exact public package are qualified: 44 pages, strict Mintlify build and link checks passed. Hosted publication still requires verification of the existing Git-connected project and custom-domain mapping; dashboard login is needed only if those settings cannot be confirmed from the established deployment path; see [the completion record](docs/operations/documentation-overhaul-2026-11-01.md). Keep this item open until the real site and final plugin admission status are updated.
+- [ ] Move Core compatibility/UI/test source copies to reviewed versioned plugin inputs after the independent runtime releases are qualified; preserve Archives Core acceptance tests.
+- [ ] Provision repository-scoped registry publisher tokens through the owner account for unattended publication; initial releases may be submitted through the authenticated registry MCP and must still pass pinned-key CI verification.
+- [ ] Align the requested Pulumi/managed-service maintenance plan with the Blacksmith-only GitHub CI decision, including managed CI configuration and safe retirement of the existing runner. Preserve the build-cluster egress guard, rootless BuildKit, volatile runtime directory and pinned tool update/recovery requirements for any remaining customer-build services.
+- [ ] Until the existing trusted CI runner is retired, reserve/coordinate its CPU/RAM/cache usage with Kubernetes build capacity before enabling concurrent customer builds; the host service is outside the Kubernetes scheduler. Never route arbitrary imported source into the shared trusted CI cache.
+- [ ] Replace persistent trusted CI state with disposable runners before admitting untrusted external source. Fork PRs remain excluded; CI qualification does not pass the public customer-build isolation gate.
+
+### Verified plugin delivery status (2026-11-01)
+
+- [x] Publish all nine native plugins and Managed CMS in independent Spitzli repositories, with immutable OCI images and original signed tags.
+- [x] Admit and publish all ten new registry records; verify the existing Ed25519 key, exact manifest bytes and all23 declared signed assets. Keep provider bindings/customer activation separate.
+- [x] Qualify and roll out the unchanged foreign-node retained-volume controller path; registry revision5 ready with unchanged Deployment UID, PV/PVC specs and other protected deployments.
+- [ ] Renew the rejected registry-owner GitHub OAuth connection and set up repository-scoped publisher credentials/release hooks for future unattended versions. Initial publication used the existing authorized MCP publisher path.
+- [ ] Qualify durable bounded retry/diagnostics for registry asset hashing after transient fetch failures; metadata acceptance alone does not imply signed integrity.
+- [ ] Investigate the one unreproduced generic Runtime error in owned retained-update qualification; preserve error-code/callsite evidence without logging credentials.
+- [ ] Publish the qualified docs through the intended Git-connected project and confirm docs.spitzli.cloud. Existing successful Git checks name docs.webdock.dev; the new domain still showed a Starter Kit.
+- [ ] Qualify distribution/bootstrap of the registry-server OCI image on replacement/future RUN nodes; the exact image is currently preloaded on all three existing nodes.
+
+Do not rerun the old self-hosted registry-only CI jobs to change their historical
+status: the Blacksmith-only owner instruction applies to new/rerun GitHub CI.
