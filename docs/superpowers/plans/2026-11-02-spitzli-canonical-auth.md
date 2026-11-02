@@ -36,10 +36,10 @@
 
 - [x] Snapshot Core identities/images/public origin values, exact gateway configuration, Vercel targets and public metadata; never print secrets.
 - [ ] Qualify a matching backend candidate with current retained data/schema through a disposable fixture. Do not apply an unrelated production migration merely to make startup pass.
-- [ ] Activate new canonical Auth/API origin plus explicit old RP/issuer settings; preserve all unrelated runtime secret bytes. Keep private agent-control forwarding healthy across any Core rollout.
-- [ ] Update the existing gateway's trusted Host values and TLS routes atomically with backup/rollback. Update Managed Auth trusted origins if required, through the normal provider path.
+- [x] Activate new canonical Auth origin plus explicit old RP/issuer settings; preserve technical API Host contracts, unrelated secret bytes and private agent-control forwarding.
+- [x] Update the existing gateway's account Host and TLS routes with backup/rollback; verify Managed Auth already trusts the new account origin.
 - [x] Promote only reviewed static artifacts. Verify new Auth has no Webdock navigation redirect, old Auth pages lead to new Auth, config/cookies/anonymous login/Origin denials and public RP/OAuth/MCP metadata stay correct.
-- [ ] Reverse remaining platform navigation aliases (website, docs, registry, monitoring) with provider-specific scope checks. Preserve production/custom-tenant routes and protocol authority; record any real provider approval blocker.
+- [x] Reverse remaining platform navigation aliases (website, docs, registry, monitoring) with provider-specific scope checks; preserve tenant routes and protocol authority.
 
 ## Execution rulings
 
@@ -47,4 +47,6 @@
 - Backport only the three-file Auth patch to the exact production source (all SQL and unrelated code unchanged). No unrelated main migration is required. HTTP image and canonical origin activation passed actual production readiness checks with rollback snapshots.
 - Registry canonical navigation uses the existing RUN ingress and certificate plus an exact owned Core proxy. No registry DNS or TLS-key transfer is needed. The superseding DNS confirmation script now contains only the old Docs CNAME.
 - Real existing-operator password, TOTP MFA and PKCE passed on the new account origin. A real browser/hardware passkey ceremony remains untested; related-origin metadata, exact RP and required user-verification options were checked live.
-- 1Password runtime-mirror update is prepared but awaiting the application CLI approval/unlock after a30-second timeout. Do not bypass it.
+- After the owner unlocked 1Password, the runtime mirror was updated by changing only the three public Auth/RP/issuer settings; exact readback verified all credentials and unrelated fields were preserved.
+- The owner interactively confirmed the old Docs DNS change; strict TLS and the forward redirect with preserved path/query passed. Registry DNS stayed unchanged.
+- Exact production image acceptance used a staged live rollout with original origins first, then the canonical origin. Readiness, retained configuration and the existing operator were checked without resetting any production data. No separate disposable production-backport database fixture or hardware ceremony was run.

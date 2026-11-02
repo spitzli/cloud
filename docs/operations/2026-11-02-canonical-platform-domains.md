@@ -3,9 +3,9 @@
 The owner corrected navigation on 2026-11-02: new Spitzli entry points must not
 send people back to Webdock. Account UI now stays at `https://auth.spitzli.cloud`.
 Old account, Studio, website, registry and monitoring page URLs forward to the
-matching Spitzli service. The old Docs DNS record still requires an interactive
-Vercel confirmation; its replacement handler is prepared. New public docs are
-already live at `https://docs.spitzli.cloud`.
+matching Spitzli service. The owner confirmed the old Docs CNAME change through the interactive Vercel
+CLI. Its valid TLS endpoint now forwards page paths and queries to
+`https://docs.spitzli.cloud`.
 
 ## Public origins and protocol identities
 
