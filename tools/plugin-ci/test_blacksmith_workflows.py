@@ -108,7 +108,7 @@ class BlacksmithWorkflows(unittest.TestCase):
         workflow = yaml.load((ROOT / '.github/workflows/quality.yml').read_text(), Loader=yaml.BaseLoader)
         job = workflow['jobs']['quality']
         environment = job.get('env', {})
-        self.assertEqual(environment.get('CARGO_TARGET_DIR'), '${{ runner.temp }}/webdock-quality-target')
+        self.assertEqual(environment.get('CARGO_TARGET_DIR'), '${{ github.workspace }}/target')
         for name in ['CARGO_INCREMENTAL', 'CARGO_PROFILE_DEV_DEBUG', 'CARGO_PROFILE_TEST_DEBUG']:
             self.assertEqual(environment.get(name), '0')
         self.assertEqual(environment.get('CARGO_BUILD_JOBS'), '3')
