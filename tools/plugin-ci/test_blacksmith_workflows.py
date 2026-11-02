@@ -104,6 +104,21 @@ class BlacksmithWorkflows(unittest.TestCase):
                     for forbidden in ['--allow','docker.sock','--oci-worker-no-process-sandbox','unconfined','docker:dind']:
                         self.assertNotIn(forbidden,path.read_text())
 
+    def test_root_quality_bounds_artifacts_and_preserves_the_complete_gate(self):
+        workflow = yaml.load((ROOT / '.github/workflows/quality.yml').read_text(), Loader=yaml.BaseLoader)
+        job = workflow['jobs']['quality']
+        environment = job.get('env', {})
+        self.assertEqual(environment.get('CARGO_TARGET_DIR'), '${{ runner.temp }}/webdock-quality-target')
+        for name in ['CARGO_INCREMENTAL', 'CARGO_PROFILE_DEV_DEBUG', 'CARGO_PROFILE_TEST_DEBUG']:
+            self.assertEqual(environment.get(name), '0')
+        self.assertEqual(environment.get('CARGO_BUILD_JOBS'), '3')
+        self.assertEqual(environment.get('RUST_TEST_THREADS'), '3')
+        commands = [step.get('run', '') for step in job['steps']]
+        self.assertIn('bun run quality', commands)
+        self.assertIn('bun run test:distribution', commands)
+        self.assertNotIn('CARGO_PROFILE_TEST_DEBUG_ASSERTIONS', environment)
+        self.assertNotIn('CARGO_PROFILE_DEV_DEBUG_ASSERTIONS', environment)
+
     def test_owned_vercel_app_roots_disable_automatic_git_builds(self):
         # Vercel reads the project root configuration, not only the repository root.
         for name in ['vercel.json', 'apps/website/vercel.json', 'apps/cms/vercel.json',

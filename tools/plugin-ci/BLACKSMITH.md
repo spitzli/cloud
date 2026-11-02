@@ -199,3 +199,22 @@ The readiness command currently **must exit 1**. It validates recorded metadata;
 it does not install integrations, fetch credentials or launch CI. A future
 passing metadata check still needs independent review of linked real provider
 and job evidence for the exact release source.
+
+## Native quality artifact budget
+
+The first full root source run exhausted the disposable runner disk while Rust
+quality was still executing. GitHub recorded `No space left on device` while
+writing its worker diagnostics, so complete test logs were unavailable; this
+failed run is not qualification evidence.
+
+Root quality uses one job-local `CARGO_TARGET_DIR` for the workspace, standalone
+plugins and quality checker. CI disables incremental compilation and dev/test
+**debug symbols**, retains default debug assertions and all canonical commands,
+and bounds Cargo jobs and Rust test threads to three. This avoids retaining
+separate dependency/debug artifacts for every manifest. The ephemeral target is
+not a persistent or cross-tenant cache. Start/end disk and inode usage are logged.
+Reduced debug symbols limit source-level backtraces; they do not skip tests or
+change runtime production profiles. The corrected complete source run still has
+to pass before merge.
+
+Cargo documents these settings in its [environment variable reference](https://doc.rust-lang.org/cargo/reference/environment-variables.html).
