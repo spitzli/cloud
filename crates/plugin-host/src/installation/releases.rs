@@ -36,6 +36,7 @@ impl HostService {
             input.expected_revision,
             input.approved_capabilities,
             input.idempotency_key,
+            false,
         )
         .await
     }
@@ -68,14 +69,15 @@ impl HostService {
             input.expected_revision,
             input.approved_capabilities,
             input.idempotency_key,
+            false,
         )
         .await
     }
     #[expect(
         clippy::too_many_arguments,
-        reason = "The two strict public request types share one atomic admission transaction"
+        reason = "Reviewed release and callback recovery requests share one atomic admission transaction"
     )]
-    async fn request_release(
+    pub(super) async fn request_release(
         &self,
         actor: &Principal,
         authority: &StoredAuthority,
@@ -87,6 +89,7 @@ impl HostService {
         revision: String,
         approved: Vec<String>,
         key: String,
+        initial_callback_recovery: bool,
     ) -> Result<InstallSnapshot> {
         if !crate::slug(plugin)
             || !idempotency(&key)
@@ -103,7 +106,26 @@ impl HostService {
             if prior!=payload{return Err(conflict("Key already used with a different command"));}
             let result=snapshot(&row)?;self.admin_commit(tx,actor,Some(authority),auth,true).await?;return Ok(result);
         }
-        let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT to_jsonb(p) AS installation,to_jsonb(e) AS execution,to_jsonb(c) AS configuration FROM webdock_auth.plugin_installation p JOIN webdock_auth.plugin_install_execution e ON e.plugin_id=p.id AND e.runtime_generation=p.current_generation JOIN webdock_auth.plugin_configuration c ON c.plugin_id=p.id WHERE p.id=$1 AND p.kind='external' AND p.state='disabled' FOR UPDATE OF p,e FOR SHARE OF c",[plugin.into()])).await.map_err(db_error)?.ok_or_else(||conflict("Disable and drain the managed installation first"))?;
+        let source_query = if initial_callback_recovery {
+            "SELECT to_jsonb(p) AS installation,to_jsonb(e) AS execution,to_jsonb(c) AS configuration FROM webdock_auth.plugin_installation p JOIN webdock_auth.plugin_install_execution e ON e.plugin_id=p.id AND e.runtime_generation=p.candidate_generation JOIN webdock_auth.plugin_configuration c ON c.plugin_id=p.id WHERE p.id=$1 AND p.kind='external' AND p.state='disabled' AND p.desired_state='enabled' AND p.current_generation IS NULL AND p.candidate_generation=1 AND e.promoted_at IS NULL AND e.source_runtime_generation IS NULL AND e.spec IS NOT NULL AND e.binding IS NOT NULL AND NOT EXISTS(SELECT 1 FROM webdock_auth.plugin_install_execution old WHERE old.plugin_id=p.id AND old.promoted_at IS NOT NULL) FOR UPDATE OF p,e FOR SHARE OF c"
+        } else {
+            "SELECT to_jsonb(p) AS installation,to_jsonb(e) AS execution,to_jsonb(c) AS configuration FROM webdock_auth.plugin_installation p JOIN webdock_auth.plugin_install_execution e ON e.plugin_id=p.id AND e.runtime_generation=p.current_generation JOIN webdock_auth.plugin_configuration c ON c.plugin_id=p.id WHERE p.id=$1 AND p.kind='external' AND p.state='disabled' FOR UPDATE OF p,e FOR SHARE OF c"
+        };
+        let row = tx
+            .query_one_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                source_query,
+                [plugin.into()],
+            ))
+            .await
+            .map_err(db_error)?
+            .ok_or_else(|| {
+                conflict(if initial_callback_recovery {
+                    "Prepared initial callback recovery source required"
+                } else {
+                    "Disable and drain the managed installation first"
+                })
+            })?;
         let p: Value = row.try_get("", "installation").map_err(db_error)?;
         let source: Value = row.try_get("", "execution").map_err(db_error)?;
         let c: Value = row.try_get("", "configuration").map_err(db_error)?;
@@ -117,6 +139,12 @@ impl HostService {
         // belongs in the custody plan below, even when it never reached promotion.
         for o in &busy {
             let body: Value = o.try_get("", "payload").map_err(db_error)?;
+            if initial_callback_recovery {
+                if !matches!(body["kind"].as_str(), Some("install" | "installRetry")) {
+                    return Err(conflict("Resolve the current lifecycle operation first"));
+                }
+                continue;
+            }
             if restore.is_none()
                 || o.try_get::<String>("", "status").map_err(db_error)? != "blocked"
                 || !matches!(operation_kind(body["kind"].as_str()), "update" | "rollback")
@@ -154,11 +182,38 @@ impl HostService {
             "catalog.target",
             &source["private_components"]["catalog.target"],
         )?;
+        let retained_policy: Value = serde_json::from_str(&policy).map_err(|_| error())?;
+        let policy_matches = if initial_callback_recovery {
+            let retained_recipe: Value = serde_json::from_str(&open_component(
+                &config.cipher,
+                plugin,
+                source_gen,
+                "catalog.recipe",
+                &source["private_components"]["catalog.recipe"],
+            )?)
+            .map_err(|_| error())?;
+            if p["version"] != version
+                || entry.recipe != retained_recipe
+                || entry.recipe["storage"] != false
+                || entry.recipe["sealingKey"] != false
+                || entry.manifest.as_json()["tables"] != json!([])
+                || entry.manifest.as_json()["migrations"] != json!([])
+            {
+                return Err(conflict(
+                    "Initial callback recovery requires the same stateless signed release",
+                ));
+            }
+            super::recovery::initial_callback_repair(&retained_policy, &target.policy)
+        } else {
+            retained_policy == target.policy
+        };
         if source["platform_id"] != config.catalog.platform_id
             || source["cluster_id"] != target.cluster_id
-            || serde_json::from_str::<Value>(&policy).map_err(|_| error())? != target.policy
+            || !policy_matches
         {
-            return Err(conflict("Runtime placement cannot change"));
+            return Err(conflict(
+                "Runtime placement or callback authority cannot change",
+            ));
         }
         let caps: std::collections::BTreeSet<_> = approved.iter().cloned().collect();
         let declared: std::collections::BTreeSet<_> = entry.manifest.as_json()["capabilities"]
@@ -313,8 +368,17 @@ impl HostService {
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.plugin_runtime(plugin_id,generation,version,image,status,configuration_revision,cluster_id,operation_id) VALUES($1,$2,$3,$4,'prepared',$5,$6,$7)",[plugin.into(),runtime_generation.into(),version.into(),image.into(),revision.into(),target.cluster_id.clone().into(),id.clone().into()])).await.map_err(db_error)?;
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.plugin_install_execution(plugin_id,runtime_generation,configuration_revision,operation_id,origin_operation_id,source_runtime_generation,platform_id,target_id,cluster_id,review_sha256,supported_features,private_components,configuration_snapshot,quiesce_generations) VALUES($1,$2,$3,$4,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",[plugin.into(),runtime_generation.into(),revision.into(),id.clone().into(),(source_gen as i64).into(),config.catalog.platform_id.clone().into(),target_id.into(),target.cluster_id.clone().into(),review.into(),json!(entry.supported_features).into(),Value::Object(private).into(),json!({"configuration":c["configuration"],"approvedCapabilities":c["approved_capabilities"]}).into(),json!(quiesce).into()])).await.map_err(db_error)?;
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.plugin_installation SET candidate_generation=$2,generation=$3,schema_high_water=$4,desired_state='enabled',revision=revision+1,updated_at=now() WHERE id=$1",[plugin.into(),runtime_generation.into(),generation.into(),high.into()])).await.map_err(db_error)?;
-        self.audit_admin(&tx, actor, "plugin.release.requested", plugin)
-            .await?;
+        self.audit_admin(
+            &tx,
+            actor,
+            if initial_callback_recovery {
+                "plugin.initial_callback_recovery.requested"
+            } else {
+                "plugin.release.requested"
+            },
+            plugin,
+        )
+        .await?;
         let result = self.install_snapshot_in(&tx, &id).await?;
         self.admin_commit(tx, actor, Some(authority), auth, true)
             .await?;

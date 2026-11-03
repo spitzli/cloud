@@ -215,6 +215,8 @@ pub(crate) fn open_component(
 mod admission;
 #[path = "installation/agent.rs"]
 mod agent;
+#[path = "installation/recovery.rs"]
+mod recovery;
 #[path = "installation/worker.rs"]
 mod worker;
 

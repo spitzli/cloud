@@ -12,6 +12,10 @@ pub(super) fn routes() -> Router<Arc<ServiceState>> {
         .route("/api/console/plugins/install", post(install))
         .route("/api/console/plugins/{plugin}/releases", get(history))
         .route("/api/console/plugins/{plugin}/update", post(update))
+        .route(
+            "/api/console/plugins/{plugin}/recover-callback",
+            post(recover_callback),
+        )
         .route("/api/console/plugins/{plugin}/rollback", post(rollback))
         .route("/api/console/plugins/operations/{id}/retry", post(retry))
 }
@@ -51,6 +55,37 @@ async fn update(
         let value = endpoints(&state)?
             .host
             .request_update_with_authority(&actor.principal, &actor.authority, &plugin, input)
+            .await
+            .map_err(failure)?;
+        Ok(Json(value).into_response())
+    }
+    .await;
+    result.unwrap_or_else(IntoResponse::into_response)
+}
+async fn recover_callback(
+    State(state): State<Arc<ServiceState>>,
+    headers: HeaderMap,
+    Path(plugin): Path<String>,
+    body: Bytes,
+) -> Response {
+    let result: Result<Response, ApiFailure> = async {
+        let actor = actor(&state, &headers).await?;
+        let input: webdock_plugin_host::UpdateRequest =
+            serde_json::from_value(json_body(&body, &headers)?).map_err(|_| {
+                reject(
+                    StatusCode::BAD_REQUEST,
+                    "invalid_input",
+                    "Invalid initial callback recovery.",
+                )
+            })?;
+        let value = endpoints(&state)?
+            .host
+            .request_initial_callback_recovery_with_authority(
+                &actor.principal,
+                &actor.authority,
+                &plugin,
+                input,
+            )
             .await
             .map_err(failure)?;
         Ok(Json(value).into_response())

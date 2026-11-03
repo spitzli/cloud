@@ -132,3 +132,12 @@ A Vercel installation must include the target project and `read-write:project` t
 Token exchange and credential storage do not finish the Vercel installation transaction. After validating the signed flow, team, installation and exact scopes, the callback must redirect the popup to Vercel’s supplied `next` URL. The URL is required, bounded, and restricted to the exact `https://vercel.com` origin without credentials or fragments; invalid targets are rejected before token exchange. It is not stored with credentials. The callback clears the flow cookie and returns a 303 with no-store/no-referrer and `Cross-Origin-Opener-Policy: unsafe-none`. Returning directly to Studio previously displayed a premature success while the parent Vercel dialog subsequently cancelled the installation.
 
 Official contract: https://vercel.com/docs/integrations/create-integration/submit-integration (Redirect URL / Completion). Tests cover both provider scope variants, callback binding and invalid completion targets. Diagnostic logs expose fixed failure stages and parameter-presence booleans only, never OAuth codes/tokens/cookies.
+
+## GitHub application branding
+
+The existing first-party application is **Spitzli Cloud**, owned by the Spitzli
+organization: <https://github.com/apps/spitzli-cloud>. Its app ID, client ID,
+permissions, events and installation remain the existing identities. Public
+homepage and setup navigation use the Spitzli domains. Retained OAuth callbacks
+and the webhook address are migration contracts; update an active consumer's
+configured app slug deliberately, and preserve its client credentials.
