@@ -17,7 +17,8 @@ const server = await createServer({
     });
   } }],
   optimizeDeps: { entries: ["tests/database-workbench-proof.tsx"], include: ["react", "react-dom/client", "@tabularis/web-ui", "zod"], noDiscovery: true },
-  resolve: { dedupe: ["react", "react-dom"] }, server: { host: "127.0.0.1", port: 0, strictPort: true },
+  // Dependency-optimizer reloads must not replace an in-flight controlled session.
+  resolve: { dedupe: ["react", "react-dom"] }, server: { host: "127.0.0.1", port: 0, strictPort: true, hmr: false },
 });
 let browser;
 try {
@@ -25,7 +26,7 @@ try {
   const origin = `http://127.0.0.1:${address.port}`;
   browser = await chromium.launch({ headless: true });
   for (const stage of ["launch", "session", "initialize"]) {
-    const page = await browser.newPage(); page.setDefaultTimeout(5000); await page.clock.install();
+    const page = await browser.newPage(); page.setDefaultTimeout(5000); page.setDefaultNavigationTimeout(30_000); await page.clock.install();
     const requests = [], aborted = []; let pending, attempts = 0;
     page.on("requestfailed", request => aborted.push(new URL(request.url()).pathname));
     await page.route("**/__launch/*", async route => {
@@ -59,7 +60,9 @@ try {
     await page.close();
   }
   for (const authenticated of [true, false]) {
-    const page = await browser.newPage(); page.setDefaultTimeout(5000); let loggedOut = false;
+    const page = await browser.newPage(); page.setDefaultTimeout(5000); page.setDefaultNavigationTimeout(30_000); let loggedOut = false;
+    let navigations = 0;
+    page.on("framenavigated", frame => { if (frame === page.mainFrame()) navigations++; });
     await page.route("**/__launch/*", route => route.fulfill({ json: { launch: { gatewayOrigin: origin, code: "valid-code" } } }));
     await page.route(`${origin}/session`, route => route.fulfill({ json: { scopeID: "valid", connectionID: "connection", baseUrl: `${origin}/s/valid` } }));
     await page.route(`${origin}/s/valid/api/v1/session`, route => route.fulfill({ json: {
@@ -79,6 +82,7 @@ try {
       await page.getByRole("button", { name: "Leave database", exact: true }).click();
       await until(() => loggedOut);
       assert.equal(await page.locator(".database-workbench").count(), 0);
+      assert.equal(navigations, 1, "controlled session must not be replaced by a development reload");
     } else {
       await page.getByRole("alert").filter({ hasText: "Database access is unavailable." }).waitFor();
       assert.equal(await page.locator(".database-workbench").count(), 0, "unauthenticated negotiation never exposes a workspace");
@@ -86,7 +90,7 @@ try {
     }
     await page.close();
   }
-  const page = await browser.newPage(); page.setDefaultTimeout(5000);
+  const page = await browser.newPage(); page.setDefaultTimeout(5000); page.setDefaultNavigationTimeout(30_000);
   let oldSession, lateNegotiations = 0;
   await page.route("**/__launch/*", route => route.fulfill({ json: { launch: { gatewayOrigin: origin, code: route.request().url().endsWith("first") ? "old" : "new" } } }));
   await page.route(`${origin}/session`, async route => {

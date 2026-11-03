@@ -169,6 +169,41 @@ impl KubernetesPluginRuntime {
         }
         Ok(())
     }
+    fn legacy_probe_upgrade_patch(
+        actual: &DynamicObject,
+        desired: &Value,
+        spec: &PluginRuntimeSpec,
+        uid: Option<&str>,
+        action: PluginRuntimeAction,
+    ) -> Result<Value> {
+        if action != PluginRuntimeAction::Apply || desired["kind"] != "Deployment" {
+            return Err(ExecutionError::Ownership);
+        }
+        let mut legacy = desired.clone();
+        let container = legacy["spec"]["template"]["spec"]["containers"][0]
+            .as_object_mut()
+            .ok_or(ExecutionError::Runtime)?;
+        for probe in ["startupProbe", "livenessProbe"] {
+            container.remove(probe).ok_or(ExecutionError::Runtime)?;
+        }
+        // Only the exact previous fixed profile is migratable; injected fields still fail closed.
+        Self::owned(actual, &legacy, spec, uid)?;
+        let uid = actual
+            .metadata
+            .uid
+            .as_deref()
+            .ok_or(ExecutionError::Ownership)?;
+        let revision = actual
+            .metadata
+            .resource_version
+            .as_deref()
+            .ok_or(ExecutionError::Ownership)?;
+        Ok(
+            json!({"metadata":{"uid":uid,"resourceVersion":revision},"spec":{"template":{"spec":{
+                "containers":desired["spec"]["template"]["spec"]["containers"]
+            }}}}),
+        )
+    }
     async fn object(
         &self,
         claim: &PluginRuntimeClaim,
@@ -190,8 +225,24 @@ impl KubernetesPluginRuntime {
             Self::owned(&existing, desired, &claim.spec, expected_uid)?;
             return Ok(existing);
         }
-        if let Some(existing) = existing {
-            Self::owned(&existing, desired, &claim.spec, expected_uid)?;
+        if let Some(mut existing) = existing {
+            if Self::owned(&existing, desired, &claim.spec, expected_uid).is_err() {
+                let patch = Self::legacy_probe_upgrade_patch(
+                    &existing,
+                    desired,
+                    &claim.spec,
+                    expected_uid,
+                    claim.lease.action,
+                )?;
+                existing = self
+                    .guarded(claim, authority, async {
+                        api.patch(name, &runtime_patch_params(), &Patch::Merge(&patch))
+                            .await
+                            .map_err(|_| ExecutionError::Runtime)
+                    })
+                    .await?;
+                Self::owned(&existing, desired, &claim.spec, expected_uid)?;
+            }
             if desired["kind"] != "Deployment"
                 || claim.lease.action != PluginRuntimeAction::Suspend
                     && existing.data["spec"]["replicas"] == desired["spec"]["replicas"]
@@ -526,6 +577,103 @@ mod tests {
             Some("webdock-plugin-runtime")
         );
         assert!(!runtime_patch_params().force);
+    }
+    #[test]
+    fn runtime_profile_satisfies_required_long_running_probe_admission() {
+        let claim = fixture::claim();
+        let objects = plugin_objects(&claim).unwrap();
+        let container = &objects[2]["spec"]["template"]["spec"]["containers"][0];
+        for probe in ["readinessProbe", "startupProbe", "livenessProbe"] {
+            assert_eq!(
+                container[probe]["tcpSocket"]["port"], "runtime",
+                "missing {probe}"
+            );
+            assert!(container[probe]["timeoutSeconds"].as_u64().unwrap() > 0);
+        }
+        assert!(
+            container["startupProbe"]["failureThreshold"]
+                .as_u64()
+                .unwrap()
+                >= 30
+        );
+    }
+    #[test]
+    fn new_probes_do_not_require_zero_fields_omitted_by_the_api() {
+        let claim = fixture::claim();
+        let objects = plugin_objects(&claim).unwrap();
+        let container = &objects[2]["spec"]["template"]["spec"]["containers"][0];
+        for probe in ["startupProbe", "livenessProbe"] {
+            assert!(container[probe].get("initialDelaySeconds").is_none());
+        }
+        let actual: DynamicObject = serde_json::from_value(objects[2].clone()).unwrap();
+        KubernetesPluginRuntime::owned(&actual, &objects[2], &claim.spec, None).unwrap();
+    }
+    #[test]
+    fn only_exact_legacy_profile_can_receive_uid_fenced_probes_during_apply() {
+        let claim = fixture::claim();
+        let objects = plugin_objects(&claim).unwrap();
+        let desired = &objects[2];
+        let mut legacy = desired.clone();
+        legacy["metadata"]["uid"] = "owned".into();
+        legacy["metadata"]["resourceVersion"] = "7".into();
+        for probe in ["startupProbe", "livenessProbe"] {
+            legacy["spec"]["template"]["spec"]["containers"][0]
+                .as_object_mut()
+                .unwrap()
+                .remove(probe);
+        }
+        let actual: DynamicObject = serde_json::from_value(legacy.clone()).unwrap();
+        let patch = KubernetesPluginRuntime::legacy_probe_upgrade_patch(
+            &actual,
+            desired,
+            &claim.spec,
+            Some("owned"),
+            PluginRuntimeAction::Apply,
+        )
+        .unwrap();
+        assert_eq!(
+            patch["metadata"],
+            json!({"uid":"owned","resourceVersion":"7"})
+        );
+        assert_eq!(
+            patch["spec"]["template"]["spec"]["containers"],
+            desired["spec"]["template"]["spec"]["containers"]
+        );
+        for action in [PluginRuntimeAction::Inspect, PluginRuntimeAction::Suspend] {
+            assert!(
+                KubernetesPluginRuntime::legacy_probe_upgrade_patch(
+                    &actual,
+                    desired,
+                    &claim.spec,
+                    Some("owned"),
+                    action
+                )
+                .is_err()
+            );
+        }
+        assert!(
+            KubernetesPluginRuntime::legacy_probe_upgrade_patch(
+                &actual,
+                desired,
+                &claim.spec,
+                Some("foreign"),
+                PluginRuntimeAction::Apply
+            )
+            .is_err()
+        );
+        legacy["spec"]["template"]["spec"]["containers"][0]["env"] =
+            json!([{"name":"EXFILTRATE","value":"bad"}]);
+        let injected: DynamicObject = serde_json::from_value(legacy).unwrap();
+        assert!(
+            KubernetesPluginRuntime::legacy_probe_upgrade_patch(
+                &injected,
+                desired,
+                &claim.spec,
+                Some("owned"),
+                PluginRuntimeAction::Apply
+            )
+            .is_err()
+        );
     }
     #[tokio::test]
     async fn delayed_permit_cannot_start_mutation_after_expiration() {
