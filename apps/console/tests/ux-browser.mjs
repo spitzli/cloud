@@ -1,11 +1,11 @@
 // Disposable HTTP fixtures exercise the real UI; no customer data, mail or provider I/O.
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { server, previewOrigin } from './preview-server.ts';
 import { fromRepo } from './repo.mjs';
 
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {}) });
 const failures = [];
 const path = (value) => (url) => url.pathname === value;
 const future = '2099-01-01T00:00:00Z';
@@ -213,6 +213,54 @@ try {
     } finally { release(); }
     await page.getByRole('heading', { name: 'Verify your identity' }).waitFor();
   }, false));
+  await check('Customer create menus stay inside the mobile viewport', () => using('owner', 'console', async ({ page }) => {
+    const manifest = JSON.parse(await readFile(fromRepo('plugins/hosting/manifest.json'), 'utf8'));
+    await page.route(path('/api/console/plugins'), json => json.fulfill({ json: [{ state: 'enabled', runtime: 'ready', manifest, generation: 1, manifestSha256: 'a'.repeat(64), launchLinks: [], features: ['create-apps'], resources: [] }] }));
+    await page.setViewportSize({ width: 320, height: 812 });
+    for (const [url, button, label] of [
+      ['/workspaces/101/projects/201', 'Add', 'Add a resource'],
+      ['/workspaces/101/products/hosting', 'Create', 'Create'],
+    ]) {
+      await page.goto(previewOrigin + url);
+      await page.locator('summary').filter({ hasText: new RegExp('^' + button + '$') }).click();
+      const menu = page.getByRole('list', { name: label, exact: true });
+      await menu.waitFor();
+      const box = await menu.boundingBox();
+      assert.ok(box && box.x >= 0 && box.x + box.width <= 320, url + ' create menu must fit the viewport');
+      await page.keyboard.press('Tab');
+      assert.equal(await menu.getByRole('button').first().evaluate(el => el === document.activeElement), true);
+    }
+  }));
+  await check('Read-only resource preview keeps reads and withholds writes for native and generic plugins', () => using('operator', 'console', async ({ page }) => {
+    const previewSession = { user: { id: '2', name: 'Preview operator', email: 'operator@example.test', role: 'operator', emailVerified: true, twoFactorEnabled: true, preview: true, acting: false, customerScope: '101' }, session: { id: 'read-only-fixture', userId: '2', expiresAt: future } };
+    await page.route(path('/v1/auth/session'), route => route.fulfill({ json: { data: previewSession } }));
+    await page.route(path('/api/auth/get-session'), route => route.fulfill({ json: previewSession }));
+    await page.route(path('/api/console/tenant-preview/current'), route => route.fulfill({ json: { customerID: '101', customerName: 'Acme Labs', status: 'active', mode: 'read_only', readOnly: true, expiresAt: future } }));
+    // Membership can still say owner; the active preview must independently remain read-only.
+    await page.route(path('/api/console/project/201'), route => route.fulfill({ json: { id: '201', name: 'Shop', role: 'owner', customer: { id: '101', name: 'Acme Labs' } } }));
+    const hosting = JSON.parse(await readFile(fromRepo('plugins/hosting/manifest.json'), 'utf8'));
+    const generic = { name: 'generic-fixture', offerings: [{ id: 'resource', label: 'Resource' }], selfService: { features: [] }, actions: [{ name: 'safe.read', intent: 'read', audience: 'customer', resource: 'use' }, { name: 'unsafe.write', intent: 'write', audience: 'customer', resource: 'use' }], areas: { operator: { pages: [] }, selfService: { pages: [{ id: 'resource', label: 'Resource', action: 'safe.read', resource: true }] } } };
+    const view = (manifest, resource) => ({ state: 'enabled', runtime: 'ready', manifest, generation: 1, manifestSha256: 'a'.repeat(64), launchLinks: [], features: [], resources: [resource] });
+    await page.route(path('/api/console/plugins'), route => route.fulfill({ json: [view(hosting, { id: 'app-preview', offering: 'app', name: 'Website', createdVia: 'self-service' }), view(generic, { id: 'generic-preview', offering: 'resource', name: 'Generic resource', createdVia: 'self-service' })] }));
+    await page.route(url => url.pathname.endsWith('/logs'), route => route.fulfill({ json: [] }));
+    const actions = [];
+    await page.route(path('/api/console/plugins/invoke'), route => {
+      const action = route.request().postDataJSON().action; actions.push(action);
+      if (action === 'apps.view') return route.fulfill({ json: { name: 'Website', status: 'running', image: 'nginx:stable-alpine', port: 80, memoryMb: 128, url: null, env: [], error: null, createdAt: '2026-10-22 10:00:00+00', host: 'website.example.test', domains: [] } });
+      if (action === 'safe.read') return route.fulfill({ json: { version: 2, title: 'Generic resource', blocks: [{ kind: 'actions', actions: [{ id: 'safe.read', label: 'Refresh' }, { id: 'unsafe.write', label: 'Change settings' }] }] } });
+      return route.fulfill({ status: 403, json: { error: { message: 'Read-only fixture' } } });
+    });
+    await page.goto(previewOrigin + '/workspaces/101/projects/201/resources/hosting/app-preview');
+    await page.getByRole('heading', { name: 'Website', exact: true }).waitFor();
+    await page.getByText('Running', { exact: true }).first().waitFor();
+    const stop = page.getByRole('button', { name: 'Stop', exact: true });
+    assert.ok(await stop.count() === 0 || await stop.isDisabled(), 'native writes must be unavailable in read-only preview');
+    await page.goto(previewOrigin + '/workspaces/101/projects/201/resources/generic-fixture/generic-preview');
+    await page.getByRole('button', { name: 'Change settings', exact: true }).waitFor();
+    assert.equal(await page.getByRole('button', { name: 'Change settings', exact: true }).isDisabled(), true);
+    await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+    assert.ok(!actions.includes('unsafe.write') && !actions.includes('apps.power'));
+  }));
   await check('Desktop/mobile and light/dark role matrix stays usable', async () => {
     const shots = process.env.WEBDOCK_UX_SCREENSHOTS === 'true';
     if (shots) await mkdir(fromRepo('.runtime-test/ui-ux/screens/'), { recursive: true });

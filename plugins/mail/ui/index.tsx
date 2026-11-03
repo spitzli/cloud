@@ -111,7 +111,7 @@ function DomainPage(context: ResourceProps) {
   const domain = query.data;
   const checked = verify.data ? verifySchema.safeParse(verify.data) : undefined;
   return (
-    <div className="grid gap-6">
+    <div className={ui.resourceGrid}>
       {query.error ? <Failure error={query.error} retry={() => void query.refetch()} /> : null}
       <section className={ui.card} aria-label="Status">
         <div className={ui.cardBody}>
@@ -244,7 +244,7 @@ function MailboxPage(context: ResourceProps) {
     </div>
   );
   return (
-    <div className="grid gap-6">
+    <div className={ui.resourceGrid}>
       <section className={ui.card} aria-label="Status">
         <div className={ui.cardBody}>
           <div className="flex flex-wrap items-center gap-3">

@@ -202,3 +202,12 @@ async function flushAct(action: () => void) {
     await Promise.resolve();
   });
 }
+
+await test("resource panels retain their accessible region without repeating the page heading", () => {
+  const value = { version: 2, title: "Store database", blocks: [{ kind: "text", text: "Ready" }] };
+  const html = renderToStaticMarkup(<main><h1>Store database</h1><PluginPanel value={value} resourceName="Store database" invoke={noop} /></main>);
+  assert.equal((html.match(/<h[12][^>]*>Store database</g) ?? []).length, 1);
+  assert.match(html, /aria-label="Store database"/);
+  const settings = renderToStaticMarkup(<PluginPanel value={{ ...value, title: "Connection settings" }} resourceName="Store database" invoke={noop} />);
+  assert.match(settings, /<h2[^>]*>Connection settings<\/h2>/);
+});

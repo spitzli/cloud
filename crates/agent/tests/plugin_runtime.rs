@@ -111,6 +111,55 @@ impl PluginRuntimeAuthority for Authority {
     }
 }
 #[tokio::test]
+async fn real_kube_client_upgrades_only_legacy_probes_and_preserves_all_checkpoint_uids() {
+    let fixture = api_fixture::Fixture::open().await;
+    let authority = Authority {
+        state: fixture.state.clone(),
+        checkpoint: Mutex::new(None),
+    };
+    let mut claim = claim();
+    let runtime =
+        KubernetesPluginRuntime::new(fixture.client.clone(), claim.spec.platform_id.clone());
+    let original = runtime
+        .execute(&claim, &authority)
+        .await
+        .unwrap()
+        .checkpoint;
+    claim.checkpoint = Some(original.clone());
+    {
+        let mut objects = fixture.state.objects.lock().unwrap();
+        let deployment = objects
+            .values_mut()
+            .find(|o| o["kind"] == "Deployment")
+            .unwrap();
+        for probe in ["startupProbe", "livenessProbe"] {
+            deployment["spec"]["template"]["spec"]["containers"][0]
+                .as_object_mut()
+                .unwrap()
+                .remove(probe);
+        }
+    }
+    let result = runtime.execute(&claim, &authority).await.unwrap();
+    assert!(result.converged);
+    assert_eq!(result.checkpoint, original);
+    assert_eq!(fixture.state.patches.load(Ordering::SeqCst), 1);
+    assert_eq!(fixture.state.creates.load(Ordering::SeqCst), 6);
+    {
+        let objects = fixture.state.objects.lock().unwrap();
+        let deployment = objects
+            .values()
+            .find(|o| o["kind"] == "Deployment")
+            .unwrap();
+        let container = &deployment["spec"]["template"]["spec"]["containers"][0];
+        assert_eq!(container["startupProbe"]["tcpSocket"]["port"], "runtime");
+        assert_eq!(container["livenessProbe"]["tcpSocket"]["port"], "runtime");
+        assert_eq!(deployment["spec"]["replicas"], 1);
+    }
+    claim.lease.action = PluginRuntimeAction::Inspect;
+    runtime.execute(&claim, &authority).await.unwrap();
+    assert_eq!(fixture.state.patches.load(Ordering::SeqCst), 1);
+}
+#[tokio::test]
 async fn real_kube_client_reconciles_lost_create_replies_and_retains_configuration_on_suspend() {
     let fixture = api_fixture::Fixture::open().await;
     fixture.state.lost_deployment.store(true, Ordering::SeqCst);

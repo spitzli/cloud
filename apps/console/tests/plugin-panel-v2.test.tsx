@@ -94,7 +94,9 @@ await test("reveal shows a value only after a click and hides it again", async (
   assert.ok(show);
   await flush(() => { show.click(); });
   await flush(() => undefined);
-  assert.deepEqual(calls[0], ["credentials", { resource_id: "db-1" }]);
+  const request = calls[0] as [string, unknown, AbortSignal];
+  assert.deepEqual(request.slice(0, 2), ["credentials", { resource_id: "db-1" }]);
+  assert.ok(request[2] instanceof AbortSignal);
   assert.match(host.textContent, /postgres:\/\/u:p@h\/db/);
   const hide = [...host.querySelectorAll("button")].find((b) => b.textContent.includes("Hide"));
   assert.ok(hide);
@@ -102,4 +104,38 @@ await test("reveal shows a value only after a click and hides it again", async (
   assert.doesNotMatch(host.innerHTML, /postgres:/);
   await flush(() => { root.unmount(); });
   await browser.happyDOM.abort();
+});
+
+await test("read-only resource panels keep read actions but disable write actions", async () => {
+  const { browser, host, root } = dom();
+  const value = { version: 2, title: "Resource", blocks: [{ kind: "actions", actions: [
+    { id: "resource.read", label: "Refresh" },
+    { id: "resource.write", label: "Change settings" },
+  ] }] };
+  const calls: string[] = [];
+  try {
+    await flush(() => { root.render(<PluginPanel value={value} allowedActions={["resource.read"]} invoke={action => { calls.push(action); return Promise.resolve({}); }} />); });
+    const buttons = [...host.querySelectorAll("button")];
+    assert.equal(buttons.find(b => b.textContent === "Refresh")?.disabled, false);
+    assert.equal(buttons.find(b => b.textContent === "Change settings")?.disabled, true);
+    await flush(() => { buttons.find(b => b.textContent === "Refresh")?.click(); });
+    assert.deepEqual(calls, ["resource.read"]);
+  } finally { await flush(() => { root.unmount(); }); await browser.happyDOM.close(); }
+});
+
+await test("generic panel context changes abort pending private values and discard late replies", async () => {
+  const { browser, host, root } = dom();
+  let complete: ((value: unknown) => void) | undefined;
+  let signal: AbortSignal | undefined;
+  const pending = new Promise(resolve => { complete = resolve; });
+  const value = { version: 2, title: "Credentials", blocks: [{ kind: "reveal", label: "Password", action: "secret.read" }] };
+  const invoke = (_action: string, _input: unknown, requestSignal?: AbortSignal) => { signal = requestSignal; return pending; };
+  try {
+    await flush(() => { root.render(<PluginPanel value={value} context={{ resource_id: "one" }} invoke={invoke} />); });
+    await flush(() => { host.querySelector<HTMLButtonElement>("button")?.click(); });
+    await flush(() => { root.render(<PluginPanel value={value} context={{ resource_id: "two" }} invoke={invoke} />); });
+    assert.equal(signal?.aborted, true);
+    await flush(() => { complete?.({ value: "synthetic-old-resource-secret" }); });
+    assert.ok(!host.textContent.includes("synthetic-old-resource-secret"));
+  } finally { await flush(() => { root.unmount(); }); await browser.happyDOM.close(); }
 });

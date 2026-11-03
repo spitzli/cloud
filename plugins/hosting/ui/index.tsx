@@ -214,7 +214,7 @@ function Resource(context: ResourceProps) {
   if (query.error) return <Failure error={query.error} retry={() => void query.refetch()} />;
   const app = query.data;
   return (
-    <div className="grid gap-6">
+    <div className={ui.resourceGrid}>
       <section className={ui.card} aria-label="Status">
         <div className={ui.cardBody}>
           <div className="flex flex-wrap items-center justify-between gap-3">

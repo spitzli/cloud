@@ -289,7 +289,7 @@ export function Shell() {
     </>
   );
   return (
-    <div className="grid min-h-dvh grid-cols-[minmax(0,1fr)] grid-rows-[56px_1fr] md:grid-cols-[210px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
+    <div className="grid min-h-dvh grid-cols-[minmax(0,1fr)] grid-rows-[56px_1fr] md:grid-cols-[216px_minmax(0,1fr)] lg:grid-cols-[224px_minmax(0,1fr)]">
       <a className="fixed -top-24 left-4 z-50 border border-focus bg-surface px-4 py-2.5 focus:top-2.5" href="#main">
         Skip to content
       </a>
@@ -382,7 +382,7 @@ export function Shell() {
       </aside>
       <div className="flex min-w-0 flex-col">
         <CustomerScopeBanner />
-        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1200px] flex-1 px-4 pt-6 pb-12 outline-none md:px-7 md:pt-8 md:pb-14 lg:px-10 lg:pt-10 lg:pb-16">
+        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1200px] flex-1 px-4 pt-5 pb-10 outline-none md:px-6 md:pt-6 md:pb-12 lg:px-8 lg:pt-8 lg:pb-14">
           <Outlet />
         </main>
       </div>

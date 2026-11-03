@@ -149,7 +149,7 @@ function Resource(context: ResourceProps) {
   const data = view.data;
   const kind = data.offering === "shared" ? `Shared database${data.server ? ` on ${data.server}` : ""}` : `Dedicated PostgreSQL ${data.version ?? ""}`;
   return (
-    <div className="grid gap-6">
+    <div className={ui.resourceGrid}>
       <section className={ui.card} aria-label="Status">
         <div className={ui.cx(ui.cardBody, "grid-cols-[auto_1fr] items-center gap-x-4")}>
           <span className={ui.badge(stateTone[data.state])}>{stateText[data.state]}</span>

@@ -1,5 +1,5 @@
 import { formText } from "../form";
-import { useId, useState, type SubmitEvent } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type SubmitEvent } from "react";
 import { parsePanel, revealSchema, type Action, type Panel } from "./contracts";
 import * as ui from "../ui";
 export type InvokeAction = (
@@ -153,19 +153,38 @@ function ActionForm({
 }
 
 /** Fetches a credential only when asked and keeps it out of any cache; hidden again on unmount. */
+const visibleDocument = () => !document.hidden;
 function Reveal({ label, action, invoke, active }: { label: string; action: string; invoke: InvokeAction; active: boolean }) {
   const [value, setValue] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   const [pending, setPending] = useState(false);
+  const request = useRef<AbortController | null>(null);
+  const hide = useCallback(() => {
+    request.current?.abort(); request.current = null;
+    setValue(null); setPending(false); setFailed(false);
+  }, []);
+  useEffect(() => () => { request.current?.abort(); request.current = null; }, []);
+  useEffect(() => {
+    const changed = () => { if (document.hidden) hide(); };
+    document.addEventListener("visibilitychange", changed);
+    return () => { document.removeEventListener("visibilitychange", changed); };
+  }, [hide]);
+  useEffect(() => {
+    if (value === null) return;
+    const timer = window.setTimeout(hide, 60_000);
+    return () => { window.clearTimeout(timer); };
+  }, [hide, value]);
   const show = async () => {
-    setPending(true);
-    setFailed(false);
+    if (!active || request.current || !visibleDocument()) return;
+    const controller = new AbortController(); request.current = controller;
+    setPending(true); setFailed(false);
     try {
-      setValue(revealSchema.parse(await invoke(action, {})).value);
+      const result = revealSchema.parse(await invoke(action, {}, controller.signal));
+      if (request.current === controller && !controller.signal.aborted && visibleDocument()) setValue(result.value);
     } catch {
-      setFailed(true);
+      if (request.current === controller && !controller.signal.aborted) setFailed(true);
     } finally {
-      setPending(false);
+      if (request.current === controller) { request.current = null; setPending(false); }
     }
   };
   return (
@@ -178,12 +197,8 @@ function Reveal({ label, action, invoke, active }: { label: string; action: stri
           </button>
         ) : (
           <>
-            <button type="button" className={ui.button("secondary")} onClick={() => void navigator.clipboard.writeText(value)}>
-              Copy
-            </button>
-            <button type="button" className={ui.button("secondary")} onClick={() => { setValue(null); }}>
-              Hide
-            </button>
+            <button type="button" className={ui.button("secondary")} onClick={() => void navigator.clipboard.writeText(value)}>Copy</button>
+            <button type="button" className={ui.button("secondary")} onClick={hide}>Hide</button>
           </>
         )}
       </div>
@@ -199,8 +214,12 @@ export function PluginPanel({
   active = true,
   context = {},
   onOpenResource,
+  resourceName,
+  allowedActions,
 }: {
   value: unknown;
+  resourceName?: string;
+  allowedActions?: readonly string[];
   invoke: InvokeAction;
   active?: boolean;
   /** Merged into every action input, e.g. the resource a page shows. */
@@ -219,9 +238,11 @@ export function PluginPanel({
       </p>
     );
   }
+  const canRun = (action: string) => active && (!allowedActions || allowedActions.includes(action));
+  const scope = JSON.stringify([context, allowedActions, active]);
   return (
-    <section aria-label={panel.title} className={ui.cx(`${ui.card} ${ui.cardBody} gap-5`)}>
-      <h2 className={ui.sectionTitle}>{panel.title}</h2>
+    <section key={scope} aria-label={panel.title} className={ui.cx(`${ui.card} ${ui.cardBody} gap-5`)}>
+      {panel.title !== resourceName ? <h2 className={ui.sectionTitle}>{panel.title}</h2> : null}
       {!active ? (
         <p role="status" className={ui.notice}>
           Extension access is unavailable. Actions are disabled.
@@ -303,12 +324,12 @@ export function PluginPanel({
                   action={block.action}
                   fields={block.fields}
                   invoke={invoke}
-                  active={active}
+                  active={canRun(block.action.id)}
                 />
               </section>
             );
           case "reveal":
-            return <Reveal key={index} label={block.label} action={block.action} invoke={invoke} active={active} />;
+            return <Reveal key={index} label={block.label} action={block.action} invoke={invoke} active={canRun(block.action)} />;
           case "actions":
             return (
               <div key={index} className="flex flex-wrap gap-3">
@@ -317,7 +338,7 @@ export function PluginPanel({
                     key={action.id}
                     action={action}
                     invoke={invoke}
-                    active={active}
+                    active={canRun(action.id)}
                   />
                 ))}
               </div>

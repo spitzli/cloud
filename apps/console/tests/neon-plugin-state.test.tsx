@@ -40,7 +40,7 @@ function setup(options: { failedView?: boolean; pendingSecret?: boolean; writabl
   const props: ResourceProps = { plugin: "neon", projectID: "201", customer: "101", resource: { id: "bound-1", offering: "database", name: "Synthetic database", createdVia: "self-service" }, features: ["connect-databases"], writable: options.writable ?? true, actions: ["databases.view", "databases.branches", "databases.credentials", "databases.detach"], onDeleted: () => { deleted++; } };
   const Resource = Neon.Resource;
   return { host, client, browser, get signal() { return signal; }, get deleted() { return deleted; },
-    render: () => flush(() => { root.render(<QueryClientProvider client={client}><I18nProvider locale={options.locale ?? "en"} preference={options.locale ?? "en"}><ApiContext.Provider value={api}><Resource {...props} /></ApiContext.Provider></I18nProvider></QueryClientProvider>); }),
+    render: () => flush(() => { root.render(<QueryClientProvider client={client}><I18nProvider locale={options.locale ?? "en"} preference={options.locale ?? "en"}><ApiContext.Provider value={api}><h1>{props.resource.name}</h1><Resource {...props} /></ApiContext.Provider></I18nProvider></QueryClientProvider>); }),
     hide: () => flush(() => { hidden = true; document.dispatchEvent(new Event("visibilitychange")); }),
     show: () => flush(() => { hidden = false; document.dispatchEvent(new Event("visibilitychange")); }),
     complete: () => flush(() => { assert.ok(resolveSecret); resolveSecret(Response.json({ value: secret })); }),

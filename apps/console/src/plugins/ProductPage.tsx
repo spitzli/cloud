@@ -39,7 +39,7 @@ export function ProductPage({ customer, plugin }: { customer: string; plugin: st
               <PlusIcon />
               {operator ? "Assign" : "Create"}
             </summary>
-            <ul className={ui.cx(ui.card, "absolute right-0 z-20 mt-2 w-80 p-1.5 shadow-lg")} aria-label="Create">
+            <ul className={ui.actionMenu} aria-label="Create">
               {options.map((option) => (
                 <li key={option.action.name}>
                   <button

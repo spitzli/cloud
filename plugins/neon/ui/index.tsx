@@ -16,7 +16,7 @@ const attachedSchema = z.object({ resource: item });
 const detachedSchema = z.object({ detached: z.literal(true), resource_id: z.string() });
 const secretSchema = z.object({ value: z.string().max(8000) }).strict();
 const panelSchema = z.object({ title: z.string(), blocks: z.array(z.object({
-  kind: z.string(), title: z.string().optional(), text: z.string().optional(),
+  kind: z.string(), title: z.string().optional(), text: z.string().optional(), state: z.string().max(64).optional(),
   columns: z.array(z.object({ key: z.string(), label: z.string() })).optional(),
   rows: z.array(z.record(z.string(), z.union([z.string(), z.boolean(), z.null()]))).optional(),
 })) });
@@ -108,7 +108,7 @@ function Create(context: CreateProps) {
     {inventory.error ? <div role="alert"><p>{t("Could not load Neon inventory. Check your connection and permissions.")}</p><button type="button" className={ui.button("quiet")} onClick={() => void inventory.refetch()}>{t("Retry")}</button></div> : null}
     {data && !data.projects.length && !project ? <p className="text-sm text-muted">{t("No authorized Neon projects found. Check the workspace connection or create a project in Neon.")}</p> : null}
     {attach.error ? <p role="alert" className="text-sm text-danger">{t("Could not attach this database. You can retry the same selection.")}</p> : null}
-    <div className="flex flex-wrap gap-3"><button type="submit" className={ui.button()} disabled={!ready}>{attach.isPending ? t("Connecting…") : t("Connect database")}</button><button type="button" className={ui.button("quiet")} disabled={attach.isPending} onClick={context.onCancel}>{t("Cancel")}</button></div>
+    <div className="flex flex-wrap gap-3"><button type="submit" className={ui.button("primary")} disabled={!ready}>{attach.isPending ? t("Connecting…") : t("Connect database")}</button><button type="button" className={ui.button("quiet")} disabled={attach.isPending} onClick={context.onCancel}>{t("Cancel")}</button></div>
   </form>;
 }
 function Table({ panel }: { panel: z.infer<typeof panelSchema> }) {
@@ -158,10 +158,11 @@ function Resource(context: ResourceProps) {
   const detach = usePluginSubmission(context, "databases.detach", detachedSchema);
   const key = useRef(crypto.randomUUID());
   const [confirming, setConfirming] = useState(false);
+  const status = view.data?.blocks.find(block => block.kind === "status");
   const canReveal = context.writable && (!context.actions || context.actions.includes("databases.credentials"));
   const canDetach = context.writable && (!context.actions || context.actions.includes("databases.detach"));
-  return <div className="grid gap-6">
-    <section className={ui.card}><div className={ui.cardBody}><h2 className={ui.sectionTitle}>{view.data?.title ?? context.resource.name}</h2><p className="text-sm text-muted">{panelText(view.data?.blocks.find(block => block.kind === "status")?.text, t)}</p>{context.writable ? <Connections customer={context.customer} /> : null}</div></section>
+  return <div className={ui.resourceGrid}>
+    <section className={ui.card}><div className={ui.cardBody}><div className="flex flex-wrap items-center justify-between gap-3"><h2 className={ui.sectionTitle}>{t("Overview")}</h2>{context.writable ? <Connections customer={context.customer} /> : null}</div>{status?.text ? <span className={ui.cx(ui.badge(ui.statusTone(status.state)), "w-fit max-w-full whitespace-normal normal-case")} role="status">{panelText(status.text, t)}</span> : null}</div></section>
     {view.isPending ? <Loading>{t("Loading Neon database…")}</Loading> : view.error ? <Failure error={view.error} retry={() => void view.refetch()} /> : <Table panel={view.data} />}
     {context.writable ? <BranchInventory context={context} /> : null}
     {canReveal && view.data && !view.error ? <Credentials key={context.resource.id} context={context} /> : null}

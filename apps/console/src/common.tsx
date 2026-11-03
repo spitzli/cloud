@@ -4,7 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { useOptionalI18n } from "@webdock/i18n/react";
 import * as ui from "./ui";
 import { describeFailure } from "./AuthFrame";
-const state = "flex items-start gap-3 rounded-xl border border-outline bg-surface px-7 py-10 max-sm:px-[18px] max-sm:py-6";
+const state = "flex items-start gap-3 rounded-lg border border-outline bg-surface px-5 py-6 max-sm:px-4 max-sm:py-5";
 export function Loading({ children = "Loading…" }: { children?: ReactNode }) {
   return (
     <div className={`${state} text-muted`} role="status">

@@ -118,6 +118,22 @@ Describe/Health identity and the exact finalized manifest before promotion.
 Use normal retry/disable/update/rollback APIs for failures; do not SQL-repair
 installation rows or replace immutable runtime Secrets manually.
 
+The enrolled agent-control process must load the same reviewed native catalog
+and retained installation encryption key as HTTP/controller. It also needs the
+existing first-party browser client ID/secret/cookie secret and retained OAuth
+issuer to revalidate installation authority. Reference the existing restricted
+Secret keys; do not create another client, rotate credentials or bypass a blocked
+`authority_changed` operation. Retry through the normal operator API after the
+configuration has been corrected.
+
+Run application admission remains enabled for plugin Pods. Provision and verify
+the UID-fenced namespace foundation with
+`tools/plugin-runtime/harden_namespace.py` as described in that directory's
+README. The fixed agent profile must include startup and liveness probes as well
+as readiness. If admission refuses the initial Pod, retain the failed operation
+and inspect its actual reason; a namespace label or a ready Deployment alone
+cannot substitute for quota, isolation, pinned Describe and Health verification.
+
 ## Customer acceptance
 
 Enable the reviewed `connect-databases` feature and a finite `neon.database`

@@ -87,7 +87,7 @@ function Resource(context: ResourceProps) {
   if (query.isPending) return <Loading>Loading bucket…</Loading>;
   if (query.error) return <Failure error={query.error} retry={() => { void query.refetch(); }} />;
   const view = query.data;
-  return <div className="grid gap-6">
+  return <div className={ui.resourceGrid}>
     <section className={ui.card} aria-label="Bucket status"><div className={ui.cardBody}>
       <h2 className={ui.sectionTitle}>{view.state}</h2>
       <p className="break-all font-mono text-sm">{view.bucket}</p>

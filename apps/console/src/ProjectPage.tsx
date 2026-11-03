@@ -45,7 +45,7 @@ export function ProjectPage({ customer, id }: { customer: string; id: string }) 
               <PlusIcon />
               {operator ? "Assign to this project" : "Add"}
             </summary>
-            <ul className={ui.cx(ui.card, "absolute right-0 z-20 mt-2 w-80 p-1.5 shadow-lg")} aria-label="Add a resource">
+            <ul className={ui.actionMenu} aria-label="Add a resource">
               {options.map((option) => (
                 <li key={option.key}>
                   <button

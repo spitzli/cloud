@@ -150,16 +150,19 @@ fn respond(state: &State, method: &str, path: &str, mut input: Value) -> (u16, V
             let Some(object)=objects.get_mut(path) else {return(404,json!({"kind":"Status","apiVersion":"v1","code":404}))};
             if input["metadata"]["uid"]!=object["metadata"]["uid"]||input["metadata"]["resourceVersion"]!=object["metadata"]["resourceVersion"] {return(409,json!({"kind":"Status","apiVersion":"v1","code":409}));}
             state.patches.fetch_add(1, Ordering::SeqCst);
-            let changed = object["spec"]["replicas"] != input["spec"]["replicas"];
+            let changed = input["spec"].get("replicas").is_some_and(|v| v != &object["spec"]["replicas"]);
+            let containers = input["spec"]["template"]["spec"].get("containers");
+            let containers_changed = containers.is_some_and(|v| v != &object["spec"]["template"]["spec"]["containers"]);
             let annotations_changed = input["metadata"]["annotations"].as_object().is_some_and(|a| a.iter().any(|(key,value)| object["metadata"]["annotations"].get(key) != Some(value)));
-            if changed || annotations_changed {
+            if changed || containers_changed || annotations_changed {
                 let rv = object["metadata"]["resourceVersion"].as_str().unwrap().parse::<u64>().unwrap() + 1;
                 object["metadata"]["resourceVersion"] = rv.to_string().into();
-                if changed {
+                if changed || containers_changed {
                     let generation = object["metadata"]["generation"].as_u64().unwrap() + 1;
                     object["metadata"]["generation"] = generation.into();
                 }
-                object["spec"]["replicas"] = input["spec"]["replicas"].clone();
+                if changed { object["spec"]["replicas"] = input["spec"]["replicas"].clone(); }
+                if let Some(containers) = containers { object["spec"]["template"]["spec"]["containers"] = containers.clone(); }
                 if let Some(annotations) = input["metadata"]["annotations"].as_object() {
                     for (k,v) in annotations { object["metadata"]["annotations"][k] = v.clone(); }
                 }
