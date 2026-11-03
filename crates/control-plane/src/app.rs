@@ -219,9 +219,8 @@ impl Hooks for WebdockApp {
                 identity.clone(),
                 browser.clone(),
                 &rls_secret,
-                &std::env::var("WEBDOCK_HOSTING_ENCRYPTION_KEY")
-                    .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
-                    .unwrap_or_else(|_| secret.clone()),
+                crate::neon_connections::encryption_key(&env)
+                    .map_err(|e| loco_rs::Error::Message(e.to_string()))?,
             )
             .map_err(|_| loco_rs::Error::Message("Neon connection initialization failed".into()))?,
         ));
@@ -352,6 +351,7 @@ impl Hooks for WebdockApp {
                         ids: ids.clone(),
                         rls_secret: rls_secret.clone(),
                         database_new_orders_enabled: config.database_new_orders_enabled,
+                        neon_connections: neon_connections.clone(),
                     },
                     plugin_config,
                 )

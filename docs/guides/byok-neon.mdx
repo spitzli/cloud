@@ -1,9 +1,9 @@
 ---
 title: "Connect Neon"
-description: "Connect your own Neon API key and view authorized projects in Console."
+description: "Connect your Neon account and attach existing databases through the Neon plugin."
 ---
 
-Use your own Neon account for new PostgreSQL projects. Neon bills you directly and applies its own quotas. The Spitzli Cloud connection currently manages your key and lists available projects; it does not provision databases, run SQL or bind an application automatically.
+Use your own Neon account for PostgreSQL projects. Neon bills you directly and applies its own quotas. **Workspace Connections** protects your provider key; the separately installed **Neon database plugin** attaches existing databases to a Spitzli Cloud project. Saving a key alone does not install the plugin or attach a database.
 
 You need workspace owner or administrator access, or authorized platform operator access. Read-only customer preview cannot change the connection or refresh provider inventory.
 
@@ -15,6 +15,27 @@ You need workspace owner or administrator access, or authorized platform operato
 </Steps>
 
 The key is stored encrypted on the server and is never displayed again. The form clears it after every submission. Enter provider credentials only in the protected form.
+
+## Attach a database to a project
+
+An operator must install the reviewed Neon plugin and enable **Connect Neon databases** for your workspace. If that option is missing, ask your operator to check the installation and your plan's resource limit.
+
+1. Create or select a Neon project in **Frankfurt, Germany** (`aws-eu-central-1`). Other regions can appear in inventory but cannot be attached in this release.
+2. Open your Spitzli Cloud project and choose the **Neon database** offering.
+3. Enter a display name, then select the Neon project, branch, database, role and endpoint. Select **Connect database**.
+4. Review **Connection settings** and **Neon branches**. The compute state comes from Neon; an idle endpoint is not reported as a healthy running application.
+
+Workspace owners, administrators and authorized operators can browse provider inventory and manage attachments. Read-only customer preview can see permitted settings without provider-wide inventory or credential controls. Ordinary workspace members do not gain Neon actions merely because the plugin is installed: the existing database-management permission remains required.
+
+## Use connection credentials
+
+**Reveal URI** requires write access. Choose pooled or direct mode before revealing. The URI starts hidden, stays outside shared Console caches, and disappears after one minute, when the tab is hidden, or when you leave the resource. **Copy** does not extend that time. Paste credentials only into the application's protected server-side environment configuration.
+
+This release does not run SQL, create paid Neon capacity, change branches, or automatically inject credentials into application deployments. Neon Auth, Storage, Realtime, Functions and AI Gateway are future capabilities, not actions provided by this database plugin. Plugin actions currently require a browser session; automation through API tokens or MCP is not supported for this release.
+
+## Detach an attachment
+
+Use **Detach database**, then review **Confirm detach**. This removes the local Spitzli Cloud attachment and releases its resource allocation. It does not delete the Neon project, database or role, revoke a provider key, or stop provider charges. Detach remains available to an authorized administrator if provider inventory is unavailable or new attachments have been disabled.
 
 ## Optional: use the Neon CLI
 
@@ -35,4 +56,4 @@ An invalid or revoked key, insufficient scope or Neon outage can prevent invento
 
 ## Disconnect
 
-Select **Disconnect Neon**, review the confirmation and select **Confirm disconnect**. This removes the Spitzli Cloud connection's stored key. Your Neon projects and data remain intact. Revoke the key separately in Neon when it should no longer work elsewhere.
+In **Workspace Connections**, select **Disconnect Neon**, review the confirmation and select **Confirm disconnect**. This removes the Spitzli Cloud connection's stored key; attached resources cannot make new provider requests until an authorized connection is restored. Your Neon projects and data remain intact. Revoke the key separately in Neon when it should no longer work elsewhere.

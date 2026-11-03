@@ -224,6 +224,10 @@ impl PluginEndpoints {
         can_write: bool,
         api_hash: String,
     ) -> Result<Value, PluginError> {
+        // API token revocation is not part of Browser StoredAuthority. Fail closed for this adapter.
+        if input.plugin_id == "neon" {
+            return Err(PluginError::denied());
+        }
         self.invoke_as_storage(actor, input, can_write, Some(api_hash))
             .await
     }
@@ -846,7 +850,12 @@ async fn invoke(State(state): State<Arc<ServiceState>>, request: Request) -> Res
         .into_response())
     }
     .await;
-    result.unwrap_or_else(IntoResponse::into_response)
+    let mut response = result.unwrap_or_else(IntoResponse::into_response);
+    response.headers_mut().insert(
+        header::CACHE_CONTROL,
+        header::HeaderValue::from_static("no-store"),
+    );
+    response
 }
 async fn installed(State(state): State<Arc<ServiceState>>, headers: HeaderMap) -> Response {
     let result: Result<Response, ApiFailure> = async {
@@ -937,6 +946,7 @@ pub struct PluginDependencies {
     pub ids: Arc<webdock_persistence::IdAllocator>,
     pub rls_secret: String,
     pub database_new_orders_enabled: bool,
+    pub neon_connections: Option<Arc<webdock_provider_connections::Connections>>,
 }
 impl PluginEndpoints {
     pub async fn initialize(
@@ -1006,6 +1016,9 @@ impl PluginEndpoints {
             config.mail.as_ref(),
             &std::env::vars().collect(),
         ));
+        if let Some(neon) = dependencies.neon_connections {
+            host = host.with_named_http(neon);
+        }
         if let Some(storage) = &config.storage {
             host = host.with_storage_gateway(Arc::new(
                 webdock_plugin_host::storage::StorageGateway::new(

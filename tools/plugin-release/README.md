@@ -190,3 +190,30 @@ still requires qualification. All fifteen independent helper copies remain
 byte-identical to this source. The managed Blacksmith adapter is prepared with pre/post setup guards and
 private authentication, but real provider qualification remains pending. See
 the migration guide for the exact branch-only first probe and fallback inputs.
+
+## Public catalog acceptance
+
+A built image or files on GitHub do not prove the registry shows a usable plugin.
+After publication, refresh the owned `.tabularium` at its **immutable source commit**
+through the registry's normal owner/admin API. The default refresh ref is the
+last release tag; it may intentionally still contain the previous presentation.
+Do not rewrite old tags, release assets or signed manifests to update a catalog.
+
+Run the read-only acceptance check before reporting presentation complete:
+
+```sh
+python3 tools/plugin-release/catalog_presentation.py \
+  --plugin neon --source-sha <reviewed-40-character-commit> \
+  --output /private/neon-presentation-proof.json
+```
+
+It checks the exact first-party repository/source, rendered README, descriptive
+screenshot alternatives and the actual public image/Markdown responses. A missing
+README, inaccessible image, mutable source or wrong entry fails the check. The
+current registry CI publication endpoint does not ingest README bytes itself;
+source refresh and this acceptance step remain required. Historical release README
+and signed runtime identity remain independent from current catalog presentation.
+
+```sh
+python3 -m unittest discover -s tools/plugin-release -p 'test_*.py'
+```

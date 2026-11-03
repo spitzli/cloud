@@ -166,6 +166,18 @@ pub async fn platform_storage_identity(
         .map_err(|_| "Platform database identity unavailable")?;
     Ok(webdock_plugin_host::provisioning::storage::ClusterIdentity::parse(value)?)
 }
+
+async fn verify_storage_platform(
+    config: &WorkerConfig,
+    database: &sea_orm::DatabaseConnection,
+) -> Result<(), Error> {
+    // Stateless runtimes have no plugin metadata cluster to compare with Core.
+    // Stateful preparation still proves separation afresh before provisioning.
+    if !config.storage_targets.is_empty() {
+        platform_storage_identity(database).await?;
+    }
+    Ok(())
+}
 impl InstallationWorker {
     pub async fn load(
         path: &FilePath,
@@ -194,7 +206,7 @@ impl InstallationWorker {
                 return Err("Invalid private storage target".into());
             }
         }
-        platform_storage_identity(platform_database).await?;
+        verify_storage_platform(&config, platform_database).await?;
         let platform_database = platform_database.clone();
         let (certificate, private_key, authority) = match &plugin.control {
             crate::plugin_config::ControlListener::MutualTls {
@@ -638,6 +650,24 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[tokio::test]
+    async fn stateless_worker_needs_no_database_control_privilege() {
+        let database = sea_orm::DatabaseConnection::default();
+        let empty = WorkerConfig {
+            storage_targets: vec![],
+        };
+        verify_storage_platform(&empty, &database).await.unwrap();
+        let stateful = WorkerConfig {
+            storage_targets: vec![StorageTarget {
+                id: "owned".into(),
+                admin_url: "postgresql://metadata.invalid/db".into(),
+                authority: "/private/ca.crt".into(),
+                runtime_host: "metadata.invalid".into(),
+                runtime_port: 5432,
+            }],
+        };
+        assert!(verify_storage_platform(&stateful, &database).await.is_err());
+    }
     #[test]
     fn managed_policy_accepts_explicit_project_binary_bindings() {
         let value = json!({"runtimeDomain":"plugins.example.test","runtimePort":8443,"entryPoint":"websecure",

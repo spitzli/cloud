@@ -17,7 +17,8 @@ fn required(key: &str) -> Result<String, Error> {
 async fn run() -> Result<(), Error> {
     let args = Args::parse();
     let config = PluginConfig::load(&args.config)?;
-    let platform = webdock_core::config::PlatformConfig::from_map(&std::env::vars().collect())?;
+    let environment = std::env::vars().collect();
+    let platform = webdock_core::config::PlatformConfig::from_map(&environment)?;
     let auth_url = required("WEBDOCK_DATABASE_URL")?;
     let auth = webdock_control_plane::db::connect_runtime(
         &auth_url,
@@ -45,6 +46,14 @@ async fn run() -> Result<(), Error> {
         .await?,
     );
     let authority = authority_services(auth.clone(), ids.clone(), &platform).await?;
+    let neon_connections = Arc::new(webdock_provider_connections::Connections::new(
+        business.clone(),
+        auth.clone(),
+        authority.identity.clone(),
+        authority.browser.clone(),
+        &required("DATABASE_RLS_SECRET")?,
+        webdock_control_plane::neon_connections::encryption_key(&environment)?,
+    )?);
     let mail_dependencies = webdock_mail::MailDependencies {
         auth: auth.clone(),
         business: business.clone(),
@@ -64,6 +73,7 @@ async fn run() -> Result<(), Error> {
             ids,
             rls_secret: required("DATABASE_RLS_SECRET")?,
             database_new_orders_enabled: platform.database_new_orders_enabled,
+            neon_connections: Some(neon_connections),
         },
         &config,
     )

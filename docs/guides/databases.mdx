@@ -11,15 +11,19 @@ For a new database, create a project in your own Neon account, then connect it t
 
 Create the project and configure its database in Neon. Neon bills your account and applies its provider limits. In Console, connecting an API key lets an authorized workspace administrator view the projects available to that key.
 
-This connection currently provides connection management and read-only project inventory. Database provisioning, SQL access and automatic application bindings through this connection are separate capabilities and are not enabled by saving a key. Configure application connection details through the supported application environment workflow; keep them server-side and verify TLS.
+When your operator has installed and enabled the **Neon database plugin**, open a Spitzli Cloud project and use its **Neon database** offering to select an existing project, branch, database, role and endpoint. The first release supports attachments in Frankfurt (`aws-eu-central-1`). It provides safe settings, branch inventory, protected connection-URI reveal and local detach. Saving a provider key alone does not install or enable this offering.
 
-## Open an existing database
+Database provisioning, SQL access and automatic application bindings are separate capabilities. Configure application connection details through the supported application environment workflow; keep them server-side and verify TLS. See [Connect Neon](/guides/byok-neon) for permissions, credential handling and the distinction between detaching a database and disconnecting its provider key.
+
+## Open an existing managed database service
 
 1. Select the correct workspace and open **Databases**.
 2. Choose a database you are permitted to access.
 3. Open its database browser and wait for connection and schema discovery.
 
 If startup fails or times out, use the displayed retry action. Repeated failure can require an operator to check the gateway, database state or access grant. Do not change credentials or delete the service to clear an uncertain state.
+
+These database-browser controls belong to existing managed services. A Neon plugin attachment does not enable the SQL browser or promise a managed backup service.
 
 ## Existing service maintenance
 

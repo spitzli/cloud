@@ -1,0 +1,234 @@
+{
+  "date": "2026-11-02",
+  "status": "affected source and owned fixtures qualified; signed publication and live rollout pending",
+  "plugin": {
+    "name": "neon",
+    "version": "0.1.0",
+    "repository": "https://github.com/spitzli/cloud-plugin-neon",
+    "databaseFirst": true,
+    "metadataAndEncryptedKeysOwner": "existing Core database",
+    "separatePluginDatabase": false,
+    "firstSupportedRegion": "aws-eu-central-1",
+    "authority": "browser only; existing database managers and authorized operators; existing read-only customer preview",
+    "publishedNewRelease": false,
+    "immutableReleaseImageDigest": null
+  },
+  "catalogRepair": {
+    "retainedEntriesWithIconReadmeGallery": [
+      "archives",
+      "echo-demo",
+      "github-repository",
+      "hosting",
+      "lumaserv-compute",
+      "mail",
+      "mail-relay",
+      "managed-cms",
+      "object-storage"
+    ],
+    "ownerSelectedRemovedCatalogEntries": [
+      "lumaserv",
+      "managed-analytics",
+      "managed-apps",
+      "project-notes",
+      "postgres"
+    ],
+    "runtimeImagesInstallationsAndCustomerDataRetained": true,
+    "publicAssetAndMarkdownLoads": 28,
+    "verifiedIntegritySignaturesAcrossSavedAndCurrentRecords": 26
+  },
+  "manualQualification": {
+    "location": "existing qualified EU build infrastructure; rootless full process sandbox",
+    "native": {
+      "check": 0,
+      "testsPassed": 15,
+      "clippy": 0,
+      "binaryBuild": 0,
+      "sdkRevision": "8ed57d89c3263b050f126e4c2ba7f6cdebb0daa6",
+      "toolchain": "Rust1.98.1"
+    },
+    "core": {
+      "qualifiedCoreSourceArchiveSHA256": "999755f09698191526f45a37d1578bb318cfc7833da602990c2dd0e9f099cf77",
+      "compileChecks": [
+        {
+          "name": "provider",
+          "exitCode": 0
+        },
+        {
+          "name": "core",
+          "exitCode": 0
+        },
+        {
+          "name": "clippy",
+          "exitCode": 0
+        },
+        {
+          "name": "postgres-compile",
+          "exitCode": 0
+        }
+      ],
+      "ownedPostgres": {
+        "exitCode": 0,
+        "logSHA256": "2367ddc0f796e06c5c1f3fe93032c32dbbd1bcb9e6576d9b53027e47c05c4c3b",
+        "ownedPG18": true,
+        "UID": 1001,
+        "actualTestPassed": true,
+        "productionDatabaseUsed": false
+      },
+      "acceptedMigration": {
+        "file": "0075_neon_database_attachments.sql",
+        "sha256": "a8d23e3bbe46d96852f13311396376f2ca8350f590763aa4e3bd045e261733e7"
+      },
+      "allExistingFrozenEntriesUnchanged": true,
+      "productionMigrationPerformed": false
+    },
+    "additionalTwoTenantTest": {
+      "sourceArchiveSHA256": "8987e9f5097c42f2bc77c5d8f5f610e1ee3f05cfed00a269896356534e73cb76",
+      "ownedPostgres": {
+        "exitCode": 0,
+        "logSHA256": "1ea9e3ae485c29db96600cc018f0d58b8441879c67287bf4321627cb0b7a7651",
+        "ownedPG18": true,
+        "UID": 1001,
+        "actualTestPassed": true,
+        "productionDatabaseUsed": false
+      },
+      "compileChecks": [
+        {
+          "name": "clippy-host",
+          "command": [
+            "cargo",
+            "clippy",
+            "--locked",
+            "-p",
+            "webdock-plugin-host",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exitCode": 0,
+          "seconds": 208.25985455513,
+          "logSHA256": "d6b246892c57e7446520d48340112e3a44d0e524e5df2f65652938c38826490d"
+        },
+        {
+          "name": "postgres-compile",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "webdock-plugin-host",
+            "--test",
+            "neon_databases",
+            "--no-run",
+            "--message-format=json"
+          ],
+          "exitCode": 0,
+          "seconds": 199.39245057106018,
+          "logSHA256": "b379c0a127d24ae008491dd98b30b91707e85ae7cf63022de2c190aafa16f96d"
+        }
+      ],
+      "productionCodeUnchangedFromQualifiedGreen8": true,
+      "actualSeparateTenants": true,
+      "ownTenantBindingsAndConnectionReadable": true,
+      "foreignTenantConnectionAttachmentAndReceiptHidden": true,
+      "foreignResourceAndForeignProjectAdmissionDenied": true,
+      "productionDatabaseUsed": false
+    },
+    "unchangedCoreUnitGroupsPassed": {
+      "namedHttp": 1,
+      "legacyBoundariesAndHttps": 5,
+      "connectionKeyPriority": 2,
+      "authCompatibility": 4,
+      "statelessInstaller": 1
+    },
+    "frontend": {
+      "productionConsoleBuildExitCode": 0,
+      "sourceArchiveSHA256": "b12b8ce7489481d021984270b2ba5391cb9858c0920706c70205629d54b3775b",
+      "reactTestsPassed": 11,
+      "browserAcceptance": "passed with synthetic transport; real UI/SDK; English/German320px; roles/retries/URI lifecycle/detach",
+      "browserVersion": "156.0.8078.4",
+      "catalogsValidated": 21,
+      "independentUiAbi": 0
+    },
+    "releaseHelperTestsPassed": 17,
+    "contractsAcceptedFrozenLedger": 0,
+    "desktopNativeOrAppCompilation": false,
+    "finalContractsOnCurrentFixtureSource": {
+      "command": [
+        "cargo",
+        "run",
+        "--manifest-path",
+        "tools/quality/Cargo.toml",
+        "--locked",
+        "--",
+        "contracts"
+      ],
+      "exitCode": 0,
+      "logSHA256": "1ff259d23a7a1faf445d22b30735fc5c86b608670979b1be21122f06421784f9",
+      "manualEUQualification": true,
+      "desktopNativeCompilation": false
+    },
+    "finalCoreSourceArchiveSHA256": "8987e9f5097c42f2bc77c5d8f5f610e1ee3f05cfed00a269896356534e73cb76"
+  },
+  "screenshots": {
+    "browser": "156.0.8078.4",
+    "actualConsoleAndPluginUI": true,
+    "syntheticDataOnly": true,
+    "providerContacted": false,
+    "imageEditing": false,
+    "captures": [
+      {
+        "file": "neon-connect.png",
+        "sha256": "f65c28132af2d3d836fa5326bcfa5562312c16599858afa9799b7acf8cca4d4f",
+        "bytes": 170613,
+        "role": "user",
+        "uriHidden": true,
+        "credentialsRequested": false,
+        "overflow": false,
+        "writeActionsDisabled": true
+      },
+      {
+        "file": "neon-database.png",
+        "sha256": "b14bbf15f0c0ea737e9d768a02cc8dd095676a4e92eddbad67624d0aedacdb41",
+        "bytes": 221372,
+        "role": "user",
+        "uriHidden": true,
+        "credentialsRequested": false,
+        "overflow": false,
+        "writeActionsDisabled": true
+      },
+      {
+        "file": "neon-database-mobile-de.png",
+        "sha256": "b873d45b5e1ef9746bc14606cb799e6f957f814e02d97232a073cdb958b30bbc",
+        "bytes": 208914,
+        "role": "user",
+        "uriHidden": true,
+        "credentialsRequested": false,
+        "overflow": false,
+        "writeActionsDisabled": true
+      }
+    ]
+  },
+  "migration": {
+    "file": "0075_neon_database_attachments.sql",
+    "sha256": "a8d23e3bbe46d96852f13311396376f2ca8350f590763aa4e3bd045e261733e7"
+  },
+  "productionMigrationPerformed": false,
+  "productionCoreOrRuntimeRolloutPerformed": false,
+  "blacksmith": {
+    "repositorySelected": true,
+    "selectedRepositoryCount": 17,
+    "actualConfiguredOwnCiRegion": "us-west",
+    "customerRegionException": false,
+    "newRepositorySourceCiRun": "not started; normal owner signing blocked"
+  },
+  "remainingGates": [
+    "Normal owner 1Password SSH/signing authentication",
+    "Signed source commits and PRs; actual Blacksmith checks",
+    "Immutable OCI image/release, signed catalog receipt and exact-source presentation refresh",
+    "Qualified compatible rollback image and controlled offline Core migration",
+    "Private callback/controller/catalog and managed runtime installation",
+    "Authorized live customer/provider and retained operator-MFA acceptance"
+  ],
+  "mfaEvidence": "Owned migration fixture preserves the operator account and MFA flag; live credential/login preservation is not claimed by that fixture."
+}

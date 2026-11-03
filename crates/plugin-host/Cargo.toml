@@ -46,6 +46,7 @@ tokio-postgres = "0.7"
 webdock-plugin-kit = { path = "../plugin-kit" }
 
 [dev-dependencies]
+webdock-provider-connections={path="../provider-connections",features=["test-transport"]}
 webdock-control-plane={path="../control-plane"}
 webdock-core={path="../core"}
 webdock-mail = { path = "../mail" }

@@ -218,3 +218,19 @@ change runtime production profiles. The corrected complete source run still has
 to pass before merge.
 
 Cargo documents these settings in its [environment variable reference](https://doc.rust-lang.org/cargo/reference/environment-variables.html).
+
+## Neon repository addition — 2026-11-02
+
+`spitzli/cloud-plugin-neon` was added to the existing selected Blacksmith app and
+READY/REGION/BUILDER_READY variable selections. Readback confirmed the exact
+original sixteen repositories plus Neon, with previous values unchanged. It uses
+`us-west` under the existing own-CI exception. Its Actions allowlist matches the
+reviewed pinned actions; no old persistent-runner variables were copied. The
+`plugin-release` environment allows `v*` tags only and retains the existing public
+registry JWK and signing authority. No secret or paid-plan change was made.
+
+Neon's manual native qualification on the EU build host passed check, fifteen
+tests (including actual process shutdown), Clippy and binary build. That is not
+a Blacksmith source-check result: source publication/signing and the actual new
+repository CI run still need their own recorded evidence. The previous sixteen
+repository probe/setup descriptions above describe their historical setup scope.
