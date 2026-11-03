@@ -24,43 +24,64 @@ struct Fixture {
     name: String,
     url: url::Url,
     passwords: BTreeMap<String, String>,
+    external_owned: bool,
 }
 impl Drop for Fixture {
     fn drop(&mut self) {
-        let _ = docker().args(["rm", "-f", &self.name]).output();
+        if !self.external_owned {
+            let _ = docker().args(["rm", "-f", &self.name]).output();
+        }
     }
 }
 impl Fixture {
     async fn start() -> Self {
         let name = format!("wd-install-task1-{}", uuid::Uuid::new_v4().simple());
-        assert!(
-            docker()
-                .args([
-                    "run",
-                    "-d",
-                    "--rm",
-                    "--name",
-                    &name,
-                    "-e",
-                    "POSTGRES_HOST_AUTH_METHOD=trust",
-                    "-e",
-                    "POSTGRES_DB=webdock_install_test",
-                    "-p",
-                    "127.0.0.1::5432",
-                    "postgres:18-alpine"
-                ])
-                .output()
-                .unwrap()
-                .status
-                .success()
-        );
-        let output = docker().args(["port", &name, "5432/tcp"]).output().unwrap();
-        let endpoint = String::from_utf8(output.stdout).unwrap();
-        let endpoint = endpoint.trim();
-        let url = url::Url::parse(&format!(
-            "postgres://postgres@{endpoint}/webdock_install_test?sslmode=disable"
-        ))
-        .unwrap();
+        let external = std::env::var("WEBDOCK_OWNED_INSTALLATION_TEST_URL").ok();
+        let external_owned = external.is_some();
+        let url = if let Some(raw) = external {
+            let mut base = url::Url::parse(&raw).unwrap();
+            assert_eq!(base.host_str(), Some("127.0.0.1"));
+            assert_eq!(base.port(), Some(55432));
+            assert_eq!(base.username(), "postgres");
+            assert_eq!(base.path(), "/webdock_owned_installation");
+            let owner = Database::connect(base.as_str()).await.unwrap();
+            let database = format!("owned_install_{}", uuid::Uuid::new_v4().simple());
+            owner
+                .execute_unprepared(&format!("CREATE DATABASE {database}"))
+                .await
+                .unwrap();
+            base.set_path(&database);
+            base
+        } else {
+            assert!(
+                docker()
+                    .args([
+                        "run",
+                        "-d",
+                        "--rm",
+                        "--name",
+                        &name,
+                        "-e",
+                        "POSTGRES_HOST_AUTH_METHOD=trust",
+                        "-e",
+                        "POSTGRES_DB=webdock_install_test",
+                        "-p",
+                        "127.0.0.1::5432",
+                        "postgres:18-alpine"
+                    ])
+                    .output()
+                    .unwrap()
+                    .status
+                    .success()
+            );
+            let output = docker().args(["port", &name, "5432/tcp"]).output().unwrap();
+            let endpoint = String::from_utf8(output.stdout).unwrap();
+            let endpoint = endpoint.trim();
+            url::Url::parse(&format!(
+                "postgres://postgres@{endpoint}/webdock_install_test?sslmode=disable"
+            ))
+            .unwrap()
+        };
         let passwords = webdock_persistence::roles::LOGIN_ROLES
             .iter()
             .copied()
@@ -76,6 +97,7 @@ impl Fixture {
             name,
             url,
             passwords,
+            external_owned,
         };
         let db = tokio::time::timeout(std::time::Duration::from_secs(30), async {
             loop {
@@ -89,14 +111,14 @@ impl Fixture {
         .expect("owned PostgreSQL connection readiness");
         webdock_persistence::roles::provision_roles(
             &db,
-            "webdock_install_test",
+            fixture.url.path().trim_start_matches('/'),
             &fixture.passwords,
         )
         .await
         .unwrap();
         webdock_persistence::migrations::bootstrap(
             &db,
-            "webdock_install_test",
+            fixture.url.path().trim_start_matches('/'),
             "owned-install-rls-secret-at-least32",
         )
         .await
@@ -1573,7 +1595,7 @@ fn generation_checkpoint(generation: u64) -> PluginRuntimeCheckpoint {
 fn generation_proof(work: &webdock_plugin_host::InstallWork, version: &str) -> RuntimeDescription {
     RuntimeDescription {
         manifest: work.manifest_bytes.as_bytes().to_vec(),
-        plugin_id: "postgres".into(),
+        plugin_id: work.plugin_id.clone(),
         version: version.into(),
         generation: work.runtime_generation,
         protocol_version: 1,
@@ -1595,7 +1617,7 @@ async fn prepare_generation(
     spec.manifest_sha256 = work.manifest_sha256.clone();
     spec.image = work.image.clone();
     spec.namespace =
-        PluginRuntimeSpec::namespace_name_v2("fixture", "postgres", work.runtime_generation);
+        PluginRuntimeSpec::namespace_name_v2("fixture", &work.plugin_id, work.runtime_generation);
     let files: BTreeMap<String, String> = MATERIAL_FILES
         .iter()
         .map(|name| {
@@ -1629,4 +1651,360 @@ async fn prepare_generation(
     .await
     .unwrap();
     (spec, binding)
+}
+
+fn recovery_catalog(corrected: bool) -> serde_json::Value {
+    use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD as B64};
+    use ed25519_dalek::Signer;
+    use sha2::{Digest, Sha256};
+    let mut catalog = catalog_fixture::catalog();
+    let mut manifest: serde_json::Value =
+        serde_json::from_str(include_str!("../../../plugins/neon/manifest.json")).unwrap();
+    manifest["image"] = json!(format!(
+        "registry.example.test/neon@sha256:{}",
+        "a".repeat(64)
+    ));
+    let raw = manifest.to_string();
+    let hash = format!("{:x}", Sha256::digest(raw.as_bytes()));
+    let payload = json!({"v":1,"registry":"https://registry.example.test","plugin_slug":"neon","release_version":"0.1.0","kid":"trusted","manifest_sha256":hash,"assets":[{"name":"neon-universal.json","sha256":hash,"size":raw.len()}]});
+    let body = format!(
+        "{}.{}",
+        B64.encode(r#"{"alg":"EdDSA","kid":"trusted"}"#),
+        B64.encode(payload.to_string())
+    );
+    let jws = format!(
+        "{body}.{}",
+        B64.encode(
+            ed25519_dalek::SigningKey::from_bytes(&[27; 32])
+                .sign(body.as_bytes())
+                .to_bytes()
+        )
+    );
+    catalog["releases"] = json!([{"id":"neon","version":"0.1.0","registryURL":"https://registry.example.test","kid":"trusted","jws":jws,"manifestRaw":raw,"descriptor":raw,"recipe":{"storage":false,"sealingKey":false,"privateConfiguration":{}},"supportedFeatures":["connect-databases"],"targetIDs":["local-eu"]}]);
+    catalog["targets"][0]["policy"] = json!({"core":{"origin":"https://10.0.0.4:3132","domain":"core.internal","certificate":"/private/core.crt","privateKey":"/private/core.key","authority":"/private/ca.crt","serverCertificateSha256":"a".repeat(64)},"hostAliases":[],"egress":[{"cidr":"10.0.0.4/32","port":3132}],"resources":{"cpuMillicores":100,"memoryBytes":134217728}});
+    if corrected {
+        catalog["targets"][0]["policy"]["core"]["origin"] = json!("https://core.internal:3132/");
+        catalog["targets"][0]["policy"]["hostAliases"] =
+            json!([{"ip":"10.0.0.4","hostnames":["core.internal"]}]);
+    }
+    catalog
+}
+
+#[tokio::test]
+#[ignore = "requires a disposable explicitly owned PostgreSQL fixture"]
+async fn initial_callback_recovery_fences_old_claims_and_requires_stop_before_apply() {
+    let fixture = Fixture::start().await;
+    let owner = fixture.owner().await;
+    let auth = fixture.role("webdock_auth_bootstrap").await;
+    let business = fixture.role("webdock_auth_runtime").await;
+    let worker = fixture.role("webdock_worker_runtime").await;
+    sql(&owner,"INSERT INTO webdock_auth.\"user\"(id,name,email,\"emailVerified\",role,\"twoFactorEnabled\",\"mustChangePassword\") VALUES('operator','Operator','operator@example.test',true,'operator',true,false)",vec![]).await;
+    sql(&owner,"INSERT INTO webdock_auth.session(id,token,\"userId\",\"expiresAt\",\"updatedAt\") VALUES('session','private-token','operator',now()+interval '1 hour',now())",vec![]).await;
+    sql(&owner,"INSERT INTO webdock_admin.users(id,name,email,role,auth_subject) VALUES('100','Operator','operator@example.test','operator','operator')",vec![]).await;
+    sql(&owner,"INSERT INTO webdock_auth.hosting_cluster(id,name,provider,region,location_evidence,verified,runtime_installation,runtime_kind) VALUES('42','Owned fixture','fixture','eu','fixture',true,'fixture','kubernetes')",vec![]).await;
+    sql(&owner,"INSERT INTO webdock_auth.hosting_agent(cluster_id,generation,credential_hash,revoked,observation) VALUES('42',1,$1,false,jsonb_build_object('capabilities',jsonb_build_object('pluginRuntimeVersion',2)))",vec!["a".repeat(64).into()]).await;
+    // Synthetic transport enrollment is fixture setup; acceptance uses the separately owned offline CLI.
+    sql(&owner,"INSERT INTO webdock_auth.agent_transport_enrollment(installation,agent_id,generation,cluster_id,credential_hash,transport,unix_uid) VALUES('fixture','agent',1,'42',$1,'unix',0)",vec!["a".repeat(64).into()]).await;
+    let identity = Arc::new(IdentityService::new(
+        auth.clone(),
+        CookiePolicy::new(false, "owned-install-auth-secret-atleast32").unwrap(),
+    ));
+    let identity_tx = auth.begin().await.unwrap();
+    let principal = identity
+        .authenticate_session_in(&identity_tx, "operator", "session")
+        .await
+        .unwrap()
+        .unwrap();
+    identity_tx.commit().await.unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    let fallback = Arc::new(FileBindings::new(directory.path().join("missing.json")));
+    // Empty file enrollment is explicit, rather than treating a missing/unreadable fallback as empty.
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::write(directory.path().join("missing.json"), b"{\"runtimes\":{}}").unwrap();
+    std::fs::set_permissions(
+        directory.path().join("missing.json"),
+        std::fs::Permissions::from_mode(0o600),
+    )
+    .unwrap();
+    let bindings = Arc::new(
+        ManagedBindings::new(
+            fixture.role("webdock_worker_runtime").await,
+            "owned-install-rls-secret-at-least32".into(),
+            fallback,
+        )
+        .await
+        .unwrap()
+        .with_encryption_secret("owned-install-encryption-key-at-least32")
+        .unwrap(),
+    );
+    let ids = Arc::new(
+        webdock_persistence::IdAllocator::connect(
+            fixture.url.as_str(),
+            webdock_ids::Identity::platform(0, 2).unwrap(),
+        )
+        .await
+        .unwrap(),
+    );
+    let catalog = Arc::new(
+        Catalog::from_bytes(&serde_json::to_vec(&recovery_catalog(false)).unwrap()).unwrap(),
+    );
+    let host = HostService::new(
+        business.clone(),
+        worker.clone(),
+        "owned-install-rls-secret-at-least32".into(),
+        ids,
+        bindings.clone(),
+        ed25519_dalek::SigningKey::from_bytes(&[19; 32]),
+    )
+    .await
+    .unwrap()
+    .with_session_authority(auth.clone(), identity.clone(), None)
+    .await
+    .unwrap();
+
+    let authority = StoredAuthority::LocalSession {};
+    let host = host
+        .with_installation(catalog.clone(), "owned-install-encryption-key-at-least32")
+        .unwrap();
+    let d = &catalog.descriptors()[0];
+    let initial = host
+        .request_install_with_authority(
+            &principal,
+            &authority,
+            InstallRequest {
+                catalog_id: "neon".into(),
+                version: "0.1.0".into(),
+                review_sha256: d.targets[0].review_sha256.clone(),
+                target_id: "local-eu".into(),
+                configuration: json!({}),
+                approved_capabilities: d.capabilities.clone(),
+                idempotency_key: "initial-recovery-fixture".into(),
+            },
+        )
+        .await
+        .unwrap();
+    let claim = host.claim_installation(None).await.unwrap().unwrap();
+    host.persist_install_components(
+        &claim,
+        BTreeMap::from([
+            ("storagePassword".into(), "retained-master".into()),
+            ("sealingKey".into(), "retained-sealer".into()),
+        ]),
+    )
+    .await
+    .unwrap();
+    let work = host.install_work(&claim).await.unwrap();
+    let files: BTreeMap<String, String> = MATERIAL_FILES
+        .iter()
+        .map(|n| {
+            (
+                (*n).into(),
+                if *n == "manifest.json" {
+                    work.manifest_bytes.clone()
+                } else {
+                    format!("initial-{n}")
+                },
+            )
+        })
+        .collect();
+    let spec = PluginRuntimeSpec {
+        version: 1,
+        platform_id: "fixture".into(),
+        plugin_id: "neon".into(),
+        runtime_generation: 1,
+        configuration_revision: 1,
+        cluster_id: "42".into(),
+        manifest_sha256: work.manifest_sha256.clone(),
+        material_sha256: PluginRuntimeMaterial {
+            files: files.clone(),
+        }
+        .fingerprint()
+        .unwrap(),
+        image: work.image.clone(),
+        namespace: PluginRuntimeSpec::namespace_name("fixture", "neon"),
+        service: "runtime".into(),
+        runtime_host: "neon.example.test".into(),
+        port: 3443,
+        entry_point: "plugins".into(),
+        cpu_millicores: 100,
+        memory_bytes: 134217728,
+        egress: vec![PluginRuntimeEgress {
+            cidr: "10.0.0.4/32".into(),
+            port: 3132,
+        }],
+        host_aliases: vec![],
+    };
+    let binding = RuntimeBinding {
+        storage: Default::default(),
+        generation: 1,
+        namespace: spec.namespace.clone(),
+        service: "runtime".into(),
+        credential_sha256: "b".repeat(64),
+        peers: vec![PeerEnrollment::Unix {
+            uid: rustix::process::geteuid().as_raw(),
+        }],
+        public_configuration: BTreeMap::new(),
+        projects: BTreeMap::new(),
+        public_customer_configuration: BTreeMap::new(),
+        customers: BTreeMap::new(),
+        workload_cluster: Some("42".into()),
+        route_domains: vec![],
+    };
+    host.prepare_installation(
+        &claim,
+        PreparedInstallation {
+            spec: serde_json::to_value(&spec).unwrap(),
+            files,
+            binding: binding.clone(),
+            endpoint: json!({"generation":1}),
+        },
+    )
+    .await
+    .unwrap();
+    let hosting = webdock_hosting::HostingService::new(
+        business,
+        auth,
+        worker,
+        "owned-install-rls-secret-at-least32".into(),
+        "owned-install-environment-key-at-least32".into(),
+        Arc::new(
+            webdock_persistence::IdAllocator::connect(
+                fixture.url.as_str(),
+                webdock_ids::Identity::platform(0, 3).unwrap(),
+            )
+            .await
+            .unwrap(),
+        ),
+    )
+    .await
+    .unwrap();
+    let agent = hosting
+        .authenticate_enrolled_agent("42", 1, &"a".repeat(64))
+        .await
+        .unwrap();
+    let dispatched = host.poll_plugin_runtime(&agent, 2).await.unwrap().unwrap();
+    let checkpoint = generation_checkpoint(1);
+    assert!(
+        host.checkpoint_plugin_runtime(&agent, &dispatched.spec, &dispatched.lease, &checkpoint)
+            .await
+            .unwrap()
+    );
+    let original_material = dispatched.spec.material_sha256.clone();
+    let corrected = Arc::new(
+        Catalog::from_bytes(&serde_json::to_vec(&recovery_catalog(true)).unwrap()).unwrap(),
+    );
+    let host = host
+        .with_installation(corrected.clone(), "owned-install-encryption-key-at-least32")
+        .unwrap();
+    let installed = host
+        .installed_with_authority(&principal, &authority)
+        .await
+        .unwrap();
+    let request = webdock_plugin_host::UpdateRequest {
+        version: "0.1.0".into(),
+        review_sha256: corrected.descriptors()[0].targets[0].review_sha256.clone(),
+        expected_revision: installed[0]["revision"].as_str().unwrap().into(),
+        approved_capabilities: corrected.descriptors()[0].capabilities.clone(),
+        idempotency_key: "recover-callback".into(),
+    };
+    let recovery = host
+        .request_initial_callback_recovery_with_authority(
+            &principal,
+            &authority,
+            "neon",
+            request.clone(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        host.request_initial_callback_recovery_with_authority(
+            &principal,
+            &authority,
+            "neon",
+            request.clone()
+        )
+        .await
+        .unwrap()
+        .id,
+        recovery.id
+    );
+    let mut stale = request.clone();
+    stale.idempotency_key = "different-recovery".into();
+    assert!(
+        host.request_initial_callback_recovery_with_authority(
+            &principal, &authority, "neon", stale
+        )
+        .await
+        .is_err()
+    );
+    assert!(
+        !host
+            .guard_plugin_runtime(&agent, &dispatched.spec, &dispatched.lease)
+            .await
+            .unwrap()
+    );
+    assert_eq!(scalar(&owner,"SELECT count(*)::bigint n FROM webdock_auth.plugin_installation WHERE current_generation IS NOT NULL").await,0);
+    let next_claim = host.claim_installation(None).await.unwrap().unwrap();
+    let next = host.install_work(&next_claim).await.unwrap();
+    assert_eq!(next.runtime_generation, 2);
+    assert_eq!(next.source_runtime_generation, Some(1));
+    assert_eq!(next.components["storagePassword"], "retained-master");
+    let (new_spec, _) = prepare_generation(&host, &next_claim, &next, &spec, &binding).await;
+    let stop = host.poll_plugin_runtime(&agent, 2).await.unwrap().unwrap();
+    assert_eq!(stop.lease.action, PluginRuntimeAction::Suspend);
+    assert_eq!(stop.spec, spec);
+    assert_eq!(stop.spec.material_sha256, original_material);
+    assert!(host.poll_plugin_runtime(&agent, 2).await.unwrap().is_none());
+    assert!(
+        host.complete_plugin_runtime(
+            &agent,
+            &stop.spec,
+            &stop.lease,
+            &PluginRuntimeCompletion {
+                outcome: PluginRuntimeOutcome::Succeeded,
+                checkpoint: checkpoint.clone(),
+                converged: true
+            }
+        )
+        .await
+        .unwrap()
+    );
+    let apply = host.poll_plugin_runtime(&agent, 2).await.unwrap().unwrap();
+    assert_eq!(apply.lease.action, PluginRuntimeAction::Apply);
+    assert_eq!(apply.spec, new_spec);
+    assert!(
+        host.complete_plugin_runtime(
+            &agent,
+            &apply.spec,
+            &apply.lease,
+            &PluginRuntimeCompletion {
+                outcome: PluginRuntimeOutcome::Succeeded,
+                checkpoint: generation_checkpoint(2),
+                converged: true
+            }
+        )
+        .await
+        .unwrap()
+    );
+    let verify = host.claim_installation(None).await.unwrap().unwrap();
+    host.promote_installation(&verify, generation_proof(&next, "0.1.0"))
+        .await
+        .unwrap();
+    assert_eq!(scalar(&owner,"SELECT count(*)::bigint n FROM webdock_auth.plugin_installation WHERE id='neon' AND current_generation=2 AND state='enabled'").await,1);
+    assert_eq!(scalar(&owner,"SELECT count(*)::bigint n FROM webdock_auth.plugin_install_execution WHERE plugin_id='neon' AND runtime_generation=1 AND stopped").await,1);
+    assert_eq!(
+        scalar(
+            &owner,
+            "SELECT count(*)::bigint n FROM webdock_admin.customers"
+        )
+        .await,
+        0
+    );
+    assert_eq!(
+        host.operation_with_authority(&principal, &authority, &initial.id)
+            .await
+            .unwrap()
+            .status,
+        webdock_plugin_host::OperationStatus::Failed
+    );
 }

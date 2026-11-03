@@ -59,10 +59,11 @@ tower-http = { version = "0.6", features = ["cors", "trace", "limit", "fs"] }
 governor = "0.10.4"
 clap = { version = "4", features = ["derive"] }
 
+webdock-plugin-kit = { path = "../plugin-kit" }
+
 [dev-dependencies]
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
 webdock-agent = { path = "../agent", default-features = false, features = ["docker"] }
-webdock-plugin-kit = { path = "../plugin-kit" }
 tokio-postgres = "0.7"
 serde-saphyr = "0.0.29"
 tempfile = "3"

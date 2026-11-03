@@ -138,6 +138,20 @@ fn seeds_needed(kind: &str, components: &BTreeMap<String, String>) -> Result<(bo
     }
     Ok((masters == 0, identity == 0))
 }
+fn runtime_tls_configuration(policy: &TargetPolicy) -> Result<Value, Error> {
+    let value = json!({
+        "listenTls":{"address":format!("0.0.0.0:{}",policy.runtime_port),
+          "certificate":"/run/webdock/runtime/runtime.crt", "privateKey":"/run/webdock/runtime/runtime.key",
+          "authority":"/run/webdock/runtime/core-ca.crt"},
+        "coreTls":{"origin":policy.core.origin,"domain":policy.core.domain,
+          "certificate":"/run/webdock/runtime/runtime.crt", "privateKey":"/run/webdock/runtime/runtime.key",
+          "authority":"/run/webdock/runtime/core-ca.crt","serverCertificateSha256":policy.core.server_certificate_sha256}
+    });
+    let transport: webdock_plugin_kit::transport::RuntimeTransport =
+        serde_json::from_value(value.clone())?;
+    transport.validate()?;
+    Ok(value)
+}
 fn guarded_origin(value: &str) -> Result<url::Url, Error> {
     let url = url::Url::parse(value).map_err(|_| "Invalid private callback")?;
     if url.scheme() != "https"
@@ -290,6 +304,7 @@ impl InstallationWorker {
     ) -> Result<(), Error> {
         let policy: TargetPolicy = decode(work.target_policy.clone())?;
         let recipe: Recipe = decode(work.recipe.clone())?;
+        let tls_configuration = runtime_tls_configuration(&policy)?;
         guarded_origin(&policy.core.origin)?;
         self.kernel.validate(&policy)?;
         validate_storage_bindings(&policy.storage)?;
@@ -402,8 +417,12 @@ impl InstallationWorker {
             "corePeers".into(),
             json!([{"kind":"mutualTls","certificateSha256":self.kernel.fingerprint}]),
         );
-        configuration.insert("listenTls".into(),json!({"address":format!("0.0.0.0:{}",policy.runtime_port),"certificate":"/run/webdock/runtime/runtime.crt","privateKey":"/run/webdock/runtime/runtime.key","authority":"/run/webdock/runtime/core-ca.crt"}));
-        configuration.insert("coreTls".into(),json!({"origin":policy.core.origin,"domain":policy.core.domain,"certificate":"/run/webdock/runtime/runtime.crt","privateKey":"/run/webdock/runtime/runtime.key","authority":"/run/webdock/runtime/core-ca.crt","serverCertificateSha256":policy.core.server_certificate_sha256}));
+        configuration.extend(
+            tls_configuration
+                .as_object()
+                .ok_or("Invalid runtime transport")?
+                .clone(),
+        );
         let core_ca = private_text(&policy.core.authority)?;
         let storage_ca = match storage {
             Some((url, ca)) => {
@@ -667,6 +686,15 @@ mod tests {
             }],
         };
         assert!(verify_storage_platform(&stateful, &database).await.is_err());
+    }
+    #[test]
+    fn prepared_tls_transport_rejects_ip_origin_with_different_tls_name() {
+        let mut policy: TargetPolicy=decode(json!({"runtimeDomain":"plugins.example.test","runtimePort":8443,"entryPoint":"websecure",
+            "core":{"origin":"https://core.example.test:3132/","domain":"core.example.test","certificate":"/private/core.crt","privateKey":"/private/core.key","authority":"/private/ca.crt","serverCertificateSha256":"a".repeat(64)},
+            "runtimeIdentity":{"authority":"/private/ca.crt","privateKey":"/private/core.key"},"resources":{"cpuMillicores":100,"memoryBytes":268435456},"egress":[]})).unwrap();
+        assert!(runtime_tls_configuration(&policy).is_ok());
+        policy.core.origin = "https://10.0.0.4:3132".into();
+        assert!(runtime_tls_configuration(&policy).is_err());
     }
     #[test]
     fn managed_policy_accepts_explicit_project_binary_bindings() {

@@ -163,3 +163,32 @@ The synthetic Console fixture, browser tests and gallery verify UI contracts and
 responsive layout. They do not prove a production provider connection. Record
 source/check/image/migration/installation/customer evidence separately before
 reporting the integration live.
+
+## Recover an unpromoted callback hostname
+
+The explicit operator endpoint `POST /api/console/plugins/neon/recover-callback`
+repairs one narrowly defined initial-installation failure: a private IP callback
+URL was prepared with a different retained TLS DNS name. Review a catalog target
+whose callback URL uses that DNS name and whose single host alias resolves it to
+the original private IPv4 address. The original callback port, egress, certificate
+pin, issuer, resource bounds and other target fields must match exactly.
+
+The request uses the reviewed catalog `version` and `reviewSha256`, the current
+installation `expectedRevision`, unchanged `approvedCapabilities` and a fresh,
+persisted `idempotencyKey`, as for a release update. It accepts only the same
+signed release of an explicitly stateless candidate that has never been promoted.
+Stateful, promoted, incompatible, stale and differently placed installations are
+refused. This endpoint is an infrastructure recovery operation, not a customer
+configuration option.
+
+Recovery fences the prior operation and retains its immutable material and UID
+checkpoint. The normal agent must suspend the prior generation and prove that no
+Pods remain before it can apply the new generation. Prepare the new namespace's
+quota and isolation foundation, then follow the operation through pinned
+Describe/Health verification. A repeated request with the same key replays the
+same operation. Existing availability and update operations retain their guards.
+
+Core validates newly generated TLS transport configuration using the same SDK
+validator as the runtime before dispatch. Certificate checks and the runtime SDK
+remain unchanged. No SQL installation repair, Secret replacement or release-tag
+overwrite is part of this procedure.
