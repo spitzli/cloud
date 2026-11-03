@@ -1,0 +1,97 @@
+{
+  "date": "2026-11-03",
+  "status": "source and release published; controlled Core rollout not activated",
+  "coreSource": {
+    "head": "e63192ad39bab9dc7ad08f74c5b97ae7c9432084",
+    "mergedMain": "11fe0aa867e67fbdeb61039f4ce22b18b8b4ea80",
+    "blacksmithQuality": "passed",
+    "run": 41610673962
+  },
+  "neonRelease": {
+    "version": "0.1.0",
+    "source": "30e6b7038415b7fb986f50c6d1ff8a86c34bcdd9",
+    "metadataSource": "f5037e92a538b509087c5d8c48e392c7e4f16d12",
+    "image": "ghcr.io/spitzli/cloud-plugin-neon@sha256:5565e531168c387cf1708c036cb0d9a8755948a6db808fdc2efbf4111308d3fe",
+    "registrySignatureVerified": true,
+    "anonymousOciManifestHttp": 200,
+    "publicPresentationLoads": 5,
+    "renderedReadme": true,
+    "screenshots": 3,
+    "blacksmithRelease": "passed"
+  },
+  "registryRepair": {
+    "observedDestination": "20.250.119.72:443",
+    "officialSource": "https://api.github.com/meta",
+    "addedHttpsDestinations": [
+      "20.250.119.67/32",
+      "20.250.119.72/32"
+    ],
+    "onlyExistingApplicationSelector": true,
+    "privateNetworksNotAllowed": true,
+    "existingIdentityCatalogRefreshHttp": 200,
+    "fullInteractiveOAuthRetested": false,
+    "identityUnlinked": false,
+    "credentialsRotated": false
+  },
+  "rollback": {
+    "actualRollbackExecutables": true,
+    "ownedPG18": true,
+    "journalCount": 74,
+    "latestMigration": 75,
+    "initialAndRepeatMigrationPassed": true,
+    "actualCoreReadyz": 200,
+    "productionDatabaseUsed": false,
+    "uid": 1001,
+    "binarySHA256": {
+      "rollback-core": "26b30eb4c5d7cfddac73d6dd266ceaf44b690d3c8cdbed3a5dba33c197d41a93",
+      "rollback-migrate": "abac5a2bf30dc069f5600830dfc30a55325b9a87370c5d6cb57cd7257fda873c"
+    }
+  },
+  "productionPreflight": {
+    "latestMigration": 72,
+    "consistentEncryptedBackupAndDecryptionRoundtripVerified": true,
+    "retainedOperatorPasswordMfaAndSsoPassed": true,
+    "actualPrivateNativeActivation": false,
+    "schemaChangesApplied": false
+  },
+  "consoleCandidate": {
+    "deploymentID": "dpl_9qCE6ZEwWXs57NCDosKspqgyrfGv",
+    "deployment": "https://webdock-admin-epn1jipid-spitzli.vercel.app",
+    "checks": [
+      {
+        "path": "/",
+        "sha256": "1445bc1b7cf1b05bd8c0e4301fb2d3be6e0c670481fd839261fdb144571c3a01",
+        "passed": true
+      },
+      {
+        "path": "/assets/index-DQzLOi2w.js",
+        "sha256": "897e7afe82fb1868f94856e7f860cb3bccef9a5908c893575bded64b893b5c76",
+        "passed": true
+      },
+      {
+        "path": "/console-config.json",
+        "sha256": "58d7c32153b84f60360d52774a894011204a958c836a2d09b614f4ce187c9c3f",
+        "passed": true
+      }
+    ],
+    "prebuiltEuArtifactMatched": true,
+    "canonicalDomainsPromoted": false
+  },
+  "privateControlRenderer": {
+    "defaultReplicas": 0,
+    "testsPassed": 9,
+    "issuerSecretIsolatedToController": true,
+    "tokenlessRestrictedPods": true,
+    "privateClusterIpOnly": true,
+    "liveNetworkAndRuntimeAcceptancePending": true
+  },
+  "remaining": [
+    "Candidate backend image completion and actual image acceptance",
+    "Controlled production migration and retained HTTP/agent/realtime verification",
+    "Private listener/controller routing, policy and mTLS admission",
+    "Normal operator installation and bounded customer grants",
+    "Actual authorized customer provider flow, excluding Core project credentials",
+    "First-party GitHub App rebranding after rollout"
+  ],
+  "shutdownAuthorized": false
+}
