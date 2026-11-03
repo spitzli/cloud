@@ -15,7 +15,7 @@ export const authPanel =
 export function Brand({ product, href }: { product?: string | undefined; href?: string | undefined }) {
   const content = <>
     <span className={brandMark} aria-hidden><img src="/spitzli-logo.png" alt="" width={24} height={24} /></span>
-    <span className="max-[420px]:sr-only">Spitzli Cloud</span>
+    <span className="font-brand max-[420px]:sr-only">Spitzli Cloud</span>
     {product ? <span className="ml-1 border-l border-outline pl-3 text-[13px] font-normal tracking-normal text-muted max-[700px]:hidden">{product}</span> : null}
   </>;
   const style = "flex shrink-0 items-center gap-2 text-xl font-semibold tracking-tight text-foreground no-underline hover:no-underline max-[700px]:text-lg";

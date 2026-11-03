@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/csr/ArrowLeft";
-import { useApi } from "../context";
+import { useApi, useSession } from "../context";
+import { isReadOnlyPreview, type Session } from "../api";
+import { sessionCacheScope } from "../session-cache";
 import { Empty, Failure, Loading } from "../common";
 import { parsePanel } from "./contracts";
 import { PluginPanel } from "./Panel";
@@ -12,9 +14,14 @@ import { useNativeUI } from "./native";
 import { pluginNav, useWorkspaceProjects } from "./workspace";
 import * as ui from "../ui";
 
+function resourceWritable(session: Session, role: string | null | undefined) {
+  return !isReadOnlyPreview(session) && ["owner", "admin", "operator"].includes(role ?? "");
+}
+
 /** One plugin resource, rendered from the plugin's self-service resource page. */
 export function ResourcePage({ customer, projectID, plugin, resource }: { customer: string; projectID: string; plugin: string; resource: string }) {
   const api = useApi();
+  const session = useSession();
   const client = useQueryClient();
   const navigate = useNavigate();
   const project = useProject(projectID);
@@ -25,6 +32,7 @@ export function ResourcePage({ customer, projectID, plugin, resource }: { custom
   const page = view?.manifest.areas.selfService?.pages[0];
   const native = useNativeUI(view?.manifest.name);
   const Native = native.data?.Resource;
+  const writable = resourceWritable(session, project.data?.role);
   const [replaced, setReplaced] = useState<unknown>();
   const context = { resource_id: resource };
   const panel = useQuery({
@@ -76,7 +84,7 @@ export function ResourcePage({ customer, projectID, plugin, resource }: { custom
           resource={indexed}
           features={view.features}
           actions={view.manifest.actions.map(action => action.name)}
-          writable={["owner", "admin", "operator"].includes(project.data?.role ?? "")}
+          writable={writable}
           onDeleted={() => void leave()}
         />
         <LogHistory projectID={projectID} plugin={plugin} resource={indexed.id} viewer={project.data} />
@@ -104,7 +112,10 @@ export function ResourcePage({ customer, projectID, plugin, resource }: { custom
         <Failure error={panel.error} retry={() => void panel.refetch()} />
       ) : (
         <PluginPanel
+          key={JSON.stringify([sessionCacheScope(session), projectID, plugin, resource, writable])}
+          allowedActions={view.manifest.actions.filter(action => writable || action.intent === "read").map(action => action.name)}
           value={replaced ?? panel.data}
+          resourceName={indexed.name}
           context={context}
           invoke={async (action, input, signal) => {
             const result = await invokePlugin(api, plugin, projectID, action, input, signal);

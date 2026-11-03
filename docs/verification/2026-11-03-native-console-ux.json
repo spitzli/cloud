@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-03",
+  "scope": "Core Console and all first-party plugin presentation",
+  "implementation": "shared native theme and UI recipes; generic panel and custom resource views",
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "viewports": [
+    320,
+    375,
+    414,
+    768,
+    1280
+  ],
+  "unitTestsPassed": 248,
+  "typecheck": "passed",
+  "independentReview": "no must-fix findings; 14 selected tests independently passed",
+  "browserAcceptance": {
+    "exactEuArtifact": "ux5",
+    "casesPassed": 21,
+    "nativePluginJourneys": [
+      {
+        "script": "hosting-plugin-browser.mjs",
+        "exitCode": 0
+      },
+      {
+        "script": "mail-plugin-browser.mjs",
+        "exitCode": 0
+      },
+      {
+        "script": "plans-browser.mjs",
+        "exitCode": 0
+      }
+    ],
+    "retainedDatabaseUi": {
+      "exitCode": 0,
+      "syntheticTransport": true,
+      "productionOrderingNotEnabled": true
+    },
+    "neonFixture": "passed with customer identity and synthetic transport",
+    "artifactSHA256": "1efe3dc45aa3e8ddef2a9c6a7a31ac3f8a18b4b961feef894c706d97265e41e0",
+    "frontendSourceArchiveSHA256": "138a08205b7b1c886bf878156b571bcd7c3ae64b97ddf9f027994cb1a306503b"
+  },
+  "demonstratedRegressionsFixed": [
+    "Mobile project/product create menus outside viewport",
+    "Read-only preview exposing native writes despite owner membership",
+    "Generic panels not filtering writes for non-writers",
+    "Generic pending private values surviving resource context change"
+  ],
+  "providerOperationsInUiTests": false,
+  "currentFinalArtifact": "ux5; EU production build and all 21 browser cases passed",
+  "productionCore": {
+    "image": "sha256:179500fd022fca0045396bbac35be3306277cb38fc3ca7f0d8fb7a98466c3133",
+    "latestMigration": 75,
+    "retainedAuthMfaPasskeyOrgAndRlsTablesIdentical": true,
+    "freshOperatorMfaAndSso": "passed"
+  },
+  "nativeNeonRuntime": {
+    "privateCallback": "running; mTLS/no-client and public-interface denial tested",
+    "installer": "running",
+    "agentCapabilityEnabled": true,
+    "installed": false,
+    "remainingTargetGate": "Legacy verified EU display string requires canonical metadata normalization after fresh provider region read"
+  },
+  "shutdown": false
+}

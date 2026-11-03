@@ -1,5 +1,7 @@
 // Test-only browser fixtures. Production runtime has no fixture or fallback data.
-import { createServer } from "vite";
+import { createServer, preview } from "vite";
+import { isAbsolute } from "node:path";
+import { statSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
@@ -188,22 +190,42 @@ async function serve(
   }
   send(data);
 }
-export const server = await createServer({
-  root,
-  cacheDir: fileURLToPath(new URL('../../../.runtime-test/vite-cache/preview', import.meta.url)),
-  // 3121 by default; another free port when a local Tilt Console already uses it.
-  server: { host: "127.0.0.1", port: Number(process.env.WEBDOCK_PREVIEW_PORT ?? 3121), strictPort: false },
-  plugins: [
-    {
+// Optional exact EU-built artifact: serve it without invoking the Vite compiler.
+const artifact = process.env.WEBDOCK_BROWSER_DIST;
+async function prebuilt() {
+  if (!artifact || !isAbsolute(artifact) || !statSync(`${artifact}/index.html`).isFile()) {
+    throw new Error("Explicit absolute compiled Console artifact required");
+  }
+  const instance = await preview({
+    root, configFile: false, envDir: false,
+    build: { outDir: artifact },
+    preview: { host: "127.0.0.1", port: Number(process.env.WEBDOCK_PREVIEW_PORT ?? 3121), strictPort: false },
+    plugins: [{
+      name: "test-only-prebuilt-api",
+      configurePreviewServer(server) {
+        server.middlewares.use((req, res, next) => { void serve(req, res, next).catch(next); });
+      },
+    }],
+  });
+  return { resolvedUrls: instance.resolvedUrls, close: () => new Promise<void>((resolve, reject) => {
+    instance.httpServer.close(error => { if (error) reject(error); else resolve(); });
+  }) };
+}
+async function development() {
+  const instance = await createServer({
+    root,
+    cacheDir: fileURLToPath(new URL('../../../.runtime-test/vite-cache/preview', import.meta.url)),
+    server: { host: "127.0.0.1", port: Number(process.env.WEBDOCK_PREVIEW_PORT ?? 3121), strictPort: false },
+    plugins: [{
       name: "test-only-api",
       configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-          void serve(req, res, next).catch(next);
-        });
+        server.middlewares.use((req, res, next) => { void serve(req, res, next).catch(next); });
       },
-    },
-  ],
-});
-await server.listen();
+    }],
+  });
+  await instance.listen();
+  return instance;
+}
+export const server = await (artifact ? prebuilt() : development());
 export const previewOrigin = (server.resolvedUrls?.local[0] ?? "http://127.0.0.1:3121/").replace(/\/$/, "");
 console.log(`Test-only preview listening on ${previewOrigin}`);
