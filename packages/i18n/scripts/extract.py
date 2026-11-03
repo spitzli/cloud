@@ -11,7 +11,7 @@ ROOTS = [REPO / path for path in (
     'packages/cms-ui/src', 'packages/instance-kit/src', 'packages/payload-sso/src',
     'packages/page-builder/src', 'packages/hosting-contracts/src', 'packages/search/src',
     'packages/console-kit/src', 'modules/mail/src', 'modules/hosting/src', 'modules/databases/src',
-    'modules/cms/src', 'modules/storage/src',
+    'modules/cms/src', 'modules/storage/src', 'plugins/neon/ui',
 )]
 selected = [Path(path).resolve() for path in sys.argv[1:]] if len(sys.argv) > 1 else ROOTS
 files = []

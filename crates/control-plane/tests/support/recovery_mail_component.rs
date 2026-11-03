@@ -900,6 +900,7 @@ pub(super) async fn core_services(
                 ids: dependencies.ids.clone(),
                 rls_secret: SECRET.into(),
                 database_new_orders_enabled: false,
+                neon_connections: None,
             },
             plugin_config,
         )

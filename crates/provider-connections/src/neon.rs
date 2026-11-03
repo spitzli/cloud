@@ -50,6 +50,14 @@ pub(crate) struct Page {
     pub(crate) projects: Vec<Project>,
     pub(crate) next_cursor: Option<String>,
 }
+impl Page {
+    pub(crate) fn project_region(&self, project: &str) -> Option<&str> {
+        self.projects
+            .iter()
+            .find(|p| p.id == project)
+            .map(|p| p.region_id.as_str())
+    }
+}
 fn project_page(value: Value) -> Result<Page> {
     if value
         .get("unavailable_project_ids")
@@ -119,7 +127,7 @@ impl Client {
             .build()
             .map_err(|_| unavailable())
     }
-    #[cfg(test)]
+    #[cfg(any(test, feature = "test-transport"))]
     pub(crate) fn test_client(origin: String) -> Self {
         let url = reqwest::Url::parse(&origin).unwrap();
         assert_eq!(url.scheme(), "http");
@@ -178,7 +186,12 @@ impl Client {
         }
         project_page(serde_json::json!({"projects":[row]}))
     }
-    async fn get_json(&self, key: &ApiKey, path: &str, query: &[(&str, &str)]) -> Result<Value> {
+    pub(crate) async fn get_json(
+        &self,
+        key: &ApiKey,
+        path: &str,
+        query: &[(&str, &str)],
+    ) -> Result<Value> {
         let mut authorization =
             reqwest::header::HeaderValue::from_str(&format!("Bearer {}", key.value()))
                 .map_err(|_| invalid())?;

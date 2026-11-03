@@ -321,6 +321,8 @@ pub async fn authority_services(
     config: &webdock_core::config::PlatformConfig,
 ) -> Result<AuthorityServices, ConfigurationError> {
     use std::sync::Arc;
+    let compatibility =
+        crate::config::AuthCompatibility::from_map(&std::env::vars().collect(), config)?;
     let secret = std::env::var("WEBDOCK_AUTH_SECRET")
         .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
         .map_err(|_| "Missing identity secret")?;
@@ -349,7 +351,7 @@ pub async fn authority_services(
         ids,
         Arc::new(keys()?),
         webdock_oauth::OAuthConfig::new(
-            &format!("{}/api/auth", config.auth_origin),
+            &compatibility.oauth_issuer,
             &std::env::var("WEBDOCK_MCP_RESOURCE")
                 .unwrap_or_else(|_| format!("{}/api/mcp", config.studio_origin)),
             std::env::var("WEBDOCK_STUDIO_CLIENT_ID")
@@ -364,7 +366,7 @@ pub async fn authority_services(
             .map_err(|_| "Missing first-party cookie secret")?;
         let options = webdock_browser_session::BrowserConfig::new(
             config.console_origin(),
-            &format!("{}/api/auth", config.auth_origin),
+            &compatibility.oauth_issuer,
             client,
             secret,
         )?

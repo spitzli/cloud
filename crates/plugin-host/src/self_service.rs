@@ -20,6 +20,37 @@ pub(crate) async fn ensure_grant(
 pub(crate) fn resource_input(input: &Value) -> Option<&str> {
     input.get("resource_id").and_then(Value::as_str)
 }
+
+/// Retained detach receipt is authorization-neutral: callers still check live audience/feature/session.
+pub(crate) async fn neon_detach_replay(
+    tx: &DatabaseTransaction,
+    plugin: &str,
+    action: &str,
+    customer: &str,
+    project: &str,
+    actor_operation: (&str, &str),
+    request_hash: &str,
+) -> Result<Option<Value>> {
+    let (actor, operation) = actor_operation;
+    if plugin != "neon" || action != "databases.detach" {
+        return Ok(None);
+    }
+    let receipt = tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+        "SELECT request_hash,result FROM webdock_auth.neon_database_receipt WHERE customer_id=$1 AND project_id=$2 AND actor_id=$3 AND operation_id=$4 AND action='databases.detach'",
+        [customer.into(),project.into(),actor.into(),operation.into()])).await.map_err(db_error)?;
+    let Some(receipt) = receipt else {
+        return Ok(None);
+    };
+    if receipt
+        .try_get::<String>("", "request_hash")
+        .map_err(db_error)?
+        != request_hash
+    {
+        return Err(conflict("Idempotency key reused with different input"));
+    }
+    Ok(Some(receipt.try_get("", "result").map_err(db_error)?))
+}
+
 /// Order: audience, then the feature's access mode (operators bypass it), then resource ownership.
 pub(crate) async fn gate(
     tx: &DatabaseTransaction,
@@ -177,6 +208,28 @@ pub(crate) async fn record_result(
 ) -> Result<()> {
     let context = &source["session_context"];
     let action = &context["resourceAction"];
+    if source["plugin_id"] == "neon"
+        && matches!(
+            source["name"].as_str(),
+            Some("databases.attach" | "databases.detach")
+        )
+    {
+        let receipt = tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+            "SELECT request_hash,result FROM webdock_auth.neon_database_receipt WHERE customer_id=$1 AND project_id=$2 AND actor_id=$3 AND operation_id=$4 AND action=$5",
+            [string(source,"customer_id")?.into(),string(source,"project_id")?.into(),string(source,"actor_id")?.into(),string(source,"operation_id")?.into(),string(source,"name")?.into()]))
+            .await.map_err(db_error)?.ok_or_else(PluginError::denied)?;
+        if receipt
+            .try_get::<String>("", "request_hash")
+            .map_err(db_error)?
+            != string(source, "request_hash")?
+            || receipt.try_get::<Value>("", "result").map_err(db_error)? != *output
+        {
+            return Err(conflict(
+                "Plugin result differs from Core attachment receipt",
+            ));
+        }
+        return Ok(());
+    }
     // An enqueue acknowledgement proves neither creation nor deletion has finished.
     if !job
         && matches!(action["effect"].as_str(), Some("create" | "delete"))

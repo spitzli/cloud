@@ -175,6 +175,7 @@ async fn main() -> Result<(), Error> {
                 ids,
                 rls_secret: required("DATABASE_RLS_SECRET")?,
                 database_new_orders_enabled: config.database_new_orders_enabled,
+                neon_connections: None,
             },
             plugin_config
                 .as_ref()

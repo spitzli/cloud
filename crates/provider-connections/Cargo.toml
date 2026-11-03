@@ -5,7 +5,12 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 
+[features]
+test-transport = []
+
 [dependencies]
+async-trait.workspace = true
+webdock-plugin-host = { path = "../plugin-host" }
 serde.workspace = true
 serde_json.workspace = true
 sea-orm.workspace = true

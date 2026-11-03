@@ -1,0 +1,303 @@
+{
+  "name": "neon",
+  "version": "0.1.0",
+  "kind": "extension",
+  "description": "Connect existing Neon databases, inspect branches and reveal connection URIs securely through Core.",
+  "protocolVersion": 2,
+  "sdkVersion": 2,
+  "dataProtocolVersion": 2,
+  "coreVersion": ">=0.1.0 <1.0.0",
+  "image": "ghcr.io/spitzli/cloud-plugin-neon@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "dependencies": [],
+  "capabilities": [
+    "plugin.http.read",
+    "plugin.http.request"
+  ],
+  "schemaVersion": 1,
+  "readableSchema": {
+    "min": 1,
+    "max": 1
+  },
+  "migrations": [],
+  "tables": [],
+  "services": {
+    "required": [
+      {
+        "name": "http",
+        "version": 1
+      }
+    ],
+    "optional": []
+  },
+  "configuration": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  },
+  "actions": [
+    {
+      "name": "databases.discover",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [
+        "plugin.http.read"
+      ],
+      "httpBinding": "neon",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "neon_project_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "branch_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "required": []
+      },
+      "feature": "connect-databases"
+    },
+    {
+      "name": "databases.attach",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [
+        "plugin.http.request"
+      ],
+      "httpBinding": "neon",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "neon_project_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "branch_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "database_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "role_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "endpoint_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "name",
+          "neon_project_id",
+          "branch_id",
+          "database_name",
+          "role_name",
+          "endpoint_id"
+        ]
+      },
+      "offering": "database",
+      "resource": "create",
+      "feature": "connect-databases"
+    },
+    {
+      "name": "databases.view",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [
+        "plugin.http.read"
+      ],
+      "httpBinding": "neon",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "resource_id"
+        ]
+      },
+      "offering": "database",
+      "resource": "use"
+    },
+    {
+      "name": "databases.branches",
+      "intent": "read",
+      "audience": "customer",
+      "capabilities": [
+        "plugin.http.read"
+      ],
+      "httpBinding": "neon",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "resource_id"
+        ]
+      },
+      "offering": "database",
+      "resource": "use"
+    },
+    {
+      "name": "databases.credentials",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [
+        "plugin.http.request"
+      ],
+      "httpBinding": "neon",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "pooled": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "resource_id"
+        ]
+      },
+      "offering": "database",
+      "resource": "use"
+    },
+    {
+      "name": "databases.detach",
+      "intent": "write",
+      "audience": "customer",
+      "capabilities": [
+        "plugin.http.request"
+      ],
+      "httpBinding": "neon",
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "resource_id"
+        ]
+      },
+      "offering": "database",
+      "resource": "delete"
+    }
+  ],
+  "jobs": [],
+  "offerings": [
+    {
+      "id": "database",
+      "label": "Neon database",
+      "description": "Attach an existing Neon database to this project.",
+      "highlights": [
+        "Existing databases and branches",
+        "Credentials stay protected by Core",
+        "Detach without deleting provider data"
+      ]
+    }
+  ],
+  "selfService": {
+    "features": [
+      {
+        "id": "connect-databases",
+        "label": "Connect Neon databases",
+        "offering": "database",
+        "description": "Discover, attach and disconnect existing Neon databases"
+      }
+    ]
+  },
+  "areas": {
+    "selfService": {
+      "pages": [
+        {
+          "id": "database",
+          "label": "Database",
+          "action": "databases.view",
+          "resource": true
+        },
+        {
+          "id": "branches",
+          "label": "Branches",
+          "action": "databases.branches",
+          "resource": true
+        }
+      ]
+    },
+    "operator": {
+      "pages": []
+    }
+  },
+  "events": [],
+  "secrets": [],
+  "httpBindings": [
+    "neon"
+  ],
+  "api": [],
+  "mcp": [],
+  "icon": "assets/icon.svg",
+  "readme": "README.md",
+  "homepage": "https://github.com/spitzli/cloud-plugin-neon",
+  "documentation_url": "https://github.com/spitzli/cloud-plugin-neon/blob/HEAD/README.md",
+  "screenshots": [
+    {
+      "url": "screenshots/neon-connect.png",
+      "caption": "Actual Console Create UI; synthetic fixture data; disabled write actions. No Neon account contacted.",
+      "alt": "Neon database attachment form with project, branch, database, role and endpoint selectors"
+    },
+    {
+      "url": "screenshots/neon-database.png",
+      "caption": "Actual Console Resource UI; synthetic fixture data; hidden URI and disabled write actions. No Neon account contacted.",
+      "alt": "Neon database settings, branch inventory, protected URI controls and local detach explanation"
+    },
+    {
+      "url": "screenshots/neon-database-mobile-de.png",
+      "caption": "Actual German Console UI on mobile; synthetic fixture data; hidden URI and disabled write actions.",
+      "alt": "Mobile Neon database settings and credential controls in German"
+    }
+  ]
+}

@@ -1,4 +1,7 @@
 //! Native Core BYOK connections. Provider keys never cross the browser response boundary.
+mod database;
+#[cfg(test)]
+mod database_tests;
 mod neon;
 use sea_orm::{
     ConnectionTrait, DatabaseConnection, DatabaseTransaction, DbBackend, Statement,
@@ -22,6 +25,8 @@ pub enum Error {
         "Neon scope is unavailable. For a project API key, enter its Neon project ID and check the selected organization."
     )]
     InvalidScope,
+    #[error("Choose a Neon project in Frankfurt (aws-eu-central-1) for this integration.")]
+    UnsupportedDatabaseRegion,
     #[error("Neon connection management is unavailable for this customer.")]
     Forbidden,
     #[error("The Neon connection changed. Reload before trying again.")]
@@ -40,7 +45,10 @@ impl From<sea_orm::DbErr> for Error {
 impl Error {
     pub fn status(&self) -> u16 {
         match self {
-            Self::InvalidInput | Self::InvalidCredentials | Self::InvalidScope => 400,
+            Self::InvalidInput
+            | Self::InvalidCredentials
+            | Self::InvalidScope
+            | Self::UnsupportedDatabaseRegion => 400,
             Self::Forbidden => 403,
             Self::Conflict => 409,
             Self::Unavailable => 503,
@@ -200,6 +208,11 @@ impl Connections {
             provider: neon::Client::new()?,
         })
     }
+    #[cfg(feature = "test-transport")]
+    pub fn with_test_provider(mut self, origin: String) -> Self {
+        self.provider = neon::Client::test_client(origin);
+        self
+    }
     async fn guard(
         &self,
         principal: &Principal,
@@ -332,7 +345,24 @@ impl Connections {
             Command::Get { customer } => {
                 let guard = self.guard(principal, proof, &customer, false).await?;
                 let connection = load(&guard.business, &customer).await?;
-                let can_manage = !proof.read_only() && !guard.principal.in_read_only_preview();
+                let mut can_manage = !proof.read_only()
+                    && !guard.principal.in_read_only_preview()
+                    && one(
+                        &guard.business,
+                        "SELECT webdock_rls.neon_connection_allowed($1,true) AS allowed",
+                        vec![customer.clone().into()],
+                    )
+                    .await?
+                    .ok_or(Error::Unavailable)?
+                    .try_get::<bool>("", "allowed")?;
+                if can_manage
+                    && !guard.principal.is_operator()
+                    && !guard.principal.in_tenant_preview()
+                {
+                    can_manage = one(&guard.business,
+                        "SELECT EXISTS(SELECT 1 FROM webdock_auth.tenant_customer t JOIN webdock_auth.member m ON m.\"organizationId\"=t.organization_id WHERE t.customer_id=$1 AND m.\"userId\"=$2 AND m.role IN ('owner','admin')) AS allowed",
+                        vec![customer.clone().into(),guard.principal.user_id.clone().into()]).await?.ok_or(Error::Unavailable)?.try_get::<bool>("","allowed")?;
+                }
                 let result = reply(connection.as_ref(), can_manage);
                 self.finish(guard).await?;
                 Ok(result)

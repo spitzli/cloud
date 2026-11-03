@@ -1619,6 +1619,9 @@
   "Branch": [
     "Branch"
   ],
+  "Branches": [
+    "Branches"
+  ],
   "Branding, customer access and Mail configuration.": [
     "Markenauftritt, Kundenzugriff und E-Mail-Konfiguration."
   ],
@@ -2003,6 +2006,9 @@
   "Choose Sending only for your application. Save the key as WEBDOCK_MAIL_API_KEY on your server; it is shown once. Never put it in browser code.": [
     "Wähle „Nur Versand“ für deine Anwendung. Speichere den einmalig angezeigten Key als WEBDOCK_MAIL_API_KEY auf deinem Server. Er gehört niemals in Browser-Code."
   ],
+  "Choose a Neon project in Frankfurt, Germany. Other regions are not enabled for database attachments in this release.": [
+    "Wähle ein Neon-Projekt in Frankfurt, Deutschland. Andere Regionen sind in dieser Version nicht für Datenbankverknüpfungen freigeschaltet."
+  ],
   "Choose a cluster for Kubernetes": [
     "Cluster für Kubernetes auswählen"
   ],
@@ -2324,6 +2330,12 @@
   "Completed deletion steps": [
     "Abgeschlossene Löschschritte"
   ],
+  "Compute": [
+    "Compute"
+  ],
+  "Compute state": [
+    "Compute-Status"
+  ],
   "Concept": [
     "Konzept"
   ],
@@ -2413,6 +2425,9 @@
   ],
   "Confirm archive": [
     "Archivierung bestätigen"
+  ],
+  "Confirm detach": [
+    "Verknüpfung entfernen bestätigen"
   ],
   "Confirm disconnect": [
     "Trennung bestätigen"
@@ -2546,11 +2561,17 @@
   "Connect an existing database": [
     "Vorhandene Datenbank verbinden"
   ],
+  "Connect an existing database. Your Neon account keeps ownership and billing. Your API key is stored encrypted.": [
+    "Verbinde eine bestehende Datenbank. Eigentum und Abrechnung bleiben bei deinem Neon-Konto. Dein API-Schlüssel wird verschlüsselt gespeichert."
+  ],
   "Connect an existing service": [
     "Vorhandenen Dienst verbinden"
   ],
   "Connect cluster agent": [
     "Cluster-Agent verbinden"
+  ],
+  "Connect database": [
+    "Datenbank verbinden"
   ],
   "Connect each Blob store or a tenant’s exclusive path prefix. Credentials are saved privately and are never displayed. Production and preview storage are measured separately.": [
     "Verbinde jeden Blob-Speicher oder das exklusive Pfadpräfix eines Mandanten. Zugangsdaten werden vertraulich gespeichert und nie angezeigt. Produktiv- und Vorschau-Speicher werden getrennt erfasst."
@@ -2674,6 +2695,9 @@
   ],
   "Connection": [
     "Verbindung"
+  ],
+  "Connection URI": [
+    "Verbindungs-URI"
   ],
   "Connection credentials": [
     "Verbindungsdaten"
@@ -2868,6 +2892,9 @@
   "Copy API key": [
     "API-Schlüssel kopieren"
   ],
+  "Copy URI": [
+    "URI kopieren"
+  ],
   "Copy credentials": [
     "Zugangsdaten kopieren"
   ],
@@ -2897,6 +2924,9 @@
   ],
   "Could not accept this offer. Please try again.": [
     "Das Angebot konnte nicht angenommen werden. Bitte versuche es erneut."
+  ],
+  "Could not attach this database. You can retry the same selection.": [
+    "Diese Datenbank konnte nicht verknüpft werden. Du kannst es mit derselben Auswahl erneut versuchen."
   ],
   "Could not change language. Please try again.": [
     "Die Sprache konnte nicht geändert werden. Bitte erneut versuchen."
@@ -2928,6 +2958,12 @@
   "Could not complete tracking setup. Refresh to check the current state.": [
     "Die Tracking-Einrichtung konnte nicht abgeschlossen werden. Aktualisiere die Ansicht, um den aktuellen Stand zu prüfen."
   ],
+  "Could not detach. Retry to safely resume this request.": [
+    "Die Verknüpfung konnte nicht entfernt werden. Versuche es erneut, um diese Anfrage sicher fortzusetzen."
+  ],
+  "Could not load Neon inventory. Check your connection and permissions.": [
+    "Die Neon-Übersicht konnte nicht geladen werden. Prüfe deine Verbindung und Berechtigungen."
+  ],
   "Could not load choices. Try again.": [
     "Die Auswahl konnte nicht geladen werden. Bitte erneut versuchen."
   ],
@@ -2939,6 +2975,9 @@
   ],
   "Could not respond to this invitation. Try again or contact your Webdock administrator.": [
     "Auf die Einladung konnte nicht geantwortet werden. Versuche es erneut oder wende dich an deinen Webdock-Admin."
+  ],
+  "Could not reveal the connection URI. Check your access and try again.": [
+    "Die Verbindungs-URI konnte nicht angezeigt werden. Prüfe deinen Zugriff und versuche es erneut."
   ],
   "Could not save content.": [
     "Inhalt konnte nicht gespeichert werden."
@@ -3594,6 +3633,12 @@
   "Dessert": [
     "Dessert"
   ],
+  "Detach database": [
+    "Datenbankverknüpfung entfernen"
+  ],
+  "Detaching…": [
+    "Verknüpfung wird entfernt…"
+  ],
   "Developer tools": [
     "Entwicklerwerkzeuge"
   ],
@@ -4014,6 +4059,9 @@
   "Ended": [
     "Beendet"
   ],
+  "Endpoint": [
+    "Endpunkt"
+  ],
   "Endpoint URL": [
     "Endpunkt-URL"
   ],
@@ -4374,6 +4422,9 @@
   "First name is invalid or too long.": [
     "Vorname ist ungültig oder zu lang."
   ],
+  "First page": [
+    "Erste Seite"
+  ],
   "Focus mode": [
     "Fokusmodus"
   ],
@@ -4673,6 +4724,9 @@
   ],
   "Hidden": [
     "Ausgeblendet"
+  ],
+  "Hide URI": [
+    "URI ausblenden"
   ],
   "Hide credentials": [
     "Zugangsdaten ausblenden"
@@ -5574,11 +5628,20 @@
   "Loading Mail…": [
     "Mail wird geladen…"
   ],
+  "Loading Neon database…": [
+    "Neon-Datenbank wird geladen…"
+  ],
+  "Loading Neon inventory…": [
+    "Neon-Übersicht wird geladen…"
+  ],
   "Loading access requests…": [
     "Zugangsanfragen werden geladen…"
   ],
   "Loading assigned addresses…": [
     "Zugewiesene Adressen werden geladen…"
+  ],
+  "Loading branches…": [
+    "Branches werden geladen…"
   ],
   "Loading build history…": [
     "Build-Verlauf wird geladen…"
@@ -6372,6 +6435,21 @@
   "Neon bills your own account and applies its own quotas. This connection does not use the platform's free database allowance.": [
     "Neon rechnet über dein eigenes Konto ab und wendet eigene Kontingente an. Diese Verbindung nutzt nicht das kostenlose Datenbankkontingent der Plattform."
   ],
+  "Neon branches": [
+    "Neon-Branches"
+  ],
+  "Neon compute is active": [
+    "Neon-Compute ist aktiv"
+  ],
+  "Neon compute is idle; a database connection can wake it": [
+    "Neon-Compute ist im Ruhezustand; eine Datenbankverbindung kann es aktivieren"
+  ],
+  "Neon compute is starting": [
+    "Neon-Compute wird gestartet"
+  ],
+  "Neon compute state is not recognized": [
+    "Der Neon-Compute-Status wird nicht erkannt"
+  ],
   "Neon connected. Refresh projects to read your Neon inventory.": [
     "Neon ist verbunden. Aktualisiere die Projekte, um deine Neon-Projekte abzurufen."
   ],
@@ -6380,6 +6458,9 @@
   ],
   "Neon inventory is unavailable. The key may be invalid or revoked, or Neon may be unavailable. Check the key and refresh; no fallback is used.": [
     "Die Neon-Projektübersicht ist nicht verfügbar. Der Schlüssel könnte ungültig oder widerrufen sein oder Neon ist nicht erreichbar. Prüfe den Schlüssel und aktualisiere die Übersicht; es wird kein Ersatzanbieter verwendet."
+  ],
+  "Neon project": [
+    "Neon-Projekt"
   ],
   "Neon project ID (optional)": [
     "Neon-Projekt-ID (optional)"
@@ -6459,6 +6540,9 @@
   "Next attempt": [
     "Nächster Versuch"
   ],
+  "Next branches": [
+    "Nächste Branches"
+  ],
   "Next choices": [
     "Weitere Auswahlmöglichkeiten"
   ],
@@ -6467,6 +6551,9 @@
   ],
   "Next project page": [
     "Nächste Projektseite"
+  ],
+  "Next projects": [
+    "Nächste Projekte"
   ],
   "Next repositories": [
     "Nächste Repositories"
@@ -6552,8 +6639,14 @@
   "No archived projects": [
     "Keine archivierten Projekte"
   ],
+  "No authorized Neon projects found. Check the workspace connection or create a project in Neon.": [
+    "Keine autorisierten Neon-Projekte gefunden. Prüfe die Verbindung des Arbeitsbereichs oder erstelle ein Projekt in Neon."
+  ],
   "No blocked recipients. Bounces and complaints can add recipients here automatically.": [
     "Keine gesperrten Empfänger. Unzustellbare Mails und Beschwerden können hier automatisch Empfänger hinzufügen."
+  ],
+  "No branches found.": [
+    "Keine Branches gefunden."
   ],
   "No build output yet.": [
     "Noch keine Build-Ausgabe vorhanden."
@@ -8613,6 +8706,9 @@
   "Remove sending registration": [
     "Versandregistrierung entfernen"
   ],
+  "Remove the attachment from this Spitzli Cloud project. The database, branches and all Neon data remain in your Neon account.": [
+    "Entferne die Verknüpfung aus diesem Spitzli-Cloud-Projekt. Die Datenbank, Branches und alle Neon-Daten bleiben in deinem Neon-Konto erhalten."
+  ],
   "Remove this domain from the sending provider. Applications may no longer send from it.": [
     "Entferne diese Domain beim Versandanbieter. Anwendungen können möglicherweise nicht mehr über sie senden."
   ],
@@ -8943,6 +9039,9 @@
   "Retries": [
     "Wiederholungen"
   ],
+  "Retry": [
+    "Erneut versuchen"
+  ],
   "Retry Mail operation": [
     "E-Mail-Änderung erneut ausführen"
   ],
@@ -8976,8 +9075,14 @@
   "Reusable allocations for your customers. Assign a plan or prepare an individual offer from a tenant’s usage page.": [
     "Wiederverwendbare Kontingente für deine Kunden. Weise über die Verbrauchsseite eines Mandanten einen Tarif zu oder erstelle ein individuelles Angebot."
   ],
+  "Reveal URI": [
+    "URI anzeigen"
+  ],
   "Reveal credentials": [
     "Zugangsdaten anzeigen"
+  ],
+  "Reveal requires write access. The URI is hidden after one minute or when you leave this tab.": [
+    "Zum Anzeigen ist Schreibzugriff erforderlich. Die URI wird nach einer Minute oder beim Verlassen dieses Tabs ausgeblendet."
   ],
   "Review": [
     "Prüfung"
@@ -9197,6 +9302,9 @@
   ],
   "SPF, DKIM and DMARC verified": [
     "SPF, DKIM und DMARC bestätigt"
+  ],
+  "SSL mode": [
+    "SSL-Modus"
   ],
   "SSO cookie secret must contain at least 32 characters": [
     "Das Geheimnis für SSO-Cookies muss mindestens 32 Zeichen enthalten"
@@ -9507,14 +9615,29 @@
   "Select an installation": [
     "Installation auswählen"
   ],
+  "Select branch…": [
+    "Branch auswählen…"
+  ],
   "Select connection": [
     "Verbindung auswählen"
   ],
   "Select content": [
     "Inhalt auswählen"
   ],
+  "Select database…": [
+    "Datenbank auswählen…"
+  ],
+  "Select endpoint…": [
+    "Endpunkt auswählen…"
+  ],
   "Select existing images for products and the homepage.": [
     "Vorhandene Bilder für Produkte und die Startseite auswählen."
+  ],
+  "Select neon project…": [
+    "Neon-Projekt auswählen…"
+  ],
+  "Select role…": [
+    "Rolle auswählen…"
   ],
   "Select the featured products on the homepage.": [
     "Die empfohlenen Produkte der Startseite auswählen."
@@ -9537,6 +9660,9 @@
   "Selected": [
     "Ausgewählt"
   ],
+  "Selected branch": [
+    "Ausgewählter Branch"
+  ],
   "Selected build": [
     "Ausgewählter Build"
   ],
@@ -9545,6 +9671,9 @@
   ],
   "Selected item {id}": [
     "Ausgewählter Eintrag {id}"
+  ],
+  "Selected project": [
+    "Ausgewähltes Projekt"
   ],
   "Selected sender domain": [
     "Ausgewählte Absenderdomain"
@@ -9752,6 +9881,9 @@
   ],
   "Set up hosting": [
     "Hosting einrichten"
+  ],
+  "Setting": [
+    "Einstellung"
   ],
   "Setting up": [
     "Wird eingerichtet"
@@ -10097,6 +10229,9 @@
   ],
   "Started": [
     "Gestartet"
+  ],
+  "State": [
+    "Status"
   ],
   "State / region": [
     "Bundesland / Region"
@@ -10956,6 +11091,9 @@
   "This authorization request is invalid or has expired. Return to the application and start signing in again.": [
     "Diese Zugriffsanfrage ist ungültig oder abgelaufen. Kehre zur Anwendung zurück und starte die Anmeldung erneut."
   ],
+  "This branch has no compute endpoint. Choose another branch or configure an endpoint in Neon.": [
+    "Dieser Branch hat keinen Compute-Endpunkt. Wähle einen anderen Branch oder richte einen Endpunkt in Neon ein."
+  ],
   "This browser does not support passkeys. Sign in with your password.": [
     "Dieser Browser unterstützt keine Passkeys. Melde dich mit deinem Passwort an."
   ],
@@ -11672,6 +11810,9 @@
   ],
   "Use one Idempotency-Key per intended email. Reuse that key when retrying the same request; use a new key only for a different email. A send_outcome_unknown response must be investigated, not resent.": [
     "Verwende pro beabsichtigter E-Mail einen Idempotency-Key. Nutze bei einer Wiederholung desselben Aufrufs denselben Key; einen neuen nur für eine andere E-Mail. Prüfe send_outcome_unknown, statt die Nachricht erneut zu senden."
+  ],
+  "Use pooled connection": [
+    "Verbindungspool verwenden"
   ],
   "Use the IPv4 sending address assigned by the mail provider.": [
     "Verwende die vom Mail-Anbieter zugewiesene IPv4-Versandadresse."
@@ -12408,6 +12549,9 @@
   "Workspace": [
     "Arbeitsbereich"
   ],
+  "Workspace Connections": [
+    "Verbindungen des Arbeitsbereichs"
+  ],
   "Workspace ID": [
     "Arbeitsbereichs-ID"
   ],
@@ -12890,6 +13034,9 @@
   ],
   "unconnected": [
     "Nicht verbunden"
+  ],
+  "unknown": [
+    "unbekannt"
   ],
   "updating": [
     "Wird aktualisiert"

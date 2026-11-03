@@ -24,6 +24,12 @@ use webdock_plugin_protocol::{
 use webdock_plugin_runtime::{InvocationAuthority, PeerIdentity};
 
 pub const MAIL_ACTION_INPUT_BYTES: usize = 128 * 1024;
+// These reads enumerate beyond an already attached database and retain the
+// workspace-administrator requirement of the existing Connections inventory.
+pub(crate) fn neon_management(write: bool, action: &str) -> bool {
+    write || matches!(action, "databases.discover" | "databases.branches")
+}
+
 #[path = "database_orders.rs"]
 mod database_orders;
 pub(crate) fn invocation_input_limit(plugin: &str, action: &str, job: bool) -> usize {
@@ -97,6 +103,7 @@ pub struct HostService {
     bindings: Arc<dyn RuntimeBindings>,
     key: SigningKey,
     apps: Option<Arc<dyn AppsAdapter>>,
+    pub(crate) named_http: Option<Arc<dyn crate::http::NamedHttpAdapter>>,
     session_authority: Option<crate::session_authority::SessionAuthority>,
 }
 pub(crate) struct PersistedInvocation {
@@ -118,6 +125,8 @@ pub(crate) struct Authorized {
     auth_tx: Option<DatabaseTransaction>,
     authority_ref: Option<AuthorityReference>,
     intent_write: bool,
+    pub(crate) principal: Option<Principal>,
+    pub(crate) invocation: Value,
     binding_hash: String,
     pub scope: InvocationScope,
     pub binding: RuntimeBinding,
@@ -163,6 +172,7 @@ impl HostService {
             bindings,
             key,
             apps: None,
+            named_http: None,
             session_authority: None,
             installation: None,
             native_mail_control: false,
@@ -209,6 +219,10 @@ impl HostService {
             })
             .map(str::to_owned)
             .collect()
+    }
+    pub fn with_named_http(mut self, adapter: Arc<dyn crate::http::NamedHttpAdapter>) -> Self {
+        self.named_http = Some(adapter);
+        self
     }
     pub fn with_apps(mut self, apps: Arc<dyn AppsAdapter>) -> Self {
         self.apps = Some(apps);
@@ -487,6 +501,12 @@ impl HostService {
             return denied();
         }
         let customer = Self::project(&session, &input.project_id, write).await?;
+        if input.plugin_id == "neon" {
+            if !matches!(authority, Some(AuthorityReference::Browser { .. })) {
+                return denied();
+            }
+            Self::neon_scope(&session, &customer, write, &input.action).await?;
+        }
         if metadata.grant["customer_id"] != customer {
             return denied();
         }
@@ -515,11 +535,40 @@ impl HostService {
                 return denied();
             }
         }
+        let operation = digest(
+            serde_json::to_vec(&json!([
+                actor.user_id,
+                input.plugin_id,
+                input.project_id,
+                input.action,
+                input.idempotency_key
+            ]))
+            .map_err(|_| invalid("Invalid operation"))?,
+        );
+        let request_hash = digest(crate::data::javascript_json(&input.input, false)?);
         let resource = self_service::resource_input(&input.input).map(str::to_owned);
+        let detach_replay = if matches!(authority, Some(AuthorityReference::Browser { .. })) {
+            self_service::neon_detach_replay(
+                &tx,
+                &input.plugin_id,
+                &input.action,
+                &customer,
+                &input.project_id,
+                (&actor.user_id, &operation),
+                &request_hash,
+            )
+            .await?
+        } else {
+            None
+        };
+        let mut gated_action = action.clone();
+        if detach_replay.is_some() {
+            gated_action["resource"] = Value::Null;
+        }
         self_service::gate(
             &tx,
             operator,
-            action,
+            &gated_action,
             &input.plugin_id,
             &customer,
             &input.project_id,
@@ -544,17 +593,6 @@ impl HostService {
             Some(&metadata.manifest.as_json()["configuration"]),
             &configuration,
         )?;
-        let operation = digest(
-            serde_json::to_vec(&json!([
-                actor.user_id,
-                input.plugin_id,
-                input.project_id,
-                input.action,
-                input.idempotency_key
-            ]))
-            .map_err(|_| invalid("Invalid operation"))?,
-        );
-        let request_hash = digest(crate::data::javascript_json(&input.input, false)?);
         tx.query_one_raw(Statement::from_sql_and_values(
             DbBackend::Postgres,
             "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
@@ -577,10 +615,30 @@ impl HostService {
             exp: now + 60,
         };
         let snapshot = Self::admission_snapshot(&metadata, &binding, &configuration)?;
-        let stored_scope = json!({"kind":"session","authProvider":"better-auth","subject":actor.user_id,"sessionID":actor.session_id,"nativeAdmission":snapshot,"customerScope":actor.customer_scope(),"authority":authority,"operator":operator,"resourceID":resource,"resourceAction":{"effect":action["resource"],"offering":action["offering"]}});
+        let mut stored_scope = json!({"kind":"session","authProvider":"better-auth","subject":actor.user_id,"sessionID":actor.session_id,"nativeAdmission":snapshot,"customerScope":actor.customer_scope(),"authority":authority,"operator":operator,"resourceID":resource,"resourceAction":{"effect":action["resource"],"offering":action["offering"]}});
+        // Persist only this explicit nonsecret tuple so SQL can bind atomic writes to admission.
+        if claims.plugin_id == "neon" {
+            if claims.action == "databases.attach" {
+                stored_scope["neonAttachmentInput"] = json!({"name":input.input["name"],"neon_project_id":input.input["neon_project_id"],"branch_id":input.input["branch_id"],"database_name":input.input["database_name"],"role_name":input.input["role_name"],"endpoint_id":input.input["endpoint_id"]});
+            } else if claims.action == "databases.detach" {
+                stored_scope["neonAttachmentInput"] =
+                    json!({"resource_id":input.input["resource_id"]});
+            }
+        }
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.plugin_invocation(id,plugin_id,customer_id,project_id,runtime_generation,grant_revision,kind,name,intent,actor_id,session_id,operation_id,capabilities,created_at,expires_at,session_context,request_hash) VALUES($1::uuid,$2,$3,$4,$5,$6,'action',$7,$8,$9,$10,$11,$12,to_timestamp($13)-interval '60 seconds',to_timestamp($13),$14,$15)",[claims.id.clone().into(),input.plugin_id.into(),customer.into(),input.project_id.clone().into(),(claims.generation as i64).into(),integer(&metadata.grant,"revision")?.into(),claims.action.clone().into(),string(action,"intent")?.into(),actor.user_id.clone().into(),actor.session_id.clone().into(),operation.into(),action["capabilities"].clone().into(),claims.exp.into(),stored_scope.into(),request_hash.into()])).await.map_err(db_error)?;
-        let replay_result =
-            self_service::reserve(&tx, action, &claims.plugin_id, &claims.id).await?;
+        if claims.plugin_id == "neon" && claims.action == "databases.attach" {
+            tx.query_one_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                "SELECT webdock_rls.reclaim_neon_attachment_reservation($1::uuid)",
+                [claims.id.clone().into()],
+            ))
+            .await
+            .map_err(db_error)?;
+        }
+        let replay_result = match detach_replay {
+            Some(result) => Some(result),
+            None => self_service::reserve(&tx, action, &claims.plugin_id, &claims.id).await?,
+        };
         // Retained public receipts may replay; a fresh reservation rolls back before dispatch.
         if !database_orders::create_allowed(
             self.new_database_orders_enabled,
@@ -704,10 +762,24 @@ impl HostService {
         if action["intent"] != row["intent"] || action["capabilities"] != row["capabilities"] {
             return denied();
         }
+        let replay = self_service::neon_detach_replay(
+            &tx,
+            &claims.plugin_id,
+            &claims.action,
+            string(&row, "customer_id")?,
+            &claims.project_id,
+            (&actor, string(&row, "operation_id")?),
+            string(&row, "request_hash")?,
+        )
+        .await?;
+        let mut gated_action = action.clone();
+        if replay.is_some() {
+            gated_action["resource"] = Value::Null;
+        }
         self_service::gate(
             &tx,
             row["session_context"]["operator"] == true,
-            action,
+            &gated_action,
             &claims.plugin_id,
             string(&row, "customer_id")?,
             &claims.project_id,
@@ -756,21 +828,21 @@ impl HostService {
                     .map_err(|_| PluginError::denied())
             })
             .transpose()?;
-        let auth_tx = if let Some(stored) = &stored {
-            Some(
-                self.session_authority
-                    .as_ref()
-                    .ok_or_else(PluginError::denied)?
-                    .begin(
-                        &inv.actor,
-                        &inv.session,
-                        stored,
-                        inv.row["intent"] == "write",
-                    )
-                    .await?,
-            )
+        let (auth_tx, principal) = if let Some(stored) = &stored {
+            let (tx, principal) = self
+                .session_authority
+                .as_ref()
+                .ok_or_else(PluginError::denied)?
+                .begin_principal(
+                    &inv.actor,
+                    &inv.session,
+                    stored,
+                    inv.row["intent"] == "write",
+                )
+                .await?;
+            (Some(tx), Some(principal))
         } else {
-            None
+            (None, None)
         };
         let tx = self.db.begin().await.map_err(db_error)?;
         self.scopes.invocation(&tx, &inv).await?;
@@ -780,6 +852,18 @@ impl HostService {
         let scope = Self::scope(&tx, capability).await?;
         let project_customer =
             Self::project(&tx, &handle.claims.project_id, inv.row["intent"] == "write").await?;
+        if handle.claims.plugin_id == "neon" {
+            if !matches!(stored.as_ref(), Some(AuthorityReference::Browser { .. })) {
+                return denied();
+            }
+            Self::neon_scope(
+                &tx,
+                &project_customer,
+                inv.row["intent"] == "write",
+                &handle.claims.action,
+            )
+            .await?;
+        }
         if scope["pluginID"] != handle.claims.plugin_id
             || scope["projectID"] != handle.claims.project_id
             || scope["customerID"] != project_customer
@@ -792,6 +876,8 @@ impl HostService {
             auth_tx,
             authority_ref: stored,
             intent_write: inv.row["intent"] == "write",
+            principal,
+            invocation: inv.row.clone(),
             binding_hash: string(
                 &inv.row["session_context"]["nativeAdmission"],
                 "bindingSHA256",
@@ -854,6 +940,15 @@ impl HostService {
         )
         .await?;
         Self::scope(&authorized.tx, capability).await?;
+        if handle.claims.plugin_id == "neon" {
+            Self::neon_scope(
+                &authorized.tx,
+                &authorized.scope.customer_id,
+                authorized.intent_write,
+                &handle.claims.action,
+            )
+            .await?;
+        }
         let binding = self
             .bindings
             .runtime(&handle.claims.plugin_id)
@@ -1482,3 +1577,57 @@ pub(crate) mod storage_admission;
 
 #[path = "exports.rs"]
 pub mod exports;
+
+impl Authorized {
+    pub(crate) fn http_adapter_context<'a>(
+        &mut self,
+        host: &'a HostService,
+        handle: &'a InvocationHandle,
+    ) -> Result<crate::http::HttpAdapterContext<'a>> {
+        let Some(AuthorityReference::Browser { authority }) = &self.authority_ref else {
+            return denied();
+        };
+        if self.scope.plugin_id != "neon" || self.invocation["kind"] != "action" {
+            return denied();
+        }
+        Ok(crate::http::HttpAdapterContext {
+            host,
+            handle,
+            scope: self.scope.clone(),
+            invocation_id: string(&self.invocation, "id")?.into(),
+            action: string(&self.invocation, "name")?.into(),
+            write: self.intent_write,
+            request_hash: string(&self.invocation, "request_hash")?.into(),
+            resource_id: self.invocation["session_context"]["resourceID"]
+                .as_str()
+                .map(str::to_owned),
+            principal: self.principal.take().ok_or_else(PluginError::denied)?,
+            authority: authority.clone(),
+        })
+    }
+}
+
+impl HostService {
+    async fn neon_scope(
+        tx: &DatabaseTransaction,
+        customer: &str,
+        write: bool,
+        action: &str,
+    ) -> Result<()> {
+        let allowed = tx
+            .query_one_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                "SELECT webdock_rls.neon_connection_allowed($1,$2) AS allowed",
+                [customer.into(), neon_management(write, action).into()],
+            ))
+            .await
+            .map_err(db_error)?
+            .ok_or_else(PluginError::denied)?
+            .try_get::<bool>("", "allowed")
+            .map_err(db_error)?;
+        if !allowed {
+            return denied();
+        }
+        Ok(())
+    }
+}

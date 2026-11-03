@@ -168,6 +168,10 @@
     {
       "file": "0066_platform_hostnames.sql",
       "sha256": "0d9f6621b27ef242f6fcb97bc1eefd0dfbf0435eee8f7dc9c162c8bde6869c12"
+    },
+    {
+      "file": "0075_neon_database_attachments.sql",
+      "sha256": "a8d23e3bbe46d96852f13311396376f2ca8350f590763aa4e3bd045e261733e7"
     }
   ]
 }

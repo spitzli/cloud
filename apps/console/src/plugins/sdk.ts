@@ -7,6 +7,7 @@ import { SessionContext, useApi } from "../context";
 import { sessionCacheScope } from "../session-cache";
 import { invokePlugin } from "./views";
 export * as ui from "../ui";
+export { useI18n } from "@webdock/i18n/react";
 export { Empty, Failure, Loading } from "../common";
 export { usePluginStorage, usePluginScope, storageKeySchema, storageHashSchema, STORAGE_CONTENT_TYPES, type TransferDescriptor, type BinaryTransferOptions } from "./storage";
 

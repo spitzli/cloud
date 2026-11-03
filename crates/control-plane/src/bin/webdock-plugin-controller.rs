@@ -61,6 +61,7 @@ async fn run() -> Result<(), Error> {
                 ids,
                 rls_secret: required("DATABASE_RLS_SECRET")?,
                 database_new_orders_enabled: platform.database_new_orders_enabled,
+                neon_connections: None,
             },
             &config,
         )

@@ -173,6 +173,9 @@ impl HostService {
         input: Value,
         transport: &dyn HttpTransport,
     ) -> Result<HttpResult> {
+        if input["binding"] == "neon" && self.named_http.is_some() {
+            return self.request_named_http(handle, input).await;
+        }
         validate_request(&input)?;
         let binding = self.http_binding(handle, &input).await?;
         let result = tokio::time::timeout(
@@ -193,6 +196,147 @@ impl HostService {
         if result.status >= 500 {
             return Err(provider_error());
         }
+        if serde_json::to_vec(&result.body)
+            .map_err(|_| provider_error())?
+            .len()
+            > LIMIT
+        {
+            return Err(provider_error());
+        }
+        Ok(result)
+    }
+}
+
+/// Contains only Core-admitted authority. It cannot be deserialized or built by a runtime.
+pub struct HttpAdapterContext<'a> {
+    pub(crate) host: &'a HostService,
+    pub(crate) handle: &'a InvocationHandle,
+    pub(crate) scope: crate::InvocationScope,
+    pub(crate) invocation_id: String,
+    pub(crate) action: String,
+    pub(crate) write: bool,
+    pub(crate) request_hash: String,
+    pub(crate) resource_id: Option<String>,
+    pub(crate) principal: webdock_identity::Principal,
+    pub(crate) authority: webdock_browser_session::StoredAuthority,
+}
+impl HttpAdapterContext<'_> {
+    pub async fn revalidate(&self) -> Result<()> {
+        self.host.revalidate(self.handle).await
+    }
+    pub fn scope(&self) -> &crate::InvocationScope {
+        &self.scope
+    }
+    pub fn invocation_id(&self) -> &str {
+        &self.invocation_id
+    }
+    pub fn action(&self) -> &str {
+        &self.action
+    }
+    pub fn write(&self) -> bool {
+        self.write
+    }
+    pub fn requires_connection_management(&self) -> bool {
+        crate::authority::neon_management(self.write, &self.action)
+    }
+    pub fn request_hash(&self) -> &str {
+        &self.request_hash
+    }
+    pub fn resource_id(&self) -> Option<&str> {
+        self.resource_id.as_deref()
+    }
+    pub fn principal(&self) -> &webdock_identity::Principal {
+        &self.principal
+    }
+    pub fn authority(&self) -> &webdock_browser_session::StoredAuthority {
+        &self.authority
+    }
+    pub fn matches_input(&self, input: &Value) -> Result<bool> {
+        Ok(
+            crate::authority::digest(crate::data::javascript_json(input, false)?)
+                == self.request_hash,
+        )
+    }
+}
+#[async_trait]
+pub trait NamedHttpAdapter: Send + Sync {
+    async fn request(&self, context: &HttpAdapterContext<'_>, input: Value) -> Result<HttpResult>;
+}
+/// Structured query is deliberately a separate validator: legacy static bindings are unchanged.
+pub fn validate_named_request(input: &Value) -> Result<()> {
+    let raw = input
+        .as_object()
+        .ok_or_else(|| invalid("Invalid HTTP request"))?;
+    if input["binding"] != "neon"
+        || raw
+            .keys()
+            .any(|key| !["binding", "method", "path", "query", "body"].contains(&key.as_str()))
+        || !matches!(input["method"].as_str(), Some("GET" | "POST"))
+    {
+        return Err(denied());
+    }
+    let path = input["path"].as_str().ok_or_else(denied)?;
+    validate_path(path)?;
+    if path.contains('?') {
+        return Err(denied());
+    }
+    if let Some(query) = raw.get("query") {
+        let query = query.as_object().ok_or_else(denied)?;
+        if query.len() > 2
+            || query.iter().any(|(k, v)| {
+                !["cursor", "limit"].contains(&k.as_str())
+                    || v.as_str().is_none_or(|v| {
+                        v.is_empty()
+                            || v.len() > 1024
+                            || v.chars().any(char::is_control)
+                            || (k == "limit"
+                                && !v.parse::<u16>().is_ok_and(|n| (1..=100).contains(&n)))
+                    })
+            })
+        {
+            return Err(denied());
+        }
+    }
+    if input["method"] == "GET" && raw.contains_key("body") {
+        return Err(denied());
+    }
+    if serde_json::to_vec(input).map_err(|_| denied())?.len() > 32768 {
+        return Err(denied());
+    }
+    Ok(())
+}
+impl HostService {
+    async fn request_named_http(
+        &self,
+        handle: &InvocationHandle,
+        input: Value,
+    ) -> Result<HttpResult> {
+        validate_named_request(&input)?;
+        let capability = if input["method"] == "GET" {
+            "plugin.http.read"
+        } else {
+            "plugin.http.request"
+        };
+        let mut authorized = self.authorized(handle, Some(capability)).await?;
+        if !authorized.manifest.as_json()["httpBindings"]
+            .as_array()
+            .is_some_and(|names| names.iter().any(|name| name == "neon"))
+        {
+            return Err(denied());
+        }
+        let context = authorized.http_adapter_context(self, handle)?;
+        self.finish(authorized, handle, Some(capability)).await?;
+        let result = tokio::time::timeout(
+            Duration::from_secs(45),
+            self.named_http
+                .as_ref()
+                .ok_or_else(denied)?
+                .request(&context, input),
+        )
+        .await
+        .map_err(|_| provider_error())??;
+        let fresh = self.authorized(handle, Some(capability)).await?;
+        self.finish(fresh, handle, Some(capability)).await?;
         if serde_json::to_vec(&result.body)
             .map_err(|_| provider_error())?
             .len()

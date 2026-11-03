@@ -14,6 +14,21 @@ use serde_json::json;
 use std::sync::Arc;
 use webdock_provider_connections::{Command, Connections, Error};
 pub type NeonConnections = Connections;
+
+/// Preserve the existing HTTP connection-key priority in every private callback process.
+pub fn encryption_key(
+    env: &std::collections::HashMap<String, String>,
+) -> Result<&str, webdock_core::ContractError> {
+    [
+        "WEBDOCK_HOSTING_ENCRYPTION_KEY",
+        "BETTER_AUTH_SECRET",
+        "WEBDOCK_AUTH_SECRET",
+    ]
+    .iter()
+    .find_map(|key| env.get(*key).map(String::as_str))
+    .ok_or_else(|| webdock_core::ContractError("Missing Neon connection encryption key".into()))
+}
+
 pub fn routes() -> Router<Arc<ServiceState>> {
     Router::new().route("/api/console/byok/neon", post(command))
 }
@@ -87,4 +102,35 @@ async fn command(State(state): State<Arc<ServiceState>>, request: Request) -> Re
         header::HeaderValue::from_static("no-store"),
     );
     response
+}
+
+#[cfg(test)]
+mod retained_connection_key_tests {
+    use super::encryption_key;
+    #[test]
+    fn private_callbacks_and_http_preserve_the_same_connection_key_priority() {
+        let mut env = std::collections::HashMap::from([
+            ("WEBDOCK_AUTH_SECRET".into(), "fixture-auth".into()),
+            ("BETTER_AUTH_SECRET".into(), "fixture-better".into()),
+            (
+                "WEBDOCK_HOSTING_ENCRYPTION_KEY".into(),
+                "fixture-hosting".into(),
+            ),
+        ]);
+        assert_eq!(encryption_key(&env).unwrap(), "fixture-hosting");
+        env.remove("WEBDOCK_HOSTING_ENCRYPTION_KEY");
+        assert_eq!(encryption_key(&env).unwrap(), "fixture-better");
+        env.remove("BETTER_AUTH_SECRET");
+        assert_eq!(encryption_key(&env).unwrap(), "fixture-auth");
+        env.clear();
+        assert!(encryption_key(&env).is_err());
+    }
+    #[test]
+    fn an_explicit_empty_key_is_not_silently_replaced() {
+        let env = std::collections::HashMap::from([
+            ("WEBDOCK_HOSTING_ENCRYPTION_KEY".into(), String::new()),
+            ("BETTER_AUTH_SECRET".into(), "fixture-other".into()),
+        ]);
+        assert_eq!(encryption_key(&env).unwrap(), "");
+    }
 }
