@@ -68,6 +68,10 @@ jobs:
       - name: Install browser for isolated UI fixtures
         working-directory: apps/console
         run: bunx playwright install --with-deps chromium
+      - name: Verify private plugin deployment and catalog presentation policy
+        run: |
+          python3 -m unittest discover -s tools/plugin-runtime -p 'test_*.py'
+          python3 -m unittest discover -s tools/plugin-release -p 'test_catalog_presentation.py'
       - name: Enforce native quality and local tests
         run: bun run quality
       - name: Verify native deployment manifests and probe routing
