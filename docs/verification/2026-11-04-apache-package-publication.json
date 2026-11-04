@@ -1,0 +1,108 @@
+{
+  "date": "2026-11-04",
+  "sourcePullRequest": 69,
+  "sourceHead": "3c23d7453ecf1a04c9f09aad37643b357510a6ca",
+  "mergeCommit": "cbf36d0a1ae9309c58108dc628cdd5e13b92d265",
+  "blacksmithQuality": "passed",
+  "defaultBranchLicense": "Apache-2.0",
+  "npmPackages": [
+    {
+      "name": "@spitzli/plugin-sdk",
+      "version": "0.1.0",
+      "integrity": "sha512-peoSuO+h7R4ZEZsoC74MVWW1Guh3msqtP081zV2pxJpDMxd3n7x+sZGEwyEgjhd6EvjBNByWPHphpJZmqb1L4g==",
+      "license": "Apache-2.0",
+      "repository": {
+        "url": "git+https://github.com/spitzli/cloud.git",
+        "type": "git",
+        "directory": "packages/plugin-sdk"
+      }
+    },
+    {
+      "name": "@spitzli/cli",
+      "version": "0.1.0",
+      "integrity": "sha512-U0WPQPj/RxMggSwNH+IZ8dgLM52te/GcPcDDgQaxRvtm2AZuHT3TMP8e9lvHM5mMdX01OnO8IdDWTcf0ZZNetQ==",
+      "license": "Apache-2.0",
+      "repository": {
+        "url": "git+https://github.com/spitzli/cloud.git",
+        "type": "git",
+        "directory": "packages/plugin-cli"
+      },
+      "bin": {
+        "webdock": "src/cli.js",
+        "spitzli-cloud": "src/cli.js"
+      },
+      "dependencies": {
+        "@spitzli/plugin-sdk": "0.1.0"
+      }
+    }
+  ],
+  "publicRegistryConsumer": {
+    "publicRegistryInstall": true,
+    "installedCliAloneWithSdkResolvedFromRegistry": true,
+    "localSdkOverridesUsed": false,
+    "npmCredentialsUsed": false,
+    "sdkVersion": "0.1.0",
+    "cliVersion": "0.1.0",
+    "primaryExecutable": "spitzli-cloud",
+    "compatibilityAlias": "webdock",
+    "bothExecutableHelpPassed": true,
+    "actionsTemplateInstallBuildValidate": true,
+    "backendTemplateInstallBuildValidate": true,
+    "productionServicesChanged": false
+  },
+  "coreContainer": {
+    "repository": "ghcr.io/spitzli/cloud",
+    "sourceCommit": "bccb838fecb83ee2e7893e356bf9b6ad5edebe36",
+    "digest": "sha256:a7ef2578f933ebddd5d02b576c157b69cc07372e6d0ef9a8ff8a5f75a95f777f",
+    "matchedQualifiedDigest": true,
+    "anonymousManifestAndConfigVerified": true,
+    "sourceLabel": "https://github.com/spitzli/cloud",
+    "licenseLabel": "Apache-2.0",
+    "runtimeUser": "65532:65532",
+    "actualOciBinariesQualified": true,
+    "qualificationDatabase": "owned disposable PostgreSQL 18",
+    "productionDatabaseUsedForQualification": false,
+    "initialAndRepeatedMigrationPassed": true,
+    "actualCoreReadyz": 200
+  },
+  "vercelProjectRenames": [
+    {
+      "id": "prj_TqeFXSoCLV7dNDQ2VHdRiYnR4K7L",
+      "oldName": "webdock",
+      "newName": "spitzli-cloud",
+      "productionDeploymentUnchanged": true,
+      "functionRegionsUnchanged": true
+    },
+    {
+      "id": "prj_W4Ytphd3TSToMFuQHSMdSec6Rgr9",
+      "oldName": "webdock-auth",
+      "newName": "spitzli-cloud-auth",
+      "productionDeploymentUnchanged": true,
+      "functionRegionsUnchanged": true
+    },
+    {
+      "id": "prj_yb5o6FQN5Wkf1123yOMBtx4AlcMx",
+      "oldName": "webdock-admin",
+      "newName": "spitzli-cloud-console",
+      "productionDeploymentUnchanged": true,
+      "functionRegionsUnchanged": true
+    },
+    {
+      "id": "prj_0dlqp0mgfTbBefjRBBcvI1jyEboC",
+      "oldName": "webdock-cms",
+      "newName": "spitzli-cloud-cms",
+      "productionDeploymentUnchanged": true,
+      "functionRegionsUnchanged": true
+    }
+  ],
+  "temporaryPublishingCredentialsRemoved": true,
+  "productionRolloutPerformed": false,
+  "historicalGhcrPackagesAndDeploymentRecordsRetained": true,
+  "separateComponentLicensesPreserved": true,
+  "knownSeparateLegacyModuleTestFailure": {
+    "passed": 166,
+    "skipped": 4,
+    "existingFailure": 1,
+    "description": "Existing SQL in retained TypeScript Hosting composition path; scope rename changed only its SDK import."
+  }
+}

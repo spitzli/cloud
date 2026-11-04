@@ -26,6 +26,27 @@ console.spitzli.cloud. New deployment integrations can use the new names;
 historical GitHub deployment records still describe the name used at the time.
 No environment secrets, protection rules or deployment history were deleted.
 
+## Verified current publication
+
+PR #69 is merged on `main`; GitHub recognises Apache-2.0 for the Core repository.
+The public npm packages `@spitzli/plugin-sdk@0.1.0` and `@spitzli/cli@0.1.0`
+are published with verified archive integrity, Apache licensing and their notices.
+A fresh anonymous registry install of the CLI resolved its SDK dependency without
+local overrides; both executable aliases and both template install/build/validate
+flows passed.
+
+The Core image is public at
+`ghcr.io/spitzli/cloud@sha256:a7ef2578f933ebddd5d02b576c157b69cc07372e6d0ef9a8ff8a5f75a95f777f`.
+It was built from licensing commit `bccb838f`; the later npm namespace commit
+changes no native Rust, Cargo, Docker or vendor inputs. Actual OCI executables
+passed initial/repeated migrations and readiness against an owned disposable
+PostgreSQL 18 fixture. The pushed digest matches the qualified artifact and its
+manifest/configuration are readable anonymously. Production was not rolled out.
+
+See [the publication receipt](../verification/2026-11-04-apache-package-publication.json).
+This is a later phase than the source qualification record that correctly marked
+publication as pending at that time.
+
 ## Container publication
 
 The current backend bootstrap configuration targets `ghcr.io/spitzli/cloud`.
@@ -36,9 +57,8 @@ Future backend OCI metadata identifies Spitzli Cloud, Apache-2.0 and
 
 The old public `ghcr.io/spitzli/webdock/...` images and charts still exist.
 A source metadata update does not rename registry objects, republish old bytes
-under a new license or prove that a new image has been built. Qualify and publish
-the new source image to the current namespace, inventory retained pull/rollback
-references, then migrate consumers before retiring old addresses. Keep existing
+under a new license or prove that a new image has been built. The current qualified Core image is published above. Inventory retained pull/rollback
+references and migrate consumers before retiring old addresses. Keep existing
 signed descriptors, immutable digests and rollback material intact.
 
 Internal Rust crate names, environment variables, Kubernetes identities and
