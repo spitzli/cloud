@@ -21,7 +21,7 @@ export async function startLiveInvalidation(options:{client:Pick<RealtimeClient,
    if(subscription){
     // A transport ACK must not block subsequent authorization refreshes during an outage.
     void subscription.renew(sealed).catch(failed);
-   }else {subscription=options.client.subscribe(sealed,{materialize:false});subscription.onUpdate(options.changed)}
+   }else {subscription=options.client.subscribe(sealed,{materialize:false});subscription.onUpdate(update=>{if(!closed&&(update.type==='rows'||update.changes.length>0))options.changed()})}
    retry=1000;schedule(Math.max(1000,sealed.expiresAt-Date.now()-15000));
   }catch(error){failed(error)}
  };
