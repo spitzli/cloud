@@ -29,3 +29,14 @@ curl -H "Authorization: Bearer $WEBDOCK_TOKEN" $API/v1/api/usage
 An action's input is the one its plugin's manifest describes. Errors come back as
 `{"error":{"code","message"}}`; a plan limit or an unverified domain is a `409` with the reason.
 A read-only token gets `403` for actions that change something.
+
+## Workspace icon
+
+Owners and admins can open **Members** in a workspace to upload, replace or remove its icon.
+PNG, JPEG and WebP files up to 2 MiB and 4096 × 4096 pixels are accepted. The browser fits the
+image into a 64 × 64 PNG, preserving its proportions. Core validates and re-encodes the PNG
+before saving it in the existing organization metadata; remote image URLs and SVG are rejected.
+
+The saved icon appears in the workspace header, switcher and account workspace list. Removing
+it restores the first letter of the actual workspace name. Members and read-only customer
+previews cannot change it. Changes use the existing tenant authorization and audit trail.

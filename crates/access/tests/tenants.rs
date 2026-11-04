@@ -1241,3 +1241,230 @@ async fn tenant_invites_roles_and_revocation_preserve_restricted_boundaries() {
     auth.close().await.unwrap();
     offline.close().await.unwrap();
 }
+
+#[tokio::test]
+#[ignore = "requires freshly migrated owned PostgreSQL restricted fixture"]
+async fn workspace_icons_use_live_tenant_authority() {
+    let offline = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+        .await
+        .unwrap();
+    // The schema-only native fixture has no retained allocator singleton row.
+    offline.execute_unprepared("INSERT INTO webdock_auth.snowflake_state(singleton,last_ms,sequence) VALUES(true,0,0) ON CONFLICT DO NOTHING").await.unwrap();
+    let auth_url = guarded("AUTH_DATABASE_URL");
+    let auth = Database::connect(auth_url.clone()).await.unwrap();
+    let business = Database::connect(guarded("DATABASE_URL")).await.unwrap();
+    let allocator = Arc::new(
+        webdock_persistence::IdAllocator::connect(
+            &auth_url,
+            webdock_ids::Identity::platform(0, 2).unwrap(),
+        )
+        .await
+        .unwrap(),
+    );
+    let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
+    let keys = || {
+        SecretKeys::new(
+            BTreeMap::from([(0, secret.clone())]),
+            0,
+            Some(secret.clone()),
+        )
+        .unwrap()
+    };
+    let setup_mail = Arc::new(CaptureDelivery::default());
+    let identity = Arc::new(
+        IdentityService::new(
+            auth.clone(),
+            CookiePolicy::new(false, secret.clone()).unwrap(),
+        )
+        .with_account_origin(url::Url::parse("https://auth.example.invalid").unwrap())
+        .unwrap()
+        .with_secret_keys(keys())
+        .with_allocator(allocator.clone())
+        .with_delivery(setup_mail.clone()),
+    );
+    let captured = Arc::new(CaptureDelivery::default());
+    let access = AccessService::new(
+        business,
+        auth.clone(),
+        identity.clone(),
+        allocator.clone(),
+        RlsSigner::new(
+            std::env::var("DATABASE_RLS_SECRET").unwrap(),
+            "webdock_auth_runtime",
+        )
+        .unwrap(),
+        Arc::new(keys()),
+        AccessConfig {
+            auth_origin: url::Url::parse("https://auth.example.invalid").unwrap(),
+            console_origins: vec![url::Url::parse("https://studio.example.invalid").unwrap()],
+            allow_local_http: false,
+        },
+    )
+    .unwrap()
+    .with_delivery(captured.clone());
+    let mut users = vec![];
+    let mut cookies = vec![];
+    for label in ["owner", "other", "recipient"] {
+        let email = format!(
+            "access-{label}-{}@example.invalid",
+            allocator.allocate().await.unwrap()
+        );
+        let id = identity
+            .create_local_account(&email, "Access fixture", "fixture-password-123", false)
+            .await
+            .unwrap();
+        auth.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.\"user\" SET \"emailVerified\"=true,\"mustChangePassword\"=false WHERE id=$1",[id.clone().into()])).await.unwrap();
+        let PasswordAuthentication::Authenticated(s) = identity
+            .authenticate_password(&email, "fixture-password-123")
+            .await
+            .unwrap()
+        else {
+            panic!("sign in")
+        };
+        users.push((id, email));
+        cookies.push(s.set_cookie);
+    }
+    let mut customers = vec![];
+    let mut orgs = vec![];
+    let mut members = vec![];
+    for user in users.iter().take(2) {
+        let id = allocator.allocate().await.unwrap().to_string();
+        offline
+            .execute_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                "INSERT INTO webdock_admin.customers(id,name) VALUES($1,'Access fixture')",
+                [id.clone().into()],
+            ))
+            .await
+            .unwrap();
+        let org: String = offline
+            .query_one_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                "SELECT organization_id FROM webdock_auth.tenant_customer WHERE customer_id=$1",
+                [id.clone().into()],
+            ))
+            .await
+            .unwrap()
+            .unwrap()
+            .try_get("", "organization_id")
+            .unwrap();
+        let member = allocator.allocate().await.unwrap().to_string();
+        offline.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.member(id,\"organizationId\",\"userId\",role,\"createdAt\") VALUES($1,$2,$3,'owner',now())",[member.clone().into(),org.clone().into(),user.0.clone().into()])).await.unwrap();
+        customers.push(id);
+        orgs.push(org);
+        members.push(member);
+    }
+
+    let extra = allocator.allocate().await.unwrap().to_string();
+    offline.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.member(id,\"organizationId\",\"userId\",role,\"createdAt\") VALUES($1,$2,$3,'member',now())",[extra.clone().into(),orgs[0].clone().into(),users[2].0.clone().into()])).await.unwrap();
+    let mut png = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut png, 64, 64);
+        encoder.set_color(png::ColorType::Rgba);
+        encoder.set_depth(png::BitDepth::Eight);
+        let mut writer = encoder.write_header().unwrap();
+        writer.write_image_data(&[200; 64 * 64 * 4]).unwrap();
+    }
+    use base64::Engine as _;
+    let icon = format!(
+        "data:image/png;base64,{}",
+        base64::engine::general_purpose::STANDARD.encode(png)
+    );
+    access
+        .manage_tenant(
+            cookie(&cookies[0]),
+            &customers[0],
+            TenantCommand::Icon {
+                icon: Some(icon.clone()),
+            },
+        )
+        .await
+        .unwrap();
+    let branded = access.list_tenants(cookie(&cookies[0])).await.unwrap();
+    assert!(
+        branded[0]["icon"]
+            .as_str()
+            .unwrap()
+            .starts_with("data:image/png;base64,")
+    );
+    assert!(
+        access
+            .get_tenant(cookie(&cookies[0]), &customers[0])
+            .await
+            .unwrap()["tenant"]["icon"]
+            .is_string()
+    );
+    assert!(matches!(
+        access
+            .manage_tenant(
+                cookie(&cookies[1]),
+                &customers[0],
+                TenantCommand::Icon { icon: None }
+            )
+            .await,
+        Err(Error::Forbidden | Error::NotFound)
+    ));
+    assert!(matches!(
+        access
+            .manage_tenant(
+                cookie(&cookies[2]),
+                &customers[0],
+                TenantCommand::Icon { icon: None }
+            )
+            .await,
+        Err(Error::Forbidden)
+    ));
+    assert!(matches!(
+        access
+            .manage_tenant(
+                cookie(&cookies[0]),
+                &customers[0],
+                TenantCommand::Icon {
+                    icon: Some("https://example.test/icon.svg".into())
+                }
+            )
+            .await,
+        Err(Error::InvalidInput)
+    ));
+    access
+        .manage_tenant(
+            cookie(&cookies[0]),
+            &customers[0],
+            TenantCommand::Role {
+                member: extra.clone(),
+                role: MemberRole::Admin,
+            },
+        )
+        .await
+        .unwrap();
+    access
+        .manage_tenant(
+            cookie(&cookies[2]),
+            &customers[0],
+            TenantCommand::Icon { icon: None },
+        )
+        .await
+        .unwrap();
+    assert!(access.list_tenants(cookie(&cookies[0])).await.unwrap()[0]["icon"].is_null());
+    access
+        .manage_tenant(
+            cookie(&cookies[0]),
+            &customers[0],
+            TenantCommand::Role {
+                member: extra,
+                role: MemberRole::Member,
+            },
+        )
+        .await
+        .unwrap();
+    assert!(matches!(
+        access
+            .manage_tenant(
+                cookie(&cookies[2]),
+                &customers[0],
+                TenantCommand::Icon { icon: Some(icon) }
+            )
+            .await,
+        Err(Error::Forbidden)
+    ));
+}

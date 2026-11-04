@@ -1,22 +1,65 @@
+<p align="center">
+  <img src="docs/images/repository/readme-banner.png" alt="Spitzli Cloud — One control plane. Your cloud." width="100%" />
+</p>
+
+<p align="center">
+  <a href="https://spitzli.cloud">Website</a> ·
+  <a href="https://console.spitzli.cloud">Console</a> ·
+  <a href="https://docs.spitzli.cloud">Documentation</a> ·
+  <a href="https://registry.spitzli.cloud">Plugin registry</a>
+</p>
+
 # Spitzli Cloud
 
-Spitzli Cloud is a Rust control plane with a React Console, local account security, workspaces, projects and explicitly enabled product plugins. Customer websites keep their own repositories and content stores.
+Manage applications, databases and team access from one workspace. Spitzli Cloud combines a
+Rust control plane, a React Console and product plugins that connect the services you choose.
+Bring your own provider credentials; keep your projects and permissions in one place.
 
-The active platform API is `crates/control-plane`. The Console and account UI share `apps/console` (`@webdock/console`, Vite). The old TypeScript Control Plane, Next.js Console/Auth and Mail service are preserved under `legacy/` and excluded from the active Bun workspace. Their plans and billing implementation are historical references; the native Core owns the active plans, limits and usage system. Billing is a future plugin.
+**Early access.** This is the active platform repository. Features are enabled deliberately per
+workspace; code in this repository does not mean a product is publicly available. Preview
+environments and billing are not released. Arbitrary public customer builds remain behind a
+separate isolation and security qualification gate.
 
-## Development
+![Spitzli Cloud Console showing workspace branding and member management](docs/images/repository/console-workspace.png)
 
-Use the pinned Rust toolchain, Bun 1.4.3, Docker and Tilt:
+*Actual Console components, captured with synthetic demo data. No customer data or credentials
+are shown. The workspace-icon controls are part of this branch; see the
+[qualification record](docs/verification/2026-11-04-workspace-icons.json) for rollout status.*
+
+## What lives here
+
+- **Workspaces and projects:** member roles, customer plans, finite limits and usage, with separate
+  operator and customer access.
+- **Account security:** Neon Auth for the primary login, with Core-enforced account access, MFA
+  and passkey support. [Auth migration and verification](docs/verification/2026-10-31-neon-all-users.json).
+- **Product plugins:** native Console screens backed by authorized plugin actions. Neon focuses
+  on connecting existing databases, inspecting branches and revealing connection details on demand.
+  Provider credentials remain behind Core. [Neon rollout](docs/operations/neon-plugin-rollout.md).
+- **Git-based deployments:** a dedicated Kubernetes build backend and a separate workload runtime.
+  Build success and deployment readiness have different lifecycles.
+  [Build architecture](docs/architecture/build-cluster-decision.md).
+- **Workspace API:** scoped tokens for scripts and CI, subject to the same membership and limits.
+  [API guide](docs/workspace-api.md).
+
+Product plugins are developed in separate repositories under the
+[Spitzli GitHub organization](https://github.com/spitzli). The `plugins/` directory also contains
+compatibility sources and local fixtures; it is not the authoritative list of published products.
+Customer websites retain their own repositories, deployments and content stores.
+
+## Local development
+
+Use the pinned Rust toolchain from [`rust-toolchain.toml`](rust-toolchain.toml), **Bun 1.4.3**,
+**Node.js 24**, Docker and Tilt.
 
 ```sh
 bun install --frozen-lockfile
-bun run dev                 # Tilt: local database, Rust services, Console and account UI
-bun run quality             # Rust, contracts, frontend and local browser fixtures
+bun run dev
 ```
 
-Console runs on 3121, account UI on `localhost:3125`, and Rust Core on 3130. Tilt stores private local configuration under `.dev-local/`. Use disposable fixtures for tests; never customer databases or real mail. Dev mail goes only to Mailpit. See [native development](crates/control-plane/README.md) and [Console development](apps/console/README.md).
-
-Tilt also runs MinIO for local S3 tests: API `http://127.0.0.1:55900`, web console `http://127.0.0.1:55901`, region `us-east-1`. Use path-style addressing with S3 clients. The generated access key (`MINIO_ROOT_USER`) and secret key (`MINIO_ROOT_PASSWORD`) are in `.dev-local/minio.env`; reruns preserve them. Containers on the Compose network use `http://minio:9000`. Override host ports with `WEBDOCK_DEV_S3_PORT` and `WEBDOCK_DEV_MINIO_CONSOLE_PORT`. Buckets and objects live in the retained `minio` Docker volume. The first start builds the [pinned official MinIO release](https://github.com/minio/minio/releases/tag/RELEASE.2025-10-15T17-29-55Z) locally because its historical upstream image tags are unavailable.
+Tilt starts the local database, Rust services, Console and account UI. Console listens on
+`http://127.0.0.1:3121`, account UI on `http://localhost:3125`, and Core on port `3130`.
+Generated private configuration stays in `.dev-local/`; development email goes to Mailpit.
+Never use a customer database or real outbound email as a test fixture.
 
 For separately configured processes:
 
@@ -24,42 +67,76 @@ For separately configured processes:
 bun run dev:api
 bun run dev:console
 bun run dev:auth
-bun run build:api
-bun run build:console
 ```
 
-`apps/website` is the separate public website; use `bun run dev:web`. Its CMS and TypeScript integrations are outside the platform API retirement.
+The public website is a separate application in `apps/website`; start it with `bun run dev:web`.
+Local S3 tests use Tilt's retained MinIO volume: API `http://127.0.0.1:55900`, console
+`http://127.0.0.1:55901`, path-style addressing. Its generated credentials are in
+`.dev-local/minio.env`; this is development storage, not a customer storage offering.
+See [Core development](crates/control-plane/README.md) and [Console development](apps/console/README.md).
 
-## Runtime and installation
-
-| Source | Responsibility |
-| --- | --- |
-| `crates/control-plane` | Rust HTTP API, account/OAuth protocols and first-party UI delivery |
-| `apps/console` | React Console and canonical account screens |
-| `crates/agent`, `crates/agent-control` | Authorized workload execution and reporting |
-| `crates/plugin-host`, `crates/plugin-runtime` | Plugin admission, limits, workload pinning and RPC |
-| `plugins/` | Independently built product providers |
-| `crates/database-gateway` | Scoped access to native Tabularis runtimes |
-| `legacy/` | Retired TypeScript applications and their distribution tooling |
-
-Build the native container from the repository root:
+## Checks
 
 ```sh
-docker build -f deploy/docker/Dockerfile --target core -t webdock-core:local .
-docker build -f deploy/docker/Dockerfile --target migrate -t webdock-migrate:local .
-bun run test:distribution
+bun run quality                      # Native, contracts, frontend and local browser fixtures
+bun run --cwd apps/console check       # Console TypeScript
+bun run --cwd apps/console test        # Console unit tests
+bun run --cwd packages/i18n catalog:check
+bun run test:distribution             # Native distribution contracts
 ```
 
-Core serves the built Console and account UI on their configured hosts. It needs private restricted-role PostgreSQL connections and canonical origins from [the runtime example](crates/control-plane/.env.example). Offline migration and initial operator setup use independent credentials and exact database targets; see [native setup](crates/control-plane/README.md). Runtime startup does not upgrade schemas. For the opt-in signed product-plugin initial path, see [native plugin installation](docs/operations/native-plugin-installation.md).
+Database integration tests require explicitly owned, disposable local PostgreSQL fixtures.
+A successful unit or browser-fixture run is not evidence of a production rollout. Dated
+[verification records](docs/verification) separate local checks, deployed versions and remaining gates.
+Spitzli's GitHub CI uses [Blacksmith](tools/plugin-ci/BLACKSMITH.md).
 
-Native Compose and Helm candidates are under `deploy/`. Managed workloads belong on the existing Kubernetes cluster. The old multi-service Bun release pipeline is archived under `legacy/`; historical releases are not native Rust release evidence. This branch has no published native release or production cutover. Domain migration, retained-data upgrade/rollback and outstanding product parity need their own acceptance before rollout. See [the parity inventory](docs/verification/2026-10-20-native-parity.md).
+## Architecture and operations
 
-## Data and compatibility
+| Location | Responsibility |
+| --- | --- |
+| `crates/control-plane` | Core HTTP API, account/OAuth protocols and orchestration |
+| `apps/console` | React Console and account screens; Vite |
+| `apps/website` | Public website; Next.js |
+| `crates/agent`, `crates/agent-control` | Authorized workload execution and reporting |
+| `crates/build` | Durable build lifecycle and Kubernetes execution |
+| `crates/plugin-host`, `crates/plugin-runtime` | Plugin admission, limits, pinned workloads and RPC |
+| `crates/persistence` | Native schema, migrations and restricted-role persistence |
+| `deploy/` | Container, Compose and Helm definitions |
+| `legacy/` | Retired TypeScript applications and historical tooling |
 
-Platform IDs are decimal Snowflake strings. Keep existing OAuth issuers, MCP audiences, registered clients, identity/session keys and Mail encryption keys during migration. Filesystem renaming does not change protocol identifiers.
+The managed installation separates Core, the customer run cluster and the build cluster.
+Console and Auth frontend artifacts are built separately and hosted on Vercel. Core can also
+serve first-party UI artifacts for separately configured installations. Keep deployment
+configuration explicit; do not infer the production topology from a local Compose file.
 
-Incoming Mail is explicitly activated per customer with one isolated Stalwart Community Edition instance. Outgoing-only customers do not receive Stalwart. Suspension retains data; deletion is separate. See [the mail decision](docs/architecture/mail-deployment-decision.md).
+Build the standalone backend image from the repository root:
 
-## License
+```sh
+docker build -f deploy/docker/backend.Dockerfile --target backend -t spitzli-cloud-core:local .
+```
 
-Original Spitzli Cloud code is **AGPL-3.0-only**. See [LICENSE](LICENSE), [alternative licensing](COMMERCIAL-LICENSING.md) and [contribution requirements](CONTRIBUTING.md). Third-party components keep their own licenses.
+The image contains the runtime and independent migration/bootstrap tools. Runtime startup does
+not migrate schemas or create operator credentials. Use restricted runtime database roles and
+separate offline migration credentials. See [native setup](crates/control-plane/README.md),
+[Core operations](docs/operations/core-host.md), and
+[signed plugin installation](docs/operations/native-plugin-installation.md).
+
+The older Next.js Console/Auth and TypeScript control plane are archived under `legacy/` and
+excluded from the active Bun workspace. They are historical references, not alternate production
+entry points. Some internal package names and protocol identifiers still use `webdock` for
+compatibility; preserve registered OAuth issuers, audiences, clients and existing encryption keys.
+Platform IDs are decimal Snowflake **strings**.
+
+Incoming mail is explicitly enabled per customer, using an isolated Stalwart Community Edition
+instance. Outgoing-only customers do not receive Stalwart. Suspension retains data; deletion is
+a separate action. See the [mail deployment decision](docs/architecture/mail-deployment-decision.md).
+
+## Contributing and license
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before contributing. Preserve tenant isolation, use real
+provider access only when explicitly authorized, and keep secrets out of source, logs and screenshots.
+[Repository graphics and screenshot provenance](docs/images/repository/README.md) are documented
+alongside the assets.
+
+Original Spitzli Cloud code is **AGPL-3.0-only**. See [LICENSE](LICENSE) and
+[alternative licensing](COMMERCIAL-LICENSING.md). Third-party components retain their own licenses.

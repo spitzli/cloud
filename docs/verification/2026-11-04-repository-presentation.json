@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-04",
+  "status": "assets-qualified-github-social-preview-configured-readme-awaiting-pr-merge",
+  "assets": [
+    {
+      "file": "docs/images/repository/social-preview.png",
+      "dimensions": [
+        1280,
+        640
+      ],
+      "bytes": 47636,
+      "sha256": "630104cc424c82ca60e087ab3ca34abbbba4195ef8541ad7de625d2261de8ee3"
+    },
+    {
+      "file": "docs/images/repository/console-workspace.png",
+      "dimensions": [
+        1440,
+        1000
+      ],
+      "bytes": 78659,
+      "sha256": "5e96c94966d8d0ac6df45a1e6975be8962a59a3d83d9322c172b8292de52ecae"
+    },
+    {
+      "file": "docs/images/repository/readme-banner.png",
+      "dimensions": [
+        1600,
+        440
+      ],
+      "bytes": 46060,
+      "sha256": "f356b358d2d29467208d689b3807634bc7978cb9d92e276972e6fe4c7ca1a15e"
+    }
+  ],
+  "screenshot": {
+    "actualConsoleComponents": true,
+    "syntheticCustomerHttpFixtures": true,
+    "realCustomerData": false,
+    "productionOrProviderRequests": false,
+    "credentialsOrConnectionUrisShown": false,
+    "operatorPrivileges": false,
+    "captureCommand": "bun apps/console/tests/repository-capture.mjs"
+  },
+  "github": {
+    "descriptionAndHomepageUpdated": true,
+    "homepage": "https://spitzli.cloud",
+    "usesCustomOpenGraphImage": true,
+    "socialPreviewUrl": "https://repository-images.githubusercontent.com/1402313247/c74068a0-e984-48eb-a91b-2d665ef70bc9",
+    "confirmedAfterSettingsReload": true
+  },
+  "readme": {
+    "currentBrand": true,
+    "nativeCoreReactVercelTopology": true,
+    "retiredStackClearlyMarked": true,
+    "earlyAccessAndPublicBuildIsolationGateExplicit": true,
+    "localLinksChecked": true
+  },
+  "applicationCodeChanged": false,
+  "productionApplicationRolloutClaimed": false
+}

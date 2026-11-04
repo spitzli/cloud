@@ -1,3 +1,4 @@
+import { tenantsSchema } from "./workspace-contracts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { Link } from "@tanstack/react-router";
@@ -5,6 +6,7 @@ import { useApi, useSession } from "./context";
 import { Failure, Loading } from "./common";
 import * as ui from "./ui";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/csr/ArrowLeft";
+import { WorkspaceAvatar } from "./WorkspaceAvatar";
 import { CustomerMembers } from "./CustomerMembers";
 function useTenants() {
   const api = useApi();
@@ -13,14 +15,7 @@ function useTenants() {
     queryFn: () =>
       api.get(
         "/api/console/tenants",
-        z.array(
-          z.object({
-            id: z.string(),
-            name: z.string(),
-            status: z.string(),
-            role: z.string().nullable(),
-          }),
-        ),
+        tenantsSchema,
       ),
   });
 }
@@ -104,7 +99,9 @@ export function Workspaces() {
           <ul>
             {tenants.data.map((t) => (
               <li key={t.id} className={ui.cx(ui.cardRow, ui.clickableRow)}>
-                <div>
+                <div className="flex min-w-0 items-center gap-3">
+                  <WorkspaceAvatar name={t.name} icon={t.icon} />
+                  <div>
                   <Link className={ui.cx(ui.rowLink, "font-medium")} to="/workspaces/$id" params={{ id: t.id }}>
                     {t.name}
                   </Link>
@@ -112,6 +109,7 @@ export function Workspaces() {
                     {t.status}
                     {t.role ? ` · ${t.role}` : ""}
                   </p>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                 {!(session.user.preview && !session.user.acting) && (t.role === "owner" || t.role === "admin") ? (

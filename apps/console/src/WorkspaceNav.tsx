@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { z } from "zod";
+import { tenantsSchema } from "./workspace-contracts";
 import { useI18n } from "@webdock/i18n/react";
 import { HouseIcon } from "@phosphor-icons/react/dist/csr/House";
 import { UsersIcon } from "@phosphor-icons/react/dist/csr/Users";
@@ -10,7 +10,7 @@ import { KeyIcon } from "@phosphor-icons/react/dist/csr/Key";
 import { useApi, useSession } from "./context";
 import { pluginNav, useWorkspacePlugins } from "./plugins/workspace";
 
-const tenantsSchema = z.array(z.object({ id: z.string(), name: z.string(), status: z.string(), role: z.string().nullable() }));
+
 export function useTenants() {
   const api = useApi();
   return useQuery({ queryKey: ["tenants"], queryFn: ({ signal }) => api.get("/api/console/tenants", tenantsSchema, signal) });
@@ -39,7 +39,7 @@ export function useWorkspaceHeader(pathname: string) {
   if (!customer) return null;
   const tenant = tenants.data?.find((t) => t.id === customer);
   const name = tenant?.name ?? "Workspace";
-  return { customer, label: name, detail: tenant?.role ?? "Customer workspace", crumbs: [name, pathname.endsWith("/connections") ? t("Connections") : section(pathname)] };
+  return { customer, icon: tenant?.icon, label: name, detail: tenant?.role ?? "Customer workspace", crumbs: [name, pathname.endsWith("/connections") ? t("Connections") : section(pathname)] };
 }
 
 /** Sidebar of one workspace: overview, one entry per product the viewer can see, members. */

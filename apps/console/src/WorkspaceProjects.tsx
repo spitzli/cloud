@@ -1,3 +1,4 @@
+import { tenantsSchema } from "./workspace-contracts";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -10,7 +11,7 @@ import * as ui from "./ui";
 import { pluginNav, useWorkspacePlugins } from "./plugins/workspace";
 import { Attention } from "./Notices";
 
-const tenantsSchema = z.array(z.object({ id: z.string(), name: z.string(), status: z.string(), role: z.string().nullable() }));
+
 const projectsSchema = z.array(z.object({ id: z.string(), name: z.string(), status: z.string() }));
 
 /** A workspace's projects. Owners, admins and operators start new ones here. */

@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Spitzli Cloud\n"
+"PO-Revision-Date: 2026-11-04 00:00+0000\n"
+"Last-Translator: Spitzli Cloud\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Workspace icon"
+msgstr "Workspace-Icon"
+
+msgid "Use your team’s logo across Spitzli Cloud. Without an icon, we show the first letter of the workspace name."
+msgstr "Verwende das Logo deines Teams in Spitzli Cloud. Ohne Icon zeigen wir den Anfangsbuchstaben des Workspace-Namens."
+
+msgid "Upload workspace icon"
+msgstr "Workspace-Icon hochladen"
+
+msgid "PNG, JPEG or WebP, up to 2 MiB and 4096 × 4096 pixels. Saved automatically as a 64 × 64 PNG."
+msgstr "PNG, JPEG oder WebP, bis zu 2 MiB und 4096 × 4096 Pixel. Wird automatisch als PNG mit 64 × 64 Pixeln gespeichert."
+
+msgid "Remove workspace icon"
+msgstr "Workspace-Icon entfernen"
+
+msgid "Saving workspace icon…"
+msgstr "Workspace-Icon wird gespeichert…"
+
+msgid "Workspace icon saved."
+msgstr "Workspace-Icon gespeichert."
+
+msgid "Choose a PNG, JPEG or WebP image up to 2 MiB."
+msgstr "Wähle ein PNG-, JPEG- oder WebP-Bild mit höchstens 2 MiB."
+
+msgid "This image could not be read. Choose another image."
+msgstr "Dieses Bild konnte nicht gelesen werden. Wähle ein anderes Bild."
+
+msgid "Choose an image no larger than 4096 × 4096 pixels."
+msgstr "Wähle ein Bild mit höchstens 4096 × 4096 Pixeln."
+
+msgid "Image processing is unavailable in this browser."
+msgstr "Die Bildverarbeitung ist in diesem Browser nicht verfügbar."
+
+msgid "Updated workspace icon"
+msgstr "Workspace-Icon aktualisiert"

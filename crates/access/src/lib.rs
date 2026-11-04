@@ -3,6 +3,7 @@ mod admin;
 mod allowances;
 pub use allowances::{AllowanceAuthority, ConfigureAllowances, FiniteAllowance, HostingAllowances};
 pub mod api_tokens;
+mod branding;
 mod contracts;
 pub mod domains;
 mod migration;
