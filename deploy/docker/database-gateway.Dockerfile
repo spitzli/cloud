@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,targe
 
 FROM ${TABULARIS_IMAGE} AS database-gateway
 COPY --from=build /usr/local/bin/webdock-database-gateway /usr/local/bin/webdock-database-gateway
-COPY LICENSE COMMERCIAL-LICENSING.md NOTICE /usr/share/licenses/webdock/
+COPY LICENSE COMMERCIAL-LICENSING.md NOTICE /usr/share/licenses/spitzli-cloud/
 ARG TABULARIS_SOURCE_COMMIT=fdd6c0a6f979ede0acb38415fa12b25c04aa9c4e
 LABEL org.opencontainers.image.source="https://github.com/TabularisDB/tabularis" webdock.dev.tabularis-source=$TABULARIS_SOURCE_COMMIT webdock.dev.backend="rust"
 USER 65532:65532

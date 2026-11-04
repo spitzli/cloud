@@ -19,5 +19,6 @@
   },
   "devDependencies": {
     "@types/semver": "^7.7.1"
-  }
+  },
+  "license": "Apache-2.0"
 }

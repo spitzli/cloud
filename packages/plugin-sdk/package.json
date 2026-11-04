@@ -2,9 +2,7 @@
   "name": "@webdock/plugin-sdk",
   "version": "0.1.0",
   "type": "module",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist", "NOTICE"],
   "exports": {
     "./contracts": {
       "types": "./dist/contracts/index.d.ts",
@@ -31,5 +29,6 @@
   },
   "engines": {
     "bun": ">=1.4.3"
-  }
+  },
+  "license": "Apache-2.0"
 }

@@ -9,7 +9,7 @@ export function createManifest(image:string){
   {name:"cms.read",intent:"read",httpBinding:"cms",capabilities:["plugin.http.read"],input:object({path:string(2048)})},
   {name:"cms.write",intent:"write",httpBinding:"cms",capabilities:["plugin.http.request"],input:object({op:{type:"string",enum:["begin","append","commit"]},transfer:string(128),size:{type:"integer",minimum:1,maximum:15728640},sha256:string(64),kind:{type:"string",enum:["json","media"]},offset:{type:"integer",minimum:0,maximum:15728640},data:string(21848,0)},["op"])},
  ];
- return parsePluginManifest({name:"managed-cms",version:"0.1.0-alpha.1",kind:"extension",description:"Create independent website CMS instances and edit pages, drafts and media in Webdock.",license:"AGPL-3.0-only",category:"content",tags:["cms","content","websites"],image,
+ return parsePluginManifest({name:"managed-cms",version:"0.1.0-alpha.1",kind:"extension",description:"Create independent website CMS instances and edit pages, drafts and media in Webdock.",license:"Apache-2.0",category:"content",tags:["cms","content","websites"],image,
   protocolVersion:1,sdkVersion:1,dataProtocolVersion:1,coreVersion:">=0.1.0 <1.0.0",schemaVersion:1,readableSchema:{min:1,max:1},
   capabilities:["plugin.apps.read","plugin.apps.provision","plugin.http.read","plugin.http.request"],services:{required:[{name:"http",version:1}],optional:[{name:"apps",version:1}]},httpBindings:["cms"],
   configuration:object({}),actions,navigation:[{id:"cms",label:"CMS",path:"/ui/cms"}],api:[],mcp:[],jobs:[],events:[],slots:[],tables:[],migrations:[],dependencies:[],secrets:[],

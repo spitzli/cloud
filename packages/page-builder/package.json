@@ -14,5 +14,6 @@
   "peerDependencies": {
     "pg": "8.16.3",
     "payload": "4.0.0-canary.37"
-  }
+  },
+  "license": "Apache-2.0"
 }

@@ -55,7 +55,7 @@ test('actions scaffold includes a vendored SDK and declares no unsupported servi
     assert.equal(sdk.name, '@webdock/plugin-sdk');
     assert.ok(sdk.dependencies.zod);
     assert.equal(sdk.scripts, undefined, "vendored compiled SDK must not rerun source build hooks");
-    assert.match(await readFile(join(dir, 'vendor/plugin-sdk/LICENSE'), 'utf8'), /GNU AFFERO GENERAL PUBLIC LICENSE/);
+    assert.match(await readFile(join(dir, 'vendor/plugin-sdk/LICENSE'), 'utf8'), /Apache License/);
     assert.match(await readFile(join(dir, 'vendor/plugin-sdk/NOTICE'), 'utf8'), /Spitzli/);
     assert.match(await readFile(join(dir, '.gitignore'), 'utf8'), /^\/dist\/$/m);
     assert.ok(await readFile(join(dir, 'vendor/plugin-sdk/dist/server/index.js'), 'utf8'));

@@ -16,5 +16,6 @@
     "@webdock/platform-db": "*",
     "drizzle-orm": "1.0.0-rc.4",
     "zod": "4.6.5"
-  }
+  },
+  "license": "Apache-2.0"
 }

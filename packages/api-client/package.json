@@ -26,5 +26,6 @@
     "@webdock/mail-contracts": "*",
     "@webdock/core": "*",
     "@webdock/module-cms": "*"
-  }
+  },
+  "license": "Apache-2.0"
 }

@@ -38,5 +38,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "esbuild": "0.25.12"
-  }
+  },
+  "license": "Apache-2.0"
 }

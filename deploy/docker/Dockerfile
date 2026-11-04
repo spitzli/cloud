@@ -18,7 +18,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,targe
 
 FROM docker.io/library/debian:trixie-slim AS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates libssl3t64 libzstd1 libbrotli1 zlib1g && rm -rf /var/lib/apt/lists/*
-COPY LICENSE COMMERCIAL-LICENSING.md NOTICE /usr/share/licenses/webdock/
+COPY LICENSE COMMERCIAL-LICENSING.md NOTICE /usr/share/licenses/spitzli-cloud/
 COPY --from=rust-build /binaries/ /usr/local/bin/
 USER 65532:65532
 ENV NODE_ENV=production

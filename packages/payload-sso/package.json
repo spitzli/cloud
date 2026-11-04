@@ -12,5 +12,6 @@
   },
   "dependencies": {
     "@webdock/oauth-session": "*"
-  }
+  },
+  "license": "Apache-2.0"
 }

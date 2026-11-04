@@ -33,5 +33,6 @@
   "peerDependencies": {
     "react": "^19",
     "next": ">=16"
-  }
+  },
+  "license": "Apache-2.0"
 }

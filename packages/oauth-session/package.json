@@ -10,5 +10,6 @@
   "dependencies": {
     "openid-client": "6.8.8",
     "iron-session": "^8.0.4"
-  }
+  },
+  "license": "Apache-2.0"
 }

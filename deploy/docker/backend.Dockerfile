@@ -30,12 +30,14 @@ RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.l
  && apt-get -qq -o Acquire::https::CAInfo=/etc/ssl/certs/ca-certificates.crt -o APT::Update::Error-Mode=any update \
  && apt-get -qq -o Acquire::https::CAInfo=/etc/ssl/certs/ca-certificates.crt install -y --no-install-recommends ca-certificates libssl3t64 libzstd1 libbrotli1 zlib1g \
  && rm -rf /var/lib/apt/lists/*
-COPY LICENSE COMMERCIAL-LICENSING.md NOTICE /usr/share/licenses/webdock/
-COPY vendor/maylily/LICENSE /usr/share/licenses/webdock/maylily.LICENSE
+COPY LICENSE COMMERCIAL-LICENSING.md NOTICE /usr/share/licenses/spitzli-cloud/
+COPY vendor/maylily/LICENSE /usr/share/licenses/spitzli-cloud/maylily.LICENSE
 COPY --from=rust-build /binaries/ /usr/local/bin/
 ARG SOURCE_REVISION
-LABEL org.opencontainers.image.source="https://github.com/spitzli/webdock" \
-      org.opencontainers.image.revision=$SOURCE_REVISION
+LABEL org.opencontainers.image.source="https://github.com/spitzli/cloud" \
+      org.opencontainers.image.revision=$SOURCE_REVISION \
+      org.opencontainers.image.title="Spitzli Cloud" \
+      org.opencontainers.image.licenses="Apache-2.0"
 USER 65532:65532
 ENV NODE_ENV=production
 WORKDIR /opt/webdock

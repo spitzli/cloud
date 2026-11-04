@@ -52,4 +52,4 @@ Existing website integrations keep their schema and use a PostgreSQL transfer jo
 
 Payload is pinned to `4.0.0-canary.37`. This is a canary dependency, not a stable Payload release. Production readiness requires the complete fresh-instance, role, publication, restart and matched backup/restore acceptance, not just compilation or unit tests. Deployment evidence belongs in the release record. Local image checks do not establish cluster provisioning, certificate issuance or a successful matched backup restore.
 
-Licensed under AGPL-3.0; separate commercial licensing is described in the repository's `COMMERCIAL-LICENSING.md`.
+Licensed under Apache-2.0; component licensing scope is described in the repository's `COMMERCIAL-LICENSING.md`.

@@ -98,7 +98,7 @@ def dockerfile(kind: str) -> str:
 FROM {BUN_IMAGE}
 WORKDIR /app
 COPY --from=build --chown=65532:65532 /app/extensions/managed-cms/dist ./
-COPY --from=build /app/LICENSE /app/COMMERCIAL-LICENSING.md /app/NOTICE /usr/share/licenses/webdock/
+COPY --from=build /app/LICENSE /app/COMMERCIAL-LICENSING.md /app/NOTICE /usr/share/licenses/spitzli-cloud/
 ENV NODE_ENV=production
 USER 65532:65532
 EXPOSE 3443 3444
@@ -112,7 +112,7 @@ WORKDIR /app
 COPY --from=build --chown=65532:65532 /app/apps/cms-instance/.next/standalone ./
 COPY --from=build --chown=65532:65532 /app/apps/cms-instance/.next/static ./apps/cms-instance/.next/static
 COPY --from=build --chown=65532:65532 /app/apps/cms-instance/.next/migrate.mjs ./migrate.mjs
-COPY --from=build /app/LICENSE /app/COMMERCIAL-LICENSING.md /app/NOTICE /usr/share/licenses/webdock/
+COPY --from=build /app/LICENSE /app/COMMERCIAL-LICENSING.md /app/NOTICE /usr/share/licenses/spitzli-cloud/
 RUN mkdir -p /data/media /data/transfers && chown -R 65532:65532 /data
 USER 65532:65532
 VOLUME ["/data"]
@@ -145,7 +145,7 @@ def export_cms(source: Path, output: Path) -> dict:
                 copy_source(source, staging, path)
                 patched[name] = relative
         plugin = json.loads((staging / APPLICATIONS[0] / 'package.json').read_text())
-        root = {'name': 'webdock-extension-managed-cms', 'version': plugin['version'], 'private': True,
+        root = {'name': 'spitzli-cloud-plugin-managed-cms', 'version': plugin['version'], 'private': True,
                 'type': 'module', 'packageManager': 'bun@1.4.3', 'workspaces': package_paths(),
                 'scripts': {'build:sdk': 'bun run --filter @webdock/plugin-sdk build',
                             'build:plugin': 'bun run build:sdk && bun extensions/managed-cms/build.ts',
@@ -154,7 +154,7 @@ def export_cms(source: Path, output: Path) -> dict:
                             'check': 'bun run build:sdk && bun run --filter @webdock/extension-managed-cms check',
                             'test': 'bun run build:sdk && bun test --isolate ./extensions/managed-cms/tests ./apps/cms-instance/tests ./packages/cms-bridge/src ./packages/cms-ui/src'},
                 'devDependencies': {'typescript': '^5', '@types/bun': '^1.3.0', '@types/node': '^24', '@types/react': '^19', '@types/react-dom': '^19', '@types/pg': '^8.15.5', 'happy-dom': '20.14.5'},
-                'overrides': upstream.get('overrides', {}), 'patchedDependencies': patched, 'license': 'AGPL-3.0-only'}
+                'overrides': upstream.get('overrides', {}), 'patchedDependencies': patched, 'license': upstream.get('license', 'Apache-2.0')}
         (staging / 'package.json').write_text(json.dumps(root, indent=2) + '\n')
         (staging / 'bunfig.toml').write_text('[install]\nlinker = "hoisted"\n')
         ignored = 'node_modules\n.next\ndist\n.git\n.env*\n!**/.env.example\n/data\n/private\n/secrets\n/release\n'
