@@ -145,7 +145,7 @@ impl AccessService {
     pub async fn list_tenants_as(&self, actor: &Principal) -> Result<Vec<Value>> {
         let actor = self.current_actor(actor).await?;
         let tx = self.domain(&actor).await?;
-        let rows=json_rows(&tx,"SELECT jsonb_build_object('id',c.id,'name',c.name,'status',c.status,'role',CASE WHEN $3 THEN coalesce(webdock_rls.membership_role(t.organization_id),'admin') ELSE m.role END,'localAuthority',webdock_rls.local_organization_authority(t.organization_id)) AS data FROM webdock_admin.customers c JOIN webdock_auth.tenant_customer t ON t.customer_id=c.id LEFT JOIN webdock_auth.member m ON m.\"organizationId\"=t.organization_id AND m.\"userId\"=$1 WHERE $2 OR $3 OR (c.status='active' AND m.id IS NOT NULL AND webdock_rls.local_organization_authority(t.organization_id)) ORDER BY c.name,c.id",vec![actor.user_id.clone().into(),actor.is_operator().into(),actor.in_tenant_preview().into()]).await?;
+        let rows=json_rows(&tx,"SELECT jsonb_build_object('id',c.id,'name',c.name,'icon',(SELECT o.logo FROM webdock_auth.organization o WHERE o.id=t.organization_id),'status',c.status,'role',CASE WHEN $3 THEN coalesce(webdock_rls.membership_role(t.organization_id),'admin') ELSE m.role END,'localAuthority',webdock_rls.local_organization_authority(t.organization_id)) AS data FROM webdock_admin.customers c JOIN webdock_auth.tenant_customer t ON t.customer_id=c.id LEFT JOIN webdock_auth.member m ON m.\"organizationId\"=t.organization_id AND m.\"userId\"=$1 WHERE $2 OR $3 OR (c.status='active' AND m.id IS NOT NULL AND webdock_rls.local_organization_authority(t.organization_id)) ORDER BY c.name,c.id",vec![actor.user_id.clone().into(),actor.is_operator().into(),actor.in_tenant_preview().into()]).await?;
         tx.commit().await?;
         Ok(rows)
     }
@@ -342,6 +342,7 @@ impl AccessService {
     ) -> Result<ChangeResult> {
         let actor = self.current_actor(actor).await?;
         let action = match &command {
+            TenantCommand::Icon { .. } => "tenant-icon",
             TenantCommand::Profile { .. } => "tenant-profile",
             TenantCommand::Invite { .. } => "tenant-invite",
             TenantCommand::Resend { .. } => "tenant-resend",
@@ -395,6 +396,16 @@ impl AccessService {
         let mut recipient = invitee.clone();
         let action;
         match command {
+            TenantCommand::Icon { icon } => {
+                action = "tenant-icon";
+                let icon = crate::branding::normalize_icon(icon)?;
+                tx.execute_raw(Statement::from_sql_and_values(
+                    DbBackend::Postgres,
+                    "UPDATE webdock_auth.organization SET logo=$2 WHERE id=$1",
+                    [org.clone().into(), icon.into()],
+                ))
+                .await?;
+            }
             TenantCommand::Profile { profile } => {
                 action = "tenant-profile";
                 let p = profile.validate()?;
@@ -1014,7 +1025,7 @@ pub(crate) async fn tenant(
     customer: &str,
 ) -> Result<Value> {
     let sql = format!(
-        "SELECT to_jsonb(profile) AS data FROM (SELECT {PROFILE},t.organization_id,webdock_rls.membership_role(t.organization_id) AS member_role FROM webdock_admin.customers c JOIN webdock_auth.tenant_customer t ON t.customer_id=c.id LEFT JOIN webdock_auth.member m ON m.\"organizationId\"=t.organization_id AND m.\"userId\"=$2 WHERE c.id=$1 AND ($3 OR $4 OR (c.status='active' AND m.id IS NOT NULL AND webdock_rls.local_organization_authority(t.organization_id)))) profile"
+        "SELECT to_jsonb(profile) AS data FROM (SELECT {PROFILE},(SELECT o.logo FROM webdock_auth.organization o WHERE o.id=t.organization_id) AS icon,t.organization_id,webdock_rls.membership_role(t.organization_id) AS member_role FROM webdock_admin.customers c JOIN webdock_auth.tenant_customer t ON t.customer_id=c.id LEFT JOIN webdock_auth.member m ON m.\"organizationId\"=t.organization_id AND m.\"userId\"=$2 WHERE c.id=$1 AND ($3 OR $4 OR (c.status='active' AND m.id IS NOT NULL AND webdock_rls.local_organization_authority(t.organization_id)))) profile"
     );
     let rows = json_rows(
         tx,

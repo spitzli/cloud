@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-04",
+  "status": "local-qualification-passed-production-rollout-pending",
+  "behavior": {
+    "initialUsesDisplayedWorkspaceName": true,
+    "ownerAdminUploadReplaceRemove": true,
+    "pngJpegWebpInputMaxBytes": 2097152,
+    "maxInputDimensions": [
+      4096,
+      4096
+    ],
+    "storedPngDimensions": [
+      64,
+      64
+    ],
+    "serverReencodesPixels": true,
+    "serverRejectsRemoteUrlsSvgAnimationCorruptionAndOversizedInput": true,
+    "sharedTenantCacheSchema": true,
+    "iconPersistsAcrossReloadAndWorkspaceNavigation": true,
+    "invalidImageFallsBackToInitial": true
+  },
+  "storage": {
+    "existingField": "webdock_auth.organization.logo",
+    "newMigrations": false,
+    "rlsAndAuditPreserved": true
+  },
+  "verification": {
+    "regressionRed": "workspace navigation test reproduced Y instead of A",
+    "consoleUnitTests": 239,
+    "consoleTypecheck": true,
+    "rustBrandingUnitTests": 2,
+    "rustContractTest": 1,
+    "restrictedPostgresIntegration": "fresh owned local PostgreSQL18; owner write/read/removal, foreign denial, member denial, admin allowed, demoted admin denied",
+    "productionDataUsedInIntegration": false,
+    "browserFixtures": "owner/admin upload/replace, reload, overview navigation, remove, invalid file/image, member has no write controls, widths375/1280",
+    "accountOnboardingBrowserFixture": true,
+    "gettextTests": 12,
+    "independentReview": "two shared-cache/legacy-header findings corrected; no other concrete blocker reported"
+  },
+  "limitations": [
+    "Local browser checks use explicit HTTP fixtures, not production customer identity.",
+    "The initial retained-schema test was incompatible with the native baseline; the new icon test uses a freshly migrated native database with its own fixture allocator state.",
+    "Production rollout and public authenticated icon flow remain pending."
+  ]
+}

@@ -2009,6 +2009,9 @@
   "Choose a Neon project in Frankfurt, Germany. Other regions are not enabled for database attachments in this release.": [
     "Wähle ein Neon-Projekt in Frankfurt, Deutschland. Andere Regionen sind in dieser Version nicht für Datenbankverknüpfungen freigeschaltet."
   ],
+  "Choose a PNG, JPEG or WebP image up to 2 MiB.": [
+    "Wähle ein PNG-, JPEG- oder WebP-Bild mit höchstens 2 MiB."
+  ],
   "Choose a cluster for Kubernetes": [
     "Cluster für Kubernetes auswählen"
   ],
@@ -2107,6 +2110,9 @@
   ],
   "Choose an enabled customer website, not the operator studio.": [
     "Wähle eine aktivierte Kundenwebsite, nicht das Betreiber-Studio."
+  ],
+  "Choose an image no larger than 4096 × 4096 pixels.": [
+    "Wähle ein Bild mit höchstens 4096 × 4096 Pixeln."
   ],
   "Choose an installation and repository you can access. GitHub consent is completed on GitHub.": [
     "Wähle eine Installation und ein Repository, auf die du Zugriff hast. Die Freigabe erfolgt bei GitHub."
@@ -4968,6 +4974,9 @@
   "Image preview": [
     "Bildvorschau"
   ],
+  "Image processing is unavailable in this browser.": [
+    "Die Bildverarbeitung ist in diesem Browser nicht verfügbar."
+  ],
   "Image removed. Its file is retained until an operator purges it.": [
     "Bild entfernt. Die Datei bleibt erhalten, bis ein Betreiber sie endgültig löscht."
   ],
@@ -7491,6 +7500,9 @@
   "Ownership verified": [
     "Inhaberschaft bestätigt"
   ],
+  "PNG, JPEG or WebP, up to 2 MiB and 4096 × 4096 pixels. Saved automatically as a 64 × 64 PNG.": [
+    "PNG, JPEG oder WebP, bis zu 2 MiB und 4096 × 4096 Pixel. Wird automatisch als PNG mit 64 × 64 Pixeln gespeichert."
+  ],
   "Package metadata could not be read. Configure the application manually.": [
     "Die Paketmetadaten konnten nicht gelesen werden. Konfiguriere die Anwendung manuell."
   ],
@@ -8745,6 +8757,9 @@
   "Remove variable": [
     "Variable entfernen"
   ],
+  "Remove workspace icon": [
+    "Workspace-Icon entfernen"
+  ],
   "Remove {value1}": [
     "{value1} entfernen"
   ],
@@ -9464,6 +9479,9 @@
   ],
   "Saving publishes your changes": [
     "Änderungen werden beim Speichern veröffentlicht"
+  ],
+  "Saving workspace icon…": [
+    "Workspace-Icon wird gespeichert…"
   ],
   "Saving…": [
     "Wird gespeichert …"
@@ -11169,6 +11187,9 @@
   "This hosting provider does not support repository source setup here.": [
     "Dieser Hosting-Anbieter unterstützt hier keine Einrichtung von Repository-Quellen."
   ],
+  "This image could not be read. Choose another image.": [
+    "Dieses Bild konnte nicht gelesen werden. Wähle ein anderes Bild."
+  ],
   "This inventory is out of date. Refresh it before making changes.": [
     "Diese Ressourcenübersicht ist veraltet. Aktualisiere sie vor Änderungen."
   ],
@@ -11688,6 +11709,9 @@
   "Updated": [
     "Aktualisiert"
   ],
+  "Updated workspace icon": [
+    "Workspace-Icon aktualisiert"
+  ],
   "Updated {name}": [
     "{name} aktualisiert"
   ],
@@ -11702,6 +11726,9 @@
   ],
   "Upload image": [
     "Bild hochladen"
+  ],
+  "Upload workspace icon": [
+    "Workspace-Icon hochladen"
   ],
   "Usage": [
     "Nutzung"
@@ -11846,6 +11873,9 @@
   ],
   "Use your provider-issued sending credentials in your application. This connection does not send a test email or change existing application settings.": [
     "Verwende die Versandschlüssel deines Anbieters in deiner Anwendung. Diese Verbindung versendet keine Testmail und ändert keine bestehenden Anwendungseinstellungen."
+  ],
+  "Use your team’s logo across Spitzli Cloud. Without an icon, we show the first letter of the workspace name.": [
+    "Verwende das Logo deines Teams in Spitzli Cloud. Ohne Icon zeigen wir den Anfangsbuchstaben des Workspace-Namens."
   ],
   "Use your tenant portal to manage customer access.": [
     "Verwalte Kundenzugriffe über dein Mandantenportal."
@@ -12563,6 +12593,12 @@
   ],
   "Workspace details": [
     "Arbeitsbereich"
+  ],
+  "Workspace icon": [
+    "Workspace-Icon"
+  ],
+  "Workspace icon saved.": [
+    "Workspace-Icon gespeichert."
   ],
   "Workspace navigation": [
     "Arbeitsbereich-Navigation"

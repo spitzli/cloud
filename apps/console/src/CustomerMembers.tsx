@@ -1,3 +1,6 @@
+import { msgid } from "@webdock/i18n";
+import { useI18n } from "@webdock/i18n/react";
+import { WorkspaceIcon } from "./WorkspaceIcon";
 import { useRef, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
@@ -10,7 +13,7 @@ import * as ui from "./ui";
 const tenantSchema = z.object({
   canManage: z.boolean(),
   operator: z.boolean().default(false),
-  tenant: z.object({ member_role: z.string().nullish() }).default({}),
+  tenant: z.object({ member_role: z.string().nullish(), name: z.string().optional(), icon: z.string().nullish() }).default({}),
   members: z.array(z.object({ id: z.string(), role: z.string(), name: z.string(), email: z.string(), mustChangePassword: z.boolean().nullish() })),
   invitations: z.array(z.object({
     id: z.string(), email: z.string(), role: z.string(), status: z.string(), name: z.string().nullish(),
@@ -36,6 +39,7 @@ const actionText: Record<string, string> = {
   "tenant-role": "Changed role",
   "tenant-remove": "Removed member",
   "tenant-profile": "Updated customer details",
+  "tenant-icon": msgid("Updated workspace icon"),
 };
 const relative = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
 function ago(value: string) {
@@ -89,6 +93,7 @@ export interface FirstInvite { email: string; name: string; done: () => void }
 /** People with access to this customer, their invitations and what happened to them. */
 export function CustomerMembers({ customer, welcome }: { customer: string; welcome?: FirstInvite | undefined }) {
   const api = useApi();
+  const { t } = useI18n();
   const client = useQueryClient();
   const live = useLiveValidation();
   const [copied, setCopied] = useState(false);
@@ -225,6 +230,7 @@ export function CustomerMembers({ customer, welcome }: { customer: string; welco
   };
   return (
     <>
+    {tenant.data.canManage ? <WorkspaceIcon customer={customer} name={tenant.data.tenant.name ?? "Workspace"} icon={tenant.data.tenant.icon} /> : null}
     <section className={ui.cx(`${ui.card} mt-8`)} aria-label="Members">
       <div className={ui.cardBody}>
         <h2 className={ui.sectionTitle}>Members</h2>
@@ -283,7 +289,7 @@ export function CustomerMembers({ customer, welcome }: { customer: string; welco
           {tenant.data.activity.map((event) => (
             <li key={event.id} className={ui.cx(`${ui.cardRow} text-[13px]`)}>
               <span className="flex min-w-0 flex-wrap items-center gap-x-2">
-                <span className="font-medium">{actionText[event.action] ?? event.action}</span>
+                <span className="font-medium">{t(actionText[event.action] ?? event.action)}</span>
                 {event.outcome === "failed" ? <span className={ui.badge("danger")}>Failed</span> : null}
                 <span className="truncate text-muted">{event.actorName ?? event.actorEmail ?? "Unknown person"}</span>
               </span>

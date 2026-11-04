@@ -226,14 +226,7 @@ export const logReadSchema = z.object({
   error: z.string().nullable(),
 });
 
-export const tenantsSchema = z.array(
-  z.object({
-    id: resourceID,
-    name: z.string(),
-    status: z.string().optional(),
-    role: z.string().nullable().optional(),
-  }),
-);
+export { tenantsSchema } from "./workspace-contracts";
 
 // Browser-side live checks mirroring the shared schema; the Core still validates every request.
 export const fieldRules = {

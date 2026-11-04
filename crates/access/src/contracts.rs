@@ -182,6 +182,9 @@ pub struct AccessConfig {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(tag = "action", rename_all = "kebab-case", deny_unknown_fields)]
 pub enum TenantCommand {
+    Icon {
+        icon: Option<String>,
+    },
     Profile {
         profile: Box<TenantProfileInput>,
     },

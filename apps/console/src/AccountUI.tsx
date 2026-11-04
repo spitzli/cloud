@@ -1,3 +1,5 @@
+import { tenantsSchema } from "./workspace-contracts";
+import { WorkspaceAvatar } from "./WorkspaceAvatar";
 import { AuthHeader, Brand, PageFailure, PageProgress, authFrame, authPanel } from "./AuthFrame";
 import { ThemeButton } from "./theme";
 import { LocalePicker } from "./Locale";
@@ -1230,16 +1232,13 @@ const roleText: Record<string, string> = {
   admin: "Administrators manage projects, members and customer details.",
   member: "Members work in the projects they are given access to.",
 };
-function WorkspaceAvatar({ name, size = "size-9 text-sm" }: { name: string; size?: string }) {
-  return <span aria-hidden className={`grid shrink-0 place-items-center rounded-lg bg-accent font-semibold text-on-accent ${size}`}>{name.slice(0, 1).toUpperCase()}</span>;
-}
 /** The organizations this account belongs to; their projects, apps, databases and sites live in Console. */
 function WorkspacesPage() {
   const api = useApi();
   const consoleHref = useConsoleHref();
   const tenants = useQuery({
     queryKey: ["account-tenants"],
-    queryFn: () => api.request("/api/tenants", z.array(z.object({ id: z.string(), name: z.string(), status: z.string(), role: z.string().nullable() })), {}, true),
+    queryFn: () => api.request("/api/tenants", tenantsSchema, {}, true),
   });
   const invitations = useQuery({
     queryKey: ["account-invitations"],
@@ -1280,7 +1279,7 @@ function WorkspacesPage() {
             return (
               <li key={tenant.id} className={ui.cx(ui.cardRow, "first:border-t-0", href && ui.clickableRow)}>
                 <span className="flex min-w-0 items-center gap-3">
-                  <WorkspaceAvatar name={tenant.name} />
+                  <WorkspaceAvatar name={tenant.name} icon={tenant.icon} />
                   <span className="grid min-w-0"><strong className="truncate font-medium">{tenant.name}</strong><span className="text-[13px] text-muted capitalize">{tenant.role ?? "Member"}</span></span>
                 </span>
                 <span className="flex items-center gap-2">

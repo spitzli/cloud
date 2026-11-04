@@ -1,3 +1,4 @@
+import { WorkspaceAvatar } from "./WorkspaceAvatar";
 import { CustomerScopeBanner } from "./CustomerScope";
 import { Fragment, useEffect, useRef, useState } from "react";
 import {
@@ -114,8 +115,9 @@ export function Shell() {
     session,
     mail,
   );
+  const tenants = useTenants();
   const header = useWorkspaceHeader(pathname);
-  const identity = header ?? workspace;
+  const identity = header ?? { ...workspace, icon: workspaceIcon(tenants.data, customerId) };
   const [palette, setPalette] = useState(false);
   const [mobile, setMobile] = useState(false);
   useEffect(() => {
@@ -310,9 +312,7 @@ export function Shell() {
             }}
             aria-label={navigationCopy.switch}
           >
-            <span className="grid size-[22px] shrink-0 place-items-center rounded-full bg-accent text-[11px] font-semibold text-on-accent" aria-hidden>
-              {workspace.label.slice(0, 1).toUpperCase()}
-            </span>
+            <WorkspaceAvatar name={identity.label} icon={identity.icon} size="size-[22px] text-[11px]" />
             <span className="min-w-0 truncate">{identity.label}</span>
             <span className="rounded-full border border-outline px-1.5 text-xs leading-[18px] font-normal text-muted max-md:hidden">{identity.detail}</span>
             <CaretUpDownIcon size={14} className="shrink-0 text-muted" />
@@ -571,7 +571,7 @@ function WorkspaceChoices({ search, close }: { search: string; close: () => void
         void navigate({ to: "/workspaces/$id", params: { id: tenant.id } });
         close();
       }}>
-        <BuildingsIcon size={20} className="shrink-0" />
+        <WorkspaceAvatar name={tenant.name} icon={tenant.icon} size="size-6 text-xs" />
         <span className="min-w-0 [overflow-wrap:anywhere]">{tenant.name}</span>
       </button>
     )) : <Empty title="No workspaces found">Try another name or open all workspaces.</Empty>}
@@ -603,7 +603,7 @@ function workspaceIdentity(
   failed: boolean,
   session: Session,
   mail: ReturnType<typeof useMailWorkspace>,
-) {
+): { label: string; detail: string; icon?: string | null | undefined } {
   if (mail.active) return { label: mail.label, detail: "Customer workspace" };
   if (hosting.active)
     return {
@@ -641,4 +641,8 @@ function currentCustomer(
     parseConsoleSearch(search).customer ??
     undefined
   );
+}
+
+function workspaceIcon(tenants: { id: string; icon?: string | null | undefined }[] | undefined, customer: string | undefined) {
+  return tenants?.find(tenant => tenant.id === customer)?.icon;
 }

@@ -42,6 +42,7 @@ try {
   await session.page.waitForURL(/\/workspaces\/101$/);
   const sidebar = session.page.getByRole('link', { name: /^Databases/ }).first();
   await sidebar.waitFor();
+  assert.equal(await session.page.getByRole('button', { name: 'Switch workspace', exact: true }).locator('span[aria-hidden]').innerText(), 'A', 'avatar initial follows the displayed Acme workspace, not Your workspace');
   assert.match(await sidebar.innerText(), /2/, 'the entry counts the workspace resources');
   assert.equal(await session.page.getByRole('link', { name: /^Mail/ }).count(), 0, 'products without access or resources stay hidden');
   assert.equal(await session.page.getByRole('link', { name: 'Extensions' }).count(), 0, 'operator pages are not offered to customers');

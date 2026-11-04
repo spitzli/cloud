@@ -11616,3 +11616,51 @@ msgstr ""
 #: packages/i18n/src/picker.tsx:23
 msgid "Changing language…"
 msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:12
+msgid "Choose a PNG, JPEG or WebP image up to 2 MiB."
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:16
+msgid "This image could not be read. Choose another image."
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:18
+msgid "Choose an image no larger than 4096 × 4096 pixels."
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:22
+msgid "Image processing is unavailable in this browser."
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:43 apps/console/src/WorkspaceIcon.tsx:45
+msgid "Workspace icon"
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:46
+msgid "Use your team’s logo across Spitzli Cloud. Without an icon, we show the first letter of the workspace name."
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:50
+msgid "Upload workspace icon"
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:56
+msgid "PNG, JPEG or WebP, up to 2 MiB and 4096 × 4096 pixels. Saved automatically as a 64 × 64 PNG."
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:58
+msgid "Remove workspace icon"
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:60
+msgid "Saving workspace icon…"
+msgstr ""
+
+#: apps/console/src/WorkspaceIcon.tsx:60
+msgid "Workspace icon saved."
+msgstr ""
+
+#: apps/console/src/CustomerMembers.tsx
+msgid "Updated workspace icon"
+msgstr ""

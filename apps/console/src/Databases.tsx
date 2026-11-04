@@ -1,3 +1,4 @@
+import { tenantsSchema } from "./workspace-contracts";
 import { lazy, Suspense, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -57,7 +58,7 @@ export function DatabaseDirectory({
     queryFn: () =>
       api.get(
         "/api/console/tenants",
-        z.array(z.object({ id: z.string(), name: z.string() })),
+        tenantsSchema,
       ),
   });
   const directory = useQuery({
