@@ -1,10 +1,50 @@
-# Webdock TODO
+# Spitzli Cloud TODO
 
-- [x] **Neon BYOK runtime and owned-workspace API qualification (2026-11-04).** Signed native `0.1.2` is installed through the normal lifecycle with the existing Core database and unchanged credentials/schema. Full selected inventory succeeds through the public Console gateway; connection revocation during concurrent reads returns no inventory. The `0.1.1` write-path baseline proved attach/replay, protected pooled/direct URI access and actual read-only TLS SQL, quota enforcement, project binding, and local detach without provider access. Temporary keys are revoked and test attachments removed. Ordinary-customer browser acceptance and public build isolation remain separate open gates. See [evidence and test-version boundaries](docs/verification/2026-11-04-neon-owned-acceptance.json) and [the operational procedure](docs/operations/neon-plugin-rollout.md).
+## Active execution queue — 2026-11-04
+
+Owner instruction: after the workspace-icon release, continue working through this backlog.
+Finish the current release before starting dependent production changes. This queue orders the
+existing tasks; it does not replace their acceptance criteria or turn historical notes into fresh
+purchase/deletion/credential-rotation approval.
+
+1. **Completed: live customer icon acceptance.** PR #66 is merged; CI, actual EU image
+   qualification and Core/Console/Auth rollout are complete. A genuine customer USER/owner
+   passed upload/reload/navigation/Auth-list/replace/remove and foreign-write refusal404.
+   QA branding is restored; session and temporary local credentials are cleaned up.
+2. **Reconcile the backlog against current evidence.** Several dated entries below describe an
+   older state of Auth, docs, CI and plugin publication. Verify the current code and live receipts,
+   close only proven completions, and preserve genuine remaining work. Newer owner decisions
+   supersede older proposals; do not repeat successful migrations or provision duplicate servers.
+3. **Complete customer Git/build onboarding and its release gates.** Prioritize the authorized
+   GitHub App connection, exact-SHA checkout, durable dispatcher/private BUILD connectivity,
+   scoped OCI/artifact handoff, logs, cancellation and digest deployment. Prove isolation with
+   denied attempts before public admission; keep existing customer apps running on failures.
+4. **Enforce build-minute plans and accounting.** Global finite defaults, per-customer/free-plan
+   overrides, operator top-ups/corrections, atomic reservation and idempotent charging, and clear
+   customer/operator usage. Follow the detailed Build-Minuten section below.
+5. **Reduce Core Neon compute hours.** Measure idle/polling/connection behavior first, then test
+   changes and cold-start latency without weakening authentication, readiness or queue leases.
+6. **Complete the existing observability deployment.** Fleet collection, useful upstream Grafana
+   dashboards, alerting, access protection and tested recovery; reuse the booked OBS server and
+   scoped Wasabi storage rather than purchasing replacements.
+7. **Deliver Pulumi and the managed-service operating model.** Inventory/import existing
+   infrastructure safely, version configuration and secret references, then implement staged
+   updates/rollback, certificate renewal alerts/drills, off-host backups/restores and operational
+   runbooks. Continue with the remaining product/lifecycle tasks below after these foundations.
+
+Do not silently open arbitrary public builds, buy additional services, rotate live credentials or
+physically delete retained customer data while processing the backlog. Prepare and verify the
+concrete change; obtain any genuinely missing authorization only when it is required.
+
+
+- [x] **Neon BYOK runtime and owned-workspace API qualification (2026-11-04).** Signed native `0.1.2` is installed through the normal lifecycle with the existing Core database and unchanged credentials/schema. Full selected inventory succeeds through the public Console gateway; connection revocation during concurrent reads returns no inventory. The `0.1.1` write-path baseline proved attach/replay, protected pooled/direct URI access and actual read-only TLS SQL, quota enforcement, project binding, and local detach without provider access. Temporary keys are revoked and test attachments removed. Ordinary-customer Neon browser acceptance is also verified with a genuine USER account, including limits, forbidden foreign/operator access, URI reveal/hide, detach and relogin. Public build isolation remains a separate open gate. See [evidence and test-version boundaries](docs/verification/2026-11-04-neon-owned-acceptance.json) and [the operational procedure](docs/operations/neon-plugin-rollout.md).
 
 - [x] **Spitzli Cloud first-party rollout and internal address pilot (2026-10-31).** Website/Console/Login use the owned graphite/violet identity. Main/Console/API and operator Grafana/Prometheus HTTPS domains are live; existing-password/MFA/PKCE/operator browser flow passes on ordinary DNS/TLS. Exact `spitzli.site` allocation, per-host HTTPS, stop/start, deletion/no-reuse and unknown-host denial are verified. Wildcard DNS is active; admission is limited to the explicitly trusted internal customer. Existing customer domains/data are preserved. [Rollout and full file list](docs/operations/spitzli-cloud-rebrand-rollout-2026-10-31.md), [evidence](docs/verification/2026-10-31-spitzli-cloud-rollout.json).
 - [x] **Public Core activation (2026-10-31).** Dedicated Core HTTP/private agent-control image is pinned by digest, native schema65 entries/max version66, enrolled RUN agentv3 with monotonic identity/certificate/storage binding preserved. Original25 customers and Lunares/Schattenclan resources are retained; one owned QA customer/project is archived with no running app. Operator/Core/OBS1Password URLs are updated/read-back verified.
-- [ ] **Qualified canonical protocol/publication migration.** Auth/Studio/Registry retain original issuer/RP/MCP audience during the approved transition. New navigation aliases work without claiming new protocol authority. Publish the prepared Docs rebrand through its actual Mintlify deployment and qualify its canonical custom domain; do not silently rewrite retained passkeys, tokens, client secrets, signed registry URLs or customer URLs.
+- [x] **Native Core source checks on Blacksmith (2026-11-04).** The complete native quality job passed on head `d370a9c`: run `41856818349`, job `126668221149`, runner `blacksmith-4vcpu-ubuntu-2404-hax24d7necf4ks2z`. All current root workflows select Blacksmith. This closes the old root-source qualification wording; independent publisher setup and retirement of the former runner remain separate tasks.
+- [x] **Public Spitzli docs publication (2026-11-04).** The canonical homepage, `guides/byok-neon` and `guides/git-deployments` return HTTP200, show the intended Spitzli titles/canonical URLs and link the Spitzli repository. The site no longer shows Starter Kit. This verifies the public serving slice; protocol identity migration and complete live link coverage are separate.
+- [x] **Live workspace-icon customer acceptance (2026-11-04).** The genuine QA USER/owner passed upload200, reload/navigation and Auth-list persistence, replace200, remove200 and foreign-write denial404. Anonymous writes are denied401. QA branding was restored to null; the session was signed out and local password/cookie copies removed. Existing vault credentials remain unchanged. See [the completed rollout and live proof](docs/verification/2026-11-04-workspace-icons.json).
+- [ ] **Qualified canonical protocol/publication migration.** Auth/Studio/Registry retain original issuer/RP/MCP audience during the approved transition. New navigation aliases work without claiming new protocol authority. The public Docs rebrand and representative canonical routes are now verified above; finish the remaining protocol qualification separately; do not silently rewrite retained passkeys, tokens, client secrets, signed registry URLs or customer URLs.
 - [ ] **Public customer address/build release gate.** Keep automatic addresses on the trusted internal pilot until browser/cookie/PSL and hostile multi-tenant qualification pass. Permanent Core BUILD dispatcher, production OCI registry/artifact/source binding and private Core-BUILD connection are not activated. The existing extension catalogue is not an OCI registry. No per-build VM was introduced.
 - [ ] **Prove tenant isolation through denied attempts (owner reference, 2026-11-04).** Use [the layer-by-layer isolation lab](https://itnext.io/kubernetes-multi-tenancy-layer-by-layer-isolation-proved-by-being-refused-cc2f92f41cfc) as a test reference for the existing build and plugin boundaries. In owned disposable namespaces, record denied foreign Secret/resource access and policy/namespace-label modification; privileged/hostPath/host-network Pods; quota overflow and NodePort/LoadBalancer creation; forged trusted labels/service accounts; and placement escapes through nodeName, selectors or broad tolerations. Test real Pod admission as well as workload templates. Verify allowed control traffic and forbidden cross-tenant traffic in both directions after policy convergence, including restart/IP-reuse cases and IPv4/IPv6/private/metadata destinations. An applied policy, security-ready label, network timeout without a positive control, or one refused Pod is not a complete isolation proof. Follow [Kubernetes multi-tenancy](https://kubernetes.io/docs/concepts/security/multi-tenancy/), [NetworkPolicy behavior](https://kubernetes.io/docs/concepts/services-networking/network-policies/) and [Pod Security Admission](https://kubernetes.io/docs/concepts/security/pod-security-admission/). Preserve current runtime safeguards; this reference does not select a new CNI, vCluster, VM or paid server. Keep public build admission closed until the existing release gate passes.
 - [ ] **Native archived-project deletion.** Implement the guarded project lifecycle before physical deletion of archived project/customer metadata. Current native project DELETE returns405; customer DELETE protects its remaining project409. Own HTTPS qualification metadata110015806338760704/110015805512491008 is archived; app/Pod/Service/Ingress are deleted and its permanent hostname reservation is retained. Do not bypass this with direct provider/SQL deletion.
@@ -100,6 +140,8 @@ No implementation, published offer, provider purchase or final entitlement decis
 ### Customer UX verification — 2026-11-01
 
 - [ ] **Native GitHub onboarding is a release blocker for self-service Git builds.**
+  Native discovery and the first local protocol/schema/provider-boundary slice are recorded in
+  [the implementation brief](docs/superpowers/specs/2026-11-04-native-git-connection-design.md).
   Port the existing authorized GitHub App connect/callback flow into the native
   repository adapter boundary; preserve tenant/session binding, signed state,
   installation ownership, exact repository permissions and reconnect/revocation.
@@ -127,6 +169,12 @@ No implementation, published offer, provider purchase or final entitlement decis
   exact read-back comparison, preserving every existing password/MFA field.
 - [ ] Embedded database editor accessibility: remove its nested main landmark in
   the maintained UI package; keep the Console's skip-link/main region intact.
+- [ ] Retained database editor capability handling: when the real editor bundle is
+  loaded in the owned startup fixture, the SDK attempts WebSocket subscriptions
+  despite negotiated `events: false` and emits unhandled rejections. Qualify a fix
+  in the maintained UI dependency without suppressing errors or advertising a
+  capability the server does not provide. This fixture intentionally rejects SQL
+  RPC and does not establish a working SQL editor or a production reproduction.
 
 ### Build-Minuten je Kunde und Plan
 
@@ -157,7 +205,7 @@ No implementation, published offer, provider purchase or final entitlement decis
 
 - [ ] **Use Blacksmith exclusively for our own GitHub CI (owner instruction, 2026-11-01).** Migrate Spitzli platform/plugin/SDK GitHub Actions execution to [Blacksmith](https://www.blacksmith.sh/), including reusable workflows. The owner waived EU-only placement for our own Blacksmith GitHub CI on 2026-11-01; record and verify the configured/observed runner region (currently dashboard US West) and qualify the supported managed builder before migration. This exception does not change EU requirements or isolation for customer builds or other services. Blacksmith App installation and exact16-repository selection are confirmed; the isolated runner/build probe passed in `us-west` ([job](https://github.com/spitzli/cloud/actions/runs/41319592763/job/124886768224)). Complete source checks and normal workflow publication remain pending. The old root manual distribution workflow is disabled; the old runner/host remain unchanged. Do not configure an alternative runner fallback. This supersedes the earlier self-hosted runner choice for our own GitHub CI. Retire the existing trusted CI runner and its credentials/cache safely after replacement checks pass; update CI documentation and infrastructure plans. Customer build-cluster provisioning remains a separate workstream.
 - [ ] **Update documentation alongside the plugin migration (owner reminder, 2026-11-01).** Update public developer/customer docs and internal operations guides with canonical Spitzli plugin/SDK repositories, version pins, actual CI region and the own-Blacksmith exception, registry publication and signature verification, installation/update steps, and troubleshooting. Explain v1/v2 compatibility, provider catalog entries requiring separate runtime binding, and the maintenance-only Postgres policy with Neon BYOK as default. Refresh links and examples; distinguish published images from signed registry admission and actual activation. Validate navigation and links before marking complete.
-  Source overhaul and the exact public package are qualified: 44 pages, strict Mintlify build and link checks passed. Hosted publication still requires verification of the existing Git-connected project and custom-domain mapping; dashboard login is needed only if those settings cannot be confirmed from the established deployment path; see [the completion record](docs/operations/documentation-overhaul-2026-11-01.md). Keep this item open until the real site and final plugin admission status are updated.
+  Source overhaul and the exact public package are qualified: 44 pages, strict Mintlify build and link checks passed. The canonical public homepage and representative Neon/Git guides are now verified on 2026-11-04; exact dashboard/source mapping and complete live link coverage remain separately unverified; dashboard login is needed only if those settings cannot be confirmed from the established deployment path; see [the completion record](docs/operations/documentation-overhaul-2026-11-01.md). Keep this item open until the real site and final plugin admission status are updated.
 - [ ] Move Core compatibility/UI/test source copies to reviewed versioned plugin inputs after the independent runtime releases are qualified; preserve Archives Core acceptance tests.
 - [ ] Provision repository-scoped registry publisher tokens through the owner account for unattended publication; initial releases may be submitted through the authenticated registry MCP and must still pass pinned-key CI verification.
 - [ ] Align the requested Pulumi/managed-service maintenance plan with the Blacksmith-only GitHub CI decision, including managed CI configuration and safe retirement of the existing runner. Preserve the build-cluster egress guard, rootless BuildKit, volatile runtime directory and pinned tool update/recovery requirements for any remaining customer-build services.
@@ -172,7 +220,7 @@ No implementation, published offer, provider purchase or final entitlement decis
 - [ ] Renew the rejected registry-owner GitHub OAuth connection and set up repository-scoped publisher credentials/release hooks for future unattended versions. Initial publication used the existing authorized MCP publisher path.
 - [ ] Qualify durable bounded retry/diagnostics for registry asset hashing after transient fetch failures; metadata acceptance alone does not imply signed integrity.
 - [ ] Investigate the one unreproduced generic Runtime error in owned retained-update qualification; preserve error-code/callsite evidence without logging credentials.
-- [ ] Publish the qualified docs through the intended Git-connected project and confirm docs.spitzli.cloud. Existing successful Git checks name docs.webdock.dev; the new domain still showed a Starter Kit.
+- [x] Verify the qualified docs at docs.spitzli.cloud (2026-11-04). The canonical homepage and representative Neon/Git guides return200 with intended content and canonical links; Starter Kit is gone. Full link coverage and exact provider-dashboard settings are not inferred from this serving check.
 - [ ] Qualify distribution/bootstrap of the registry-server OCI image on replacement/future RUN nodes; the exact image is currently preloaded on all three existing nodes.
 
 Do not rerun the old self-hosted registry-only CI jobs to change their historical

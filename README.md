@@ -31,13 +31,13 @@ are shown. The workspace-icon controls are part of this branch; see the
 - **Workspaces and projects:** member roles, customer plans, finite limits and usage, with separate
   operator and customer access.
 - **Account security:** Neon Auth for the primary login, with Core-enforced account access, MFA
-  and passkey support. [Auth migration and verification](docs/verification/2026-10-31-neon-all-users.json).
+  and passkey support. [Account security](crates/identity/README.md).
 - **Product plugins:** native Console screens backed by authorized plugin actions. Neon focuses
   on connecting existing databases, inspecting branches and revealing connection details on demand.
   Provider credentials remain behind Core. [Neon rollout](docs/operations/neon-plugin-rollout.md).
 - **Git-based deployments:** a dedicated Kubernetes build backend and a separate workload runtime.
   Build success and deployment readiness have different lifecycles.
-  [Build architecture](docs/architecture/build-cluster-decision.md).
+  [Git build guide](https://docs.spitzli.cloud/guides/git-deployments).
 - **Workspace API:** scoped tokens for scripts and CI, subject to the same membership and limits.
   [API guide](docs/workspace-api.md).
 
@@ -118,7 +118,7 @@ docker build -f deploy/docker/backend.Dockerfile --target backend -t spitzli-clo
 The image contains the runtime and independent migration/bootstrap tools. Runtime startup does
 not migrate schemas or create operator credentials. Use restricted runtime database roles and
 separate offline migration credentials. See [native setup](crates/control-plane/README.md),
-[Core operations](docs/operations/core-host.md), and
+[runtime configuration](crates/control-plane/.env.example), and
 [signed plugin installation](docs/operations/native-plugin-installation.md).
 
 The older Next.js Console/Auth and TypeScript control plane are archived under `legacy/` and

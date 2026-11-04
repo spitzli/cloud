@@ -1,6 +1,6 @@
 {
   "date": "2026-11-04",
-  "status": "assets-qualified-github-social-preview-configured-readme-awaiting-pr-merge",
+  "status": "published-on-main-github-social-preview-configured",
   "assets": [
     {
       "file": "docs/images/repository/social-preview.png",
@@ -54,5 +54,6 @@
     "localLinksChecked": true
   },
   "applicationCodeChanged": false,
-  "productionApplicationRolloutClaimed": false
+  "productionApplicationRolloutClaimed": false,
+  "mainMergeCommit": "ab06645fbd35c0f3037249706e4183bbc0eb97b6"
 }

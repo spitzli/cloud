@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-04",
+  "failedRun": 41870662338,
+  "failedJob": 126716495962,
+  "failedHead": "2e9e976d8b0c1bf778f38b737dd34ce1397eb917",
+  "observedFailure": "Controlled workbench browser fixture timed out waiting for the generic access-unavailable alert; old log did not identify which phase.",
+  "exactCiFailureReproduced": false,
+  "originalTestLocalAndThreeOneCpuRunsPassed": true,
+  "deterministicClockProbe": [
+    {
+      "method": "fastForward",
+      "events": [
+        "deadline"
+      ]
+    },
+    {
+      "method": "runFor",
+      "events": [
+        "deadline",
+        "render"
+      ]
+    }
+  ],
+  "change": "Use runFor for normal elapsed-time deadline/render callbacks and add phase/fixture-only bounded failure diagnostics.",
+  "applicationDeadlineSeconds": 30,
+  "locatorTimeoutMs": 5000,
+  "abortRetryLateResultAndRedactionAssertionsPreserved": true,
+  "validation": {
+    "correctedTestThreeOneCpuRunsPassed": true,
+    "completeConsoleBrowserSuitePassed": true,
+    "targetedEslintPassed": true,
+    "independentReview": "Ship; no blocking finding. Supports clock correction, does not prove the exact CI failure cause."
+  },
+  "applicationRuntimeCodeChanged": false,
+  "productionRolloutPerformed": false,
+  "remaining": "Await a fresh Blacksmith quality result; do not label the previous failed CI as passed.",
+  "followupFailure": {
+    "head": "7f146696366762c9842ab55cb6154e5508cc430a",
+    "run": 41879648864,
+    "job": 126748736661,
+    "phase": "launch: startup",
+    "assertion": "Connecting status visible within default5000ms",
+    "beforeDeadlineTest": true,
+    "exactOriginalFailureCauseStillNotProven": true
+  },
+  "fixtureBootstrap": {
+    "productionReference": "apps/console/src/Databases.tsx lazy Workbench loader",
+    "deterministicRegression": "Eager editor preload failed with ReferenceError: Buffer is not defined before adding the production shim.",
+    "bufferShimMatchesProduction": true,
+    "realEditorPreloadedBeforeMount": true,
+    "optimizerIncludesBuffer": true,
+    "explicitFixtureStartupBudgetMs": 30000,
+    "normalLocatorTimeoutMs": 5000,
+    "connectionDeadlineMs": 30000,
+    "noAssertionsRemoved": true,
+    "pageErrorsCollectedForDiagnostics": true
+  },
+  "bootstrapValidation": {
+    "threeFreshCacheOneCpuRunsPassed": true,
+    "completeConsoleBrowserSuitePassed": true,
+    "typecheckAndTargetedEslintPassed": true,
+    "independentReview": "Ship; fixture bootstrap parity and unchanged assertions verified. Browser suite subsequently passed."
+  },
+  "separateLimitation": "The authenticated startup fixture intentionally rejects SQL RPC and advertises events:false. The loaded SDK emits unsupported-WebSocket subscription rejections; these are not suppressed and are tracked separately in TODO.md. This is not SQL-editor functionality or production-reproduction evidence."
+}

@@ -1,4 +1,25 @@
-# Blacksmith migration — runner and builder probe passed
+# Blacksmith migration — native Core source qualification passed
+
+## Current verified status — 2026-11-04
+
+The complete native source quality job for commit `d370a9cafc84311c45666409845a3160805eb557`
+passed: [run 41856818349 / job 126668221149](https://github.com/spitzli/cloud/actions/runs/41856818349/job/126668221149).
+GitHub identifies the runner as `blacksmith-4vcpu-ubuntu-2404-hax24d7necf4ks2z` in the
+Blacksmith scale-set group. Every job step completed successfully. Current root workflows
+(`quality`, `backend-bootstrap`, `blacksmith-qualification`) select Blacksmith exclusively.
+PR #66 is merged as `ab06645fbd35c0f3037249706e4183bbc0eb97b6`.
+
+This supersedes the historical **root source checks pending** wording below. It does not qualify
+every independent publisher, authorize a runner fallback, or retire the former trusted runner.
+US placement remains the owner's exception for Spitzli's own CI only. Customer builds and
+production frontend/Core artifacts keep their separate EU and isolation requirements.
+See [the current read-only evidence](../../docs/verification/2026-11-04-backlog-reconciliation.json).
+
+## Historical setup and qualification record — 2026-11-01 to 2026-11-02
+
+The following notes describe the incremental setup at those dates. Their earlier pending-state
+statements are retained as history; the current root-source outcome is recorded above.
+
 
 The owner's 2026-11-01 Blacksmith-only decision supersedes the persistent trusted
 Contabo GitHub CI runner. Root repository `spitzli/cloud` and all fourteen

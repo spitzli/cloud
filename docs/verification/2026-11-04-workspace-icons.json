@@ -1,6 +1,6 @@
 {
   "date": "2026-11-04",
-  "status": "local-qualification-passed-production-rollout-pending",
+  "status": "deployed-and-real-customer-browser-qualified",
   "behavior": {
     "initialUsesDisplayedWorkspaceName": true,
     "ownerAdminUploadReplaceRemove": true,
@@ -40,6 +40,107 @@
   "limitations": [
     "Local browser checks use explicit HTTP fixtures, not production customer identity.",
     "The initial retained-schema test was incompatible with the native baseline; the new icon test uses a freshly migrated native database with its own fixture allocator state.",
-    "Production rollout and public authenticated icon flow remain pending."
-  ]
+    "The first unauthenticated Auth load timed out before any credential submission or workspace write. A fresh load showed no JS errors or failed requests, and the complete live customer flow then passed. That initial load issue was not assigned a proven cause."
+  ],
+  "production": {
+    "sourceCommit": "c9183ae38f4f2a6b7061aee6bbe1684de37203cd",
+    "presentationCommit": "d370a9cafc84311c45666409845a3160805eb557",
+    "mainMergeCommit": "ab06645fbd35c0f3037249706e4183bbc0eb97b6",
+    "coreImage": "webdock.local/core/backend@sha256:7ca7ec871f4df874eff11dff76f322aa79e58abb61c29e7a07eb15c8566c04e3",
+    "coreQualification": {
+      "actualCandidateExecutables": true,
+      "ownedPG18": true,
+      "journalCount": 74,
+      "latestMigration": 75,
+      "initialAndRepeatMigrationPassed": true,
+      "actualCoreReadyz": 200,
+      "productionDatabaseUsed": false,
+      "uid": 1001,
+      "binarySHA256": {
+        "candidate-core": "41f76990a11cd66a8b452ddf969ecb9977e8d66cd4cc691d3e9bc30c11a6967a",
+        "candidate-migrate": "56bb9a1855e9276c1a483ff2167ec0b748c3a690f28a23cd9e9e0375eb12379f"
+      }
+    },
+    "coreRollout": {
+      "image": "webdock.local/core/backend@sha256:7ca7ec871f4df874eff11dff76f322aa79e58abb61c29e7a07eb15c8566c04e3",
+      "sourceCommit": "c9183ae38f4f2a6b7061aee6bbe1684de37203cd",
+      "allFourDeploymentsReady": true,
+      "deploymentUidsPreserved": true,
+      "onlyImageFieldsChanged": true,
+      "runtimeSecretsAndIssuerUnchanged": true,
+      "secretCount": 6,
+      "schemaMigrationPerformed": false,
+      "privateAgentPassThroughRestarted": true,
+      "publicReadyz": 200,
+      "rollbackImage": "webdock.local/core/backend@sha256:a0845a12911f7a24c3630a3b9de67f5d6c984a9864baf33e935cc4493bea4446"
+    },
+    "frontends": [
+      {
+        "surface": "console",
+        "deploymentID": "dpl_4wBBUdr5XMRXCZXHBZiSX8WGG86x",
+        "canonicalOrigin": "https://console.spitzli.cloud",
+        "canonicalIndexMatchesEuArtifact": true,
+        "surfaceCorrect": true,
+        "canonicalAuthOrigin": true
+      },
+      {
+        "surface": "auth",
+        "deploymentID": "dpl_8hiQk6Sw2Tii22AsjuSyy9XZseZE",
+        "canonicalOrigin": "https://auth.spitzli.cloud",
+        "canonicalIndexMatchesEuArtifact": true,
+        "surfaceCorrect": true,
+        "canonicalAuthOrigin": true
+      }
+    ],
+    "publicRuntime": {
+      "canonicalSurfaces": [
+        {
+          "surface": "console",
+          "exactEuHtml": true,
+          "runtimeConfigMatchesProtectedCandidate": true,
+          "realtimeEnabled": true
+        },
+        {
+          "surface": "auth",
+          "exactEuHtml": true,
+          "runtimeConfigMatchesProtectedCandidate": true,
+          "realtimeEnabled": false
+        }
+      ],
+      "anonymousIconWriteDenied": 401,
+      "liveCustomerPositiveFlow": "passed"
+    },
+    "liveCustomerAcceptance": {
+      "actualPublishedAuthAndConsole": true,
+      "syntheticApiMocks": false,
+      "globalRole": "user",
+      "workspaceRole": "owner",
+      "operatorPreview": false,
+      "correctInitial": true,
+      "upload200": true,
+      "persistedAfterReload": true,
+      "persistedAcrossWorkspaceNavigation": true,
+      "authWorkspaceListIcon": true,
+      "replacement200": true,
+      "removal200": true,
+      "foreignWriteStatus": 404,
+      "widths": [
+        375,
+        1280
+      ],
+      "noHorizontalOverflow": true,
+      "qaBrandingRestoredToNull": true,
+      "javascriptErrors": 0,
+      "testBrowser": "Chromium145; HTTP3 disabled only in test process; TLS and sandbox retained"
+    },
+    "qaCleanup": {
+      "qaSessionEnded": true,
+      "qaBrandingRestoredToNull": true,
+      "localPlaintextRemoved": [
+        "qa-login.private.json",
+        "qa-browser-state.private.json"
+      ],
+      "existingVaultLoginPreserved": true
+    }
+  }
 }
