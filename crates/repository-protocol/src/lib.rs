@@ -18,6 +18,7 @@ const DESCRIPTOR_DOMAIN: &[u8] = b"webdock.repository.descriptor.v1\0";
 pub mod wire {
     tonic::include_proto!("webdock.repository.v1");
 }
+pub mod connection;
 pub mod runtime;
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]

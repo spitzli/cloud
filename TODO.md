@@ -142,6 +142,10 @@ No implementation, published offer, provider purchase or final entitlement decis
 - [ ] **Native GitHub onboarding is a release blocker for self-service Git builds.**
   Native discovery and the first local protocol/schema/provider-boundary slice are recorded in
   [the implementation brief](docs/superpowers/specs/2026-11-04-native-git-connection-design.md).
+  The [signed connection-authority contract increment](docs/superpowers/plans/2026-11-04-git-connection-authority-contract.md)
+  separates connection operations from source leases and binds their complete expected scope.
+  This contract alone does not implement live session admission, durable replay handling,
+  provider OAuth, callback/UI integration or production activation.
   Port the existing authorized GitHub App connect/callback flow into the native
   repository adapter boundary; preserve tenant/session binding, signed state,
   installation ownership, exact repository permissions and reconnect/revocation.
