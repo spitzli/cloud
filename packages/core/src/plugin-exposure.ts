@@ -1,7 +1,7 @@
 import {
   PluginError,
   type PluginManifest,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 export type ExposedPlugin = {
   state: string;
   runtime: string;

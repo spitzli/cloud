@@ -8,7 +8,7 @@ import {
   type Capability,
   type JobStatus,
   type EnqueueJob,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 export type JobScope = {
   pluginID: string;
   customerID: string;

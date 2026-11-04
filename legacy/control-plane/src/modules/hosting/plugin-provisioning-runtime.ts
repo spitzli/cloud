@@ -2,7 +2,7 @@ import { isDeepStrictEqual } from "node:util";
 import { isIP } from "node:net";
 import { z } from "zod";
 import { HostingError } from "@webdock/hosting-contracts";
-import { managedAppOriginSchema } from "@webdock/plugin-sdk/contracts";
+import { managedAppOriginSchema } from "@spitzli/plugin-sdk/contracts";
 import type { SetupRow } from "@webdock/module-hosting/server/project-setup";
 import {
   createPluginAppProvisioning,

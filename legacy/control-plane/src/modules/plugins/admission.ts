@@ -5,7 +5,7 @@ import {
   sqlCommandWords,
 } from "@webdock/database-runtime";
 import { ModuleError } from "@webdock/module-sdk";
-import type { Intent } from "@webdock/plugin-sdk/contracts";
+import type { Intent } from "@spitzli/plugin-sdk/contracts";
 import { PluginStateError } from "./store";
 type Connection = Pick<PoolClient, "query">;
 export type AdmissionContext = {

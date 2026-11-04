@@ -1,7 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { z } from "zod";
-import { createPluginContext, verifyInvocation } from "@webdock/plugin-sdk/server";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import { createPluginContext, verifyInvocation } from "@spitzli/plugin-sdk/server";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 import { runAction } from "./actions";
 export type RuntimeConfig={credential:string;hostOrigin:string;publicKey:string;generation:number};
 const payloadSchema=z.strictObject({input:z.unknown(),configuration:z.strictObject({}),hostOrigin:z.string().max(2048)});

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "webdock",
+      "name": "spitzli-cloud",
       "dependencies": {
         "@neon/config": "1.10.0",
         "@neon/env": "1.6.8",
@@ -48,7 +48,7 @@
       "name": "@webdock/adapter-plugin-tabularium",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/plugin-sdk": "*",
+        "@spitzli/plugin-sdk": "*",
         "jose": "^6.1.0",
       },
     },
@@ -187,9 +187,9 @@
       "name": "@webdock/extension-managed-cms",
       "version": "0.1.0-alpha.1",
       "dependencies": {
+        "@spitzli/plugin-sdk": "*",
         "@webdock/cms-bridge": "*",
         "@webdock/cms-ui": "*",
-        "@webdock/plugin-sdk": "*",
         "react": "19.2.8",
         "react-dom": "19.2.8",
         "zod": "4.6.5",
@@ -370,8 +370,8 @@
       "name": "@webdock/core",
       "version": "0.1.0",
       "dependencies": {
+        "@spitzli/plugin-sdk": "*",
         "@webdock/platform-db": "*",
-        "@webdock/plugin-sdk": "*",
         "bullmq": "6.3.16",
         "drizzle-orm": "1.0.0-rc.4",
         "ioredis": "6.0.0",
@@ -463,7 +463,7 @@
       "name": "@webdock/module-sdk",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/plugin-sdk": "*",
+        "@spitzli/plugin-sdk": "*",
         "semver": "^7.8.5",
       },
       "devDependencies": {
@@ -511,17 +511,18 @@
       },
     },
     "packages/plugin-cli": {
-      "name": "@webdock/cli",
+      "name": "@spitzli/cli",
       "version": "0.1.0",
       "bin": {
+        "spitzli-cloud": "src/cli.js",
         "webdock": "src/cli.js",
       },
       "dependencies": {
-        "@webdock/plugin-sdk": "0.1.0",
+        "@spitzli/plugin-sdk": "0.1.0",
       },
     },
     "packages/plugin-sdk": {
-      "name": "@webdock/plugin-sdk",
+      "name": "@spitzli/plugin-sdk",
       "version": "0.1.0",
       "dependencies": {
         "semver": "^7.8.5",
@@ -1033,6 +1034,10 @@
 
     "@smithy/types": ["@smithy/types@4.19.0", "", { "dependencies": { "tslib": "^2.6.2" } }, "sha512-r7jh49VJxGerfAcTQA6gXcKc+98zOp/tqRwzYjgOE+iSQsP6cEU1hq2QzbuipmP68QtYdY9wKEhiCQZIzHgZ4Q=="],
 
+    "@spitzli/cli": ["@spitzli/cli@workspace:packages/plugin-cli"],
+
+    "@spitzli/plugin-sdk": ["@spitzli/plugin-sdk@workspace:packages/plugin-sdk"],
+
     "@stablelib/base64": ["@stablelib/base64@1.0.1", "", {}, "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ=="],
 
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
@@ -1227,8 +1232,6 @@
 
     "@webdock/auth-configuration": ["@webdock/auth-configuration@workspace:packages/auth-configuration"],
 
-    "@webdock/cli": ["@webdock/cli@workspace:packages/plugin-cli"],
-
     "@webdock/cms-bridge": ["@webdock/cms-bridge@workspace:packages/cms-bridge"],
 
     "@webdock/cms-instance": ["@webdock/cms-instance@workspace:apps/cms-instance"],
@@ -1284,8 +1287,6 @@
     "@webdock/payload-sso": ["@webdock/payload-sso@workspace:packages/payload-sso"],
 
     "@webdock/platform-db": ["@webdock/platform-db@workspace:packages/platform-db"],
-
-    "@webdock/plugin-sdk": ["@webdock/plugin-sdk@workspace:packages/plugin-sdk"],
 
     "@webdock/realtime-sealer": ["@webdock/realtime-sealer@workspace:apps/realtime-sealer"],
 

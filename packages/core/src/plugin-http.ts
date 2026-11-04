@@ -1,6 +1,6 @@
 import https from "node:https";
 import { isIP } from "node:net";
-import { PluginError, httpRequestSchema } from "@webdock/plugin-sdk/contracts";
+import { PluginError, httpRequestSchema } from "@spitzli/plugin-sdk/contracts";
 export type HTTPBinding = {
   origin: string;
   addresses: string[];

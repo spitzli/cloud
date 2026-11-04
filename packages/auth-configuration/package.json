@@ -12,5 +12,6 @@
     "@webdock/core": "*",
     "@webdock/auth-clerk": "*",
     "@webdock/auth-better-auth": "*"
-  }
+  },
+  "license": "Apache-2.0"
 }

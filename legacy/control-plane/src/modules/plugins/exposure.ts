@@ -4,7 +4,7 @@ import {
   pluginTools,
   invokePluginExposure,
 } from "@webdock/core/plugin-exposure";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 import {
   getRuntimePlugin,
   invokeRuntimePlugin,

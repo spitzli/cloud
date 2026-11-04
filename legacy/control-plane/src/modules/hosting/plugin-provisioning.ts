@@ -1,7 +1,7 @@
 import {
   PluginError,
   type ManagedAppProvisioning,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 import type {
   ManagedAppsScope,
   ManagedAppsProvisioningRequest,

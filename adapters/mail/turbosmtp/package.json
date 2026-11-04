@@ -13,5 +13,6 @@
   "dependencies": {
     "@webdock/mail-contracts": "*",
     "@webdock/module-mail": "*"
-  }
+  },
+  "license": "Apache-2.0"
 }

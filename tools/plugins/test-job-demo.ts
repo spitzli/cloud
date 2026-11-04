@@ -6,8 +6,8 @@ import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
 import { createPluginJobs } from "@webdock/core/plugin-jobs";
-import { createPluginContext } from "@webdock/plugin-sdk/server";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import { createPluginContext } from "@spitzli/plugin-sdk/server";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 const dir = resolve(process.argv[2] ?? "");
 const port = Number(process.env.WEBDOCK_TEST_REDIS_PORT);
 if (!process.argv[2] || !port)

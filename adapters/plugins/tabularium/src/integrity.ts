@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import {
   parsePluginManifest,
   type VerifiedPluginRelease,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 const hash = (raw: string) => createHash("sha256").update(raw).digest("hex");
 /** JSON.parse alone silently accepts duplicate object keys. Reject them before interpreting signed data. */
 function strictJSON(raw: string) {

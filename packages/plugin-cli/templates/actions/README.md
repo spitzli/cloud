@@ -11,7 +11,7 @@ bun install --ignore-scripts
 bun run build
 ```
 
-Commit the generated `bun.lock`, the `vendor/` directory, `tabularium.json`, Dockerfile and source. The CLI bundles its installed SDK in `vendor/plugin-sdk`; no published `@webdock/plugin-sdk` package is required. The SDK's public dependencies are still installed by Bun. The lockfile records the resolved dependency versions and the Dockerfile installs from it.
+Commit the generated `bun.lock`, the `vendor/` directory, `tabularium.json`, Dockerfile and source. The CLI bundles its installed SDK in `vendor/plugin-sdk`; no published `@spitzli/plugin-sdk` package is required. The SDK's public dependencies are still installed by Bun. The lockfile records the resolved dependency versions and the Dockerfile installs from it.
 
 In Console, open the project's extensions and choose **Install plugin**. Select the repository through GitHub (private repositories require read-only Contents access), provide an HTTPS Git URL, or upload a ZIP up to 32 MiB. The installer builds the Dockerfile and pins the resulting image. Review the built manifest and configuration, then approve. Deployment and project activation follow automatically while the installer page is open. Keep that page open; refresh it if status updates pause.
 

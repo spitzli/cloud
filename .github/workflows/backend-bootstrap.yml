@@ -77,7 +77,7 @@ jobs:
       - name: Retain the short-lived bootstrap candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: webdock-backend-bootstrap-${{ github.sha }}
+          name: spitzli-cloud-backend-bootstrap-${{ github.sha }}
           path: |
             ${{ runner.temp }}/webdock-backend.oci.tar
             ${{ runner.temp }}/bootstrap-manifest.json

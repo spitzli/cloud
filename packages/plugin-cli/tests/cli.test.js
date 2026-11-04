@@ -30,7 +30,7 @@ test("scaffold refuses overwrite; validation and pack produce identical descript
     );
     assert.equal(
       JSON.parse(await readFile(join(dir, "package.json"), "utf8"))
-        .dependencies["@webdock/plugin-sdk"],
+        .dependencies["@spitzli/plugin-sdk"],
       "0.1.0",
     );
   } finally {
@@ -50,12 +50,12 @@ test('actions scaffold includes a vendored SDK and declares no unsupported servi
     assert.deepEqual(manifest.jobs, []);
     assert.deepEqual(manifest.actions, [{name:'demo.echo',intent:'read',capabilities:[]}]);
     const pkg = JSON.parse(await readFile(join(dir, 'package.json'), 'utf8'));
-    assert.equal(pkg.dependencies['@webdock/plugin-sdk'], 'file:vendor/plugin-sdk');
+    assert.equal(pkg.dependencies['@spitzli/plugin-sdk'], 'file:vendor/plugin-sdk');
     const sdk = JSON.parse(await readFile(join(dir, 'vendor/plugin-sdk/package.json'), 'utf8'));
-    assert.equal(sdk.name, '@webdock/plugin-sdk');
+    assert.equal(sdk.name, '@spitzli/plugin-sdk');
     assert.ok(sdk.dependencies.zod);
     assert.equal(sdk.scripts, undefined, "vendored compiled SDK must not rerun source build hooks");
-    assert.match(await readFile(join(dir, 'vendor/plugin-sdk/LICENSE'), 'utf8'), /GNU AFFERO GENERAL PUBLIC LICENSE/);
+    assert.match(await readFile(join(dir, 'vendor/plugin-sdk/LICENSE'), 'utf8'), /Apache License/);
     assert.match(await readFile(join(dir, 'vendor/plugin-sdk/NOTICE'), 'utf8'), /Spitzli/);
     assert.match(await readFile(join(dir, '.gitignore'), 'utf8'), /^\/dist\/$/m);
     assert.ok(await readFile(join(dir, 'vendor/plugin-sdk/dist/server/index.js'), 'utf8'));

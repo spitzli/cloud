@@ -47,5 +47,6 @@
   "engines": {
     "bun": ">=1.4.3"
   },
-  "type": "module"
+  "type": "module",
+  "license": "Apache-2.0"
 }

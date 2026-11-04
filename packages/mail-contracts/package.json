@@ -15,5 +15,6 @@
   },
   "dependencies": {
     "@webdock/core": "*"
-  }
+  },
+  "license": "Apache-2.0"
 }

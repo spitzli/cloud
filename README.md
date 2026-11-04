@@ -138,5 +138,5 @@ provider access only when explicitly authorized, and keep secrets out of source,
 [Repository graphics and screenshot provenance](docs/images/repository/README.md) are documented
 alongside the assets.
 
-Original Spitzli Cloud code is **AGPL-3.0-only**. See [LICENSE](LICENSE) and
-[alternative licensing](COMMERCIAL-LICENSING.md). Third-party components retain their own licenses.
+Original Spitzli Cloud code is **Apache-2.0**. See [LICENSE](LICENSE) and
+[licensing scope](COMMERCIAL-LICENSING.md). Third-party components retain their own licenses.

@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   PluginError,
   type PluginManifest,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 export type RuntimePolicy = {
   state: string;
   runtime: string;

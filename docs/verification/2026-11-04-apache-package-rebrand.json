@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-04",
+  "sourceLicense": "Apache-2.0",
+  "scope": "first-party cloud source; separately licensed components retained",
+  "vercelRenames": [
+    {
+      "id": "prj_TqeFXSoCLV7dNDQ2VHdRiYnR4K7L",
+      "oldName": "webdock",
+      "newName": "spitzli-cloud",
+      "productionDeploymentUnchanged": true,
+      "functionRegionsUnchanged": true
+    },
+    {
+      "id": "prj_W4Ytphd3TSToMFuQHSMdSec6Rgr9",
+      "oldName": "webdock-auth",
+      "newName": "spitzli-cloud-auth",
+      "productionDeploymentUnchanged": true,
+      "functionRegionsUnchanged": true
+    },
+    {
+      "id": "prj_yb5o6FQN5Wkf1123yOMBtx4AlcMx",
+      "oldName": "webdock-admin",
+      "newName": "spitzli-cloud-console",
+      "productionDeploymentUnchanged": true,
+      "functionRegionsUnchanged": true
+    },
+    {
+      "id": "prj_0dlqp0mgfTbBefjRBBcvI1jyEboC",
+      "oldName": "webdock-cms",
+      "newName": "spitzli-cloud-cms",
+      "productionDeploymentUnchanged": true,
+      "functionRegionsUnchanged": true
+    }
+  ],
+  "checks": {
+    "workspaceRustMetadata": 31,
+    "cliTests": 2,
+    "exporterTests": 17,
+    "ociBuilderTests": 12,
+    "npmArchiveLicenseAndNotice": true,
+    "npmPublicationPerformed": false,
+    "frozenBunInstall": true,
+    "sdkAndCliTests": 30,
+    "isolatedPackedConsumerBuilds": true,
+    "sdkTypecheck": true,
+    "broaderLegacyModuleSuite": {
+      "passed": 166,
+      "skipped": 4,
+      "preexistingFailed": 1
+    }
+  },
+  "historicalGithubDeploymentsRewritten": false,
+  "legacyGhcrPackagesDeleted": false,
+  "newApacheContainerPublished": false,
+  "publicNpmScopeMigration": "implemented; registry publication pending CI and merge",
+  "runtimeDeploymentsChanged": false,
+  "npmPackages": [
+    {
+      "name": "@spitzli/plugin-sdk",
+      "version": "0.1.0"
+    },
+    {
+      "name": "@spitzli/cli",
+      "version": "0.1.0"
+    }
+  ],
+  "npmExecutable": {
+    "primary": "spitzli-cloud",
+    "compatibilityAlias": "webdock"
+  }
+}

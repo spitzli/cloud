@@ -1,6 +1,6 @@
 /** Synthetic acceptance extension: a separate private-TLS process, never a production plugin. */
 import {readFileSync} from 'node:fs';
-import {createPluginContext,verifyInvocation} from '@webdock/plugin-sdk/server';
+import {createPluginContext,verifyInvocation} from '@spitzli/plugin-sdk/server';
 const c=JSON.parse(readFileSync(process.argv[2],'utf8'));
 const html=`<!doctype html><html><head><title>Synthetic acceptance notes</title></head><body><h1>Synthetic acceptance notes</h1><p>This local fixture tests the shared extension bridge.</p><label>Project note <input id="note" aria-label="Project note"></label><button id="save" disabled>Save note</button><button id="load" disabled>Load note</button><pre id="result">Waiting for Console bridge</pre><script>
 let port;const pending=new Map();window.addEventListener('message',e=>{if(e.source!==parent||e.data?.type!=='webdock:init'||e.data.nonce!==location.hash.slice(1)||!e.ports[0])return;port=e.ports[0];port.onmessage=e=>{const cb=pending.get(e.data.id);if(cb){pending.delete(e.data.id);cb(e.data)}};document.querySelector('#save').disabled=false;document.querySelector('#load').disabled=false;document.querySelector('#result').textContent='Console bridge ready';});

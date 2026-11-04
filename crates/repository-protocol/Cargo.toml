@@ -3,7 +3,7 @@ name="webdock-repository-protocol"
 version="0.1.0"
 edition="2024"
 rust-version="1.94"
-license="AGPL-3.0-only"
+license="Apache-2.0"
 
 [dependencies]
 webdock-plugin-protocol={path="../plugin-protocol"}

@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test";
 import * as core from "../../../packages/core/src/plugin-apps";
 import * as adapter from "../src/modules/hosting/plugin-apps";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 const createHandler = (
   execute: Parameters<typeof adapter.createManagedAppsHandler>[0],
 ) => adapter.createManagedAppsHandler(execute, () => {});

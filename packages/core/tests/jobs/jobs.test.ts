@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { jobIdentity } from "../../src/plugin-jobs.ts";
-import { enqueueJobSchema } from "@webdock/plugin-sdk/contracts";
+import { enqueueJobSchema } from "@spitzli/plugin-sdk/contracts";
 const scope = {
   pluginID: "job-demo",
   customerID: "1",

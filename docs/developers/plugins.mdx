@@ -37,6 +37,14 @@ New shared or self-hosted PostgreSQL orders are disabled. The PostgreSQL plugin 
 
 Native runtime RPC uses authenticated private Unix sockets or mutual TLS. Legacy Elysia extensions retain their separately enrolled HTTPS transport and protocol-v1 contract. Do not change a protocol version to migrate a runtime.
 
+## TypeScript extension tooling
+
+For retained protocol-v1 TypeScript extensions, the authoring packages are
+`@spitzli/plugin-sdk` and `@spitzli/cli`. Install the CLI with
+`npm install --global @spitzli/cli`, then use `spitzli-cloud plugin --help`.
+The old `webdock` executable remains an alias. These local tools do not publish,
+install or deploy plugins, and their v1 contracts do not replace the native Rust SDK.
+
 ## Availability
 
 As of 1 November 2026, the nine native repositories, Managed CMS and shared SDK have independent releases. Their images and release assets are published. All ten new plugin releases have registry metadata and verified signatures from the established registry key. Provider entries still require their dedicated runtime bindings. Publication is not proof of customer activation or general installation readiness.

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { PluginApps, PluginHTTP } from "@webdock/plugin-sdk/contracts";
+import type { PluginApps, PluginHTTP } from "@spitzli/plugin-sdk/contracts";
 const empty = z.strictObject({});
 const transfer = z.string().regex(/^[a-zA-Z0-9_-]{1,128}$/);
 const write = z.discriminatedUnion("op", [

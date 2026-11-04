@@ -16,7 +16,7 @@ import { withDatabaseScope } from "@webdock/database-runtime";
 import {
   createPluginContext,
   verifyInvocation,
-} from "@webdock/plugin-sdk/server";
+} from "@spitzli/plugin-sdk/server";
 const env = parseEnv(
   readFileSync(process.env.WEBDOCK_PLUGIN_TEST_ENV ?? "legacy/control-plane/.env.rls.test.local", "utf8"),
 );

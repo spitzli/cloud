@@ -1,5 +1,5 @@
 {
-  "name": "webdock",
+  "name": "spitzli-cloud",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -50,7 +50,7 @@
     "nodemailer": "10.0.13",
     "dompurify": "3.4.16"
   },
-  "license": "AGPL-3.0-only",
+  "license": "Apache-2.0",
   "patchedDependencies": {
     "drizzle-orm@0.45.2": "patches/drizzle-orm@0.45.2.patch",
     "@payloadcms/storage-s3@4.0.0-canary.37": "patches/@payloadcms%2Fstorage-s3@4.0.0-canary.37.patch",

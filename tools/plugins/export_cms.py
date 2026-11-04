@@ -13,7 +13,7 @@ APPLICATIONS = ['extensions/managed-cms', 'apps/cms-instance']
 PACKAGES = ['plugin-sdk', 'cms-ui', 'cms-bridge', 'payload-sso', 'oauth-session', 'instance-kit', 'i18n', 'database-runtime']
 ROOT_FILES = ['LICENSE', 'COMMERCIAL-LICENSING.md', 'NOTICE']
 SOURCE_DIRS = {'src', 'ui', 'tests', 'compiled', 'locales'}
-SOURCE_FILES = {'package.json', 'tsconfig.json', 'README.md', 'build.ts', 'manifest.ts', 'next.config.ts', 'build-migration.mjs'}
+SOURCE_FILES = {'package.json', 'tsconfig.json', 'README.md', 'LICENSE', 'NOTICE', 'build.ts', 'manifest.ts', 'next.config.ts', 'build-migration.mjs'}
 EXCLUDED_DIRS = {'node_modules', 'dist', '.next', '.git', 'coverage', '__pycache__', '.cache', 'private', 'secrets', 'data', 'runtime'}
 WITHHELD = {'extensions/managed-cms/tests/image-smoke.mjs', 'packages/cms-bridge/tests/postgres.test.ts'}
 SOURCE_SUFFIXES = {'.ts', '.tsx', '.mjs', '.json', '.css', '.html', '.md', '.po', '.pot'}
@@ -71,15 +71,14 @@ def select_files(source: Path):
 
 
 def rewrite_workspace_packages(output: Path):
-    names = {'@webdock/' + name for name in PACKAGES}
-    names.update(json.loads((output / path / 'package.json').read_text())['name'] for path in APPLICATIONS)
+    names = {json.loads((output / path / 'package.json').read_text())['name'] for path in package_paths()}
     for relative in package_paths():
         path = output / relative / 'package.json'
         package = json.loads(path.read_text())
         for field in ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']:
             for name in package.get(field, {}):
                 value = package[field][name]
-                if name.startswith('@webdock/'):
+                if name.startswith(('@webdock/', '@spitzli/')):
                     if name not in names:
                         raise ValueError('Dependency outside CMS closure: ' + name)
                     package[field][name] = 'workspace:*'
@@ -94,11 +93,11 @@ def rewrite_workspace_packages(output: Path):
 def dockerfile(kind: str) -> str:
     prefix = f'FROM {BUN_IMAGE} AS build\nWORKDIR /app\nCOPY . .\nRUN bun install --frozen-lockfile --ignore-scripts\n'
     if kind == 'plugin':
-        return prefix + f'''RUN bun run --filter @webdock/plugin-sdk build && bun extensions/managed-cms/build.ts
+        return prefix + f'''RUN bun run --filter @spitzli/plugin-sdk build && bun extensions/managed-cms/build.ts
 FROM {BUN_IMAGE}
 WORKDIR /app
 COPY --from=build --chown=65532:65532 /app/extensions/managed-cms/dist ./
-COPY --from=build /app/LICENSE /app/COMMERCIAL-LICENSING.md /app/NOTICE /usr/share/licenses/webdock/
+COPY --from=build /app/LICENSE /app/COMMERCIAL-LICENSING.md /app/NOTICE /usr/share/licenses/spitzli-cloud/
 ENV NODE_ENV=production
 USER 65532:65532
 EXPOSE 3443 3444
@@ -112,7 +111,7 @@ WORKDIR /app
 COPY --from=build --chown=65532:65532 /app/apps/cms-instance/.next/standalone ./
 COPY --from=build --chown=65532:65532 /app/apps/cms-instance/.next/static ./apps/cms-instance/.next/static
 COPY --from=build --chown=65532:65532 /app/apps/cms-instance/.next/migrate.mjs ./migrate.mjs
-COPY --from=build /app/LICENSE /app/COMMERCIAL-LICENSING.md /app/NOTICE /usr/share/licenses/webdock/
+COPY --from=build /app/LICENSE /app/COMMERCIAL-LICENSING.md /app/NOTICE /usr/share/licenses/spitzli-cloud/
 RUN mkdir -p /data/media /data/transfers && chown -R 65532:65532 /data
 USER 65532:65532
 VOLUME ["/data"]
@@ -145,16 +144,16 @@ def export_cms(source: Path, output: Path) -> dict:
                 copy_source(source, staging, path)
                 patched[name] = relative
         plugin = json.loads((staging / APPLICATIONS[0] / 'package.json').read_text())
-        root = {'name': 'webdock-extension-managed-cms', 'version': plugin['version'], 'private': True,
+        root = {'name': 'spitzli-cloud-plugin-managed-cms', 'version': plugin['version'], 'private': True,
                 'type': 'module', 'packageManager': 'bun@1.4.3', 'workspaces': package_paths(),
-                'scripts': {'build:sdk': 'bun run --filter @webdock/plugin-sdk build',
+                'scripts': {'build:sdk': 'bun run --filter @spitzli/plugin-sdk build',
                             'build:plugin': 'bun run build:sdk && bun extensions/managed-cms/build.ts',
                             'build:instance': 'bun run --filter @webdock/cms-instance build',
                             'build': 'bun run build:plugin && bun run build:instance',
                             'check': 'bun run build:sdk && bun run --filter @webdock/extension-managed-cms check',
                             'test': 'bun run build:sdk && bun test --isolate ./extensions/managed-cms/tests ./apps/cms-instance/tests ./packages/cms-bridge/src ./packages/cms-ui/src'},
                 'devDependencies': {'typescript': '^5', '@types/bun': '^1.3.0', '@types/node': '^24', '@types/react': '^19', '@types/react-dom': '^19', '@types/pg': '^8.15.5', 'happy-dom': '20.14.5'},
-                'overrides': upstream.get('overrides', {}), 'patchedDependencies': patched, 'license': 'AGPL-3.0-only'}
+                'overrides': upstream.get('overrides', {}), 'patchedDependencies': patched, 'license': upstream.get('license', 'Apache-2.0')}
         (staging / 'package.json').write_text(json.dumps(root, indent=2) + '\n')
         (staging / 'bunfig.toml').write_text('[install]\nlinker = "hoisted"\n')
         ignored = 'node_modules\n.next\ndist\n.git\n.env*\n!**/.env.example\n/data\n/private\n/secrets\n/release\n'

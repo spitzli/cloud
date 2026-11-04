@@ -13,5 +13,6 @@
   "peerDependencies": {
     "payload": "4.0.0-canary.37",
     "@webdock/payload-sso": "*"
-  }
+  },
+  "license": "Apache-2.0"
 }

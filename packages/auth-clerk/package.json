@@ -12,5 +12,6 @@
     "@clerk/backend": "3.24.0",
     "@webdock/core": "*",
     "@webdock/auth-configuration": "*"
-  }
+  },
+  "license": "Apache-2.0"
 }

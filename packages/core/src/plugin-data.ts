@@ -6,7 +6,7 @@ import {
   documentWriteSchema,
   type Capability,
   type PluginDocument,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 export type DocumentScope = {
   pluginID: string;
   customerID: string;
