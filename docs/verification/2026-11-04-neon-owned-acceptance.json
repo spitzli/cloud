@@ -1,0 +1,90 @@
+{
+  "date": "2026-11-04",
+  "status": "owned-provider-api-acceptance-passed-customer-browser-pending",
+  "actor": "authenticated-operator-and-owned-workspace-owner",
+  "ordinaryCustomerIdentityVerified": false,
+  "runtime": {
+    "version": "0.1.2",
+    "sourceCommit": "14109bb743c35b9f89e5776e9fb44ed3f810526e",
+    "image": "ghcr.io/spitzli/cloud-plugin-neon@sha256:2f5242e41364ad801e2031ba32c692bfa205d61411658af2abf9b557eb84681f",
+    "manifestSha256": "a7081fd36b646a149024162845967afa2500eecad334b425ca5ed2392a7507b6",
+    "registryKeyID": "5d8025c66487bb44",
+    "registrySignatureVerified": true,
+    "generation": 4,
+    "normalUpdateSucceeded": true,
+    "pinnedDescribeAndHealthPromoted": true,
+    "namespaceQuotaLimitRangeDefaultDenyRestrictedVerified": true,
+    "admissionPoliciesRelaxed": false
+  },
+  "provider": {
+    "ownedNonCoreProject": true,
+    "verifiedRegion": "aws-eu-central-1",
+    "projectScopedTemporaryKey": true,
+    "providerResourcesCreatedOrDeleted": false
+  },
+  "remaining": [
+    "Real ordinary-customer identity and full browser-flow acceptance remain separate from these operator/owner API checks.",
+    "These namespace checks do not establish public arbitrary-build multi-tenant isolation."
+  ],
+  "baselineWriteAndCredentialChecksVersion": "0.1.1",
+  "baselineRuntime": {
+    "version": "0.1.1",
+    "sourceCommit": "ab279b21dffab0c86b376ddcdf046e6d281d9367",
+    "image": "ghcr.io/spitzli/cloud-plugin-neon@sha256:b50cbbfc7eacb0a8e1a42bdaead41b5cd095c5590d7cc0679d6765db2cc733c0",
+    "manifestSha256": "00961cdbb40d1fd14278d1f0bb43c660b33f80aa733cb87c1937182be98bdd29",
+    "registryKeyID": "5d8025c66487bb44",
+    "registrySignatureVerified": true,
+    "generation": 3,
+    "normalUpdateSucceeded": true,
+    "pinnedDescribeAndHealthPromoted": true,
+    "namespaceQuotaLimitRangeDefaultDenyRestrictedVerified": true,
+    "admissionPoliciesRelaxed": false
+  },
+  "baselinePassed": {
+    "normalApiKeyConnection": true,
+    "projectOnlyDiscovery": true,
+    "attach": true,
+    "attachIdempotentReplay": true,
+    "settingsAndBranches": true,
+    "pooledAndDirectUriNoStore": true,
+    "pooledAndDirectActualReadOnlySqlWithTlsVerification": true,
+    "oneAttachmentWorkspaceLimitEnforced": true,
+    "otherOwnedProjectCannotReadAttachedResource": true,
+    "detachWithCreationPermissionRemoved": true,
+    "detachWithProviderConnectionDisconnected": true,
+    "detachIdempotentReplay": true,
+    "allocationReleased": true,
+    "providerDatabaseRetained": true,
+    "temporaryKeyRevokedWithHttp401Confirmed": true,
+    "temporaryKeyPlaintextRemoved": true
+  },
+  "currentInventoryAcceptance": {
+    "runtimeVersion": "0.1.2",
+    "viaPublicConsoleGateway": true,
+    "fullSelectorSucceeded": true,
+    "seconds": 18.94,
+    "noStore": true,
+    "actualFrankfurtProject": true,
+    "projectBranchDatabaseRoleEndpointReturned": true,
+    "branchFilterCorrect": true,
+    "credentialsAbsentFromInventory": true,
+    "gatewayAndTokenDeadlinesUnchanged": true,
+    "realOrdinaryCustomerIdentity": false
+  },
+  "currentRevocationAcceptance": {
+    "requestInFlightWhenDisconnectStarted": true,
+    "disconnectCompletedBeforeReadOutcome": true,
+    "httpStatus": 503,
+    "errorCode": "unavailable",
+    "noInventoryReturned": true,
+    "realOrdinaryCustomerIdentity": false
+  },
+  "currentCleanup": {
+    "providerKeyRevoked401": true,
+    "plaintextRemoved": true,
+    "consoleDisconnected": true,
+    "noAttachmentCreated": true,
+    "allocationZero": true,
+    "concurrentReadRevocation": true
+  }
+}
