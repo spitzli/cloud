@@ -1,8 +1,8 @@
 {
   "date": "2026-11-04",
-  "status": "owned-provider-api-acceptance-passed-customer-browser-pending",
-  "actor": "authenticated-operator-and-owned-workspace-owner",
-  "ordinaryCustomerIdentityVerified": false,
+  "status": "owned-provider-api-and-real-customer-browser-acceptance-passed",
+  "actor": "authenticated-operator-owned-workspace-owner-and-ordinary-customer",
+  "ordinaryCustomerIdentityVerified": true,
   "runtime": {
     "version": "0.1.2",
     "sourceCommit": "14109bb743c35b9f89e5776e9fb44ed3f810526e",
@@ -23,7 +23,9 @@
     "providerResourcesCreatedOrDeleted": false
   },
   "remaining": [
-    "Real ordinary-customer identity and full browser-flow acceptance remain separate from these operator/owner API checks.",
+    "Earlier browser attempts encountered transient Failed to fetch errors. Successful later runs used Chromium 145 with HTTP/3 disabled only in the test process; TLS verification, browser sandbox and production Realtime remained enabled. This does not establish zero network errors.",
+    "The browser test resumed after a harness navigation assertion: detach intentionally returns to the workspace Neon listing, rather than the project overview.",
+    "Invitation inbox delivery, customer Git onboarding and arbitrary customer build isolation are outside this Neon customer-browser acceptance.",
     "These namespace checks do not establish public arbitrary-build multi-tenant isolation."
   ],
   "baselineWriteAndCredentialChecksVersion": "0.1.1",
@@ -86,5 +88,136 @@
     "noAttachmentCreated": true,
     "allocationZero": true,
     "concurrentReadRevocation": true
+  },
+  "ordinaryCustomerAcceptance": {
+    "identity": {
+      "controlledEmail": "customer01@spitzli.dev",
+      "globalRole": "user",
+      "workspaceRole": "owner",
+      "operatorPreview": false
+    },
+    "activation": {
+      "email": "customer01@spitzli.dev",
+      "realPublishedAuthAndConsole": true,
+      "noApiMocks": true,
+      "normalOperatorInvitation": true,
+      "normalActivationAndPasswordSetup": true,
+      "normalInvitationAcceptance": true,
+      "managedNeonFirstLogin": true,
+      "normalPkceConsoleHandoff": true,
+      "globalRole": "user",
+      "operatorPreview": false,
+      "operatorPlansLinkHidden": true,
+      "workspaceID": "111386885850406912",
+      "javascriptErrors": 0
+    },
+    "accessDenials": {
+      "realCustomerSession": true,
+      "operatorPreview": false,
+      "oneOwnWorkspaceOnly": true,
+      "operatorAndForeignWorkspaceEndpointsDenied": [
+        {
+          "path": "/api/console/registry/customers",
+          "status": 403
+        },
+        {
+          "path": "/api/console/plans",
+          "status": 403
+        },
+        {
+          "path": "/api/console/customers/99868132637671424/usage",
+          "status": 403
+        }
+      ],
+      "foreignNeonConnectionDenied403": true
+    },
+    "planLimits": {
+      "realCustomerSession": true,
+      "defaultProjectVisibleViaCustomerApi": true,
+      "singleProjectWorkspaceViewIntentional": true,
+      "namedPlanVisible": true,
+      "projectAllocation": 1,
+      "projectLimit": 1,
+      "extraProjectRefused409": true,
+      "helpfulLimitMessage": true,
+      "noProjectCreatedOrDeleted": true,
+      "javascriptErrors": 0
+    },
+    "neonUi": {
+      "actualPublishedUi": true,
+      "noApiMocks": true,
+      "realCustomerRole": "user",
+      "resourceSelfServiceCreated": true,
+      "settingsAndBranchesVisible": true,
+      "uriRevealAndHide": true,
+      "uriNotPersisted": true,
+      "widths": [
+        375,
+        1280
+      ],
+      "colorSchemes": [
+        "light",
+        "dark"
+      ],
+      "noDocumentOverflow": true,
+      "detachedViaUi": true,
+      "expectedDetachRoute": "/workspaces/111386885850406912/products/neon",
+      "disconnectedViaUi": true,
+      "javascriptErrors": 0,
+      "earlierTestInterruptedAfterDetach": true,
+      "interruption": "Harness expected project overview, actual intended route is workspace Neon product listing",
+      "testTransport": "Chromium 145 with HTTP/3 disabled; TLS verification retained",
+      "networkLimitation": "Earlier attempts had transient Failed to fetch; this proof does not assert zero network retries"
+    },
+    "relogin": {
+      "actualPublishedAuthAndConsole": true,
+      "signOutViaUi": true,
+      "signedOutSessionNull": true,
+      "passwordSignInViaUi": true,
+      "pkceConsoleHandoff": true,
+      "reloadRestoresSession": true,
+      "globalRole": "user",
+      "operatorPreview": false
+    },
+    "cleanup": {
+      "providerKeyRevoked401": true,
+      "plaintextKeyRemoved": true,
+      "connectionDisconnected": true,
+      "connectionRevision": 4,
+      "attachmentRemoved": true,
+      "neonAllocationZero": true,
+      "providerDatabaseAndBranchesRetained": true,
+      "qaAccountAndPlanRetained": true
+    },
+    "emailDelivery": "Activation used the supported invitation link; inbox receipt was not verified."
+  },
+  "frontendQualification": {
+    "sourceCommit": "b9603ecf723c2cf4ddec596dcf8514eb35fcf425",
+    "mainMergeCommit": "4735a585753aa549ce9a77f8b77fd6b18d2a5fa6",
+    "regressionTests": {
+      "passed": 4,
+      "failed": 0
+    },
+    "consoleTypecheckPassed": true,
+    "euPrebuiltArtifactSha256": "5bb0a86e7720188688b852604d0ca0b6bd81c602e36c073e8cf393b0c1bf65cb",
+    "canonicalPromotions": [
+      {
+        "surface": "console",
+        "deploymentID": "dpl_CsZfvKa5Szo8vDP3S33prUf25Qmw",
+        "canonicalIndexMatchesEuArtifact": true,
+        "indexSHA256": "a97713db0e63d40354ea0f7f1e85662604fcf64aedbcd18bcbbaabbc7ddd9852",
+        "runtimeConfigPreserved": true,
+        "realtimeEnabled": true
+      },
+      {
+        "surface": "auth",
+        "deploymentID": "dpl_5XMMqpDAksetXdoPdsgPqsq58RMw",
+        "canonicalIndexMatchesEuArtifact": true,
+        "indexSHA256": "a97713db0e63d40354ea0f7f1e85662604fcf64aedbcd18bcbbaabbc7ddd9852",
+        "runtimeConfigPreserved": true,
+        "realtimeEnabled": false
+      }
+    ],
+    "coreAndSchemaUnchanged": true
   }
 }
