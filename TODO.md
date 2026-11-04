@@ -169,6 +169,12 @@ No implementation, published offer, provider purchase or final entitlement decis
   exact read-back comparison, preserving every existing password/MFA field.
 - [ ] Embedded database editor accessibility: remove its nested main landmark in
   the maintained UI package; keep the Console's skip-link/main region intact.
+- [ ] Retained database editor capability handling: when the real editor bundle is
+  loaded in the owned startup fixture, the SDK attempts WebSocket subscriptions
+  despite negotiated `events: false` and emits unhandled rejections. Qualify a fix
+  in the maintained UI dependency without suppressing errors or advertising a
+  capability the server does not provide. This fixture intentionally rejects SQL
+  RPC and does not establish a working SQL editor or a production reproduction.
 
 ### Build-Minuten je Kunde und Plan
 

@@ -3,6 +3,8 @@ import { z } from "zod";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { I18nProvider } from "@webdock/i18n/react";
+import { Buffer } from "buffer/";
+import { preloadTabularisWorkspace } from "@tabularis/web-ui";
 import { DatabaseWorkbenchWithActions } from "@webdock/module-databases/ui/workbench";
 const result = z.union([z.object({ launch: z.object({ code: z.string(), gatewayOrigin: z.string() }) }), z.object({ error: z.string() })]);
 const launch = async (id: string) => result.parse(await (await fetch(`/__launch/${id}`)).json());
@@ -17,6 +19,10 @@ function Harness() {
     {visible && <DatabaseWorkbenchWithActions bindingID={bindingID} userID="owned-fixture" actions={actions} />}
   </I18nProvider>;
 }
+// Match the production Databases loader before loading the retained geometry reader.
+Object.assign(globalThis, { Buffer });
+// Finish editor imports before mounting the connection-deadline fixture.
+await preloadTabularisWorkspace();
 const root = document.getElementById("root");
 if (!root) throw new Error("Fixture root missing");
 createRoot(root).render(<Harness />);

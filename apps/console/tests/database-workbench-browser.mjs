@@ -16,10 +16,17 @@ const server = await createServer({
       void server.transformIndexHtml(req.url, '<!doctype html><html><body><div id="root"></div><script type="module" src="/tests/database-workbench-proof.tsx"></script></body></html>').then(html => { res.setHeader("Content-Type", "text/html"); res.end(html); });
     });
   } }],
-  optimizeDeps: { entries: ["tests/database-workbench-proof.tsx"], include: ["react", "react-dom/client", "@tabularis/web-ui", "zod"], noDiscovery: true },
+  optimizeDeps: { entries: ["tests/database-workbench-proof.tsx"], include: ["react", "react-dom/client", "@tabularis/web-ui", "buffer/", "zod"], noDiscovery: true },
   // Dependency-optimizer reloads must not replace an in-flight controlled session.
   resolve: { dedupe: ["react", "react-dom"] }, server: { host: "127.0.0.1", port: 0, strictPort: true, hmr: false },
 });
+// Initial module optimization is startup, not a five-second connection/UI assertion.
+async function openFixture(page, url) {
+  page.on("pageerror", error => pageErrors.push(error.message.slice(0, 400)));
+  await page.goto(url);
+  await page.getByRole("button", { name: "Switch database", exact: true }).waitFor({ timeout: 30_000 });
+}
+const pageErrors = [];
 let browser, lastPage, phase = "startup";
 try {
   await server.listen(); const address = server.httpServer.address(); assert(address && typeof address !== "string");
@@ -41,7 +48,7 @@ try {
       await route.fulfill({ json: { scopeID: "scope", connectionID: "connection", baseUrl: `${origin}/s/scope` } });
     });
     await page.route(`${origin}/s/scope/api/v1/session`, route => { requests.push("/s/scope/api/v1/session"); pending = route; });
-    await page.goto(`${origin}/__workbench`); await page.getByRole("status").filter({ hasText: "Connecting to database…" }).waitFor();
+    await openFixture(page, `${origin}/__workbench`); await page.getByRole("status").filter({ hasText: "Connecting to database…" }).waitFor();
     await until(() => pending);
     phase = `${stage}: deadline`;
     // Tick deadlines and follow-up rendering callbacks; fastForward models a sleeping browser.
@@ -81,7 +88,7 @@ try {
       loggedOut = true; await route.fulfill({ json: {} });
     });
     await page.route(`${origin}/s/valid/api/v1/rpc/**`, route => route.fulfill({ json: { ok: false, error: { code: "FIXTURE", message: "Outside startup proof", details: null, requestId: "owned" } } }));
-    await page.goto(`${origin}/__workbench`);
+    await openFixture(page, `${origin}/__workbench`);
     if (authenticated) {
       await page.locator(".database-workbench").waitFor();
       await page.getByRole("button", { name: "Leave database", exact: true }).click();
@@ -104,7 +111,7 @@ try {
     await route.fulfill({ status: 503, json: {} });
   });
   await page.route(`${origin}/s/**`, async route => { lateNegotiations++; await route.fulfill({ status: 503, json: {} }); });
-  await page.goto(`${origin}/__workbench?locale=de`);
+  await openFixture(page, `${origin}/__workbench?locale=de`);
   await until(() => oldSession);
   await page.getByRole("button", { name: "Switch database", exact: true }).click();
   await page.getByRole("alert").filter({ hasText: "Der Datenbankzugriff ist nicht verfügbar." }).waitFor();
@@ -115,7 +122,7 @@ try {
   await page.close();
   console.log("Workbench launch/session/initialize deadlines, abort, fresh retry, stale-result fencing and German errors passed (owned HTTP).");
 } catch (error) {
-  console.error("Workbench fixture failed", { phase, url: lastPage?.url(), body: (await lastPage?.locator("body").innerText().catch(() => "unavailable"))?.slice(0, 2000) });
+  console.error("Workbench fixture failed", { phase, pageErrors, url: lastPage?.url(), body: (await lastPage?.locator("body").innerText().catch(() => "unavailable"))?.slice(0, 2000) });
   throw error;
 } finally {
   await browser?.close(); await server.close(); await rm(cacheDir, { recursive: true, force: true });
