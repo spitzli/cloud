@@ -8,7 +8,59 @@ are separate acceptance steps.
 
 ## Compatibility and migration
 
-The inspected production HTTP Core runs the `3342b745` compatibility checkpoint
+### Owned acceptance, 2026-11-04
+
+Neon `0.1.2` is signed, installed and promoted through the normal managed update
+path as runtime generation 4. Its complete selected inventory returned project,
+branch, database, role and endpoint through the public Console gateway in an owned
+acceptance run taking **18.94 seconds**. This is one measured run, not a latency
+SLA. Gateway, SDK and invocation deadlines remain unchanged. At most five fixed
+GET callbacks overlap, with independent Core authorization/revalidation and the
+same safe-field projections. An independent source review found no issues.
+
+The `0.1.1` baseline passed attach/replay, settings, branches, protected
+pooled/direct URI retrieval and real TLS-verified read-only SQL. A one-attachment
+limit refused a second attachment, and project binding refused access from the
+other owned project. Local detach worked after removing creation permission and
+disconnecting the provider connection; it released the allocation and retained
+the provider database. Version `0.1.2` changes only inventory concurrency; these
+write and credential checks are recorded with their original tested version.
+
+During a second `0.1.2` inventory request, the owner disconnected the provider
+connection. The in-flight request then returned a sanitized HTTP 503 with no
+inventory. The temporary scoped key was revoked with HTTP 401 confirmed, its
+plaintext removed, and the workspace left disconnected with zero attachments.
+No provider resources were created or deleted. No website-authority gate or
+namespace admission rule was relaxed. The old signed releases and runtime
+material remain available for controlled rollback.
+
+These checks used the real operator/owner, not an ordinary customer identity.
+The full browser/customer acceptance remains separate. See the
+[dated acceptance record](../verification/2026-11-04-neon-owned-acceptance.json).
+
+### Verified checkpoint, 2026-11-03
+
+Core HTTP, agent-control, plugin-control and plugin-controller now run source
+`6014971aa9b38fcc18fbd2f7ae186c470c9a8a89`, merged through PR #62, at
+`webdock.local/core/backend@sha256:a0845a12911f7a24c3630a3b9de67f5d6c984a9864baf33e935cc4493bea4446`.
+The actual OCI executables passed initial/repeated migrations and Core readiness
+against isolated PostgreSQL 18 before deployment. All four deployments are ready.
+The production schema remains at 0075; this rollout required no migration.
+All eight protected identity/authorization table hashes and the existing runtime
+Secret and issuer material were verified unchanged across the rollout.
+
+Only the reviewed callback hostname and matching host alias changed in a new
+immutable common configuration Secret. The retained prior image ending
+`179500fd022fca0045396bbac35be3306277cb38fc3ca7f0d8fb7a98466c3133`
+remains a schema-0075-compatible rollback. Initial Neon callback recovery has
+been requested through the ordinary MFA operator API. Runtime promotion and
+customer/provider acceptance remain pending; Core readiness does not prove them.
+Preparing the new namespace foundation currently requires Run-server SSH access,
+whose existing 1Password signing agent was unavailable at this checkpoint.
+
+### Earlier pre-migration baseline
+
+Before the 0075 rollout, production HTTP Core ran the `3342b745` compatibility checkpoint
 (on the `151472be` production source), with native SQL through **0072**. Do not
 replace that image with a branch head merely because source checks pass. Qualify
 all intended changes and retain the existing environment and secret custody.
