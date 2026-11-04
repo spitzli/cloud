@@ -39,11 +39,33 @@
     "ociBuilderTests": 12,
     "npmArchiveLicenseAndNotice": true,
     "npmPublicationPerformed": false,
-    "frozenBunInstall": true
+    "frozenBunInstall": true,
+    "sdkAndCliTests": 30,
+    "isolatedPackedConsumerBuilds": true,
+    "sdkTypecheck": true,
+    "broaderLegacyModuleSuite": {
+      "passed": 166,
+      "skipped": 4,
+      "preexistingFailed": 1
+    }
   },
   "historicalGithubDeploymentsRewritten": false,
   "legacyGhcrPackagesDeleted": false,
   "newApacheContainerPublished": false,
-  "publicNpmScopeMigration": "awaiting owner scope selection",
-  "runtimeDeploymentsChanged": false
+  "publicNpmScopeMigration": "implemented; registry publication pending CI and merge",
+  "runtimeDeploymentsChanged": false,
+  "npmPackages": [
+    {
+      "name": "@spitzli/plugin-sdk",
+      "version": "0.1.0"
+    },
+    {
+      "name": "@spitzli/cli",
+      "version": "0.1.0"
+    }
+  ],
+  "npmExecutable": {
+    "primary": "spitzli-cloud",
+    "compatibilityAlias": "webdock"
+  }
 }

@@ -2,7 +2,7 @@
 FROM oven/bun:1.4.3 AS build
 WORKDIR /app
 COPY . .
-RUN bun install --frozen-lockfile --ignore-scripts && bun run --filter @webdock/plugin-sdk build && bun extensions/managed-cms/build.ts
+RUN bun install --frozen-lockfile --ignore-scripts && bun run --filter @spitzli/plugin-sdk build && bun extensions/managed-cms/build.ts
 FROM oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288
 WORKDIR /app
 LABEL org.opencontainers.image.source="https://github.com/spitzli/webdock"

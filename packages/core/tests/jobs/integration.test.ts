@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
 import { createPluginJobs, type JobScope } from "../../src/plugin-jobs.ts";
-import { createPluginContext } from "@webdock/plugin-sdk/server";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import { createPluginContext } from "@spitzli/plugin-sdk/server";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 const port = Number(process.env.WEBDOCK_TEST_REDIS_PORT);
 const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
 test(

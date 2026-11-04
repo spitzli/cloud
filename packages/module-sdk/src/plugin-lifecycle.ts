@@ -4,7 +4,7 @@ import type {
   Blocker,
   InstalledPlugin,
   PluginManifest,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 export function dependencyBlockers(
   id: string,
   nextVersion: string | null,
@@ -105,10 +105,10 @@ export function planPluginTransition(
   };
 }
 
-export { parsePluginManifest } from "@webdock/plugin-sdk/contracts";
+export { parsePluginManifest } from "@spitzli/plugin-sdk/contracts";
 export type {
   PluginManifest,
   InstalledPlugin,
   Blocker,
   Availability,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";

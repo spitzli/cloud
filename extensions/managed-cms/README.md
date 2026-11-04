@@ -10,7 +10,7 @@ From the Webdock repository root, with Bun:
 
 ```bash
 bun install --frozen-lockfile
-bun run --filter @webdock/plugin-sdk build
+bun run --filter @spitzli/plugin-sdk build
 bun test ./extensions/managed-cms/tests
 bun extensions/managed-cms/build.ts
 docker build -f extensions/managed-cms/Dockerfile -t managed-cms-plugin .

@@ -18,8 +18,8 @@ import {
   parsePluginManifest,
   type Capability,
   type PluginManifest,
-} from "@webdock/plugin-sdk/contracts";
-import { verifyInvocation } from "@webdock/plugin-sdk/server";
+} from "@spitzli/plugin-sdk/contracts";
+import { verifyInvocation } from "@spitzli/plugin-sdk/server";
 import {
   authorizePluginAction,
   resolvePluginConfiguration,

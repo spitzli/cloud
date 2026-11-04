@@ -8,7 +8,7 @@ import {
   managedAppOperationSchema,
   managedAppsRequestSchema,
   type ManagedAppsRequest,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 export type ManagedAppsScope = {
   pluginID: string;
   customerID: string;

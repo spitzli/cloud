@@ -180,6 +180,15 @@ No implementation, published offer, provider purchase or final entitlement decis
   capability the server does not provide. This fixture intentionally rejects SQL
   RPC and does not establish a working SQL editor or a production reproduction.
 
+- [ ] **Retained TypeScript Hosting composition boundary (2026-11-04).**
+  `modules/hosting/tests/boundaries.test.ts` rejects existing SQL service logic in
+  `legacy/control-plane/src/modules/hosting/plugin-provisioning-store.ts`.
+  The npm scope migration changes only its SDK import; the same forbidden SQL
+  is present in pre-migration commit `bccb838f`. Reconcile this retained legacy
+  ownership separately without weakening the boundary test or changing native
+  Rust Hosting authorization. The broader module suite currently has 166 passes,
+  four skips and this one failure; it is not fully green.
+
 ### Build-Minuten je Kunde und Plan
 
 - [ ] Globales Standardkontingent für Build-Minuten festlegen; pro Kunde und über

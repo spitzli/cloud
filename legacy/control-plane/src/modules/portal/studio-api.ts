@@ -1,5 +1,5 @@
 import { PlatformError, getPlatformSettings, savePlatformSettings } from "../platform/platform-settings";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 import { listRuntimePlugins, invokeRuntimePlugin } from "../plugins/runtime";
 import { pluginSources } from "../plugins/sources";
 import { PluginSourceError } from "../plugins/sources-policy";

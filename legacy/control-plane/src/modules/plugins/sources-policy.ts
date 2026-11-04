@@ -7,7 +7,7 @@ import {
   timingSafeEqual,
 } from "node:crypto";
 import { z } from "zod";
-import { parsePluginManifest } from "@webdock/plugin-sdk/contracts";
+import { parsePluginManifest } from "@spitzli/plugin-sdk/contracts";
 import type { PluginImport } from "@webdock/api-client/plugin-sources";
 
 export const sourceLimit = 32 * 1024 * 1024;

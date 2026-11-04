@@ -21,7 +21,7 @@ function run(command, args, options = {}) {
   return r.stdout.trim();
 }
 try {
-  run(process.execPath, ["run", "--filter", "@webdock/plugin-sdk", "build"]);
+  run(process.execPath, ["run", "--filter", "@spitzli/plugin-sdk", "build"]);
   run("docker", [
     "run",
     "-d",
@@ -61,14 +61,15 @@ try {
   );
   run(process.execPath, ["pm", "pack", "--destination", temp], { cwd: join(root, "packages/plugin-sdk") });
   run(process.execPath, ["pm", "pack", "--destination", temp], { cwd: join(root, "packages/plugin-cli") });
-  const sdk = join(temp, "webdock-plugin-sdk-0.1.0.tgz"),
-    cli = join(temp, "webdock-cli-0.1.0.tgz"),
+  const sdk = join(temp, "spitzli-plugin-sdk-0.1.0.tgz"),
+    cli = join(temp, "spitzli-cli-0.1.0.tgz"),
     authoring = join(temp, "authoring"),
     plugin = join(temp, "plugin");
   mkdirSync(authoring);
-  writeFileSync(join(authoring, "package.json"), "{}\n");
+  // Resolve the same packed SDK before its first registry publication.
+  writeFileSync(join(authoring, "package.json"), JSON.stringify({private:true,overrides:{"@spitzli/plugin-sdk":"file:"+sdk}})+"\n");
   run(process.execPath, ["add", "--ignore-scripts", sdk, cli], { cwd: authoring });
-  const command = join(authoring, "node_modules/@webdock/cli/src/cli.js");
+  const command = join(authoring, "node_modules/@spitzli/cli/src/cli.js");
   run(process.execPath, [
     command,
     "plugin",
@@ -78,6 +79,9 @@ try {
     plugin,
     "--json",
   ]);
+  const generatedPackage = JSON.parse(readFileSync(join(plugin, "package.json"), "utf8"));
+  generatedPackage.overrides = {"@spitzli/plugin-sdk":"file:"+sdk};
+  writeFileSync(join(plugin,"package.json"), JSON.stringify(generatedPackage)+"\n");
   run(process.execPath, ["add", "--ignore-scripts", "--no-save", sdk, cli], { cwd: plugin });
   run(process.execPath, [command, "plugin", "validate", "--dir", plugin]);
   run(process.execPath, [command, "plugin", "build", "--dir", plugin]);

@@ -12,7 +12,7 @@ import { resolve, dirname, join, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { parsePluginManifest } from "@webdock/plugin-sdk/contracts";
+import { parsePluginManifest } from "@spitzli/plugin-sdk/contracts";
 const args = process.argv.slice(2);
 const json = args.includes("--json");
 const option = (name) => {
@@ -28,7 +28,7 @@ const print = (x) =>
         : JSON.stringify(x, null, 2),
   );
 const help =
-  "webdock plugin create <name> --template actions --dir <empty-dir>\nwebdock plugin create <name> --template backend --services jobs --dir <empty-dir>\nwebdock plugin validate [--dir <dir>] [--json]\nwebdock plugin build [--dir <dir>]\nwebdock plugin pack --image <repository@sha256:digest> [--dir <dir>] [--json]\nAll commands are local. No publish/install/dev command is implemented yet.";
+  "spitzli-cloud plugin create <name> --template actions --dir <empty-dir>\nspitzli-cloud plugin create <name> --template backend --services jobs --dir <empty-dir>\nspitzli-cloud plugin validate [--dir <dir>] [--json]\nspitzli-cloud plugin build [--dir <dir>]\nspitzli-cloud plugin pack --image <repository@sha256:digest> [--dir <dir>] [--json]\nAll commands are local. No publish/install/dev command is implemented yet.";
 try {
   if (args.includes("--help") || args.length === 0) {
     print(help);
@@ -125,11 +125,11 @@ try {
       private: true,
       type: "module",
       scripts: { build: "tsc -p tsconfig.json", start: "bun dist/index.js" },
-      dependencies: { "@webdock/plugin-sdk": "0.1.0" },
+      dependencies: { "@spitzli/plugin-sdk": "0.1.0" },
       devDependencies: { typescript: "^5", "@types/bun": "^1" },
     };
     if (templateName === "actions") {
-      const sdkRoot = resolve(dirname(fileURLToPath(import.meta.resolve("@webdock/plugin-sdk/contracts"))), "../..");
+      const sdkRoot = resolve(dirname(fileURLToPath(import.meta.resolve("@spitzli/plugin-sdk/contracts"))), "../..");
       const vendor = join(dir, "vendor/plugin-sdk");
       await mkdir(vendor, { recursive: true });
       await cp(join(sdkRoot, "dist"), join(vendor, "dist"), { recursive: true });
@@ -142,7 +142,7 @@ try {
         if (/^(?:license|notice|copying)(?:[.-].*)?$/i.test(entry))
           await cp(join(sdkRoot, entry), join(vendor, entry));
       }
-      pkg.dependencies["@webdock/plugin-sdk"] = "file:vendor/plugin-sdk";
+      pkg.dependencies["@spitzli/plugin-sdk"] = "file:vendor/plugin-sdk";
     }
     await writeFile(
       join(dir, "package.json"),

@@ -1,7 +1,7 @@
 import { readAuthProtocolSelection } from "@webdock/auth-configuration/protocols";
 import Elysia from "elysia";
 import { withDatabaseScope } from "@webdock/database-runtime";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 import { pluginRoute } from "@webdock/core/plugin-exposure";
 import type { ApiConfig } from "../config";
 import type { Mount } from "../route-manifest";

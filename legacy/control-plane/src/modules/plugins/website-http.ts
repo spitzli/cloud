@@ -1,6 +1,6 @@
 import { isWebsiteHTTPAction } from "@webdock/core/plugin-runtime-policy";
-import type { Capability, PluginManifest } from "@webdock/plugin-sdk/contracts";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import type { Capability, PluginManifest } from "@spitzli/plugin-sdk/contracts";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 import type { HTTPBinding } from "@webdock/core/plugin-http";
 
 type WebsiteScope = {

@@ -22,12 +22,16 @@ test("packed contracts load outside the monorepo", { timeout: 60_000 }, () => {
       .split("\n")
       .filter(Boolean);
     assert.ok(files.includes("package/dist/contracts/index.d.ts"));
+    assert.ok(files.includes("package/LICENSE"));
+    assert.ok(files.includes("package/NOTICE"));
     assert.ok(files.every((path) => !path.startsWith("package/src/")));
     // Unpack beside copies of its runtime dependencies only: no registry, no dependency scripts.
-    const installed = join(dir, "node_modules", "@webdock", "plugin-sdk");
+    const installed = join(dir, "node_modules", "@spitzli", "plugin-sdk");
     mkdirSync(installed, { recursive: true });
     execFileSync("tar", ["-xzf", tarball, "-C", installed, "--strip-components=1"]);
     const manifest = JSON.parse(readFileSync(join(installed, "package.json"), "utf8"));
+    assert.equal(manifest.name, "@spitzli/plugin-sdk");
+    assert.equal(manifest.license, "Apache-2.0");
     for (const name of Object.keys(manifest.dependencies ?? {}))
       symlinkSync(join(root, "node_modules", name), join(dir, "node_modules", name));
     writeFileSync(
@@ -38,7 +42,7 @@ test("packed contracts load outside the monorepo", { timeout: 60_000 }, () => {
       process.execPath,
       [
         "-e",
-        "import {parsePluginManifest} from '@webdock/plugin-sdk/contracts'; try {parsePluginManifest({})} catch(e) {if(e.code==='invalid_input') process.exit(0)} process.exit(1)",
+        "import {parsePluginManifest} from '@spitzli/plugin-sdk/contracts'; try {parsePluginManifest({})} catch(e) {if(e.code==='invalid_input') process.exit(0)} process.exit(1)",
       ],
       { cwd: dir },
     );

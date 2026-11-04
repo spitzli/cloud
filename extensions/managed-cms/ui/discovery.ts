@@ -1,4 +1,4 @@
-import type { ManagedAppProvisioning } from "@webdock/plugin-sdk/contracts";
+import type { ManagedAppProvisioning } from "@spitzli/plugin-sdk/contracts";
 export type CMSSite={name:string;origin:string};
 export async function discoverCMS(
  transport:(path:string)=>Promise<Response>,

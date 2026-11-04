@@ -8,7 +8,7 @@ import type {
   Availability,
   Mutation,
   OperationRef,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 export class PluginStateError extends Error {
   constructor(
     readonly status: number,

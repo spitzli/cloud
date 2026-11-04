@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { createHash, timingSafeEqual } from "node:crypto";
-import { createPluginContext } from "@webdock/plugin-sdk/server";
+import { createPluginContext } from "@spitzli/plugin-sdk/server";
 export function processJob(payload: unknown) {
   if (
     !payload ||

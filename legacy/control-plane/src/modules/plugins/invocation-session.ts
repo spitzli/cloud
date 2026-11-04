@@ -3,7 +3,7 @@ import {
   withDatabaseScope,
   type DatabaseScope,
 } from "@webdock/database-runtime";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 import type { ConsolePrincipal } from "../auth/clerk-identity";
 import type { StoredConsoleIdentity } from "../auth/clerk-provider";
 export function createPluginSessionRunner(dependencies: {

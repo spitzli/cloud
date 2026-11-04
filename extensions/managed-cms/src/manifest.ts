@@ -1,4 +1,4 @@
-import { parsePluginManifest } from "@webdock/plugin-sdk/contracts";
+import { parsePluginManifest } from "@spitzli/plugin-sdk/contracts";
 const object=(properties:Record<string,unknown>,required=Object.keys(properties))=>({type:"object",additionalProperties:false,properties,required});
 const string=(maxLength:number,minLength=1)=>({type:"string",minLength,maxLength});
 export function createManifest(image:string){

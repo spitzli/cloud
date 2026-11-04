@@ -42,6 +42,9 @@ references, then migrate consumers before retiring old addresses. Keep existing
 signed descriptors, immutable digests and rollback material intact.
 
 Internal Rust crate names, environment variables, Kubernetes identities and
-protocol names retain compatibility. The public npm scope migration is a separate
-package-consumer change; it must include imports, workspace dependencies, lockfiles,
-exports, scaffolds and publication verification rather than just changing a label.
+protocol names retain compatibility. The public TypeScript authoring packages are now named `@spitzli/plugin-sdk` and
+`@spitzli/cli`. The primary CLI executable is `spitzli-cloud`; `webdock` remains a
+compatibility alias. Consumers, lockfiles, scaffolds and export tooling use the new
+scope. Source migration and tested archives do not establish npm publication: verify
+the exact published version and integrity through the registry before reporting it
+available. The native Rust SDK and its protocol identities remain unchanged.

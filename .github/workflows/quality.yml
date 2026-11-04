@@ -65,6 +65,11 @@ jobs:
           df -i "$RUNNER_TEMP"
       - name: Install locked frontend dependencies
         run: bun install --frozen-lockfile --ignore-scripts
+      - name: Verify public npm packages and scaffold exports
+        run: |
+          bun run --filter @spitzli/plugin-sdk build
+          bun test packages/plugin-sdk/tests packages/plugin-cli/tests
+          python3 -m unittest discover -s tools/plugins -p 'test_export_*.py'
       - name: Install browser for isolated UI fixtures
         working-directory: apps/console
         run: bunx playwright install --with-deps chromium

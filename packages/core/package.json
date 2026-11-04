@@ -24,7 +24,7 @@
     "zod": "4.6.5",
     "bullmq": "6.3.16",
     "ioredis": "6.0.0",
-    "@webdock/plugin-sdk": "*"
+    "@spitzli/plugin-sdk": "*"
   },
   "license": "Apache-2.0"
 }

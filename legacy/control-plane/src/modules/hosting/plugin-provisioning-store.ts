@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { PluginError } from "@webdock/plugin-sdk/contracts";
+import { PluginError } from "@spitzli/plugin-sdk/contracts";
 import type { ManagedAppsScope } from "@webdock/core/plugin-apps";
 import type { Connection } from "./authorization";
 import type {

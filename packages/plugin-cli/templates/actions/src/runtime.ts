@@ -1,6 +1,6 @@
 import {createServer} from 'node:https';
 import {createPublicKey, timingSafeEqual} from 'node:crypto';
-import {createPluginContext, verifyInvocation} from '@webdock/plugin-sdk/server';
+import {createPluginContext, verifyInvocation} from '@spitzli/plugin-sdk/server';
 
 type RuntimeOptions = {
  pluginID:string;version:string;generation:number;hostURL:string;

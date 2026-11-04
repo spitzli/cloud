@@ -17,7 +17,7 @@ import { createPluginJobs, type JobScope } from "@webdock/core/plugin-jobs";
 import {
   PluginError,
   parsePluginManifest,
-} from "@webdock/plugin-sdk/contracts";
+} from "@spitzli/plugin-sdk/contracts";
 const root = resolve(import.meta.dirname, "../.."),
   directory = resolve(process.argv[2] ?? "");
 if (!process.argv[2]) throw Error("Pass built Project Notes directory");
