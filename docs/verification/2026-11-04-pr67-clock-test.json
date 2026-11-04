@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-04",
+  "failedRun": 41870662338,
+  "failedJob": 126716495962,
+  "failedHead": "2e9e976d8b0c1bf778f38b737dd34ce1397eb917",
+  "observedFailure": "Controlled workbench browser fixture timed out waiting for the generic access-unavailable alert; old log did not identify which phase.",
+  "exactCiFailureReproduced": false,
+  "originalTestLocalAndThreeOneCpuRunsPassed": true,
+  "deterministicClockProbe": [
+    {
+      "method": "fastForward",
+      "events": [
+        "deadline"
+      ]
+    },
+    {
+      "method": "runFor",
+      "events": [
+        "deadline",
+        "render"
+      ]
+    }
+  ],
+  "change": "Use runFor for normal elapsed-time deadline/render callbacks and add phase/fixture-only bounded failure diagnostics.",
+  "applicationDeadlineSeconds": 30,
+  "locatorTimeoutMs": 5000,
+  "abortRetryLateResultAndRedactionAssertionsPreserved": true,
+  "validation": {
+    "correctedTestThreeOneCpuRunsPassed": true,
+    "completeConsoleBrowserSuitePassed": true,
+    "targetedEslintPassed": true,
+    "independentReview": "Ship; no blocking finding. Supports clock correction, does not prove the exact CI failure cause."
+  },
+  "applicationRuntimeCodeChanged": false,
+  "productionRolloutPerformed": false,
+  "remaining": "Await a fresh Blacksmith quality result; do not label the previous failed CI as passed."
+}
