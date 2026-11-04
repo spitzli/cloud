@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-04",
+  "scope": "read-only backlog reconciliation",
+  "mainMergeCommit": "ab06645fbd35c0f3037249706e4183bbc0eb97b6",
+  "rootBlacksmithJob": {
+    "completed_at": "2026-11-04T16:04:29Z",
+    "conclusion": "success",
+    "labels": [
+      "blacksmith-4vcpu-ubuntu-2404"
+    ],
+    "name": "quality",
+    "runner_group_name": "blacksmith scale sets - blacksmith-4vcpu-ubuntu-2404",
+    "runner_name": "blacksmith-4vcpu-ubuntu-2404-hax24d7necf4ks2z",
+    "started_at": "2026-11-04T15:22:20Z"
+  },
+  "publicDocs": [
+    {
+      "url": "https://docs.spitzli.cloud/",
+      "status": 200,
+      "title": "Spitzli Cloud documentation - Spitzli Cloud",
+      "canonical": "https://docs.spitzli.cloud",
+      "starterKit": false,
+      "spitzliGithubSourcePresent": true
+    },
+    {
+      "url": "https://docs.spitzli.cloud/guides/git-deployments",
+      "status": 200,
+      "title": "Git builds and deployments - Spitzli Cloud",
+      "canonical": "https://docs.spitzli.cloud/guides/git-deployments",
+      "starterKit": false,
+      "spitzliGithubSourcePresent": true
+    },
+    {
+      "url": "https://docs.spitzli.cloud/guides/byok-neon",
+      "status": 200,
+      "title": "Connect Neon - Spitzli Cloud",
+      "canonical": "https://docs.spitzli.cloud/guides/byok-neon",
+      "starterKit": false,
+      "spitzliGithubSourcePresent": true
+    }
+  ],
+  "notEstablished": [
+    "All independent repository CI/publisher credentials",
+    "Retirement of the persistent trusted runner",
+    "Complete canonical OAuth/passkey/MCP identity migration",
+    "Full live documentation link coverage",
+    "Public arbitrary-customer build isolation",
+    "Positive authenticated live icon test"
+  ]
+}
