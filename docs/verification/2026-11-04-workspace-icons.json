@@ -1,6 +1,6 @@
 {
   "date": "2026-11-04",
-  "status": "deployed-live-customer-browser-qualification-pending",
+  "status": "deployed-and-real-customer-browser-qualified",
   "behavior": {
     "initialUsesDisplayedWorkspaceName": true,
     "ownerAdminUploadReplaceRemove": true,
@@ -40,7 +40,7 @@
   "limitations": [
     "Local browser checks use explicit HTTP fixtures, not production customer identity.",
     "The initial retained-schema test was incompatible with the native baseline; the new icon test uses a freshly migrated native database with its own fixture allocator state.",
-    "Positive authenticated customer icon flow remains unverified live: the existing QA login vault read was not authorized. No password reset or alternative identity bypass was used."
+    "The first unauthenticated Auth load timed out before any credential submission or workspace write. A fresh load showed no JS errors or failed requests, and the complete live customer flow then passed. That initial load issue was not assigned a proven cause."
   ],
   "production": {
     "sourceCommit": "c9183ae38f4f2a6b7061aee6bbe1684de37203cd",
@@ -108,7 +108,39 @@
         }
       ],
       "anonymousIconWriteDenied": 401,
-      "liveCustomerPositiveFlow": "pending QA credential approval"
+      "liveCustomerPositiveFlow": "passed"
+    },
+    "liveCustomerAcceptance": {
+      "actualPublishedAuthAndConsole": true,
+      "syntheticApiMocks": false,
+      "globalRole": "user",
+      "workspaceRole": "owner",
+      "operatorPreview": false,
+      "correctInitial": true,
+      "upload200": true,
+      "persistedAfterReload": true,
+      "persistedAcrossWorkspaceNavigation": true,
+      "authWorkspaceListIcon": true,
+      "replacement200": true,
+      "removal200": true,
+      "foreignWriteStatus": 404,
+      "widths": [
+        375,
+        1280
+      ],
+      "noHorizontalOverflow": true,
+      "qaBrandingRestoredToNull": true,
+      "javascriptErrors": 0,
+      "testBrowser": "Chromium145; HTTP3 disabled only in test process; TLS and sandbox retained"
+    },
+    "qaCleanup": {
+      "qaSessionEnded": true,
+      "qaBrandingRestoredToNull": true,
+      "localPlaintextRemoved": [
+        "qa-login.private.json",
+        "qa-browser-state.private.json"
+      ],
+      "existingVaultLoginPreserved": true
     }
   }
 }
