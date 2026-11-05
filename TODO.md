@@ -297,3 +297,38 @@ No implementation, published offer, provider purchase or final entitlement decis
 
 Do not rerun the old self-hosted registry-only CI jobs to change their historical
 status: the Blacksmith-only owner instruction applies to new/rerun GitHub CI.
+
+## Database viewer / Schattenclan — 2026-11-05
+
+- [x] Local full-page viewer and scoped Spitzli Cloud Tabularis host theme; customer-mode banner/exit preserved. Desktop/mobile, light/dark and close navigation regression passes.
+- [x] Production Schattenclan owner-mode audit: both active project attachments share the exact Neon target; running bot and bot API use that endpoint; viewer SQL metadata query passed with the limited customer role. Mode exited and retired viewer session denied401. This does not close the rollout/UI findings below.
+- [ ] Schattenclan runtime acceptance: bot has a ready Pod but Core records desired37/observed34 with ownership reconciliation required. Review through the native controller without weakening ownership/storage checks. Admin-Panel is a Vercel project without a native app record; verify its actual external deployment separately.
+- [ ] Fix/qualify failing Neon plugin detail/branch invoke requests in customer owner mode; distinguish transport failure from provider/authority errors using actual evidence.
+- [x] Local lost-response customer-mode start recovery: inspect committed exact scope before navigation, never repeat start; fresh regression PASS. Merged/deployed in PR74; live artifact/API evidence recorded.
+- [x] Local customer-role regressions for hosting cluster/provider labels and DB-viewer workspace breadcrumb; authorized tenant-name fallback and provider-aware labels implemented, translated and browser-verified. Merged/deployed in PR74; live artifact/API evidence recorded.
+- [ ] Recheck the production Console SSO bootstrap auth origin: this browser attempt still passed through the legacy auth hostname before arriving at auth.spitzli.cloud.
+- [ ] Qualify real database query/event behavior separately from the local geometry fixture. See [the dated scope and instructions](docs/verification/2026-11-05-database-viewer-layout.md).
+
+## Cloudflare public website hosting — owner direction 2026-11-05
+
+Owner corrected the second domain to **spitzli.site**, already purchased. Cancel
+all spitzli.link registration/purchase preparation; no purchase is authorized or needed.
+
+- [ ] Move the public `spitzli.cloud` website hosting to Cloudflare, in addition to
+  its existing Cloudflare DNS. Current apex still points to Vercel; qualify the
+  Next/Payload SSR and CMS dependencies before cutover.
+- [ ] Prepare the existing `spitzli.site` Cloudflare setup. Inventory its apex,
+  wildcard and current customer address routing before changing anything.
+- [ ] Preserve existing `*.spitzli.site` customer URLs, run-cluster workloads,
+  EU data/runtime boundaries, TLS and tenant isolation. A domain correction does
+  not authorize moving all customer workloads to global edge compute.
+- [ ] Keep Console/Auth/API, CMS publishing, locale/legal/OG pages and waitlist
+  handoff working; retain a prior-host rollback. See
+  [inventory and migration gates](docs/operations/cloudflare-public-websites.md).
+
+- [x] PR74 released: signed source, Blacksmith, qualified exact EU agent binary,
+  preserved RUN identity/configuration and controlled Console promotion. Fresh Core
+  runtime inspection and actual customer viewer SQL passed after rollout.
+- [ ] Resolve deployment authority for Lunares before reconciling stale desired
+  state: parallel external releases changed live image and environment repeatedly.
+  Do not overwrite them or replay the failed older request. Decision requested.

@@ -1,7 +1,7 @@
 {
   "date": "2026-11-05",
   "scope": "native agent retained immutable maintenance environment cleanup",
-  "status": "reviewed-locally-qualified-release-pending",
+  "status": "merged-qualified-agent-live",
   "rootCause": "A referenced owned maintenance Secret suffix was parsed as a numeric revision before reference handling",
   "regressions": {
     "testFirstMissingHelperRed": true,
@@ -22,18 +22,15 @@
     "maintenanceDeleted": false,
     "canonicalDeletionStillLeaseAndUidResourceVersionFenced": true
   },
-  "productionAgentChanged": false,
+  "productionAgentChanged": true,
   "staleDesiredRequestReplayed": false,
   "liveConcurrentChangesOverwritten": false,
   "remaining": [
-    "signed source and Blacksmith CI",
-    "Blacksmith CI",
-    "EU binary and retained-configuration qualification",
-    "component-only agent rollout with preserved identity and rollback",
-    "fresh app reconciliation against the latest intended live configuration"
+    "fresh application reconciliation after intended deployment authority/configuration is established"
   ],
   "review": {
     "materialFindingsInAgent": 0,
     "freshReadOnlyReview": true
-  }
+  },
+  "releaseEvidence": "2026-11-05-schattenclan-release.json"
 }

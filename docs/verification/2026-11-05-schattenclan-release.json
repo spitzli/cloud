@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-05",
+  "pullRequest": "https://github.com/spitzli/cloud/pull/74",
+  "mergeCommit": "ca6a86ce68c2bd782c9f5a1705e5098fe532637c",
+  "qualifiedSourceCommit": "240326f44715f0ed90f4cab0b8aa280396337363",
+  "sameSourceTree": true,
+  "blacksmithQuality": "SUCCESS",
+  "mintlifyCheck": "SKIPPED",
+  "console": {
+    "deployment": "dpl_7ay4fcspTfZveyPdZhshQyUGm13j",
+    "rollback": "dpl_4wBBUdr5XMRXCZXHBZiSX8WGG86x",
+    "livePublicIndexAndEntryAssetsByteMatched": true,
+    "preservedApiRoutesCspAndOidcMetadata": true
+  },
+  "agent": {
+    "sha256": "22aaaf43851cd38fd4cf9b2addefe7359c2bd0ab8a6a8c028c2d5fe129db85ef",
+    "rollbackSha256": "61295b54119c366de130f4e0c06847e66b197f5d7cf022c531905c3dcab2a7d7",
+    "compiledAndTestedOnDedicatedEuBuilder": true,
+    "actualRetainedConfigurationValidated": true,
+    "activeProcessHashVerified": true,
+    "configurationIdentityCertificateKeyUnchanged": true,
+    "noCustomerWorkloadRestart": true,
+    "actualCoreRuntimeInspectionPassed": true
+  },
+  "postReleaseCustomer": {
+    "normalMfaPkce": true,
+    "genuineCustomerRole": true,
+    "scopeCorrect": true,
+    "providerMetadataVerified": true,
+    "actualDatabaseGatewaySqlPassed": true,
+    "database": "neondb",
+    "role": "lunares_schattenclan_browser",
+    "customerTablesChanged": false
+  },
+  "remaining": {
+    "botDesiredStateReconciliation": "awaiting deployment-authority decision because external concurrent releases changed image/environment",
+    "cloudflarePublicWebsiteHosting": "DNS verified; SSR/CMS-compatible hosting migration remains separate"
+  },
+  "privateCredentialsPublished": false,
+  "nativeGitMigration76Included": false,
+  "coreSchemaMigrationApplied": false
+}

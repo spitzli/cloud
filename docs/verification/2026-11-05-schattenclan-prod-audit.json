@@ -40,13 +40,12 @@
   "adminPanel": {
     "configuredProvider": "vercel",
     "nativeHostingAppRecordPresent": false,
-    "liveVercelDeploymentVerified": false
+    "liveVercelDeploymentVerified": true,
+    "approvedDomainHealthHttp200": true
   },
   "openFindings": [
-    "Neon plugin detail and branch invoke requests failed in owner mode; transport root cause not established",
-    "Prior bot operation still requires ownership/rollout reconciliation",
-    "Actual external Vercel Admin-Panel deployment remains to be verified",
-    "SSO still uses a legacy intermediate origin"
+    "Bot desired-state reconciliation awaits intended deployment authority after concurrent external releases",
+    "Cloudflare public website hosting migration remains separate from completed DNS delegation"
   ],
   "localFixes": [
     "full-page viewport DB layout and scoped Spitzli Tabularis host theme",
@@ -54,7 +53,7 @@
     "authorized workspace breadcrumb for genuine customer role",
     "provider-aware hosting infrastructure labels, with German catalog"
   ],
-  "productionUiDeployed": false,
+  "productionUiDeployed": true,
   "customerDataChanged": false,
   "credentialsPrintedOrRetained": false,
   "localVerification": {
@@ -69,5 +68,13 @@
     "germanGettextCatalogs": 22,
     "validatedMessages": 4384,
     "diffCheck": "passed"
+  },
+  "releaseEvidence": "2026-11-05-schattenclan-release.json",
+  "neonPostAuditVerification": {
+    "normalMfaPkceOwnerMode": true,
+    "bothProjectsViewAndBranchesHttp200": true,
+    "validPanelData": true,
+    "clientNetworkChangeCauseNotEstablished": true,
+    "noProviderPermissionsOrCredentialChange": true
   }
 }
