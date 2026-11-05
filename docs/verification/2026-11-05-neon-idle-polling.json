@@ -1,6 +1,6 @@
 {
   "date": "2026-11-05",
-  "status": "locally-qualified-awaiting-controlled-rollout",
+  "status": "live-qualified-compute-attribution-pending",
   "scope": [
     "plugin controller empty discovery",
     "agent empty management cycles"
@@ -40,14 +40,161 @@
     "readinessUnchanged": true,
     "databaseSchemaUnchanged": true
   },
-  "productionChanged": false,
+  "productionChanged": true,
   "computeConfigurationChanged": false,
   "newDatabaseExtensionInstalled": false,
   "billingSavingsClaimed": false,
   "remaining": [
-    "Exact EU artifacts and controlled activation",
-    "Comparable database activity and operation checks",
-    "Delayed provider consumption comparison",
-    "Other periodic tasks and probes can still keep compute awake"
-  ]
+    "Attribute the current background traffic and increased peer-connection counts; preserve security, readiness and lease checks",
+    "Measure representative provider consumption and operation/cold-start latency under comparable load",
+    "Other periodic tasks and readiness probes can still keep compute awake"
+  ],
+  "rollout": {
+    "sourceCommit": "62d1236a3768d32e1a219c286b7900d72ddc5864",
+    "dispatcher": {
+      "sourceCommit": "62d1236a3768d32e1a219c286b7900d72ddc5864",
+      "image": "ghcr.io/spitzli/cloud@sha256:6fb8dafd94b2615f18ee876b5106f420119e02dd9bfe36ee541da69e8c856e58",
+      "onlyDispatcherImagesChanged": true,
+      "otherCoreDeploymentSpecsUnchanged": true,
+      "deploymentUIDPreserved": true,
+      "referencedSecretHashesUnchanged": true,
+      "schemaMigrationPerformed": false,
+      "actualRuntimeDigestVerified": true,
+      "publicReadyz": 200,
+      "rollbackImageRetained": "webdock.local/core/backend@sha256:7ca7ec871f4df874eff11dff76f322aa79e58abb61c29e7a07eb15c8566c04e3"
+    },
+    "publishedImageDigest": "sha256:6fb8dafd94b2615f18ee876b5106f420119e02dd9bfe36ee541da69e8c856e58",
+    "anonymousImageAccessVerified": true,
+    "actualOciQualification": {
+      "actualCandidateExecutables": true,
+      "ownedPG18": true,
+      "journalCount": 74,
+      "latestMigration": 75,
+      "initialAndRepeatMigrationPassed": true,
+      "actualCoreReadyz": 200,
+      "actualControllerOnce": true,
+      "actualControllerIdleSurvived": true,
+      "controllerIdleShutdownSeconds": 0.119,
+      "productionDatabaseUsed": false,
+      "uid": 1001,
+      "binarySHA256": {
+        "candidate-core": "3ad48d6c40d60aee79b254f2a9ccd20050c7f69db968cdc8ee79ab9184d05d29",
+        "candidate-migrate": "04dbe1c0aecc82e73a07fcc44231fbd3ac01fcc2823f37ad10e03f80ad858a48",
+        "candidate-controller": "fc4044c77b79937594fd7169513929afa5c6e0ebae7e9707ba7dedd9ceaaebe2"
+      }
+    },
+    "agent": {
+      "artifactSHA256": "61295b54119c366de130f4e0c06847e66b197f5d7cf022c531905c3dcab2a7d7",
+      "sourceArchiveSHA256": "aafc3d2b889e90d6eb603676c91e4cd45070d01e15205aa3a90de2992c0b7346",
+      "features": [
+        "kubernetes"
+      ],
+      "defaultFeatures": false,
+      "softwareTests": {
+        "storage-attachment-tests.log": {
+          "passed": 64,
+          "ignored": 7,
+          "sha256": "6abf0203a1ddb067686ca9220623ef9083cb1f8d2010a74cc98999e0901bc607"
+        },
+        "management-tests.log": {
+          "passed": 16,
+          "ignored": 0,
+          "sha256": "3c4ff8e866df55a337a53dae6ed75e6b6266f9a2a436818888774d72b56e85d0"
+        },
+        "full-agent-tests.log": {
+          "passed": 144,
+          "ignored": 25,
+          "sha256": "2c58902dd877278dd5a2aa78e0e5e30d9371b4088dff852ee411baa93de45966"
+        }
+      },
+      "artifactAndTranscriptHashesVerified": true,
+      "targetHostValidationPerformed": true,
+      "activated": true,
+      "blocker": null,
+      "activation": {
+        "sourceCommit": "62d1236a3768d32e1a219c286b7900d72ddc5864",
+        "sha256": "61295b54119c366de130f4e0c06847e66b197f5d7cf022c531905c3dcab2a7d7",
+        "candidatePath": "/opt/webdock-native-agent/releases/20261105-neon-idle-61295b54119c/webdock-agent",
+        "activeProcessHashVerified": true,
+        "serviceStableAcrossProbes": true,
+        "configAndEnrollmentUnchanged": true,
+        "previousDropInsPreserved": true,
+        "stateDirectoryNotReplaced": true,
+        "monotonicIdentityPreserved": true,
+        "transportCertificateAndKeyHashesUnchanged": true,
+        "rollbackBinary": "/opt/webdock-native-agent/releases/20261103-native-admission-39dfdbff3de9/webdock-agent",
+        "rollbackDropIn": "/etc/systemd/system/webdock-native-run-agent.service.d/90-neon-idle-polling.conf",
+        "customerWorkloadMutationPerformed": false
+      },
+      "hostStaging": {
+        "candidatePath": "/opt/webdock-native-agent/releases/20261105-neon-idle-61295b54119c/webdock-agent",
+        "sha256": "61295b54119c366de130f4e0c06847e66b197f5d7cf022c531905c3dcab2a7d7",
+        "oldPath": "/opt/webdock-native-agent/releases/20261103-native-admission-39dfdbff3de9/webdock-agent",
+        "oldSHA256": "39dfdbff3de98317ad887fe0893edd531aa1fa5a3a58c3236b8b5aae6cb1cd82",
+        "sourceCommit": "62d1236a3768d32e1a219c286b7900d72ddc5864",
+        "existingConfigSHA256": "a9ba5a00cbe3cef0ba56ec517630ba79a3df887817b5cbb802a28d8b086e795d",
+        "existingConfigValidationPassed": true,
+        "serviceUnchanged": true,
+        "activated": false
+      },
+      "coreHeartbeatFresh": true,
+      "coreSequenceAdvanced": true
+    }
+  },
+  "databaseObservation": {
+    "method": "Read-only pg_stat_database xact_commit snapshots",
+    "statisticsExtensionPresent": false,
+    "statementCountsMeasured": false,
+    "samples": [
+      {
+        "phase": "before-rollout",
+        "from": "2026-11-05T08:16:53.28347+00:00",
+        "to": "2026-11-05T08:17:13.540816+00:00",
+        "seconds": 20.257,
+        "commits": 195,
+        "commitsPerSecond": 9.626
+      },
+      {
+        "phase": "after-controller",
+        "from": "2026-11-05T08:18:56.916089+00:00",
+        "to": "2026-11-05T08:19:17.163557+00:00",
+        "seconds": 20.247,
+        "commits": 173,
+        "commitsPerSecond": 8.544
+      },
+      {
+        "phase": "after-agent-initial",
+        "from": "2026-11-05T12:15:53.00879+00:00",
+        "to": "2026-11-05T12:16:13.255051+00:00",
+        "seconds": 20.246,
+        "commits": 514,
+        "commitsPerSecond": 25.387
+      },
+      {
+        "phase": "after-agent",
+        "from": "2026-11-05T12:18:03.159373+00:00",
+        "to": "2026-11-05T12:18:23.417784+00:00",
+        "seconds": 20.258,
+        "commits": 253,
+        "commitsPerSecond": 12.489
+      }
+    ],
+    "emptyPluginQueuesVerified": true,
+    "ambientTrafficControlled": false,
+    "interpretation": "These are uncontrolled snapshots, with a roughly four-hour gap before agent activation and changing peer connection/activity levels. The aggregate observations do not demonstrate a transaction-rate, CU-hour or billing reduction. Idle backoff and live request delivery are qualified; attribute remaining traffic and compare representative provider consumption before claiming savings."
+  },
+  "liveCoreAgentRead": {
+    "normalOperatorSession": true,
+    "mfaAndPkceRequiredByLogin": true,
+    "actualCoreAgentReadSucceeded": true,
+    "operationID": "111800917975638016",
+    "completionObservedWithinMilliseconds": 8073,
+    "pollingObservationIsNotExactRuntimeLatency": true,
+    "nativeObservationEpochSecondsVerified": true,
+    "reportedApplicationPhase": "running",
+    "reportedApplicationReady": true,
+    "customerDeploymentMutationPerformed": false,
+    "existingSuccessfulResponseVerifiedWithoutResubmitting": true
+  },
+  "ownVerificationSessionsSignedOut": true
 }

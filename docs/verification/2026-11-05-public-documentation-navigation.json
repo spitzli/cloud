@@ -1,0 +1,409 @@
+{
+  "capturedAt": "2026-11-05T08:28:32.014638+00:00",
+  "sourceCommit": "62d1236a3768d32e1a219c286b7900d72ddc5864",
+  "navigationSHA256": "421d37cce6b8f08777d1fbd00d3888df3fb8d1d03dc0706905d08f70d66f3208",
+  "navigationPageCount": 44,
+  "additionalLinkedTargets": 0,
+  "allTargetsPassed": true,
+  "results": [
+    {
+      "path": "/",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/",
+      "h1": "Spitzli Cloud documentation",
+      "canonical": "https://docs.spitzli.cloud",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/auth-adapters",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/auth-adapters",
+      "h1": "Identity and authentication providers",
+      "canonical": "https://docs.spitzli.cloud/developers/auth-adapters",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/authentication",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/authentication",
+      "h1": "Authentication",
+      "canonical": "https://docs.spitzli.cloud/developers/authentication",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/byok",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/byok",
+      "h1": "BYOK integration boundaries",
+      "canonical": "https://docs.spitzli.cloud/developers/byok",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/core-distribution",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/core-distribution",
+      "h1": "Core distribution",
+      "canonical": "https://docs.spitzli.cloud/developers/core-distribution",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/documentation",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/documentation",
+      "h1": "Maintain these docs",
+      "canonical": "https://docs.spitzli.cloud/developers/documentation",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/initial-setup",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/initial-setup",
+      "h1": "Initial operator setup",
+      "canonical": "https://docs.spitzli.cloud/developers/initial-setup",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/local-development",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/local-development",
+      "h1": "Local development",
+      "canonical": "https://docs.spitzli.cloud/developers/local-development",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/mail-api",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/mail-api",
+      "h1": "Mail API behavior",
+      "canonical": "https://docs.spitzli.cloud/developers/mail-api",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/mail-quickstart",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/mail-quickstart",
+      "h1": "Send your first message",
+      "canonical": "https://docs.spitzli.cloud/developers/mail-quickstart",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/mail-webhooks",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/mail-webhooks",
+      "h1": "Mail webhooks",
+      "canonical": "https://docs.spitzli.cloud/developers/mail-webhooks",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/managed-analytics",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/managed-analytics",
+      "h1": "Managed Analytics",
+      "canonical": "https://docs.spitzli.cloud/developers/managed-analytics",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/managed-apps",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/managed-apps",
+      "h1": "Managed Apps",
+      "canonical": "https://docs.spitzli.cloud/developers/managed-apps",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/managed-registry",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/managed-registry",
+      "h1": "Tabularium as a managed app",
+      "canonical": "https://docs.spitzli.cloud/developers/managed-registry",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/mcp",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/mcp",
+      "h1": "MCP integration",
+      "canonical": "https://docs.spitzli.cloud/developers/mcp",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/modules",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/modules",
+      "h1": "Configure Core features",
+      "canonical": "https://docs.spitzli.cloud/developers/modules",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/overview",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/overview",
+      "h1": "Developer overview",
+      "canonical": "https://docs.spitzli.cloud/developers/overview",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/plugin-api-mcp",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/plugin-api-mcp",
+      "h1": "Workspace API and plugin MCP tools",
+      "canonical": "https://docs.spitzli.cloud/developers/plugin-api-mcp",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/plugin-jobs",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/plugin-jobs",
+      "h1": "Plugin background jobs",
+      "canonical": "https://docs.spitzli.cloud/developers/plugin-jobs",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/plugin-manifest",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/plugin-manifest",
+      "h1": "Plugin manifest reference",
+      "canonical": "https://docs.spitzli.cloud/developers/plugin-manifest",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/plugin-releases",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/plugin-releases",
+      "h1": "Independent plugin releases",
+      "canonical": "https://docs.spitzli.cloud/developers/plugin-releases",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/plugins",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/plugins",
+      "h1": "Develop a Spitzli Cloud plugin",
+      "canonical": "https://docs.spitzli.cloud/developers/plugins",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/project-notes",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/project-notes",
+      "h1": "Project Notes reference extension",
+      "canonical": "https://docs.spitzli.cloud/developers/project-notes",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/registry",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/registry",
+      "h1": "Registry REST API",
+      "canonical": "https://docs.spitzli.cloud/developers/registry",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/self-hosting",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/self-hosting",
+      "h1": "Operate a Core installation",
+      "canonical": "https://docs.spitzli.cloud/developers/self-hosting",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/developers/website-integration",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/developers/website-integration",
+      "h1": "Website integration",
+      "canonical": "https://docs.spitzli.cloud/developers/website-integration",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/access",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/access",
+      "h1": "Accounts and access",
+      "canonical": "https://docs.spitzli.cloud/guides/access",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/applications",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/applications",
+      "h1": "Applications and deployments",
+      "canonical": "https://docs.spitzli.cloud/guides/applications",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/byok",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/byok",
+      "h1": "Bring your own accounts",
+      "canonical": "https://docs.spitzli.cloud/guides/byok",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/byok-kubernetes",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/byok-kubernetes",
+      "h1": "Connect your Kubernetes cluster",
+      "canonical": "https://docs.spitzli.cloud/guides/byok-kubernetes",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/byok-mail",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/byok-mail",
+      "h1": "Connect your turboSMTP account",
+      "canonical": "https://docs.spitzli.cloud/guides/byok-mail",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/byok-neon",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/byok-neon",
+      "h1": "Connect Neon",
+      "canonical": "https://docs.spitzli.cloud/guides/byok-neon",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/byok-vercel",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/byok-vercel",
+      "h1": "Connect your Vercel team",
+      "canonical": "https://docs.spitzli.cloud/guides/byok-vercel",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/console",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/console",
+      "h1": "Console and workspaces",
+      "canonical": "https://docs.spitzli.cloud/guides/console",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/databases",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/databases",
+      "h1": "Databases",
+      "canonical": "https://docs.spitzli.cloud/guides/databases",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/git-deployments",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/git-deployments",
+      "h1": "Git builds and deployments",
+      "canonical": "https://docs.spitzli.cloud/guides/git-deployments",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/mail",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/mail",
+      "h1": "Mail",
+      "canonical": "https://docs.spitzli.cloud/guides/mail",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/managed-cms",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/managed-cms",
+      "h1": "Managed CMS",
+      "canonical": "https://docs.spitzli.cloud/guides/managed-cms",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/plans-and-billing",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/plans-and-billing",
+      "h1": "Plan and usage",
+      "canonical": "https://docs.spitzli.cloud/guides/plans-and-billing",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/project-setup",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/project-setup",
+      "h1": "Set up an application",
+      "canonical": "https://docs.spitzli.cloud/guides/project-setup",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/storage",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/storage",
+      "h1": "Persistent storage",
+      "canonical": "https://docs.spitzli.cloud/guides/storage",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/troubleshooting",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/troubleshooting",
+      "h1": "Troubleshooting",
+      "canonical": "https://docs.spitzli.cloud/guides/troubleshooting",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/guides/websites",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/guides/websites",
+      "h1": "Websites and content",
+      "canonical": "https://docs.spitzli.cloud/guides/websites",
+      "expectedTitleMatched": true,
+      "passed": true
+    },
+    {
+      "path": "/quickstart",
+      "http": 200,
+      "finalURL": "https://docs.spitzli.cloud/quickstart",
+      "h1": "Get started",
+      "canonical": "https://docs.spitzli.cloud/quickstart",
+      "expectedTitleMatched": true,
+      "passed": true
+    }
+  ],
+  "publicReadOnly": true,
+  "providerDashboardSettingsVerified": false,
+  "canonicalOriginsAndRoutesVerified": true
+}
