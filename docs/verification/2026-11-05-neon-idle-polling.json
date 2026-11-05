@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-05",
+  "status": "locally-qualified-awaiting-controlled-rollout",
+  "scope": [
+    "plugin controller empty discovery",
+    "agent empty management cycles"
+  ],
+  "schedule": {
+    "controllerActiveMilliseconds": 500,
+    "agentActiveSeconds": 1,
+    "maximumIdleSeconds": 5,
+    "immediateStartupPoll": true,
+    "pendingDeliveryCadencePreserved": true,
+    "twentySecondEmptyControllerPasses": 6,
+    "previousControllerPasses": 40,
+    "twentySecondEmptyAgentCycles": 5,
+    "previousAgentCycles": 20
+  },
+  "tests": {
+    "newControllerTests": 2,
+    "newAgentIdleTests": 3,
+    "agentLibrary": {
+      "passed": 104,
+      "ignored": 7
+    },
+    "agentManagement": {
+      "passed": 16,
+      "ignored": 1
+    },
+    "kubernetesOnlyIdleTests": 3,
+    "pendingOutboxMutationRejected": true,
+    "focusedClippyPassed": true,
+    "rustfmtPassed": true
+  },
+  "security": {
+    "activeAuthorityChecksUnchanged": true,
+    "heartbeatsDuringWorkUnchanged": true,
+    "leaseDeadlinesUnchanged": true,
+    "runtimeRoleAndRlsChecksUnchanged": true,
+    "readinessUnchanged": true,
+    "databaseSchemaUnchanged": true
+  },
+  "productionChanged": false,
+  "computeConfigurationChanged": false,
+  "newDatabaseExtensionInstalled": false,
+  "billingSavingsClaimed": false,
+  "remaining": [
+    "Exact EU artifacts and controlled activation",
+    "Comparable database activity and operation checks",
+    "Delayed provider consumption comparison",
+    "Other periodic tasks and probes can still keep compute awake"
+  ]
+}

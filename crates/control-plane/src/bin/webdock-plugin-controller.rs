@@ -18,6 +18,13 @@ type Error = Box<dyn std::error::Error + Send + Sync>;
 fn required(key: &str) -> Result<String, Error> {
     std::env::var(key).map_err(|_| format!("Missing {key}").into())
 }
+fn next_idle_poll(previous: Duration, worked: bool) -> Duration {
+    if worked {
+        Duration::from_millis(500)
+    } else {
+        previous.saturating_mul(2).min(Duration::from_secs(5))
+    }
+}
 async fn run() -> Result<(), Error> {
     let args = Args::parse();
     let config = PluginConfig::load(&args.config)?;
@@ -78,22 +85,25 @@ async fn run() -> Result<(), Error> {
     };
     // Dropping the set aborts requests on shutdown; their persisted leases remain recoverable.
     let mut jobs = tokio::task::JoinSet::new();
+    let mut idle_delay = Duration::from_millis(500);
     loop {
+        let mut worked = false;
         if let Some(result) = jobs.try_join_next() {
-            result??;
+            worked |= result??;
         }
         if jobs.is_empty() {
             let endpoints = endpoints.clone();
             jobs.spawn(async move { endpoints.advance_job().await });
         }
         if let Some(lease) = endpoints.host.claim_state_operation(None).await? {
+            worked = true;
             endpoints
                 .host
                 .advance_state_operation(&lease, endpoints.as_ref())
                 .await?;
         }
         if let Some(installer) = &installer {
-            installer.advance(&endpoints).await?;
+            worked |= installer.advance(&endpoints).await?;
         }
         if args.once {
             while let Some(result) = jobs.join_next().await {
@@ -101,9 +111,11 @@ async fn run() -> Result<(), Error> {
             }
             return Ok(());
         }
+        // Only empty discovery slows down; active jobs keep their existing authority/lease checks.
+        idle_delay = next_idle_poll(idle_delay, worked);
         tokio::select! {
             result = tokio::signal::ctrl_c() => { result?; return Ok(()); },
-            _ = tokio::time::sleep(Duration::from_millis(500)) => {},
+            _ = tokio::time::sleep(idle_delay) => {},
         }
     }
 }
@@ -115,5 +127,38 @@ async fn main() -> ExitCode {
             eprintln!("plugin_controller_failed");
             ExitCode::FAILURE
         }
+    }
+}
+
+#[cfg(test)]
+mod idle_poll_tests {
+    use super::*;
+
+    #[test]
+    fn empty_cycles_back_off_but_work_restores_the_original_cadence() {
+        let mut delay = Duration::from_millis(500);
+        let mut observed = Vec::new();
+        for _ in 0..6 {
+            delay = next_idle_poll(delay, false);
+            observed.push(delay.as_millis());
+        }
+        assert_eq!(observed, [1000, 2000, 4000, 5000, 5000, 5000]);
+        assert_eq!(next_idle_poll(delay, true), Duration::from_millis(500));
+        assert_eq!(next_idle_poll(Duration::MAX, false), Duration::from_secs(5));
+    }
+
+    #[test]
+    fn twenty_idle_seconds_need_six_discovery_passes_instead_of_forty() {
+        let mut elapsed = Duration::ZERO;
+        let mut delay = Duration::from_millis(500);
+        let mut passes = 0;
+        while elapsed < Duration::from_secs(20) {
+            passes += 1;
+            delay = next_idle_poll(delay, false);
+            elapsed += delay;
+        }
+        assert_eq!(passes, 6);
+        assert_eq!(Duration::from_secs(20).as_millis() / 500, 40);
+        assert_eq!(next_idle_poll(delay, true), Duration::from_millis(500));
     }
 }

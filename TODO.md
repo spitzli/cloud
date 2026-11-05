@@ -2,6 +2,10 @@
 
 ## Active execution queue — 2026-11-04
 
+**Owner priority update — 2026-11-05:** finish measured Core Neon query/compute
+optimisation first, then resume the remaining queue starting with native Git/build
+onboarding. Local scheduling tests alone do not close the live cost-verification task.
+
 Owner instruction: after the workspace-icon release, continue working through this backlog.
 Finish the current release before starting dependent production changes. This queue orders the
 existing tasks; it does not replace their acceptance criteria or turn historical notes into fresh
@@ -171,6 +175,10 @@ No implementation, published offer, provider purchase or final entitlement decis
   idle connection handling, query efficiency and unused branch compute. Preserve
   authentication/MFA, queue leases, reconciliation and service availability;
   measure savings and cold-start latency before changing production defaults.
+  The first [bounded idle-polling increment](docs/superpowers/plans/2026-11-05-neon-idle-polling.md)
+  is locally qualified: empty controller/agent cycles back off to at most five
+  seconds, while active work and pending deliveries retain the original cadence.
+  Live rollout and the comparable post-change measurement remain required.
 - [ ] Realtime capacity: benchmark revision invalidation/fanout before large tenant
   counts; fixed counters currently intentionally contain no tenant/customer rows.
 - [ ] Existing agent lint debt outside the Neon/read-loop change:
