@@ -235,14 +235,18 @@ No implementation, published offer, provider purchase or final entitlement decis
   capability the server does not provide. This fixture intentionally rejects SQL
   RPC and does not establish a working SQL editor or a production reproduction.
 
-- [ ] **Retained TypeScript Hosting composition boundary (2026-11-04).**
-  `modules/hosting/tests/boundaries.test.ts` rejects existing SQL service logic in
-  `legacy/control-plane/src/modules/hosting/plugin-provisioning-store.ts`.
-  The npm scope migration changes only its SDK import; the same forbidden SQL
-  is present in pre-migration commit `bccb838f`. Reconcile this retained legacy
-  ownership separately without weakening the boundary test or changing native
-  Rust Hosting authorization. The broader module suite currently has 166 passes,
-  four skips and this one failure; it is not fully green.
+- [ ] **Retained TypeScript Hosting composition boundary (2026-11-05).**
+  The concrete PostgreSQL provisioning/template adapters and schema now sit beside
+  the retained DB/RLS adapters; previous Hosting import paths remain compatible.
+  The unchanged boundary test and full67-test module suite pass, as does the
+  owned PostgreSQL18 scoped-RLS/replay/revocation integration. Independent review
+  found no material issues. Normal Blacksmith checks/merge remain required; see
+  [the repair evidence](docs/verification/2026-11-05-hosting-persistence-boundary.json).
+- [ ] **Retained TypeScript diagnostics.** The legacy control-plane typecheck
+  currently reports212 diagnostics. An in-memory original-source compiler overlay
+  confirms the Hosting adapter move adds none. Resolve this older baseline in
+  its own checked scope; do not describe the entire retained TypeScript build as green.
+
 
 ### Build-Minuten je Kunde und Plan
 
