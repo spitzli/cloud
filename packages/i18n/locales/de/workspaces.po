@@ -269,3 +269,18 @@ msgstr "Website-Rechte dieser Person prüfen"
 
 msgid "Configure deployments"
 msgstr "Deployments einrichten"
+
+msgid "Managed cluster"
+msgstr "Verwalteter Cluster"
+
+msgid "No cluster assigned"
+msgstr "Kein Cluster zugewiesen"
+
+msgid "Hosted on Vercel"
+msgstr "Bei Vercel gehostet"
+
+msgid "Vercel manages deployment for this project."
+msgstr "Vercel verwaltet die Bereitstellung für dieses Projekt."
+
+msgid "Deployment information for this provider is not available here yet."
+msgstr "Bereitstellungsinformationen für diesen Anbieter sind hier noch nicht verfügbar."

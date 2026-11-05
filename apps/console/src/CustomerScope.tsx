@@ -13,7 +13,22 @@ export function CustomerScopeStart({ customer }: { customer: string }) {
   const api = useApi();
   const client = useQueryClient();
   const start = useMutation({
-    mutationFn: (mode: "read_only" | "owner") => api.write("/api/console/tenant-preview/start", "POST", { customerID: customer, mode }, scopeSchema),
+    mutationFn: async (mode: "read_only" | "owner") => {
+      try {
+        return await api.write("/api/console/tenant-preview/start", "POST", { customerID: customer, mode }, scopeSchema);
+      } catch (error) {
+        // A lost response can follow a committed authority change. Inspect, never repeat it.
+        try {
+          const scope = await api.request("/api/console/tenant-preview/current", scopeSchema, {
+            method: "POST", body: "{}", signal: AbortSignal.timeout(5_000),
+          });
+          if (scope.customerID === customer && scope.mode === mode && scope.status === "active") return scope;
+        } catch { /* Re-bootstrap below when current authority cannot be confirmed. */ }
+        client.clear();
+        location.reload();
+        throw error;
+      }
+    },
     onSuccess: (scope) => { client.clear(); location.assign(`/workspaces/${scope.customerID}`); },
   });
   return <div className="mb-6">

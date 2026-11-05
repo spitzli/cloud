@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-05",
+  "authenticatedProductionAudit": true,
+  "mfaOperatorSessionProvidedByOwner": true,
+  "customer": "schattenclan",
+  "customerMode": {
+    "entered": "owner",
+    "exited": true,
+    "finalRole": "operator",
+    "finalPreview": false,
+    "retiredViewerSessionHttpStatus": 401
+  },
+  "neonAttachments": {
+    "bothProjectsPresent": true,
+    "sameProviderProjectBranchDatabaseEndpointAndConnection": true,
+    "active": true,
+    "auditTransactionReadOnly": true
+  },
+  "customerViewer": {
+    "opened": true,
+    "sql": "SELECT current_database() AS database_name, current_user AS database_role, 1 AS connection_ok",
+    "database": "neondb",
+    "role": "lunares_schattenclan_browser",
+    "connectionOk": 1,
+    "customerTablesChanged": false
+  },
+  "runningBot": {
+    "readyDeploymentReplicas": 1,
+    "podReady": true,
+    "podRestarts": 0,
+    "observedUidMatchesCore": true,
+    "botAndBotApiDatabaseEndpointsMatchAttachment": true,
+    "desiredRevision": 37,
+    "observedRevision": 34,
+    "recordedStatus": "failed",
+    "recordedOperation": "needs-reconciliation",
+    "ownershipGuardWeakened": false,
+    "restarted": false
+  },
+  "adminPanel": {
+    "configuredProvider": "vercel",
+    "nativeHostingAppRecordPresent": false,
+    "liveVercelDeploymentVerified": false
+  },
+  "openFindings": [
+    "Neon plugin detail and branch invoke requests failed in owner mode; transport root cause not established",
+    "Prior bot operation still requires ownership/rollout reconciliation",
+    "Actual external Vercel Admin-Panel deployment remains to be verified",
+    "SSO still uses a legacy intermediate origin"
+  ],
+  "localFixes": [
+    "full-page viewport DB layout and scoped Spitzli Tabularis host theme",
+    "lost-response owner-mode start recovery without repeated mutation",
+    "authorized workspace breadcrumb for genuine customer role",
+    "provider-aware hosting infrastructure labels, with German catalog"
+  ],
+  "productionUiDeployed": false,
+  "customerDataChanged": false,
+  "credentialsPrintedOrRetained": false,
+  "localVerification": {
+    "consoleUnitTests": {
+      "passed": 239,
+      "failed": 0
+    },
+    "lostCustomerModeResponseBrowserRegression": "passed",
+    "fullPageThemeCustomerBreadcrumbAndInfrastructureLabelsBrowserRegression": "passed",
+    "consoleEslint": "passed",
+    "typecheckedProductionBuild": "passed",
+    "germanGettextCatalogs": 22,
+    "validatedMessages": 4384,
+    "diffCheck": "passed"
+  }
+}

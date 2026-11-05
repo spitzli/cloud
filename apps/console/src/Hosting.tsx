@@ -1,3 +1,4 @@
+import { useI18n } from "@webdock/i18n/react";
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { HostingCreate } from "./HostingCreate";
@@ -20,6 +21,7 @@ export function HostingDirectory({
 }: {
   customerID?: string | undefined;
 }) {
+  const { t } = useI18n();
   const api = useApi();
   const call = useHostingCommand();
   const navigate = useNavigate();
@@ -141,7 +143,7 @@ export function HostingDirectory({
                             ? "Managed"
                             : "Self-service"}
                         </td>
-                        <td className={ui.cx(`${ui.td} text-muted`)}>{project.clusterName ?? "No cluster assigned"}</td>
+                        <td className={ui.cx(`${ui.td} text-muted`)}>{project.provider === "vercel" ? "Vercel" : project.clusterName ?? (project.clusterID ? t("Managed cluster") : t("No cluster assigned"))}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -160,6 +162,7 @@ export function HostingDirectory({
   );
 }
 export function HostingProject({ projectID }: { projectID: string }) {
+  const { t } = useI18n();
   const api = useApi();
   const session = useSession();
   const call = useHostingCommand();
@@ -180,7 +183,7 @@ export function HostingProject({ projectID }: { projectID: string }) {
         appsPageSchema,
         signal,
       ),
-    enabled: enabled && project.data?.configured === true,
+    enabled: enabled && project.data?.configured === true && project.data.provider !== "vercel",
   });
   if (!enabled)
     return (
@@ -205,15 +208,15 @@ export function HostingProject({ projectID }: { projectID: string }) {
             {project.data.customerName}
           </Link>
           <h1 className={ui.pageTitle}>{project.data.name}</h1>
-          <p className={ui.pageLead}>Applications in this project.</p>
-          <Link className="mt-2 inline-block text-sm underline" to="/hosting/projects/$projectID/builds" params={{projectID}}>Git builds and releases</Link>
+          <p className={ui.pageLead}>{project.data.provider === "vercel" ? t("Vercel manages deployment for this project.") : "Applications in this project."}</p>
+          {project.data.provider !== "vercel" && <Link className="mt-2 inline-block text-sm underline" to="/hosting/projects/$projectID/builds" params={{projectID}}>Git builds and releases</Link>}
         </div>
         <button
           className={ui.button()}
           disabled={apps.isFetching}
           onClick={() => {
             void project.refetch();
-            void apps.refetch();
+            if (project.data.provider !== "vercel") void apps.refetch();
           }}
         >
           Refresh
@@ -223,6 +226,10 @@ export function HostingProject({ projectID }: { projectID: string }) {
         <Empty title="Hosting is not configured">
           This project has no hosting configuration. An operator must configure
           it before applications can be managed.
+        </Empty>
+      ) : project.data.provider === "vercel" ? (
+        <Empty title={t("Hosted on Vercel")}>
+          {t("Deployment information for this provider is not available here yet.")}
         </Empty>
       ) : (
         <>

@@ -50,6 +50,17 @@ const destinations = [
 const operatorDestination = (collection: string) => collection === "access-requests"
   ? { to: "/access-requests" as const }
   : { to: "/$collection" as const, params: { collection } };
+function shellLayout(viewer: boolean) {
+  return viewer ? {
+    frame: "grid h-dvh grid-cols-[minmax(0,1fr)] grid-rows-[56px_minmax(0,1fr)] overflow-hidden",
+    main: "min-h-0 w-full flex-1 outline-none",
+    sidebar: "hidden",
+  } : {
+    frame: "grid min-h-dvh grid-cols-[minmax(0,1fr)] grid-rows-[56px_1fr] md:grid-cols-[216px_minmax(0,1fr)] lg:grid-cols-[224px_minmax(0,1fr)]",
+    main: "mx-auto w-full max-w-[1200px] flex-1 px-4 pt-5 pb-10 outline-none md:px-6 md:pt-6 md:pb-12 lg:px-8 lg:pt-8 lg:pb-14",
+    sidebar: "flex",
+  };
+}
 export function Shell() {
   const session = useSession();
   const navigationCopy = session.user.role === "operator"
@@ -60,6 +71,7 @@ export function Shell() {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
+  const layout = shellLayout(/^\/databases\/[^/]+\/?$/.test(pathname));
   const searchString = useRouterState({
     select: (state) => state.location.searchStr,
   });
@@ -107,15 +119,15 @@ export function Shell() {
       Boolean(customerId) &&
       session.user.role === "operator",
   });
+  const tenants = useTenants();
   const workspace = workspaceIdentity(
     hosting,
     customerId,
-    customer.data?.name,
+    workspaceName(customer.data, tenants.data, customerId),
     customer.isError,
     session,
     mail,
   );
-  const tenants = useTenants();
   const header = useWorkspaceHeader(pathname);
   const identity = header ?? { ...workspace, icon: workspaceIcon(tenants.data, customerId) };
   const [palette, setPalette] = useState(false);
@@ -291,7 +303,7 @@ export function Shell() {
     </>
   );
   return (
-    <div className="grid min-h-dvh grid-cols-[minmax(0,1fr)] grid-rows-[56px_1fr] md:grid-cols-[216px_minmax(0,1fr)] lg:grid-cols-[224px_minmax(0,1fr)]">
+    <div className={layout.frame}>
       <a className="fixed -top-24 left-4 z-50 border border-focus bg-surface px-4 py-2.5 focus:top-2.5" href="#main">
         Skip to content
       </a>
@@ -372,7 +384,7 @@ export function Shell() {
           </button>
         </div>
       </header>
-      <aside className="sticky top-14 flex h-[calc(100dvh-56px)] flex-col self-start overflow-y-auto border-r border-outline bg-subtle px-2 py-3 max-md:hidden">
+      <aside className={ui.cx("sticky top-14 h-[calc(100dvh-56px)] flex-col self-start overflow-y-auto border-r border-outline bg-subtle px-2 py-3 max-md:hidden", layout.sidebar)}>
         <nav aria-label="Primary navigation">{navigation}</nav>
         {logout.isError ? (
           <p role="alert" className="mt-auto px-2.5 text-[13px] text-danger">
@@ -380,9 +392,9 @@ export function Shell() {
           </p>
         ) : null}
       </aside>
-      <div className="flex min-w-0 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-col">
         <CustomerScopeBanner />
-        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1200px] flex-1 px-4 pt-5 pb-10 outline-none md:px-6 md:pt-6 md:pb-12 lg:px-8 lg:pt-8 lg:pb-14">
+        <main id="main" tabIndex={-1} className={layout.main}>
           <Outlet />
         </main>
       </div>
@@ -645,4 +657,8 @@ function currentCustomer(
 
 function workspaceIcon(tenants: { id: string; icon?: string | null | undefined }[] | undefined, customer: string | undefined) {
   return tenants?.find(tenant => tenant.id === customer)?.icon;
+}
+
+function workspaceName(record: { name?: string | undefined } | undefined, tenants: { id: string; name: string }[] | undefined, customer: string | undefined) {
+  return record?.name ?? tenants?.find(tenant => tenant.id === customer)?.name;
 }
