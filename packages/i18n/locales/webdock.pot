@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Webdock\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-01 17:15+0100\n"
+"POT-Creation-Date: 2026-11-05 20:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11663,4 +11663,24 @@ msgstr ""
 
 #: apps/console/src/CustomerMembers.tsx
 msgid "Updated workspace icon"
+msgstr ""
+
+#: apps/console/src/Hosting.tsx:146
+msgid "Managed cluster"
+msgstr ""
+
+#: apps/console/src/Hosting.tsx:146
+msgid "No cluster assigned"
+msgstr ""
+
+#: apps/console/src/Hosting.tsx:211
+msgid "Vercel manages deployment for this project."
+msgstr ""
+
+#: apps/console/src/Hosting.tsx:231
+msgid "Hosted on Vercel"
+msgstr ""
+
+#: apps/console/src/Hosting.tsx:232
+msgid "Deployment information for this provider is not available here yet."
 msgstr ""

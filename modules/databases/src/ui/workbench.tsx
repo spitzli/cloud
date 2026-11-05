@@ -158,6 +158,7 @@ function DatabaseWorkbenchState({
   return (
     <div className="database-workbench">
       <Workspace
+        className="spitzli-database-workspace"
         client={workspace.client}
         scopeId={workspace.scopeID}
         connectionId={workspace.connectionID}

@@ -1,0 +1,22 @@
+/* The host owns geometry; retain the workspace header and customer-scope banner. */
+.database-view { display:flex; flex-direction:column; height:100%; min-height:0; }
+.database-view-heading { flex:none; margin:0; padding:10px 16px; border-bottom:1px solid var(--line); }
+.database-view-heading h1 { font-size:16px; }
+.database-view .database-workbench { flex:1; height:auto; min-height:0; overflow:hidden; }
+.database-view .database-workbench > .tabularis-workspace { height:100%; min-height:0; }
+/* Tabularis sets its preset tokens inline. Override only this embedded workspace,
+   leaving host chrome and separately loaded Tabularis deployments untouched. */
+.spitzli-database-workspace {
+ --bg-base:var(--panel)!important; --bg-elevated:var(--panel)!important;
+ --bg-overlay:var(--panel)!important; --bg-input:var(--panel)!important; --bg-tooltip:var(--ink)!important;
+ --surface-primary:var(--sidebar)!important; --surface-secondary:var(--soft)!important;
+ --surface-tertiary:var(--soft)!important; --surface-hover:var(--soft)!important; --surface-active:var(--soft)!important;
+ --text-primary:var(--ink)!important; --text-secondary:var(--muted)!important; --text-muted:var(--muted)!important;
+ --text-accent:var(--accent)!important; --text-inverse:var(--panel)!important;
+ --accent-primary:var(--accent)!important; --accent-secondary:var(--brand)!important;
+ --text-on-accent-primary:var(--on-accent)!important; --text-on-accent-secondary:#ffffff!important;
+ --border-default:var(--line)!important; --border-strong:var(--line-strong)!important; --border-focus:var(--focus)!important;
+ --font-base:var(--font-body)!important; --font-mono:var(--mono)!important;
+ --radius-sm:4px!important; --radius-base:6px!important; --radius-lg:8px!important;
+ font-family:var(--font-body);
+}

@@ -184,38 +184,14 @@ pub(super) async fn cleanup_kind(
     if secrets.items.len() > 200 || secrets.metadata.continue_.is_some_and(|s| !s.is_empty()) {
         return Err(ExecutionError::Runtime);
     }
-    let prefix = format!(
-        "{}-{}-",
-        name(spec),
-        if services { "services" } else { "env" }
-    );
     for secret in secrets.items {
         let name = secret
             .metadata
             .name
             .as_deref()
             .ok_or(ExecutionError::Ownership)?;
-        let Some(suffix) = name.strip_prefix(&prefix) else {
+        if !cleanup_candidate(&secret, spec, services, referenced.contains(name))? {
             continue;
-        };
-        let revision = suffix
-            .parse::<u64>()
-            .ok()
-            .filter(|v| *v > 0 && *v <= spec.revision)
-            .ok_or(ExecutionError::Ownership)?;
-        if suffix != revision.to_string() {
-            return Err(ExecutionError::Ownership);
-        }
-        if services {
-            super::services::owner(&secret.metadata, spec)?;
-        } else {
-            owner(&secret.metadata, spec, true)?;
-        }
-        if referenced.contains(name) {
-            continue;
-        }
-        if secret.type_.as_deref() != Some("Opaque") {
-            return Err(ExecutionError::Ownership);
         }
         let params = DeleteParams {
             preconditions: Some(Preconditions {
@@ -240,4 +216,146 @@ pub(super) async fn cleanup_kind(
         api.delete(name, &params).await.map_err(api_failure)?;
     }
     Ok(())
+}
+
+// Only the canonical revision writer's objects may be garbage-collected. Proven
+// immutable maintenance material stays for explicit operator retirement, even unused.
+fn cleanup_candidate(
+    secret: &Secret,
+    spec: &RuntimeSpec,
+    services: bool,
+    referenced: bool,
+) -> Result<bool> {
+    let name = secret
+        .metadata
+        .name
+        .as_deref()
+        .ok_or(ExecutionError::Ownership)?;
+    let prefix = format!(
+        "{}-{}-",
+        super::name(spec),
+        if services { "services" } else { "env" }
+    );
+    let Some(suffix) = name.strip_prefix(&prefix) else {
+        return Ok(false);
+    };
+    if services {
+        super::services::owner(&secret.metadata, spec)?;
+    } else {
+        owner(&secret.metadata, spec, true)?;
+    }
+    if !services && let Some(maintenance) = suffix.strip_prefix("maint-") {
+        if !(6..=64).contains(&maintenance.len())
+            || !maintenance
+                .bytes()
+                .all(|c| c.is_ascii_digit() || (b'a'..=b'f').contains(&c))
+            || secret.type_.as_deref() != Some("Opaque")
+            || secret.immutable != Some(true)
+            || !secret.metadata.uid.as_ref().is_some_and(|s| !s.is_empty())
+            || !secret
+                .metadata
+                .resource_version
+                .as_ref()
+                .is_some_and(|s| !s.is_empty())
+        {
+            return Err(ExecutionError::Ownership);
+        }
+        return Ok(false);
+    }
+    let revision = suffix
+        .parse::<u64>()
+        .ok()
+        .filter(|v| *v > 0 && *v <= spec.revision)
+        .ok_or(ExecutionError::Ownership)?;
+    if suffix != revision.to_string() {
+        return Err(ExecutionError::Ownership);
+    }
+    if referenced {
+        return Ok(false);
+    }
+    if secret.type_.as_deref() != Some("Opaque") {
+        return Err(ExecutionError::Ownership);
+    }
+    Ok(true)
+}
+
+#[cfg(test)]
+mod cleanup_tests {
+    use super::*;
+    fn fixture(suffix: &str) -> (RuntimeSpec, Secret) {
+        let allowance = ResourceAllowance {
+            apps: 2,
+            cpu_millicores: 1000,
+            memory_bytes: 1073741824,
+            volume_bytes: 0,
+            ephemeral_bytes: 1073741824,
+            replicas_per_app: 1,
+            concurrent_deployments: 1,
+        };
+        let spec: RuntimeSpec = serde_json::from_value(serde_json::json!({"version":1,"installation":"fixture","projectId":"123","resourceId":"456","revision":37,"image":format!("registry.invalid/app@sha256:{}","a".repeat(64)),"arguments":[],"cpuMillicores":100,"memoryBytes":33554432,"ephemeralBytes":16777216,"replicas":1,"port":8080,"healthPath":"/","volume":null,"plugin":null,"mounts":[],"hostingBinding":{"clusterId":"789","quota":allowance,"finalQuota":allowance}})).unwrap();
+        let secret = Secret {
+            metadata: ObjectMeta {
+                name: Some(format!("app-456-env-{suffix}")),
+                uid: Some("owned-uid".into()),
+                resource_version: Some("17".into()),
+                labels: Some(owner_labels(&spec, true).unwrap()),
+                annotations: Some(BTreeMap::from([(
+                    "webdock.dev/revision".into(),
+                    "34".into(),
+                )])),
+                ..Default::default()
+            },
+            type_: Some("Opaque".into()),
+            immutable: Some(true),
+            ..Default::default()
+        };
+        (spec, secret)
+    }
+    #[test]
+    fn proved_maintenance_secret_is_retained_even_after_reference_retirement() {
+        let (spec, secret) = fixture("maint-ebc654f");
+        for referenced in [true, false] {
+            assert!(!cleanup_candidate(&secret, &spec, false, referenced).unwrap());
+        }
+    }
+    #[test]
+    fn only_canonical_unreferenced_environment_secrets_are_collected() {
+        let (spec, secret) = fixture("34");
+        assert!(cleanup_candidate(&secret, &spec, false, false).unwrap());
+        assert!(!cleanup_candidate(&secret, &spec, false, true).unwrap());
+        for name in ["0", "01", "38", "nonsense", "maint-", "maint-NOTHEX"] {
+            let (_, secret) = fixture(name);
+            assert!(
+                cleanup_candidate(&secret, &spec, false, false).is_err(),
+                "{name}"
+            );
+        }
+    }
+    #[test]
+    fn maintenance_retention_never_bypasses_ownership_revision_or_immutability() {
+        let (spec, secret) = fixture("maint-ebc654f");
+        let mut wrong = secret.clone();
+        wrong
+            .metadata
+            .labels
+            .as_mut()
+            .unwrap()
+            .insert("webdock.dev/cluster-id".into(), "999".into());
+        assert!(cleanup_candidate(&wrong, &spec, false, true).is_err());
+        for revision in [None, Some("malformed"), Some("38")] {
+            let mut wrong = secret.clone();
+            wrong.metadata.annotations =
+                revision.map(|r| BTreeMap::from([("webdock.dev/revision".into(), r.into())]));
+            assert!(cleanup_candidate(&wrong, &spec, false, true).is_err());
+        }
+        let mut wrong = secret.clone();
+        wrong.immutable = Some(false);
+        assert!(cleanup_candidate(&wrong, &spec, false, true).is_err());
+        let mut wrong = secret.clone();
+        wrong.metadata.uid = None;
+        assert!(cleanup_candidate(&wrong, &spec, false, true).is_err());
+        let mut wrong = secret;
+        wrong.metadata.resource_version = None;
+        assert!(cleanup_candidate(&wrong, &spec, false, true).is_err());
+    }
 }

@@ -3591,6 +3591,9 @@
   "Deploying": [
     "Bereitstellung läuft"
   ],
+  "Deployment information for this provider is not available here yet.": [
+    "Bereitstellungsinformationen für diesen Anbieter sind hier noch nicht verfügbar."
+  ],
   "Deployment ready": [
     "Bereitgestellt"
   ],
@@ -4763,6 +4766,9 @@
   ],
   "Host": [
     "Host"
+  ],
+  "Hosted on Vercel": [
+    "Bei Vercel gehostet"
   ],
   "Hosting": [
     "Hosting"
@@ -6168,6 +6174,9 @@
   "Managed capacity must be finite and within verified persistent storage capacity.": [
     "Die Kapazität muss begrenzt sein und innerhalb der geprüften dauerhaften Speicherkapazität liegen."
   ],
+  "Managed cluster": [
+    "Verwalteter Cluster"
+  ],
   "Managed container hosting must be retired before project deletion.": [
     "Vor dem Löschen des Projekts muss das verwaltete Container-Hosting stillgelegt werden."
   ],
@@ -6671,6 +6680,9 @@
   ],
   "No changes yet": [
     "Noch keine Änderungen"
+  ],
+  "No cluster assigned": [
+    "Kein Cluster zugewiesen"
   ],
   "No cluster connected yet.": [
     "Noch kein Cluster verbunden."
@@ -11978,6 +11990,9 @@
   ],
   "Vercel is unavailable. Check the current state before retrying.": [
     "Vercel ist nicht erreichbar. Prüfe vor einem erneuten Versuch den aktuellen Zustand."
+  ],
+  "Vercel manages deployment for this project.": [
+    "Vercel verwaltet die Bereitstellung für dieses Projekt."
   ],
   "Vercel project": [
     "Vercel-Projekt"

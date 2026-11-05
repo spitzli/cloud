@@ -1,3 +1,4 @@
+import "./database-workbench.css";
 import { tenantsSchema } from "./workspace-contracts";
 import { lazy, Suspense, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -480,7 +481,7 @@ export function DatabaseViewer({
   return (
     // database-view remains as the hook for the module's fixed-height workbench rules.
     <section className="database-view">
-      <div className={ui.cx(`${ui.pageHeading} mb-6`)}>
+      <div className={ui.cx(`${ui.pageHeading} database-view-heading`)}>
         <h1 className={ui.pageTitle}>{i18n.t("Database workspace")}</h1>
         <Link
           className={ui.button()}
