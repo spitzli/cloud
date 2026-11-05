@@ -33,10 +33,43 @@
     "customerTablesChanged": false
   },
   "remaining": {
-    "botDesiredStateReconciliation": "awaiting deployment-authority decision because external concurrent releases changed image/environment",
+    "botDesiredStateReconciliation": "Authority confirmed. Pause parallel manual rollouts, retire only the verified completed one-off initializer with UID/resourceVersion tests, then admit the latest reviewed image/environment through the normal controller. Do not retry stale revision37 or the now-outdated revision38.",
     "cloudflarePublicWebsiteHosting": "DNS verified; SSR/CMS-compatible hosting migration remains separate"
   },
   "privateCredentialsPublished": false,
   "nativeGitMigration76Included": false,
-  "coreSchemaMigrationApplied": false
+  "coreSchemaMigrationApplied": false,
+  "lunaresControlHandover": {
+    "ownerDecision": "Spitzli Cloud is the deployment authority; external releases are temporary",
+    "normalOperatorUpdate": {
+      "operationID": "111928301521477632",
+      "revision": 38,
+      "status": "needs-reconciliation",
+      "errorCode": "capability_unavailable",
+      "oldRevision37SupersededThroughNormalApi": true,
+      "environmentValuesPreservedInCore": 32,
+      "image": "webdock.local/lunares@sha256:bdf98a5c3a411e6f0e86dbf87b43fce34a3eb069e673818c3cb1a39ad60369e9"
+    },
+    "runtimeAfterRejection": {
+      "desiredMutationApplied": false,
+      "snapshotSpecUnchanged": true,
+      "readyReplicas": 1
+    },
+    "additionalBlocker": {
+      "completedInitializer": "lunares-data-migration",
+      "sourceSHA256": "5124caa959178822df7c2066b759a12b6ae9154539951b809b82b1b6814719a2",
+      "exitCode": 0,
+      "completionMarkerValid": true,
+      "backupRetained": true,
+      "sqliteQuickCheck": "ok",
+      "verificationReadOnly": true,
+      "nativeInitializerGuardWeakened": false
+    },
+    "laterExternalReleaseObserved": {
+      "image": "webdock.local/lunares@sha256:806b64bd80bcb356ad393b92b21b3a7ca9a75e1be27813c6a8cb9c1a88b0d7a3",
+      "generation": 21,
+      "readyReplicas": 1
+    },
+    "handoverComplete": false
+  }
 }

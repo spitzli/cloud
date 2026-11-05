@@ -302,7 +302,7 @@ status: the Blacksmith-only owner instruction applies to new/rerun GitHub CI.
 
 - [x] Local full-page viewer and scoped Spitzli Cloud Tabularis host theme; customer-mode banner/exit preserved. Desktop/mobile, light/dark and close navigation regression passes.
 - [x] Production Schattenclan owner-mode audit: both active project attachments share the exact Neon target; running bot and bot API use that endpoint; viewer SQL metadata query passed with the limited customer role. Mode exited and retired viewer session denied401. This does not close the rollout/UI findings below.
-- [ ] Schattenclan runtime acceptance: bot has a ready Pod but Core records desired37/observed34 with ownership reconciliation required. Review through the native controller without weakening ownership/storage checks. Admin-Panel is a Vercel project without a native app record; verify its actual external deployment separately.
+- [ ] Schattenclan runtime acceptance: owner confirmed native controller authority. Normal operator admission superseded old37 with reviewed38/all32 environment values, but the retained completed migration initializer caused `capability_unavailable`; observed revision remains34. External rollouts then changed the live image again. Pause the parallel writer, retire only the verified completed initializer with exact CAS, and submit the latest reviewed configuration. Never replay either stale revision or weaken ownership/storage/init guards. Admin-Panel remains an external Vercel project.
 - [ ] Fix/qualify failing Neon plugin detail/branch invoke requests in customer owner mode; distinguish transport failure from provider/authority errors using actual evidence.
 - [x] Local lost-response customer-mode start recovery: inspect committed exact scope before navigation, never repeat start; fresh regression PASS. Merged/deployed in PR74; live artifact/API evidence recorded.
 - [x] Local customer-role regressions for hosting cluster/provider labels and DB-viewer workspace breadcrumb; authorized tenant-name fallback and provider-aware labels implemented, translated and browser-verified. Merged/deployed in PR74; live artifact/API evidence recorded.
@@ -329,6 +329,10 @@ all spitzli.link registration/purchase preparation; no purchase is authorized or
 - [x] PR74 released: signed source, Blacksmith, qualified exact EU agent binary,
   preserved RUN identity/configuration and controlled Console promotion. Fresh Core
   runtime inspection and actual customer viewer SQL passed after rollout.
-- [ ] Resolve deployment authority for Lunares before reconciling stale desired
-  state: parallel external releases changed live image and environment repeatedly.
-  Do not overwrite them or replay the failed older request. Decision requested.
+- [x] Lunares deployment authority confirmed by owner: Spitzli Cloud controls releases;
+  external rollouts are a temporary workaround. Normal operator admission superseded
+  old revision37 with reviewed revision38, but execution refused the retained one-off
+  migration initializer. Its completion marker, backup and SQLite integrity are
+  verified read-only; do not weaken the initializer guard. Pause concurrent manual
+  releases before a guarded retirement and fresh latest-state controller handover.
+  Handover remains open; neither outdated revision may be blindly retried.
