@@ -734,6 +734,58 @@ impl Daemon {
             Err(error) => Err(error),
         }
     }
+    async fn has_pending_delivery(&self) -> Result<bool> {
+        if self.outbox.lock().await.pending()?.is_some() {
+            return Ok(true);
+        }
+        if self.authority.mail_outbox.lock().await.pending()?.is_some() {
+            return Ok(true);
+        }
+        if self
+            .authority
+            .configuration_outbox
+            .lock()
+            .await
+            .pending()?
+            .is_some()
+        {
+            return Ok(true);
+        }
+        #[cfg(feature = "docker")]
+        if self
+            .authority
+            .recovery_outbox
+            .lock()
+            .await
+            .pending()?
+            .is_some()
+        {
+            return Ok(true);
+        }
+        #[cfg(feature = "kubernetes")]
+        if self
+            .authority
+            .plugin_outbox
+            .lock()
+            .await
+            .pending()?
+            .is_some()
+        {
+            return Ok(true);
+        }
+        #[cfg(feature = "kubernetes")]
+        if self
+            .authority
+            .database_outbox
+            .lock()
+            .await
+            .pending()?
+            .is_some()
+        {
+            return Ok(true);
+        }
+        Ok(false)
+    }
     async fn heartbeat(&self) -> Result<()> {
         let session = self.session().await?;
         let snapshot =
@@ -1125,18 +1177,24 @@ impl Daemon {
             let result =
                 tokio::select! {_= &mut shutdown=>return Ok(()),result=self.connect()=>result};
             match result {
-                Ok(()) => loop {
-                    let result = tokio::select! {_= &mut shutdown=>return Ok(()),result=self.cycle()=>result};
-                    match result {
-                        Ok(_) => {
-                            delay = 1;
+                Ok(()) => {
+                    let mut idle_delay = Duration::from_secs(1);
+                    loop {
+                        let result = tokio::select! {_= &mut shutdown=>return Ok(()),result=self.cycle()=>result};
+                        match result {
+                            Ok(worked) => {
+                                delay = 1;
+                                // Pending receipts are delivery work even when no new command ran.
+                                let pending = !worked && self.has_pending_delivery().await?;
+                                idle_delay = next_idle_cycle(idle_delay, worked, pending);
+                            }
+                            Err(AgentError::Revoked) => return Err(AgentError::Revoked),
+                            Err(AgentError::State) => return Err(AgentError::State),
+                            Err(_) => break,
                         }
-                        Err(AgentError::Revoked) => return Err(AgentError::Revoked),
-                        Err(AgentError::State) => return Err(AgentError::State),
-                        Err(_) => break,
+                        tokio::select! {_= &mut shutdown=>return Ok(()),_=tokio::time::sleep(idle_delay)=>{}}
                     }
-                    tokio::select! {_= &mut shutdown=>return Ok(()),_=tokio::time::sleep(Duration::from_secs(1))=>{}}
-                },
+                }
                 Err(AgentError::Revoked) => return Err(AgentError::Revoked),
                 Err(AgentError::State) => return Err(AgentError::State),
                 Err(_) => {}
@@ -1148,6 +1206,13 @@ impl Daemon {
             tokio::select! {_= &mut shutdown=>return Ok(()),_=tokio::time::sleep(Duration::from_secs(delay))=>{}}
             delay = (delay * 2).min(30);
         }
+    }
+}
+fn next_idle_cycle(previous: Duration, worked: bool, pending_delivery: bool) -> Duration {
+    if worked || pending_delivery {
+        Duration::from_secs(1)
+    } else {
+        previous.saturating_mul(2).min(Duration::from_secs(5))
     }
 }
 fn error_code(error: &ExecutionError) -> &'static str {
@@ -1334,5 +1399,116 @@ mod public_routing_contract_tests {
         let mut disabled = serde_json::json!({"capabilities":{}});
         add_public_routing_capability(&mut disabled, None);
         assert_eq!(disabled, serde_json::json!({"capabilities":{}}));
+    }
+}
+
+#[cfg(test)]
+mod idle_cycle_tests {
+    use super::*;
+
+    struct UnusedRuntime;
+    #[async_trait::async_trait]
+    impl RuntimeAdapter for UnusedRuntime {
+        fn capabilities(&self) -> webdock_supervisor::Capabilities {
+            panic!("pending delivery inspection must not contact a runtime")
+        }
+        async fn reconcile(
+            &self,
+            _: &Command,
+            _: &webdock_supervisor::LeaseGuard,
+        ) -> std::result::Result<webdock_supervisor::ObservedState, ExecutionError> {
+            panic!("pending delivery inspection must not execute work")
+        }
+        async fn inspect(
+            &self,
+            _: &webdock_supervisor::RuntimeSpec,
+        ) -> std::result::Result<webdock_supervisor::ObservedState, ExecutionError> {
+            panic!("pending delivery inspection must remain local")
+        }
+        async fn logs(
+            &self,
+            _: &webdock_supervisor::RuntimeSpec,
+            _: u32,
+        ) -> std::result::Result<String, ExecutionError> {
+            panic!("pending delivery inspection must remain local")
+        }
+    }
+
+    #[tokio::test]
+    async fn every_retained_outbox_keeps_delivery_fast_without_an_attached_runtime() {
+        use std::os::unix::fs::PermissionsExt;
+        let root = tempfile::Builder::new()
+            .permissions(std::fs::Permissions::from_mode(0o700))
+            .tempdir()
+            .unwrap();
+        let config: AgentConfig = serde_json::from_value(serde_json::json!({
+            "version":1,"installation":"idle-test","agentId":"idle-agent","generation":1,
+            "stateDirectory":root.path(),
+            "control":{"kind":"unix","path":root.path().join("unused-control.sock")},
+            "runtime":{"kind":"docker","socket":root.path().join("unused-engine.sock"),"initializerImage":null}
+        }))
+        .unwrap();
+        let daemon = Daemon::with_adapter(config, Arc::new(UnusedRuntime)).unwrap();
+        assert!(!daemon.has_pending_delivery().await.unwrap());
+        assert!(daemon.mail_runtime.is_none());
+        assert!(daemon.configuration_runtime.is_none());
+
+        macro_rules! check_outbox {
+            ($outbox:expr) => {{
+                let delivery = Default::default();
+                $outbox.lock().await.put(&delivery).unwrap();
+                let pending = daemon.has_pending_delivery().await.unwrap();
+                assert!(pending);
+                assert_eq!(
+                    next_idle_cycle(Duration::from_secs(5), false, pending),
+                    Duration::from_secs(1)
+                );
+                $outbox.lock().await.acknowledge(&delivery).unwrap();
+                assert!(!daemon.has_pending_delivery().await.unwrap());
+            }};
+        }
+        check_outbox!(daemon.outbox);
+        check_outbox!(daemon.authority.mail_outbox);
+        check_outbox!(daemon.authority.configuration_outbox);
+        #[cfg(feature = "docker")]
+        check_outbox!(daemon.authority.recovery_outbox);
+        #[cfg(feature = "kubernetes")]
+        check_outbox!(daemon.authority.plugin_outbox);
+        #[cfg(feature = "kubernetes")]
+        check_outbox!(daemon.authority.database_outbox);
+    }
+
+    #[test]
+    fn only_empty_cycles_back_off_and_pending_work_stays_fast() {
+        let mut delay = Duration::from_secs(1);
+        let mut observed = Vec::new();
+        for _ in 0..5 {
+            delay = next_idle_cycle(delay, false, false);
+            observed.push(delay.as_secs());
+        }
+        assert_eq!(observed, [2, 4, 5, 5, 5]);
+        assert_eq!(next_idle_cycle(delay, true, false), Duration::from_secs(1));
+        assert_eq!(next_idle_cycle(delay, false, true), Duration::from_secs(1));
+        assert_eq!(
+            next_idle_cycle(Duration::MAX, false, false),
+            Duration::from_secs(5)
+        );
+    }
+
+    #[test]
+    fn idle_discovery_is_bounded_without_changing_active_cadence() {
+        let mut elapsed = Duration::ZERO;
+        let mut delay = Duration::from_secs(1);
+        let mut cycles = 0;
+        while elapsed < Duration::from_secs(20) {
+            cycles += 1;
+            delay = next_idle_cycle(delay, false, false);
+            elapsed += delay;
+        }
+        assert_eq!(cycles, 5);
+        for _ in 0..20 {
+            delay = next_idle_cycle(delay, true, false);
+            assert_eq!(delay, Duration::from_secs(1));
+        }
     }
 }
