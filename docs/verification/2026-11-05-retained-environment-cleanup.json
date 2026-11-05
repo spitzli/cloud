@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-05",
+  "scope": "native agent retained immutable maintenance environment cleanup",
+  "status": "reviewed-locally-qualified-release-pending",
+  "rootCause": "A referenced owned maintenance Secret suffix was parsed as a numeric revision before reference handling",
+  "regressions": {
+    "testFirstMissingHelperRed": true,
+    "exactOldGuardReproduced": true,
+    "newTestsPassed": 3,
+    "fullAgentLibraryPassed": 109,
+    "fullAgentLibraryIgnored": 7,
+    "failed": 0,
+    "clippyAllFeaturesDenyWarnings": "passed"
+  },
+  "retentionBoundary": {
+    "exactAppProjectClusterOwner": true,
+    "positiveNonfutureMetadataRevision": true,
+    "maintenanceLowercaseHexIdMin": 6,
+    "maintenanceLowercaseHexIdMax": 64,
+    "immutableOpaqueOnly": true,
+    "uidAndResourceVersionRequired": true,
+    "maintenanceDeleted": false,
+    "canonicalDeletionStillLeaseAndUidResourceVersionFenced": true
+  },
+  "productionAgentChanged": false,
+  "staleDesiredRequestReplayed": false,
+  "liveConcurrentChangesOverwritten": false,
+  "remaining": [
+    "signed source and Blacksmith CI",
+    "Blacksmith CI",
+    "EU binary and retained-configuration qualification",
+    "component-only agent rollout with preserved identity and rollback",
+    "fresh app reconciliation against the latest intended live configuration"
+  ],
+  "review": {
+    "materialFindingsInAgent": 0,
+    "freshReadOnlyReview": true
+  }
+}
