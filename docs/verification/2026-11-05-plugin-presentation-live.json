@@ -1,0 +1,226 @@
+{
+  "date": "2026-11-05",
+  "scope": "Public registry presentation availability; no republishing or runtime admission",
+  "plugins": [
+    {
+      "id": "archives",
+      "version": "0.3.0",
+      "readmeHtmlBytes": 11243,
+      "screenshotCount": 1,
+      "iconPresent": true
+    },
+    {
+      "id": "echo-demo",
+      "version": "0.1.0",
+      "readmeHtmlBytes": 4236,
+      "screenshotCount": 1,
+      "iconPresent": true
+    },
+    {
+      "id": "github-repository",
+      "version": "0.1.0",
+      "readmeHtmlBytes": 7874,
+      "screenshotCount": 1,
+      "iconPresent": true
+    },
+    {
+      "id": "hosting",
+      "version": "0.1.0",
+      "readmeHtmlBytes": 5755,
+      "screenshotCount": 1,
+      "iconPresent": true
+    },
+    {
+      "id": "lumaserv-compute",
+      "version": "0.1.0",
+      "readmeHtmlBytes": 8811,
+      "screenshotCount": 1,
+      "iconPresent": true
+    },
+    {
+      "id": "mail",
+      "version": "0.3.0",
+      "readmeHtmlBytes": 20814,
+      "screenshotCount": 1,
+      "iconPresent": true
+    },
+    {
+      "id": "mail-relay",
+      "version": "0.1.0",
+      "readmeHtmlBytes": 8020,
+      "screenshotCount": 1,
+      "iconPresent": true
+    },
+    {
+      "id": "managed-cms",
+      "version": "0.1.0-alpha.1",
+      "readmeHtmlBytes": 6726,
+      "screenshotCount": 2,
+      "iconPresent": true
+    },
+    {
+      "id": "neon",
+      "version": "0.1.2",
+      "readmeHtmlBytes": 8056,
+      "screenshotCount": 3,
+      "iconPresent": true
+    },
+    {
+      "id": "object-storage",
+      "version": "0.5.0",
+      "readmeHtmlBytes": 8132,
+      "screenshotCount": 1,
+      "iconPresent": true
+    }
+  ],
+  "retiredCatalogEntriesAbsent": true,
+  "publicAssetVerification": {
+    "publishedPluginCount": 10,
+    "publicAssetCount": 23,
+    "allPublicImagesReachableAndParsed": true,
+    "assets": [
+      {
+        "plugin": "archives",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-archives/6ee4cc749e766e291ecaa6da0af64e13257a8a38/assets/icon.svg",
+        "bytes": 365,
+        "sha256": "8fcfa682878846ee9be4e8330116c0348ea147e029ea59382059c8b0ee3aa038"
+      },
+      {
+        "plugin": "archives",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-archives/6ee4cc749e766e291ecaa6da0af64e13257a8a38/screenshots/archive-status.png",
+        "bytes": 47472,
+        "sha256": "e9b2c1066e08ff79571be5c7ef68fb0a0f0fe5a3da2be5654a0dacad37216762"
+      },
+      {
+        "plugin": "echo-demo",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-echo-demo/beca51cdf92b2def461aed669bfa6909d563489d/assets/icon.svg",
+        "bytes": 380,
+        "sha256": "68480db9ce9925d2e8f326ef994d7de861353689bf2202cc8835171f1f965605"
+      },
+      {
+        "plugin": "echo-demo",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-echo-demo/beca51cdf92b2def461aed669bfa6909d563489d/screenshots/demo-note-panel.png",
+        "bytes": 32772,
+        "sha256": "2a6f9f28642f561bca72d45aa8c034f4a0ef42b2748b4f2467c027948e428c1f"
+      },
+      {
+        "plugin": "github-repository",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-github-repository/5c14814e5195ceb3c15298546d5d2d27e0687d8d/assets/icon.svg",
+        "bytes": 441,
+        "sha256": "2e30251fadc2d84ad9473e1c33fca5d8a0aca9f17e6afb6465cb23c20c74b8fa"
+      },
+      {
+        "plugin": "github-repository",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-github-repository/5c14814e5195ceb3c15298546d5d2d27e0687d8d/screenshots/repository-catalog.png",
+        "bytes": 133568,
+        "sha256": "4be25e1cf0982a5e8df5925fe31f4154b67479e1879f7c95340dd498da544cd1"
+      },
+      {
+        "plugin": "hosting",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-hosting/aedc0434cc4cf9eedcffa129e69abac6cb463fab/assets/icon.svg",
+        "bytes": 429,
+        "sha256": "3d644edc93856ffcb77d9de931767ea55f8983b4e68330d7266ce62851471f18"
+      },
+      {
+        "plugin": "hosting",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-hosting/aedc0434cc4cf9eedcffa129e69abac6cb463fab/screenshots/hosting-resource.png",
+        "bytes": 70341,
+        "sha256": "8682904e3f5dfdbc9145cd2b1db7e837ab40203c00533b4e4f462a3b4c512f18"
+      },
+      {
+        "plugin": "lumaserv-compute",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-lumaserv-compute/4c1386352039109daa210dfe6c237f7bf3d58c76/assets/icon.svg",
+        "bytes": 458,
+        "sha256": "553f2b2db977baba765b4c2a8beb83bed8eae763cb48f89f0e52839ec147adad"
+      },
+      {
+        "plugin": "lumaserv-compute",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-lumaserv-compute/4c1386352039109daa210dfe6c237f7bf3d58c76/screenshots/compute-servers.png",
+        "bytes": 39137,
+        "sha256": "c94d6d46a8d0c4f55665c0f9c63a09ad64c825d6fc1ad7247d7b0fbbda29db45"
+      },
+      {
+        "plugin": "mail",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-mail/21fc7c7ef4e3e9b9227dc6e752c96451d264f406/assets/icon.svg",
+        "bytes": 403,
+        "sha256": "90212a6645d484fc4ac214eabb15b507249620b01f6837ac4317dbb1a63b045f"
+      },
+      {
+        "plugin": "mail",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-mail/21fc7c7ef4e3e9b9227dc6e752c96451d264f406/screenshots/mailbox-settings.png",
+        "bytes": 42344,
+        "sha256": "bcfd8ad2c916b230dd4e8e70db4ccf2357b3770d7a51722e82ebce8a58ea6231"
+      },
+      {
+        "plugin": "mail-relay",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-mail-relay/b649e84f98191c7e957957260fb209e66ce3e647/assets/icon.svg",
+        "bytes": 382,
+        "sha256": "ae60f25d39bded7fb23489cd6d3fc8e5befab3ad3c7413a57ad9bc01e82cd7f7"
+      },
+      {
+        "plugin": "mail-relay",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-mail-relay/b649e84f98191c7e957957260fb209e66ce3e647/screenshots/relay-catalog.png",
+        "bytes": 129919,
+        "sha256": "b63f678992c05a59aa593e504c712db88f5e79eb38da9c1c2f29499e547d8131"
+      },
+      {
+        "plugin": "managed-cms",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-managed-cms/e82fe5586658c74ebc08fbd724be18723f315303/assets/icon.svg",
+        "bytes": 369,
+        "sha256": "c6b2c0817ab67ec8756be72689da8d99e081cc91a32b0d0971b108df289a6990"
+      },
+      {
+        "plugin": "managed-cms",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-managed-cms/e82fe5586658c74ebc08fbd724be18723f315303/screenshots/cms-draft-editor.png",
+        "bytes": 73534,
+        "sha256": "b1e549bba7d1876b4f5d4f2c05b1758ad39709371f91e7320feeb6c4e62b1022"
+      },
+      {
+        "plugin": "managed-cms",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-managed-cms/e82fe5586658c74ebc08fbd724be18723f315303/screenshots/cms-draft-mobile.png",
+        "bytes": 40690,
+        "sha256": "e5286683953e62192330a40c1dcb72910ef42616f5566e35b8042df8597cbe9a"
+      },
+      {
+        "plugin": "neon",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-neon/v0.1.2/assets/icon.svg",
+        "bytes": 275,
+        "sha256": "2b1aaef0b2de5d30b9a00778a0a9b9df2255be08a939a9521f3c93a46de521cf"
+      },
+      {
+        "plugin": "neon",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-neon/v0.1.2/screenshots/neon-connect.png",
+        "bytes": 167303,
+        "sha256": "a65a003f0845afdf19dd0b5dd259b63bb5955e6bab2e1f93bf30a622fd68421f"
+      },
+      {
+        "plugin": "neon",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-neon/v0.1.2/screenshots/neon-database.png",
+        "bytes": 209813,
+        "sha256": "29c1048a31d1bcc78332ddb6660283e0a94b3db649b10dbc242156afc5a2ad4c"
+      },
+      {
+        "plugin": "neon",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-neon/v0.1.2/screenshots/neon-database-mobile-de.png",
+        "bytes": 195235,
+        "sha256": "72b36fde04ad5c64490144c87088ac275992ce338a63be02b91a2d4095d006f5"
+      },
+      {
+        "plugin": "object-storage",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-object-storage/11f5215d18842d904a5e4e69c9a3bacc25708348/assets/icon.svg",
+        "bytes": 388,
+        "sha256": "ef044f363c8bb577b9ab7b20027917a7adb70e7958562c7fa9700fb51398529d"
+      },
+      {
+        "plugin": "object-storage",
+        "url": "https://raw.githubusercontent.com/spitzli/cloud-plugin-object-storage/11f5215d18842d904a5e4e69c9a3bacc25708348/screenshots/bucket-controls.png",
+        "bytes": 83449,
+        "sha256": "118589891580d7c27d1811f0f38152276ba8a42a72c5fef36410bc90cd5039d6"
+      }
+    ],
+    "signatureVerificationRepeated": false,
+    "customerRuntimeAcceptanceClaimed": false
+  },
+  "neonConsoleUIAbiCheckPassed": true,
+  "runtimeAcceptanceForAllPluginsClaimed": false
+}

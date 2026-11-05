@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-05",
+  "status": "locally-qualified-awaiting-ci-merge",
+  "problem": "Existing Hosting composition-boundary test failed because concrete PostgreSQL provisioning/template persistence and schema lived inside compatibility modules.",
+  "change": "Move unchanged concrete persistence/template adapters beside existing legacy DB/RLS adapters and preserve old import paths through compatibility re-exports.",
+  "behaviorChanged": false,
+  "sqlAndAuthorizationChecksPreserved": true,
+  "existingBoundaryTestWeakened": false,
+  "moduleTests": {
+    "passed": 67,
+    "failed": 0
+  },
+  "focusedTests": {
+    "passed": 33,
+    "failed": 0
+  },
+  "ownedPostgreSQL18ProvisioningIntegration": {
+    "passed": 1,
+    "tenantRlsReplayAndRevocationChecked": true
+  },
+  "retainedTypecheck": {
+    "baselineDiagnostics": 212,
+    "currentDiagnostics": 212,
+    "newDiagnostics": [],
+    "removedDiagnostics": []
+  },
+  "independentReview": {
+    "materialFindings": 0,
+    "additionalTestsPassed": 25,
+    "compatibilityExportsChecked": 17,
+    "schemaByteIdentical": true
+  },
+  "productionChanged": false,
+  "remaining": [
+    "Normal Blacksmith checks and merge",
+    "The retained whole-project TypeScript baseline still has212 diagnostics; this move adds none"
+  ]
+}
