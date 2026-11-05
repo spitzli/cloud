@@ -37,6 +37,47 @@ physically delete retained customer data while processing the backlog. Prepare a
 concrete change; obtain any genuinely missing authorization only when it is required.
 
 
+## Open source plugin platform and reseller roadmap — 2026-11-04
+
+Owner-confirmed direction: Spitzli Cloud is fully open source and plugin based,
+with a small Core and extensible products. These are product/architecture tasks,
+not approval to purchase infrastructure or activate an unfinished public service.
+
+- [ ] **Keep Core small and move product behaviour behind plugins.** Define and
+  test the boundary: Core retains identity, tenant/project authorisation, plugin
+  admission/lifecycle, secure configuration, audit and shared contracts. Product
+  logic and provider integrations extend the panel through versioned plugins.
+  Inventory remaining coupled code and migrate incrementally; preserve working
+  services, central security enforcement and compatible contracts. Keep Core and
+  plugin implementations open source with their component-specific notices.
+- [ ] **White-label reseller experience.** Plan a branded panel, login/account
+  screens, custom domains, theme/logo, transactional email and selectable product
+  plugins. Add delegated reseller/end-customer administration, catalogue/plan
+  controls, quotas and audit. Prove denied cross-reseller and cross-customer access.
+  Existing workspace icons do not constitute full platform white-label support.
+- [ ] **BYOK, managed and self-hosted reseller operating models.** Support authorised
+  provider accounts belonging to the reseller or end customer with explicit
+  credential ownership, scoped access, billing allocation and revocation. Define
+  Spitzli-operated white-label services and reseller-operated self-hosted Core plus
+  plugins. BYOK is independent of who hosts the platform and may apply to either
+  model. Do not assume three mutually exclusive architectures or approved prices.
+- [ ] **Package managed K3s and the own-cluster panel.** Reuse existing approved
+  cluster enrollment, scoped agents and workload controls. Define managed OS/K3s
+  updates, monitoring, certificate renewal, backups/restore drills, maintenance,
+  support and responsibility boundaries before selling the managed service.
+  Qualify wider self-service separately; do not equate extra workers with HA.
+- [ ] **Evaluate VPS hosting as an optional additional product.** Decide provider
+  arrangement, region, specifications, management level, costs and recovery scope
+  before offering it. VPS hosting remains under consideration, not an approved
+  purchasable plan or server-order instruction.
+- [ ] **Document and price the reseller offer.** Provide reproducible self-hosted
+  deployment, plugin installation, migrations, staged upgrades, rollback and recovery
+  instructions. Separate software/source licensing, platform access, managed
+  operation, underlying infrastructure and provider billing. Update public copy,
+  developer documentation and the designer brief with qualified availability;
+  do not invent quotas, commercial commitments or full white-label readiness.
+
+
 - [x] **Neon BYOK runtime and owned-workspace API qualification (2026-11-04).** Signed native `0.1.2` is installed through the normal lifecycle with the existing Core database and unchanged credentials/schema. Full selected inventory succeeds through the public Console gateway; connection revocation during concurrent reads returns no inventory. The `0.1.1` write-path baseline proved attach/replay, protected pooled/direct URI access and actual read-only TLS SQL, quota enforcement, project binding, and local detach without provider access. Temporary keys are revoked and test attachments removed. Ordinary-customer Neon browser acceptance is also verified with a genuine USER account, including limits, forbidden foreign/operator access, URI reveal/hide, detach and relogin. Public build isolation remains a separate open gate. See [evidence and test-version boundaries](docs/verification/2026-11-04-neon-owned-acceptance.json) and [the operational procedure](docs/operations/neon-plugin-rollout.md).
 
 - [x] **Spitzli Cloud first-party rollout and internal address pilot (2026-10-31).** Website/Console/Login use the owned graphite/violet identity. Main/Console/API and operator Grafana/Prometheus HTTPS domains are live; existing-password/MFA/PKCE/operator browser flow passes on ordinary DNS/TLS. Exact `spitzli.site` allocation, per-host HTTPS, stop/start, deletion/no-reuse and unknown-host denial are verified. Wildcard DNS is active; admission is limited to the explicitly trusted internal customer. Existing customer domains/data are preserved. [Rollout and full file list](docs/operations/spitzli-cloud-rebrand-rollout-2026-10-31.md), [evidence](docs/verification/2026-10-31-spitzli-cloud-rollout.json).
@@ -99,7 +140,7 @@ concrete change; obtain any genuinely missing authorization only when it is requ
 
 - [ ] **After Mail: discuss domain management with the user.** User asked to be contacted once Mail is complete. Clarify Namecheap API versus a domain-reseller API; assess central domain inventory/management, availability checks and whether registration/purchase through API is supported. No domain purchases, provider enrollment or DNS changes authorized by this TODO.
 - [x] **Mail full customer self-service.** Customers manage sender domains, public DNS instructions, custom tracking, opening/click tracking and SMTP/API credential create/revoke/replacement in Webdock. Master credentials stay server-side; all provider actions use explicit child authorization. 43 auth/integration tests pass; mobile browser flows and cross-tenant denial verified. No customer turboSMTP login required.
-- [ ] **Enterprise plan idea — BYOK / own infrastructure and self-hosting.** Explore allowing customers to connect the Webdock SaaS panel to their own Vercel account using their own credentials, and alternatively to self-host Webdock directly on their own infrastructure. Idea/backlog only for a potential Enterprise plan; no implementation or packaging commitment yet.
+- [ ] **BYOK / own infrastructure, self-hosting and reseller packaging.** The newer owner-confirmed open-source/plugin and white-label roadmap above supersedes this older Enterprise-only proposal. Hosted/managed service packaging and prices still require decisions; source availability is not an Enterprise-plan promise.
 - [ ] **Pricing ideas — retain for later decision (2026-10-04).** Previous proposal: Basic €9.90/month, Plus €19.90/month as intended end-customer prices; website creation, migration, custom changes and domains charged separately. User now wants to explore a cheaper tier for rarely updated, low-traffic websites, e.g. €4.90/month billed annually (€58.80/year), with bounded usage and no included manual content changes. These are discussion proposals, not agreed or published prices. User reports an existing free turboSMTP 100k plan and access to employee special pricing; use €0 for that existing allowance in current cost estimates, with the allowance shared across customers rather than promised per customer. Low traffic/build frequency reduces variable costs, but platform maintenance, support and shared infrastructure still need covering.
 
 ### Product and pricing exploration — ideas only, 2026-10-04
