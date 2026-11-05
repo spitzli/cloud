@@ -33,8 +33,9 @@
     "customerTablesChanged": false
   },
   "remaining": {
-    "botDesiredStateReconciliation": "Authority confirmed. Pause parallel manual rollouts, retire only the verified completed one-off initializer with UID/resourceVersion tests, then admit the latest reviewed image/environment through the normal controller. Do not retry stale revision37 or the now-outdated revision38.",
-    "cloudflarePublicWebsiteHosting": "DNS verified; SSR/CMS-compatible hosting migration remains separate"
+    "cloudflarePublicWebsiteHosting": "DNS verified; SSR/CMS-compatible hosting migration remains separate",
+    "customerGitBuildOnboarding": "Separate native Git flow/provider/browser/build onboarding work remains; this controlled deployment does not establish automatic Git-push releases",
+    "adminPanelDiscordAcceptance": "External Vercel health/fra1 verified; genuine Discord-user panel acceptance remains separate"
   },
   "privateCredentialsPublished": false,
   "nativeGitMigration76Included": false,
@@ -63,13 +64,57 @@
       "backupRetained": true,
       "sqliteQuickCheck": "ok",
       "verificationReadOnly": true,
-      "nativeInitializerGuardWeakened": false
+      "nativeInitializerGuardWeakened": false,
+      "completedInitializerRetired": true,
+      "retirementGuard": "exact workload UID, resourceVersion and full spec; completed marker, retained backup and read-only SQLite integrity rechecked"
     },
     "laterExternalReleaseObserved": {
       "image": "webdock.local/lunares@sha256:806b64bd80bcb356ad393b92b21b3a7ca9a75e1be27813c6a8cb9c1a88b0d7a3",
       "generation": 21,
       "readyReplicas": 1
     },
-    "handoverComplete": false
+    "handoverComplete": true,
+    "ownerPausedManualRollouts": true,
+    "finalControllerResult": {
+      "previousOperationStatus": "failed",
+      "operationID": "111938270526447616",
+      "status": "succeeded",
+      "appID": "102047516467400704",
+      "desiredRevision": 39,
+      "observedRevision": 39,
+      "appStatus": "ready",
+      "image": "webdock.local/lunares@sha256:ac79ca7a78de9164c02131ae676d5b21b3093d20de68d9c8ee7bb1bca13aa580",
+      "lastError": null,
+      "oldOperationStatus": "failed",
+      "environmentCount": 32,
+      "sourceRevision": "91360731f24967bf9690c6924a47db65342288aa",
+      "runtime": {
+        "nativeRevision": 39,
+        "ready": true,
+        "immutableImagePreserved": "webdock.local/lunares@sha256:ac79ca7a78de9164c02131ae676d5b21b3093d20de68d9c8ee7bb1bca13aa580",
+        "deploymentUidPreserved": true,
+        "pvPvcServiceUidsPreserved": true,
+        "all32RuntimeEnvironmentValuesPreserved": true,
+        "environmentCanonicalImmutableSecret": "app-102047516467400704-env-39",
+        "oldEnvironmentSourcesRetained": true,
+        "privateRootRollbackSnapshotRetained": true,
+        "plaintextValuesPublished": false
+      },
+      "genuineCustomerAndDatabase": {
+        "nativeAppReady": true,
+        "desiredRevision": 39,
+        "observedRevision": 39,
+        "all32EnvironmentNamesRetained": true,
+        "normalMfaPkce": true,
+        "genuineCustomerRole": true,
+        "scopeCorrect": true,
+        "providerMetadataVerified": true,
+        "actualDatabaseGatewaySqlPassed": true,
+        "database": "neondb",
+        "role": "lunares_schattenclan_browser",
+        "customerTablesChanged": false
+      },
+      "ownVerificationSessionsSignedOut": true
+    }
   }
 }
