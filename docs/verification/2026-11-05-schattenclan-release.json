@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-05",
+  "pullRequest": "https://github.com/spitzli/cloud/pull/74",
+  "mergeCommit": "ca6a86ce68c2bd782c9f5a1705e5098fe532637c",
+  "qualifiedSourceCommit": "240326f44715f0ed90f4cab0b8aa280396337363",
+  "sameSourceTree": true,
+  "blacksmithQuality": "SUCCESS",
+  "mintlifyCheck": "SKIPPED",
+  "console": {
+    "deployment": "dpl_7ay4fcspTfZveyPdZhshQyUGm13j",
+    "rollback": "dpl_4wBBUdr5XMRXCZXHBZiSX8WGG86x",
+    "livePublicIndexAndEntryAssetsByteMatched": true,
+    "preservedApiRoutesCspAndOidcMetadata": true
+  },
+  "agent": {
+    "sha256": "22aaaf43851cd38fd4cf9b2addefe7359c2bd0ab8a6a8c028c2d5fe129db85ef",
+    "rollbackSha256": "61295b54119c366de130f4e0c06847e66b197f5d7cf022c531905c3dcab2a7d7",
+    "compiledAndTestedOnDedicatedEuBuilder": true,
+    "actualRetainedConfigurationValidated": true,
+    "activeProcessHashVerified": true,
+    "configurationIdentityCertificateKeyUnchanged": true,
+    "noCustomerWorkloadRestart": true,
+    "actualCoreRuntimeInspectionPassed": true
+  },
+  "postReleaseCustomer": {
+    "normalMfaPkce": true,
+    "genuineCustomerRole": true,
+    "scopeCorrect": true,
+    "providerMetadataVerified": true,
+    "actualDatabaseGatewaySqlPassed": true,
+    "database": "neondb",
+    "role": "lunares_schattenclan_browser",
+    "customerTablesChanged": false
+  },
+  "remaining": {
+    "cloudflarePublicWebsiteHosting": "DNS verified; SSR/CMS-compatible hosting migration remains separate",
+    "customerGitBuildOnboarding": "Separate native Git flow/provider/browser/build onboarding work remains; this controlled deployment does not establish automatic Git-push releases",
+    "adminPanelDiscordAcceptance": "External Vercel health/fra1 verified; genuine Discord-user panel acceptance remains separate"
+  },
+  "privateCredentialsPublished": false,
+  "nativeGitMigration76Included": false,
+  "coreSchemaMigrationApplied": false,
+  "lunaresControlHandover": {
+    "ownerDecision": "Spitzli Cloud is the deployment authority; external releases are temporary",
+    "normalOperatorUpdate": {
+      "operationID": "111928301521477632",
+      "revision": 38,
+      "status": "needs-reconciliation",
+      "errorCode": "capability_unavailable",
+      "oldRevision37SupersededThroughNormalApi": true,
+      "environmentValuesPreservedInCore": 32,
+      "image": "webdock.local/lunares@sha256:bdf98a5c3a411e6f0e86dbf87b43fce34a3eb069e673818c3cb1a39ad60369e9"
+    },
+    "runtimeAfterRejection": {
+      "desiredMutationApplied": false,
+      "snapshotSpecUnchanged": true,
+      "readyReplicas": 1
+    },
+    "additionalBlocker": {
+      "completedInitializer": "lunares-data-migration",
+      "sourceSHA256": "5124caa959178822df7c2066b759a12b6ae9154539951b809b82b1b6814719a2",
+      "exitCode": 0,
+      "completionMarkerValid": true,
+      "backupRetained": true,
+      "sqliteQuickCheck": "ok",
+      "verificationReadOnly": true,
+      "nativeInitializerGuardWeakened": false,
+      "completedInitializerRetired": true,
+      "retirementGuard": "exact workload UID, resourceVersion and full spec; completed marker, retained backup and read-only SQLite integrity rechecked"
+    },
+    "laterExternalReleaseObserved": {
+      "image": "webdock.local/lunares@sha256:806b64bd80bcb356ad393b92b21b3a7ca9a75e1be27813c6a8cb9c1a88b0d7a3",
+      "generation": 21,
+      "readyReplicas": 1
+    },
+    "handoverComplete": true,
+    "ownerPausedManualRollouts": true,
+    "finalControllerResult": {
+      "previousOperationStatus": "failed",
+      "operationID": "111938270526447616",
+      "status": "succeeded",
+      "appID": "102047516467400704",
+      "desiredRevision": 39,
+      "observedRevision": 39,
+      "appStatus": "ready",
+      "image": "webdock.local/lunares@sha256:ac79ca7a78de9164c02131ae676d5b21b3093d20de68d9c8ee7bb1bca13aa580",
+      "lastError": null,
+      "oldOperationStatus": "failed",
+      "environmentCount": 32,
+      "sourceRevision": "91360731f24967bf9690c6924a47db65342288aa",
+      "runtime": {
+        "nativeRevision": 39,
+        "ready": true,
+        "immutableImagePreserved": "webdock.local/lunares@sha256:ac79ca7a78de9164c02131ae676d5b21b3093d20de68d9c8ee7bb1bca13aa580",
+        "deploymentUidPreserved": true,
+        "pvPvcServiceUidsPreserved": true,
+        "all32RuntimeEnvironmentValuesPreserved": true,
+        "environmentCanonicalImmutableSecret": "app-102047516467400704-env-39",
+        "oldEnvironmentSourcesRetained": true,
+        "privateRootRollbackSnapshotRetained": true,
+        "plaintextValuesPublished": false
+      },
+      "genuineCustomerAndDatabase": {
+        "nativeAppReady": true,
+        "desiredRevision": 39,
+        "observedRevision": 39,
+        "all32EnvironmentNamesRetained": true,
+        "normalMfaPkce": true,
+        "genuineCustomerRole": true,
+        "scopeCorrect": true,
+        "providerMetadataVerified": true,
+        "actualDatabaseGatewaySqlPassed": true,
+        "database": "neondb",
+        "role": "lunares_schattenclan_browser",
+        "customerTablesChanged": false
+      },
+      "ownVerificationSessionsSignedOut": true
+    }
+  }
+}

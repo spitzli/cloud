@@ -131,3 +131,23 @@ bounded to five seconds; success recovers only the exact requested active scope,
 and uncertainty retires caches/re-bootstraps without repeating the start. No other
 material/minor review findings. Vercel provider card and avoided native app polling
 also pass the controlled browser test. All release/promotion gates remain explicit.
+
+## Superseding live release
+
+PR74 merged after Blacksmith success; exact reviewed source tree was retained.
+The prebuilt Console candidate preserved the current production routes, CSP and
+OIDC metadata, passed exact artifact checks, then was promoted to the canonical
+Console domain with prior deployment retained for rollback. The exact EU-built
+agent binary passed actual retained-configuration validation and now runs with
+unchanged configuration/enrollment/certificates/keys/monotonic identity. No customer
+workload was restarted by that component-only agent update. Fresh normal MFA/PKCE
+operator inspection through Core -> new agent -> actual bot runtime passed.
+
+A fresh genuine customer-role owner-mode check also passed project/provider
+metadata and actual gateway SQL (neondb/customer browser role/connection_ok1).
+Customer mode was exited afterward. Production index and referenced JS/CSS match
+the qualified artifact bytes. These results supersede the earlier local-only UI
+and release-pending statements; see the dated release JSON. Bot desired-state
+reconciliation still awaits the source-of-truth decision because external releases
+changed image/environment concurrently. No stale desired request was replayed,
+no live newer configuration was overwritten and no success status was forged.

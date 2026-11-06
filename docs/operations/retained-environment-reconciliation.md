@@ -47,3 +47,57 @@ missing UID/resourceVersion and malformed/future revisions. The exact old parsin
 failure was reproduced before implementation. These tests do not replace signed
 source, Blacksmith CI, the EU binary/ABI/configuration qualification or production
 runtime checks. No ownership, storage, privilege or public-build gate is relaxed.
+
+## Lunares control authority and qualified handover
+
+On 2026-11-05 the owner confirmed Spitzli Cloud is the deployment authority.
+External Lunares rollouts are a temporary workaround, not a second permanent
+controller. Pause that writer before the one-time handover.
+
+The normal operator API superseded failed revision37 with revision38 containing
+the reviewed running immutable image and all32 existing environment values.
+Credential values stayed in memory until the normal Core encryption path; no
+plaintext GitHub token was written to the local request file. Execution was
+rejected with `capability_unavailable`, and the protected runtime snapshot
+remained unchanged and healthy. A subsequent independent external rollout changed
+the image again, making revision38 outdated as well. Do not retry either revision.
+
+The retained Pod template contains the one-off `lunares-data-migration` init
+container. The native retained-Pod profile deliberately rejects init containers.
+Its exact reviewed source, successful exit, matching completion marker, retained
+backup and read-only SQLite `quick_check` were verified. Do not relax that general
+guard, execute the migration again, or delete business data. Retire only that
+completed initializer using exact workload UID/resourceVersion/spec tests, with
+the root-only rollback snapshot retained. This template change can restart the
+Pod. Recheck the latest image, environment, storage, live source and controller
+revision before a new ordinary operator update; record independent readiness.
+
+See [the release evidence](../verification/2026-11-05-schattenclan-release.json).
+A prepared local retirement command is not evidence that retirement or handover
+has happened. Public Git/build admission remains closed.
+
+### Completed handover
+
+After the owner confirmed manual rollouts were paused, the latest running source
+`91360731f24967bf9690c6924a47db65342288aa` and immutable image
+`webdock.local/lunares@sha256:ac79ca7a78de9164c02131ae676d5b21b3093d20de68d9c8ee7bb1bca13aa580`
+were pinned. All32 live environment values matched the encrypted Core state.
+The completed initializer was removed with UID/resourceVersion/full-spec JSON
+Patch tests after repeating its completion-marker, retained-backup and read-only
+SQLite integrity checks. Only the initializer was removed from the Pod template;
+no business-data migration was executed. The template change rolled the Pod.
+
+A new normal operator `apps.update` admitted revision39, preserving the existing
+encrypted environment. Operation `111938270526447616` succeeded: desired39 and
+observed39 agree, status is `ready`, and the previous error is cleared. An
+independent runtime read verified the image, all32 environment values in immutable
+`app-102047516467400704-env-39`, and unchanged Deployment/PV/PVC/Service UIDs.
+Old environment sources and protected rollback snapshots remain retained.
+Revisions37/38 are failed historical operations and must not be replayed.
+
+The genuine Schattenclan customer role read the ready39 app and executed the
+limited database-viewer metadata query successfully. Own customer mode and both
+verification sessions were closed afterwards. Native init-container, ownership,
+storage and admission checks remain unchanged. This verifies controller-managed
+runtime deployment; it does not complete separate Git-push onboarding or the
+Admin-Panel's Discord-user acceptance.
