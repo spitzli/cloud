@@ -1,3 +1,4 @@
+import { clusterLabel } from "./cluster-label";
 import { useI18n } from "@webdock/i18n/react";
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -143,7 +144,7 @@ export function HostingDirectory({
                             ? "Managed"
                             : "Self-service"}
                         </td>
-                        <td className={ui.cx(`${ui.td} text-muted`)}>{project.provider === "vercel" ? "Vercel" : project.clusterName ?? (project.clusterID ? t("Managed cluster") : t("No cluster assigned"))}</td>
+                        <td className={ui.cx(`${ui.td} text-muted`)}>{project.provider === "vercel" ? "Vercel" : (project.clusterName ? clusterLabel(project.clusterName) : project.clusterID ? t("Managed cluster") : t("No cluster assigned"))}</td>
                       </tr>
                     ))}
                   </tbody>

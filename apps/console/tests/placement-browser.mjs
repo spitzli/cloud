@@ -2,8 +2,8 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { server, previewOrigin } from './preview-server.ts';
-const state = { offered: false, cluster: null, movable: true, puts: [] };
-const fra = { id: '301', name: 'Frankfurt 1', region: 'eu-central', country: 'DE' };
+const state = { offered: false, cluster: null, movable: true, puts: [], extra: [], dedicated: false };
+const fra = { id: '301', name: 'Webdock Cluster EU', region: 'eu-central', country: 'DE' };
 async function open(browser, who) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await context.newPage();
@@ -20,7 +20,7 @@ async function open(browser, who) {
   await page.route(path('/api/console/plugins'), json([]));
   await page.route(path('/api/console/clusters'), (route) => route.fulfill({ json: [{ ...fra, verified: true, offered: state.offered, dedicatedTo: null, projects: state.cluster ? 1 : 0 }] }));
   await page.route(path('/api/console/clusters/301'), (route) => { state.offered = route.request().postDataJSON().offered; return route.fulfill({ json: {} }); });
-  const placement = () => ({ cluster: state.cluster, options: state.offered ? [{ ...fra, dedicated: false }] : [], movable: state.movable });
+  const placement = () => ({ cluster: state.cluster, options: state.offered ? [{ ...fra, dedicated: state.dedicated }, ...state.extra] : [], movable: state.movable });
   await page.route(path('/api/console/projects/201/placement'), (route) => {
     if (route.request().method() === 'PUT') { state.puts.push(route.request().postDataJSON()); state.cluster = route.request().postDataJSON().clusterId; }
     return route.fulfill({ json: placement() });
@@ -47,13 +47,27 @@ try {
   await session.context.close();
   session = await open(browser, 'owner');
   await session.page.goto(previewOrigin + '/workspaces/101/projects/201');
-  await session.page.getByRole('combobox', { name: 'Cluster' }).selectOption({ label: 'Frankfurt 1 (eu-central, DE)' });
+  await session.page.getByRole('heading', { name: 'Demo project' }).waitFor();
+  await session.page.waitForTimeout(500);
+  assert.equal(await session.page.getByRole('region', { name: 'Runs on' }).count(), 0, 'One shared cluster is not a customer choice');
+  await session.context.close();
+  state.dedicated = true;
+  session = await open(browser, 'owner');
+  await session.page.goto(previewOrigin + '/workspaces/101/projects/201');
+  await session.page.getByRole('combobox', { name: 'Cluster' }).waitFor();
+  assert.equal(await session.page.getByRole('option', { name: /Webdock/ }).count(), 0);
+  await session.context.close();
+  state.dedicated = false;
+  state.extra = [{ ...fra, id: '302', name: 'Frankfurt 2', dedicated: false }];
+  session = await open(browser, 'owner');
+  await session.page.goto(previewOrigin + '/workspaces/101/projects/201');
+  await session.page.getByRole('combobox', { name: 'Cluster' }).selectOption({ label: 'Spitzli Cloud Cluster EU (eu-central, DE)' });
   await session.page.waitForFunction(() => document.querySelector('[aria-label="Runs on"] select')?.value === '301');
   assert.deepEqual(state.puts, [{ clusterId: '301' }]);
   // Once services run, the choice is shown but fixed.
   state.movable = false;
   await session.page.reload();
-  await session.page.getByText('Frankfurt 1 (eu-central, DE)').waitFor();
+  await session.page.getByText('Spitzli Cloud Cluster EU (eu-central, DE)').waitFor();
   assert.equal(await session.page.getByRole('combobox', { name: 'Cluster' }).count(), 0);
   errors.push(...session.errors);
   await session.context.close();
