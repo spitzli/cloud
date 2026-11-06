@@ -3,6 +3,7 @@ import { z } from "zod";
 import { useApi } from "./context";
 import { Empty, Failure, Loading } from "./common";
 import * as ui from "./ui";
+import { clusterLabel } from "./cluster-label";
 
 const clusterSchema = z.object({ id: z.string(), name: z.string(), region: z.string(), country: z.string().nullable(), dedicated: z.boolean() });
 const placementSchema = z.object({ cluster: z.string().nullable(), options: z.array(clusterSchema), movable: z.boolean() });
@@ -21,7 +22,8 @@ export function Placement({ projectID, role }: { projectID: string; role: string
     onSuccess: (data) => { client.setQueryData(["placement", projectID], data); },
   });
   const data = placement.data;
-  if (!data || (!data.options.length && !data.cluster)) return null;
+  const hasChoice = data && (data.options.length > 1 || data.options.some((c) => c.dedicated));
+  if (!data || (!hasChoice && !data.cluster)) return null;
   const writable = ["owner", "admin", "operator"].includes(role ?? "");
   const current = data.options.find((c) => c.id === data.cluster);
   return (
@@ -30,21 +32,21 @@ export function Placement({ projectID, role }: { projectID: string; role: string
         <div>
           <h2 className={ui.sectionTitle}>Runs on</h2>
           <p className={ui.hint}>
-            {data.movable ? "New services in this project start on this cluster." : "Services already run here, so the project stays on its cluster."}
+            {data.movable ? "Placement for new cluster-based services. Externally hosted services keep their own provider." : "Services already run here, so the project stays on its cluster."}
           </p>
         </div>
-        {writable && data.movable ? (
+        {writable && data.movable && hasChoice ? (
           <label className={ui.field}>
             Cluster
             <select className={ui.cx(ui.input, "max-w-96")} value={data.cluster ?? ""} disabled={place.isPending} onChange={(e) => { place.mutate(e.target.value || null); }}>
               <option value="">Platform default</option>
               {data.options.map((c) => (
-                <option key={c.id} value={c.id}>{`${c.name} (${where(c)})${c.dedicated ? ", yours alone" : ""}`}</option>
+                <option key={c.id} value={c.id}>{`${clusterLabel(c.name)} (${where(c)})${c.dedicated ? ", yours alone" : ""}`}</option>
               ))}
             </select>
           </label>
         ) : (
-          <p className="text-sm">{current ? `${current.name} (${where(current)})` : data.cluster ? "A cluster chosen earlier" : "Platform default"}</p>
+          <p className="text-sm">{current ? `${clusterLabel(current.name)} (${where(current)})` : data.cluster ? "A cluster chosen earlier" : "Platform default"}</p>
         )}
         {place.isError ? <p role="alert" className="text-sm text-danger">{place.error.message}</p> : null}
       </div>
@@ -87,7 +89,7 @@ export function Clusters() {
           {clusters.data.map((c) => (
             <div key={c.id} className={ui.cardRow}>
               <div className="min-w-0">
-                <span className="font-medium">{c.name}</span>
+                <span className="font-medium">{clusterLabel(c.name)}</span>
                 <p className="text-xs text-muted">
                   {[c.region, c.country].filter(Boolean).join(", ")}
                   {c.verified ? "" : ", not verified"}
