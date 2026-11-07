@@ -72,7 +72,7 @@ try {
       await page.getByRole('heading', { name: locale === 'en' ? "You're on the waitlist" : 'Du stehst auf der Warteliste', exact: true }).waitFor();
       assert.equal(attempts, 2); assert.deepEqual(authRequests, []);
       await page.screenshot({ path: `${output}/public-${locale}.png`, fullPage: true });
-    } finally { await context.close(); }
+    } catch (error) { await page.screenshot({ path: `${output}/failure-public-${locale}.png`, fullPage: true }); throw error; } finally { await context.close(); }
   }
 
   // Owned operator fixtures: search/filter/page boundaries and confirmation never write implicitly.
@@ -92,6 +92,9 @@ try {
       await list.getByText('Grace Hopper', { exact: true }).waitFor();
       assert.equal(await list.getByRole('listitem').count(), 3);
       await noOverflow(audit.page);
+      // Development StrictMode can replay the initial read. Only new reads caused by filtering are regressions.
+      const readsBeforeFiltering = reads;
+      assert.ok(readsBeforeFiltering >= 1);
       const status = audit.page.getByRole('group', { name: locale === 'en' ? 'Filter by status' : 'Nach Status filtern', exact: true });
       await status.getByRole('button').first().click();
       assert.equal(await list.getByRole('listitem').count(), 1);
@@ -102,7 +105,7 @@ try {
       await search.fill('GRACE@');
       assert.equal(await list.getByRole('listitem').count(), 1);
       await list.getByText('Grace Hopper', { exact: true }).waitFor();
-      assert.equal(reads, 1, 'Local filters must not poll the Core or pretend to search unseen pages');
+      assert.equal(reads, readsBeforeFiltering, 'Local filters must not poll the Core or pretend to search unseen pages');
       await search.fill('');
       await list.getByRole('button', { name: locale === 'en' ? 'Reject' : 'Ablehnen', exact: true }).click();
       const confirmation = audit.page.getByRole('group', { name: locale === 'en' ? 'Confirm rejection' : 'Ablehnung bestätigen', exact: true });
@@ -120,9 +123,10 @@ try {
       await audit.page.screenshot({ path: `${output}/operator-${locale}-desktop.png`, fullPage: true });
       await audit.page.setViewportSize({ width: 375, height: 812 });
       await audit.page.screenshot({ path: `${output}/operator-${locale}-mobile.png`, fullPage: true });
+      const readsBeforeRefresh = reads;
       await audit.page.getByRole('button', { name: locale === 'en' ? 'Refresh requests' : 'Anfragen aktualisieren', exact: true }).click();
       await audit.page.waitForFunction(() => !document.querySelector('main button')?.disabled);
-      assert.equal(reads, 2);
+      assert.equal(reads, readsBeforeRefresh + 1);
     } catch (error) { await audit.page.screenshot({ path: `${output}/failure-${locale}.png`, fullPage: true }); throw error; } finally { await audit.context.close(); }
   }
 
