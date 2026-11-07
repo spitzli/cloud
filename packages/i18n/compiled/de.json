@@ -2708,6 +2708,9 @@
   "Connected read-only Vercel integration": [
     "Schreibgeschützte Vercel-Integration verbunden"
   ],
+  "Connected repository": [
+    "Verbundenes Repository"
+  ],
   "Connected services": [
     "Verbundene Dienste"
   ],
@@ -3438,6 +3441,9 @@
   "Database configuration saved.": [
     "Datenbankkonfiguration gespeichert."
   ],
+  "Database connections added to your projects will appear here.": [
+    "Hier erscheinen Datenbankverbindungen, die zu deinen Projekten hinzugefügt wurden."
+  ],
   "Database engine": [
     "Datenbanktyp"
   ],
@@ -3485,6 +3491,9 @@
   ],
   "Databases": [
     "Datenbanken"
+  ],
+  "Databases are unavailable.": [
+    "Datenbanken sind nicht verfügbar."
   ],
   "Date": [
     "Datum"
@@ -4575,6 +4584,9 @@
   "Get early access": [
     "Frühzeitig Zugang erhalten"
   ],
+  "Git builds and releases": [
+    "Git-Builds und Releases"
+  ],
   "Git deployment changed. Refresh and try again.": [
     "Das Git-Deployment wurde geändert. Lade die Seite neu und versuche es erneut."
   ],
@@ -4850,6 +4862,9 @@
   ],
   "Hosting is not configured": [
     "Hosting ist nicht eingerichtet"
+  ],
+  "Hosting is not configured for this project.": [
+    "Für dieses Projekt ist kein Hosting eingerichtet."
   ],
   "Hosting is not enabled for this installation.": [
     "Hosting ist für diese Installation nicht aktiviert."
@@ -5739,6 +5754,9 @@
   "Loading repositories…": [
     "Repositories werden geladen…"
   ],
+  "Loading repository sources…": [
+    "Repository-Quellen werden geladen…"
+  ],
   "Loading sources…": [
     "Quellen werden geladen…"
   ],
@@ -6068,6 +6086,9 @@
   ],
   "Manage account": [
     "Konto verwalten"
+  ],
+  "Manage applications": [
+    "Anwendungen verwalten"
   ],
   "Manage appointments": [
     "Termine verwalten"
@@ -6687,6 +6708,9 @@
   "No applications deployed yet.": [
     "Noch keine Anwendungen bereitgestellt."
   ],
+  "No applications in this project yet.": [
+    "In diesem Projekt gibt es noch keine Anwendungen."
+  ],
   "No appointments yet. New entries appear here.": [
     "Noch keine Termine. Neue Einträge erscheinen hier."
   ],
@@ -6962,6 +6986,9 @@
   ],
   "No repository source": [
     "Kein Repository verbunden"
+  ],
+  "No repository source is connected. Open Git builds and releases to connect one.": [
+    "Es ist keine Repository-Quelle verbunden. Öffne Git-Builds und Releases, um eine zu verbinden."
   ],
   "No requests yet. New requests appear here.": [
     "Noch keine Anfragen. Neue Anfragen erscheinen hier."
@@ -7272,6 +7299,12 @@
   "Open application": [
     "Anwendung öffnen"
   ],
+  "Open application management to see all applications.": [
+    "In der Anwendungsverwaltung findest du alle Anwendungen."
+  ],
+  "Open application management to view this provider.": [
+    "Öffne die Anwendungsverwaltung, um diesen Anbieter anzusehen."
+  ],
   "Open cluster enrollment": [
     "Cluster-Anbindung öffnen"
   ],
@@ -7322,6 +7355,9 @@
   ],
   "Open the project in Studio to view hosting details. Refresh to request the latest available status.": [
     "Öffne das Projekt in Studio, um die Hostingdetails anzusehen. Aktualisiere die Ansicht, um den neuesten verfügbaren Status abzurufen."
+  ],
+  "Open this provider to connect a database to a project.": [
+    "Öffne diesen Anbieter, um eine Datenbank mit einem Projekt zu verbinden."
   ],
   "Open tracking": [
     "Öffnungs-Tracking"
@@ -8109,6 +8145,9 @@
   "Project ID": [
     "Projekt-ID"
   ],
+  "Project URL": [
+    "Projekt-URL"
+  ],
   "Project and extension usage": [
     "Projekt- und Erweiterungsnutzung"
   ],
@@ -8126,6 +8165,9 @@
   ],
   "Project extensions": [
     "Projekterweiterungen"
+  ],
+  "Project links": [
+    "Projektlinks"
   ],
   "Project managers can connect an authorized repository below. Your provider must enable new GitHub account access.": [
     "Projektverantwortliche können unten ein freigegebenes Repository verbinden. Neue GitHub-Konten muss dein Anbieter freischalten."
@@ -8885,6 +8927,9 @@
   ],
   "Repository inspection exceeded its size limit.": [
     "Die Repository-Prüfung hat die Größenbegrenzung überschritten."
+  ],
+  "Repository link": [
+    "Repository-Link"
   ],
   "Repository pages": [
     "Repository-Seiten"
@@ -11364,6 +11409,9 @@
   "This project is being deleted. Setup cannot continue.": [
     "Dieses Projekt wird gelöscht. Die Einrichtung kann nicht fortgesetzt werden."
   ],
+  "This project is not available in this workspace.": [
+    "Dieses Projekt ist in diesem Workspace nicht verfügbar."
+  ],
   "This project is not in the selected workspace.": [
     "Dieses Projekt gehört nicht zum ausgewählten Arbeitsbereich."
   ],
@@ -12851,6 +12899,9 @@
   ],
   "Your data and ending access": [
     "Deine Daten und das Beenden des Zugriffs"
+  ],
+  "Your database connections, organized by provider and project.": [
+    "Deine Datenbankverbindungen, nach Anbieter und Projekt geordnet."
   ],
   "Your draft is saved in this project. You can continue it later.": [
     "Dein Entwurf ist im Projekt gespeichert. Du kannst ihn später fortsetzen."

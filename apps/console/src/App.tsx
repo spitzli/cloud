@@ -1,3 +1,4 @@
+import { WorkspaceDatabases } from "./WorkspaceDatabases";
 import { PublicWaitlist,WaitlistReview } from "./Waitlist";
 import { useState, lazy, Suspense, type ReactNode } from "react";
 import {
@@ -405,6 +406,11 @@ const projectRoute = createRoute({
     return <ProjectPage key={`${customer}:${id}`} customer={customer} id={id} />;
   },
 });
+const workspaceDatabasesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/workspaces/$id/databases",
+  component: () => { const { id } = workspaceDatabasesRoute.useParams(); return <WorkspaceDatabases key={id} customer={id} />; },
+});
 const productRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/workspaces/$customer/products/$plugin",
@@ -507,6 +513,7 @@ const router = createRouter({
     workspaceRoute,
     projectRoute,
     productRoute,
+    workspaceDatabasesRoute,
     resourceRoute,
     mailRoute,
     inboxRoute,

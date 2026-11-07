@@ -95,6 +95,8 @@ export function invokePlugin(
   });
 }
 export const projectSchema = z.object({
+  url: z.string().nullish(),
+  repositoryURL: z.string().nullish(),
   id: z.string(),
   name: z.string(),
   customer: z.object({ id: z.string(), name: z.string().nullable() }),
