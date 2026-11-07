@@ -27,6 +27,7 @@ export interface WorkspacePlugin {
   /** Features this viewer may use in this workspace (the access mode is per customer, not per project). */
   features: string[];
   resources: WorkspaceResource[];
+  sources: { project: WorkspaceProject; view: PluginView }[];
 }
 
 export function useWorkspaceProjects(customer: string) {
@@ -55,11 +56,12 @@ export function useWorkspacePlugins(customer: string) {
   (projects.data ?? []).forEach((project, index) => {
     for (const view of views[index]?.data ?? []) {
       if (!view.manifest.areas.selfService) continue;
-      const entry = merged.get(view.manifest.name) ?? { plugin: view.manifest.name, view, features: [], resources: [] };
+      const entry = merged.get(view.manifest.name) ?? { plugin: view.manifest.name, view, features: [], resources: [], sources: [] };
+      entry.sources.push({ project, view });
       entry.features = [...new Set([...entry.features, ...view.features])];
       entry.resources.push(...view.resources.map((resource) => ({ ...resource, project })));
       merged.set(view.manifest.name, entry);
     }
   });
-  return { projects, plugins: [...merged.values()].sort((a, b) => pluginNav(a.plugin).label.localeCompare(pluginNav(b.plugin).label)), pending, error, incomplete: views.some((v) => v.isError) };
+  return { projects, plugins: [...merged.values()].sort((a, b) => pluginNav(a.plugin).label.localeCompare(pluginNav(b.plugin).label)), pending, error, incomplete: views.some((v) => v.isError), refetch: () => Promise.all([projects.refetch(), ...views.map((view) => view.refetch())]) };
 }

@@ -11,7 +11,7 @@ import { parsePanel } from "./contracts";
 import { PluginPanel } from "./Panel";
 import { invokePlugin, usePluginViews, useProject } from "./views";
 import { useNativeUI } from "./native";
-import { pluginNav, useWorkspaceProjects } from "./workspace";
+import { pluginNav } from "./workspace";
 import * as ui from "../ui";
 
 function resourceWritable(session: Session, role: string | null | undefined) {
@@ -25,20 +25,20 @@ export function ResourcePage({ customer, projectID, plugin, resource }: { custom
   const client = useQueryClient();
   const navigate = useNavigate();
   const project = useProject(projectID);
-  const views = usePluginViews(projectID);
-  const projects = useWorkspaceProjects(customer);
+  const matchesWorkspace = project.isSuccess && project.data.customer.id === customer;
+  const views = usePluginViews(projectID, matchesWorkspace);
   const view = views.data?.find((v) => v.manifest.name === plugin);
   const indexed = view?.resources.find((r) => r.id === resource);
   const page = view?.manifest.areas.selfService?.pages[0];
   const native = useNativeUI(view?.manifest.name);
   const Native = native.data?.Resource;
-  const writable = resourceWritable(session, project.data?.role);
+  const writable = matchesWorkspace && resourceWritable(session, project.data.role);
   const [replaced, setReplaced] = useState<unknown>();
   const context = { resource_id: resource };
   const panel = useQuery({
     queryKey: ["plugin-resource", plugin, projectID, resource, page?.action ?? ""],
     queryFn: ({ signal }) => invokePlugin(api, plugin, projectID, page?.action ?? "", context, signal),
-    enabled: view?.state === "enabled" && view.runtime === "ready" && Boolean(page && indexed) && native.isSuccess && !Native,
+    enabled: matchesWorkspace && view?.state === "enabled" && view.runtime === "ready" && Boolean(page && indexed) && native.isSuccess && !Native,
     retry: false,
     // The plugin decides how often its page needs fresh state.
     refetchInterval: (query) => {
@@ -55,8 +55,12 @@ export function ResourcePage({ customer, projectID, plugin, resource }: { custom
       {pluginNav(plugin).label}
     </Link>
   );
+  if (project.isPending) return <Loading>Loading project…</Loading>;
+  if (project.error) return <Failure error={project.error} retry={() => void project.refetch()} />;
+  if (!matchesWorkspace) return <Empty title="Project unavailable"><span>This project is not available in this workspace.</span> <Link to="/workspaces/$id" params={{ id: customer }}>Open workspace</Link></Empty>;
   if (views.isPending || native.isLoading) return <Loading>Loading…</Loading>;
   if (views.error) return <Failure error={views.error} retry={() => void views.refetch()} />;
+  const projectLink = <Link to="/workspaces/$customer/projects/$id" params={{ customer, id: projectID }}>{project.data.name}</Link>;
   const leave = async () => {
     await client.invalidateQueries({ queryKey: ["project-plugins"] });
     await navigate({ to: "/workspaces/$customer/products/$plugin", params: { customer, plugin } });
@@ -70,7 +74,7 @@ export function ResourcePage({ customer, projectID, plugin, resource }: { custom
             <h1 className={ui.pageTitle}>{indexed.name}</h1>
             <p className={ui.pageLead}>
               {view.manifest.offerings.find((o) => o.id === indexed.offering)?.label}
-              {(projects.data?.length ?? 0) > 1 ? <> in <Link to="/workspaces/$customer/projects/$id" params={{ customer, id: projectID }}>{project.data?.name ?? "its project"}</Link></> : null}
+              <> in {projectLink}</>
             </p>
             {view.manifest.offerings.find((o) => o.id === indexed.offering)?.description ? (
               <p className="mt-1 max-w-[76ch] text-[13px] text-muted">{view.manifest.offerings.find((o) => o.id === indexed.offering)?.description}</p>
@@ -105,7 +109,7 @@ export function ResourcePage({ customer, projectID, plugin, resource }: { custom
         <div>
           {back}
           <h1 className={ui.pageTitle}>{indexed.name}</h1>
-          <p className={ui.pageLead}>{offering?.label ?? page.label}</p>
+          <p className={ui.pageLead}>{offering?.label ?? page.label} in {projectLink}</p>
         </div>
       </div>
       {panel.isPending ? <Loading>Loading {page.label.toLowerCase()}…</Loading> : panel.error ? (

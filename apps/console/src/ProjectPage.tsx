@@ -7,7 +7,7 @@ import { ArrowLeftIcon } from "@phosphor-icons/react/dist/csr/ArrowLeft";
 import { PlusIcon } from "@phosphor-icons/react/dist/csr/Plus";
 import { useApi, useSession } from "./context";
 import { Empty, Failure, Loading } from "./common";
-import { ApiError } from "./api";
+import { isReadOnlyPreview } from "./api";
 import { PluginPanel } from "./plugins/Panel";
 import { creatable, invokePlugin, usePluginViews, useProject, type JsonSchema, type PluginAction, type PluginView } from "./plugins/views";
 import { useNativeUI } from "./plugins/native";
@@ -17,15 +17,15 @@ import * as ui from "./ui";
 export function ProjectPage({ customer, id }: { customer: string; id: string }) {
   const session = useSession();
   const project = useProject(id);
-  const views = usePluginViews(id);
+  const views = usePluginViews(id, project.isSuccess && project.data.customer.id === customer);
   const [adding, setAdding] = useState<string>();
-  if (project.isPending || views.isPending) return <Loading>Loading project…</Loading>;
+  if (project.isPending) return <Loading>Loading project…</Loading>;
   if (project.error) return <Failure error={project.error} retry={() => void project.refetch()} />;
-  // Installations without a plugin host answer "unavailable"; the project still opens.
-  const plugins = views.error instanceof ApiError && [404, 503].includes(views.error.status) ? [] : views.data;
-  if (!plugins) return <Failure error={views.error ?? new Error("Extensions are unavailable.")} retry={() => void views.refetch()} />;
+  if (project.data.customer.id !== customer) return <Empty title="Project unavailable"><span>This project is not available in this workspace.</span> <Link to="/workspaces/$id" params={{ id: customer }}>Open workspace</Link></Empty>;
+  if (views.isPending) return <Loading>Loading project…</Loading>;
+  const plugins = views.error ? [] : views.data;
   const operator = session.user.role === "operator" && !session.user.preview;
-  const options = plugins.flatMap((view) => creatable(view).map((option) => ({ view, ...option, key: `${view.manifest.name}:${option.action.name}` })));
+  const options = isReadOnlyPreview(session) ? [] : plugins.flatMap((view) => creatable(view).map((option) => ({ view, ...option, key: `${view.manifest.name}:${option.action.name}` })));
   const chosen = options.find((option) => option.key === adding);
   const hasResources = plugins.some((view) => view.resources.length > 0);
   return (
@@ -76,7 +76,7 @@ export function ProjectPage({ customer, id }: { customer: string; id: string }) 
           onCancel={() => { setAdding(undefined); }}
         />
       ) : null}
-      {hasResources ? (
+      {views.error ? <Failure error={views.error} retry={() => void views.refetch()} /> : hasResources ? (
         <div className="grid gap-6">
           {plugins.flatMap((view) => view.manifest.offerings.map((offering) => {
             const resources = view.resources.filter((r) => r.offering === offering.id);
@@ -117,7 +117,7 @@ export function ProjectPage({ customer, id }: { customer: string; id: string }) 
       {operator ? plugins.flatMap((view) => view.manifest.areas.operator.pages.map((page) => (
         <OperatorPage key={`${view.manifest.name}:${page.id}`} view={view} projectID={id} action={page.action} label={page.label} />
       ))) : null}
-      <Placement projectID={id} role={project.data.role} />
+      {!views.error ? <Placement projectID={id} role={project.data.role} /> : null}
     </section>
   );
 }
