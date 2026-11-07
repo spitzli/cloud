@@ -96,7 +96,7 @@ await test("review action groups identify the contact when requests share a disp
   const f = await fixture(() => Promise.resolve(Response.json({ entries: [{ ...entry, name: "Same name" }, { ...entry, id: "11", name: "Same name", email: "other@example.test" }], nextCursor: null })));
   try {
     await until(() => f.host.querySelectorAll("li").length === 2);
-    const groups = [...f.host.querySelectorAll('[role="group"]')];
+    const groups = [...f.host.querySelectorAll('li [role="group"]')];
     assert.deepEqual(groups.map(group => group.getAttribute("aria-label")), [entry.email, "other@example.test"]);
     for (const group of groups) assert.equal(group.querySelectorAll("button").length, 2);
   } finally { await f.close(); }
@@ -172,11 +172,44 @@ await test("a review in flight holds pagination and failure reports the review a
   try {
     await until(() => f.host.textContent.includes("Approve"));
     await flush(() => { button(f.host, "Reject").click(); });
+    await flush(() => { button(f.host, "Confirm rejection").click(); });
     assert.equal(button(f.host, "Older requests").disabled, true);
     await flush(() => { finish(Response.json({ error: { message: "Already reviewed. Refresh before trying again." } }, { status: 409 })); });
     await until(() => f.host.querySelector('[role="alert"]') !== null);
     assert.match(select(f.host, '[role="alert"]').textContent, /Unable to review request/);
     assert.match(select(f.host, '[role="alert"]').textContent, /Already reviewed/);
     await until(() => !button(f.host, "Older requests").disabled);
+  } finally { await f.close(); }
+});
+
+await test("operator filters the current page without fetching or treating its counts as global", async () => {
+  let reads = 0;
+  const f = await fixture(() => { reads++; return Promise.resolve(Response.json({ entries: [entry, { ...entry, id: "11", email: "approved@example.test", name: "Approved contact", status: "approved", reviewedAt: "2026-11-01T10:00:00Z" }], nextCursor: "older-page" })); });
+  try {
+    await until(() => f.host.querySelectorAll("li").length === 2);
+    assert.match(f.host.textContent, /Counts and search apply to this page/);
+    await flush(() => { button(f.host, "Pending1").click(); });
+    assert.equal(f.host.querySelectorAll("li").length, 1);
+    assert.match(select(f.host, "li").textContent, /contact@example.test/);
+    await flush(() => { button(f.host, "All requests").click(); });
+    await flush(() => { button(f.host, "Approved1").click(); });
+    assert.equal(f.host.querySelectorAll("li").length, 1);
+    assert.match(select(f.host, "li").textContent, /Approved contact/);
+    assert.equal(reads, 1);
+    assert.equal(button(f.host, "Older requests").disabled, false);
+  } finally { await f.close(); }
+});
+
+await test("reject requires confirmation and can be canceled without writing", async () => {
+  let writes = 0;
+  const f = await fixture((_url, init) => { if (init?.method === "POST") writes++; return Promise.resolve(Response.json({ entries: [entry], nextCursor: null })); });
+  try {
+    await until(() => f.host.querySelector("li") !== null);
+    await flush(() => { button(f.host, "Reject").click(); });
+    assert.equal(writes, 0);
+    assert.match(f.host.textContent, /Reject this access request/);
+    await flush(() => { button(f.host, "Keep pending").click(); });
+    assert.equal(writes, 0);
+    assert.equal(button(f.host, "Reject").disabled, false);
   } finally { await f.close(); }
 });

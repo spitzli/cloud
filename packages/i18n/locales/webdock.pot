@@ -11684,3 +11684,99 @@ msgstr ""
 #: apps/console/src/Hosting.tsx:232
 msgid "Deployment information for this provider is not available here yet."
 msgstr ""
+
+#: apps/console/src/Waitlist.tsx:92
+msgid "Review access requests and decide who can start onboarding."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:93
+msgid "Refreshing…"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:93
+msgid "Refresh requests"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:104
+msgid "Filter by status"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:115
+msgid "All requests"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:116
+msgid "Search this page"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:117
+msgid "Search by name or email"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:120
+msgid "Counts and search apply to this page. Use older requests to review more."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:125
+msgid "No matching requests"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:126
+msgid "Try another name, email or status on this page."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:127
+msgid "Clear filters"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:129
+msgid "Access requests"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:143 apps/console/src/Waitlist.tsx:147
+msgid "Confirm rejection"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:144
+msgid "Reject this access request?"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:145
+msgid "This contact will not be allowed to start onboarding."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:148
+msgid "Keep pending"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:151
+msgid "Awaiting your review"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:160
+msgid "Request pages"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:165 apps/console/src/Waitlist.tsx:167
+msgid "How access works"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:168
+msgid "Approve onboarding"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:168
+msgid "Approval lets this contact start onboarding. It does not grant access to an existing workspace."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:169
+msgid "Assign workspace access"
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:169
+msgid "Invite approved contacts from the workspace member settings when they need to join an existing team."
+msgstr ""
+
+#: apps/console/src/Waitlist.tsx:170
+msgid "Review requests individually. Decisions are saved immediately."
+msgstr ""

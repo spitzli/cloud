@@ -521,6 +521,9 @@
   "Access is by invitation. If you need access or help with your account, contact your Webdock administrator.": [
     "Der Zugang erfolgt auf Einladung. Wende dich an deinen Webdock-Admin, wenn du Zugang oder Hilfe zu deinem Konto benötigst."
   ],
+  "Access requests": [
+    "Zugangsanfragen"
+  ],
   "Access saved and invitation email sent.": [
     "Zugriff gespeichert und Einladung per E-Mail versendet."
   ],
@@ -835,6 +838,9 @@
   ],
   "All records": [
     "Alle Einträge"
+  ],
+  "All requests": [
+    "Alle Anfragen"
   ],
   "All resource types": [
     "Alle Ressourcentypen"
@@ -1178,8 +1184,14 @@
   "Appointments and enquiries setup": [
     "Termine & Anfragen einrichten"
   ],
+  "Approval lets this contact start onboarding. It does not grant access to an existing workspace.": [
+    "Die Freigabe erlaubt diesem Kontakt, mit der Einrichtung zu beginnen. Sie gewährt keinen Zugriff auf bestehende Workspaces."
+  ],
   "Approve": [
     "Freigeben"
+  ],
+  "Approve onboarding": [
+    "Einrichtung freigeben"
   ],
   "Approve publication": [
     "Veröffentlichung freigeben"
@@ -1310,6 +1322,9 @@
   "Assign website": [
     "Website zuweisen"
   ],
+  "Assign workspace access": [
+    "Workspace-Zugriff vergeben"
+  ],
   "Assigned addresses": [
     "Zugewiesene Adressen"
   ],
@@ -1405,6 +1420,9 @@
   ],
   "Awaiting publication": [
     "Wartet auf Veröffentlichung"
+  ],
+  "Awaiting your review": [
+    "Wartet auf deine Prüfung"
   ],
   "BYOK connection setup": [
     "BYOK-Verbindung einrichten"
@@ -2183,6 +2201,9 @@
   "Clear": [
     "Leeren"
   ],
+  "Clear filters": [
+    "Filter zurücksetzen"
+  ],
   "Click rate": [
     "Klickrate"
   ],
@@ -2446,6 +2467,9 @@
   ],
   "Confirm permission to run this project's images on a shared cluster.": [
     "Bestätige die Freigabe der Images dieses Projekts für einen gemeinsamen Cluster."
+  ],
+  "Confirm rejection": [
+    "Ablehnung bestätigen"
   ],
   "Confirm removal": [
     "Entfernen bestätigen"
@@ -3011,6 +3035,9 @@
   ],
   "Country unverified": [
     "Land nicht verifiziert"
+  ],
+  "Counts and search apply to this page. Use older requests to review more.": [
+    "Zähler und Suche gelten für diese Seite. Über „Ältere Anfragen“ findest du weitere."
   ],
   "Cover": [
     "Ausschnitt füllen"
@@ -4380,6 +4407,9 @@
   "Filter by name or ID": [
     "Nach Name oder ID filtern"
   ],
+  "Filter by status": [
+    "Nach Status filtern"
+  ],
   "Filter or sort is not available for this collection.": [
     "Filter oder Sortierung sind für diese Sammlung nicht verfügbar."
   ],
@@ -4877,6 +4907,9 @@
   ],
   "How Webdock processes personal data, uses service providers and protects your rights.": [
     "Wie Webdock personenbezogene Daten verarbeitet, Dienstleister einsetzt und deine Rechte wahrt."
+  ],
+  "How access works": [
+    "So funktioniert der Zugang"
   ],
   "How do I access Spitzli Cloud?": [
     "Wie bekomme ich Zugang zu Spitzli Cloud?"
@@ -5418,6 +5451,9 @@
   "Invite a person": [
     "Person einladen"
   ],
+  "Invite approved contacts from the workspace member settings when they need to join an existing team.": [
+    "Lade freigegebene Kontakte über die Mitgliederverwaltung des Workspaces ein, wenn sie einem bestehenden Team beitreten sollen."
+  ],
   "Invite customers and control access to each website.": [
     "Lade Kunden ein und steuere den Zugriff auf jede Website."
   ],
@@ -5456,6 +5492,9 @@
   ],
   "Keep at least one customer administrator.": [
     "Mindestens ein Kunden-Admin muss erhalten bleiben."
+  ],
+  "Keep pending": [
+    "Offen lassen"
   ],
   "Keep this record and its history, and remove it from the active list. You can restore it later.": [
     "Behalte diesen Eintrag samt Verlauf bei und entferne ihn aus der aktiven Liste. Du kannst ihn später wiederherstellen."
@@ -6836,6 +6875,9 @@
   ],
   "No matching projects in this workspace.": [
     "Keine passenden Projekte in diesem Arbeitsbereich."
+  ],
+  "No matching requests": [
+    "Keine passenden Anfragen"
   ],
   "No matching requests on this page.": [
     "Keine passenden Anfragen auf dieser Seite."
@@ -8571,6 +8613,9 @@
   "Refresh repositories": [
     "Repositories aktualisieren"
   ],
+  "Refresh requests": [
+    "Anfragen aktualisieren"
+  ],
   "Refresh the cluster inventory before changing this application.": [
     "Aktualisiere die Ressourcenübersicht, bevor du diese Anwendung änderst."
   ],
@@ -8585,6 +8630,9 @@
   ],
   "Refresh tracking status": [
     "Tracking-Status aktualisieren"
+  ],
+  "Refreshing…": [
+    "Wird aktualisiert…"
   ],
   "Refunded": [
     "Erstattet"
@@ -8651,6 +8699,9 @@
   ],
   "Reject": [
     "Ablehnen"
+  ],
+  "Reject this access request?": [
+    "Diese Zugangsanfrage ablehnen?"
   ],
   "Rejected": [
     "Abgelehnt"
@@ -9114,6 +9165,9 @@
   "Review": [
     "Prüfung"
   ],
+  "Review access requests and decide who can start onboarding.": [
+    "Prüfe Zugangsanfragen und entscheide, wer mit der Einrichtung beginnen darf."
+  ],
   "Review access requests. Approval permits onboarding; workspace access is assigned separately.": [
     "Prüfe Zugangsanfragen. Die Freigabe ermöglicht die Einrichtung; Workspace-Zugriff wird separat vergeben."
   ],
@@ -9146,6 +9200,9 @@
   ],
   "Review requests": [
     "Anfragen bearbeiten"
+  ],
+  "Review requests individually. Decisions are saved immediately.": [
+    "Prüfe jede Anfrage einzeln. Entscheidungen werden sofort gespeichert."
   ],
   "Review required": [
     "Prüfung erforderlich"
@@ -9525,6 +9582,9 @@
   "Search and filters": [
     "Suche und Filter"
   ],
+  "Search by name or email": [
+    "Nach Name oder E-Mail suchen"
+  ],
   "Search content": [
     "Inhalte suchen"
   ],
@@ -9566,6 +9626,9 @@
   ],
   "Search the products on this page.": [
     "Suche in den Produkten dieser Seite."
+  ],
+  "Search this page": [
+    "Diese Seite durchsuchen"
   ],
   "Search websites": [
     "Websites durchsuchen"
@@ -11145,6 +11208,9 @@
   "This connection attempt expired. Start again.": [
     "Dieser Verbindungsversuch ist abgelaufen. Starte ihn erneut."
   ],
+  "This contact will not be allowed to start onboarding.": [
+    "Dieser Kontakt darf nicht mit der Einrichtung beginnen."
+  ],
   "This content area is not available.": [
     "Dieser Inhaltsbereich ist nicht verfügbar."
   ],
@@ -11486,6 +11552,9 @@
   ],
   "Try another name, contact or email address.": [
     "Versuche einen anderen Namen, Kontakt oder eine andere E-Mail-Adresse."
+  ],
+  "Try another name, email or status on this page.": [
+    "Versuche einen anderen Namen, eine andere E-Mail oder einen anderen Status auf dieser Seite."
   ],
   "Try another search.": [
     "Versuche einen anderen Suchbegriff."

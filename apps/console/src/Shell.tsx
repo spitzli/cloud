@@ -1,3 +1,4 @@
+import { useI18n } from "@webdock/i18n/react";
 import { WorkspaceAvatar } from "./WorkspaceAvatar";
 import { CustomerScopeBanner } from "./CustomerScope";
 import { Fragment, useEffect, useRef, useState } from "react";
@@ -62,6 +63,7 @@ function shellLayout(viewer: boolean) {
   };
 }
 export function Shell() {
+  const { t } = useI18n();
   const session = useSession();
   const navigationCopy = session.user.role === "operator"
     ? { section: "Workspace", switch: "Switch customer or project", search: "Find a project or customer" }
@@ -331,7 +333,7 @@ export function Shell() {
           </button>
           {(hosting.active
             ? hosting.breadcrumbs
-            : header?.crumbs ?? [customer.data?.name ?? "Workspace", sectionTitle(pathname)]
+            : header?.crumbs ?? [customer.data?.name ?? "Workspace", pathname === "/access-requests" ? t("Waitlist") : sectionTitle(pathname)]
           )
             .slice(1)
             .map((label, index) => (

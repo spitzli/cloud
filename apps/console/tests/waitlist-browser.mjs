@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 import { server, previewOrigin } from './preview-server.ts';
 import { fromRepo } from './repo.mjs';
 
-const output = fileURLToPath(fromRepo('.runtime-test/waitlist-polish-20261031'));
+const output = fileURLToPath(fromRepo('.runtime-test/waitlist-operator-20261107'));
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {}) });
 const errors = [];
@@ -15,6 +15,7 @@ const path = value => url => url.pathname === value;
 async function open(locale = 'en', role = 'operator') {
   const context = await browser.newContext({ viewport: { width: 375, height: 812 } });
   const page = await context.newPage();
+  page.setDefaultTimeout(15_000);
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => { if (/Generated path.*access-requests/.test(message.text())) routeWarnings.push(message.text()); });
   await page.route(url => url.pathname.startsWith('/api/'), route => route.fulfill({ json: [] }));
@@ -71,7 +72,62 @@ try {
       await page.getByRole('heading', { name: locale === 'en' ? "You're on the waitlist" : 'Du stehst auf der Warteliste', exact: true }).waitFor();
       assert.equal(attempts, 2); assert.deepEqual(authRequests, []);
       await page.screenshot({ path: `${output}/public-${locale}.png`, fullPage: true });
-    } finally { await context.close(); }
+    } catch (error) { await page.screenshot({ path: `${output}/failure-public-${locale}.png`, fullPage: true }); throw error; } finally { await context.close(); }
+  }
+
+  // Owned operator fixtures: search/filter/page boundaries and confirmation never write implicitly.
+  for (const locale of ['en', 'de']) {
+    const audit = await open(locale);
+    const rows = [
+      { id: '21', email: 'ada@example.test', name: 'Ada Lovelace', status: 'pending', createdAt: '2026-11-07T09:00:00Z', reviewedAt: null, version: 1 },
+      { id: '22', email: 'grace@example.test', name: 'Grace Hopper', status: 'approved', createdAt: '2026-11-06T09:00:00Z', reviewedAt: '2026-11-07T08:00:00Z', version: 2 },
+      { id: '23', email: 'linus@example.test', name: 'Linus Example', status: 'rejected', createdAt: '2026-11-05T09:00:00Z', reviewedAt: '2026-11-06T08:00:00Z', version: 2 },
+    ];
+    let reads = 0, writes = 0;
+    await audit.page.route(path('/api/console/waitlist'), route => { reads++; return route.fulfill({ json: { entries: rows, nextCursor: 'older-page' } }); });
+    await audit.page.route(url => /^\/api\/console\/waitlist\/\d+$/.test(url.pathname), route => { writes++; return route.fulfill({ status: 500 }); });
+    try {
+      await audit.page.goto(previewOrigin + '/access-requests');
+      const list = audit.page.getByRole('list', { name: locale === 'en' ? 'Access requests' : 'Zugangsanfragen', exact: true });
+      await list.getByText('Grace Hopper', { exact: true }).waitFor();
+      assert.equal(await list.getByRole('listitem').count(), 3);
+      await noOverflow(audit.page);
+      // Development StrictMode can replay the initial read. Only new reads caused by filtering are regressions.
+      const readsBeforeFiltering = reads;
+      assert.ok(readsBeforeFiltering >= 1);
+      const status = audit.page.getByRole('group', { name: locale === 'en' ? 'Filter by status' : 'Nach Status filtern', exact: true });
+      await status.getByRole('button').first().click();
+      assert.equal(await list.getByRole('listitem').count(), 1);
+      const search = audit.page.getByRole('searchbox');
+      await search.fill('missing');
+      await audit.page.getByRole('heading', { name: locale === 'en' ? 'No matching requests' : 'Keine passenden Anfragen', exact: true }).waitFor();
+      await audit.page.getByRole('button', { name: locale === 'en' ? 'Clear filters' : 'Filter zurücksetzen', exact: true }).click();
+      await search.fill('GRACE@');
+      assert.equal(await list.getByRole('listitem').count(), 1);
+      await list.getByText('Grace Hopper', { exact: true }).waitFor();
+      assert.equal(reads, readsBeforeFiltering, 'Local filters must not poll the Core or pretend to search unseen pages');
+      await search.fill('');
+      await list.getByRole('button', { name: locale === 'en' ? 'Reject' : 'Ablehnen', exact: true }).click();
+      const confirmation = audit.page.getByRole('group', { name: locale === 'en' ? 'Confirm rejection' : 'Ablehnung bestätigen', exact: true });
+      await confirmation.waitFor();
+      assert.equal(writes, 0);
+      const cancel = confirmation.getByRole('button', { name: locale === 'en' ? 'Keep pending' : 'Offen lassen', exact: true });
+      assert.equal(await cancel.evaluate(element => document.activeElement === element), true, 'Confirmation must focus its safe cancellation action');
+      await audit.page.keyboard.press('Enter');
+      assert.equal(await confirmation.count(), 0);
+      const reject = list.getByRole('button', { name: locale === 'en' ? 'Reject' : 'Ablehnen', exact: true });
+      assert.equal(await reject.evaluate(element => document.activeElement === element), true, 'Cancellation returns focus to the same request');
+      assert.equal(writes, 0);
+      await audit.page.setViewportSize({ width: 1440, height: 1024 });
+      await audit.page.getByRole('navigation', { name: 'Breadcrumb', exact: true }).getByText(locale === 'en' ? 'Waitlist' : 'Warteliste', { exact: true }).waitFor();
+      await audit.page.screenshot({ path: `${output}/operator-${locale}-desktop.png`, fullPage: true });
+      await audit.page.setViewportSize({ width: 375, height: 812 });
+      await audit.page.screenshot({ path: `${output}/operator-${locale}-mobile.png`, fullPage: true });
+      const readsBeforeRefresh = reads;
+      await audit.page.getByRole('button', { name: locale === 'en' ? 'Refresh requests' : 'Anfragen aktualisieren', exact: true }).click();
+      await audit.page.waitForFunction(() => !document.querySelector('main button')?.disabled);
+      assert.equal(reads, readsBeforeRefresh + 1);
+    } catch (error) { await audit.page.screenshot({ path: `${output}/failure-${locale}.png`, fullPage: true }); throw error; } finally { await audit.context.close(); }
   }
 
   const { context, page } = await open();
