@@ -47,7 +47,7 @@ try {
   assert.equal(acting.user.role,'user');assert.equal(acting.user.preview,true);assert.equal(acting.user.acting,true);
   assert.equal(await page.getByRole('link',{name:'Customers',exact:true}).count(),0);
   assert.equal(await page.getByRole('link',{name:'API tokens',exact:true}).count(),0);
-  await page.getByRole('button',{name:'Add a project',exact:true}).click();
+  await page.getByRole('button',{name:'New project',exact:true}).click();
   const name=`Acted project ${Date.now()}`;
   await page.getByRole('textbox',{name:'Project name',exact:true}).fill(name);
   await page.getByRole('button',{name:'Create project',exact:true}).click();
@@ -65,7 +65,6 @@ try {
   await page.waitForURL(origin+`/workspaces/${selected.id}`);
   await banner.getByText('Read-only customer preview',{exact:true}).waitFor();
   assert.equal(await page.getByRole('button',{name:'New project',exact:true}).count(),0);
-  assert.equal(await page.getByRole('button',{name:'Add a project',exact:true}).count(),0);
   assert.equal((await request(`/api/console/tenant/${selected.id}/projects`,{name:'Denied readonly project'})).status,403);
   await banner.getByRole('button',{name:'Exit customer mode',exact:true}).click();
   await page.waitForURL(origin+'/customers');

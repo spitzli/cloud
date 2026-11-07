@@ -8,8 +8,13 @@ import { useApi, useSession } from "./context";
 import { Empty, Failure, Loading } from "./common";
 import { formText } from "./form";
 import * as ui from "./ui";
-import { pluginNav, useWorkspacePlugins } from "./plugins/workspace";
+import { useWorkspacePlugins } from "./plugins/workspace";
 import { Attention } from "./Notices";
+import { WorkspaceUsageSummary } from "./Usage";
+import { WorkspaceAvatar } from "./WorkspaceAvatar";
+import { FolderSimpleIcon } from "@phosphor-icons/react/dist/csr/FolderSimple";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
+import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/csr/ArrowClockwise";
 
 
 const projectsSchema = z.array(z.object({ id: z.string(), name: z.string(), status: z.string() }));
@@ -27,6 +32,16 @@ export function WorkspaceProjects({ id }: { id: string }) {
   });
   const workspace = useWorkspacePlugins(id);
   const [adding, setAdding] = useState(false);
+  const [search, setSearch] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const refresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([projects.refetch(),
+        ...[["usage", id], ["hosting", "usage", id], ["notifications", id], ...(projects.data ?? []).map((project) => ["project-plugins", session.session.id, project.id])].map((queryKey) => client.invalidateQueries({ queryKey })),
+      ]);
+    } finally { setRefreshing(false); }
+  };
   const create = useMutation({
     mutationFn: (name: string) =>
       api.write(`/api/console/tenant/${encodeURIComponent(id)}/projects`, "POST", { name }, z.object({ id: z.string() })),
@@ -40,24 +55,22 @@ export function WorkspaceProjects({ id }: { id: string }) {
   const canCreate = !(session.user.preview && !session.user.acting) && (operator || tenant?.role === "owner" || tenant?.role === "admin");
   if (projects.isPending) return <Loading>Loading projects…</Loading>;
   if (projects.error) return <Failure error={projects.error} retry={() => void projects.refetch()} />;
+  const filtered = projects.data.filter((project) => project.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()));
   return (
     <section>
       <div className={ui.pageHeading}>
         <div>
-          <Link className={ui.backLink} to="/$collection" params={{ collection: "tenants" }}>
-            <ArrowLeftIcon />
-            All workspaces
-          </Link>
-          <h1 className={ui.pageTitle}>{tenant?.name ?? "Workspace"}</h1>
-          <p className={ui.pageLead}>Everything this workspace runs. Projects group resources that belong together.</p>
+          {tenants.data && tenants.data.length > 1 ? <Link className={ui.backLink} to="/$collection" params={{ collection: "tenants" }}><ArrowLeftIcon />All workspaces</Link> : null}
+          <div className="flex items-center gap-3">
+            <WorkspaceAvatar name={tenant?.name ?? "Workspace"} icon={tenant?.icon} size="size-10 text-base" />
+            <h1 className={ui.pageTitle}>{tenant?.name ?? "Workspace"}</h1>
+          </div>
         </div>
-        {canCreate && !adding && projects.data.length > 1 ? (
-          <button className={ui.button()} onClick={() => { setAdding(true); }}>
-            New project
-          </button>
-        ) : null}
+        <div className="flex items-center gap-2">
+          <button type="button" aria-label="Refresh workspace" className={ui.button("quiet", "icon")} disabled={refreshing} onClick={() => { void refresh(); }}><ArrowClockwiseIcon aria-hidden className={refreshing ? "animate-spin" : ""} /></button>
+          {canCreate && !adding ? <button className={ui.button()} onClick={() => { setAdding(true); }}>New project</button> : null}
+        </div>
       </div>
-      <Attention customer={id} />
       {adding ? (
         <form
           className={ui.cx(ui.card, ui.cardBody, "mb-6 gap-4")}
@@ -81,47 +94,47 @@ export function WorkspaceProjects({ id }: { id: string }) {
           </div>
         </form>
       ) : null}
-      {workspace.plugins.some((p) => p.features.length || p.resources.length) ? (
-        <ul className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Products">
-          {workspace.plugins.filter((p) => p.features.length || p.resources.length).map(({ plugin, resources, view }) => {
-            const { label, Icon } = pluginNav(plugin);
-            const kinds = view.manifest.offerings.map((offering) => ({ label: offering.label, count: resources.filter((r) => r.offering === offering.id).length })).filter((k) => k.count);
-            return (
-              <li key={plugin} className={ui.cx(ui.card, ui.clickableRow, "relative grid gap-2 p-5")}>
-                <Link className={ui.cx(ui.rowLink, "flex items-center gap-2 font-semibold")} to="/workspaces/$customer/products/$plugin" params={{ customer: id, plugin }}>
-                  <Icon size={20} />
-                  {label}
-                </Link>
-                <p className="text-[13px] text-muted">
-                  {kinds.length ? kinds.map((k) => `${String(k.count)} ${k.label.toLowerCase()}`).join(", ") : "Nothing yet"}
-                </p>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-      {projects.data.length <= 1 && !adding ? (
-        <p className="text-[13px] text-muted">
-          Everything lives in one project for now.
-          {canCreate ? <> Need separate access for a team, or a staging environment? <button type="button" className="underline underline-offset-2" onClick={() => { setAdding(true); }}>Add a project</button>.</> : null}
-        </p>
-      ) : null}
-      {projects.data.length > 1 ? <h2 className={ui.cx(ui.sectionTitle, "mb-3")}>Projects</h2> : null}
-      {projects.data.length <= 1 ? null : projects.data.length === 0 ? (
-        <Empty title="No projects yet">
-          {canCreate ? "Create a project to start adding resources." : "Your provider adds projects to this workspace for you."}
-        </Empty>
-      ) : (
-        <ul className={ui.card}>
-          {projects.data.map((project) => (
-            <li key={project.id} className={ui.cx(ui.cardRow, ui.clickableRow)}>
-              <Link className={ui.cx(ui.rowLink, "font-medium")} to="/workspaces/$customer/projects/$id" params={{ customer: id, id: project.id }}>
-                {project.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="grid items-start gap-7 xl:grid-cols-[280px_minmax(0,1fr)]">
+        <section aria-labelledby="workspace-projects-title" className="min-w-0 xl:col-start-2 xl:row-start-1">
+          <label className="relative mb-6 block">
+            <MagnifyingGlassIcon size={18} aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+            <span className="sr-only">Search projects</span>
+            <input type="search" aria-label="Search projects" placeholder="Search projects…" value={search} onChange={(event) => { setSearch(event.target.value); }} className={ui.cx(ui.input, "pl-10")} />
+          </label>
+          <div className="mb-3 flex items-baseline gap-2">
+            <h2 id="workspace-projects-title" className={ui.sectionTitle}>Projects</h2>
+            <span className="text-xs text-muted">{projects.data.length}</span>
+          </div>
+          {!projects.data.length ? <Empty title="No projects yet">{canCreate ? "Create a project to start adding resources." : "Your provider adds projects to this workspace for you."}</Empty> : !filtered.length ? <Empty title="No matching projects">Try another project name.</Empty> : (
+            <ul aria-label="Projects" className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+              {filtered.map((project) => {
+                const resources = workspace.plugins.flatMap((plugin) => plugin.resources.filter((resource) => resource.project.id === project.id).map((resource) => ({ ...resource, plugin: plugin.plugin })));
+                return <li key={project.id} className="min-w-0">
+                  <article aria-labelledby={`workspace-project-${project.id}`} className={ui.cx(ui.card, ui.clickableRow, "flex h-full min-h-44 flex-col p-5")}>
+                    <div className="mb-5 flex min-w-0 items-center gap-3">
+                      <span className="grid size-9 shrink-0 place-items-center rounded-md border border-outline bg-soft"><FolderSimpleIcon size={20} aria-hidden /></span>
+                      <h3 id={`workspace-project-${project.id}`} className="min-w-0 truncate text-sm font-semibold" title={project.name}>
+                        <Link className={ui.rowLink} to="/workspaces/$customer/projects/$id" params={{ customer: id, id: project.id }}>{project.name}</Link>
+                      </h3>
+                    </div>
+                    {workspace.pending ? <p className="text-xs text-muted">Loading resources…</p> : workspace.error || workspace.incomplete ? <p className="text-xs text-muted">Resource details unavailable.</p> : resources.length ? (
+                      <ul aria-label={`Resources in ${project.name}`} className="mb-4 grid gap-1 text-[13px] text-muted">{resources.slice(0, 2).map((resource) => <li key={`${resource.plugin}:${resource.id}`} className="truncate" title={resource.name}>{resource.name}</li>)}</ul>
+                    ) : <p className="text-[13px] text-muted">No extension resources linked.</p>}
+                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-outline pt-3 text-xs text-muted">
+                      <span>{workspace.pending || workspace.error || workspace.incomplete ? "Extension resources" : `${String(resources.length)} ${resources.length === 1 ? "extension resource" : "extension resources"}`}</span>
+                      <span>Open project</span>
+                    </div>
+                  </article>
+                </li>;
+              })}
+            </ul>
+          )}
+        </section>
+        <aside aria-label="Workspace summary" className="grid min-w-0 gap-5 xl:col-start-1 xl:row-start-1">
+          <WorkspaceUsageSummary customer={id} />
+          <Attention customer={id} />
+        </aside>
+      </div>
     </section>
   );
 }
