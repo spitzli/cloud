@@ -13,6 +13,7 @@ import { pluginNavMeta } from "./registry";
 
 // Sidebar label and icon of first-party plugins (`@plugins/<id>/ui/nav.ts`); others fall back to their name.
 const icons: Record<string, ComponentType<{ size?: number }>> = { database: DatabaseIcon, envelope: EnvelopeIcon, app: AppWindowIcon, note: NoteIcon };
+export function databasePlugin(plugin: string) { return pluginNavMeta(plugin)?.icon === "database"; }
 export function pluginNav(plugin: string) {
   const nav = pluginNavMeta(plugin);
   return { label: nav?.label ?? plugin.charAt(0).toUpperCase() + plugin.slice(1), Icon: icons[nav?.icon ?? ""] ?? CubeIcon };

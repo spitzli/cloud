@@ -62,7 +62,7 @@ impl AccessService {
     pub async fn get_project_as(&self, actor: &Principal, project: &str) -> Result<Value> {
         let actor = self.current_actor(actor).await?;
         let tx = self.domain(&actor).await?;
-        let rows = json_rows(&tx, "SELECT jsonb_build_object('id',p.id,'name',p.name,'customer',p.customer_id) AS data FROM webdock_admin.projects p WHERE p.id=$1 AND p.status='active'", vec![id(project)?.into()]).await?;
+        let rows = json_rows(&tx, "SELECT jsonb_build_object('id',p.id,'name',p.name,'customer',p.customer_id,'url',p.url,'repositoryURL',p.repository_u_r_l) AS data FROM webdock_admin.projects p WHERE p.id=$1 AND p.status='active'", vec![id(project)?.into()]).await?;
         let row = rows.into_iter().next().ok_or(Error::NotFound)?;
         let customer = row["customer"].as_str().ok_or(Error::NotFound)?.to_owned();
         let profile = tenant(&tx, &actor, &customer).await?;
@@ -73,7 +73,7 @@ impl AccessService {
             profile["member_role"].clone()
         };
         Ok(
-            json!({"id": row["id"], "name": row["name"], "customer": {"id": customer, "name": profile["name"]}, "role": role}),
+            json!({"id": row["id"], "name": row["name"], "customer": {"id": customer, "name": profile["name"]}, "role": role, "url": row["url"], "repositoryURL": row["repositoryURL"]}),
         )
     }
 }

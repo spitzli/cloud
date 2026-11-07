@@ -11780,3 +11780,88 @@ msgstr ""
 #: apps/console/src/Waitlist.tsx:170
 msgid "Review requests individually. Decisions are saved immediately."
 msgstr ""
+
+#: apps/console/src/ProjectPage.tsx:71
+msgid "Project links"
+msgstr ""
+
+#: apps/console/src/ProjectPage.tsx:72
+msgid "Project URL"
+msgstr ""
+
+#: apps/console/src/ProjectPage.tsx:73
+msgid "Repository link"
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:25
+#: apps/console/src/ProjectRuntime.tsx:37
+msgid "Loading applications…"
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:27
+msgid "This project is not available in this workspace."
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:32
+msgid "Manage applications"
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:34
+msgid "Hosting is not configured for this project."
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:36
+msgid "Open application management to view this provider."
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:39
+msgid "No applications in this project yet."
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:42
+msgid "Recorded state"
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:44
+msgid "Open application management to see all applications."
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:49
+msgid "Git builds and releases"
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:51
+msgid "Loading repository sources…"
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:53
+msgid "No repository source is connected. Open Git builds and releases to connect one."
+msgstr ""
+
+#: apps/console/src/ProjectRuntime.tsx:55
+msgid "Connected repository"
+msgstr ""
+
+#: apps/console/src/WorkspaceDatabases.tsx:11
+msgid "Your database connections, organized by provider and project."
+msgstr ""
+
+#: apps/console/src/WorkspaceDatabases.tsx:12
+msgid "Loading databases…"
+msgstr ""
+
+#: apps/console/src/WorkspaceDatabases.tsx:13
+msgid "Databases are unavailable."
+msgstr ""
+
+#: apps/console/src/WorkspaceDatabases.tsx:14
+msgid "No databases yet"
+msgstr ""
+
+#: apps/console/src/WorkspaceDatabases.tsx:14
+msgid "Database connections added to your projects will appear here."
+msgstr ""
+
+#: apps/console/src/WorkspaceDatabases.tsx:22
+msgid "Open this provider to connect a database to a project."
+msgstr ""

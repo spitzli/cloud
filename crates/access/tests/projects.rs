@@ -180,7 +180,10 @@ async fn customer_projects() {
                 .len(),
             3
         );
+        sql(&owner, "UPDATE webdock_admin.projects SET url=$1,repository_u_r_l=$2 WHERE id=$3", vec!["https://admin.example.test".into(), "https://github.com/spitzli/lunares".into(), shop.clone().into()]).await;
         let detail = access.get_project_as(p("member"), &shop).await.unwrap();
+        assert_eq!(detail["url"], "https://admin.example.test");
+        assert_eq!(detail["repositoryURL"], "https://github.com/spitzli/lunares");
         assert_eq!(detail["customer"]["id"], customers[0].as_str());
         assert_eq!(detail["role"], "member");
         assert_eq!(

@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Spitzli Cloud\n"
+"PO-Revision-Date: 2026-10-31 00:00+0000\n"
+"Last-Translator: Spitzli Development\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Manage applications"
+msgstr "Anwendungen verwalten"
+
+msgid "Hosting is not configured for this project."
+msgstr "Für dieses Projekt ist kein Hosting eingerichtet."
+
+msgid "Open application management to view this provider."
+msgstr "Öffne die Anwendungsverwaltung, um diesen Anbieter anzusehen."
+
+msgid "No applications in this project yet."
+msgstr "In diesem Projekt gibt es noch keine Anwendungen."
+
+msgid "Open application management to see all applications."
+msgstr "In der Anwendungsverwaltung findest du alle Anwendungen."
+
+msgid "Git builds and releases"
+msgstr "Git-Builds und Releases"
+
+msgid "Loading repository sources…"
+msgstr "Repository-Quellen werden geladen…"
+
+msgid "No repository source is connected. Open Git builds and releases to connect one."
+msgstr "Es ist keine Repository-Quelle verbunden. Öffne Git-Builds und Releases, um eine zu verbinden."
+
+msgid "Connected repository"
+msgstr "Verbundenes Repository"
+
+msgid "Your database connections, organized by provider and project."
+msgstr "Deine Datenbankverbindungen, nach Anbieter und Projekt geordnet."
+
+msgid "Databases are unavailable."
+msgstr "Datenbanken sind nicht verfügbar."
+
+msgid "Database connections added to your projects will appear here."
+msgstr "Hier erscheinen Datenbankverbindungen, die zu deinen Projekten hinzugefügt wurden."
+
+msgid "Open this provider to connect a database to a project."
+msgstr "Öffne diesen Anbieter, um eine Datenbank mit einem Projekt zu verbinden."
+
+msgid "Project links"
+msgstr "Projektlinks"
+
+msgid "Project URL"
+msgstr "Projekt-URL"
+
+msgid "Repository link"
+msgstr "Repository-Link"
+
+msgid "This project is not available in this workspace."
+msgstr "Dieses Projekt ist in diesem Workspace nicht verfügbar."

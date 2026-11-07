@@ -1,3 +1,6 @@
+import { useI18n } from "@webdock/i18n/react";
+import { projectLink } from "./project-links";
+import { ProjectRuntime } from "./ProjectRuntime";
 import { Placement } from "./Placement";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,19 +18,19 @@ import * as ui from "./ui";
 
 /** A project as its customer sees it: plugin resources by kind, and what the viewer may add. */
 export function ProjectPage({ customer, id }: { customer: string; id: string }) {
-  const session = useSession();
+  const session = useSession(), api = useApi(), { t } = useI18n();
   const project = useProject(id);
   const views = usePluginViews(id, project.isSuccess && project.data.customer.id === customer);
   const [adding, setAdding] = useState<string>();
   if (project.isPending) return <Loading>Loading project…</Loading>;
   if (project.error) return <Failure error={project.error} retry={() => void project.refetch()} />;
   if (project.data.customer.id !== customer) return <Empty title="Project unavailable"><span>This project is not available in this workspace.</span> <Link to="/workspaces/$id" params={{ id: customer }}>Open workspace</Link></Empty>;
-  if (views.isPending) return <Loading>Loading project…</Loading>;
-  const plugins = views.error ? [] : views.data;
+  const plugins = views.isSuccess ? views.data : [];
   const operator = session.user.role === "operator" && !session.user.preview;
   const options = isReadOnlyPreview(session) ? [] : plugins.flatMap((view) => creatable(view).map((option) => ({ view, ...option, key: `${view.manifest.name}:${option.action.name}` })));
   const chosen = options.find((option) => option.key === adding);
   const hasResources = plugins.some((view) => view.resources.length > 0);
+  const publicURL = projectLink(project.data.url), repositoryURL = projectLink(project.data.repositoryURL);
   return (
     <section>
       <div className={ui.pageHeading}>
@@ -65,6 +68,11 @@ export function ProjectPage({ customer, id }: { customer: string; id: string }) 
           </details>
         ) : null}
       </div>
+      {publicURL || repositoryURL ? <section className={ui.cx(ui.card, ui.cardBody, "mb-5")} aria-label={t("Project links")}>
+        {publicURL ? <div><p className="text-xs text-muted">{t("Project URL")}</p><a className="mt-1 block text-sm underline [overflow-wrap:anywhere]" href={publicURL} target="_blank" rel="noreferrer">{publicURL}</a></div> : null}
+        {repositoryURL ? <div><p className="text-xs text-muted">{t("Repository link")}</p><a className="mt-1 block text-sm underline [overflow-wrap:anywhere]" href={repositoryURL} target="_blank" rel="noreferrer">{repositoryURL}</a></div> : null}
+      </section> : null}
+      <ProjectRuntime projectID={id} customer={customer} />
       {chosen ? (
         <ChosenCreate
           key={chosen.key}
@@ -76,7 +84,7 @@ export function ProjectPage({ customer, id }: { customer: string; id: string }) 
           onCancel={() => { setAdding(undefined); }}
         />
       ) : null}
-      {views.error ? <Failure error={views.error} retry={() => void views.refetch()} /> : hasResources ? (
+      {views.isPending ? <Loading>Loading project resources…</Loading> : views.error ? <Failure error={views.error} retry={() => void views.refetch()} /> : hasResources ? (
         <div className="grid gap-6">
           {plugins.flatMap((view) => view.manifest.offerings.map((offering) => {
             const resources = view.resources.filter((r) => r.offering === offering.id);
@@ -107,7 +115,7 @@ export function ProjectPage({ customer, id }: { customer: string; id: string }) 
             );
           }))}
         </div>
-      ) : !chosen ? (
+      ) : !chosen && !api.config.enabledFeatures.includes("hosting") ? (
         <Empty title="Nothing here yet">
           {options.length
             ? `Use ${operator ? "“Assign to this project”" : "“Add”"} to create the first resource.`

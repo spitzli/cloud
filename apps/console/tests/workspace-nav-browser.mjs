@@ -49,7 +49,10 @@ try {
 
   // 2. The product page lists everything across projects and creates into a chosen project.
   await sidebar.click();
+  await session.page.waitForURL('**/workspaces/101/databases');
   await session.page.getByRole('heading', { name: 'Databases', exact: true }).waitFor();
+  await session.page.getByRole('main').getByRole('link', { name: 'PostgreSQL', exact: true }).click();
+  await session.page.waitForURL('**/workspaces/101/products/postgres');
   for (const text of ['orders', 'analytics', 'Shop', 'Blog', 'added by your provider']) await session.page.getByText(text, { exact: true }).waitFor();
   // Every plugin explains its offerings: below the list, in the create menu and above the form.
   await session.page.getByText('Which one do I need?').click();
