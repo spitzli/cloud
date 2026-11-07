@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@webdock/i18n/react";
 import { allowanceSchema, formatResource, hostingDimensions, hostingLabels } from "@webdock/hosting-contracts";
 import { z } from "zod";
@@ -54,12 +55,13 @@ export function amount(meter: Pick<Meter, "unit">, value: number) {
   if (meter.unit === "millicores") return `${String(+(value / 1000).toFixed(value < 100 ? 3 : 2))} CPU`;
   return String(value);
 }
-function useUsage(customer: string) {
+function useUsage(customer: string, live = true) {
   const api = useApi();
   return useQuery({
     queryKey: ["usage", customer],
     queryFn: ({ signal }) => api.get(`/api/console/customers/${customer}/usage`, usageSchema, signal),
-    refetchInterval: 60_000,
+    refetchInterval: live ? 60_000 : false,
+    ...(live ? {} : { refetchOnWindowFocus: false, staleTime: 60_000, retry: false }),
   });
 }
 
@@ -179,15 +181,19 @@ function Units({ usage }: { usage: Usage }) {
     </div>
   );
 }
-function NativeHostingUsage({ customer }: { customer: string }) {
-  const { t, locale } = useI18n();
+function useHostingReservations(customer: string, live = true) {
   const call = useHostingCommand();
-  const usage = useQuery({
+  return useQuery({
     queryKey: ["hosting", "usage", customer],
     queryFn: ({ signal }) => call({ action: "usage.get", customerID: customer }, hostingUsageSchema, signal),
-    refetchInterval: 60_000,
+    refetchInterval: live ? 60_000 : false,
     retry: false,
+    ...(live ? {} : { refetchOnWindowFocus: false, staleTime: 60_000 }),
   });
+}
+function NativeHostingUsage({ customer }: { customer: string }) {
+  const { t, locale } = useI18n();
+  const usage = useHostingReservations(customer);
   return <section className={ui.card} aria-label={t("Application hosting")}>
     <div className={ui.cardBody}>
       <h2 className={ui.sectionTitle}>{t("Application hosting")}</h2>
@@ -256,6 +262,57 @@ function ExtensionUsage({ customer }: { customer: string }) {
       </section>
     </div>
   );
+}
+
+/** Compact overview; reuse the authorized usage cache without an idle polling loop. */
+export function WorkspaceUsageSummary({ customer }: { customer: string }) {
+  const api = useApi();
+  const native = api.config.enabledFeatures.includes("hosting");
+  const usage = useUsage(customer, false);
+  const data = usage.data;
+  const meters = data?.meters.filter((m) => data.limits[m.id] != null || (data.allocated[m.id] ?? 0) > 0).slice(0, 3) ?? [];
+  return (
+    <section aria-label="Plan and usage" className={ui.card}>
+      <div className={ui.cx(ui.cardBody, "gap-5")}>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className={ui.sectionTitle}>Plan and usage</h2>
+          <Link className="text-xs text-muted underline underline-offset-4" to="/workspaces/$id/usage" params={{ id: customer }}>View usage</Link>
+        </div>
+        {usage.isPending ? <p role="status" className="text-sm text-muted">Loading usage…</p> : usage.isError ? (
+          <div className="grid gap-2"><p className="text-sm text-muted">Usage is unavailable.</p><button className={ui.button()} onClick={() => { void usage.refetch(); }}>Retry usage</button></div>
+        ) : data ? <>
+          <p className="text-lg font-semibold">{data.plan?.name ?? "No plan assigned"}</p>
+          <p className={ui.hint}>{native ? "External provider usage is managed in each project." : "Project and extension reservations. External providers bill separately."}</p>
+          {native ? null : meters.length ? <ul className="grid gap-4">{meters.map((meter) => {
+            const used = data.allocated[meter.id] ?? 0;
+            const limit = data.limits[meter.id];
+            return <li key={meter.id} className="grid gap-2">
+              <div className="flex flex-wrap justify-between gap-2 text-[13px]"><span>{meter.label}</span><span className="text-muted">{amount(meter, used)}{limit == null ? " · no plan limit" : ` of ${amount(meter, limit)}`}</span></div>
+              {limit == null ? null : <Bar used={used} limit={limit} />}
+            </li>;
+          })}</ul> : <p className="text-sm text-muted">No reservations reported.</p>}
+        </> : null}
+        {native ? <HostingReservationSummary customer={customer} /> : null}
+      </div>
+    </section>
+  );
+}
+function HostingReservationSummary({ customer }: { customer: string }) {
+  const { t, locale } = useI18n();
+  const usage = useHostingReservations(customer, false);
+  if (usage.isPending) return <p role="status" className="text-sm text-muted">Loading hosting reservations…</p>;
+  if (usage.isError) return <div className="grid gap-2"><p className="text-sm text-muted">Hosting usage is unavailable.</p><button className={ui.button()} onClick={() => { void usage.refetch(); }}>Retry hosting usage</button></div>;
+  return <div className="grid gap-4" aria-label="Hosting reservations">
+    <p className={ui.hint}>Application resources, allocated and pending.</p>
+    {(["apps", "cpuMillicores", "memoryBytes"] as const).map((dimension) => {
+      const used = usage.data.allocated[dimension] + usage.data.reserved[dimension];
+      const limit = usage.data.effective[dimension];
+      return <div key={dimension} className="grid gap-2">
+        <div className="flex flex-wrap justify-between gap-2 text-[13px]"><span>{t(hostingLabels[dimension])}</span><span className="text-muted">{formatResource(dimension, used, locale)}{limit == null ? " · no customer limit" : ` of ${formatResource(dimension, limit, locale)}`}</span></div>
+        {limit == null ? null : <Bar used={used} limit={limit} />}
+      </div>;
+    })}
+  </div>;
 }
 
 /** The usage page of one workspace. */

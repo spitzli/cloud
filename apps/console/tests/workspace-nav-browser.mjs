@@ -74,13 +74,13 @@ try {
   await session.context.close();
 
   // 4. A workspace holds the Default project the server created with it; with one project the
-  // project level stays out of sight and the console creates nothing.
+  // project remains visible and the console creates nothing.
   const single = [{ id: '209', name: 'Default', status: 'active' }];
   session = await open(browser, 'owner', single);
   await session.page.goto(previewOrigin + '/workspaces/101');
-  await session.page.getByText('Everything lives in one project for now.').waitFor();
+  await session.page.getByRole('article', { name: 'Default' }).waitFor();
   assert.deepEqual(session.created, [], 'the console creates no project');
-  await session.page.getByRole('button', { name: 'Add a project' }).waitFor();
+  await session.page.getByRole('button', { name: 'New project' }).waitFor();
   await session.page.goto(previewOrigin + '/workspaces/101/products/postgres');
   await session.page.getByRole('heading', { name: 'Databases', exact: true }).waitFor();
   assert.equal(await session.page.getByRole('columnheader', { name: 'Project' }).count(), 0);

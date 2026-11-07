@@ -61,5 +61,5 @@ export function useWorkspacePlugins(customer: string) {
       merged.set(view.manifest.name, entry);
     }
   });
-  return { projects, plugins: [...merged.values()].sort((a, b) => pluginNav(a.plugin).label.localeCompare(pluginNav(b.plugin).label)), pending, error };
+  return { projects, plugins: [...merged.values()].sort((a, b) => pluginNav(a.plugin).label.localeCompare(pluginNav(b.plugin).label)), pending, error, incomplete: views.some((v) => v.isError) };
 }

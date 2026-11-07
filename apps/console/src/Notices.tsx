@@ -22,23 +22,28 @@ const what = {
   certificate: "has no certificate yet. Check that its domains point at the platform.",
 } as const;
 
-/** What in this workspace needs attention right now, from Core's notices. Nothing when all is well. */
+/** What in this workspace needs attention right now, from Core's notices. Show explicit loading, failure and empty states. */
 export function Attention({ customer }: { customer: string }) {
   const api = useApi();
   const notices = useQuery({
     queryKey: ["notifications", customer],
     queryFn: ({ signal }) => api.get(`/api/console/customers/${customer}/notifications`, z.array(noticeSchema), signal),
-    refetchInterval: 60_000,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    retry: false,
   });
   const open = notices.data?.filter((n) => !n.resolvedAt) ?? [];
-  if (!open.length) return null;
   return (
-    <section aria-label="Needs attention" className={ui.cx(ui.card, "mb-6 border-warning")}>
+    <section aria-label="Needs attention" className={ui.cx(ui.card, open.length > 0 && "border-warning")}>
+      <div className={ui.cardBody}>
+        <h2 className={ui.sectionTitle}>Needs attention</h2>
+        {notices.isPending ? <p role="status" className="text-sm text-muted">Checking alerts…</p> : notices.isError ? <div className="grid gap-2"><p className="text-sm text-muted">Alerts are unavailable.</p><button className={ui.button()} onClick={() => { void notices.refetch(); }}>Retry alerts</button></div> : !open.length ? <p className="text-sm text-muted">No open alerts.</p> : null}
+      </div>
       {open.map((n) => (
         <div key={n.id} className={ui.cx(ui.cardRow, "first:border-t-0")}>
           <div className="flex min-w-0 items-start gap-3">
             <WarningCircleIcon size={20} className="mt-0.5 shrink-0 text-warning" />
-            <p className="text-sm">
+            <p className="min-w-0 text-sm [overflow-wrap:anywhere]">
               {n.resource && n.project ? (
                 <Link
                   to="/workspaces/$customer/projects/$id/resources/$plugin/$resource"
