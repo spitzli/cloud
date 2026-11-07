@@ -270,7 +270,7 @@ export function WorkspaceUsageSummary({ customer }: { customer: string }) {
   const native = api.config.enabledFeatures.includes("hosting");
   const usage = useUsage(customer, false);
   const data = usage.data;
-  const meters = data?.meters.filter((m) => data.limits[m.id] != null || (data.allocated[m.id] ?? 0) > 0).slice(0, 3) ?? [];
+  const meters = data?.meters.filter((m) => data.limits[m.id] != null || (data.allocated[m.id] ?? 0) > 0) ?? [];
   return (
     <section aria-label="Plan and usage" className={ui.card}>
       <div className={ui.cx(ui.cardBody, "gap-5")}>
@@ -282,8 +282,8 @@ export function WorkspaceUsageSummary({ customer }: { customer: string }) {
           <div className="grid gap-2"><p className="text-sm text-muted">Usage is unavailable.</p><button className={ui.button()} onClick={() => { void usage.refetch(); }}>Retry usage</button></div>
         ) : data ? <>
           <p className="text-lg font-semibold">{data.plan?.name ?? "No plan assigned"}</p>
-          <p className={ui.hint}>{native ? "External provider usage is managed in each project." : "Project and extension reservations. External providers bill separately."}</p>
-          {native ? null : meters.length ? <ul className="grid gap-4">{meters.map((meter) => {
+          <p className={ui.hint}>Project and extension reservations. External providers bill separately.</p>
+          {meters.length ? <ul className="grid gap-4" aria-label="Project and extension reservations">{meters.map((meter) => {
             const used = data.allocated[meter.id] ?? 0;
             const limit = data.limits[meter.id];
             return <li key={meter.id} className="grid gap-2">

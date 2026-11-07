@@ -119,9 +119,9 @@ export function WorkspaceProjects({ id }: { id: string }) {
                     </div>
                     {workspace.pending ? <p className="text-xs text-muted">Loading resources…</p> : workspace.error || workspace.incomplete ? <p className="text-xs text-muted">Resource details unavailable.</p> : resources.length ? (
                       <ul aria-label={`Resources in ${project.name}`} className="mb-4 grid gap-1 text-[13px] text-muted">{resources.slice(0, 2).map((resource) => <li key={`${resource.plugin}:${resource.id}`} className="truncate" title={resource.name}>{resource.name}</li>)}</ul>
-                    ) : <p className="text-[13px] text-muted">No resources yet</p>}
+                    ) : <p className="text-[13px] text-muted">No extension resources linked.</p>}
                     <div className="mt-auto flex items-center justify-between gap-3 border-t border-outline pt-3 text-xs text-muted">
-                      <span>{workspace.pending || workspace.error || workspace.incomplete ? "Project resources" : `${String(resources.length)} ${resources.length === 1 ? "resource" : "resources"}`}</span>
+                      <span>{workspace.pending || workspace.error || workspace.incomplete ? "Extension resources" : `${String(resources.length)} ${resources.length === 1 ? "extension resource" : "extension resources"}`}</span>
                       <span>Open project</span>
                     </div>
                   </article>

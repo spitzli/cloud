@@ -5,7 +5,7 @@ import { chromium } from 'playwright';
 import { server, previewOrigin } from './preview-server.ts';
 import neon from '@plugins/neon/manifest.json' with { type: 'json' };
 const projects = [{ id: '201', name: 'Shop', status: 'active' }, { id: '202', name: 'Admin Panel', status: 'active' }];
-async function open(browser, { role = 'owner', count = 2, unavailable = false, preview = false, acting = false, pluginsUnavailable = false, hosting = false, nativeUnavailable = false, alert = false } = {}) {
+async function open(browser, { role = 'owner', count = 2, unavailable = false, preview = false, acting = false, pluginsUnavailable = false, hosting = false, nativeUnavailable = false, alert = false, linkedResources = true } = {}) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 960 } });
   const page = await context.newPage(); const errors = []; const calls = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -15,7 +15,7 @@ async function open(browser, { role = 'owner', count = 2, unavailable = false, p
     if (url.pathname === '/api/console/tenants') return send([{ id: '101', name: 'Acme', status: 'active', role }]);
     if (url.pathname === '/api/console/tenant/101/projects') return send(projects.slice(0, count));
     if (url.pathname === '/api/console/plugins' && pluginsUnavailable) return route.fulfill({ status: 503, json: { error: { message: 'Plugin discovery unavailable' } } });
-    if (url.pathname === '/api/console/plugins') return send([{ state: 'enabled', runtime: 'ready', manifest: neon, generation: 1, manifestSha256: 'a'.repeat(64), launchLinks: [], features: [], resources: [{ id: 'db-' + url.searchParams.get('projectID'), offering: neon.offerings[0].id, name: 'project-db', createdVia: 'operator' }] }]);
+    if (url.pathname === '/api/console/plugins') return send([{ state: 'enabled', runtime: 'ready', manifest: neon, generation: 1, manifestSha256: 'a'.repeat(64), launchLinks: [], features: [], resources: linkedResources ? [{ id: 'db-' + url.searchParams.get('projectID'), offering: neon.offerings[0].id, name: 'project-db', createdVia: 'operator' }] : [] }]);
     if (url.pathname === '/api/console/hosting') return nativeUnavailable ? route.fulfill({ status: 503, json: { error: { message: 'Hosting unavailable' } } }) : send({ effective: { apps: 4, cpuMillicores: 800, memoryBytes: 512000000, volumeBytes: null, ephemeralBytes: 1000000000, replicasPerApp: 3, concurrentDeployments: 2 }, allocated: { apps: 2, cpuMillicores: 300, memoryBytes: 256000000, volumeBytes: 0, ephemeralBytes: 64000000, replicasPerApp: 2, concurrentDeployments: 0 }, reserved: { apps: 1, cpuMillicores: 200, memoryBytes: 64000000, volumeBytes: 0, ephemeralBytes: 32000000, replicasPerApp: 3, concurrentDeployments: 1 } });
     if (url.pathname.endsWith('/usage')) return unavailable ? route.fulfill({ status: 503, json: { error: { message: 'Usage unavailable' } } }) : send({ plan: { id: '301', name: 'Starter', description: '', assigned: true }, overrides: {}, limits: { projects: 3, cpu: 500, memory: 512 }, allocated: { projects: 2, cpu: 250, memory: 256 }, meters: [{ id: 'projects', label: 'Projects', unit: 'count' }, { id: 'cpu', label: 'CPU', unit: 'millicores' }, { id: 'memory', label: 'Memory', unit: 'MiB' }], units: [], history: [] });
     if (url.pathname.endsWith('/notifications')) return unavailable ? route.fulfill({ status: 503, json: { error: { message: 'Alerts unavailable' } } }) : send(alert ? [{ id: 'notice-1', kind: 'crashing', plugin: 'hosting', unit: 'app-qa', project: projects[0], resource: { id: 'app-qa', name: 'service-' + 'x'.repeat(180) }, openedAt: '2026-11-07T10:00:00Z', resolvedAt: null }] : []);
@@ -25,7 +25,7 @@ async function open(browser, { role = 'owner', count = 2, unavailable = false, p
   await page.route(url => url.pathname === '/v1/auth/session', route => route.fulfill({ json: { data: { user: { id: '2', name: 'Ada', role: 'user', preview, acting, email: 'ada@example.test', emailVerified: true }, session: { id: 'home-qa', userId: '2', expiresAt: '2027-01-01T00:00:00Z' } } } }));
   await page.goto(previewOrigin + '/workspaces/101');
   await page.getByRole('heading', { name: 'Acme', exact: true }).waitFor();
-  return { context, page, errors, calls };
+  return { context, page, errors, calls, failReads: () => { unavailable = true; } };
 }
 const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {}) });
 try {
@@ -72,6 +72,16 @@ try {
   assert.equal(await s.page.getByRole('button', { name: 'New project', exact: true }).count(), 0, 'read-only previews cannot create projects');
   assert.equal(await s.page.getByText('No resources yet', { exact: true }).count(), 0, 'unknown discovery does not imply zero resources');
   assert.deepEqual(s.errors, []); await s.context.close();
+  s = await open(browser, { hosting: true });
+  const mixed = s.page.getByRole('region', { name: 'Plan and usage', exact: true });
+  await mixed.getByText('Starter', { exact: true }).waitFor();
+  await s.page.getByLabel('Hosting reservations', { exact: true }).getByText('3 of 4', { exact: true }).waitFor();
+  assert.equal(await mixed.getByText('2 of 3', { exact: true }).count(), 1, 'hosting must not hide the enforced project/extension limit');
+  assert.deepEqual(s.errors, []); await s.context.close();
+  s = await open(browser, { hosting: true, linkedResources: false });
+  await s.page.getByRole('article', { name: 'Shop' }).getByText('No extension resources linked.', { exact: true }).waitFor();
+  assert.equal(await s.page.getByText('No resources yet', { exact: true }).count(), 0, 'native-only projects are not empty projects');
+  assert.deepEqual(s.errors, []); await s.context.close();
   s = await open(browser, { hosting: true, unavailable: true });
   await s.page.getByText('Usage is unavailable.', { exact: true }).waitFor();
   await s.page.getByLabel('Hosting reservations', { exact: true }).getByText('3 of 4', { exact: true }).waitFor();
@@ -86,6 +96,10 @@ try {
   assert.match(await notice.getByRole('link').getAttribute('href'), /\/projects\/201\/resources\/hosting\/app-qa$/);
   await s.page.setViewportSize({ width: 320, height: 960 });
   assert(await s.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'long alert names fit narrow screens');
+  s.failReads();
+  await s.page.getByRole('button', { name: 'Refresh workspace' }).click();
+  await s.page.getByText('Alerts are unavailable.', { exact: true }).waitFor();
+  assert.equal(await notice.getByRole('link').count(), 0, 'failed revalidation retires cached alert links');
   assert.deepEqual(s.errors, []); await s.context.close();
   console.log('Workspace home: project cards/search, no provider catalog, real usage/alerts, zero/one projects, member access, failures and responsive themes PASS. Test-only HTTP fixtures.');
 } finally { await browser.close(); await server.close(); }

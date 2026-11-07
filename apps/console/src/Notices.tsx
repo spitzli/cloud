@@ -32,7 +32,7 @@ export function Attention({ customer }: { customer: string }) {
     refetchOnWindowFocus: false,
     retry: false,
   });
-  const open = notices.data?.filter((n) => !n.resolvedAt) ?? [];
+  const open = notices.isSuccess ? notices.data.filter((n) => !n.resolvedAt) : [];
   return (
     <section aria-label="Needs attention" className={ui.cx(ui.card, open.length > 0 && "border-warning")}>
       <div className={ui.cardBody}>
