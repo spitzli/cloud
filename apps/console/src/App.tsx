@@ -402,7 +402,7 @@ const projectRoute = createRoute({
   path: "/workspaces/$customer/projects/$id",
   component: () => {
     const { customer, id } = projectRoute.useParams();
-    return <ProjectPage key={id} customer={customer} id={id} />;
+    return <ProjectPage key={`${customer}:${id}`} customer={customer} id={id} />;
   },
 });
 const productRoute = createRoute({
@@ -420,7 +420,7 @@ const resourceRoute = createRoute({
     const { customer, id, plugin, resource } = resourceRoute.useParams();
     return (
       <Suspense fallback={<Loading>Loading…</Loading>}>
-        <ResourcePage key={`${plugin}:${resource}`} customer={customer} projectID={id} plugin={plugin} resource={resource} />
+        <ResourcePage key={`${customer}:${id}:${plugin}:${resource}`} customer={customer} projectID={id} plugin={plugin} resource={resource} />
       </Suspense>
     );
   },

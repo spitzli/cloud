@@ -60,11 +60,12 @@ export const pluginViewSchema = z.object({
 export type PluginView = z.infer<typeof pluginViewSchema>;
 export type PluginAction = z.infer<typeof actionSchema>;
 
-export function usePluginViews(projectID: string) {
+export function usePluginViews(projectID: string, enabled = true) {
   const api = useApi();
   const session = useSession();
   return useQuery({
     queryKey: ["project-plugins", session.session.id, projectID],
+    enabled,
     queryFn: ({ signal }) =>
       api.get(`/api/console/plugins?projectID=${encodeURIComponent(projectID)}`, z.array(pluginViewSchema).max(64), signal),
   });

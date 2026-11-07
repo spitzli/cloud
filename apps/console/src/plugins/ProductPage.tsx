@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { PlusIcon } from "@phosphor-icons/react/dist/csr/Plus";
 import { useSession } from "../context";
+import { isReadOnlyPreview } from "../api";
 import { Empty, Failure, Loading } from "../common";
 import { ChosenCreate } from "../ProjectPage";
 import { creatable } from "./views";
@@ -18,13 +19,19 @@ export function ProductPage({ customer, plugin }: { customer: string; plugin: st
   const [project, setProject] = useState<string>();
   const { label, Icon } = pluginNav(plugin);
   if (workspace.pending) return <Loading>Loading {label.toLowerCase()}…</Loading>;
-  if (workspace.error) return <Failure error={workspace.error} retry={() => void workspace.projects.refetch()} />;
+  if (workspace.error || workspace.incomplete) return <Failure error={workspace.error ?? new Error("Resources are unavailable.")} retry={() => void workspace.refetch()} />;
   const projects = workspace.projects.data ?? [];
   const entry = workspace.plugins.find((p) => p.plugin === plugin);
   const operator = session.user.role === "operator" && !session.user.preview;
-  const options = entry ? creatable({ ...entry.view, features: entry.features }) : [];
+  const options = entry && !isReadOnlyPreview(session) ? [...new Map(entry.sources.flatMap(({ view }) => creatable(view).map((option) => [option.action.name, option] as const))).values()] : [];
   const chosen = options.find((o) => o.action.name === adding);
-  const target = project ?? projects[0]?.id;
+  const eligible = entry?.sources.filter(({ view }) => creatable(view).some((option) => option.action.name === adding)) ?? [];
+  const target = eligible.find((source) => source.project.id === project);
+  const targetOption = target && creatable(target.view).find((option) => option.action.name === adding);
+  const choose = (action: string) => {
+    setProject(entry?.sources.find(({ view }) => creatable(view).some((option) => option.action.name === action))?.project.id);
+    setAdding(action);
+  };
   const offerings = entry?.view.manifest.offerings ?? [];
   return (
     <section>
@@ -47,7 +54,7 @@ export function ProductPage({ customer, plugin }: { customer: string; plugin: st
                     className="w-full rounded-md px-3 py-2 text-left text-sm hover:bg-subtle"
                     onClick={(event) => {
                       event.currentTarget.closest("details")?.removeAttribute("open");
-                      setAdding(option.action.name);
+                      choose(option.action.name);
                     }}
                   >
                     <span className="block font-medium">{option.offering.label}</span>
@@ -59,26 +66,27 @@ export function ProductPage({ customer, plugin }: { customer: string; plugin: st
           </details>
         ) : null}
       </div>
-      {chosen && entry && target ? (
+      {chosen && entry ? (
         <div className="mb-6 grid gap-3">
           {chosen.offering.description ? <p className={ui.notice}>{chosen.offering.description}</p> : null}
-          {projects.length > 1 ? (
+          {eligible.length > 1 || !target ? (
             <label className={ui.cx(ui.field, "max-w-sm")}>
               Project
-              <select className={ui.input} value={target} onChange={(event) => { setProject(event.target.value); }}>
-                {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+              <select className={ui.input} value={target?.project.id ?? ""} onChange={(event) => { setProject(event.target.value); }}>
+                {!target ? <option value="" disabled>Choose a project</option> : null}
+                {eligible.map(({ project: p }) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </label>
-          ) : null}
-          <ChosenCreate
-            key={`${chosen.action.name}:${target}`}
-            view={{ ...entry.view, features: entry.features, resources: entry.resources.filter((r) => r.project.id === target) }}
-            action={chosen.action}
-            title={chosen.offering.label}
+          ) : <div role="group" aria-label="Project destination" className={ui.field}><span>Project</span><span className="font-normal">{target.project.name}</span></div>}
+          {target && targetOption ? <ChosenCreate
+            key={`${chosen.action.name}:${target.project.id}`}
+            view={target.view}
+            action={targetOption.action}
+            title={targetOption.offering.label}
             customer={customer}
-            projectID={target}
-            onCancel={() => { setAdding(undefined); }}
-          />
+            projectID={target.project.id}
+            onCancel={() => { setAdding(undefined); setProject(undefined); }}
+          /> : <p role="status" className={ui.notice}>Choose an available project to continue.</p>}
         </div>
       ) : null}
       {!projects.length ? (
@@ -91,7 +99,7 @@ export function ProductPage({ customer, plugin }: { customer: string; plugin: st
             </p>
             <Offerings offerings={offerings} create={(id) => {
               const option = options.find((o) => o.offering.id === id);
-              return option ? () => { setAdding(option.action.name); } : undefined;
+              return option ? () => { choose(option.action.name); } : undefined;
             }} />
           </div>
         ) : null
@@ -107,7 +115,7 @@ export function ProductPage({ customer, plugin }: { customer: string; plugin: st
             </thead>
             <tbody>
               {entry.resources.map((resource) => (
-                <tr key={resource.id} className={ui.tr}>
+                <tr key={`${resource.project.id}:${resource.id}`} className={ui.tr}>
                   <td className={ui.td}>
                     <Link
                       className={ui.cx(ui.rowLink, "font-medium")}
