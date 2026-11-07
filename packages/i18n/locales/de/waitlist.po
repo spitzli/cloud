@@ -90,3 +90,72 @@ msgstr "zur Verarbeitung meiner Zugangsanfrage zu."
 
 msgid "privacy policy"
 msgstr "Datenschutzerklärung"
+
+msgid "Review access requests and decide who can start onboarding."
+msgstr "Prüfe Zugangsanfragen und entscheide, wer mit der Einrichtung beginnen darf."
+
+msgid "Refresh requests"
+msgstr "Anfragen aktualisieren"
+
+msgid "Refreshing…"
+msgstr "Wird aktualisiert…"
+
+msgid "Filter by status"
+msgstr "Nach Status filtern"
+
+msgid "All requests"
+msgstr "Alle Anfragen"
+
+msgid "Search this page"
+msgstr "Diese Seite durchsuchen"
+
+msgid "Search by name or email"
+msgstr "Nach Name oder E-Mail suchen"
+
+msgid "Counts and search apply to this page. Use older requests to review more."
+msgstr "Zähler und Suche gelten für diese Seite. Über „Ältere Anfragen“ findest du weitere."
+
+msgid "No matching requests"
+msgstr "Keine passenden Anfragen"
+
+msgid "Try another name, email or status on this page."
+msgstr "Versuche einen anderen Namen, eine andere E-Mail oder einen anderen Status auf dieser Seite."
+
+msgid "Clear filters"
+msgstr "Filter zurücksetzen"
+
+msgid "Access requests"
+msgstr "Zugangsanfragen"
+
+msgid "Confirm rejection"
+msgstr "Ablehnung bestätigen"
+
+msgid "Reject this access request?"
+msgstr "Diese Zugangsanfrage ablehnen?"
+
+msgid "This contact will not be allowed to start onboarding."
+msgstr "Dieser Kontakt darf nicht mit der Einrichtung beginnen."
+
+msgid "Keep pending"
+msgstr "Offen lassen"
+
+msgid "Awaiting your review"
+msgstr "Wartet auf deine Prüfung"
+
+msgid "How access works"
+msgstr "So funktioniert der Zugang"
+
+msgid "Approve onboarding"
+msgstr "Einrichtung freigeben"
+
+msgid "Approval lets this contact start onboarding. It does not grant access to an existing workspace."
+msgstr "Die Freigabe erlaubt diesem Kontakt, mit der Einrichtung zu beginnen. Sie gewährt keinen Zugriff auf bestehende Workspaces."
+
+msgid "Assign workspace access"
+msgstr "Workspace-Zugriff vergeben"
+
+msgid "Invite approved contacts from the workspace member settings when they need to join an existing team."
+msgstr "Lade freigegebene Kontakte über die Mitgliederverwaltung des Workspaces ein, wenn sie einem bestehenden Team beitreten sollen."
+
+msgid "Review requests individually. Decisions are saved immediately."
+msgstr "Prüfe jede Anfrage einzeln. Entscheidungen werden sofort gespeichert."
