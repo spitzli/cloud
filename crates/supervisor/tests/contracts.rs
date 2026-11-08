@@ -7,6 +7,7 @@ use webdock_core::id::RecordId;
 use webdock_supervisor::*;
 fn spec() -> RuntimeSpec {
     RuntimeSpec {
+        autoscaling: None,
         version: 1,
         installation: "test-install".into(),
         project_id: RecordId::parse("123").unwrap(),
@@ -97,6 +98,7 @@ fn journal_directory() -> tempfile::TempDir {
 }
 fn observed() -> ObservedState {
     ObservedState {
+        autoscaling: None,
         resource_id: "456".into(),
         revision: 1,
         phase: Phase::Running,

@@ -239,6 +239,7 @@ export function HostingProject({ projectID }: { projectID: string }) {
               projectID={projectID}
               subscriptionRevision={apps.data.subscriptionRevision}
               publicSitePolicy={project.data.publicSitePolicy}
+              automaticScalingAvailable={project.data.automaticScalingAvailable ?? false}
             />
           ) : null}
           <HostingSearch

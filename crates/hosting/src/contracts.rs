@@ -44,10 +44,9 @@ pub fn command_document() -> Value {
             {
                 let schema: Value =
                     serde_json::from_str(include_str!("app-spec.schema.json")).unwrap();
-                properties.insert(
-                    "healthHost".into(),
-                    schema["properties"]["healthHost"].clone(),
-                );
+                for key in ["healthHost", "autoscaling"] {
+                    properties.insert(key.into(), schema["properties"][key].clone());
+                }
             }
             if map.get("enum") == Some(&json!(["k3s", "vercel"])) {
                 map.insert("enum".into(), json!(["k3s", "vercel", "docker"]));
@@ -178,6 +177,8 @@ pub fn parse_command(mut value: Value) -> Result<Value> {
         }
         if action != "apps.prepare" {
             resolve_spec(spec.clone())?;
+        } else if spec.get("autoscaling").is_some() {
+            validate_autoscaling(spec)?;
         } else if amount(&spec["replicas"])? > 1
             && spec
                 .get("volumeBytes")
@@ -204,6 +205,7 @@ pub fn resolve_spec(mut value: Value) -> Result<Value> {
         return Err(error(400, "Invalid application specification."));
     }
     validate_health_host(&value)?;
+    validate_autoscaling(&value)?;
     if let Some(volume) = value.get("volumeBytes") {
         let volume = amount(volume)?;
         if (volume > 0 && volume < 67108864) || (volume > 0 && amount(&value["replicas"])? > 1) {
@@ -236,11 +238,81 @@ fn validate_health_host(value: &Value) -> Result<()> {
     }
     Ok(())
 }
+pub fn admit_autoscaling(enabled: bool, runtime: &str, capability: &Value) -> Result<()> {
+    if !enabled {
+        return Err(error(503, "Automatic scaling is not enabled."));
+    }
+    if runtime != "kubernetes" || capability != &json!(1) {
+        return Err(error(
+            409,
+            "Automatic scaling requires a qualified Kubernetes agent and metrics.",
+        ));
+    }
+    Ok(())
+}
+
+fn validate_autoscaling(spec: &Value) -> Result<()> {
+    if let Some(policy) = spec.get("autoscaling") {
+        let min = amount(&policy["minReplicas"])?;
+        let max = amount(&policy["maxReplicas"])?;
+        let cpu = amount(&policy["targetCPUUtilizationPercent"])?;
+        let replicas = amount(&spec["replicas"])?;
+        if !policy.is_object()
+            || policy.as_object().unwrap().len() != 3
+            || min == 0
+            || min > max
+            || max > 20
+            || !(10..=90).contains(&cpu)
+            || (replicas != 0 && !(min..=max).contains(&replicas))
+            || spec
+                .get("volumeBytes")
+                .map(amount)
+                .transpose()?
+                .unwrap_or(0)
+                > 0
+        {
+            return Err(error(
+                400,
+                "Invalid automatic scaling policy or local persistent storage.",
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// Lifecycle intent stays separate from the dynamic Kubernetes replica count.
+pub fn apply_scaling_action(spec: &mut Value, action: &str, requested: &Value) -> Result<()> {
+    match action {
+        "apps.scale" => {
+            if spec.get("autoscaling").is_some() {
+                return Err(error(
+                    409,
+                    "Switch to fixed instances before scaling manually.",
+                ));
+            }
+            spec["replicas"] = requested.clone();
+        }
+        "apps.stop" => spec["replicas"] = json!(0),
+        "apps.start" => {
+            spec["replicas"] = json!(match spec.get("autoscaling") {
+                Some(policy) => amount(&policy["minReplicas"])?,
+                None => amount(&spec["replicas"])?.max(1),
+            });
+        }
+        _ => {}
+    }
+    Ok(())
+}
+
 pub fn app_demand(spec: &Value, deleted: bool) -> Result<Value> {
-    let replicas = if deleted {
+    let intended = amount(&spec["replicas"])?;
+    let replicas = if deleted || intended == 0 {
         0
+    } else if let Some(policy) = spec.get("autoscaling") {
+        validate_autoscaling(spec)?;
+        amount(&policy["maxReplicas"])?
     } else {
-        amount(&spec["replicas"])?
+        intended
     };
     Ok(
         json!({"apps":if deleted{0}else{1},"cpuMillicores":amount(&spec["cpuMillicores"])?*replicas,"memoryBytes":amount(&spec["memoryBytes"])?*replicas,"volumeBytes":spec.get("volumeBytes").map(amount).transpose()?.unwrap_or(0),"ephemeralBytes":amount(&spec["ephemeralBytes"])?*replicas,"replicasPerApp":replicas,"concurrentDeployments":1}),
@@ -305,6 +377,8 @@ pub(crate) fn observation(value: &Value) -> Result<()> {
         for key in ["volumeQuotas", "replicas"] {
             schema["properties"]["capabilities"]["properties"][key] = json!({"type":"boolean"});
         }
+        schema["properties"]["capabilities"]["properties"]["autoscalingVersion"] =
+            json!({"type":"integer","const":1});
         jsonschema::options()
             .should_validate_formats(true)
             .build(&schema)

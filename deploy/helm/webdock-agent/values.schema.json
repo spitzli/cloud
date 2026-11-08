@@ -50,6 +50,9 @@
     },
     "egress": {
       "type": "array"
+    },
+    "autoscalingEnabled": {
+      "type": "boolean"
     }
   },
   "if": {

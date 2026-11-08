@@ -26,6 +26,25 @@ Use the application's available settings for its image, resources, healthcheck a
 
 Durable files belong on approved [persistent storage](/guides/storage), mounted at `/data` in the fixed-volume model. Process restarts retain that volume; the container's temporary filesystem is not durable storage.
 
+### Instance scaling
+
+In application settings, **Fixed instances** selects a constant count.
+**Automatic scaling** appears on qualified clusters where your provider has
+enabled it. Choose minimum and maximum instances and a target CPU utilization;
+the initial target is 70% of each instance's configured CPU. Scaling down has a
+five-minute stabilization period.
+
+Your plan must have capacity for the selected maximum. This reserved maximum is
+different from the number of instances currently running. Use **Refresh live
+instances** on the application overview for a timestamped snapshot of running,
+ready and desired counts. Missing CPU metrics is shown explicitly.
+
+Stop preserves your scaling settings while keeping the application stopped.
+To choose a fixed count again, switch back to **Fixed instances**. Apps using
+local persistent storage stay on a single fixed instance. Shared state and
+background jobs must support multiple concurrent processes before you enable
+automatic scaling.
+
 Default public project addresses use `spitzli.site` where address allocation is enabled. Use the exact HTTPS address displayed in Console. A custom domain requires its own configuration and verification.
 
 ## Builds and publication

@@ -58,6 +58,12 @@ impl HostingService {
             .unwrap_or(0);
         let legacy = cluster["runtime_kind"] == "kubernetes";
         let runtime = RuntimeSpec {
+            autoscaling: spec
+                .get("autoscaling")
+                .cloned()
+                .map(serde_json::from_value)
+                .transpose()
+                .map_err(|_| error(503, "Invalid persisted scaling policy."))?,
             version: 1,
             installation: field(&cluster, "runtime_installation")?.into(),
             project_id: webdock_core::id::RecordId::parse(field(&op, "project_id")?)

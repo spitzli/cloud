@@ -37,7 +37,9 @@ rules:
   - {apiGroups: [apps], resources: [deployments/scale, statefulsets/scale], verbs: [get, patch]}
   - {apiGroups: [batch], resources: [jobs], verbs: [get, list]}
   - {apiGroups: [batch], resources: [cronjobs], verbs: [get, list, patch]}
-  - {apiGroups: [autoscaling], resources: [horizontalpodautoscalers], verbs: [get, list]}
+  - apiGroups: [autoscaling]
+    resources: [horizontalpodautoscalers]
+    verbs: {{ ternary (list "get" "list" "create" "update" "delete") (list "get" "list") $.Values.autoscalingEnabled | toJson }}
   - {apiGroups: [networking.k8s.io], resources: [ingresses], verbs: [get, list]}
   - {apiGroups: [metrics.k8s.io], resources: [pods], verbs: [get, list]}
 ---
@@ -87,6 +89,9 @@ spec:
       containers:
         - name: agent
           image: {{ .Values.image | quote }}
+          env:
+            - name: WEBDOCK_AGENT_AUTOSCALING_ENABLED
+              value: {{ .Values.autoscalingEnabled | quote }}
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false

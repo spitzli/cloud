@@ -66,7 +66,8 @@ async fn mutation_completion_rechecks_deadline_after_application_lock_wait() {
         let deadline = command.lease_until;
         let completion = tokio::spawn(async move {
             let observed = ObservedState {
-                resource_id: command.spec.resource_id.to_string(),
+                autoscaling: None,
+        resource_id: command.spec.resource_id.to_string(),
                 revision: command.spec.revision,
                 phase: Phase::Running,
                 ready: true,
@@ -221,6 +222,7 @@ fn deadline_schema(f: &Fixture) -> String {
 }
 fn ready_observation(command: &webdock_supervisor::Command) -> ObservedState {
     ObservedState {
+        autoscaling: None,
         resource_id: command.spec.resource_id.to_string(),
         revision: command.spec.revision,
         phase: Phase::Running,

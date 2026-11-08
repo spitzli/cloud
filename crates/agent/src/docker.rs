@@ -692,6 +692,7 @@ impl DockerAdapter {
             return Err(ExecutionError::Ownership);
         }
         Ok(ObservedState {
+            autoscaling: None,
             resource_id: spec.resource_id.to_string(),
             revision: spec.revision,
             phase: Phase::Absent,
@@ -952,6 +953,7 @@ impl RuntimeAdapter for DockerAdapter {
             registry_version: self.registry_ready().unwrap_or(false).then_some(1),
             service_bindings_version: None,
             public_routing_version: None,
+            autoscaling_version: None,
             version,
             nodes: vec![TargetNode {
                 id,
@@ -1122,6 +1124,7 @@ impl RuntimeAdapter for DockerAdapter {
     async fn inspect(&self, spec: &RuntimeSpec) -> Result<ObservedState> {
         self.validate(spec)?;
         let mut result = ObservedState {
+            autoscaling: None,
             resource_id: spec.resource_id.to_string(),
             revision: spec.revision,
             phase: Phase::Absent,
@@ -1348,6 +1351,7 @@ mod health_convergence_tests {
     use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
     fn state(ready: bool, phase: Phase) -> ObservedState {
         ObservedState {
+            autoscaling: None,
             resource_id: "123".into(),
             revision: 1,
             phase,

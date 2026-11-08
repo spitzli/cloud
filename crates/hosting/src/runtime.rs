@@ -89,6 +89,14 @@ impl HostingService {
             return Err(error(503, "Runtime kind unavailable."));
         }
         let desired = &op["desired"];
+        if desired.get("autoscalingVersion").is_some() {
+            let state = Self::verify_agent(tx, agent).await?;
+            contracts::admit_autoscaling(
+                true,
+                cluster["runtime_kind"].as_str().unwrap_or(""),
+                &state["observation"]["capabilities"]["autoscalingVersion"],
+            )?;
+        }
         if !matches!(
             desired["action"].as_str(),
             Some("apply" | "delete" | "purge-storage")
@@ -126,6 +134,12 @@ impl HostingService {
             .transpose()?
             .unwrap_or(0);
         let runtime = RuntimeSpec {
+            autoscaling: spec
+                .get("autoscaling")
+                .cloned()
+                .map(serde_json::from_value)
+                .transpose()
+                .map_err(|_| error(503, "Invalid persisted scaling policy."))?,
             version: 1,
             installation: field(&cluster, "runtime_installation")?.into(),
             project_id: webdock_core::id::RecordId::parse(field(op, "project_id")?)
@@ -484,7 +498,29 @@ impl HostingService {
         {
             return Err(error(409, "Public address HTTPS has not converged."));
         }
+        if let Some(policy) = command.spec.autoscaling.as_ref()
+            && !deleting
+            && !stopped
+        {
+            let state = observed
+                .autoscaling
+                .as_ref()
+                .ok_or_else(|| error(409, "Automatic scaling observation required."))?;
+            if state.min_replicas != policy.min_replicas
+                || state.max_replicas != policy.max_replicas
+                || !(policy.min_replicas..=policy.max_replicas).contains(&state.current_replicas)
+                || state.ready_replicas != state.current_replicas
+                || state.desired_replicas > policy.max_replicas
+                || state.reason.len() > 80
+            {
+                return Err(error(409, "Automatic scaling has not converged."));
+            }
+        }
         let mut proof = json!({"appID":command.spec.resource_id.to_string(),"revision":command.spec.revision,"namespace":format!("wd-{}",command.spec.project_id),"uid":observed.runtime_id,"ready":true,"deleted":deleting,"replicas":if deleting{0}else{command.spec.replicas}});
+        if let Some(state) = &observed.autoscaling {
+            proof["replicas"] = json!(state.current_replicas);
+            proof["autoscaling"] = json!(state);
+        }
         if let Some(volume) = &command.spec.volume {
             let expected = if command.action == Action::PurgeStorage {
                 0

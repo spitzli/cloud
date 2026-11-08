@@ -38,6 +38,7 @@ pub struct HostingService {
     browser_authority: Option<Arc<browser_authority::BrowserVerifier>>,
     recovery_signer: Option<crate::RecoverySigner>,
     public_site_origins: Vec<String>,
+    autoscaling_enabled: bool,
 }
 // Internal actor is either a live browser principal or a persisted, validated Git release.
 struct HostingActor {
@@ -223,7 +224,24 @@ impl HostingService {
             browser_authority: None,
             recovery_signer: None,
             public_site_origins: Vec::new(),
+            autoscaling_enabled: std::env::var("WEBDOCK_HOSTING_AUTOSCALING_ENABLED").as_deref()
+                == Ok("true"),
         })
+    }
+    async fn automatic_scaling_available(
+        &self,
+        tx: &DatabaseTransaction,
+        cluster: Option<&str>,
+    ) -> Result<bool> {
+        if !self.autoscaling_enabled {
+            return Ok(false);
+        }
+        let Some(cluster) = cluster else {
+            return Ok(false);
+        };
+        let snapshot = Self::cluster_view(tx, cluster).await?;
+        Ok(snapshot["runtimeKind"] == "kubernetes"
+            && snapshot["observation"]["capabilities"]["autoscalingVersion"] == 1)
     }
     async fn id(&self) -> Result<String> {
         Ok(self

@@ -33,7 +33,7 @@
     "test:api": "cargo test --locked -p webdock-control-plane",
     "build:api": "cargo build --locked -p webdock-control-plane --bins",
     "test:modules": "bun tools/tests/modules.mjs",
-    "test:distribution": "python3 tools/release/check-compose.py && python3 tools/release/check-charts.py && cargo test --locked -p webdock-control-plane --test probes",
+    "test:distribution": "python3 tools/release/check-compose.py && python3 tools/release/check-charts.py && python3 tools/release/check-autoscaling-charts.py && WEBDOCK_AGENT_AUTOSCALING_ENABLED=true cargo test --locked -p webdock-agent --features kubernetes --test autoscaling_api -- --include-ignored && cargo test --locked -p webdock-control-plane --test probes",
     "test:plugin-jobs": "cargo test --locked -p webdock-plugin-host --test jobs -- --include-ignored --test-threads=1",
     "dev:console": "bun run --filter @webdock/console dev",
     "build:console": "bun run --filter @webdock/console build",

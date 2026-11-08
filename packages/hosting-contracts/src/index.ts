@@ -119,13 +119,14 @@ const paging = {
   search: z.string().max(160).default(""),
 };
 export function appDemand(spec: AppSpec, deleted = false): HostingDemand {
+  const replicas = deleted || spec.replicas === 0 ? 0 : spec.autoscaling?.maxReplicas ?? spec.replicas;
   return {
     apps: deleted ? 0 : 1,
-    cpuMillicores: deleted ? 0 : spec.cpuMillicores * spec.replicas,
-    memoryBytes: deleted ? 0 : spec.memoryBytes * spec.replicas,
+    cpuMillicores: spec.cpuMillicores * replicas,
+    memoryBytes: spec.memoryBytes * replicas,
     volumeBytes: spec.volumeBytes ?? 0,
-    ephemeralBytes: deleted ? 0 : spec.ephemeralBytes * spec.replicas,
-    replicasPerApp: deleted ? 0 : spec.replicas,
+    ephemeralBytes: spec.ephemeralBytes * replicas,
+    replicasPerApp: replicas,
     concurrentDeployments: 1,
   };
 }
@@ -295,7 +296,7 @@ export const commandSchema = z.discriminatedUnion("action", [
   ),
   z
     .object({
-      action: z.literal("apps.logs"),
+      action: z.enum(["apps.logs", "apps.inspect", "apps.metrics"]),
       appID: resourceID,
       idempotencyKey: key,
     })
@@ -462,6 +463,8 @@ export const readActions = new Set<HostingCommand["action"]>([
   "apps.deletion",
   "apps.storageDeletion",
   "apps.logs",
+  "apps.inspect",
+  "apps.metrics",
   "clusters.list",
   "clusters.get",
   "limits.get",

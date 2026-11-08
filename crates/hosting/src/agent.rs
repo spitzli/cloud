@@ -412,7 +412,7 @@ impl HostingService {
     ) -> Result<Value> {
         let agent_state = Self::verify_agent(tx, agent).await?;
         execute(tx,"UPDATE webdock_auth.hosting_operation SET status=CASE WHEN action IN ('apps.logs','apps.inspect','apps.metrics') THEN 'failed' ELSE 'needs-reconciliation' END WHERE cluster_id=$1 AND status='running' AND lease_until<now()",vec![agent.cluster.clone().into()]).await?;
-        let Some(op)=rows(tx,"SELECT to_jsonb(o) AS value FROM webdock_auth.hosting_operation o WHERE o.cluster_id=$1 AND o.status='queued' AND o.action LIKE 'apps.%' AND o.desired IS NOT NULL AND (NOT(o.desired ? 'publicRoutingVersion') OR ($2::integer=1 AND $6::boolean)) AND (($2::integer=0 AND o.action NOT IN ('apps.inspect','apps.metrics')) OR ($2=2 AND o.action IN ('apps.logs','apps.inspect','apps.metrics') AND o.desired->>'expectedUID' IS NOT NULL) OR ($2=1 AND o.desired->>'action' IN ('apply','delete','purge-storage') AND NOT (o.desired ?| ARRAY['serviceBindingsVersion']) AND (o.desired->>'action'<>'apply' OR o.action='apps.stop' OR NOT (o.desired ? 'environmentVersion') OR $3::boolean) AND (COALESCE((o.desired->'spec'->>'volumeBytes')::bigint,0)=0 OR ($4::boolean AND (o.desired->>'action'<>'apply' OR $5::boolean))) AND (o.desired->'spec'->>'replicas')::integer BETWEEN 0 AND 20 AND ((SELECT runtime_kind FROM webdock_auth.hosting_cluster c WHERE c.id=o.cluster_id)<>'docker' OR (o.desired->'spec'->>'replicas')::integer<=1) AND length(o.desired->'spec'->>'image')<=512 AND o.desired->'spec'->>'image' ~ '^[a-z0-9]+([.-][a-z0-9]+)*(:[0-9]{1,5})?/([a-z0-9]+([._-][a-z0-9]+)*/)*[a-z0-9]+([._-][a-z0-9]+)*@sha256:[a-f0-9]{64}$' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements_text(o.desired->'spec'->'args') arg WHERE octet_length(arg)>2048))) AND NOT EXISTS(SELECT 1 FROM webdock_auth.hosting_operation busy WHERE busy.project_id=o.project_id AND (busy.status='running' OR(busy.status='needs-reconciliation' AND o.action NOT IN ('apps.logs','apps.inspect','apps.metrics')))) ORDER BY o.created_at,o.id FOR UPDATE SKIP LOCKED LIMIT 1",vec![agent.cluster.clone().into(),mode.into(),(agent_state["observation"]["capabilities"]["environment"]==true).into(),(agent_state["observation"]["capabilities"]["storageVersion"]==1).into(),(agent_state["observation"]["capabilities"]["storage"]==true).into(),(agent_state["observation"]["capabilities"]["publicRoutingVersion"]==1).into()]).await?.pop()else{return Ok(Value::Null)};
+        let Some(op)=rows(tx,"SELECT to_jsonb(o) AS value FROM webdock_auth.hosting_operation o WHERE o.cluster_id=$1 AND o.status='queued' AND o.action LIKE 'apps.%' AND o.desired IS NOT NULL AND (NOT(o.desired ? 'autoscalingVersion') OR (($2=1 OR $2=2) AND $7::boolean)) AND (NOT(o.desired ? 'publicRoutingVersion') OR ($2::integer=1 AND $6::boolean)) AND (($2::integer=0 AND o.action NOT IN ('apps.inspect','apps.metrics')) OR ($2=2 AND o.action IN ('apps.logs','apps.inspect','apps.metrics') AND o.desired->>'expectedUID' IS NOT NULL) OR ($2=1 AND o.desired->>'action' IN ('apply','delete','purge-storage') AND NOT (o.desired ?| ARRAY['serviceBindingsVersion']) AND (o.desired->>'action'<>'apply' OR o.action='apps.stop' OR NOT (o.desired ? 'environmentVersion') OR $3::boolean) AND (COALESCE((o.desired->'spec'->>'volumeBytes')::bigint,0)=0 OR ($4::boolean AND (o.desired->>'action'<>'apply' OR $5::boolean))) AND (o.desired->'spec'->>'replicas')::integer BETWEEN 0 AND 20 AND ((SELECT runtime_kind FROM webdock_auth.hosting_cluster c WHERE c.id=o.cluster_id)<>'docker' OR (o.desired->'spec'->>'replicas')::integer<=1) AND length(o.desired->'spec'->>'image')<=512 AND o.desired->'spec'->>'image' ~ '^[a-z0-9]+([.-][a-z0-9]+)*(:[0-9]{1,5})?/([a-z0-9]+([._-][a-z0-9]+)*/)*[a-z0-9]+([._-][a-z0-9]+)*@sha256:[a-f0-9]{64}$' AND NOT EXISTS(SELECT 1 FROM jsonb_array_elements_text(o.desired->'spec'->'args') arg WHERE octet_length(arg)>2048))) AND NOT EXISTS(SELECT 1 FROM webdock_auth.hosting_operation busy WHERE busy.project_id=o.project_id AND (busy.status='running' OR(busy.status='needs-reconciliation' AND o.action NOT IN ('apps.logs','apps.inspect','apps.metrics')))) ORDER BY o.created_at,o.id FOR UPDATE SKIP LOCKED LIMIT 1",vec![agent.cluster.clone().into(),mode.into(),(agent_state["observation"]["capabilities"]["environment"]==true).into(),(agent_state["observation"]["capabilities"]["storageVersion"]==1).into(),(agent_state["observation"]["capabilities"]["storage"]==true).into(),(agent_state["observation"]["capabilities"]["publicRoutingVersion"]==1).into(),(agent_state["observation"]["capabilities"]["autoscalingVersion"]==1).into()]).await?.pop()else{return Ok(Value::Null)};
         if mode != 2 && op["desired"].get("serviceBindingsVersion").is_some() {
             return Ok(Value::Null);
         }
@@ -672,7 +672,21 @@ impl HostingService {
                 || proof["deleted"] != json!(deleting)
                 || (!deleting
                     && (proof["uid"].as_str().is_none_or(str::is_empty)
-                        || proof["replicas"] != spec["replicas"]))
+                        || if spec.get("autoscaling").is_some() && spec["replicas"] != 0 {
+                            !native
+                                || proof["autoscaling"]["minReplicas"]
+                                    != spec["autoscaling"]["minReplicas"]
+                                || proof["autoscaling"]["maxReplicas"]
+                                    != spec["autoscaling"]["maxReplicas"]
+                                || proof["autoscaling"]["currentReplicas"] != proof["replicas"]
+                                || proof["autoscaling"]["readyReplicas"] != proof["replicas"]
+                                || amount(&proof["replicas"])?
+                                    < amount(&spec["autoscaling"]["minReplicas"])?
+                                || amount(&proof["replicas"])?
+                                    > amount(&spec["autoscaling"]["maxReplicas"])?
+                        } else {
+                            proof["replicas"] != spec["replicas"]
+                        }))
                 || (deleting && (!proof["uid"].is_null() || proof["replicas"] != 0))
             {
                 return Err(error(
@@ -754,6 +768,7 @@ fn proof_input(value: &Value) -> Result<()> {
             "logsTruncated",
             "serviceBindings",
             "storage",
+            "autoscaling",
         ],
     )?;
     contracts::record_id(field(value, "appID")?)?;

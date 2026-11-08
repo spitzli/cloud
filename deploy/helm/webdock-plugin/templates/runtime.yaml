@@ -20,7 +20,9 @@ metadata:
     webdock.dev/generation: {{ .Values.generation | quote }}
     webdock.dev/spec-sha256: {{ .Values.specHash | quote }}
 spec:
+  {{- if not .Values.autoscaling }}
   replicas: {{ .Values.replicas }}
+  {{- end }}
   revisionHistoryLimit: 2
   strategy:
     type: Recreate

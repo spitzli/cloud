@@ -13,6 +13,7 @@ import {
 import { useHostingAction, useHostingCommand } from "./hosting-client";
 import { HostingReceipt } from "./HostingOperation";
 import { ActionFailure } from "./HostingActionState";
+import { HostingScaling } from "./HostingScaling";
 import { HostingEnvironment } from "./HostingEnvironment";
 import * as ui from "./ui";
 export function HostingSettings({ app }: { app: HostingApp }) {
@@ -75,7 +76,7 @@ export function HostingSettings({ app }: { app: HostingApp }) {
             mutation.mutate(command);
           } catch {
             setValidation(
-              "Check the image digest, arguments, resource values and environment variables. Use valid JSON for startup arguments.",
+              "Check the image digest, arguments, resource values, scaling bounds and environment variables. Use valid JSON for startup arguments.",
             );
           }
         }}
@@ -180,19 +181,7 @@ export function HostingSettings({ app }: { app: HostingApp }) {
               )}
             />
           </label><FieldError message={live.errors.ephemeralBytes} />
-          <label className={ui.field}>
-            Replicas
-            <input
-              className={ui.input}
-              name="replicas"
-              type="number"
-              min={0}
-              max={20}
-              step={1}
-              required
-              defaultValue={snapshot.spec.replicas}
-            />
-          </label><FieldError message={live.errors.replicas} />
+          <HostingScaling spec={snapshot.spec} available={snapshot.automaticScalingAvailable} />
         </fieldset>
         <HostingEnvironment
           names={snapshot.environmentNames ?? []}

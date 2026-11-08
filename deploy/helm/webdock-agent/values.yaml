@@ -1,4 +1,5 @@
 enabled: false
+autoscalingEnabled: false
 image: ''
 # A pre-enrolled BYOK connection.json. The chart never enrolls an agent.
 existingSecret: ''

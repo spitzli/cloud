@@ -11,6 +11,7 @@ impl KubernetesAdapter {
         guard: &LeaseGuard,
     ) -> Result<ObservedState> {
         let spec = &command.spec;
+        autoscaling::ensure_absent(self.client.clone(), spec).await?;
         let namespaces: Api<Namespace> = Api::all(self.client.clone());
         let namespace = namespaces
             .get(&spec.namespace())
@@ -167,6 +168,7 @@ impl KubernetesAdapter {
         };
         guard.check_for(command).await?;
         Ok(ObservedState {
+            autoscaling: None,
             resource_id: spec.resource_id.to_string(),
             revision: spec.revision,
             phase: Phase::Absent,

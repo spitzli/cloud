@@ -61,6 +61,32 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 1099511627776
+    },
+    "autoscaling": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minReplicas": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "maxReplicas": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "targetCPUUtilizationPercent": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 90
+        }
+      },
+      "required": [
+        "minReplicas",
+        "maxReplicas",
+        "targetCPUUtilizationPercent"
+      ]
     }
   },
   "required": [
