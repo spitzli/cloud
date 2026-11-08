@@ -41,9 +41,7 @@ tonic = { version = "0.14.6", features = ["transport", "tls-ring"] }
 rustix = { version = "1", features = ["process", "fs"] }
 base64 = "0.22"
 percent-encoding = "2"
-loco-rs.workspace = true
 sea-orm.workspace = true
-sea-orm-migration = { version = "=2.0.4", default-features = false, features = ["sqlx-postgres", "runtime-tokio-rustls"] }
 axum.workspace = true
 tower = { version = "0.5", features = ["util"] }
 tokio.workspace = true
@@ -53,6 +51,7 @@ serde_json.workspace = true
 thiserror.workspace = true
 async-trait.workspace = true
 tracing.workspace = true
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
 url.workspace = true
 uuid = { version = "1", features = ["v4"] }
 tower-http = { version = "0.6", features = ["cors", "trace", "limit", "fs"] }

@@ -148,17 +148,15 @@ async fn database_order_retirement_does_not_hide_existing_database_access() {
 }
 
 #[test]
-fn loco_database_boot_never_mutates_schema_or_seeds() {
+fn native_database_boot_keeps_explicit_runtime_policy() {
     let env = HashMap::from([(
         "WEBDOCK_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     let config = runtime_config(&env).unwrap();
-    assert!(!config.database.auto_migrate);
-    assert!(!config.database.dangerously_truncate);
-    assert!(!config.database.dangerously_recreate);
-    assert!(config.database.run_on_start.is_none());
-    assert!(config.queue.is_none());
+    assert_eq!(config.database.min_connections, 1);
+    assert_eq!(config.database.max_connections, 10);
+    assert_eq!(config.server.binding, "127.0.0.1");
     assert!(runtime_config(&HashMap::new()).is_err());
 }
 
