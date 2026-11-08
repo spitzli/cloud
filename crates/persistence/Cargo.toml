@@ -7,6 +7,13 @@ license.workspace = true
 publish = false
 
 [dependencies]
+deadpool-postgres = { version = "=0.14.2", default-features = false, features = ["rt_tokio_1"] }
+tokio-postgres = "0.7"
+tokio-postgres-rustls = { version = "0.14", features = ["ring"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+rustls-pemfile = "2"
+webpki-roots = "1"
+rustix = { version = "1", features = ["fs", "process"] }
 webdock-ids = { path = "../ids" }
 sea-orm.workspace = true
 tokio.workspace = true
@@ -19,6 +26,9 @@ hex = "0.4"
 
 
 [dev-dependencies]
+rcgen = "0.14"
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
+tempfile = "3"
 uuid = { version = "1", features = ["v4"] }
 
 [lints]

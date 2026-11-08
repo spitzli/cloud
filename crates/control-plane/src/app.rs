@@ -26,15 +26,25 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         Some(secret.clone()),
     )
     .map_err(|_| Error::Message("Invalid identity encryption configuration".into()))?;
-    let ids = std::sync::Arc::new(
-        webdock_persistence::IdAllocator::connect(
-            runtime.database.uri.as_str(),
-            webdock_ids::Identity::platform(0, 2)
-                .map_err(|_| Error::Message("Invalid platform generator".into()))?,
-        )
-        .await
-        .map_err(|_| Error::Message("ID allocation database unavailable".into()))?,
-    );
+    let generator = webdock_ids::Identity::platform(0, 2)
+        .map_err(|_| Error::Message("Invalid platform generator".into()))?;
+    let allocator = match runtime.id_backend {
+        crate::config::IdBackend::Legacy => {
+            webdock_persistence::IdAllocator::connect(runtime.database.uri.as_str(), generator)
+                .await
+        }
+        crate::config::IdBackend::Native => {
+            webdock_persistence::IdAllocator::connect_native(
+                runtime.database.uri.as_str(),
+                generator,
+                "webdock_auth_bootstrap",
+                config.production,
+            )
+            .await
+        }
+    }
+    .map_err(|_| Error::Message("ID allocation database unavailable".into()))?;
+    let ids = std::sync::Arc::new(allocator);
     // Account mail (activation, reset, invitations) leaves from Core itself. Only a loopback
     // catch-all is supported here; hosted installations use the separate Mail API dispatcher.
     let account_mail = match std::env::var("WEBDOCK_ACCOUNT_SMTP") {

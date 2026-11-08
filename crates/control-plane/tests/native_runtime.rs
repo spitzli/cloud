@@ -21,6 +21,26 @@ fn native_startup_keeps_explicit_pool_and_binding_policy() {
 }
 
 #[test]
+fn native_id_backend_requires_an_explicit_supported_choice() {
+    use webdock_control_plane::config::IdBackend;
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().id_backend,
+        IdBackend::Legacy
+    ));
+    env.insert("WEBDOCK_ID_BACKEND".into(), "tokio-postgres".into());
+    assert!(matches!(
+        runtime_config(&env).unwrap().id_backend,
+        IdBackend::Native
+    ));
+    env.insert("WEBDOCK_ID_BACKEND".into(), "typo".into());
+    assert!(runtime_config(&env).is_err());
+}
+
+#[test]
 fn native_startup_errors_do_not_include_database_credentials() {
     let env = HashMap::from([(
         "WEBDOCK_DATABASE_URL".into(),

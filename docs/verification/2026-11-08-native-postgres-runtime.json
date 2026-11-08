@@ -1,0 +1,87 @@
+{
+  "date": "2026-11-08",
+  "scope": "Direct tokio-postgres pool and central HTTP Core ID allocator",
+  "base": "d6720f203643b3ce71b8d4c4c2620947c25bc2f9",
+  "maximumMigration": 75,
+  "environment": "Owned local loopback PostgreSQL18 Docker fixtures; no supplied DSN, live credentials or provider operations",
+  "defaultBackend": "sea-orm",
+  "optIn": "WEBDOCK_ID_BACKEND=tokio-postgres",
+  "guards": [
+    "verified TLS and exact URI authority",
+    "restricted actual backend/current/session role on every transaction",
+    "clean signed-RLS session context",
+    "uncertain or canceled transaction discards the pooled connection",
+    "30-second full allocator client budget and transaction-finalization deadline",
+    "generator row lock before database clock, immutable layout, durable high-water commit",
+    "no retry or ID return after unconfirmed commit",
+    "no SQL background health polling"
+  ],
+  "cleanOwnedQualification": {
+    "passed": 23,
+    "failed": 0,
+    "ignored": 0,
+    "suites": {
+      "persistencePolicyAndTLSFileUnits": 6,
+      "nativeIDs": 3,
+      "nativePool": 3,
+      "nativeTLSProxy": 1,
+      "coreRuntime": 7,
+      "actualCoreAndStartupCancellation": 3
+    },
+    "clippy": "passed: persistence and control-plane all-targets -D warnings",
+    "format": "passed: cargo fmt --all -- --check"
+  },
+  "review": {
+    "importantFindings": 2,
+    "fixed": [
+      "Reproduced a silently withheld durable COMMIT response with an open socket; added bounded client operation/finalization and preserved discard/no retry",
+      "Reproduced TLS FIFO blocking; opened NOFOLLOW|NONBLOCK before regular-file/ownership/permission checks"
+    ],
+    "redGreenRegressionTests": true
+  },
+  "actualHTTP": "Opted-in actual Core POST /api/console/waitlist through configured Studio Host/Origin returns202, stores one entry, shows native restricted-role backend; migration journal and account records unchanged",
+  "nonGatingLatencyExperiment": {
+    "samplesPerDriver": 200,
+    "mode": "alternating durable local debug-build allocator calls; 20 warmup calls each",
+    "legacyMicroseconds": {
+      "p50": 5723,
+      "p95": 10346,
+      "p99": 15396
+    },
+    "nativeMicroseconds": {
+      "p50": 5937,
+      "p95": 6910,
+      "p99": 10093
+    },
+    "conclusion": "No reliable throughput/latency gain established; not a whole-API, release-build or Neon compute-cost benchmark"
+  },
+  "commands": [
+    "cargo test --locked -p webdock-persistence --lib --test native_pool --test native_ids --test native_tls -- --include-ignored --nocapture --test-threads=1",
+    "cargo test --locked -p webdock-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --nocapture --test-threads=1",
+    "cargo test --locked -p webdock-persistence -p webdock-control-plane --lib --tests -- --test-threads=2",
+    "cargo clippy --locked -p webdock-persistence -p webdock-control-plane --all-targets -- -D warnings",
+    "cargo fmt --all -- --check"
+  ],
+  "schemaChanged": false,
+  "credentialsChanged": false,
+  "productionChanged": false,
+  "publicBuildAdmissionChanged": false,
+  "completeDriverRewrite": false,
+  "remaining": "Native signed tenant/session and product service ports; other allocator callers and offline migration paths still SeaORM/SQLx. Benchmark streaming storage before any replacement. Autoscaling production activation remains separately gated by actual RUN-agent rollout/qualification.",
+  "defaultRegressionQualification": {
+    "passed": 197,
+    "ignored": 29,
+    "failed": 0,
+    "suites": 35
+  },
+  "focusedQualification": "Fused allocator authority rejects live SUPERUSER role changes and recovers only after owned fixture restores the restricted role",
+  "independentWorkspaceLocks": {
+    "lockedAllFeaturesMetadataPassed": 15,
+    "synchronized": [
+      "plugins/archives/Cargo.lock",
+      "crates/plugin-host/tests/producer/Cargo.lock"
+    ],
+    "existingRegistryPackageVersionsChanged": false,
+    "note": "Producer fixture also synchronizes existing local package dependency declarations; no source or runtime behavior changes"
+  }
+}

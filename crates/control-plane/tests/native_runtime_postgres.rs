@@ -43,6 +43,16 @@ async fn journal(db: &impl ConnectionTrait) -> Value {
 #[tokio::test]
 #[ignore = "owned local PostgreSQL18; actual binary startup and SIGTERM"]
 async fn actual_native_binary_starts_with_restricted_roles_without_schema_changes() {
+    actual_core(false).await;
+}
+
+#[tokio::test]
+#[ignore = "owned local PostgreSQL18; actual HTTP write using native ID driver"]
+async fn actual_http_write_uses_native_postgres_id_backend() {
+    actual_core(true).await;
+}
+
+async fn actual_core(native: bool) {
     let fixture = fixture::DatabaseFixture::start().await;
     let owner = fixture.owner().await;
     let before = journal(&owner).await;
@@ -112,7 +122,11 @@ async fn actual_native_binary_starts_with_restricted_roles_without_schema_change
         .env("WEBDOCK_AUTH_ORIGIN", "http://localhost:3125")
         .env("WEBDOCK_STUDIO_ORIGIN", "http://localhost:3120")
         .env("WEBDOCK_CONSOLE_ORIGIN", "http://localhost:3121")
-        .env("WEBDOCK_FEATURES", "{}");
+        .env("WEBDOCK_FEATURES", "{}")
+        .env(
+            "WEBDOCK_ID_BACKEND",
+            if native { "tokio-postgres" } else { "sea-orm" },
+        );
     let output = std::fs::File::create(&log).unwrap();
     command
         .stdout(Stdio::from(output.try_clone().unwrap()))
@@ -152,6 +166,14 @@ async fn actual_native_binary_starts_with_restricted_roles_without_schema_change
             .status(),
         200
     );
+    if native {
+        let response=client.post(format!("http://127.0.0.1:{port}/api/console/waitlist")).header("Host","localhost:3120").header("Origin","http://localhost:3120")
+            .json(&json!({"email":"native-id@example.test","name":"Owned native ID test","privacyAccepted":true})).send().await.unwrap();
+        assert_eq!(response.status(), 202);
+        let row=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT (SELECT count(*) FROM webdock_auth.waitlist_entry WHERE email='native-id@example.test') AS entries,(SELECT count(*) FROM pg_catalog.pg_stat_activity WHERE application_name='spitzli-native-postgres' AND usename='webdock_auth_bootstrap') AS native_connections")).await.unwrap().unwrap();
+        assert_eq!(row.try_get::<i64>("", "entries").unwrap(), 1);
+        assert!(row.try_get::<i64>("", "native_connections").unwrap() >= 1);
+    }
     assert_eq!(
         before,
         journal(&owner).await,

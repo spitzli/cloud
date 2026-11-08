@@ -81,7 +81,13 @@ pub struct RuntimeServerConfig {
     pub port: u16,
     pub shutdown_timeout: Duration,
 }
+#[derive(Clone, Copy)]
+pub enum IdBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub id_backend: IdBackend,
     pub database: RuntimeDatabaseConfig,
     pub server: RuntimeServerConfig,
     pub platform: PlatformConfig,
@@ -112,7 +118,13 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
     } else {
         binding.to_owned()
     };
+    let id_backend = match env.get("WEBDOCK_ID_BACKEND").map(String::as_str) {
+        None | Some("sea-orm") => IdBackend::Legacy,
+        Some("tokio-postgres") => IdBackend::Native,
+        _ => return Err(Error::Message("Invalid WEBDOCK_ID_BACKEND".into())),
+    };
     Ok(RuntimeConfig {
+        id_backend,
         database: RuntimeDatabaseConfig {
             uri,
             min_connections: 1,
