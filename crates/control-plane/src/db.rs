@@ -19,28 +19,24 @@ pub async fn independent_pool(
     Ok(db)
 }
 
-// These startup adapters preserve Loco's error contract; request paths use compact errors.
-#[expect(
-    clippy::result_large_err,
-    reason = "The Loco framework requires its error type at this startup boundary."
-)]
-pub async fn require_runtime_role(db: &DatabaseConnection, expected: &str) -> loco_rs::Result<()> {
+pub async fn require_runtime_role(
+    db: &DatabaseConnection,
+    expected: &str,
+) -> crate::runtime::Result<()> {
     webdock_persistence::connection::verify_runtime_role(db, expected)
         .await
-        .map_err(|_| loco_rs::Error::Message("Restricted database role required".into()))
+        .map_err(|_| crate::runtime::Error::Message("Restricted database role required".into()))
 }
 
-#[expect(
-    clippy::result_large_err,
-    reason = "The Loco framework requires its error type at this startup boundary."
-)]
 pub async fn connect_runtime(
     url: &str,
     expected: &str,
     production: bool,
-) -> loco_rs::Result<DatabaseConnection> {
-    let url = webdock_persistence::connection::ConnectionUrl::parse(url, production)
-        .map_err(|_| loco_rs::Error::Message("Invalid PostgreSQL connection policy".into()))?;
+) -> crate::runtime::Result<DatabaseConnection> {
+    let url =
+        webdock_persistence::connection::ConnectionUrl::parse(url, production).map_err(|_| {
+            crate::runtime::Error::Message("Invalid PostgreSQL connection policy".into())
+        })?;
     let mut options = ConnectOptions::new(url.as_str());
     options
         .max_connections(10)
@@ -48,7 +44,27 @@ pub async fn connect_runtime(
         .sqlx_logging(false);
     let db = Database::connect(options)
         .await
-        .map_err(|_| loco_rs::Error::Message("Runtime database connection failed".into()))?;
+        .map_err(|_| crate::runtime::Error::Message("Runtime database connection failed".into()))?;
     require_runtime_role(&db, expected).await?;
+    Ok(db)
+}
+
+/// Preserve the previous bootstrap connection policy without framework initialization.
+pub async fn connect_bootstrap(
+    config: &crate::config::RuntimeConfig,
+) -> crate::runtime::Result<DatabaseConnection> {
+    let database = &config.database;
+    let mut options = ConnectOptions::new(database.uri.as_str());
+    options
+        .min_connections(database.min_connections)
+        .max_connections(database.max_connections)
+        .connect_timeout(database.connect_timeout)
+        .acquire_timeout(database.acquire_timeout)
+        .idle_timeout(database.idle_timeout)
+        .sqlx_logging(false);
+    let db = Database::connect(options)
+        .await
+        .map_err(|_| crate::runtime::Error::Message("Runtime database connection failed".into()))?;
+    require_runtime_role(&db, "webdock_auth_bootstrap").await?;
     Ok(db)
 }

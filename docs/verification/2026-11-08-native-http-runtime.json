@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-08",
+  "scope": "Native Axum/Tokio HTTP lifecycle, first full-performance rewrite increment",
+  "sourceBase": "b837bb850d04dac04ae7ecd091a43778d1f28093",
+  "locoRemovedFromResolvedWorkspace": true,
+  "removedResolvedPackages": 126,
+  "newResolvedPackages": 0,
+  "persistenceDriver": "SeaORM/SQLx retained until subsequent tokio-postgres increments",
+  "databaseSchemaChanged": false,
+  "releaseSourceNativeMigrationMax": 75,
+  "bootstrapPool": {
+    "min": 1,
+    "max": 10,
+    "connectSeconds": 5,
+    "acquireSeconds": 30,
+    "idleSeconds": 30
+  },
+  "httpGraceSeconds": 20,
+  "executorTeardownMaxSeconds": 1,
+  "verification": {
+    "coreRegressionPassed": 187,
+    "coreIgnored": 18,
+    "nativeLifecyclePassed": 6,
+    "actualBinaryStartupAndStartupCancellationPassed": 2,
+    "ownedPostgres18": true,
+    "restrictedRuntimeRoleRequired": true,
+    "startupDoesNotSeedAccountsOrChangeMigrationHistory": true,
+    "bracketedIPv6Compatible": true,
+    "retainedProductionAliasPreservesTLS": true,
+    "heldRequestShutdownBounded": true,
+    "clippyAllTargets": true,
+    "independentReview": "two Important findings fixed with RED/GREEN tests; no other findings"
+  },
+  "performanceClaims": "Dependency removal only; no request-throughput or Neon-cost improvement claimed without benchmarks.",
+  "productionDeploymentPerformed": false
+}

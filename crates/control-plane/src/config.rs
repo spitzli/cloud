@@ -1,6 +1,6 @@
-use loco_rs::config::Config;
-use serde_json::json;
+use crate::runtime::{Error, Result as RuntimeResult};
 use std::collections::HashMap;
+use std::time::Duration;
 use webdock_core::config::PlatformConfig;
 
 /// Retained protocol identifiers are independent of the public account origin.
@@ -67,28 +67,67 @@ pub fn read_private_file(path: &std::path::Path) -> std::io::Result<Vec<u8>> {
     Ok(bytes)
 }
 
-// This startup adapter intentionally returns the framework's externally defined error.
-#[expect(
-    clippy::result_large_err,
-    reason = "The Loco framework requires its error type at this startup boundary."
-)]
-pub fn runtime_config(env: &HashMap<String, String>) -> loco_rs::Result<Config> {
-    let platform =
-        PlatformConfig::from_map(env).map_err(|e| loco_rs::Error::Message(e.to_string()))?;
+/// Contains credentials and deliberately implements neither Debug nor Serialize.
+pub struct RuntimeDatabaseConfig {
+    pub uri: webdock_persistence::connection::ConnectionUrl,
+    pub min_connections: u32,
+    pub max_connections: u32,
+    pub connect_timeout: Duration,
+    pub acquire_timeout: Duration,
+    pub idle_timeout: Duration,
+}
+pub struct RuntimeServerConfig {
+    pub binding: String,
+    pub port: u16,
+    pub shutdown_timeout: Duration,
+}
+pub struct RuntimeConfig {
+    pub database: RuntimeDatabaseConfig,
+    pub server: RuntimeServerConfig,
+    pub platform: PlatformConfig,
+}
+
+pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeConfig> {
+    let platform = PlatformConfig::from_map(env).map_err(|e| Error::Message(e.to_string()))?;
     let database_url = env
         .get("WEBDOCK_DATABASE_URL")
-        .ok_or_else(|| loco_rs::Error::Message("Missing WEBDOCK_DATABASE_URL".into()))?;
-    let database_url =
+        .ok_or_else(|| Error::Message("Missing WEBDOCK_DATABASE_URL".into()))?;
+    let uri =
         webdock_persistence::connection::ConnectionUrl::parse(database_url, platform.production)
-            .map_err(|_| loco_rs::Error::Message("Invalid PostgreSQL connection policy".into()))?;
-    serde_json::from_value(json!({
-        "logger": {"enable":true,"level":"info","format":"json"},
-        "server": {"port":platform.port,"binding":env.get("WEBDOCK_BIND_ADDRESS").map(String::as_str).unwrap_or("127.0.0.1"),"host":platform.api_origin,"middlewares":{}},
-        "database": {"uri":database_url.as_str(),"enable_logging":false,"min_connections":1,"max_connections":10,"connect_timeout":5000,"idle_timeout":30000,"acquire_timeout":5000,"auto_migrate":false,"dangerously_truncate":false,"dangerously_recreate":false},
-        "workers":{"mode":"ForegroundBlocking"},
-        "queue":null,"auth":null,"mailer":null,"initializers":null,"scheduler":null,
-        "settings":{"platform":"webdock"}
-    })).map_err(Into::into)
+            .map_err(|_| Error::Message("Invalid PostgreSQL connection policy".into()))?;
+    let binding = env
+        .get("WEBDOCK_BIND_ADDRESS")
+        .map(String::as_str)
+        .unwrap_or("127.0.0.1");
+    if binding.is_empty() || binding.chars().any(char::is_whitespace) {
+        return Err(Error::Message("Invalid HTTP binding".into()));
+    }
+    let binding = if let Some(host) = binding
+        .strip_prefix('[')
+        .and_then(|host| host.strip_suffix(']'))
+    {
+        host.parse::<std::net::Ipv6Addr>()
+            .map_err(|_| Error::Message("Invalid IPv6 binding".into()))?
+            .to_string()
+    } else {
+        binding.to_owned()
+    };
+    Ok(RuntimeConfig {
+        database: RuntimeDatabaseConfig {
+            uri,
+            min_connections: 1,
+            max_connections: 10,
+            connect_timeout: Duration::from_secs(5),
+            acquire_timeout: Duration::from_secs(30),
+            idle_timeout: Duration::from_secs(30),
+        },
+        server: RuntimeServerConfig {
+            binding,
+            port: platform.port,
+            shutdown_timeout: Duration::from_secs(20),
+        },
+        platform,
+    })
 }
 
 #[cfg(test)]

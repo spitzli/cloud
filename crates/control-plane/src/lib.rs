@@ -5,6 +5,7 @@ pub mod db;
 pub mod http;
 mod recovery;
 pub mod registry;
+pub mod runtime;
 
 pub mod hosting;
 pub mod oauth;
