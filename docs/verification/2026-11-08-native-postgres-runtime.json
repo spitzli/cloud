@@ -74,5 +74,14 @@
     "failed": 0,
     "suites": 35
   },
-  "focusedQualification": "Fused allocator authority rejects live SUPERUSER role changes and recovers only after owned fixture restores the restricted role"
+  "focusedQualification": "Fused allocator authority rejects live SUPERUSER role changes and recovers only after owned fixture restores the restricted role",
+  "independentWorkspaceLocks": {
+    "lockedAllFeaturesMetadataPassed": 15,
+    "synchronized": [
+      "plugins/archives/Cargo.lock",
+      "crates/plugin-host/tests/producer/Cargo.lock"
+    ],
+    "existingRegistryPackageVersionsChanged": false,
+    "note": "Producer fixture also synchronizes existing local package dependency declarations; no source or runtime behavior changes"
+  }
 }
