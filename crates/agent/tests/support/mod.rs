@@ -2,6 +2,7 @@ use webdock_core::id::RecordId;
 use webdock_supervisor::*;
 pub fn spec() -> RuntimeSpec {
     RuntimeSpec {
+        autoscaling: None,
         version: 1,
         installation: "test-install".into(),
         project_id: RecordId::parse("123").unwrap(),

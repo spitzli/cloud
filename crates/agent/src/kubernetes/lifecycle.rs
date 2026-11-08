@@ -125,6 +125,7 @@ impl KubernetesAdapter {
         }
         self.check_release_ownership(spec, command.generation)
             .await?;
+        autoscaling::remove(self.client.clone(), command, guard).await?;
         if namespace.is_some() {
             let secrets: Api<Secret> = Api::namespaced(self.client.clone(), &spec.namespace());
             let history = secrets
@@ -209,6 +210,7 @@ impl KubernetesAdapter {
             tokio::time::sleep(std::time::Duration::from_millis(250)).await;
         }
         Ok(ObservedState {
+            autoscaling: None,
             resource_id: spec.resource_id.to_string(),
             revision: spec.revision,
             phase: Phase::Absent,
@@ -495,6 +497,7 @@ impl KubernetesAdapter {
             .await
             .map_err(|_| ExecutionError::Runtime)?;
         Ok(ObservedState {
+            autoscaling: None,
             resource_id: spec.resource_id.to_string(),
             revision: spec.revision,
             phase: Phase::Absent,

@@ -12,7 +12,13 @@ impl HostingService {
         )
     }
     fn deletion(row: &Value, purge: bool) -> Result<Value> {
-        let plan = json!({"appID":row["id"],"name":row["name"],"projectID":row["project_id"],"clusterID":row["cluster_id"],"namespace":row["namespace"],"revision":row["revision"],"observedUID":row["observed_uid"],"resources":if row["lifecycle"]=="draft"{json!([])}else if purge{json!(["PersistentVolume","PersistentVolumeClaim","Filesystem"])}else{json!(["Deployment","Service","Secret"])},"persistentData":row["lifecycle"]!="draft"&&row["spec"]["volumeBytes"].as_u64().unwrap_or(0)>0,"volumeBytes":row["spec"].get("volumeBytes").cloned().unwrap_or(json!(0)),"storagePurged":purge,"namespaceRetained":true});
+        let mut plan = json!({"appID":row["id"],"name":row["name"],"projectID":row["project_id"],"clusterID":row["cluster_id"],"namespace":row["namespace"],"revision":row["revision"],"observedUID":row["observed_uid"],"resources":if row["lifecycle"]=="draft"{json!([])}else if purge{json!(["PersistentVolume","PersistentVolumeClaim","Filesystem"])}else{json!(["Deployment","Service","Secret"])},"persistentData":row["lifecycle"]!="draft"&&row["spec"]["volumeBytes"].as_u64().unwrap_or(0)>0,"volumeBytes":row["spec"].get("volumeBytes").cloned().unwrap_or(json!(0)),"storagePurged":purge,"namespaceRetained":true});
+        if row["spec"].get("autoscaling").is_some() && row["lifecycle"] != "draft" && !purge {
+            plan["resources"]
+                .as_array_mut()
+                .unwrap()
+                .push(json!("HorizontalPodAutoscaler"));
+        }
         let hash = hex::encode(Sha256::digest(serde_json::to_vec(&plan).unwrap()));
         Ok(json!({"plan":plan,"planHash":hash}))
     }
@@ -88,6 +94,10 @@ impl HostingService {
         if action == "apps.get" {
             let row = row.as_ref().unwrap();
             let mut value = self.safe_app(row)?;
+            value["automaticScalingAvailable"] = json!(
+                self.automatic_scaling_available(tx, row["cluster_id"].as_str())
+                    .await?
+            );
             value["canRequestLogs"] = json!(
                 access.live
                     && row["lifecycle"] != "draft"
@@ -330,15 +340,7 @@ impl HostingService {
                 return Err(error(409, "No previous application revision is available."));
             }
         }
-        if action == "apps.scale" {
-            spec["replicas"] = cmd["replicas"].clone();
-        }
-        if action == "apps.stop" {
-            spec["replicas"] = json!(0);
-        }
-        if action == "apps.start" {
-            spec["replicas"] = json!(amount(&spec["replicas"])?.max(1));
-        }
+        contracts::apply_scaling_action(&mut spec, action, &cmd["replicas"])?;
         spec = contracts::resolve_spec(spec)?;
         if let Some(row) = &row
             && row["lifecycle"] != "draft"
@@ -374,6 +376,18 @@ impl HostingService {
             environment = Environment::patch(environment, patch)?;
         }
         let snapshot = Self::cluster_view(tx, &cluster).await?;
+        let had_autoscaling = row
+            .as_ref()
+            .is_some_and(|r| r["spec"].get("autoscaling").is_some());
+        let has_autoscaling = spec.get("autoscaling").is_some();
+        if (had_autoscaling || has_autoscaling) && !logging {
+            contracts::admit_autoscaling(
+                self.autoscaling_enabled || deleting || action == "apps.stop" || !has_autoscaling,
+                snapshot["runtimeKind"].as_str().unwrap_or(""),
+                &snapshot["observation"]["capabilities"]["autoscalingVersion"],
+            )?;
+        }
+
         let storage = spec["volumeBytes"].as_u64().unwrap_or(0) > 0;
         let environment_required = !environment.is_empty()
             || row.as_ref().is_some_and(|r| {
@@ -513,6 +527,9 @@ impl HostingService {
             .await?;
         let mut desired = json!({"appID":row["id"],"projectID":project,"clusterID":cluster,"namespace":access.project.get("namespace").cloned().unwrap_or(json!(format!("wd-{project}"))),"name":row["name"],"spec":spec,"revision":row["revision"],"action":if logging{match action{"apps.inspect"=>"inspect","apps.metrics"=>"metrics",_=>"logs"}}else if purging{"purge-storage"}else if deleting{"delete"}else{"apply"},"expectedUID":row["observed_uid"]});
         desired["customerScope"] = json!(actor.customer_scope);
+        if had_autoscaling || has_autoscaling {
+            desired["autoscalingVersion"] = json!(1);
+        }
         if let Some(route) = public_route.filter(|_| !logging) {
             desired["publicRoute"] = json!(route);
             desired["publicRoutingVersion"] = json!(1);

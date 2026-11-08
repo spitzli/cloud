@@ -15,6 +15,7 @@ export const appSchema = appViewSchema.and(
     operator: z.boolean(),
     canManage: z.boolean(),
     canRequestLogs: z.boolean(),
+    automaticScalingAvailable: z.boolean().optional(),
   }),
 );
 export type HostingApp = z.infer<typeof appSchema>;
@@ -43,6 +44,7 @@ export const projectPageSchema = z.object({
     .max(50),
 });
 export const projectSchema = z.object({
+  automaticScalingAvailable: z.boolean().optional(),
   projectID: resourceID,
   name: z.string(),
   customerID: resourceID,
@@ -121,9 +123,17 @@ export function actionCommand(
     ...(action === "apps.scale" ? { replicas } : {}),
   });
 }
-function formSpec(data: FormData) {
+function formSpec(data: FormData, previous?: HostingApp) {
   const args: unknown = JSON.parse(formText(data, "args"));
+  const mode = data.get("scalingMode");
+  if (mode !== null && mode !== "fixed" && mode !== "automatic") throw new Error("Invalid scaling mode.");
+  const autoscaling = mode === "automatic" ? {
+    minReplicas: Number(formText(data, "minReplicas")),
+    maxReplicas: Number(formText(data, "maxReplicas")),
+    targetCPUUtilizationPercent: Number(formText(data, "targetCPUUtilizationPercent")),
+  } : mode === "fixed" ? undefined : previous?.spec.autoscaling;
   return {
+    ...(mode !== null ? { autoscaling } : {}),
     image: formText(data, "image"),
     args,
     port: Number(formText(data, "port")),
@@ -131,7 +141,7 @@ function formSpec(data: FormData) {
     cpuMillicores: parseResourceInput("cpuMillicores", formText(data, "cpuMillicores")),
     memoryBytes: parseResourceInput("memoryBytes", formText(data, "memoryBytes")),
     ephemeralBytes: parseResourceInput("ephemeralBytes", formText(data, "ephemeralBytes")),
-    replicas: Number(formText(data, "replicas")),
+    replicas: mode === "automatic" ? (previous?.spec.replicas === 0 ? 0 : Number(formText(data, "minReplicas"))) : Number(formText(data, "replicas")),
   };
 }
 // Only explicit changes are sent; saved values are never read back or resubmitted.
@@ -148,7 +158,7 @@ export function settingsCommand(
     throw new Error(
       "Deploy this application before editing its configuration.",
     );
-  const spec = appSpecSchema.parse({ ...app.spec, ...formSpec(data) });
+  const spec = appSpecSchema.parse({ ...app.spec, ...formSpec(data, app) });
   const environment = formEnvironment(data);
   const result = commandSchema.parse({
     action: "apps.update",
@@ -223,6 +233,24 @@ export const logReadSchema = z.object({
   id: resourceID,
   status: operationStatus,
   result: z.object({ logs: z.string(), truncated: z.boolean() }).nullable(),
+  error: z.string().nullable(),
+});
+
+export const scalingReadSchema = z.object({
+  id: resourceID,
+  status: operationStatus,
+  result: z.object({
+    observedAt: z.number(),
+    autoscaling: z.object({
+      minReplicas: z.number().int().min(1).max(20),
+      maxReplicas: z.number().int().min(1).max(20),
+      currentReplicas: z.number().int().min(0).max(20),
+      readyReplicas: z.number().int().min(0).max(20),
+      desiredReplicas: z.number().int().min(0).max(20),
+      metricsAvailable: z.boolean(),
+      reason: z.string().max(80),
+    }).optional(),
+  }).nullable(),
   error: z.string().nullable(),
 });
 

@@ -300,6 +300,7 @@ impl RuntimeAdapter for ObservedControlled {
             registry_version: None,
             service_bindings_version: None,
             public_routing_version: None,
+            autoscaling_version: None,
         }))
     }
     async fn reconcile(&self, c: &Command, g: &LeaseGuard) -> Result<ObservedState> {

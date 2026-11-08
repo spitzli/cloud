@@ -10,6 +10,26 @@ pub struct RetainedVolume {
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AutoscalingPolicy {
+    pub min_replicas: u16,
+    pub max_replicas: u16,
+    #[serde(rename = "targetCPUUtilizationPercent")]
+    pub target_cpu_utilization_percent: u8,
+}
+impl AutoscalingPolicy {
+    pub fn validate(&self) -> Result<()> {
+        if self.min_replicas == 0
+            || self.min_replicas > self.max_replicas
+            || self.max_replicas > 20
+            || !(10..=90).contains(&self.target_cpu_utilization_percent)
+        {
+            return Err(ExecutionError::Invalid("automatic scaling policy"));
+        }
+        Ok(())
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RuntimeSpec {
     pub version: u8,
     pub installation: String,
@@ -22,6 +42,8 @@ pub struct RuntimeSpec {
     pub memory_bytes: u64,
     pub ephemeral_bytes: u64,
     pub replicas: u16,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub autoscaling: Option<AutoscalingPolicy>,
     pub port: u16,
     pub health_path: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -97,6 +119,16 @@ impl RuntimeSpec {
             .is_some_and(|host| !valid_health_host(host))
         {
             return Err(ExecutionError::Invalid("health host"));
+        }
+        if let Some(policy) = &self.autoscaling {
+            policy.validate()?;
+            if self.volume.is_some()
+                || self.plugin.is_some()
+                || (self.replicas != 0
+                    && !(policy.min_replicas..=policy.max_replicas).contains(&self.replicas))
+            {
+                return Err(ExecutionError::Invalid("automatic scaling workload"));
+            }
         }
         if let Some(volume) = &self.volume
             && (volume.mount_path != "/data"
@@ -222,7 +254,20 @@ pub struct Condition {
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct AutoscalingObservation {
+    pub min_replicas: u16,
+    pub max_replicas: u16,
+    pub current_replicas: u16,
+    pub ready_replicas: u16,
+    pub desired_replicas: u16,
+    pub metrics_available: bool,
+    pub reason: String,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ObservedState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub autoscaling: Option<AutoscalingObservation>,
     pub resource_id: String,
     pub revision: u64,
     pub phase: Phase,
@@ -326,6 +371,8 @@ pub struct TargetObservation {
     pub service_bindings_version: Option<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub public_routing_version: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub autoscaling_version: Option<u8>,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

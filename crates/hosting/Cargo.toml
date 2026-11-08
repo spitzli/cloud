@@ -41,6 +41,7 @@ getrandom = "0.2"
 unicode-normalization = "0.1"
 
 [dev-dependencies]
+uuid = { version = "1", features = ["v4"] }
 webdock-object-storage = { path = "../object-storage", features = ["local-test"] }
 webdock-access={path="../access"}
 webdock-registry={path="../registry"}

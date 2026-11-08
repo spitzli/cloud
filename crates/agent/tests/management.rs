@@ -199,6 +199,7 @@ impl RuntimeAdapter for Controlled {
     }
     async fn inspect(&self, s: &RuntimeSpec) -> Result<ObservedState> {
         Ok(ObservedState {
+            autoscaling: None,
             resource_id: s.resource_id.to_string(),
             revision: s.revision,
             phase: Phase::Running,

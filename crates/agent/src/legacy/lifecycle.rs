@@ -14,6 +14,7 @@ pub async fn inspect_completed(
     }
     guard.check_for(command).await?;
     let spec = &command.spec;
+    crate::kubernetes::autoscaling::ensure_absent(client.clone(), spec).await?;
     let binding = spec
         .hosting_binding
         .as_ref()
@@ -127,6 +128,7 @@ pub async fn inspect_completed(
     };
     guard.check_for(command).await?;
     Ok(ObservedState {
+        autoscaling: None,
         resource_id: spec.resource_id.to_string(),
         revision: spec.revision,
         phase: Phase::Absent,
@@ -416,6 +418,7 @@ pub(super) async fn execute(
     }
     guard.check_for(command).await?;
     Ok(ObservedState {
+        autoscaling: None,
         resource_id: spec.resource_id.to_string(),
         revision: spec.revision,
         phase: Phase::Absent,

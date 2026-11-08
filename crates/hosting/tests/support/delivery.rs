@@ -53,6 +53,7 @@ impl RuntimeAdapter for Runtime {
     }
     async fn inspect(&self, spec: &RuntimeSpec) -> webdock_supervisor::Result<ObservedState> {
         Ok(ObservedState {
+            autoscaling: None,
             resource_id: spec.resource_id.to_string(),
             revision: spec.revision,
             phase: Phase::Running,

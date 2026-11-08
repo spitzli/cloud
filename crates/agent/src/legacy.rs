@@ -170,8 +170,14 @@ pub fn deployment_update(mut existing: Deployment, command: &Command) -> Result<
     }
     annotations(&mut existing.metadata, command);
     let deployment = existing.spec.as_mut().ok_or(ExecutionError::Ownership)?;
-    deployment.replicas = Some(if command.action == Action::Stop {
+    deployment.replicas = Some(if command.action == Action::Stop || spec.replicas == 0 {
         0
+    } else if let Some(policy) = &spec.autoscaling {
+        // Preserve the HPA's count through configuration rollouts; only resume seeds min.
+        deployment
+            .replicas
+            .filter(|count| *count > 0)
+            .unwrap_or(i32::from(policy.min_replicas))
     } else {
         i32::from(spec.replicas)
     });
@@ -461,6 +467,14 @@ pub(crate) async fn reconcile_with_registry(
 ) -> Result<ObservedState> {
     guard.check_for(command).await?;
     let spec = &command.spec;
+    let automatic =
+        command.action == Action::Apply && spec.replicas > 0 && spec.autoscaling.is_some();
+    if automatic && !crate::kubernetes::autoscaling::enabled() {
+        return Err(ExecutionError::Unsupported("qualified automatic scaling"));
+    }
+    if !automatic {
+        crate::kubernetes::autoscaling::remove(client.clone(), command, guard).await?;
+    }
     if matches!(command.action, Action::Retire | Action::PurgeStorage) {
         return lifecycle::execute(client, command, guard, storage).await;
     }
@@ -631,6 +645,17 @@ pub(crate) async fn reconcile_with_registry(
             .await
             .map_err(api_failure)?;
     }
+    if automatic {
+        let actual = existing_deployment(client.clone(), spec)
+            .await?
+            .ok_or(ExecutionError::Ownership)?;
+        let uid = actual
+            .metadata
+            .uid
+            .as_deref()
+            .ok_or(ExecutionError::Ownership)?;
+        crate::kubernetes::autoscaling::apply(client.clone(), command, guard, uid).await?;
+    }
     let deadline = tokio::time::Instant::now() + Duration::from_secs(120);
     loop {
         guard.check().await?;
@@ -666,6 +691,7 @@ pub(crate) async fn reconcile_with_registry(
 pub async fn inspect(client: Client, spec: &RuntimeSpec) -> Result<ObservedState> {
     spec.validate()?;
     let mut observed = ObservedState {
+        autoscaling: None,
         resource_id: spec.resource_id.to_string(),
         revision: spec.revision,
         phase: Phase::Absent,
@@ -695,7 +721,7 @@ pub async fn inspect(client: Client, spec: &RuntimeSpec) -> Result<ObservedState
     let status = deployment.status.unwrap_or_default();
     let current =
         status.observed_generation.unwrap_or(0) >= deployment.metadata.generation.unwrap_or(1);
-    let pod_api: Api<Pod> = Api::namespaced(client, &namespace(spec));
+    let pod_api: Api<Pod> = Api::namespaced(client.clone(), &namespace(spec));
     let pods = pod_api
         .list(
             &ListParams::default()
@@ -742,6 +768,7 @@ pub async fn inspect(client: Client, spec: &RuntimeSpec) -> Result<ObservedState
         }
         .into(),
     });
+    crate::kubernetes::autoscaling::observe(client.clone(), spec, &mut observed).await?;
     Ok(observed)
 }
 pub async fn logs(client: Client, spec: &RuntimeSpec, tail: u32) -> Result<String> {

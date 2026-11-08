@@ -19,6 +19,7 @@ import {
   useHostingActionCompletion,
 } from "./HostingOperation";
 import { HostingSettings } from "./HostingSettings";
+import { HostingScalingStatus } from "./HostingScaling";
 import { HostingDeletion } from "./HostingDeletion";
 import { ActionFailure } from "./HostingActionState";
 import * as ui from "./ui";
@@ -141,6 +142,7 @@ export function HostingApplication({
           {view === "overview" ? (
             <>
               <ApplicationSummary app={app.data} />
+              {app.data.spec.autoscaling ? <HostingScalingStatus key={`${appID}-${String(app.data.revision)}`} app={app.data} /> : null}
               {canManageApp(app.data, (session.user.preview && !session.user.acting) === true) ? (
                 <>
                   <ApplicationControls key={appID} app={app.data} />
@@ -181,12 +183,12 @@ function ApplicationSummary({ app }: { app: HostingApp }) {
         {[
           ["Desired revision", String(app.revision)],
           ["Observed revision", String(app.observedRevision)],
-          ["Replicas", String(app.spec.replicas)],
+          [app.spec.autoscaling ? "Automatic instances" : "Fixed instances", app.spec.autoscaling ? `${String(app.spec.autoscaling.minReplicas)}–${String(app.spec.autoscaling.maxReplicas)}` : String(app.spec.replicas)],
           [
-            "CPU cores",
+            "CPU per instance",
             formatResource("cpuMillicores", app.spec.cpuMillicores),
           ],
-          ["Memory", formatResource("memoryBytes", app.spec.memoryBytes)],
+          ["Memory per instance", formatResource("memoryBytes", app.spec.memoryBytes)],
           [
             "Persistent storage",
             formatResource("volumeBytes", app.spec.volumeBytes ?? 0),
@@ -249,7 +251,8 @@ function ApplicationControls({ app }: { app: HostingApp }) {
           <button
             key={action}
             className={ui.button()}
-            disabled={pending}
+            disabled={pending || (action === "apps.scale" && Boolean(app.spec.autoscaling))}
+            title={action === "apps.scale" && app.spec.autoscaling ? "Switch to fixed instances in Settings to scale manually." : undefined}
             onClick={() => {
               mutation.reset();
               setReview({ action, app });
@@ -259,6 +262,7 @@ function ApplicationControls({ app }: { app: HostingApp }) {
           </button>
         ))}
       </div>
+      {app.spec.autoscaling ? <p className="mt-3 text-sm text-muted">Automatic scaling controls the instance count. Switch to fixed instances in Settings to choose it manually.</p> : null}
       <ActionFailure
         error={mutation.error}
         uncertain={uncertain}

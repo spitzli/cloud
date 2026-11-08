@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-08",
+  "scope": "Native application CPU autoscaling; fixed mode preserved",
+  "productionEnabled": false,
+  "nativeSchemaMigration": false,
+  "bounds": {
+    "minReplicas": 1,
+    "maxReplicas": 20,
+    "cpuPercentMin": 10,
+    "cpuPercentMax": 90,
+    "cpuPercentDefault": 70,
+    "scaleDownStabilizationSeconds": 300
+  },
+  "qualification": {
+    "kubernetesVersion": "v1.37.0",
+    "ownedLoopbackCluster": true,
+    "realCPUScaleUp": true,
+    "realScaleDownToMinimum": true,
+    "bothHelmAndRetainedDeploymentPaths": true,
+    "stopRemovesHpaAndRemainsStopped": true,
+    "staleScaleAfterStopRefused": true,
+    "resumeRestoresPolicy": true,
+    "serviceReachesMultipleInstances": true,
+    "policyUpdateAndDirectDeletion": true,
+    "tenantAndMaxCapacityPostgresTest": true,
+    "missingMetricDoesNotWrite": true,
+    "stalePolicyPutRefused": true,
+    "oldAgentCannotClaimAutomaticWork": true,
+    "desktopMobileCustomerBrowser": true,
+    "cleanRustRegressionsPassed": 256,
+    "consoleTestsPassed": 245,
+    "sharedTypeScriptTestsPassed": 34
+  },
+  "review": "Independent implementation review completed; HPA CAS revision, observed count, agent env placement and client demand parity corrected with regression tests.",
+  "remaining": [
+    "Roll out compatible native agent and qualify target cluster before enabling.",
+    "Run SSH is unavailable through the existing local key; no new 1Password request made."
+  ],
+  "source": "Feature branch; exact signed commit and artifact hashes retained in local release receipt.",
+  "references": [
+    "https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/"
+  ]
+}

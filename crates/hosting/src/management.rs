@@ -105,6 +105,10 @@ impl HostingService {
                 value["configured"] = json!(!access.project["provider"].is_null());
                 value["provider"] = access.project["provider"].clone();
                 value["publicSitePolicy"] = Self::public_site_policy(tx, id).await?;
+                value["automaticScalingAvailable"] = json!(
+                    self.automatic_scaling_available(tx, access.project["cluster_id"].as_str())
+                        .await?
+                );
                 Ok((value, Target::project(id, false, false, false)))
             }
             "clusters.get" => {

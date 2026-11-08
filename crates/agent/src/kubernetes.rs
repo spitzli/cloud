@@ -1,3 +1,4 @@
+pub mod autoscaling;
 mod completed;
 mod lifecycle;
 mod metrics;
@@ -53,9 +54,14 @@ pub fn helm_values(spec: &RuntimeSpec, generation: u64, stop: bool) -> Result<Va
         ));
     }
     let limits = json!({"cpu":format!("{}m",spec.cpu_millicores),"memory":spec.memory_bytes.to_string(),"ephemeral-storage":spec.ephemeral_bytes.to_string()});
-    Ok(
-        json!({"name":spec.name(),"labels":spec.labels(),"revision":spec.revision,"generation":generation,"specHash":digest(spec)?,"image":spec.image,"arguments":spec.arguments,"replicas":if stop{0}else{spec.replicas},"port":spec.port,"healthPath":spec.health_path,"healthHost":spec.health_host,"ephemeralBytes":spec.ephemeral_bytes,"resources":{"requests":limits,"limits":limits},"volume":{"enabled":spec.volume.is_some(),"sizeBytes":spec.volume.as_ref().and_then(|v|v.size_bytes).unwrap_or(0)},"plugin":spec.plugin,"mounts":spec.mounts.iter().map(|m|json!({"name":m.name,"secretName":crate::policy::RuntimePolicy::kubernetes_secret_name(spec,&m.name)})).collect::<Vec<_>>()}),
-    )
+    let mut values = json!({"name":spec.name(),"labels":spec.labels(),"revision":spec.revision,"generation":generation,"specHash":digest(spec)?,"image":spec.image,"arguments":spec.arguments,"replicas":if stop{0}else{spec.replicas},"port":spec.port,"healthPath":spec.health_path,"healthHost":spec.health_host,"ephemeralBytes":spec.ephemeral_bytes,"resources":{"requests":limits,"limits":limits},"volume":{"enabled":spec.volume.is_some(),"sizeBytes":spec.volume.as_ref().and_then(|v|v.size_bytes).unwrap_or(0)},"plugin":spec.plugin,"mounts":spec.mounts.iter().map(|m|json!({"name":m.name,"secretName":crate::policy::RuntimePolicy::kubernetes_secret_name(spec,&m.name)})).collect::<Vec<_>>()});
+    if !stop
+        && spec.replicas > 0
+        && let Some(policy) = &spec.autoscaling
+    {
+        values["autoscaling"] = json!(policy);
+    }
+    Ok(values)
 }
 #[derive(Clone)]
 pub struct ApprovedChart {
@@ -592,6 +598,10 @@ impl KubernetesAdapter {
         if command.action == Action::Stop {
             // Stop retains the last installed configuration even after artifact/secret/registry grants are revoked.
             values["replicas"] = json!(0);
+            values
+                .as_object_mut()
+                .ok_or(ExecutionError::Ownership)?
+                .remove("autoscaling");
             values["revision"] = json!(command.spec.revision);
             values["generation"] = json!(command.generation);
         }
@@ -631,6 +641,43 @@ impl KubernetesAdapter {
 }
 #[async_trait::async_trait]
 impl RuntimeAdapter for KubernetesAdapter {
+    async fn check_expected(&self, command: &Command) -> Result<()> {
+        let Some(expected) = &command.expected_runtime_id else {
+            return Ok(());
+        };
+        self.validate(&command.spec)?;
+        // This is an ownership precondition, not convergence against the new HPA policy.
+        let (namespace, name, labels) = autoscaling::identity(&command.spec)?;
+        let api: Api<Deployment> = Api::namespaced(self.client.clone(), &namespace);
+        let Some(deployment) = api
+            .get_opt(&name)
+            .await
+            .map_err(|_| ExecutionError::Runtime)?
+        else {
+            return if command.action == Action::Retire {
+                Ok(())
+            } else {
+                Err(ExecutionError::Ownership)
+            };
+        };
+        if deployment.metadata.uid.as_ref() != Some(expected)
+            || labels.as_object().is_none_or(|required| {
+                required.iter().any(|(key, value)| {
+                    deployment
+                        .metadata
+                        .labels
+                        .as_ref()
+                        .and_then(|l| l.get(key))
+                        .map(String::as_str)
+                        != value.as_str()
+                })
+            })
+        {
+            return Err(ExecutionError::Ownership);
+        }
+        Ok(())
+    }
+
     fn capabilities(&self) -> Capabilities {
         Capabilities {
             retained_volumes: true,
@@ -757,6 +804,7 @@ impl RuntimeAdapter for KubernetesAdapter {
             registry_version: self.registry_ready().await.unwrap_or(false).then_some(1),
             service_bindings_version: Some(1),
             public_routing_version: self.public_routing_ready().await.then_some(1),
+            autoscaling_version: autoscaling::enabled().then_some(1),
             version,
             nodes,
             runtime_kind: "kubernetes".into(),
@@ -777,6 +825,11 @@ impl RuntimeAdapter for KubernetesAdapter {
         self.validate(spec)?;
         if command.action == Action::Apply {
             self.policy.admit(spec)?;
+        }
+        let automatic =
+            command.action == Action::Apply && spec.replicas > 0 && spec.autoscaling.is_some();
+        if automatic && !autoscaling::enabled() {
+            return Err(ExecutionError::Unsupported("qualified automatic scaling"));
         }
         if spec.hosting_binding.is_some() {
             let registry = if command.action == Action::Apply {
@@ -829,12 +882,27 @@ impl RuntimeAdapter for KubernetesAdapter {
         self.namespace(spec, guard).await?;
         self.check_release_ownership(spec, command.generation)
             .await?;
+        if !automatic {
+            autoscaling::remove(self.client.clone(), command, guard).await?;
+        }
         // Helm owns specification; the Deployment controller owns Pods and restart behavior.
         guard.check().await?;
         if command.action == Action::Apply {
             self.verify_mounts(spec).await?;
         }
         self.upgrade(command, guard).await?;
+        if automatic {
+            let deployment = self
+                .deployment(spec)
+                .await?
+                .ok_or(ExecutionError::Ownership)?;
+            let uid = deployment
+                .metadata
+                .uid
+                .as_deref()
+                .ok_or(ExecutionError::Ownership)?;
+            autoscaling::apply(self.client.clone(), command, guard, uid).await?;
+        }
         let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(120);
         loop {
             guard.check_for(command).await?;
@@ -888,6 +956,7 @@ impl RuntimeAdapter for KubernetesAdapter {
             return crate::legacy::inspect(self.client.clone(), spec).await;
         }
         let mut observed = ObservedState {
+            autoscaling: None,
             resource_id: spec.resource_id.to_string(),
             revision: spec.revision,
             phase: Phase::Absent,
@@ -965,6 +1034,7 @@ impl RuntimeAdapter for KubernetesAdapter {
             }
             .into(),
         });
+        autoscaling::observe(self.client.clone(), spec, &mut observed).await?;
         Ok(observed)
     }
     async fn metrics(&self, spec: &RuntimeSpec) -> Result<ResourceMetrics> {
@@ -1077,6 +1147,7 @@ mod helm_rollback_tests {
         use webdock_core::id::RecordId;
         let root = tempfile::tempdir().unwrap();
         let mut spec = RuntimeSpec {
+            autoscaling: None,
             version: 1,
             installation: "owned".into(),
             project_id: RecordId::parse("1").unwrap(),

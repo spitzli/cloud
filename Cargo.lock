@@ -8698,6 +8698,7 @@ dependencies = [
  "tower",
  "unicode-normalization",
  "url",
+ "uuid",
  "webdock-access",
  "webdock-agent",
  "webdock-agent-control",

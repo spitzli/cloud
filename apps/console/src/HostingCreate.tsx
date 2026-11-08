@@ -5,9 +5,10 @@ import { checkArguments, createCommand, fieldRules } from "./hosting-contracts";
 import { useHostingAction } from "./hosting-client";
 import { HostingReceipt } from "./HostingOperation";
 import { ActionFailure } from "./HostingActionState";
+import { HostingScaling } from "./HostingScaling";
 import { HostingEnvironment } from "./HostingEnvironment";
 import * as ui from "./ui";
-export function HostingCreate({ projectID, subscriptionRevision, publicSitePolicy }: { projectID: string; subscriptionRevision: number; publicSitePolicy?:{domain:string|null;enabled:boolean}|null|undefined }) {
+export function HostingCreate({ projectID, subscriptionRevision, publicSitePolicy, automaticScalingAvailable = false }: { projectID: string; subscriptionRevision: number; automaticScalingAvailable?: boolean; publicSitePolicy?:{domain:string|null;enabled:boolean}|null|undefined }) {
   const [open, setOpen] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [validation, setValidation] = useState<string>();
@@ -46,7 +47,7 @@ export function HostingCreate({ projectID, subscriptionRevision, publicSitePolic
         <label className={ui.field}>CPU<input className={ui.input} name="cpuMillicores" pattern={fieldRules.cpuMillicores.pattern} title={fieldRules.cpuMillicores.title} aria-label="CPU" required defaultValue="0.1 cores" /></label><FieldError message={live.errors.cpuMillicores} />
         <label className={ui.field}>Memory<input className={ui.input} name="memoryBytes" pattern={fieldRules.bytes.pattern} title={fieldRules.bytes.title} aria-label="Memory" required defaultValue="128 MB" /></label><FieldError message={live.errors.memoryBytes} />
         <label className={ui.field}>Temporary storage<input className={ui.input} name="ephemeralBytes" pattern={fieldRules.bytes.pattern} title={fieldRules.bytes.title} required defaultValue="64 MB" /></label><FieldError message={live.errors.ephemeralBytes} />
-        <label className={ui.field}>Replicas<input className={ui.input} name="replicas" type="number" min={0} max={20} step={1} required defaultValue={1} /></label><FieldError message={live.errors.replicas} />
+        <HostingScaling available={automaticScalingAvailable} />
         <label className={ui.field}>Persistent storage<input className={ui.input} name="volumeBytes" pattern={fieldRules.bytes.pattern} title={fieldRules.bytes.title} aria-label="Persistent storage" required defaultValue="0 MB" />
           <span className={ui.hint}>0 MB for none; otherwise at least 64 MB and one replica.</span></label><FieldError message={live.errors.volumeBytes} />
       </fieldset>

@@ -862,6 +862,9 @@ impl Daemon {
                 value["capacity"]["volumeBytes"] = storage.capacity_bytes.into();
             }
             add_public_routing_capability(&mut value, snapshot.public_routing_version);
+            if let Some(1) = snapshot.autoscaling_version {
+                value["capabilities"]["autoscalingVersion"] = 1.into();
+            }
             if let Some(version) = snapshot.registry_version {
                 value["capabilities"]["registryVersion"] = version.into();
             }

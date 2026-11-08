@@ -6,6 +6,7 @@ generation: 1
 specHash: ""
 arguments: []
 replicas: 1
+autoscaling: null
 port: 3443
 healthPath: null
 healthHost: null
