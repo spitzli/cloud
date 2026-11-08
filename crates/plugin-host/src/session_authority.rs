@@ -145,9 +145,12 @@ impl SessionAuthority {
 fn identity_error(error: webdock_identity::IdentityError) -> PluginError {
     use webdock_identity::IdentityError as E;
     match error {
-        E::Database(_) | E::Configuration | E::Crypto | E::Allocation | E::Worker => {
-            crate::unavailable()
-        }
+        E::Database(_)
+        | E::Configuration
+        | E::Crypto
+        | E::Allocation
+        | E::Worker
+        | E::Persistence => crate::unavailable(),
         _ => PluginError::denied(),
     }
 }
@@ -178,6 +181,7 @@ mod tests {
         let database = || sea_orm::DbErr::Custom("private diagnostic".into());
         for error in [
             webdock_browser_session::Error::Database(database()),
+            webdock_browser_session::Error::Identity(webdock_identity::IdentityError::Persistence),
             webdock_browser_session::Error::Identity(webdock_identity::IdentityError::Database(
                 database(),
             )),

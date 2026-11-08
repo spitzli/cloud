@@ -43,18 +43,27 @@ async fn journal(db: &impl ConnectionTrait) -> Value {
 #[tokio::test]
 #[ignore = "owned local PostgreSQL18; actual binary startup and SIGTERM"]
 async fn actual_native_binary_starts_with_restricted_roles_without_schema_changes() {
-    actual_core(false).await;
+    actual_core(false, false).await;
 }
 
 #[tokio::test]
 #[ignore = "owned local PostgreSQL18; actual HTTP write using native ID driver"]
 async fn actual_http_write_uses_native_postgres_id_backend() {
-    actual_core(true).await;
+    actual_core(true, false).await;
 }
 
-async fn actual_core(native: bool) {
+#[tokio::test]
+#[ignore = "owned local PostgreSQL18; actual authenticated HTTP native session read"]
+async fn actual_http_session_read_uses_native_postgres() {
+    actual_core(false, true).await;
+}
+
+async fn actual_core(native: bool, native_session: bool) {
     let fixture = fixture::DatabaseFixture::start().await;
     let owner = fixture.owner().await;
+    if native_session {
+        owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('owned-session-user','Owned user','session@example.test',true,'user',false,false); INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('owned-session','owned-core-session-token','owned-session-user',now()+interval '1 hour',now())"#).await.unwrap();
+    }
     let before = journal(&owner).await;
     let account_counts = || {
         Statement::from_string(
@@ -126,6 +135,14 @@ async fn actual_core(native: bool) {
         .env(
             "WEBDOCK_ID_BACKEND",
             if native { "tokio-postgres" } else { "sea-orm" },
+        )
+        .env(
+            "WEBDOCK_SESSION_READ_BACKEND",
+            if native_session {
+                "tokio-postgres"
+            } else {
+                "sea-orm"
+            },
         );
     let output = std::fs::File::create(&log).unwrap();
     command
@@ -173,6 +190,48 @@ async fn actual_core(native: bool) {
         let row=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT (SELECT count(*) FROM webdock_auth.waitlist_entry WHERE email='native-id@example.test') AS entries,(SELECT count(*) FROM pg_catalog.pg_stat_activity WHERE application_name='spitzli-native-postgres' AND usename='webdock_auth_bootstrap') AS native_connections")).await.unwrap().unwrap();
         assert_eq!(row.try_get::<i64>("", "entries").unwrap(), 1);
         assert!(row.try_get::<i64>("", "native_connections").unwrap() >= 1);
+    }
+    if native_session {
+        let gate = owner.begin().await.unwrap();
+        gate.execute_unprepared("LOCK TABLE webdock_auth.session IN ACCESS EXCLUSIVE MODE")
+            .await
+            .unwrap();
+        let cookie = CookiePolicy::new(false, secret)
+            .unwrap()
+            .header("owned-core-session-token", 3600)
+            .unwrap()
+            .split(';')
+            .next()
+            .unwrap()
+            .to_owned();
+        let request_client = client.clone();
+        let request = tokio::spawn(async move {
+            request_client
+                .get(format!("http://127.0.0.1:{port}/api/auth/get-session"))
+                .header("Host", "localhost:3125")
+                .header("Cookie", cookie)
+                .timeout(Duration::from_secs(5))
+                .send()
+                .await
+                .unwrap()
+        });
+        let deadline = tokio::time::Instant::now() + Duration::from_secs(3);
+        loop {
+            let active=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT EXISTS(SELECT 1 FROM pg_catalog.pg_stat_activity WHERE application_name='spitzli-native-postgres' AND usename='webdock_auth_bootstrap' AND wait_event_type='Lock' AND query LIKE '%s.token=$1%' AND query LIKE '%native_provider_session_live%') AS native_read")).await.unwrap().unwrap().try_get::<bool>("","native_read").unwrap();
+            if active {
+                break;
+            }
+            assert!(
+                tokio::time::Instant::now() < deadline,
+                "actual authenticated HTTP must execute the native session query"
+            );
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+        gate.commit().await.unwrap();
+        let response = request.await.unwrap();
+        assert_eq!(response.status(), 200);
+        let body: Value = response.json().await.unwrap();
+        assert_eq!(body["user"]["id"], "owned-session-user");
     }
     assert_eq!(
         before,

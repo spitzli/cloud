@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-08",
+  "scope": "Opt-in native canonical cookie/session reads and signed tenant context",
+  "base": "a4def00ec0b38cbca93d82e764a759e115447716",
+  "maximumMigration": 75,
+  "defaultBackend": "sea-orm",
+  "optIn": "WEBDOCK_SESSION_READ_BACKEND=tokio-postgres",
+  "completeDatabaseRewrite": false,
+  "productionActivation": false,
+  "schemaMigration": false,
+  "credentialsChanged": false,
+  "publicBuildAdmissionChanged": false,
+  "pool": {
+    "max": 4,
+    "min": 0,
+    "idleSeconds": 30,
+    "backgroundSQLPolling": false,
+    "additionalToRetainedPools": true
+  },
+  "security": [
+    "same CookiePolicy/Principal and authoritative local/provider SQL functions",
+    "checked role/TLS/clean transaction scope; direct typed native rows",
+    "full native session operation deadline30s",
+    "signer owns checked transaction, verifies actual audience, bounds installation5s and returns only on success",
+    "SQL independently checks current membership/session/acting authority",
+    "native persistence uncertainty maps unavailable; no legacy fallback after opt-in"
+  ],
+  "targetedQualification": {
+    "uniqueTestsPassed": 19,
+    "nativeOwnedSessionCases": 6,
+    "coreRuntimeAndConfig": 9,
+    "actualCoreAndStartupCancellation": 4,
+    "ownedEnvironment": "Exclusively owned loopback PostgreSQL18 Docker fixtures; no supplied DSN/provider network",
+    "providerCoverage": "Synthetic provider tables and real existing policy functions: binding/credential/revision/session/ban/impersonation/MFA/enforcement changes",
+    "authenticationCoverage": "Cookie parity, setup/operator MFA, preview/acting expiry, tenant RLS, membership/session revocation, wrong audience/signature, canceled query discard/replacement; actual local operator MFA/recovery and software passkey registration/login/replay/revocation",
+    "actualHTTP": "GET /api/auth/get-session returns expected canonical user; owned session-table lock observes the actual native query/backend before release",
+    "softwareAuthenticatorException": "Existing test-only resident client selection override; server UV/signature/origin verification remains required"
+  },
+  "defaultRegressions": {
+    "passed": 346,
+    "failed": 0,
+    "ignored": 146,
+    "suites": 76
+  },
+  "staticQualification": {
+    "clippy": "identity, control-plane, databases, provider-connections, plugin-host all-targets -D warnings passed",
+    "format": "cargo fmt --all -- --check passed",
+    "independentLockedMetadataWorkspaces": 15,
+    "existingPackageVersionsChanged": false
+  },
+  "review": {
+    "reviewer": "fresh independent code review",
+    "materialFindings": 0,
+    "productionCodeChangedAfterReview": false
+  },
+  "nonGatingSessionExperiment": {
+    "samplesPerDriver": 200,
+    "warmupPerDriver": 20,
+    "mode": "Alternating owned local debug-build reads including respective security checks",
+    "legacyMicroseconds": {
+      "p50": 278,
+      "p95": 501,
+      "p99": 759
+    },
+    "nativeMicroseconds": {
+      "p50": 544,
+      "p95": 809,
+      "p99": 958
+    },
+    "conclusion": "No local latency improvement established. This is not a pure driver/fullAPI/NeonCU benchmark; default unchanged."
+  },
+  "remaining": "Identity/session writes, caller-owned authenticate_session_in and product services retain explicit SeaORM/SQLx paths. Storage-library decisions remain measurement driven."
+}

@@ -86,7 +86,13 @@ pub enum IdBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum SessionReadBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub session_read_backend: SessionReadBackend,
     pub id_backend: IdBackend,
     pub database: RuntimeDatabaseConfig,
     pub server: RuntimeServerConfig,
@@ -123,7 +129,17 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         Some("tokio-postgres") => IdBackend::Native,
         _ => return Err(Error::Message("Invalid WEBDOCK_ID_BACKEND".into())),
     };
+    let session_read_backend = match env.get("WEBDOCK_SESSION_READ_BACKEND").map(String::as_str) {
+        None | Some("sea-orm") => SessionReadBackend::Legacy,
+        Some("tokio-postgres") => SessionReadBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_SESSION_READ_BACKEND".into(),
+            ));
+        }
+    };
     Ok(RuntimeConfig {
+        session_read_backend,
         id_backend,
         database: RuntimeDatabaseConfig {
             uri,

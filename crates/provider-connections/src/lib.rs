@@ -554,7 +554,8 @@ fn authority_error(error: webdock_browser_session::Error) -> Error {
             | webdock_identity::IdentityError::RateLimited
             | webdock_identity::IdentityError::Database(_)
             | webdock_identity::IdentityError::Allocation
-            | webdock_identity::IdentityError::Worker,
+            | webdock_identity::IdentityError::Worker
+            | webdock_identity::IdentityError::Persistence,
         ) => Error::Unavailable,
         webdock_browser_session::Error::OAuth(error) if error.status() >= 500 => Error::Unavailable,
         _ => Error::Forbidden,
