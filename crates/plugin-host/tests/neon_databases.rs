@@ -6,7 +6,7 @@ use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
 use std::sync::{
     Arc,
-    atomic::{AtomicBool, Ordering},
+    atomic::{AtomicBool, AtomicUsize, Ordering},
 };
 use webdock_identity::{CookiePolicy, IdentityService};
 use webdock_plugin_host::{AdmissionInput, FileBindings, HostService};
@@ -54,6 +54,7 @@ async fn handle(
 }
 #[derive(Default)]
 struct Gate {
+    requests: AtomicUsize,
     pause: AtomicBool,
     entered: tokio::sync::Notify,
     release: tokio::sync::Notify,
@@ -64,6 +65,7 @@ async fn provider(
     uri: axum::http::Uri,
 ) -> axum::Json<Value> {
     assert_eq!(headers["authorization"], "Bearer fixture-key");
+    gate.requests.fetch_add(1, Ordering::SeqCst);
     if gate.pause.load(Ordering::SeqCst) {
         gate.entered.notify_one();
         gate.release.notified().await;
@@ -347,6 +349,20 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     )
     .await;
     assert!(host.http_request(&view,json!({"binding":"neon","method":"POST","path":"/_spitzli/databases/credentials","body":{"resource_id":resource}})).await.is_err());
+    gate.requests.store(0, Ordering::SeqCst);
+    let current = host
+        .http_request(
+            &view,
+            json!({"binding":"neon","method":"GET","path":"/_spitzli/databases/current"}),
+        )
+        .await
+        .unwrap();
+    assert_eq!(current.body["status"], "active");
+    assert_eq!(
+        gate.requests.load(Ordering::SeqCst),
+        2,
+        "one scoped project validation and one endpoint read are sufficient"
+    );
     let discover_roles = handle(
         &f,
         &host,

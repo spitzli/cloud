@@ -80,7 +80,12 @@ const fakeFetcher: typeof fetch = async (input, init) => {
       if (parameters.get("retry") === "1" && attachAttempts === 1) return json({ error: "Synthetic response lost" }, 503);
       return json({ resource: { id: resource.id, name: tuple.name } });
     }
-    case "databases.view": return providerUnavailable ? json({ error: "Synthetic provider outage" }, 503) : json(panel);
+    case "databases.view":
+      if (initialView === "slow") return new Promise((_resolve, reject) => {
+        const abort = () => { reject(new DOMException("Fixture read deadline", "AbortError")); };
+        if (init.signal?.aborted) abort(); else init.signal?.addEventListener("abort", abort, { once: true });
+      });
+      return providerUnavailable ? json({ error: "Synthetic provider outage" }, 503) : json(panel);
     case "databases.branches": return providerUnavailable ? json({ error: "Synthetic provider outage" }, 503) : json(branchPanel);
     case "databases.credentials": {
       if (providerUnavailable) return json({ error: "Synthetic provider outage" }, 503);

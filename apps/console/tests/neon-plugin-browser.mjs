@@ -46,6 +46,8 @@ try {
   };
   const resourceReady = async () => {
     await page.getByRole("heading", { name: "Connection settings", exact: true }).waitFor();
+    assert.equal((await diagnostics()).requests.filter(request => request.action === "databases.branches").length, 0, "Branches must not be fetched until requested");
+    await page.getByRole("button", { name: "Show branches", exact: true }).click();
     await page.getByRole("heading", { name: "Neon branches", exact: true }).waitFor();
     await page.getByRole("button", { name: "Reveal URI", exact: true }).waitFor();
   };
@@ -151,6 +153,11 @@ try {
   assert.equal(await field.evaluate(element => { const range = document.createRange(); range.selectNodeContents(element); return range.getClientRects().length; }), 1, "German field labels must stay legible on one line");
   assert.equal(await page.locator("code").count(), 0);
   await noCachedSecret();
+  await open("slow");
+  assert.equal(await page.getByRole("button", { name: "Detach database", exact: true }).count(), 0, "Pending reads must not foreground destructive controls");
+  await page.getByRole("alert").waitFor({ timeout: 20_000 });
+  await page.getByRole("button", { name: "Detach database", exact: true }).waitFor();
+  assert.equal((await diagnostics()).requests.filter(request => request.action === "databases.view").length, 1, "A timed-out read is not retried automatically");
   assert.deepEqual(pageErrors, []);
   assert.deepEqual(externalRequests, [], "No external service may be contacted by this fixture");
   await context.close();

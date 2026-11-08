@@ -4779,6 +4779,9 @@
   "Hide URI": [
     "URI ausblenden"
   ],
+  "Hide branches": [
+    "Branches ausblenden"
+  ],
   "Hide credentials": [
     "Zugangsdaten ausblenden"
   ],
@@ -10103,6 +10106,9 @@
   ],
   "Show all records": [
     "Alle Datensätze anzeigen"
+  ],
+  "Show branches": [
+    "Branches anzeigen"
   ],
   "Show enrollment token once": [
     "Anbindungstoken einmal anzeigen"
