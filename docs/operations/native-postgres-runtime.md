@@ -26,6 +26,12 @@ owner memberships are checked. A transaction cannot start with a leftover signed
 RLS context/signature. These checks run on the transaction's actual backend,
 including when a provider uses transaction-mode pooling.
 
+Native transactions explicitly begin with READ COMMITTED. Fresh authority/facts
+queries after canonical row-lock acquisition therefore see revocation committed
+during a lock wait, even if a role/server default selected repeatable snapshots.
+This is the native runtime's isolation contract; it does not override retained
+SeaORM transaction settings.
+
 The public connection exposes checked native transactions, native rows and ToSql
 parameters; it does not translate ORM statements. Normal callers explicitly
 commit or roll back. Cancellation, an implicit drop or an unconfirmed/failed

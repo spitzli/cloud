@@ -1,5 +1,11 @@
 #[path = "native_session.rs"]
 mod native_session;
+#[path = "native_session_management.rs"]
+mod native_session_management;
+struct NativeSessionBackend {
+    pool: webdock_persistence::postgres::Pool,
+    management: bool,
+}
 use crate::{
     CookiePolicy, IdentityError, Result, SecretKeys,
     crypto::{hash_password, random, verify_password},
@@ -88,7 +94,7 @@ pub struct IdentityService {
     pub(crate) neon: Option<crate::NeonAuthClient>,
     pub(crate) neon_gate: tokio::sync::OnceCell<bool>,
     pub(crate) db: DatabaseConnection,
-    native_session_reads: Option<webdock_persistence::postgres::Pool>,
+    native_sessions: Option<NativeSessionBackend>,
     pub(crate) cookies: CookiePolicy,
     pub(crate) password_workers: Arc<Semaphore>,
     pub(crate) keys: Option<SecretKeys>,
@@ -103,7 +109,7 @@ impl IdentityService {
             neon: None,
             neon_gate: tokio::sync::OnceCell::new(),
             db,
-            native_session_reads: None,
+            native_sessions: None,
             cookies,
             password_workers: Arc::new(Semaphore::new(4)),
             keys: None,
@@ -114,8 +120,40 @@ impl IdentityService {
         }
     }
     pub fn with_native_session_reads(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
-        self.native_session_reads = Some(pool);
+        self.native_sessions = Some(NativeSessionBackend {
+            pool,
+            management: false,
+        });
         self
+    }
+    pub fn with_native_session_management(
+        mut self,
+        pool: webdock_persistence::postgres::Pool,
+    ) -> Self {
+        self.native_sessions = Some(NativeSessionBackend {
+            pool,
+            management: true,
+        });
+        self
+    }
+    pub(crate) fn native_management_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+        self.native_sessions
+            .as_ref()
+            .filter(|backend| backend.management)
+            .map(|backend| &backend.pool)
+    }
+    /// Trusted backend boundary: subject/session IDs alone are not authentication proof.
+    /// Keep canonical share locks until the caller commits or rolls back this transaction.
+    pub async fn authenticate_session_native_in<'a>(
+        &self,
+        tx: webdock_persistence::postgres::Transaction<'a>,
+        subject: &str,
+        session: &str,
+    ) -> Result<(
+        webdock_persistence::postgres::Transaction<'a>,
+        Option<Principal>,
+    )> {
+        native_session::revalidate(tx, subject, session).await
     }
     pub fn with_allocator(mut self, allocator: Arc<webdock_persistence::IdAllocator>) -> Self {
         self.allocator = Some(allocator);
@@ -153,8 +191,8 @@ impl IdentityService {
         let Some(token) = self.cookies.read(header)? else {
             return Ok(None);
         };
-        if let Some(pool) = &self.native_session_reads {
-            return native_session::authenticate(pool, &token).await;
+        if let Some(backend) = &self.native_sessions {
+            return native_session::authenticate(&backend.pool, &token).await;
         }
         let tx = self.db.begin().await?;
         let row = tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,

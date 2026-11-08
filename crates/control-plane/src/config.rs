@@ -91,7 +91,13 @@ pub enum SessionReadBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum SessionManagementBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub session_management_backend: SessionManagementBackend,
     pub session_read_backend: SessionReadBackend,
     pub id_backend: IdBackend,
     pub database: RuntimeDatabaseConfig,
@@ -138,7 +144,26 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
             ));
         }
     };
+    let session_management_backend = match env
+        .get("WEBDOCK_SESSION_MANAGEMENT_BACKEND")
+        .map(String::as_str)
+    {
+        None | Some("sea-orm") => SessionManagementBackend::Legacy,
+        Some("tokio-postgres") => SessionManagementBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_SESSION_MANAGEMENT_BACKEND".into(),
+            ));
+        }
+    };
+    let session_read_backend =
+        if matches!(session_management_backend, SessionManagementBackend::Native) {
+            SessionReadBackend::Native
+        } else {
+            session_read_backend
+        };
     Ok(RuntimeConfig {
+        session_management_backend,
         session_read_backend,
         id_backend,
         database: RuntimeDatabaseConfig {

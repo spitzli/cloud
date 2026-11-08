@@ -138,10 +138,18 @@ impl Connection {
         self.discard = true;
         let deadline = tokio::time::Instant::now() + TRANSACTION_BUDGET;
         let client = self.client.as_mut().ok_or(Error::Unavailable)?;
-        let tx = tokio::time::timeout(self.owner.limits.connect_timeout, client.transaction())
-            .await
-            .map_err(|_| Error::Unavailable)?
-            .map_err(|_| Error::Unavailable)?;
+        // Fresh statements after row-lock acquisition must observe intervening revocation,
+        // even when a role/server default has selected a repeatable snapshot.
+        let tx = tokio::time::timeout(
+            self.owner.limits.connect_timeout,
+            client
+                .build_transaction()
+                .isolation_level(tokio_postgres::IsolationLevel::ReadCommitted)
+                .start(),
+        )
+        .await
+        .map_err(|_| Error::Unavailable)?
+        .map_err(|_| Error::Unavailable)?;
         Ok(Transaction {
             inner: Some(tx),
             discard: &mut self.discard,

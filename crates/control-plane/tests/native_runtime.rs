@@ -207,3 +207,36 @@ fn native_session_read_backend_requires_explicit_opt_in() {
     env.insert("WEBDOCK_SESSION_READ_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
+
+#[test]
+fn native_session_management_is_explicit_and_shares_native_reads() {
+    use webdock_control_plane::config::{SessionManagementBackend, SessionReadBackend};
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().session_management_backend,
+        SessionManagementBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_SESSION_MANAGEMENT_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    let config = runtime_config(&env).unwrap();
+    assert!(matches!(
+        config.session_management_backend,
+        SessionManagementBackend::Native
+    ));
+    assert!(matches!(
+        config.session_read_backend,
+        SessionReadBackend::Native
+    ));
+    env.insert("WEBDOCK_SESSION_READ_BACKEND".into(), "sea-orm".into());
+    assert!(matches!(
+        runtime_config(&env).unwrap().session_read_backend,
+        SessionReadBackend::Native
+    ));
+    env.insert("WEBDOCK_SESSION_MANAGEMENT_BACKEND".into(), "other".into());
+    assert!(runtime_config(&env).is_err());
+}
