@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-09",
+  "scope": "Trusted scoped-automation session issuance/revocation in existing native management store",
+  "base": "a403e4857101aa640cc7ae4132d1b45a2d5fda31",
+  "maximumMigration": 75,
+  "existingManagementFlag": "WEBDOCK_SESSION_MANAGEMENT_BACKEND=tokio-postgres",
+  "newFlags": false,
+  "newPools": false,
+  "newDependencies": false,
+  "defaultsChanged": false,
+  "schemaMigration": false,
+  "credentialChange": false,
+  "runtimeRolloutInitiatedForThisIncrement": false,
+  "separateSecurityRelease": "Immutable a403 source is building/qualifying separately; this increment is excluded from that artifact.",
+  "contract": [
+    "existing1..366day and nonempty/max120byte label bounds before native allocation",
+    "explicit coordinated allocator; no implicit legacy SQL stub/fallback",
+    "canonical token is random and never returned; only confirmed session ID leaves issuer",
+    "trusted caller still authorizes workspace/user and creates explicit bearer binding",
+    "revocation constrains user+session and confirms commit",
+    "30second bound, shared guarded transaction; no retry on uncertain commit"
+  ],
+  "ownedQualification": {
+    "passed": 5,
+    "failed": 0,
+    "ignored": 0,
+    "environment": "Owned loopback PostgreSQL18; no supplied DSN or provider network",
+    "cases": [
+      "disconnected legacy DB proves actual native issuance/revocation",
+      "opaque random token, finite TTL and no ID-as-cookie credential",
+      "foreign-user revocation denied and repeated own revocation harmless",
+      "invalid label/day inputs do not reserve IDs or persist sessions",
+      "Managed enforcement denies unbound session, accepts only explicit scopedAPI binding, still no operator role",
+      "deferred insert/delete commit failure never reports success; durable ID high-water not reused",
+      "missing explicit allocator fails without legacy fallback"
+    ]
+  },
+  "regressions": {
+    "passed": 215,
+    "failed": 0,
+    "ignored": 59,
+    "suites": 50,
+    "packages": [
+      "identity",
+      "access",
+      "browser-session",
+      "control-plane"
+    ]
+  },
+  "clippy": "Affected packages all-targets -D warnings passed",
+  "format": "cargo fmt --all -- --check passed",
+  "review": {
+    "materialFindings": 0,
+    "freshIndependentReview": true
+  },
+  "remaining": "Interactive session issuance, credentials/MFA/passkey persistence, browser/OAuth and product-service stores still have explicit retained paths; complete driver rewrite and performance/storage qualification remain ongoing.",
+  "staticContracts": "architecture/lint/Serde/frozen migrations passed",
+  "independentLockedMetadataWorkspaces": 15
+}

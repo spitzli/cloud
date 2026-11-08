@@ -391,6 +391,9 @@ impl IdentityService {
         if !(1..=366).contains(&days) || label.is_empty() || label.len() > 120 {
             return Err(IdentityError::InvalidInput);
         }
+        if self.native_management_pool().is_some() {
+            return self.native_issue_api_session(user_id, label, days).await;
+        }
         let tx = self.db.begin().await?;
         let id = self.allocate_id(&tx).await?;
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,
@@ -399,7 +402,12 @@ impl IdentityService {
         tx.commit().await?;
         Ok(id)
     }
+    /// Trusted backend only: callers must already authorize the user/session operation.
     pub async fn revoke_session(&self, user_id: &str, session_id: &str) -> Result<bool> {
+        if self.native_management_pool().is_some() {
+            return self.native_revoke_session(user_id, session_id).await;
+        }
+
         Ok(self
             .db
             .execute_raw(Statement::from_sql_and_values(
