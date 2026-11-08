@@ -12,16 +12,25 @@ pub enum Error {
     Database(#[from] sea_orm::DbErr),
     #[error("invalid allocation state")]
     Id(#[from] webdock_ids::Error),
+    #[error("Native ID allocation is unavailable")]
+    Native(#[from] postgres::Error),
 }
 
+enum Backend {
+    Legacy(DatabaseConnection),
+    Native(postgres::Pool),
+}
 pub struct IdAllocator {
-    db: DatabaseConnection,
+    backend: Backend,
     identity: Identity,
 }
 impl IdAllocator {
     /// Use a dedicated pool, not a pool whose callers hold business transactions.
     pub fn new(db: DatabaseConnection, identity: Identity) -> Self {
-        Self { db, identity }
+        Self {
+            backend: Backend::Legacy(db),
+            identity,
+        }
     }
     pub async fn connect(url: &str, identity: Identity) -> Result<Self, Error> {
         let url = connection::ConnectionUrl::parse(url, false).map_err(|_| Error::Unavailable)?;
@@ -32,6 +41,29 @@ impl IdAllocator {
             .sqlx_logging(false);
         Ok(Self::new(Database::connect(options).await?, identity))
     }
+    /// Explicit native path; the legacy constructor remains for unmigrated/offline callers.
+    pub async fn connect_native(
+        url: &str,
+        identity: Identity,
+        role: &str,
+        production: bool,
+    ) -> Result<Self, Error> {
+        Identity::platform(identity.machine(), identity.generator())?;
+        let pool = postgres::Pool::connect(
+            url,
+            role,
+            production,
+            postgres::Limits {
+                max_connections: 2,
+                ..Default::default()
+            },
+        )
+        .await?;
+        Ok(Self {
+            backend: Backend::Native(pool),
+            identity,
+        })
+    }
     pub async fn allocate(&self) -> Result<Id, Error> {
         self.allocate_inner(None).await
     }
@@ -39,9 +71,19 @@ impl IdAllocator {
         self.allocate_inner(Some(now_ms)).await
     }
     async fn allocate_inner(&self, now_ms: Option<u64>) -> Result<Id, Error> {
+        match &self.backend {
+            Backend::Legacy(db) => self.allocate_legacy(db, now_ms).await,
+            Backend::Native(pool) => self.allocate_native(pool, now_ms).await,
+        }
+    }
+    async fn allocate_legacy(
+        &self,
+        db: &DatabaseConnection,
+        now_ms: Option<u64>,
+    ) -> Result<Id, Error> {
         Identity::platform(self.identity.machine(), self.identity.generator())?;
         let slot = ((self.identity.machine() << 4) | self.identity.generator()) as i16;
-        let tx = self.db.begin().await?;
+        let tx = db.begin().await?;
         let row = tx
             .query_one_raw(Statement::from_sql_and_values(
                 DbBackend::Postgres,
@@ -85,8 +127,74 @@ impl IdAllocator {
         tx.commit().await?;
         Ok(next)
     }
+    async fn allocate_native(
+        &self,
+        pool: &postgres::Pool,
+        now_ms: Option<u64>,
+    ) -> Result<Id, Error> {
+        tokio::time::timeout(
+            postgres::TRANSACTION_BUDGET,
+            self.allocate_native_transaction(pool, now_ms),
+        )
+        .await
+        .map_err(|_| Error::Unavailable)?
+    }
+    async fn allocate_native_transaction(
+        &self,
+        pool: &postgres::Pool,
+        now_ms: Option<u64>,
+    ) -> Result<Id, Error> {
+        let mut connection = pool.acquire().await?;
+        let slot = ((self.identity.machine() << 4) | self.identity.generator()) as i16;
+        let (tx, row) = connection.allocation(slot).await?;
+        if row
+            .try_get::<_, String>("layout")
+            .map_err(|_| postgres::Error::Unavailable)?
+            != "2026-01-01:41:6:4:12"
+        {
+            return Err(Error::Unavailable);
+        }
+        let previous = row
+            .try_get::<_, Option<i64>>("high_water")
+            .map_err(|_| postgres::Error::Unavailable)?
+            .map(Id::try_from)
+            .transpose()?;
+        let now = match now_ms {
+            Some(now) => now,
+            None => {
+                // Evaluate database time only after acquiring the generator row lock.
+                let value=tx.query_typed_one("SELECT floor(extract(epoch FROM clock_timestamp())*1000)::bigint AS now_ms",&[]).await.map_err(|_|postgres::Error::Unavailable)?;
+                u64::try_from(
+                    value
+                        .try_get::<_, i64>("now_ms")
+                        .map_err(|_| postgres::Error::Unavailable)?,
+                )
+                .map_err(|_| Error::Unavailable)?
+            }
+        };
+        let next = Layout::PLATFORM.next_after(self.identity, previous, now)?;
+        let value = next.as_i64();
+        if tx
+            .execute_typed(
+                "UPDATE webdock_ids.generator SET high_water=$1 WHERE slot=$2",
+                &[
+                    (&value, tokio_postgres::types::Type::INT8),
+                    (&slot, tokio_postgres::types::Type::INT2),
+                ],
+            )
+            .await
+            .map_err(|_| postgres::Error::Unavailable)?
+            != 1
+        {
+            return Err(Error::Unavailable);
+        }
+        tx.commit().await?;
+        Ok(next)
+    }
 }
 pub mod migrations;
 
 pub mod connection;
 pub mod roles;
+
+pub mod postgres;
