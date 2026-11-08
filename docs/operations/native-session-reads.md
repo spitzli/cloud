@@ -65,3 +65,7 @@ measurement. Initial local samples do not establish a latency improvement. Keep
 the default unchanged until broader realistic measurements justify activation.
 Switching the explicit flag back to `sea-orm` requires a normal Core restart and
 no data, schema or credential migration.
+
+The later [native session management mode](native-session-management.md) also
+selects native reads and reuses this same pool for session control. It does not
+create a third identity pool; the read-only mode remains compatible.

@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-08",
+  "scope": "Native self-service session management, canonical row-fenced authority and expiry security fix",
+  "base": "dd7bff0fee21acc032309e59086db1f23d140d3a",
+  "maximumMigration": 75,
+  "defaultBackend": "sea-orm",
+  "optIn": "WEBDOCK_SESSION_MANAGEMENT_BACKEND=tokio-postgres",
+  "nativeReadImplication": true,
+  "singleSharedSessionPool": {
+    "max": 4,
+    "min": 0,
+    "backgroundSQLPolling": false
+  },
+  "completeDriverRewrite": false,
+  "runtimeRolloutInitiated": false,
+  "schemaMigration": false,
+  "credentialsChanged": false,
+  "publicBuildAdmissionChanged": false,
+  "retainedSecurityFix": "Canonical validity and actor facts are reread after lock acquisition; renewal UPDATE also predicates on current expiry. An expired cookie cannot be resurrected by waiting on a row lock. Setup-session own control remains allowed.",
+  "nativeSecurity": [
+    "explicit READ COMMITTED overrides inherited repeatable snapshot defaults",
+    "canonical user/session locks before fresh local/provider authorization",
+    "caller-owned SHARE fence then fresh complete Principal/acting facts",
+    "foreign id/token deletion constrained to authenticated owner",
+    "invalid cookies rejected before DB acquisition",
+    "whole operations30s, uncertain/cancelled transactions discarded",
+    "refresh retains15minute/eighthour/token semantics and releasesconnection beforePrincipal reread",
+    "logout confirms localrevocation before bounded best-effort provider callback; existing encryptedcookie custodyvalidation shared"
+  ],
+  "targetedQualification": {
+    "passed": 45,
+    "failed": 0,
+    "ignored": 0,
+    "suites": {
+      "persistencePolicy": 6,
+      "nativeIDs": 3,
+      "nativePool": 3,
+      "nativeTLS": 1,
+      "nativeSessionManagement": 10,
+      "nativeSessionReadsAndMfaPasskeys": 7,
+      "coreRuntimeAndConfig": 10,
+      "actualCoreAndStartupCancellation": 5
+    },
+    "environment": "Exclusively owned local loopback PostgreSQL18 fixtures; synthetic provider tables, no supplied live DSN/provider network",
+    "actualHTTP": "Native query observed under owned table lock before listresponse; own-session revocation and signout succeed while foreign session remains; schema/account counts unchanged"
+  },
+  "defaultRegressions": {
+    "passed": 356,
+    "failed": 0,
+    "ignored": 168,
+    "suites": 84
+  },
+  "staticQualification": {
+    "clippy": "persistence, identity, Core, databases, provider-connections, plugin-host all-targets -D warnings passed",
+    "format": "cargo fmt --all -- --check passed",
+    "independentLockedMetadataWorkspaces": 15,
+    "newDependencies": false
+  },
+  "review": {
+    "importantFindings": 1,
+    "fixed": "Expired canonical session could be renewed after waiting for a row lock. Reproduced native=true and retained=false RED; fixed native fresh validity, retained fresh Actor query and terminal renewal WHERE. Refresh/list cases both backends GREEN.",
+    "otherMaterialFindings": 0,
+    "reReview": false
+  },
+  "sourcePreservation": "Unrelated original Native-Git dirty work and reviewed original-root atomic-agent files preserved; draft migration76 excluded.",
+  "performance": "No speedup, whole-API throughput or Neon compute-cost claim. Existing local debug samples do not establish native-driver latency improvement. Defaults unchanged.",
+  "remaining": "Identity issuance, password/MFA/passkey writes, browser/OAuth storage, product services and offline migration dependencies still retain SeaORM/SQLx paths pending subsequent ports; streaming storage decisions remain benchmark-driven."
+}

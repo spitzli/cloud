@@ -86,7 +86,14 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             )
             .await
             .map_err(|_| Error::Message("Native session database unavailable".into()))?;
-            service.with_native_session_reads(pool)
+            if matches!(
+                runtime.session_management_backend,
+                crate::config::SessionManagementBackend::Native
+            ) {
+                service.with_native_session_management(pool)
+            } else {
+                service.with_native_session_reads(pool)
+            }
         } else {
             service
         };

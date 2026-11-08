@@ -456,12 +456,26 @@ async fn cancelled_native_session_read_discards_its_connection() {
 #[tokio::test]
 #[ignore = "owned local PostgreSQL18; real local MFA/passkey flows with native session reads"]
 async fn native_reads_interoperate_with_operator_mfa_and_passkeys() {
+    operator_security_flow(false).await;
+}
+#[tokio::test]
+#[ignore = "owned local PostgreSQL18; MFA/passkey flow with native session management"]
+async fn native_management_interoperates_with_operator_mfa_and_passkeys() {
+    operator_security_flow(true).await;
+}
+async fn operator_security_flow(management: bool) {
     use webauthn_authenticator_rs::{WebauthnAuthenticator, softpasskey::SoftPasskey};
     use webdock_identity::{MfaProof, PasswordAuthentication, SecretKeys};
     let f = fixture::Fixture::start().await;
     let origin = url::Url::parse("https://auth.example.test").unwrap();
-    let service = service(&f, true)
-        .await
+    let service = service(&f, true).await;
+    let service = if management {
+        service
+            .with_native_session_management(pool(&f.bootstrap_url, "webdock_auth_bootstrap").await)
+    } else {
+        service
+    };
+    let service = service
         .with_allocator(std::sync::Arc::new(
             webdock_persistence::IdAllocator::connect_native(
                 &f.bootstrap_url,

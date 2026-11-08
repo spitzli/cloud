@@ -501,8 +501,31 @@ impl IdentityService {
         client.reset_password(token, new).await?;
         Ok(true)
     }
+    /// Validates custody before any best-effort provider sign-out; never log the result.
+    pub(crate) fn decrypt_provider_cookie(
+        &self,
+        user: &str,
+        subject: &str,
+        session: &str,
+        encrypted: &str,
+    ) -> Result<String> {
+        let envelope = self
+            .keys
+            .as_ref()
+            .ok_or(IdentityError::Configuration)?
+            .decrypt(encrypted)?;
+        let envelope: CookieEnvelope =
+            serde_json::from_str(&envelope).map_err(|_| IdentityError::InvalidEncoding)?;
+        if envelope.user != user || envelope.subject != subject || envelope.session != session {
+            return Err(IdentityError::InvalidEncoding);
+        }
+        Ok(envelope.cookie)
+    }
     /// Sign-out always revokes the local cookie, even when the provider is unavailable.
     pub async fn logout(&self, cookie: &str) -> Result<()> {
+        if self.native_management_pool().is_some() {
+            return self.native_logout(cookie).await;
+        }
         let Some(token) = self.cookies.read(cookie)? else {
             return Ok(());
         };
@@ -520,8 +543,7 @@ impl IdentityService {
             let session: String = row.try_get("", "id")?;
             if self.has_neon_gate(&tx).await?
                 && let Some(p)=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT provider_subject::text,provider_session_id::text,encrypted_cookie FROM webdock_auth.neon_session WHERE session_id=$1 AND user_id=$2",[session.clone().into(),user.clone().into()])).await?{
-     let envelope=self.keys.as_ref().ok_or(IdentityError::Configuration)?.decrypt(&p.try_get::<String>("","encrypted_cookie")?)?;let envelope:CookieEnvelope=serde_json::from_str(&envelope).map_err(|_|IdentityError::InvalidEncoding)?;
-     if envelope.user!=user||envelope.subject!=p.try_get::<String>("","provider_subject")?||envelope.session!=p.try_get::<String>("","provider_session_id")?{return Err(IdentityError::InvalidEncoding)}provider_cookie=Some(envelope.cookie);
+     provider_cookie=Some(self.decrypt_provider_cookie(&user,&p.try_get::<String>("","provider_subject")?,&p.try_get::<String>("","provider_session_id")?,&p.try_get::<String>("","encrypted_cookie")?)?);
     }
 
             tx.execute_raw(Statement::from_sql_and_values(

@@ -43,26 +43,45 @@ async fn journal(db: &impl ConnectionTrait) -> Value {
 #[tokio::test]
 #[ignore = "owned local PostgreSQL18; actual binary startup and SIGTERM"]
 async fn actual_native_binary_starts_with_restricted_roles_without_schema_changes() {
-    actual_core(false, false).await;
+    actual_core(NativeMode::Legacy).await;
 }
 
 #[tokio::test]
 #[ignore = "owned local PostgreSQL18; actual HTTP write using native ID driver"]
 async fn actual_http_write_uses_native_postgres_id_backend() {
-    actual_core(true, false).await;
+    actual_core(NativeMode::Ids).await;
 }
 
 #[tokio::test]
 #[ignore = "owned local PostgreSQL18; actual authenticated HTTP native session read"]
 async fn actual_http_session_read_uses_native_postgres() {
-    actual_core(false, true).await;
+    actual_core(NativeMode::SessionReads).await;
 }
 
-async fn actual_core(native: bool, native_session: bool) {
+#[tokio::test]
+#[ignore = "owned local PostgreSQL18; actual native HTTP session listing/revocation/logout"]
+async fn actual_http_session_management_uses_native_postgres() {
+    actual_core(NativeMode::SessionManagement).await;
+}
+#[derive(Clone, Copy)]
+enum NativeMode {
+    Legacy,
+    Ids,
+    SessionReads,
+    SessionManagement,
+}
+async fn actual_core(mode: NativeMode) {
+    let native = matches!(mode, NativeMode::Ids);
+    let native_session = matches!(mode, NativeMode::SessionReads);
+    let native_management = matches!(mode, NativeMode::SessionManagement);
     let fixture = fixture::DatabaseFixture::start().await;
     let owner = fixture.owner().await;
-    if native_session {
+    if native_session || native_management {
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('owned-session-user','Owned user','session@example.test',true,'user',false,false); INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('owned-session','owned-core-session-token','owned-session-user',now()+interval '1 hour',now())"#).await.unwrap();
+    }
+    if native_management {
+        owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('foreign-user','Foreign','foreign@example.test',true,'user',false,false);
+        INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('owned-other-session','owned-other-token','owned-session-user',now()+interval '1 hour',now()),('foreign-session','foreign-token','foreign-user',now()+interval '1 hour',now())"#).await.unwrap();
     }
     let before = journal(&owner).await;
     let account_counts = || {
@@ -144,6 +163,14 @@ async fn actual_core(native: bool, native_session: bool) {
                 "sea-orm"
             },
         );
+    command.env(
+        "WEBDOCK_SESSION_MANAGEMENT_BACKEND",
+        if native_management {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
     let output = std::fs::File::create(&log).unwrap();
     command
         .stdout(Stdio::from(output.try_clone().unwrap()))
@@ -232,6 +259,79 @@ async fn actual_core(native: bool, native_session: bool) {
         assert_eq!(response.status(), 200);
         let body: Value = response.json().await.unwrap();
         assert_eq!(body["user"]["id"], "owned-session-user");
+    }
+    if native_management {
+        let gate = owner.begin().await.unwrap();
+        gate.execute_unprepared("LOCK TABLE webdock_auth.session IN ACCESS EXCLUSIVE MODE")
+            .await
+            .unwrap();
+        let auth_cookie = CookiePolicy::new(false, secret)
+            .unwrap()
+            .header("owned-core-session-token", 3600)
+            .unwrap()
+            .split(';')
+            .next()
+            .unwrap()
+            .to_owned();
+        let request_client = client.clone();
+        let request_cookie = auth_cookie.clone();
+        let request = tokio::spawn(async move {
+            request_client
+                .get(format!("http://127.0.0.1:{port}/api/auth/list-sessions"))
+                .header("Host", "localhost:3125")
+                .header("Cookie", request_cookie)
+                .timeout(Duration::from_secs(5))
+                .send()
+                .await
+                .unwrap()
+        });
+        let deadline = tokio::time::Instant::now() + Duration::from_secs(3);
+        loop {
+            let active=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE application_name='spitzli-native-postgres' AND usename='webdock_auth_bootstrap' AND wait_event_type='Lock' AND query LIKE '%FOR UPDATE OF u,s%') AS native_management")).await.unwrap().unwrap().try_get::<bool>("","native_management").unwrap();
+            if active {
+                break;
+            }
+            assert!(
+                tokio::time::Instant::now() < deadline,
+                "actual management HTTP must execute native canonical row locking"
+            );
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+        gate.commit().await.unwrap();
+        let response = request.await.unwrap();
+        assert_eq!(response.status(), 200);
+        let rows: Value = response.json().await.unwrap();
+        let rows = rows.as_array().unwrap();
+        assert_eq!(rows.len(), 2);
+        assert!(rows.iter().all(|r| r["id"] != "foreign-session"));
+        for (path, body) in [
+            ("revoke-session-by-id", json!({"id":"foreign-session"})),
+            ("revoke-other-sessions", json!({})),
+            ("sign-out", json!({})),
+        ] {
+            let response = client
+                .post(format!("http://127.0.0.1:{port}/api/auth/{path}"))
+                .header("Host", "localhost:3125")
+                .header("Origin", "http://localhost:3125")
+                .header("Cookie", auth_cookie.clone())
+                .json(&body)
+                .send()
+                .await
+                .unwrap();
+            assert_eq!(response.status(), 200);
+        }
+        let counts=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT count(*) FILTER(WHERE id='foreign-session') AS foreign_count,count(*) FILTER(WHERE \"userId\"='owned-session-user') AS own_count FROM webdock_auth.session")).await.unwrap().unwrap();
+        assert_eq!(counts.try_get::<i64>("", "foreign_count").unwrap(), 1);
+        assert_eq!(counts.try_get::<i64>("", "own_count").unwrap(), 0);
+        let response = client
+            .get(format!("http://127.0.0.1:{port}/api/auth/get-session"))
+            .header("Host", "localhost:3125")
+            .header("Cookie", auth_cookie)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 200);
+        assert!(response.json::<Value>().await.unwrap().is_null());
     }
     assert_eq!(
         before,

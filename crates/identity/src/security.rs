@@ -109,6 +109,11 @@ impl IdentityService {
         {
             return Err(IdentityError::Unauthorized);
         }
+        // The locking SELECT's statement time/projection precedes any lock wait.
+        // Re-read current validity and preview facts before authorizing management/security.
+        let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
+            r#"SELECT u.id,u.email,u.role,u."emailVerified",u."mustChangePassword",coalesce(u."twoFactorEnabled",false) AS mfa,s.id AS session_id,webdock_rls.identity_has_preview(u.id,s.id) AS preview FROM webdock_auth."user" u JOIN webdock_auth.session s ON s."userId"=u.id WHERE u.id=$1 AND s.id=$2 AND s."expiresAt">statement_timestamp() AND NOT coalesce(u.banned,false) AND u.role IN ('user','operator')"#,
+            [id.clone().into(),row.try_get::<String>("","session_id")?.into()])).await?.ok_or(IdentityError::Unauthorized)?;
         Ok(Actor {
             id,
             session_id: row.try_get("", "session_id")?,
@@ -369,6 +374,9 @@ impl IdentityService {
         self.issue_session_with_source(tx, &actor.id, source).await
     }
     pub async fn list_sessions(&self, cookie: &str) -> Result<Vec<SessionSummary>> {
+        if self.native_management_pool().is_some() {
+            return self.native_list_sessions(cookie).await;
+        }
         let tx = self.db.begin().await?;
         let actor = self.locked_actor(&tx, cookie).await?;
         let rows=tx.query_all_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT id,\"expiresAt\",\"createdAt\" FROM webdock_auth.session WHERE \"userId\"=$1 AND \"expiresAt\">statement_timestamp() ORDER BY \"createdAt\",id",[actor.id.into()])).await?;
@@ -388,6 +396,9 @@ impl IdentityService {
         Ok(sessions)
     }
     pub async fn revoke_other_sessions(&self, cookie: &str) -> Result<u64> {
+        if self.native_management_pool().is_some() {
+            return self.native_revoke_other_sessions(cookie).await;
+        }
         let tx = self.db.begin().await?;
         let actor = self.locked_actor(&tx, cookie).await?;
         let count = invalidate_sessions(&tx, &actor.id, Some(&actor.session_id)).await?;
@@ -466,9 +477,12 @@ impl IdentityService {
         self.issue_session_with_source(tx, &actor.id, source).await
     }
     pub async fn refresh_session(&self, cookie: &str) -> Result<IssuedSession> {
+        if self.native_management_pool().is_some() {
+            return self.native_refresh_session(cookie).await;
+        }
         let tx = self.db.begin().await?;
         let actor = self.locked_actor(&tx, cookie).await?;
-        let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.session SET \"expiresAt\"=CASE WHEN \"updatedAt\"<=statement_timestamp()-interval '15 minutes' THEN statement_timestamp()+interval '8 hours' ELSE \"expiresAt\" END,\"updatedAt\"=CASE WHEN \"updatedAt\"<=statement_timestamp()-interval '15 minutes' THEN statement_timestamp() ELSE \"updatedAt\" END WHERE id=$1 RETURNING token,greatest(1,extract(epoch FROM (\"expiresAt\"-statement_timestamp()))::bigint) AS age",[actor.session_id.clone().into()])).await?.ok_or(IdentityError::Unauthorized)?;
+        let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.session SET \"expiresAt\"=CASE WHEN \"updatedAt\"<=statement_timestamp()-interval '15 minutes' THEN statement_timestamp()+interval '8 hours' ELSE \"expiresAt\" END,\"updatedAt\"=CASE WHEN \"updatedAt\"<=statement_timestamp()-interval '15 minutes' THEN statement_timestamp() ELSE \"updatedAt\" END WHERE id=$1 AND \"expiresAt\">statement_timestamp() RETURNING token,greatest(1,extract(epoch FROM (\"expiresAt\"-statement_timestamp()))::bigint) AS age",[actor.session_id.clone().into()])).await?.ok_or(IdentityError::Unauthorized)?;
         let token: String = row.try_get("", "token")?;
         let age: i64 = row.try_get("", "age")?;
         let set_cookie = self.cookies.header(
@@ -486,6 +500,9 @@ impl IdentityService {
         })
     }
     pub async fn revoke_owned_session(&self, cookie: &str, target: &str) -> Result<bool> {
+        if self.native_management_pool().is_some() {
+            return self.native_revoke_target(cookie, target, false).await;
+        }
         let tx = self.db.begin().await?;
         let actor = self.locked_actor(&tx, cookie).await?;
         let changed = tx
@@ -501,6 +518,9 @@ impl IdentityService {
         Ok(changed)
     }
     pub async fn revoke_session_by_token(&self, cookie: &str, target_token: &str) -> Result<bool> {
+        if self.native_management_pool().is_some() {
+            return self.native_revoke_target(cookie, target_token, true).await;
+        }
         let tx = self.db.begin().await?;
         let actor = self.locked_actor(&tx, cookie).await?;
         let changed = tx
