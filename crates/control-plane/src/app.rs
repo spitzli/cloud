@@ -70,6 +70,26 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
                 auth_compatibility.passkey_rp_origin,
             )
             .map_err(|_| Error::Message("Invalid native identity configuration".into()))?;
+        let service = if matches!(
+            runtime.session_read_backend,
+            crate::config::SessionReadBackend::Native
+        ) {
+            let pool = webdock_persistence::postgres::Pool::connect(
+                runtime.database.uri.as_str(),
+                "webdock_auth_bootstrap",
+                config.production,
+                webdock_persistence::postgres::Limits {
+                    max_connections: 4,
+                    min_connections: 0,
+                    ..Default::default()
+                },
+            )
+            .await
+            .map_err(|_| Error::Message("Native session database unavailable".into()))?;
+            service.with_native_session_reads(pool)
+        } else {
+            service
+        };
         let service = if let Ok(base) = std::env::var("NEON_AUTH_BASE_URL") {
             service.with_neon_auth(
                 webdock_identity::NeonAuthClient::new(&base, &config.auth_origin)

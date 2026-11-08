@@ -1,3 +1,5 @@
+#[path = "native_session.rs"]
+mod native_session;
 use crate::{
     CookiePolicy, IdentityError, Result, SecretKeys,
     crypto::{hash_password, random, verify_password},
@@ -86,6 +88,7 @@ pub struct IdentityService {
     pub(crate) neon: Option<crate::NeonAuthClient>,
     pub(crate) neon_gate: tokio::sync::OnceCell<bool>,
     pub(crate) db: DatabaseConnection,
+    native_session_reads: Option<webdock_persistence::postgres::Pool>,
     pub(crate) cookies: CookiePolicy,
     pub(crate) password_workers: Arc<Semaphore>,
     pub(crate) keys: Option<SecretKeys>,
@@ -100,6 +103,7 @@ impl IdentityService {
             neon: None,
             neon_gate: tokio::sync::OnceCell::new(),
             db,
+            native_session_reads: None,
             cookies,
             password_workers: Arc::new(Semaphore::new(4)),
             keys: None,
@@ -108,6 +112,10 @@ impl IdentityService {
             webauthn: None,
             delivery: Arc::new(crate::UnavailableDelivery),
         }
+    }
+    pub fn with_native_session_reads(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+        self.native_session_reads = Some(pool);
+        self
     }
     pub fn with_allocator(mut self, allocator: Arc<webdock_persistence::IdAllocator>) -> Self {
         self.allocator = Some(allocator);
@@ -145,6 +153,9 @@ impl IdentityService {
         let Some(token) = self.cookies.read(header)? else {
             return Ok(None);
         };
+        if let Some(pool) = &self.native_session_reads {
+            return native_session::authenticate(pool, &token).await;
+        }
         let tx = self.db.begin().await?;
         let row = tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
             "SELECT u.id,u.name,u.email,u.role,u.\"emailVerified\",u.\"mustChangePassword\",coalesce(u.\"twoFactorEnabled\",false) AS \"twoFactorEnabled\",s.id AS session_id,s.\"expiresAt\",webdock_rls.identity_has_preview(u.id,s.id) AS preview,webdock_rls.identity_is_acting(u.id,s.id) AS acting,webdock_rls.identity_customer_scope(u.id,s.id) AS customer_scope FROM webdock_auth.\"user\" u JOIN webdock_auth.session s ON s.\"userId\"=u.id WHERE s.token=$1 AND s.\"expiresAt\">statement_timestamp() AND NOT coalesce(u.banned,false)", [token.into()])).await?;

@@ -216,7 +216,8 @@ fn identity_failure(error: webdock_identity::IdentityError) -> Error {
         | IdentityError::RateLimited
         | IdentityError::Database(_)
         | IdentityError::Allocation
-        | IdentityError::Worker => unavailable(),
+        | IdentityError::Worker
+        | IdentityError::Persistence => unavailable(),
     }
 }
 #[cfg(test)]
@@ -228,6 +229,10 @@ mod scope_error_tests {
             sea_orm::DbErr::Custom("isolated scope failure".into()),
         ));
         assert_eq!(error.status, 503);
+        assert_eq!(
+            identity_failure(webdock_identity::IdentityError::Persistence).status,
+            503
+        );
         assert_eq!(
             identity_failure(webdock_identity::IdentityError::Unauthorized).status,
             404

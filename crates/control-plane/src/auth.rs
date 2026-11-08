@@ -77,7 +77,10 @@ pub fn failure(failure: IdentityError) -> ApiFailure {
             "rate_limited",
             "Try again later.",
         ),
-        IdentityError::Database(_) | IdentityError::Configuration | IdentityError::Worker => error(
+        IdentityError::Database(_)
+        | IdentityError::Configuration
+        | IdentityError::Worker
+        | IdentityError::Persistence => error(
             StatusCode::SERVICE_UNAVAILABLE,
             "unavailable",
             "Identity service is unavailable.",

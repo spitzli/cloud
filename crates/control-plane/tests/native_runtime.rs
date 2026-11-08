@@ -176,3 +176,34 @@ async fn shutdown_drains_inflight_work_but_does_not_wait_forever() {
         }
     }
 }
+
+#[test]
+fn native_identity_uncertainty_is_service_unavailability() {
+    let response =
+        webdock_control_plane::auth::failure(webdock_identity::IdentityError::Persistence);
+    assert_eq!(response.status, axum::http::StatusCode::SERVICE_UNAVAILABLE);
+    assert_eq!(response.code, "unavailable");
+}
+
+#[test]
+fn native_session_read_backend_requires_explicit_opt_in() {
+    use webdock_control_plane::config::SessionReadBackend;
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().session_read_backend,
+        SessionReadBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_SESSION_READ_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    assert!(matches!(
+        runtime_config(&env).unwrap().session_read_backend,
+        SessionReadBackend::Native
+    ));
+    env.insert("WEBDOCK_SESSION_READ_BACKEND".into(), "other".into());
+    assert!(runtime_config(&env).is_err());
+}

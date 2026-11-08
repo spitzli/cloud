@@ -44,6 +44,8 @@ pub enum IdentityError {
     InvalidInput,
     #[error("identity database operation failed")]
     Database(#[from] sea_orm::DbErr),
+    #[error("native identity persistence is unavailable")]
+    Persistence,
     #[error("identity allocation is unavailable")]
     Allocation,
     #[error("credential worker failed")]

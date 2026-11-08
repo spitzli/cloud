@@ -748,3 +748,13 @@ async fn restricted_core_connections_authority_replay_cleanup_and_provider_races
     assert_eq!(retained["connection"]["neonProjectID"], "fixture-tree-123");
     server.abort();
 }
+
+#[test]
+fn native_identity_failure_is_unavailable_without_exposing_diagnostics() {
+    assert!(matches!(
+        super::authority_error(webdock_browser_session::Error::Identity(
+            webdock_identity::IdentityError::Persistence
+        )),
+        super::Error::Unavailable
+    ));
+}
