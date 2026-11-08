@@ -60,3 +60,9 @@ msgstr "Repository-Link"
 
 msgid "This project is not available in this workspace."
 msgstr "Dieses Projekt ist in diesem Workspace nicht verfügbar."
+
+msgid "Show branches"
+msgstr "Branches anzeigen"
+
+msgid "Hide branches"
+msgstr "Branches ausblenden"

@@ -149,22 +149,30 @@ function Credentials({ context }: { context: ResourceProps }) {
 }
 function BranchInventory({ context }: { context: ResourceProps }) {
   const { t } = useI18n();
-  const branchView = usePluginQuery(context, "databases.branches", { resource_id: context.resource.id }, panelSchema);
+  const [expanded, setExpanded] = useState(false);
+  return <section className={ui.card}><div className={ui.cardBody}>
+    <button type="button" className={ui.button()} aria-expanded={expanded} onClick={() => { setExpanded(!expanded); }}>{expanded ? t("Hide branches") : t("Show branches")}</button>
+    {expanded ? <BranchDetails context={context} /> : null}
+  </div></section>;
+}
+function BranchDetails({ context }: { context: ResourceProps }) {
+  const { t } = useI18n();
+  const branchView = usePluginQuery(context, "databases.branches", { resource_id: context.resource.id }, panelSchema, { timeoutMs: 15_000 });
   return branchView.data ? <Table panel={branchView.data} /> : branchView.error ? <Failure error={branchView.error} retry={() => { void branchView.refetch(); }} /> : <Loading>{t("Loading branches…")}</Loading>;
 }
 function Resource(context: ResourceProps) {
   const { t } = useI18n();
-  const view = usePluginQuery(context, "databases.view", { resource_id: context.resource.id }, panelSchema);
+  const view = usePluginQuery(context, "databases.view", { resource_id: context.resource.id }, panelSchema, { timeoutMs: 15_000 });
   const detach = usePluginSubmission(context, "databases.detach", detachedSchema);
   const key = useRef(crypto.randomUUID());
   const [confirming, setConfirming] = useState(false);
   const status = view.data?.blocks.find(block => block.kind === "status");
   const canReveal = context.writable && (!context.actions || context.actions.includes("databases.credentials"));
-  const canDetach = context.writable && (!context.actions || context.actions.includes("databases.detach"));
+  const canDetach = !view.isPending && context.writable && (!context.actions || context.actions.includes("databases.detach"));
   return <div className={ui.resourceGrid}>
     <section className={ui.card}><div className={ui.cardBody}><div className="flex flex-wrap items-center justify-between gap-3"><h2 className={ui.sectionTitle}>{t("Overview")}</h2>{context.writable ? <Connections customer={context.customer} /> : null}</div>{status?.text ? <span className={ui.cx(ui.badge(ui.statusTone(status.state)), "w-fit max-w-full whitespace-normal normal-case")} role="status">{panelText(status.text, t)}</span> : null}</div></section>
     {view.isPending ? <Loading>{t("Loading Neon database…")}</Loading> : view.error ? <Failure error={view.error} retry={() => void view.refetch()} /> : <Table panel={view.data} />}
-    {context.writable ? <BranchInventory context={context} /> : null}
+    {context.writable && !view.isPending ? <BranchInventory context={context} /> : null}
     {canReveal && view.data && !view.error ? <Credentials key={context.resource.id} context={context} /> : null}
     {canDetach ? <section className={ui.card}><div className={ui.cardBody}><h2 className={ui.sectionTitle}>{t("Detach database")}</h2><p className="text-sm text-muted">{t("Remove the attachment from this Spitzli Cloud project. The database, branches and all Neon data remain in your Neon account.")}</p>{confirming ? <div className="flex flex-wrap gap-3"><button type="button" className={ui.cx(ui.button("danger"), "whitespace-normal py-2")} disabled={detach.isPending} onClick={() => { void detach.mutateAsync({ input: { resource_id: context.resource.id }, idempotencyKey: key.current }).then(context.onDeleted).catch(() => undefined); }}>{detach.isPending ? t("Detaching…") : t("Confirm detach")}</button><button type="button" className={ui.button("quiet")} disabled={detach.isPending} onClick={() => { setConfirming(false); }}>{t("Cancel")}</button></div> : <button type="button" className={ui.cx(ui.button("danger"), "whitespace-normal py-2")} onClick={() => { setConfirming(true); }}>{t("Detach database")}</button>}{detach.error ? <p role="alert" className="text-sm text-danger">{t("Could not detach. Retry to safely resume this request.")}</p> : null}</div></section> : null}
   </div>;

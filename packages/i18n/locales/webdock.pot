@@ -11865,3 +11865,11 @@ msgstr ""
 #: apps/console/src/WorkspaceDatabases.tsx:22
 msgid "Open this provider to connect a database to a project."
 msgstr ""
+
+#: plugins/neon/ui/index.tsx
+msgid "Show branches"
+msgstr ""
+
+#: plugins/neon/ui/index.tsx
+msgid "Hide branches"
+msgstr ""

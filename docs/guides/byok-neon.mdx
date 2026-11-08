@@ -57,3 +57,7 @@ An invalid or revoked key, insufficient scope or Neon outage can prevent invento
 ## Disconnect
 
 In **Workspace Connections**, select **Disconnect Neon**, review the confirmation and select **Confirm disconnect**. This removes the Spitzli Cloud connection's stored key; attached resources cannot make new provider requests until an authorized connection is restored. Your Neon projects and data remain intact. Revoke the key separately in Neon when it should no longer work elsewhere.
+
+## Inspect an attached database
+
+Open the database from its project or the workspace **Databases** page. The overview reads connection metadata; use **Show branches** when you need the branch list. If a read times out, retry explicitly. Detaching remains a local operation and does not delete your Neon database.

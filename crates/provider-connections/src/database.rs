@@ -405,13 +405,7 @@ impl Connections {
             "databases.view" => {
                 let row = snapshot.binding.as_ref().ok_or(Error::Conflict)?;
                 let project = field(row, "neon_project_id")?;
-                self.inventory(
-                    context,
-                    &snapshot,
-                    &format!("/projects/{project}"),
-                    &Value::Null,
-                )
-                .await?;
+                // The endpoint inventory call already validates this exact project's account and region.
                 let endpoint = self
                     .inventory(
                         context,

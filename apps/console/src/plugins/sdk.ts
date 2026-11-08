@@ -55,12 +55,12 @@ export function usePluginQuery<T>(
   action: string,
   input: Record<string, unknown>,
   schema: z.ZodType<T>,
-  options: { refetchInterval?: (data: T | undefined) => number | false } = {},
+  options: { refetchInterval?: (data: T | undefined) => number | false; timeoutMs?: number } = {},
 ) {
   const api = useApi();
   return useQuery({
     queryKey: ["plugin-ui", context.plugin, context.projectID, action, input],
-    queryFn: async ({ signal }) => schema.parse(await invokePlugin(api, context.plugin, context.projectID, action, input, signal)),
+    queryFn: async ({ signal }) => schema.parse(await invokePlugin(api, context.plugin, context.projectID, action, input, options.timeoutMs === undefined ? signal : AbortSignal.any([signal, AbortSignal.timeout(options.timeoutMs)]))),
     retry: false,
     refetchInterval: (query) => options.refetchInterval?.(query.state.data) ?? false,
   });
