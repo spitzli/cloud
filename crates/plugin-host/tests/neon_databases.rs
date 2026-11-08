@@ -115,6 +115,20 @@ async fn provider(
 #[ignore = "requires owned PostgreSQL18 (WEBDOCK_PLUGIN_TEST_LOCAL_POSTGRES=1 on qualified EU runner)"]
 async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     let mut f = fixture::JobFixture::start_with_connections(4).await;
+    sql(&f.owner, "INSERT INTO webdock_auth.plan(id,name,limits,is_default,updated_by) VALUES('9999','BYOK test','{\"neon.database\":0,\"postgres.shared\":2,\"memory\":512}',true,'operator')", vec![]).await;
+    sql(&f.owner, "INSERT INTO webdock_auth.customer_plan(customer_id,plan_id,overrides,updated_by) VALUES('123','9999','{\"neon.database\":1,\"memory\":256,\"storage\":null}','operator')", vec![]).await;
+    f.owner.execute_unprepared("INSERT INTO webdock_ids.generator(slot,layout) VALUES(3,'2026-01-01:41:6:4:12') ON CONFLICT DO NOTHING").await.unwrap();
+    f.owner
+        .execute_unprepared(include_str!(
+            "../../../tools/operations/neon-byok-plan-cleanup.sql"
+        ))
+        .await
+        .unwrap();
+    let cleaned=f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT jsonb_build_object('limits',p.limits,'overrides',c.overrides,'planActor',p.updated_by,'customerActor',c.updated_by) AS value FROM webdock_auth.plan p JOIN webdock_auth.customer_plan c ON c.plan_id=p.id WHERE p.id='9999'")).await.unwrap().unwrap().try_get::<Value>("","value").unwrap();
+    assert_eq!(cleaned["limits"], json!({"postgres.shared":2,"memory":512}));
+    assert_eq!(cleaned["overrides"], json!({"memory":256,"storage":null}));
+    assert_eq!(cleaned["planActor"], "system:neon-byok-policy");
+    assert_eq!(cleaned["customerActor"], "system:neon-byok-policy");
     // Reconstruct accepted 0074 only inside this fresh, exclusively owned fixture.
     // 0075 is additive; none of these new tables has customer data yet. This is
     // fixture preparation, never a supported production schema rollback.
@@ -216,6 +230,65 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
         .await
         .unwrap()
         .with_named_http(service.clone()),
+    );
+    let authority = webdock_browser_session::StoredAuthority::local_session(&f.actor);
+    host.save_plan(
+        &f.actor,
+        Some(&authority),
+        Some("9999"),
+        webdock_plugin_host::PlanInput {
+            name: "BYOK test".into(),
+            description: "".into(),
+            is_default: true,
+            limits: json!({"neon.database":0,"postgres.shared":2,"memory":512}),
+        },
+    )
+    .await
+    .unwrap();
+    host.set_customer_plan(
+        &f.actor,
+        Some(&authority),
+        "123",
+        webdock_plugin_host::CustomerPlanInput {
+            plan_id: Some("9999".into()),
+            overrides: json!({"neon.database":0,"postgres.shared":1}),
+        },
+    )
+    .await
+    .unwrap();
+    let effective = f
+        .owner
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT webdock_auth.limits_of('123') AS value",
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<Value>("", "value")
+        .unwrap();
+    assert_eq!(
+        effective["neon.database"],
+        Value::Null,
+        "BYOK Neon has no Spitzli quantity quota"
+    );
+    assert_eq!(effective["postgres.shared"], 1);
+    assert_eq!(effective["memory"], 512);
+    let plans = host
+        .plans(
+            &f.actor,
+            Some(&webdock_browser_session::StoredAuthority::local_session(
+                &f.actor,
+            )),
+        )
+        .await
+        .unwrap();
+    assert!(
+        plans["meters"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|meter| meter["plugin"] != "neon")
     );
     assert!(
         host.admit(

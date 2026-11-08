@@ -85,6 +85,14 @@ mod tests {
     }
 }
 
+// BYOK Neon capacity belongs to its provider account, never to a platform plan.
+fn platform_limits(mut value: Value) -> Value {
+    if let Some(fields) = value.as_object_mut() {
+        fields.retain(|key, _| key != "neon" && !key.starts_with("neon."));
+    }
+    value
+}
+
 type Authority<'a> = Option<&'a webdock_browser_session::StoredAuthority>;
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -137,6 +145,10 @@ impl HostService {
         let ids = tx.query_all_raw(Statement::from_string(DbBackend::Postgres,"SELECT id FROM webdock_auth.plugin_installation WHERE kind='external' AND state IN ('enabled','draining') ORDER BY id")).await.map_err(db_error)?;
         for row in ids {
             let plugin: String = row.try_get("", "id").map_err(db_error)?;
+            // Neon is BYOK: its provider owns capacity and billing, not platform plans.
+            if plugin == "neon" {
+                continue;
+            }
             let Ok(metadata) = self.metadata(tx, &plugin, None).await else {
                 continue;
             };
@@ -206,7 +218,7 @@ impl HostService {
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,
             "INSERT INTO webdock_auth.plan(id,name,description,limits,is_default,updated_by) VALUES($1,$2,$3,$4,$5,$6) \
              ON CONFLICT (id) DO UPDATE SET name=EXCLUDED.name,description=EXCLUDED.description,limits=EXCLUDED.limits,is_default=EXCLUDED.is_default,updated_by=EXCLUDED.updated_by,updated_at=now()",
-            [id.clone().into(), name.into(), input.description.trim().to_owned().into(), input.limits.into(), input.is_default.into(), actor.user_id.clone().into()])).await.map_err(plan_error)?;
+            [id.clone().into(), name.into(), input.description.trim().to_owned().into(), platform_limits(input.limits).into(), input.is_default.into(), actor.user_id.clone().into()])).await.map_err(plan_error)?;
         self.audit_admin(&tx, actor, "plan.save", &id).await?;
         self.admin_commit(tx, actor, authority, guard, true).await?;
         Ok(json!({"id": id}))
@@ -256,7 +268,7 @@ impl HostService {
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,
             "INSERT INTO webdock_auth.customer_plan(customer_id,plan_id,overrides,updated_by) VALUES($1,$2,$3,$4) \
              ON CONFLICT (customer_id) DO UPDATE SET plan_id=EXCLUDED.plan_id,overrides=EXCLUDED.overrides,updated_by=EXCLUDED.updated_by,updated_at=now()",
-            [customer.into(), input.plan_id.into(), input.overrides.into(), actor.user_id.clone().into()])).await.map_err(|e| {
+            [customer.into(), input.plan_id.into(), platform_limits(input.overrides).into(), actor.user_id.clone().into()])).await.map_err(|e| {
                 let text = e.to_string();
                 if text.contains("customer_plan_customer_id_fkey") || text.contains("customer_plan_plan_id_fkey") {
                     PluginError::new(webdock_plugin_protocol::ErrorCode::NotFound, "Customer or plan not found")
