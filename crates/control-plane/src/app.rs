@@ -77,6 +77,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         runtime.mcp_authority_backend,
         crate::config::McpAuthorityBackend::Native
     );
+    let native_account_recovery = matches!(
+        runtime.account_recovery_backend,
+        crate::config::AccountRecoveryBackend::Native
+    );
     let native_oauth_tokens = matches!(
         runtime.oauth_tokens_backend,
         crate::config::OAuthTokensBackend::Native
@@ -97,7 +101,8 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         runtime.oauth_client_backend,
         crate::config::OAuthClientBackend::Native
     );
-    let native_bootstrap_pool = if native_browser_flows
+    let native_bootstrap_pool = if native_account_recovery
+        || native_browser_flows
         || native_oauth_clients
         || matches!(
             runtime.session_read_backend,
@@ -148,6 +153,18 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             } else {
                 service.with_native_session_reads(pool)
             }
+        } else {
+            service
+        };
+        let service = if native_account_recovery {
+            service.with_native_account_recovery(
+                native_bootstrap_pool
+                    .as_ref()
+                    .ok_or_else(|| {
+                        Error::Message("Native account recovery storage unavailable".into())
+                    })?
+                    .clone(),
+            )
         } else {
             service
         };
