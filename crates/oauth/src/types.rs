@@ -179,6 +179,20 @@ pub(crate) struct GrantContext {
     pub request: AuthorizationRequest,
     pub auth_time: i64,
 }
+/// Stored client configuration decoded into domain fields, never a generic query row.
+/// Contains a credential hash; deliberately not Debug/Serialize.
+pub(crate) struct ClientRecord {
+    pub secret: Option<String>,
+    pub name: Option<String>,
+    pub method: Option<String>,
+    pub metadata: Option<Value>,
+    pub redirects: Value,
+    pub logout_redirects: Option<Value>,
+    pub scopes: Option<Value>,
+    pub grants: Option<Value>,
+    pub skip_consent: Option<bool>,
+    pub end_session: Option<bool>,
+}
 pub(crate) struct Client {
     pub id: String,
     pub secret: Option<String>,

@@ -263,3 +263,26 @@ fn native_browser_flow_storage_requires_explicit_opt_in() {
     env.insert("WEBDOCK_BROWSER_FLOW_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
+
+#[test]
+fn native_oauth_client_store_requires_explicit_opt_in() {
+    use webdock_control_plane::config::OAuthClientBackend;
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().oauth_client_backend,
+        OAuthClientBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_OAUTH_CLIENT_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    assert!(matches!(
+        runtime_config(&env).unwrap().oauth_client_backend,
+        OAuthClientBackend::Native
+    ));
+    env.insert("WEBDOCK_OAUTH_CLIENT_BACKEND".into(), "other".into());
+    assert!(runtime_config(&env).is_err());
+}

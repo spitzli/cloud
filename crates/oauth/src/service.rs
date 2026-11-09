@@ -1,3 +1,5 @@
+#[path = "native_client_store.rs"]
+mod native_client_store;
 use crate::{
     engine::{Engine, grant},
     types::{Client, GrantContext, SCOPES, valid_url},
@@ -28,6 +30,7 @@ struct Issuance<'a> {
 }
 pub struct OAuthService {
     pub(crate) db: DatabaseConnection,
+    native_client_store: Option<webdock_persistence::postgres::Pool>,
     identity: Arc<IdentityService>,
     allocator: Arc<IdAllocator>,
     pub(crate) keys: Arc<SecretKeys>,
@@ -43,11 +46,29 @@ impl OAuthService {
     ) -> Self {
         Self {
             db,
+            native_client_store: None,
             identity,
             allocator,
             keys,
             config,
         }
+    }
+    pub fn with_native_client_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+        self.native_client_store = Some(pool);
+        self
+    }
+    pub(crate) fn native_client_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+        self.native_client_store.as_ref()
+    }
+    /// Trusted native transaction boundary retaining the canonical client fence until caller completion.
+    pub async fn validate_portal_client_native_in<'a>(
+        &self,
+        tx: webdock_persistence::postgres::Transaction<'a>,
+        credentials: &ClientAuthentication,
+        redirect: &str,
+    ) -> Result<webdock_persistence::postgres::Transaction<'a>> {
+        self.native_validate_portal_in(tx, credentials, redirect)
+            .await
     }
     pub(crate) async fn allocate_id(&self) -> Result<String> {
         self.allocator
@@ -553,6 +574,9 @@ impl OAuthService {
         redirect_uri: &str,
     ) -> Result<()> {
         self.portal_credentials(credentials)?;
+        if self.native_client_pool().is_some() {
+            return self.native_validate_portal(credentials, redirect_uri).await;
+        }
         let tx = self.db.begin().await?;
         self.validate_portal_client_in(&tx, credentials, redirect_uri)
             .await?;
@@ -1330,50 +1354,48 @@ impl OAuthService {
 }
 async fn load_client(tx: &DatabaseTransaction, id: &str) -> Result<Client> {
     let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT * FROM webdock_auth.\"oauthClient\" WHERE \"clientId\"=$1 AND NOT coalesce(disabled,false) AND NOT coalesce(\"dpopBoundAccessTokens\",false) AND (\"subjectType\" IS NULL OR \"subjectType\"='public') FOR SHARE",[id.into()])).await?.ok_or(Error::InvalidClient)?;
-    let method = match row
-        .try_get::<Option<String>>("", "tokenEndpointAuthMethod")?
-        .as_deref()
-        .unwrap_or("client_secret_post")
-    {
+    client_record(
+        id,
+        crate::types::ClientRecord {
+            secret: row.try_get("", "clientSecret")?,
+            name: row.try_get("", "name")?,
+            method: row.try_get("", "tokenEndpointAuthMethod")?,
+            metadata: row.try_get("", "metadata")?,
+            redirects: row.try_get("", "redirectUris")?,
+            logout_redirects: row.try_get("", "postLogoutRedirectUris")?,
+            scopes: row.try_get("", "scopes")?,
+            grants: row.try_get("", "grantTypes")?,
+            skip_consent: row.try_get("", "skipConsent")?,
+            end_session: row.try_get("", "enableEndSession")?,
+        },
+    )
+}
+fn client_record(id: &str, record: crate::types::ClientRecord) -> Result<Client> {
+    let method = match record.method.as_deref().unwrap_or("client_secret_post") {
         "none" => ClientAuthMethod::None,
         "client_secret_post" => ClientAuthMethod::ClientSecretPost,
         "client_secret_basic" => ClientAuthMethod::ClientSecretBasic,
         _ => return Err(Error::InvalidClient),
     };
-    let mut metadata = row
-        .try_get::<Option<Value>>("", "metadata")?
-        .unwrap_or(json!({}));
+    let mut metadata = record.metadata.unwrap_or(json!({}));
     if let Some(text) = metadata.as_str() {
         metadata = serde_json::from_str(text).map_err(|_| Error::InvalidClient)?;
     }
-    let redirects = json_strings(row.try_get("", "redirectUris")?)?;
+    let redirects = json_strings(record.redirects)?;
     if redirects.is_empty() {
         return Err(Error::InvalidClient);
     }
     Ok(Client {
         id: id.into(),
-        secret: row.try_get("", "clientSecret")?,
-        name: row.try_get("", "name")?,
+        secret: record.secret,
+        name: record.name,
         redirects,
-        logout_redirects: json_strings(
-            row.try_get::<Option<Value>>("", "postLogoutRedirectUris")?
-                .unwrap_or(json!([])),
-        )?,
-        scopes: json_strings(
-            row.try_get::<Option<Value>>("", "scopes")?
-                .unwrap_or(json!([])),
-        )?,
-        grants: json_strings(
-            row.try_get::<Option<Value>>("", "grantTypes")?
-                .unwrap_or(json!(["authorization_code"])),
-        )?,
+        logout_redirects: json_strings(record.logout_redirects.unwrap_or(json!([])))?,
+        scopes: json_strings(record.scopes.unwrap_or(json!([])))?,
+        grants: json_strings(record.grants.unwrap_or(json!(["authorization_code"])))?,
         method,
-        skip_consent: row
-            .try_get::<Option<bool>>("", "skipConsent")?
-            .unwrap_or(false),
-        end_session: row
-            .try_get::<Option<bool>>("", "enableEndSession")?
-            .unwrap_or(false),
+        skip_consent: record.skip_consent.unwrap_or(false),
+        end_session: record.end_session.unwrap_or(false),
         metadata,
     })
 }
