@@ -11,18 +11,20 @@ use tokio_postgres::types::Type;
 use webdock_identity::Principal;
 use webdock_persistence::postgres::Transaction;
 const BUDGET: Duration = Duration::from_secs(30);
-struct TokenRecord {
-    id: String,
-    hash: String,
-    client: String,
-    user: Option<String>,
-    session: Option<String>,
-    scopes: Value,
-    resources: Option<Value>,
-    expires: DateTime<Utc>,
-    created: DateTime<Utc>,
-    revoked: Option<DateTime<Utc>>,
-    alive: bool,
+pub(super) struct TokenRecord {
+    pub(super) id: String,
+    pub(super) hash: String,
+    pub(super) client: String,
+    pub(super) user: Option<String>,
+    pub(super) session: Option<String>,
+    pub(super) scopes: Value,
+    pub(super) resources: Option<Value>,
+    pub(super) expires: DateTime<Utc>,
+    pub(super) created: DateTime<Utc>,
+    pub(super) revoked: Option<DateTime<Utc>>,
+    pub(super) alive: bool,
+    pub(super) code: Option<String>,
+    pub(super) refresh_id: Option<String>,
 }
 impl TokenRecord {
     fn decode(row: &tokio_postgres::Row) -> std::result::Result<Self, tokio_postgres::Error> {
@@ -38,6 +40,8 @@ impl TokenRecord {
             created: row.try_get("createdAt")?,
             revoked: row.try_get("revoked")?,
             alive: row.try_get("alive")?,
+            code: row.try_get("authorizationCodeId")?,
+            refresh_id: row.try_get("refreshId")?,
         })
     }
     fn same_owner(&self, other: &Self) -> bool {
@@ -62,9 +66,18 @@ fn table(refresh: bool) -> &'static str {
         "oauthAccessToken"
     }
 }
-async fn discover(tx: &Transaction<'_>, hash: &str, refresh: bool) -> Result<Option<TokenRecord>> {
+pub(super) async fn discover(
+    tx: &Transaction<'_>,
+    hash: &str,
+    refresh: bool,
+) -> Result<Option<TokenRecord>> {
+    let refresh_id = if refresh {
+        r#"NULL::text AS "refreshId""#
+    } else {
+        r#""refreshId""#
+    };
     let sql = format!(
-        "SELECT {COLUMNS} FROM webdock_auth.\"{}\" WHERE token=$1",
+        r#"SELECT {COLUMNS},"authorizationCodeId",{refresh_id} FROM webdock_auth."{}" WHERE token=$1"#,
         table(refresh)
     );
     tx.query_typed_opt(&sql, &[(&hash, Type::TEXT)])
@@ -100,7 +113,7 @@ async fn ownership_locks(tx: &Transaction<'_>, record: &TokenRecord) -> Result<(
     }
     Ok(())
 }
-async fn reload_fenced(
+pub(super) async fn reload_fenced(
     tx: &Transaction<'_>,
     discovered: TokenRecord,
     refresh: bool,
@@ -267,6 +280,18 @@ impl OAuthService {
         let Some(record) = record else {
             return Ok((tx, inactive()));
         };
+        self.inspect_native_record(tx, record, &hash, refresh, caller, allow_preview)
+            .await
+    }
+    pub(super) async fn inspect_native_record<'a>(
+        &self,
+        tx: Transaction<'a>,
+        record: TokenRecord,
+        hash: &str,
+        refresh: bool,
+        caller: Option<&str>,
+        allow_preview: bool,
+    ) -> Result<(Transaction<'a>, Value)> {
         if !record.alive || record.revoked.is_some() {
             return Ok((tx, inactive()));
         }
@@ -321,7 +346,7 @@ impl OAuthService {
             Err(Error::AccessDenied) => return Ok((tx, disabled())),
             Err(error) => return Err(error),
         };
-        let current = discover(&tx, &hash, refresh).await?;
+        let current = discover(&tx, hash, refresh).await?;
         if !current.is_some_and(|current| record.same_owner(&current) && current.alive) {
             return Ok((tx, inactive()));
         }

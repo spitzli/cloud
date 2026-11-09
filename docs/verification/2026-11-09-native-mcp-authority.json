@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-09",
+  "base": "9b5eb3cac446f0a827f615451d73c5ee6c928b6c",
+  "optIn": "WEBDOCK_MCP_AUTHORITY_BACKEND=tokio-postgres",
+  "default": "sea-orm",
+  "nativeOperations": [
+    "owned MCP access reference authentication",
+    "consuming authorize_mcp_reference_native_in",
+    "consuming revalidate_mcp_authority_native_in"
+  ],
+  "corePool": {
+    "shared": true,
+    "max": 4,
+    "min": 0
+  },
+  "implies": [
+    "native introspection/client/public-key reads"
+  ],
+  "preservesExistingNativeCapabilities": true,
+  "validation": {
+    "targetedPassed": 95,
+    "nativeClientsPassed": 4,
+    "nativeOAuthMcpCasesPassed": 43,
+    "newMcpCasesPassed": 7,
+    "nativeBrowserPassed": 17,
+    "coreConfigPassed": 18,
+    "actualCoreHttpPassed": 13,
+    "defaultPassed": 217,
+    "defaultIgnored": 128,
+    "defaultSuites": 52,
+    "clippyWarningsDenied": true,
+    "format": true,
+    "staticContracts": true,
+    "lockedMetadataWorkspaces": 15,
+    "fixtures": "owned loopback PostgreSQL18; restricted roles; disconnected retained MCP reader; native-issued access and retained fingerprint interoperability; HTTP bearer gateway native fence and revoked401"
+  },
+  "review": {
+    "freshContext": true,
+    "materialFindings": 0,
+    "minorDeferrals": 0
+  },
+  "maximumMigration": 75,
+  "schemaOrCredentialsChanged": false,
+  "productionActivated": false,
+  "publicBuildAdmissionChanged": false,
+  "completeDriverMigration": false,
+  "measuredPerformanceImprovement": false,
+  "limits": [
+    "Retained McpGuard/domain consumers and other identity/product stores remain explicit pending ports.",
+    "Existing binding/provider snapshots retained; app_binding SELECT-only unchanged.",
+    "No production login, S3 benchmark, Neon compute gain or arbitrary public-build qualification claimed."
+  ]
+}

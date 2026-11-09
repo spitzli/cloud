@@ -24,6 +24,7 @@ struct Setup {
     security: Arc<OAuthService>,
     grants: Arc<OAuthService>,
     tokens: Arc<OAuthService>,
+    mcp: Arc<OAuthService>,
     pool: Pool,
     credentials: ClientAuthentication,
     auth_cookie: String,
@@ -159,12 +160,23 @@ impl Setup {
         let tokens = Arc::new(
             OAuthService::new(
                 DatabaseConnection::default(),
+                native_identity.clone(),
+                ids.clone(),
+                keys.clone(),
+                config(Some(credentials.client_id.clone())),
+            )
+            .with_native_tokens_store(pool.clone()),
+        );
+        let mcp = Arc::new(
+            OAuthService::new(
+                DatabaseConnection::default(),
                 native_identity,
                 ids,
                 keys.clone(),
                 config(Some(credentials.client_id.clone())),
             )
-            .with_native_tokens_store(pool.clone()),
+            .with_native_tokens_store(pool.clone())
+            .with_native_mcp_authority(pool.clone()),
         );
         let auth_cookie = CookiePolicy::new(true, AUTH_SECRET)
             .unwrap()
@@ -181,6 +193,7 @@ impl Setup {
             security,
             grants,
             tokens,
+            mcp,
             pool,
             credentials,
             auth_cookie,
@@ -2208,4 +2221,373 @@ async fn native_tokens_refresh_deadline_after_pending_write_rolls_back() {
     let clean=s.f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT \"rotatedAt\" IS NULL AND revoked IS NULL AS clean FROM webdock_auth.\"oauthRefreshToken\" LIMIT 1")).await.unwrap().unwrap().try_get::<bool>("","clean").unwrap();
     assert!(clean);
     assert_eq!(s.active(&t.access_token).await["active"], true);
+}
+
+impl Setup {
+    async fn mcp_token(&self) -> (ClientAuthentication, TokenResponse) {
+        let c = self
+            .legacy
+            .provision_client(
+                &self.f.owner,
+                ClientRegistration {
+                    name: "Native MCP authority".into(),
+                    redirect_uris: vec![REDIRECT.into()],
+                    post_logout_redirect_uris: vec![],
+                    scopes: vec![
+                        "openid".into(),
+                        "hosting:read".into(),
+                        "hosting:write".into(),
+                        "offline_access".into(),
+                    ],
+                    auth_method: ClientAuthMethod::ClientSecretPost,
+                    allow_refresh: true,
+                    skip_consent: true,
+                    purpose: ClientPurpose::McpHosting,
+                },
+            )
+            .await
+            .unwrap();
+        let c = ClientAuthentication {
+            client_id: c.client_id,
+            client_secret: c.client_secret,
+            method: ClientAuthMethod::ClientSecretPost,
+        };
+        let v = "m".repeat(64);
+        let challenge = URL_SAFE_NO_PAD.encode(Sha256::digest(v.as_bytes()));
+        let mut r = AuthorizationRequest::code(
+            c.client_id.clone(),
+            REDIRECT.into(),
+            "openid hosting:read hosting:write offline_access".into(),
+            challenge,
+        );
+        r.resources = vec![RESOURCE.into()];
+        let AuthorizationOutcome::Redirect(location) =
+            self.mcp.authorize(&self.auth_cookie, r).await.unwrap()
+        else {
+            panic!("MCP code expected")
+        };
+        let u = url::Url::parse(&location).unwrap();
+        let code = u
+            .query_pairs()
+            .find(|(k, _)| k == "code")
+            .unwrap()
+            .1
+            .into_owned();
+        let t = self
+            .mcp
+            .exchange_code(CodeExchange {
+                client: c.clone(),
+                code,
+                redirect_uri: REDIRECT.into(),
+                code_verifier: v,
+            })
+            .await
+            .unwrap();
+        (c, t)
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; native MCP access references interoperate with retained fingerprints and caller-owned fences"]
+async fn native_mcp_authority_revalidates_exact_native_access_record() {
+    let s = Setup::start().await;
+    let (c, t) = s.mcp_token().await;
+    let native = s
+        .mcp
+        .authorize_mcp_reference(&c, &t.access_token, "hosting:write")
+        .await
+        .unwrap();
+    let old = s
+        .legacy
+        .authorize_mcp_reference(&c, &t.access_token, "hosting:write")
+        .await
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(&native.authority).unwrap(),
+        serde_json::to_value(&old.authority).unwrap()
+    );
+    let mut connection = s.pool.acquire().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    let (tx, p) = s
+        .mcp
+        .revalidate_mcp_authority_native_in(tx, &native.authority)
+        .await
+        .unwrap();
+    assert_eq!(p.user_id, s.user);
+    assert!(native.authority.can_write());
+    tx.commit().await.unwrap();
+}
+
+#[tokio::test]
+#[ignore = "owned PG18; native MCP returned transaction retains exact identity/token/resource fences"]
+async fn native_mcp_authority_retains_all_fences_until_domain_completion() {
+    let s = Setup::start().await;
+    let (c, t) = s.mcp_token().await;
+    let mut connection = s.pool.acquire().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    let (tx, actor) = s
+        .mcp
+        .authorize_mcp_reference_native_in(tx, &c, &t.access_token, "hosting:write")
+        .await
+        .unwrap();
+    assert_eq!(actor.principal.user_id, s.user);
+    for sql in [
+        "SELECT id FROM webdock_auth.\"oauthClient\" FOR UPDATE NOWAIT",
+        "SELECT id FROM webdock_auth.\"user\" FOR UPDATE NOWAIT",
+        "SELECT id FROM webdock_auth.session FOR UPDATE NOWAIT",
+        "SELECT id FROM webdock_auth.\"oauthAccessToken\" FOR UPDATE NOWAIT",
+        "SELECT id FROM webdock_auth.\"oauthResource\" FOR UPDATE NOWAIT",
+        "SELECT id FROM webdock_auth.\"oauthClientResource\" FOR UPDATE NOWAIT",
+    ] {
+        let gate = s.f.owner.begin().await.unwrap();
+        let error = gate
+            .query_all_raw(Statement::from_string(DbBackend::Postgres, sql))
+            .await
+            .unwrap_err();
+        assert!(
+            error.to_string().contains("could not obtain lock"),
+            "{error}"
+        );
+        gate.rollback().await.unwrap();
+    }
+    tx.commit().await.unwrap();
+    drop(connection);
+    let guard = s
+        .legacy
+        .begin_mcp_authority(&actor.authority)
+        .await
+        .unwrap();
+    assert_eq!(guard.principal().user_id, s.user);
+    guard.verify().await.unwrap();
+}
+#[tokio::test]
+#[ignore = "owned PG18; native MCP cannot turn a refresh/bare JWT/ID token or wrong scope into authority"]
+async fn native_mcp_authority_requires_current_access_row_and_namespace() {
+    let s = Setup::start().await;
+    let (c, t) = s.mcp_token().await;
+    let now = chrono::Utc::now().timestamp();
+    let jwt=s.sign(&serde_json::json!({"iss":ISSUER,"aud":RESOURCE,"azp":c.client_id,"sub":s.user,"sid":s.session,"scope":"hosting:read hosting:write","iat":now,"exp":now+300})).await;
+    for token in [
+        jwt.as_str(),
+        t.refresh_token.as_ref().unwrap(),
+        t.id_token.as_ref().unwrap(),
+        "unknown",
+    ] {
+        assert!(
+            s.mcp
+                .authorize_mcp_reference(&c, token, "hosting:read")
+                .await
+                .is_err()
+        );
+    }
+    assert!(
+        s.mcp
+            .authorize_mcp_reference(&c, &t.access_token, "webdock:read")
+            .await
+            .is_err()
+    );
+    assert!(matches!(
+        s.mcp
+            .authorize_mcp_reference(&c, &t.access_token, "unknown-scope")
+            .await,
+        Err(Error::InvalidScope)
+    ));
+    let mut bad = c.clone();
+    bad.client_secret = Some("wrong".into());
+    assert!(matches!(
+        s.mcp
+            .authorize_mcp_reference(&bad, &t.access_token, "hosting:read")
+            .await,
+        Err(Error::InvalidClient)
+    ));
+    s.sql("UPDATE webdock_auth.\"oauthAccessToken\" SET \"expiresAt\"=\"createdAt\"+interval '301 seconds'").await;
+    assert!(
+        s.mcp
+            .authorize_mcp_reference(&c, &t.access_token, "hosting:read")
+            .await
+            .is_err(),
+        "long-lived MCP access is refused"
+    );
+}
+#[tokio::test]
+#[ignore = "owned PG18; native MCP reference fields and token-record identity cannot be substituted"]
+async fn native_mcp_authority_rejects_tampering_and_record_changes() {
+    let s = Setup::start().await;
+    let (c, t) = s.mcp_token().await;
+    let actor = s
+        .mcp
+        .authorize_mcp_reference(&c, &t.access_token, "hosting:write")
+        .await
+        .unwrap();
+    let original = serde_json::to_value(&actor.authority).unwrap();
+    for (field, value) in [
+        ("accessId", serde_json::json!("wrong")),
+        ("recordHash", serde_json::json!("x".repeat(43))),
+        ("subject", serde_json::json!("backup")),
+        ("issuerClientId", serde_json::json!(s.credentials.client_id)),
+        ("role", serde_json::json!("operator")),
+        ("write", serde_json::json!(false)),
+        (
+            "expiresAt",
+            serde_json::json!(chrono::Utc::now().timestamp() + 600),
+        ),
+    ] {
+        let mut raw = original.clone();
+        raw[field] = value;
+        let a: webdock_oauth::McpAuthority = serde_json::from_value(raw).unwrap();
+        let mut connection = s.pool.acquire().await.unwrap();
+        let tx = connection.transaction().await.unwrap();
+        assert!(
+            s.mcp
+                .revalidate_mcp_authority_native_in(tx, &a)
+                .await
+                .is_err(),
+            "{field}"
+        );
+    }
+    s.sql("UPDATE webdock_auth.\"oauthAccessToken\" SET \"authorizationCodeId\"='replaced'")
+        .await;
+    let mut connection = s.pool.acquire().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    assert!(
+        s.mcp
+            .revalidate_mcp_authority_native_in(tx, &actor.authority)
+            .await
+            .is_err(),
+        "non-owner immutable fields are part of exact fingerprint"
+    );
+}
+#[tokio::test]
+#[ignore = "owned PG18; current caller/issuer/resource permissions and role ceilings remain live"]
+async fn native_mcp_authority_observes_current_client_resource_and_role() {
+    let s = Setup::start().await;
+    let (c, t) = s.mcp_token().await;
+    let actor = s
+        .mcp
+        .authorize_mcp_reference(&c, &t.access_token, "hosting:write")
+        .await
+        .unwrap();
+    for (deny, restore) in [
+        (
+            "UPDATE webdock_auth.\"oauthResource\" SET disabled=true",
+            "UPDATE webdock_auth.\"oauthResource\" SET disabled=false",
+        ),
+        (
+            "UPDATE webdock_auth.\"oauthClient\" SET disabled=true",
+            "UPDATE webdock_auth.\"oauthClient\" SET disabled=false",
+        ),
+        (
+            "UPDATE webdock_auth.\"user\" SET banned=true WHERE id<>'backup'",
+            "UPDATE webdock_auth.\"user\" SET banned=false WHERE id<>'backup'",
+        ),
+    ] {
+        s.sql(deny).await;
+        let mut connection = s.pool.acquire().await.unwrap();
+        let tx = connection.transaction().await.unwrap();
+        assert!(
+            s.mcp
+                .revalidate_mcp_authority_native_in(tx, &actor.authority)
+                .await
+                .is_err()
+        );
+        drop(connection);
+        s.sql(restore).await;
+    }
+    s.sql("UPDATE webdock_auth.\"user\" SET role='operator',\"twoFactorEnabled\"=true WHERE id<>'backup'").await;
+    let mut connection = s.pool.acquire().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    assert!(
+        s.mcp
+            .revalidate_mcp_authority_native_in(tx, &actor.authority)
+            .await
+            .is_err(),
+        "saved hosting-customer proof cannot become operator"
+    );
+}
+#[tokio::test]
+#[ignore = "owned PG18; cross-client MCP introspection requires current linked grants and preserves both fences"]
+async fn native_mcp_authority_preserves_cross_client_grant_boundaries() {
+    let s = Setup::start().await;
+    let (c, t) = s.mcp_token().await;
+    assert!(
+        s.mcp
+            .authorize_mcp_reference(&s.credentials, &t.access_token, "hosting:read")
+            .await
+            .is_err()
+    );
+    s.sql(&format!("INSERT INTO webdock_auth.\"oauthClientResource\"(id,\"clientId\",\"resourceId\",\"createdAt\") VALUES('mcp-caller-link','{}','{RESOURCE}',now())",s.credentials.client_id)).await;
+    let actor = s
+        .mcp
+        .authorize_mcp_reference(&s.credentials, &t.access_token, "hosting:read")
+        .await
+        .unwrap();
+    assert_eq!(actor.principal.user_id, s.user);
+    let mut connection = s.pool.acquire().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    let (tx, _) = s
+        .mcp
+        .revalidate_mcp_authority_native_in(tx, &actor.authority)
+        .await
+        .unwrap();
+    let gate = s.f.owner.begin().await.unwrap();
+    assert!(gate.execute_unprepared("SELECT id FROM webdock_auth.\"oauthClientResource\" WHERE id='mcp-caller-link' FOR UPDATE NOWAIT").await.is_err());
+    gate.rollback().await.unwrap();
+    tx.commit().await.unwrap();
+    drop(connection);
+    s.sql("DELETE FROM webdock_auth.\"oauthClientResource\" WHERE id='mcp-caller-link'")
+        .await;
+    let mut connection = s.pool.acquire().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    assert!(
+        s.mcp
+            .revalidate_mcp_authority_native_in(tx, &actor.authority)
+            .await
+            .is_err()
+    );
+    let _ = c;
+}
+#[tokio::test]
+#[ignore = "owned PG18; native MCP expiry after lock waits/cancellation never returns stale authority"]
+async fn native_mcp_authority_rechecks_expiry_and_cancellation() {
+    let s = Setup::start().await;
+    let (c, t) = s.mcp_token().await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared("SELECT id FROM webdock_auth.\"oauthAccessToken\" FOR UPDATE")
+        .await
+        .unwrap();
+    let reader = s.mcp.clone();
+    let creds = c.clone();
+    let token = t.access_token.clone();
+    let task = tokio::spawn(async move {
+        reader
+            .authorize_mcp_reference(&creds, &token, "hosting:read")
+            .await
+    });
+    s.wait_lock("oauthAccessToken").await;
+    task.abort();
+    assert!(matches!(task.await,Err(e)if e.is_cancelled()));
+    gate.commit().await.unwrap();
+    assert!(
+        s.mcp
+            .authorize_mcp_reference(&c, &t.access_token, "hosting:read")
+            .await
+            .is_ok()
+    );
+    s.sql("UPDATE webdock_auth.\"oauthAccessToken\" SET \"expiresAt\"=clock_timestamp()+interval '1 second'").await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared("SELECT id FROM webdock_auth.\"oauthAccessToken\" FOR UPDATE")
+        .await
+        .unwrap();
+    let reader = s.mcp.clone();
+    let token = t.access_token.clone();
+    let task = tokio::spawn(async move {
+        reader
+            .authorize_mcp_reference(&c, &token, "hosting:read")
+            .await
+    });
+    s.wait_lock("oauthAccessToken").await;
+    gate.execute_unprepared("SELECT pg_sleep(1.1)")
+        .await
+        .unwrap();
+    gate.commit().await.unwrap();
+    assert!(task.await.unwrap().is_err());
 }

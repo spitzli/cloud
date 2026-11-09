@@ -1,4 +1,6 @@
 //! Server-owned MCP access references. No raw token, synthetic session or portal preview grant.
+#[path = "native_mcp.rs"]
+mod native_mcp;
 use super::*;
 use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -83,10 +85,14 @@ fn record_hash(row: &sea_orm::QueryResult) -> Result<String> {
         row.try_get::<DateTime<Utc>>("", "createdAt")?,
         row.try_get::<DateTime<Utc>>("", "expiresAt")?
     ]);
+    hash_record(value)
+}
+fn hash_record(value: Value) -> Result<String> {
     Ok(URL_SAFE_NO_PAD.encode(Sha256::digest(
         serde_json::to_vec(&value).map_err(|_| Error::InvalidRequest)?,
     )))
 }
+
 impl OAuthService {
     pub async fn begin_mcp_authority(
         self: &std::sync::Arc<Self>,
@@ -109,49 +115,14 @@ impl OAuthService {
         claims: &Value,
         scope: &str,
     ) -> Result<bool> {
-        let (read, write, registry) = match scope {
-            "webdock:read" => ("webdock:read", false, true),
-            "webdock:write" => ("webdock:read", true, true),
-            "hosting:read" => ("hosting:read", false, false),
-            "hosting:write" => ("hosting:read", true, false),
-            _ => return Err(Error::InvalidScope),
-        };
-        let role = claims["webdock_role"].as_str().unwrap_or("");
-        let scopes = claims["scope"]
-            .as_str()
-            .unwrap_or("")
-            .split_whitespace()
-            .collect::<Vec<_>>();
-        let write_scope = if registry {
-            "webdock:write"
-        } else {
-            "hosting:write"
-        };
-        if claims["active"] != true
-            || claims["token_type"] != "Bearer"
-            || !audiences(claims).contains(&self.config.mcp_resource.as_str().to_owned())
-            || (registry && role != "operator")
-            || (!registry && !["hosting-operator", "hosting-customer"].contains(&role))
-            || (!registry && scopes.iter().any(|scope| scope.starts_with("webdock:")))
-            || !scopes.contains(&read)
-            || (write && !scopes.contains(&write_scope))
-        {
-            return Err(Error::AccessDenied);
-        }
+        let write = mcp_scope_policy(claims, self.config.mcp_resource.as_str(), scope)?;
         let issuer =
             load_client(tx, claims["client_id"].as_str().ok_or(Error::AccessDenied)?).await?;
         if issuer.metadata["webdock_mcp"] != true && issuer.metadata["webdock_hosting"] != true {
             return Err(Error::AccessDenied);
         }
-        let iat = claims["iat"].as_i64().ok_or(Error::AccessDenied)?;
-        let exp = claims["exp"].as_i64().ok_or(Error::AccessDenied)?;
-        if !(1..=300).contains(&exp.saturating_sub(iat))
-            || iat > Utc::now().timestamp()
-            || exp <= Utc::now().timestamp()
-        {
-            return Err(Error::AccessDenied);
-        }
-        Ok(scopes.contains(&write_scope))
+        mcp_deadline(claims)?;
+        Ok(write)
     }
     /// Authenticate an access token into an opaque reference backed by an exact retained token row.
     /// Stateless legacy JWTs without an access row cannot become durable native authority references.
@@ -161,6 +132,11 @@ impl OAuthService {
         token: &str,
         required_scope: &str,
     ) -> Result<McpAuthentication> {
+        if self.native_mcp_pool().is_some() {
+            return self
+                .native_authorize_mcp_reference(credentials, token, required_scope)
+                .await;
+        }
         if token.is_empty() || token.len() > 16384 {
             return Err(Error::AccessDenied);
         }
@@ -284,4 +260,48 @@ impl OAuthService {
         }
         Ok(principal)
     }
+}
+
+fn mcp_scope_policy(claims: &Value, resource: &str, scope: &str) -> Result<bool> {
+    let (read, write, registry) = match scope {
+        "webdock:read" => ("webdock:read", false, true),
+        "webdock:write" => ("webdock:read", true, true),
+        "hosting:read" => ("hosting:read", false, false),
+        "hosting:write" => ("hosting:read", true, false),
+        _ => return Err(Error::InvalidScope),
+    };
+    let role = claims["webdock_role"].as_str().unwrap_or("");
+    let scopes = claims["scope"]
+        .as_str()
+        .unwrap_or("")
+        .split_whitespace()
+        .collect::<Vec<_>>();
+    let write_scope = if registry {
+        "webdock:write"
+    } else {
+        "hosting:write"
+    };
+    if claims["active"] != true
+        || claims["token_type"] != "Bearer"
+        || !audiences(claims).contains(&resource.to_owned())
+        || (registry && role != "operator")
+        || (!registry && !["hosting-operator", "hosting-customer"].contains(&role))
+        || (!registry && scopes.iter().any(|scope| scope.starts_with("webdock:")))
+        || !scopes.contains(&read)
+        || (write && !scopes.contains(&write_scope))
+    {
+        return Err(Error::AccessDenied);
+    }
+    Ok(scopes.contains(&write_scope))
+}
+fn mcp_deadline(claims: &Value) -> Result<()> {
+    let iat = claims["iat"].as_i64().ok_or(Error::AccessDenied)?;
+    let exp = claims["exp"].as_i64().ok_or(Error::AccessDenied)?;
+    if !(1..=300).contains(&exp.saturating_sub(iat))
+        || iat > Utc::now().timestamp()
+        || exp <= Utc::now().timestamp()
+    {
+        return Err(Error::AccessDenied);
+    }
+    Ok(())
 }

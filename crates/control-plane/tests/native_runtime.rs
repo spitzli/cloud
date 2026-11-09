@@ -450,3 +450,40 @@ fn native_oauth_tokens_is_explicit_and_composes_the_complete_owned_lifecycle() {
     env.insert("WEBDOCK_OAUTH_TOKENS_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
+
+#[test]
+fn native_mcp_authority_is_explicit_and_additive_to_existing_capabilities() {
+    use webdock_control_plane::config::{
+        McpAuthorityBackend, OAuthIntrospectionBackend, OAuthTokensBackend,
+    };
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().mcp_authority_backend,
+        McpAuthorityBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_MCP_AUTHORITY_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    assert!(matches!(
+        runtime_config(&env).unwrap().mcp_authority_backend,
+        McpAuthorityBackend::Native
+    ));
+    assert!(matches!(
+        runtime_config(&env).unwrap().oauth_introspection_backend,
+        OAuthIntrospectionBackend::Native
+    ));
+    env.insert(
+        "WEBDOCK_OAUTH_TOKENS_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    assert!(matches!(
+        runtime_config(&env).unwrap().oauth_tokens_backend,
+        OAuthTokensBackend::Native
+    ));
+    env.insert("WEBDOCK_MCP_AUTHORITY_BACKEND".into(), "other".into());
+    assert!(runtime_config(&env).is_err());
+}

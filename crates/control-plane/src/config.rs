@@ -131,7 +131,13 @@ pub enum OAuthTokensBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum McpAuthorityBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub mcp_authority_backend: McpAuthorityBackend,
     pub oauth_tokens_backend: OAuthTokensBackend,
     pub oauth_grants_backend: OAuthGrantsBackend,
     pub oauth_security_backend: OAuthSecurityBackend,
@@ -290,6 +296,21 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         } else {
             oauth_introspection_backend
         };
+    let mcp_authority_backend = match env.get("WEBDOCK_MCP_AUTHORITY_BACKEND").map(String::as_str) {
+        None | Some("sea-orm") => McpAuthorityBackend::Legacy,
+        Some("tokio-postgres") => McpAuthorityBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_MCP_AUTHORITY_BACKEND".into(),
+            ));
+        }
+    };
+    let oauth_introspection_backend =
+        if matches!(mcp_authority_backend, McpAuthorityBackend::Native) {
+            OAuthIntrospectionBackend::Native
+        } else {
+            oauth_introspection_backend
+        };
     let browser_authority_backend = match env
         .get("WEBDOCK_BROWSER_AUTHORITY_BACKEND")
         .map(String::as_str)
@@ -323,6 +344,7 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         oauth_client_backend
     };
     Ok(RuntimeConfig {
+        mcp_authority_backend,
         oauth_tokens_backend,
         oauth_grants_backend,
         oauth_security_backend,

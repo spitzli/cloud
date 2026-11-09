@@ -98,6 +98,11 @@ async fn actual_http_oauth_grants_use_native_postgres() {
 async fn actual_http_oauth_tokens_use_native_postgres() {
     actual_core(NativeMode::OAuthTokens).await;
 }
+#[tokio::test]
+#[ignore = "owned PostgreSQL18; actual bearer resource boundary uses native MCP reference proof"]
+async fn actual_http_mcp_authority_uses_native_postgres() {
+    actual_core(NativeMode::McpAuthority).await;
+}
 #[derive(Clone, Copy)]
 enum NativeMode {
     Legacy,
@@ -111,8 +116,10 @@ enum NativeMode {
     OAuthSecurity,
     OAuthGrants,
     OAuthTokens,
+    McpAuthority,
 }
 async fn actual_core(mode: NativeMode) {
+    let native_mcp = matches!(mode, NativeMode::McpAuthority);
     let native = matches!(mode, NativeMode::Ids);
     let native_session = matches!(mode, NativeMode::SessionReads);
     let native_management = matches!(mode, NativeMode::SessionManagement);
@@ -153,17 +160,24 @@ async fn actual_core(mode: NativeMode) {
             .unwrap();
         tx.commit().await.unwrap();
     }
-    if native_introspection || native_authority {
+    if native_introspection || native_authority || native_mcp {
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('501','HTTP user','http@example.test',true,'user',false,false);INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('502','owned-introspection-session','501',now()+interval '1 hour',now());
         WITH hint AS MATERIALIZED(SELECT set_config('webdock.organization_allocation','{"customer_id":"100","organization_id":"101"}',true)) INSERT INTO webdock_admin.customers(id,name) SELECT '100','Owned HTTP customer' FROM hint;
         INSERT INTO webdock_auth.member(id,"organizationId","userId",role,"createdAt") VALUES('503','101','501','owner',now())"#).await.unwrap();
-        sql(&owner,r#"INSERT INTO webdock_auth."oauthAccessToken"(id,token,"clientId","sessionId","userId",scopes,resources,"expiresAt","createdAt") VALUES('504',$1,'102','502','501','["openid","profile","email"]','[]',now()+interval '1 hour',now())"#,vec![webdock_oauth::legacy_token_hash("owned-http-access").into()]).await;
+        if !native_mcp {
+            sql(&owner,r#"INSERT INTO webdock_auth."oauthAccessToken"(id,token,"clientId","sessionId","userId",scopes,resources,"expiresAt","createdAt") VALUES('504',$1,'102','502','501','["openid","profile","email"]','[]',now()+interval '1 hour',now())"#,vec![webdock_oauth::legacy_token_hash("owned-http-access").into()]).await;
+        }
     }
     if native_grants {
         owner.execute_unprepared("CREATE TABLE public.owned_oauth_grant_audit(app text);CREATE FUNCTION public.owned_oauth_grant_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_oauth_grant_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_oauth_grant_audit AFTER INSERT ON webdock_auth.identity_oauth_request FOR EACH ROW WHEN(NEW.kind='code') EXECUTE FUNCTION public.owned_oauth_grant_audit()").await.unwrap();
     }
     if native_tokens {
         owner.execute_unprepared("UPDATE webdock_auth.\"oauthClient\" SET scopes='[\"openid\",\"profile\",\"email\",\"offline_access\"]' WHERE \"clientId\"='102';CREATE TABLE public.owned_oauth_token_audit(app text,kind text);CREATE FUNCTION public.owned_oauth_token_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_oauth_token_audit VALUES(current_setting('application_name'),TG_TABLE_NAME);RETURN NEW;END $$;CREATE TRIGGER owned_oauth_token_audit AFTER INSERT ON webdock_auth.\"oauthAccessToken\" FOR EACH ROW EXECUTE FUNCTION public.owned_oauth_token_audit();CREATE TRIGGER owned_oauth_token_audit AFTER INSERT ON webdock_auth.\"oauthRefreshToken\" FOR EACH ROW EXECUTE FUNCTION public.owned_oauth_token_audit()").await.unwrap();
+    }
+    if native_mcp {
+        sql(&owner,r#"INSERT INTO webdock_auth."oauthClient"(id,"clientId","clientSecret",name,disabled,"skipConsent","enableEndSession",scopes,"redirectUris","grantTypes","responseTypes","tokenEndpointAuthMethod","requirePKCE","subjectType",metadata,"createdAt","updatedAt") VALUES('901','902',$1,'Owned MCP',false,true,true,'["hosting:read","hosting:write"]','["http://localhost:3121/api/sso/callback"]','["authorization_code"]','["code"]','client_secret_post',true,'public','{"webdock_hosting":true}',now(),now())"#,vec![webdock_oauth::legacy_token_hash("owned-http-mcp-secret").into()]).await;
+        owner.execute_unprepared(r#"INSERT INTO webdock_auth."oauthResource"(id,identifier,name,"accessTokenTtl","refreshTokenTtl","allowedScopes",disabled,"createdAt","updatedAt") VALUES('904','http://localhost:3120/api/mcp','Owned MCP',300,28800,'["hosting:read","hosting:write"]',false,now(),now());INSERT INTO webdock_auth."oauthClientResource"(id,"clientId","resourceId","createdAt") VALUES('905','902','http://localhost:3120/api/mcp',now())"#).await.unwrap();
+        sql(&owner,r#"INSERT INTO webdock_auth."oauthAccessToken"(id,token,"clientId","sessionId","userId",scopes,resources,"expiresAt","createdAt") VALUES('903',$1,'902','502','501','["hosting:read"]','["http://localhost:3120/api/mcp"]',now()+interval '300 seconds',now())"#,vec![webdock_oauth::legacy_token_hash("owned-http-mcp").into()]).await;
     }
     let before = journal(&owner).await;
     let account_counts = || {
@@ -318,6 +332,23 @@ async fn actual_core(mode: NativeMode) {
             "sea-orm"
         },
     );
+    command.env(
+        "WEBDOCK_MCP_AUTHORITY_BACKEND",
+        if native_mcp {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
+    if native_mcp {
+        use std::os::unix::fs::PermissionsExt;
+        let path = private.path().join("resource-secret");
+        std::fs::write(&path, "owned-http-mcp-secret").unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
+        command
+            .env("WEBDOCK_RESOURCE_CLIENT_ID", "902")
+            .env("WEBDOCK_RESOURCE_CLIENT_SECRET_FILE", path);
+    }
     let output = std::fs::File::create(&log).unwrap();
     command
         .stdout(Stdio::from(output.try_clone().unwrap()))
@@ -852,6 +883,57 @@ async fn actual_core(mode: NativeMode) {
     if native_grants {
         let n=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT count(*) AS n FROM public.owned_oauth_grant_audit WHERE app='spitzli-native-postgres'")).await.unwrap().unwrap().try_get::<i64>("","n").unwrap();
         assert_eq!(n, 1, "actual HTTP code write must use native driver");
+    }
+    if native_mcp {
+        let gate = owner.begin().await.unwrap();
+        gate.execute_unprepared(
+            "SELECT id FROM webdock_auth.\"oauthAccessToken\" WHERE id='903' FOR UPDATE",
+        )
+        .await
+        .unwrap();
+        let http = client.clone();
+        let request = tokio::spawn(async move {
+            http.get(format!("http://127.0.0.1:{port}/api/hosting/not-valid"))
+                .header("Host", "localhost:3120")
+                .bearer_auth("owned-http-mcp")
+                .timeout(Duration::from_secs(5))
+                .send()
+                .await
+                .unwrap()
+        });
+        let until = tokio::time::Instant::now() + Duration::from_secs(3);
+        loop {
+            let waiting=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE application_name='spitzli-native-postgres' AND wait_event_type='Lock' AND query LIKE '%oauthAccessToken%' AND query LIKE '%FOR SHARE%') AS waiting")).await.unwrap().unwrap().try_get::<bool>("","waiting").unwrap();
+            if waiting {
+                break;
+            }
+            assert!(
+                tokio::time::Instant::now() < until,
+                "actual resource boundary must retain native access fence"
+            );
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+        gate.commit().await.unwrap();
+        assert_eq!(
+            request.await.unwrap().status(),
+            404,
+            "valid authentication reaches routing contract"
+        );
+        owner
+            .execute_unprepared(
+                "UPDATE webdock_auth.\"oauthAccessToken\" SET revoked=now() WHERE id='903'",
+            )
+            .await
+            .unwrap();
+        let response = client
+            .get(format!("http://127.0.0.1:{port}/api/hosting/not-valid"))
+            .header("Host", "localhost:3120")
+            .bearer_auth("owned-http-mcp")
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 401);
+        assert!(response.headers().contains_key("www-authenticate"));
     }
     assert_eq!(
         before,
