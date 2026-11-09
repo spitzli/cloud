@@ -73,6 +73,11 @@ async fn actual_http_browser_login_begin_uses_native_flow_storage() {
 async fn actual_http_jwks_uses_native_oauth_client_store() {
     actual_core(NativeMode::OAuthClientReads).await;
 }
+#[tokio::test]
+#[ignore = "owned local PostgreSQL18; actual HTTP native token introspection/userinfo"]
+async fn actual_http_token_introspection_uses_native_postgres() {
+    actual_core(NativeMode::OAuthIntrospection).await;
+}
 #[derive(Clone, Copy)]
 enum NativeMode {
     Legacy,
@@ -81,6 +86,7 @@ enum NativeMode {
     SessionManagement,
     BrowserFlows,
     OAuthClientReads,
+    OAuthIntrospection,
 }
 async fn actual_core(mode: NativeMode) {
     let native = matches!(mode, NativeMode::Ids);
@@ -88,6 +94,7 @@ async fn actual_core(mode: NativeMode) {
     let native_management = matches!(mode, NativeMode::SessionManagement);
     let native_browser = matches!(mode, NativeMode::BrowserFlows);
     let native_oauth = matches!(mode, NativeMode::OAuthClientReads);
+    let native_introspection = matches!(mode, NativeMode::OAuthIntrospection);
     let fixture = fixture::DatabaseFixture::start().await;
     let owner = fixture.owner().await;
     if native_session || native_management {
@@ -97,7 +104,7 @@ async fn actual_core(mode: NativeMode) {
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('foreign-user','Foreign','foreign@example.test',true,'user',false,false);
         INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('owned-other-session','owned-other-token','owned-session-user',now()+interval '1 hour',now()),('foreign-session','foreign-token','foreign-user',now()+interval '1 hour',now())"#).await.unwrap();
     }
-    if native_browser {
+    if native_browser || native_introspection {
         let client_hash = webdock_oauth::legacy_token_hash("owned-core-browser-secret");
         sql(&owner,r#"INSERT INTO webdock_auth."oauthClient"(id,"clientId","clientSecret",name,disabled,"skipConsent","enableEndSession",scopes,"redirectUris","postLogoutRedirectUris","grantTypes","responseTypes","tokenEndpointAuthMethod","requirePKCE","subjectType",metadata,"createdAt","updatedAt") VALUES('103','102',$1,'Owned browser',false,true,true,'["openid","profile","email"]','["http://localhost:3121/api/sso/callback","http://localhost:3120/api/sso/callback"]','["http://localhost:3121/login"]','["authorization_code","refresh_token"]','["code"]','client_secret_post',true,'public','{"webdock_binding":"104"}',now(),now())"#,vec![client_hash.into()]).await;
         owner.execute_unprepared("INSERT INTO webdock_auth.app_binding(id,client_id,label,organization_id,enabled) VALUES('104','102','Owned browser',null,true);CREATE TABLE public.owned_browser_http_audit(app text);CREATE FUNCTION public.owned_browser_http_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_browser_http_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_browser_http_audit AFTER INSERT ON webdock_auth.identity_browser_flow FOR EACH ROW EXECUTE FUNCTION public.owned_browser_http_audit()").await.unwrap();
@@ -117,6 +124,12 @@ async fn actual_core(mode: NativeMode) {
             .await
             .unwrap();
         tx.commit().await.unwrap();
+    }
+    if native_introspection {
+        owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('501','HTTP user','http@example.test',true,'user',false,false);INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('502','owned-introspection-session','501',now()+interval '1 hour',now());
+        WITH hint AS MATERIALIZED(SELECT set_config('webdock.organization_allocation','{"customer_id":"100","organization_id":"101"}',true)) INSERT INTO webdock_admin.customers(id,name) SELECT '100','Owned HTTP customer' FROM hint;
+        INSERT INTO webdock_auth.member(id,"organizationId","userId",role,"createdAt") VALUES('503','101','501','owner',now())"#).await.unwrap();
+        sql(&owner,r#"INSERT INTO webdock_auth."oauthAccessToken"(id,token,"clientId","sessionId","userId",scopes,resources,"expiresAt","createdAt") VALUES('504',$1,'102','502','501','["openid","profile","email"]','[]',now()+interval '1 hour',now())"#,vec![webdock_oauth::legacy_token_hash("owned-http-access").into()]).await;
     }
     let before = journal(&owner).await;
     let account_counts = || {
@@ -228,6 +241,17 @@ async fn actual_core(mode: NativeMode) {
             "sea-orm"
         },
     );
+    command.env(
+        "WEBDOCK_OAUTH_INTROSPECTION_BACKEND",
+        if native_introspection {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
+    if native_introspection {
+        command.env("WEBDOCK_STUDIO_CLIENT_ID", "102");
+    }
     let output = std::fs::File::create(&log).unwrap();
     command
         .stdout(Stdio::from(output.try_clone().unwrap()))
@@ -474,6 +498,80 @@ async fn actual_core(mode: NativeMode) {
         assert_eq!(keys["keys"].as_array().unwrap().len(), 1);
         assert_eq!(keys["keys"][0]["kid"], "301");
         assert!(keys["keys"][0].get("d").is_none());
+    }
+    if native_introspection {
+        let gate = owner.begin().await.unwrap();
+        gate.execute_unprepared(
+            "LOCK TABLE webdock_auth.\"oauthAccessToken\" IN ACCESS EXCLUSIVE MODE",
+        )
+        .await
+        .unwrap();
+        let http = client.clone();
+        let request = tokio::spawn(async move {
+            http.post(format!(
+                "http://127.0.0.1:{port}/api/auth/oauth2/introspect"
+            ))
+            .header("Host", "localhost:3125")
+            .form(&[
+                ("client_id", "102"),
+                ("client_secret", "owned-core-browser-secret"),
+                ("token", "owned-http-access"),
+            ])
+            .timeout(Duration::from_secs(5))
+            .send()
+            .await
+            .unwrap()
+        });
+        let until = tokio::time::Instant::now() + Duration::from_secs(3);
+        loop {
+            let waiting=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE application_name='spitzli-native-postgres' AND usename='webdock_auth_bootstrap' AND wait_event_type='Lock' AND query LIKE '%oauthAccessToken%') AS blocked")).await.unwrap().unwrap().try_get::<bool>("","blocked").unwrap();
+            if waiting {
+                break;
+            }
+            assert!(
+                tokio::time::Instant::now() < until,
+                "actual introspection must use native driver"
+            );
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+        gate.commit().await.unwrap();
+        let response = request.await.unwrap();
+        assert_eq!(response.status(), 200);
+        let claims: Value = response.json().await.unwrap();
+        assert_eq!(claims["active"], true);
+        assert_eq!(claims["sub"], "501");
+        assert_eq!(claims["webdock_role"], "reader");
+        let response = client
+            .get(format!("http://127.0.0.1:{port}/api/auth/oauth2/userinfo"))
+            .header("Host", "localhost:3125")
+            .bearer_auth("owned-http-access")
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 200);
+        let profile: Value = response.json().await.unwrap();
+        assert_eq!(profile["email"], "http@example.test");
+        owner
+            .execute_unprepared(
+                "UPDATE webdock_auth.\"oauthAccessToken\" SET revoked=now() WHERE id='504'",
+            )
+            .await
+            .unwrap();
+        let response = client
+            .post(format!(
+                "http://127.0.0.1:{port}/api/auth/oauth2/introspect"
+            ))
+            .header("Host", "localhost:3125")
+            .form(&[
+                ("client_id", "102"),
+                ("client_secret", "owned-core-browser-secret"),
+                ("token", "owned-http-access"),
+            ])
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 200);
+        assert_eq!(response.json::<Value>().await.unwrap()["active"], false);
     }
     assert_eq!(
         before,

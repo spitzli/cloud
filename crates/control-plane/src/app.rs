@@ -69,6 +69,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             "Native browser storage requires first-party client configuration".into(),
         ));
     }
+    let native_oauth_introspection = matches!(
+        runtime.oauth_introspection_backend,
+        crate::config::OAuthIntrospectionBackend::Native
+    );
     let native_oauth_clients = matches!(
         runtime.oauth_client_backend,
         crate::config::OAuthClientBackend::Native
@@ -176,7 +180,14 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         oauth_keys.clone(),
         oauth_config,
     );
-    let oauth = if native_oauth_clients {
+    let oauth = if native_oauth_introspection {
+        oauth.with_native_introspection(
+            native_bootstrap_pool
+                .as_ref()
+                .ok_or_else(|| Error::Message("Native authentication storage unavailable".into()))?
+                .clone(),
+        )
+    } else if native_oauth_clients {
         oauth.with_native_client_store(
             native_bootstrap_pool
                 .as_ref()

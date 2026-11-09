@@ -8,7 +8,7 @@ use std::time::Duration;
 use tokio_postgres::types::Type;
 use webdock_persistence::postgres::Transaction;
 const BUDGET: Duration = Duration::from_secs(30);
-async fn load_client(tx: &Transaction<'_>, id: &str) -> Result<Client> {
+pub(super) async fn load_client(tx: &Transaction<'_>, id: &str) -> Result<Client> {
     if tx
         .query_typed_opt(
             r#"SELECT "clientId" FROM webdock_auth."oauthClient" WHERE "clientId"=$1 FOR SHARE"#,
