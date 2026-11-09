@@ -81,21 +81,12 @@ impl OAuthService {
         claims: &Value,
     ) -> Result<String> {
         let row=tx.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT id,\"privateKey\" FROM webdock_auth.jwks WHERE (alg='RS256' OR alg IS NULL) AND (\"expiresAt\" IS NULL OR \"expiresAt\">statement_timestamp()) ORDER BY \"createdAt\" DESC,id DESC LIMIT 1 FOR SHARE")).await?.ok_or(Error::Crypto)?;
-        let encrypted: String = serde_json::from_str(&row.try_get::<String>("", "privateKey")?)
-            .map_err(|_| Error::Crypto)?;
-        let private = self.keys.decrypt(&encrypted)?;
-        let key = Jwk::from_bytes(private.as_bytes()).map_err(|_| Error::Crypto)?;
-        let signer = RS256.signer_from_jwk(&key).map_err(|_| Error::Crypto)?;
-        let mut header = JwsHeader::new();
-        header.set_algorithm("RS256");
-        header.set_token_type("JWT");
-        header.set_key_id(row.try_get::<String>("", "id")?);
-        jws::serialize_compact(
-            &serde_json::to_vec(claims).map_err(|_| Error::Crypto)?,
-            &header,
-            &signer,
+        sign_encrypted(
+            &self.keys,
+            &row.try_get::<String>("", "privateKey")?,
+            &row.try_get::<String>("", "id")?,
+            claims,
         )
-        .map_err(|_| Error::Crypto)
     }
 }
 
@@ -159,4 +150,27 @@ pub(crate) fn verified_public_claims(
         return Err(Error::InvalidGrant);
     }
     Ok(claims)
+}
+
+/// Shared private operation; callers must own signing authority and key eligibility.
+pub(crate) fn sign_encrypted(
+    keys: &webdock_identity::SecretKeys,
+    raw: &str,
+    id: &str,
+    claims: &Value,
+) -> Result<String> {
+    let encrypted: String = serde_json::from_str(raw).map_err(|_| Error::Crypto)?;
+    let private = keys.decrypt(&encrypted)?;
+    let key = Jwk::from_bytes(private.as_bytes()).map_err(|_| Error::Crypto)?;
+    let signer = RS256.signer_from_jwk(&key).map_err(|_| Error::Crypto)?;
+    let mut header = JwsHeader::new();
+    header.set_algorithm("RS256");
+    header.set_token_type("JWT");
+    header.set_key_id(id);
+    jws::serialize_compact(
+        &serde_json::to_vec(claims).map_err(|_| Error::Crypto)?,
+        &header,
+        &signer,
+    )
+    .map_err(|_| Error::Crypto)
 }

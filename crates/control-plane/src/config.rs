@@ -126,7 +126,13 @@ pub enum OAuthGrantsBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum OAuthTokensBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub oauth_tokens_backend: OAuthTokensBackend,
     pub oauth_grants_backend: OAuthGrantsBackend,
     pub oauth_security_backend: OAuthSecurityBackend,
     pub browser_authority_backend: BrowserAuthorityBackend,
@@ -249,6 +255,20 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
             ));
         }
     };
+    let oauth_tokens_backend = match env.get("WEBDOCK_OAUTH_TOKENS_BACKEND").map(String::as_str) {
+        None | Some("sea-orm") => OAuthTokensBackend::Legacy,
+        Some("tokio-postgres") => OAuthTokensBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_OAUTH_TOKENS_BACKEND".into(),
+            ));
+        }
+    };
+    let oauth_grants_backend = if matches!(oauth_tokens_backend, OAuthTokensBackend::Native) {
+        OAuthGrantsBackend::Native
+    } else {
+        oauth_grants_backend
+    };
     let oauth_security_backend = if matches!(oauth_grants_backend, OAuthGrantsBackend::Native) {
         OAuthSecurityBackend::Native
     } else {
@@ -303,6 +323,7 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         oauth_client_backend
     };
     Ok(RuntimeConfig {
+        oauth_tokens_backend,
         oauth_grants_backend,
         oauth_security_backend,
         browser_authority_backend,

@@ -1,0 +1,54 @@
+{
+  "date": "2026-11-09",
+  "base": "00c5cb8d5f46cb7f878d92915053c12730f886de",
+  "optIn": "WEBDOCK_OAUTH_TOKENS_BACKEND=tokio-postgres",
+  "default": "sea-orm",
+  "nativeOperations": [
+    "owned code exchange/access-refresh persistence",
+    "owned refresh rotation/replay family revocation",
+    "fenced offline-provisioned encrypted private signing-key reads"
+  ],
+  "corePool": {
+    "shared": true,
+    "max": 4,
+    "min": 0
+  },
+  "implies": [
+    "native grants/security/coordinated IDs",
+    "native cookie/OAuth/client/public-key reads"
+  ],
+  "validation": {
+    "targetedPassed": 86,
+    "nativeClientsPassed": 4,
+    "nativeOAuthCasesPassed": 36,
+    "newTokenCasesPassed": 10,
+    "nativeBrowserPassed": 17,
+    "coreConfigPassed": 17,
+    "actualCoreHttpPassed": 12,
+    "defaultPassed": 216,
+    "defaultIgnored": 120,
+    "defaultSuites": 52,
+    "clippyWarningsDenied": true,
+    "format": true,
+    "staticContracts": true,
+    "lockedMetadataWorkspaces": 15,
+    "fixtures": "owned loopback PostgreSQL18; restricted roles; disconnected retained token writer; real PKCE/RS256 and actual HTTP native code/access/refresh audit"
+  },
+  "review": {
+    "freshContext": true,
+    "materialFindings": 0,
+    "minorDeferrals": 0
+  },
+  "maximumMigration": 75,
+  "schemaOrCredentialsChanged": false,
+  "productionActivated": false,
+  "publicBuildAdmissionChanged": false,
+  "completeOwnedOAuthLifecycleNative": true,
+  "completeDriverMigration": false,
+  "measuredPerformanceImprovement": false,
+  "limits": [
+    "Offline provisioning, retained caller-owned/MCP/domain and other identity/product stores remain explicit pending ports.",
+    "Existing binding/provider snapshots retained, app_binding SELECT-only unchanged.",
+    "No production login, S3 benchmark, Neon compute gain or arbitrary public-build qualification claimed."
+  ]
+}

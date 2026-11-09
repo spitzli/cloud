@@ -6,11 +6,14 @@ mod native_grants;
 mod native_introspection;
 #[path = "native_security.rs"]
 mod native_security;
+#[path = "native_tokens.rs"]
+mod native_tokens;
 struct NativeOAuthStore {
     pool: webdock_persistence::postgres::Pool,
     introspection: bool,
     security: bool,
     grants: bool,
+    tokens: bool,
 }
 use crate::{
     engine::{Engine, grant},
@@ -71,6 +74,7 @@ impl OAuthService {
             introspection: false,
             security: false,
             grants: false,
+            tokens: false,
         });
         self
     }
@@ -80,6 +84,7 @@ impl OAuthService {
             introspection: true,
             security: false,
             grants: false,
+            tokens: false,
         });
         self
     }
@@ -89,6 +94,7 @@ impl OAuthService {
             introspection: true,
             security: true,
             grants: false,
+            tokens: false,
         });
         self
     }
@@ -98,8 +104,25 @@ impl OAuthService {
             introspection: true,
             security: true,
             grants: true,
+            tokens: false,
         });
         self
+    }
+    pub fn with_native_tokens_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+        self.native_store = Some(NativeOAuthStore {
+            pool,
+            introspection: true,
+            security: true,
+            grants: true,
+            tokens: true,
+        });
+        self
+    }
+    pub(crate) fn native_tokens_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+        self.native_store
+            .as_ref()
+            .filter(|s| s.tokens)
+            .map(|s| &s.pool)
     }
     pub(crate) fn native_grants_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
         self.native_store
@@ -444,6 +467,9 @@ impl OAuthService {
         ))
     }
     pub async fn exchange_code(&self, input: CodeExchange) -> Result<TokenResponse> {
+        if self.native_tokens_pool().is_some() {
+            return self.native_exchange_code(input).await;
+        }
         let tx = self.db.begin().await?;
         let client = load_client(&tx, &input.client.client_id).await?;
         authenticate_client(&client, &input.client)?;
@@ -504,6 +530,9 @@ impl OAuthService {
         Ok(response)
     }
     pub async fn refresh(&self, input: RefreshExchange) -> Result<TokenResponse> {
+        if self.native_tokens_pool().is_some() {
+            return self.native_refresh(input).await;
+        }
         let tx = self.db.begin().await?;
         let client = load_client(&tx, &input.client.client_id).await?;
         authenticate_client(&client, &input.client)?;
@@ -609,6 +638,8 @@ impl OAuthService {
         tx: &DatabaseTransaction,
         issuance: Issuance<'_>,
     ) -> Result<TokenResponse> {
+        let scopes = scope_vec(&issuance.context.request.scope)?;
+        let claims = self.id_token_claims(&issuance, &scopes)?;
         let Issuance {
             client,
             principal,
@@ -620,7 +651,6 @@ impl OAuthService {
             code_id,
         } = issuance;
         let tokens = engine.tokens.issued.as_ref().ok_or(Error::InvalidGrant)?;
-        let scopes = scope_vec(&context.request.scope)?;
         let refresh_id = if let Some(token) = &tokens.refresh {
             let id = self.allocate_id().await?;
             tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.\"oauthRefreshToken\"(id,token,\"clientId\",\"sessionId\",\"userId\",\"authorizationCodeId\",resources,scopes,\"expiresAt\",\"createdAt\",\"authTime\") VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",[id.clone().into(),legacy_token_hash(token).into(),client.id.clone().into(),principal.session_id.clone().into(),principal.user_id.clone().into(),code_id.clone().into(),json!(context.request.resources).into(),json!(scopes).into(),date(current+refresh_ttl)?.into(),date(current)?.into(),date(context.auth_time)?.into()])).await?;
@@ -629,21 +659,7 @@ impl OAuthService {
             None
         };
         tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.\"oauthAccessToken\"(id,token,\"clientId\",\"sessionId\",\"userId\",\"authorizationCodeId\",\"refreshId\",resources,scopes,\"expiresAt\",\"createdAt\") VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",[self.allocate_id().await?.into(),legacy_token_hash(&tokens.token).into(),client.id.clone().into(),principal.session_id.clone().into(),principal.user_id.clone().into(),code_id.into(),refresh_id.into(),json!(context.request.resources).into(),json!(scopes).into(),date(current+ttl)?.into(),date(current)?.into()])).await?;
-        let id_token = if scopes.iter().any(|s| s == "openid") {
-            let mut claims = json!({"iss":self.config.issuer.as_str(),"sub":principal.user_id,"aud":client.id,"iat":current,"exp":current+300,"auth_time":context.auth_time,"acr":"0","at_hash":URL_SAFE_NO_PAD.encode(&Sha256::digest(tokens.token.as_bytes())[..16])});
-            if let Some(nonce) = &context.request.nonce {
-                claims["nonce"] = json!(nonce);
-            }
-            if client.end_session {
-                claims["sid"] = json!(principal.session_id);
-            }
-            if scopes.iter().any(|s| s == "email") {
-                claims["email"] = json!(principal.email);
-                claims["email_verified"] = json!(principal.email_verified());
-            }
-            if scopes.iter().any(|s| s == "profile") {
-                claims["name"] = json!(principal.name);
-            }
+        let id_token = if let Some(claims) = claims {
             Some(self.sign_id_token(tx, &claims).await?)
         } else {
             None
@@ -656,6 +672,35 @@ impl OAuthService {
             refresh_token: tokens.refresh.clone(),
             id_token,
         })
+    }
+    fn id_token_claims(&self, issuance: &Issuance<'_>, scopes: &[String]) -> Result<Option<Value>> {
+        if !scopes.iter().any(|s| s == "openid") {
+            return Ok(None);
+        }
+        let Issuance {
+            client,
+            principal,
+            context,
+            engine,
+            current,
+            ..
+        } = issuance;
+        let tokens = engine.tokens.issued.as_ref().ok_or(Error::InvalidGrant)?;
+        let mut claims = json!({"iss":self.config.issuer.as_str(),"sub":principal.user_id,"aud":client.id,"iat":current,"exp":current+300,"auth_time":context.auth_time,"acr":"0","at_hash":URL_SAFE_NO_PAD.encode(&Sha256::digest(tokens.token.as_bytes())[..16])});
+        if let Some(nonce) = &context.request.nonce {
+            claims["nonce"] = json!(nonce);
+        }
+        if client.end_session {
+            claims["sid"] = json!(principal.session_id);
+        }
+        if scopes.iter().any(|s| s == "email") {
+            claims["email"] = json!(principal.email);
+            claims["email_verified"] = json!(principal.email_verified());
+        }
+        if scopes.iter().any(|s| s == "profile") {
+            claims["name"] = json!(principal.name);
+        }
+        Ok(Some(claims))
     }
     /// Trusted first-party browser facade only. Never admit an organization/MCP client as a Console.
     pub async fn validate_portal_client(
