@@ -136,7 +136,13 @@ pub enum McpAuthorityBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum AccountRecoveryBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub account_recovery_backend: AccountRecoveryBackend,
     pub mcp_authority_backend: McpAuthorityBackend,
     pub oauth_tokens_backend: OAuthTokensBackend,
     pub oauth_grants_backend: OAuthGrantsBackend,
@@ -343,7 +349,25 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
     } else {
         oauth_client_backend
     };
+    let account_recovery_backend = match env
+        .get("WEBDOCK_ACCOUNT_RECOVERY_BACKEND")
+        .map(String::as_str)
+    {
+        None | Some("sea-orm") => AccountRecoveryBackend::Legacy,
+        Some("tokio-postgres") => AccountRecoveryBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_ACCOUNT_RECOVERY_BACKEND".into(),
+            ));
+        }
+    };
+    let id_backend = if matches!(account_recovery_backend, AccountRecoveryBackend::Native) {
+        IdBackend::Native
+    } else {
+        id_backend
+    };
     Ok(RuntimeConfig {
+        account_recovery_backend,
         mcp_authority_backend,
         oauth_tokens_backend,
         oauth_grants_backend,

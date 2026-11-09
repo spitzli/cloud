@@ -8,6 +8,8 @@ use async_trait::async_trait;
 use sea_orm::{ConnectionTrait, DatabaseTransaction, DbBackend, Statement, TransactionTrait};
 use serde::{Deserialize, Serialize};
 use std::{sync::Arc, time::Duration};
+#[path = "native_recovery.rs"]
+mod native_recovery;
 #[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub enum DeliveryKind {
@@ -94,6 +96,9 @@ impl IdentityService {
             return Ok(());
         }
         let email = email.trim().to_lowercase();
+        if self.native_recovery.is_some() {
+            return self.native_request_password_reset(&email).await;
+        }
         if self.neon_mapping_email(&email).await?.is_some() {
             let redirect = self
                 .account_origin
@@ -134,6 +139,11 @@ impl IdentityService {
         user_id: &str,
         invitation: Option<&str>,
     ) -> Result<Option<String>> {
+        if self.native_recovery.is_some() {
+            return self
+                .native_queue_account_activation(user_id, invitation)
+                .await;
+        }
         let tx = self.db.begin().await?;
         if tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT id FROM webdock_auth.\"user\" WHERE id=$1 AND NOT \"emailVerified\" AND \"mustChangePassword\" AND NOT coalesce(banned,false) FOR UPDATE",[user_id.into()])).await?.is_none()||externally_managed(&tx,user_id).await? {return Err(IdentityError::SecurityState)}
         let link = self
@@ -196,6 +206,9 @@ impl IdentityService {
         if limit == 0 || limit > 100 {
             return Err(IdentityError::InvalidInput);
         }
+        if self.native_recovery.is_some() {
+            return self.native_dispatch_delivery_jobs(limit).await;
+        }
         let keys = self.keys.as_ref().ok_or(IdentityError::Configuration)?;
         let mut result = DeliveryBatch::default();
         for _ in 0..limit {
@@ -227,6 +240,11 @@ impl IdentityService {
     pub async fn complete_password_reset(&self, token: &str, new_password: &str) -> Result<String> {
         if token.len() != 64 || !token.bytes().all(|b| b.is_ascii_hexdigit()) {
             return Err(IdentityError::Unauthorized);
+        }
+        if self.native_recovery.is_some() {
+            return self
+                .native_complete_password_reset(token, new_password)
+                .await;
         }
         let hash_token = digest(token);
         let tx = self.db.begin().await?;

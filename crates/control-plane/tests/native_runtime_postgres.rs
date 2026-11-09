@@ -105,6 +105,7 @@ async fn actual_http_mcp_authority_uses_native_postgres() {
 }
 #[derive(Clone, Copy)]
 enum NativeMode {
+    AccountRecovery,
     Legacy,
     Ids,
     SessionReads,
@@ -118,7 +119,13 @@ enum NativeMode {
     OAuthTokens,
     McpAuthority,
 }
+#[tokio::test]
+#[ignore = "owned PostgreSQL18; actual Console recovery HTTP uses native SQL and one-use proof"]
+async fn actual_http_account_recovery_uses_native_postgres() {
+    actual_core(NativeMode::AccountRecovery).await;
+}
 async fn actual_core(mode: NativeMode) {
+    let native_recovery = matches!(mode, NativeMode::AccountRecovery);
     let native_mcp = matches!(mode, NativeMode::McpAuthority);
     let native = matches!(mode, NativeMode::Ids);
     let native_session = matches!(mode, NativeMode::SessionReads);
@@ -132,6 +139,11 @@ async fn actual_core(mode: NativeMode) {
     let native_introspection = matches!(mode, NativeMode::OAuthIntrospection) || native_security;
     let fixture = fixture::DatabaseFixture::start().await;
     let owner = fixture.owner().await;
+    if native_recovery {
+        let hash = webdock_identity::hash_password("Owned-original-password-123").unwrap();
+        owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('owned-recovery-user','Owned recovery','recovery@example.test',true,'user',true,false);CREATE TABLE public.owned_recovery_audit(app text);CREATE FUNCTION public.owned_recovery_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_recovery_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_recovery_audit AFTER INSERT ON webdock_auth.identity_recovery_token FOR EACH ROW EXECUTE FUNCTION public.owned_recovery_audit()"#).await.unwrap();
+        sql(&owner,r#"INSERT INTO webdock_auth.account(id,"accountId","providerId","userId",password,"updatedAt") VALUES('owned-recovery-credential','owned-recovery-user','credential','owned-recovery-user',$1,now())"#,vec![hash.into()]).await;
+    }
     if native_session || native_management {
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('owned-session-user','Owned user','session@example.test',true,'user',false,false); INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('owned-session','owned-core-session-token','owned-session-user',now()+interval '1 hour',now())"#).await.unwrap();
     }
@@ -340,6 +352,14 @@ async fn actual_core(mode: NativeMode) {
             "sea-orm"
         },
     );
+    command.env(
+        "WEBDOCK_ACCOUNT_RECOVERY_BACKEND",
+        if native_recovery {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
     if native_mcp {
         use std::os::unix::fs::PermissionsExt;
         let path = private.path().join("resource-secret");
@@ -395,6 +415,110 @@ async fn actual_core(mode: NativeMode) {
         let row=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT (SELECT count(*) FROM webdock_auth.waitlist_entry WHERE email='native-id@example.test') AS entries,(SELECT count(*) FROM pg_catalog.pg_stat_activity WHERE application_name='spitzli-native-postgres' AND usename='webdock_auth_bootstrap') AS native_connections")).await.unwrap().unwrap();
         assert_eq!(row.try_get::<i64>("", "entries").unwrap(), 1);
         assert!(row.try_get::<i64>("", "native_connections").unwrap() >= 1);
+    }
+    if native_recovery {
+        let url = format!("http://127.0.0.1:{port}/api/console/auth/request-password-reset");
+        let response=client.post(&url).header("Host","localhost:3121").header("Origin","http://localhost:3121").json(&json!({"email":"recovery@example.test","redirectTo":"https://foreign.invalid/steal"})).send().await.unwrap();
+        assert_eq!(response.status(), 200);
+        let expected: Value = response.json().await.unwrap();
+        let missing: Value = client
+            .post(&url)
+            .header("Host", "localhost:3121")
+            .header("Origin", "http://localhost:3121")
+            .json(&json!({"email":"missing@example.test"}))
+            .send()
+            .await
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+        assert_eq!(expected, missing);
+        let row = owner
+            .query_one_raw(Statement::from_string(
+                DbBackend::Postgres,
+                "SELECT app FROM public.owned_recovery_audit",
+            ))
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            row.try_get::<String>("", "app").unwrap(),
+            "spitzli-native-postgres"
+        );
+        let keys = webdock_identity::SecretKeys::new(
+            std::collections::BTreeMap::from([(1, secret.to_owned())]),
+            1,
+            Some(secret.to_owned()),
+        )
+        .unwrap();
+        let row = owner
+            .query_one_raw(Statement::from_string(
+                DbBackend::Postgres,
+                "SELECT payload FROM webdock_auth.identity_delivery_job",
+            ))
+            .await
+            .unwrap()
+            .unwrap();
+        let request: webdock_identity::DeliveryRequest = serde_json::from_str(
+            &keys
+                .decrypt(&row.try_get::<String>("", "payload").unwrap())
+                .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            request
+                .url
+                .starts_with("http://localhost:3125/reset-password?token=")
+        );
+        let token = url::Url::parse(&request.url)
+            .unwrap()
+            .query_pairs()
+            .find(|(k, _)| k == "token")
+            .unwrap()
+            .1
+            .into_owned();
+        let reset = format!("http://127.0.0.1:{port}/api/console/auth/reset-password");
+        let response = client
+            .post(&reset)
+            .timeout(Duration::from_secs(15))
+            .header("Host", "localhost:3121")
+            .header("Origin", "http://localhost:3121")
+            .json(&json!({"token":token,"newPassword":"Owned-new-password-456"}))
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 200);
+        let replay = client
+            .post(&reset)
+            .header("Host", "localhost:3121")
+            .header("Origin", "http://localhost:3121")
+            .json(&json!({"token":token,"newPassword":"Owned-other-password-789"}))
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(replay.status(), 401);
+        let signin = client
+            .post(format!(
+                "http://127.0.0.1:{port}/api/console/auth/sign-in/email"
+            ))
+            .timeout(Duration::from_secs(15))
+            .header("Host", "localhost:3121")
+            .header("Origin", "http://localhost:3121")
+            .json(&json!({"email":"recovery@example.test","password":"Owned-new-password-456"}))
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(signin.status(), 200);
+        assert!(
+            signin
+                .headers()
+                .get_all("set-cookie")
+                .iter()
+                .all(|h| !h.to_str().unwrap().contains("session_token=")),
+            "password reset must not bypass the retained MFA gate"
+        );
+        let body: Value = signin.json().await.unwrap();
+        assert_eq!(body["twoFactorRedirect"], true);
     }
     if native_session {
         let gate = owner.begin().await.unwrap();

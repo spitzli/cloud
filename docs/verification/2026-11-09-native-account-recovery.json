@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-09",
+  "base": "69717c791603a0174d91b9cf4896418abf253be2",
+  "optIn": "WEBDOCK_ACCOUNT_RECOVERY_BACKEND=tokio-postgres",
+  "default": "sea-orm",
+  "operations": [
+    "request_password_reset",
+    "queue_account_activation",
+    "dispatch_delivery_jobs",
+    "complete_password_reset"
+  ],
+  "corePool": {
+    "shared": true,
+    "max": 4,
+    "min": 0,
+    "nativeAllocator": true
+  },
+  "validation": {
+    "newRestrictedPostgresCases": 9,
+    "coreConfigCases": 19,
+    "coreActualHttpCases": 14,
+    "exactFinalRecoveryHttpCases": 1,
+    "relatedRestrictedPostgres": {
+      "passed": 86,
+      "ignored": 0,
+      "suites": 6
+    },
+    "defaultRegression": {
+      "passed": 218,
+      "ignored": 138,
+      "suites": 53
+    },
+    "strictClippy": true,
+    "format": true,
+    "staticContracts": true,
+    "lockedManifests": 15,
+    "fixture": "Owned loopback PostgreSQL18 and real Core binary; disconnected retained DB in native recovery fixture",
+    "actualHttpChain": [
+      "Console reset request",
+      "native SQL execution audit",
+      "unknown same acknowledgement",
+      "server-owned redirect",
+      "one-use reset/replay401",
+      "new-password login still requires MFA"
+    ]
+  },
+  "review": {
+    "reviewer": "native_recovery_review",
+    "freshContext": true,
+    "ownedFilesReviewed": 10,
+    "criticalFindings": 0,
+    "importantFindings": 0,
+    "minorFindings": 0,
+    "materialFindingsResolved": true,
+    "codeChangesByReviewer": false,
+    "reReview": false,
+    "verdict": "Ship after remaining qualification gates pass",
+    "notChecked": [
+      "live Neon",
+      "real mail delivery",
+      "production rollout",
+      "full customer E2E"
+    ]
+  },
+  "maximumMigration": 75,
+  "schemaChanged": false,
+  "privilegesChanged": false,
+  "credentialsChanged": false,
+  "productionChanged": false,
+  "publicBuildAdmissionChanged": false,
+  "completeBackendRewrite": false,
+  "completeProductionE2e": false,
+  "measuredGeneralLatencyOrComputeGain": false,
+  "limits": [
+    "Live Neon provider, actual mail delivery and production customer login/rollout are not exercised.",
+    "Password sign-in, MFA/passkey ceremonies and remaining identity/domain stores retain their current persistence paths.",
+    "Native activation refuses an existing managed binding rather than creating an unusable local reset link."
+  ]
+}

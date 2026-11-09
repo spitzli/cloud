@@ -487,3 +487,40 @@ fn native_mcp_authority_is_explicit_and_additive_to_existing_capabilities() {
     env.insert("WEBDOCK_MCP_AUTHORITY_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
+
+#[test]
+fn native_account_recovery_is_explicit_and_preserves_other_capabilities() {
+    use webdock_control_plane::config::{
+        AccountRecoveryBackend, IdBackend, SessionManagementBackend,
+    };
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().account_recovery_backend,
+        AccountRecoveryBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_ACCOUNT_RECOVERY_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    assert!(matches!(
+        runtime_config(&env).unwrap().account_recovery_backend,
+        AccountRecoveryBackend::Native
+    ));
+    assert!(matches!(
+        runtime_config(&env).unwrap().id_backend,
+        IdBackend::Native
+    ));
+    env.insert(
+        "WEBDOCK_SESSION_MANAGEMENT_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    assert!(matches!(
+        runtime_config(&env).unwrap().session_management_backend,
+        SessionManagementBackend::Native
+    ));
+    env.insert("WEBDOCK_ACCOUNT_RECOVERY_BACKEND".into(), "unknown".into());
+    assert!(runtime_config(&env).is_err());
+}
