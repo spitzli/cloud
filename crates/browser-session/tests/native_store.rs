@@ -2,7 +2,9 @@
 #[path = "../../identity/tests/support/native_pg.rs"]
 mod fixture;
 use fixture::AUTH_SECRET;
-use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
+use sea_orm::{
+    ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement, TransactionTrait,
+};
 use std::{collections::BTreeMap, sync::Arc, time::Duration};
 use webdock_browser_session::{BrowserConfig, BrowserSessions};
 use webdock_identity::{CookiePolicy, IdentityService, SecretKeys};
@@ -43,6 +45,9 @@ struct Setup {
     oauth: Arc<OAuthService>,
     auth_cookie: String,
     client: String,
+    keys: Arc<SecretKeys>,
+    ids: Arc<IdAllocator>,
+    secret: String,
 }
 impl Setup {
     async fn start() -> Self {
@@ -111,7 +116,7 @@ impl Setup {
         let oauth = Arc::new(OAuthService::new(
             db.clone(),
             identity.clone(),
-            ids,
+            ids.clone(),
             keys.clone(),
             config(Some(client.client_id.clone())),
         ));
@@ -119,13 +124,13 @@ impl Setup {
             db,
             identity,
             oauth.clone(),
-            keys,
+            keys.clone(),
             AUTH_SECRET,
             BrowserConfig::new(
                 ORIGIN,
                 "https://auth.example.test/api/auth",
                 client.client_id.clone(),
-                client.client_secret.unwrap(),
+                client.client_secret.clone().unwrap(),
             )
             .unwrap()
             .with_additional_origins(&["https://studio.example.test".into()])
@@ -167,6 +172,9 @@ impl Setup {
             oauth,
             auth_cookie,
             client: client.client_id,
+            keys,
+            ids,
+            secret: client.client_secret.unwrap(),
         }
     }
 }
@@ -556,4 +564,565 @@ async fn logout_proof_expiring_during_lock_wait_is_not_consumed_in_either_backen
             .unwrap();
         assert_eq!(row.try_get::<i64>("", "n").unwrap(), 1);
     }
+}
+
+impl Setup {
+    async fn native_reader(&self) -> (BrowserSessions, Pool, Arc<IdentityService>) {
+        let pool = Pool::connect(
+            &self.f.bootstrap_url,
+            "webdock_auth_bootstrap",
+            false,
+            Limits {
+                max_connections: 1,
+                min_connections: 0,
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+        let identity = Arc::new(IdentityService::new(
+            DatabaseConnection::default(),
+            CookiePolicy::new(true, AUTH_SECRET).unwrap(),
+        ));
+        let oauth = Arc::new(
+            OAuthService::new(
+                DatabaseConnection::default(),
+                identity.clone(),
+                self.ids.clone(),
+                self.keys.clone(),
+                OAuthConfig::new(
+                    "https://auth.example.test/api/auth",
+                    "https://studio.example.test/api/mcp",
+                    Some(self.client.clone()),
+                )
+                .unwrap(),
+            )
+            .with_native_introspection(pool.clone()),
+        );
+        let reader = BrowserSessions::new(
+            DatabaseConnection::default(),
+            identity.clone(),
+            oauth,
+            self.keys.clone(),
+            AUTH_SECRET,
+            BrowserConfig::new(
+                ORIGIN,
+                "https://auth.example.test/api/auth",
+                self.client.clone(),
+                self.secret.clone(),
+            )
+            .unwrap()
+            .with_additional_origins(&["https://studio.example.test".into()])
+            .unwrap(),
+        )
+        .unwrap()
+        .with_native_authority_store(pool.clone());
+        (reader, pool, identity)
+    }
+    async fn signed_cookie(&self) -> String {
+        let begin = self.browser.begin(ORIGIN, "/projects").await.unwrap();
+        let (code, state) = code(self, &begin.location).await;
+        let result = self
+            .browser
+            .callback(ORIGIN, &cookie(&begin.set_cookies[0]), &code, &state)
+            .await
+            .unwrap();
+        cookie(&result.set_cookies[0])
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; signed native browser authority with disconnected retained reader"]
+async fn native_browser_authority_preserves_real_signed_cookie_and_stored_proof() {
+    let s = Setup::start().await;
+    let signed = s.signed_cookie().await;
+    let (reader, pool, identity) = s.native_reader().await;
+    let actual = reader
+        .resolve_authority(ORIGIN, &signed)
+        .await
+        .unwrap()
+        .unwrap();
+    let expected = s
+        .browser
+        .resolve_authority(ORIGIN, &signed)
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(&actual.principal).unwrap(),
+        serde_json::to_value(&expected.principal).unwrap()
+    );
+    assert_eq!(
+        serde_json::to_value(&actual.authority).unwrap(),
+        serde_json::to_value(&expected.authority).unwrap()
+    );
+    let checked = reader.revalidate(&actual.authority).await.unwrap();
+    assert_eq!(checked.principal.user_id, actual.principal.user_id);
+    let mut connection = pool.acquire().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    let (tx, principal) = webdock_browser_session::revalidate_stored_authority_native_in(
+        &identity,
+        tx,
+        Some(&reader),
+        &actual.principal.user_id,
+        &actual.principal.session_id,
+        &webdock_browser_session::StoredAuthority::FirstPartyBrowser {
+            browser: actual.authority,
+        },
+    )
+    .await
+    .unwrap();
+    assert_eq!(principal.user_id, actual.principal.user_id);
+    tx.commit().await.unwrap();
+}
+
+impl Setup {
+    async fn sql(&self, sql: &str) {
+        self.f.owner.execute_unprepared(sql).await.unwrap();
+    }
+    async fn wait_authority_lock(&self) {
+        let until = tokio::time::Instant::now() + Duration::from_secs(3);
+        loop {
+            let waiting=self.f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND application_name='spitzli-native-postgres' AND wait_event_type='Lock' AND query LIKE '%identity_browser_session%' AND query LIKE '%FOR SHARE%') AS waiting")).await.unwrap().unwrap().try_get::<bool>("","waiting").unwrap();
+            if waiting {
+                break;
+            }
+            assert!(
+                tokio::time::Instant::now() < until,
+                "native sidecar fence not observed"
+            );
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    }
+    async fn payload(&self) -> String {
+        self.f
+            .owner
+            .query_one_raw(Statement::from_string(
+                DbBackend::Postgres,
+                "SELECT payload FROM webdock_auth.identity_browser_session LIMIT 1",
+            ))
+            .await
+            .unwrap()
+            .unwrap()
+            .try_get("", "payload")
+            .unwrap()
+    }
+    async fn replace_payload(&self, payload: &str) {
+        self.f
+            .owner
+            .execute_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                "UPDATE webdock_auth.identity_browser_session SET payload=$1",
+                [payload.into()],
+            ))
+            .await
+            .unwrap();
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; cookie/origin/client/token and encrypted role/scope ceilings"]
+async fn native_browser_authority_rejects_wrong_proof_and_changed_token_permissions() {
+    let s = Setup::start().await;
+    let signed = s.signed_cookie().await;
+    let (reader, _, _) = s.native_reader().await;
+    assert!(
+        reader
+            .resolve_authority("https://wrong.example.test", &signed)
+            .await
+            .is_err()
+    );
+    assert!(
+        reader
+            .resolve_authority(ORIGIN, &format!("{signed}; {signed}"))
+            .await
+            .is_err()
+    );
+    let mut invalid = signed.clone().into_bytes();
+    let n = invalid.len();
+    invalid[n - 5] = if invalid[n - 5] == b'A' { b'B' } else { b'A' };
+    assert!(
+        reader
+            .resolve_authority(ORIGIN, std::str::from_utf8(&invalid).unwrap())
+            .await
+            .is_err()
+    );
+    assert!(
+        reader
+            .resolve_authority("https://studio.example.test", &signed)
+            .await
+            .unwrap()
+            .is_none()
+    );
+    let original = s.payload().await;
+    let value: serde_json::Value =
+        serde_json::from_str(&s.keys.decrypt(&original).unwrap()).unwrap();
+    for (field, changed) in [
+        ("scopes", serde_json::json!(["openid"])),
+        ("role_ceiling", serde_json::Value::Null),
+        ("access_token", serde_json::json!("wrong-protected-token")),
+    ] {
+        let mut invalid = value.clone();
+        invalid[field] = changed;
+        let encrypted = s.keys.encrypt(&invalid.to_string()).unwrap();
+        s.replace_payload(&encrypted).await;
+        assert!(
+            reader.resolve_authority(ORIGIN, &signed).await.is_err(),
+            "{field}"
+        );
+        s.replace_payload(&original).await;
+    }
+    s.sql("UPDATE webdock_auth.\"oauthAccessToken\" SET revoked=now()")
+        .await;
+    assert!(reader.resolve_authority(ORIGIN, &signed).await.is_err());
+}
+#[tokio::test]
+#[ignore = "owned PG18; native caller-owned browser proof retains client/identity/token/sidecar fences"]
+async fn native_browser_authority_retains_fences_and_scoped_stored_proof() {
+    use webdock_browser_session::{StoredAuthority, revalidate_stored_authority_native_in};
+    let s = Setup::start().await;
+    let signed = s.signed_cookie().await;
+    let (reader, pool, identity) = s.native_reader().await;
+    let actual = reader
+        .resolve_authority(ORIGIN, &signed)
+        .await
+        .unwrap()
+        .unwrap();
+    let mut connection = pool.acquire().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    let (tx, checked) = reader
+        .revalidate_native_in(tx, &actual.authority)
+        .await
+        .unwrap();
+    assert_eq!(checked.principal.session_id, actual.principal.session_id);
+    for sql in [
+        "SELECT id FROM webdock_auth.\"oauthClient\" FOR UPDATE NOWAIT",
+        "SELECT id FROM webdock_auth.\"user\" FOR UPDATE NOWAIT",
+        "SELECT id FROM webdock_auth.session FOR UPDATE NOWAIT",
+        "SELECT id FROM webdock_auth.\"oauthAccessToken\" FOR UPDATE NOWAIT",
+        "SELECT token_hash FROM webdock_auth.identity_browser_session FOR UPDATE NOWAIT",
+    ] {
+        let gate = s.f.owner.begin().await.unwrap();
+        let err = gate
+            .query_all_raw(Statement::from_string(DbBackend::Postgres, sql))
+            .await
+            .unwrap_err();
+        assert!(err.to_string().contains("could not obtain lock"), "{err}");
+        gate.rollback().await.unwrap();
+    }
+    tx.commit().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    let (tx, p) = revalidate_stored_authority_native_in(
+        &identity,
+        tx,
+        None,
+        &actual.principal.user_id,
+        &actual.principal.session_id,
+        &StoredAuthority::LocalSession {},
+    )
+    .await
+    .unwrap();
+    assert!(p.can_access());
+    tx.commit().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    assert!(
+        revalidate_stored_authority_native_in(
+            &identity,
+            tx,
+            None,
+            "wrong-user",
+            &actual.principal.session_id,
+            &StoredAuthority::LocalSession {}
+        )
+        .await
+        .is_err()
+    );
+    drop(connection);
+    for change in [0, 1, 2, 3] {
+        let mut authority = actual.authority.clone();
+        match change {
+            0 => authority.scopes.clear(),
+            1 => authority.customer_scope = Some("foreign-customer".into()),
+            2 => authority.expires_at = chrono::Utc::now().timestamp() - 1,
+            _ => authority.client_id = "wrong-client".into(),
+        };
+        assert!(reader.revalidate(&authority).await.is_err());
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; immutable encrypted proof and deletion after browser lock wait"]
+async fn native_browser_authority_cannot_use_replaced_or_deleted_discovery() {
+    let s = Setup::start().await;
+    let signed = s.signed_cookie().await;
+    let (reader, _, _) = s.native_reader().await;
+    let reader = Arc::new(reader);
+    let original = s.payload().await;
+    let replacement = s.keys.encrypt(&s.keys.decrypt(&original).unwrap()).unwrap();
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared(
+        "SELECT token_hash FROM webdock_auth.identity_browser_session FOR UPDATE",
+    )
+    .await
+    .unwrap();
+    let r = reader.clone();
+    let c = signed.clone();
+    let task = tokio::spawn(async move { r.resolve_authority(ORIGIN, &c).await });
+    s.wait_authority_lock().await;
+    gate.execute_raw(Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        "UPDATE webdock_auth.identity_browser_session SET payload=$1",
+        [replacement.into()],
+    ))
+    .await
+    .unwrap();
+    gate.commit().await.unwrap();
+    assert!(
+        task.await.unwrap().unwrap().is_none(),
+        "a changed encrypted proof must not authorize discovered state"
+    );
+    assert!(
+        reader
+            .resolve_authority(ORIGIN, &signed)
+            .await
+            .unwrap()
+            .is_some(),
+        "a new request may validate the new current proof"
+    );
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared(
+        "SELECT token_hash FROM webdock_auth.identity_browser_session FOR UPDATE",
+    )
+    .await
+    .unwrap();
+    let r = reader.clone();
+    let task = tokio::spawn(async move { r.resolve_authority(ORIGIN, &signed).await });
+    s.wait_authority_lock().await;
+    gate.execute_unprepared("DELETE FROM webdock_auth.identity_browser_session")
+        .await
+        .unwrap();
+    gate.commit().await.unwrap();
+    assert!(task.await.unwrap().unwrap().is_none());
+}
+#[tokio::test]
+#[ignore = "owned PG18; current browser expiry after row-lock wait in both backends"]
+async fn browser_authority_expiry_after_wait_is_denied_in_both_backends() {
+    let s = Setup::start().await;
+    let signed = s.signed_cookie().await;
+    let (reader, _, _) = s.native_reader().await;
+    s.sql("UPDATE webdock_auth.identity_browser_session SET expires_at=clock_timestamp()+interval '1 second'").await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared(
+        "SELECT token_hash FROM webdock_auth.identity_browser_session FOR UPDATE",
+    )
+    .await
+    .unwrap();
+    let legacy = s.browser.clone();
+    let cookie2 = signed.clone();
+    let a = tokio::spawn(async move { legacy.resolve_authority(ORIGIN, &cookie2).await });
+    let b = tokio::spawn(async move { reader.resolve_authority(ORIGIN, &signed).await });
+    s.wait_authority_lock().await;
+    gate.execute_unprepared("SELECT pg_sleep(1.1)")
+        .await
+        .unwrap();
+    gate.commit().await.unwrap();
+    for result in [a.await.unwrap(), b.await.unwrap()] {
+        assert!(
+            result.is_err() || result.unwrap().is_none(),
+            "expired sidecar cannot be returned as active proof"
+        );
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; cancellation and lock budget cannot retain stale native proof"]
+async fn native_browser_authority_cancel_and_timeout_release_connection() {
+    let s = Setup::start().await;
+    let signed = s.signed_cookie().await;
+    let (reader, _, _) = s.native_reader().await;
+    let reader = Arc::new(reader);
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared(
+        "SELECT token_hash FROM webdock_auth.identity_browser_session FOR UPDATE",
+    )
+    .await
+    .unwrap();
+    let r = reader.clone();
+    let c = signed.clone();
+    let task = tokio::spawn(async move { r.resolve_authority(ORIGIN, &c).await });
+    s.wait_authority_lock().await;
+    task.abort();
+    assert!(matches!(task.await,Err(error) if error.is_cancelled()));
+    let r = reader.clone();
+    let c = signed.clone();
+    let task = tokio::spawn(async move { r.resolve_authority(ORIGIN, &c).await });
+    s.wait_authority_lock().await;
+    assert!(
+        tokio::time::timeout(Duration::from_secs(7), task)
+            .await
+            .unwrap()
+            .unwrap()
+            .is_err()
+    );
+    gate.commit().await.unwrap();
+    assert!(
+        reader
+            .resolve_authority(ORIGIN, &signed)
+            .await
+            .unwrap()
+            .is_some()
+    );
+}
+
+#[tokio::test]
+#[ignore = "owned PG18; operator promotion/preview and customer/read-only ceilings"]
+async fn native_browser_authority_preserves_preview_and_customer_scope_ceilings() {
+    use webdock_browser_session::{StoredAuthority, revalidate_stored_authority_native_in};
+    let s = Setup::start().await;
+    let signed = s.signed_cookie().await;
+    let (reader, pool, identity) = s.native_reader().await;
+    s.sql("UPDATE webdock_auth.\"user\" SET role='operator',\"twoFactorEnabled\"=true WHERE id='owned-browser-user'").await;
+    assert!(
+        reader.resolve_authority(ORIGIN, &signed).await.is_err(),
+        "customer proof cannot be promoted to operator"
+    );
+    let signed = s.signed_cookie().await;
+    s.sql("INSERT INTO webdock_auth.studio_tenant_preview(session_id,actor_id,customer_id,organization_id) VALUES('owned-browser-session','owned-browser-user','100','101')").await;
+    let actual = reader
+        .resolve_authority(ORIGIN, &signed)
+        .await
+        .unwrap()
+        .unwrap();
+    assert!(actual.authority.read_only);
+    assert!(!actual.principal.is_operator());
+    assert!(actual.authority.customer_scope.is_some());
+    assert_eq!(
+        actual.authority.customer_scope.as_deref(),
+        actual.principal.customer_scope()
+    );
+    s.sql("UPDATE webdock_auth.studio_tenant_preview SET mode='owner'")
+        .await;
+    assert!(
+        reader.revalidate(&actual.authority).await.is_err(),
+        "preview mode change invalidates the old exact scope"
+    );
+    let mut owner = reader
+        .resolve_authority(ORIGIN, &signed)
+        .await
+        .unwrap()
+        .unwrap();
+    owner.authority.read_only = true;
+    let current = reader.revalidate(&owner.authority).await.unwrap();
+    assert!(current.principal.is_acting_customer());
+    assert!(
+        current.authority.read_only,
+        "saved read-only ceiling persists within the same exact live scope"
+    );
+    let mut connection = pool.acquire().await.unwrap();
+    let tx = connection.transaction().await.unwrap();
+    assert!(
+        revalidate_stored_authority_native_in(
+            &identity,
+            tx,
+            None,
+            "owned-browser-user",
+            "owned-browser-session",
+            &StoredAuthority::LocalSession {}
+        )
+        .await
+        .is_err()
+    );
+    drop(connection);
+    let current_scope = current.principal.customer_scope().unwrap().to_owned();
+    for scope in [current_scope.as_str(), "foreign-customer"] {
+        let mut connection = pool.acquire().await.unwrap();
+        let tx = connection.transaction().await.unwrap();
+        let result = revalidate_stored_authority_native_in(
+            &identity,
+            tx,
+            None,
+            "owned-browser-user",
+            "owned-browser-session",
+            &StoredAuthority::CustomerSession {
+                customer_scope: scope.into(),
+                read_only: true,
+            },
+        )
+        .await;
+        if scope == current_scope {
+            let (tx, p) = result.unwrap();
+            assert_eq!(p.customer_scope(), Some(current_scope.as_str()));
+            tx.commit().await.unwrap();
+        } else {
+            assert!(result.is_err());
+        }
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; bounded retained-cookie bridge uses native reference proof"]
+async fn native_browser_authority_keeps_bounded_legacy_cookie_bridge() {
+    use webdock_browser_session::LegacyCookies;
+    let s = Setup::start().await;
+    let _signed = s.signed_cookie().await;
+    let (reader, _, _) = s.native_reader().await;
+    let tokens: serde_json::Value =
+        serde_json::from_str(&s.keys.decrypt(&s.payload().await).unwrap()).unwrap();
+    let old = serde_json::json!({"kind":"session","accessToken":tokens["access_token"],"sub":"owned-browser-user","exp":chrono::Utc::now().timestamp()+300,"idToken":tokens["id_token"]});
+    let seal = iron_webcrypto_rs::seal(
+        &old,
+        &iron_webcrypto_rs::Password::WithId {
+            id: "1",
+            encryption: AUTH_SECRET.into(),
+            integrity: AUTH_SECRET.into(),
+        },
+        &iron_webcrypto_rs::SealOptions {
+            ttl: 300000,
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    let signed = format!("__Host-webdock-sso={seal}~2");
+    let reader = reader.with_legacy(
+        LegacyCookies::new(
+            std::collections::HashMap::from([("1".into(), AUTH_SECRET.into())]),
+            chrono::Utc::now().timestamp() + 300,
+        )
+        .unwrap(),
+    );
+    let current = reader
+        .resolve_authority(ORIGIN, &signed)
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(current.principal.user_id, "owned-browser-user");
+    assert!(current.authority.expires_at <= old["exp"].as_i64().unwrap());
+    s.sql("UPDATE webdock_auth.\"oauthAccessToken\" SET revoked=now()")
+        .await;
+    assert!(reader.resolve_authority(ORIGIN, &signed).await.is_err());
+}
+
+#[tokio::test]
+#[ignore = "owned PG18; canonical revocation cascade must precede native sidecar lock"]
+async fn native_browser_authority_does_not_invert_canonical_revocation_order() {
+    let s = Setup::start().await;
+    let signed = s.signed_cookie().await;
+    let (reader, _, _) = s.native_reader().await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared(
+        "SELECT id FROM webdock_auth.\"user\" WHERE id='owned-browser-user' FOR UPDATE",
+    )
+    .await
+    .unwrap();
+    let task = tokio::spawn(async move { reader.resolve_authority(ORIGIN, &signed).await });
+    let until = tokio::time::Instant::now() + Duration::from_secs(3);
+    loop {
+        let waiting=s.f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE application_name='spitzli-native-postgres' AND wait_event_type='Lock' AND query LIKE '%webdock_auth.\"user\"%' AND query LIKE '%FOR SHARE%') AS waiting")).await.unwrap().unwrap().try_get::<bool>("","waiting").unwrap();
+        if waiting {
+            break;
+        }
+        assert!(
+            tokio::time::Instant::now() < until,
+            "native canonical lock not observed"
+        );
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+    gate.execute_unprepared("SET LOCAL lock_timeout='500ms';DELETE FROM webdock_auth.session WHERE id='owned-browser-session'").await.unwrap();
+    gate.commit().await.unwrap();
+    assert!(task.await.unwrap().is_err());
 }

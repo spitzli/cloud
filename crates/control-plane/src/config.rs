@@ -111,7 +111,13 @@ pub enum OAuthIntrospectionBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum BrowserAuthorityBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub browser_authority_backend: BrowserAuthorityBackend,
     pub oauth_introspection_backend: OAuthIntrospectionBackend,
     pub oauth_client_backend: OAuthClientBackend,
     pub browser_flow_backend: BrowserFlowBackend,
@@ -210,6 +216,30 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
             ));
         }
     };
+    let browser_authority_backend = match env
+        .get("WEBDOCK_BROWSER_AUTHORITY_BACKEND")
+        .map(String::as_str)
+    {
+        None | Some("sea-orm") => BrowserAuthorityBackend::Legacy,
+        Some("tokio-postgres") => BrowserAuthorityBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_BROWSER_AUTHORITY_BACKEND".into(),
+            ));
+        }
+    };
+    let browser_flow_backend =
+        if matches!(browser_authority_backend, BrowserAuthorityBackend::Native) {
+            BrowserFlowBackend::Native
+        } else {
+            browser_flow_backend
+        };
+    let oauth_introspection_backend =
+        if matches!(browser_authority_backend, BrowserAuthorityBackend::Native) {
+            OAuthIntrospectionBackend::Native
+        } else {
+            oauth_introspection_backend
+        };
     let oauth_client_backend = if matches!(
         oauth_introspection_backend,
         OAuthIntrospectionBackend::Native
@@ -219,6 +249,7 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         oauth_client_backend
     };
     Ok(RuntimeConfig {
+        browser_authority_backend,
         oauth_introspection_backend,
         oauth_client_backend,
         browser_flow_backend,

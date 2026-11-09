@@ -11,7 +11,7 @@ webdock-identity = { path = "../identity" }
 webdock-oauth = { path = "../oauth" }
 webdock-persistence = { path = "../persistence" }
 sea-orm.workspace = true
-tokio-postgres = "0.7"
+tokio-postgres = { version = "0.7", features = ["with-chrono-0_4"] }
 serde.workspace = true
 serde_json.workspace = true
 tokio.workspace = true

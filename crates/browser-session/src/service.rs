@@ -1,3 +1,5 @@
+#[path = "native_authority.rs"]
+mod native_authority;
 #[path = "native_store.rs"]
 mod native_store;
 use crate::*;
@@ -19,6 +21,23 @@ use subtle::ConstantTimeEq;
 use webdock_identity::{IdentityService, Principal, SecretKeys};
 use webdock_oauth::{CodeExchange, OAuthService};
 
+struct ReferenceRecord {
+    reference: String,
+    origin: String,
+    user: String,
+    session: String,
+    payload: String,
+    expires: chrono::DateTime<chrono::Utc>,
+}
+impl ReferenceRecord {
+    fn same_authority(&self, other: &Self) -> bool {
+        self.reference == other.reference
+            && self.origin == other.origin
+            && self.user == other.user
+            && self.session == other.session
+            && self.payload == other.payload
+    }
+}
 pub struct BrowserSessions {
     db: DatabaseConnection,
     identity: Arc<IdentityService>,
@@ -28,6 +47,7 @@ pub struct BrowserSessions {
     pub config: BrowserConfig,
     legacy: Option<LegacyCookies>,
     native_store: Option<webdock_persistence::postgres::Pool>,
+    native_authority: bool,
 }
 pub struct BrowserRedirect {
     pub location: String,
@@ -54,10 +74,20 @@ impl BrowserSessions {
             config,
             legacy: None,
             native_store: None,
+            native_authority: false,
         })
     }
     pub fn with_native_flow_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
         self.native_store = Some(pool);
+        self
+    }
+    /// Includes native encrypted sidecar storage, with the same bounded pool.
+    pub fn with_native_authority_store(
+        mut self,
+        pool: webdock_persistence::postgres::Pool,
+    ) -> Self {
+        self.native_store = Some(pool);
+        self.native_authority = true;
         self
     }
     pub fn with_legacy(mut self, legacy: LegacyCookies) -> Self {
@@ -410,6 +440,9 @@ impl BrowserSessions {
     }
     /// Backend/gateway revalidation. Saved role/scopes are a ceiling, never a replacement for live proof.
     pub async fn revalidate(&self, authority: &BrowserAuthority) -> Result<BrowserAuthentication> {
+        if self.native_authority {
+            return self.native_revalidate(authority).await;
+        }
         let tx = self.db.begin().await?;
         let result = self.revalidate_in(&tx, authority).await?;
         tx.commit().await?;
@@ -447,6 +480,9 @@ impl BrowserSessions {
         reference: &str,
         ceiling: Option<&BrowserAuthority>,
     ) -> Result<Option<BrowserAuthentication>> {
+        if self.native_authority {
+            return self.native_reference(origin, reference, ceiling).await;
+        }
         let tx = self.db.begin().await?;
         let result = self.reference_in(&tx, origin, reference, ceiling).await?;
         tx.commit().await?;
@@ -474,31 +510,51 @@ impl BrowserSessions {
             .await?;
         let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT user_id,session_id,payload,expires_at FROM webdock_auth.identity_browser_session WHERE token_hash=$1 AND app_origin=$2 AND client_id=$3 AND expires_at>statement_timestamp() FOR SHARE",[reference.into(),origin.into(),self.config.client_id.clone().into()])).await?;
         let Some(row) = row else { return Ok(None) };
-        let stored: StoredTokens =
-            serde_json::from_str(&self.keys.decrypt(&row.try_get::<String>("", "payload")?)?)
-                .map_err(|_| Error::Unauthorized)?;
-        let stored_role = stored.role_ceiling.as_deref().ok_or(Error::Unauthorized)?;
-        if stored.scopes.is_empty() {
-            return Err(Error::Unauthorized);
-        }
+        let record = ReferenceRecord {
+            reference: reference.into(),
+            origin: origin.into(),
+            user: row.try_get("", "user_id")?,
+            session: row.try_get("", "session_id")?,
+            payload: row.try_get("", "payload")?,
+            expires: row.try_get("", "expires_at")?,
+        };
+        let stored = self.reference_tokens(&record)?;
         let claims = self
             .oauth
             .introspect_portal_in(tx, &self.config.credentials(), &stored.access_token)
             .await?;
-        let mut principal = self
-            .principal_in(tx, &claims, Some(&row.try_get::<String>("", "user_id")?))
-            .await?;
-        let role = string(&claims, "webdock_role")?;
-        if principal.session_id != row.try_get::<String>("", "session_id")?
+        let principal = self.principal_in(tx, &claims, Some(&record.user)).await?;
+        self.reference_authentication(&record, &stored, &claims, principal, ceiling)
+            .map(Some)
+    }
+    fn reference_tokens(&self, record: &ReferenceRecord) -> Result<StoredTokens> {
+        let stored: StoredTokens = serde_json::from_str(&self.keys.decrypt(&record.payload)?)
+            .map_err(|_| Error::Unauthorized)?;
+        if stored.role_ceiling.is_none() || stored.scopes.is_empty() {
+            return Err(Error::Unauthorized);
+        }
+        Ok(stored)
+    }
+    fn reference_authentication(
+        &self,
+        record: &ReferenceRecord,
+        stored: &StoredTokens,
+        claims: &Value,
+        mut principal: Principal,
+        ceiling: Option<&BrowserAuthority>,
+    ) -> Result<BrowserAuthentication> {
+        let stored_role = stored.role_ceiling.as_deref().ok_or(Error::Unauthorized)?;
+        let role = string(claims, "webdock_role")?;
+        if principal.session_id != record.session
             || principal.is_operator() && stored_role != "operator"
         {
             return Err(Error::Unauthorized);
         }
-        let scopes: Vec<String> = string(&claims, "scope")?
+        let scopes: Vec<String> = string(claims, "scope")?
             .split_whitespace()
             .map(str::to_owned)
             .collect();
-        if !stored.scopes.is_empty() && scopes.iter().any(|v| !stored.scopes.contains(v)) {
+        if scopes.iter().any(|v| !stored.scopes.contains(v)) {
             return Err(Error::Unauthorized);
         }
         if let Some(ceiling) = ceiling
@@ -508,30 +564,33 @@ impl BrowserSessions {
         {
             return Err(Error::Unauthorized);
         }
-        let expires = expiration(&claims)?
-            .min(
-                row.try_get::<chrono::DateTime<chrono::Utc>>("", "expires_at")?
-                    .timestamp(),
-            )
+        let expires = expiration(claims)?
+            .min(record.expires.timestamp())
             .min(principal.expires_at.timestamp());
+        if expires <= chrono::Utc::now().timestamp() {
+            return Err(Error::Unauthorized);
+        }
         principal.expires_at =
             chrono::DateTime::from_timestamp(expires, 0).ok_or(Error::Unauthorized)?;
         let authority = BrowserAuthority {
-            reference: reference.into(),
+            reference: record.reference.clone(),
             client_id: self.config.client_id.clone(),
-            app_origin: origin.into(),
+            app_origin: record.origin.clone(),
             expires_at: expires,
             role: role.into(),
             scopes,
             read_only: principal.in_read_only_preview() || ceiling.is_some_and(|v| v.read_only),
             customer_scope: principal.customer_scope().map(str::to_owned),
         };
-        Ok(Some(BrowserAuthentication {
+        Ok(BrowserAuthentication {
             principal,
             authority,
-        }))
+        })
     }
     async fn principal(&self, claims: &Value, expected_subject: Option<&str>) -> Result<Principal> {
+        if self.native_authority {
+            return self.native_principal(claims, expected_subject).await;
+        }
         let tx = self.db.begin().await?;
         let result = self.principal_in(&tx, claims, expected_subject).await?;
         tx.commit().await?;
@@ -543,6 +602,19 @@ impl BrowserSessions {
         claims: &Value,
         expected_subject: Option<&str>,
     ) -> Result<Principal> {
+        let subject = self.claim_subject(claims, expected_subject)?;
+        let principal = self
+            .identity
+            .authenticate_session_in(tx, subject, string(claims, "sid")?)
+            .await?
+            .ok_or(Error::Unauthorized)?;
+        self.checked_principal(claims, principal)
+    }
+    fn claim_subject<'a>(
+        &self,
+        claims: &'a Value,
+        expected_subject: Option<&str>,
+    ) -> Result<&'a str> {
         if claims["active"] != true
             || claims["client_id"] != self.config.client_id
             || claims["disabled"] == true
@@ -561,11 +633,9 @@ impl BrowserSessions {
         if expected_subject.is_some_and(|v| v != subject) {
             return Err(Error::Unauthorized);
         }
-        let principal = self
-            .identity
-            .authenticate_session_in(tx, subject, string(claims, "sid")?)
-            .await?
-            .ok_or(Error::Unauthorized)?;
+        Ok(subject)
+    }
+    fn checked_principal(&self, claims: &Value, principal: Principal) -> Result<Principal> {
         let role = string(claims, "webdock_role")?;
         if !principal.can_access()
             || !matches!(role, "operator" | "admin" | "editor" | "reader")

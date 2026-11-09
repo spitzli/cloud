@@ -314,3 +314,41 @@ fn native_oauth_introspection_requires_explicit_opt_in_and_implies_client_reads(
     env.insert("WEBDOCK_OAUTH_INTROSPECTION_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
+
+#[test]
+fn native_browser_authority_is_explicit_and_shares_native_dependencies() {
+    use webdock_control_plane::config::{
+        BrowserAuthorityBackend, BrowserFlowBackend, OAuthClientBackend, OAuthIntrospectionBackend,
+    };
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().browser_authority_backend,
+        BrowserAuthorityBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_BROWSER_AUTHORITY_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    let config = runtime_config(&env).unwrap();
+    assert!(matches!(
+        config.browser_authority_backend,
+        BrowserAuthorityBackend::Native
+    ));
+    assert!(matches!(
+        config.browser_flow_backend,
+        BrowserFlowBackend::Native
+    ));
+    assert!(matches!(
+        config.oauth_client_backend,
+        OAuthClientBackend::Native
+    ));
+    assert!(matches!(
+        config.oauth_introspection_backend,
+        OAuthIntrospectionBackend::Native
+    ));
+    env.insert("WEBDOCK_BROWSER_AUTHORITY_BACKEND".into(), "other".into());
+    assert!(runtime_config(&env).is_err());
+}
