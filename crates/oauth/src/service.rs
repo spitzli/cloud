@@ -1,5 +1,7 @@
 #[path = "native_client_store.rs"]
 mod native_client_store;
+#[path = "native_grants.rs"]
+mod native_grants;
 #[path = "native_introspection.rs"]
 mod native_introspection;
 #[path = "native_security.rs"]
@@ -8,6 +10,7 @@ struct NativeOAuthStore {
     pool: webdock_persistence::postgres::Pool,
     introspection: bool,
     security: bool,
+    grants: bool,
 }
 use crate::{
     engine::{Engine, grant},
@@ -67,6 +70,7 @@ impl OAuthService {
             pool,
             introspection: false,
             security: false,
+            grants: false,
         });
         self
     }
@@ -75,6 +79,7 @@ impl OAuthService {
             pool,
             introspection: true,
             security: false,
+            grants: false,
         });
         self
     }
@@ -83,8 +88,24 @@ impl OAuthService {
             pool,
             introspection: true,
             security: true,
+            grants: false,
         });
         self
+    }
+    pub fn with_native_grants_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+        self.native_store = Some(NativeOAuthStore {
+            pool,
+            introspection: true,
+            security: true,
+            grants: true,
+        });
+        self
+    }
+    pub(crate) fn native_grants_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+        self.native_store
+            .as_ref()
+            .filter(|s| s.grants)
+            .map(|s| &s.pool)
     }
     pub(crate) fn native_security_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
         self.native_store
@@ -246,6 +267,9 @@ impl OAuthService {
         cookie: &str,
         mut request: AuthorizationRequest,
     ) -> Result<AuthorizationOutcome> {
+        if self.native_grants_pool().is_some() {
+            return self.native_authorize(cookie, request).await;
+        }
         let current = self.identity.authenticate_cookie(cookie).await?;
         let tx = self.db.begin().await?;
         let client = load_client(&tx, &request.client_id).await?;
@@ -326,6 +350,9 @@ impl OAuthService {
         ))
     }
     pub async fn consent_details(&self, cookie: &str, request_id: &str) -> Result<ConsentRequest> {
+        if self.native_grants_pool().is_some() {
+            return self.native_consent_details(cookie, request_id).await;
+        }
         let current = self
             .identity
             .authenticate_cookie(cookie)
@@ -356,6 +383,9 @@ impl OAuthService {
         request_id: &str,
         approved: bool,
     ) -> Result<AuthorizationOutcome> {
+        if self.native_grants_pool().is_some() {
+            return self.native_consent(cookie, request_id, approved).await;
+        }
         let current = self
             .identity
             .authenticate_cookie(cookie)

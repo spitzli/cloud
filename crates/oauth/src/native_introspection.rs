@@ -214,7 +214,7 @@ impl OAuthService {
    }Ok((tx,claims))
   }).await.map_err(|_|Error::Configuration)?
     }
-    async fn native_principal<'a>(
+    pub(super) async fn native_principal<'a>(
         &self,
         tx: Transaction<'a>,
         user: &str,
@@ -338,7 +338,7 @@ impl OAuthService {
         set_audience(&mut claims, resources, &scopes, self.config.issuer.as_str());
         Ok((tx, claims))
     }
-    async fn native_claims(
+    pub(super) async fn native_claims(
         &self,
         tx: &Transaction<'_>,
         client: &Client,
@@ -429,7 +429,7 @@ impl OAuthService {
         claims["webdock_role"] = json!(role);
         Ok(claims)
     }
-    async fn native_resources(
+    pub(super) async fn native_resources(
         &self,
         tx: &Transaction<'_>,
         client: &Client,

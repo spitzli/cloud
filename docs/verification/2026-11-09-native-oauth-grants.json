@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-09",
+  "base": "513fa39702ab490b0b7d280dd8dd0fe4046c0f06",
+  "optIn": "WEBDOCK_OAUTH_GRANTS_BACKEND=tokio-postgres",
+  "default": "sea-orm",
+  "nativeOperations": [
+    "authorization request/code creation",
+    "consent details",
+    "consent approval/denial and approved scope/resource persistence"
+  ],
+  "corePool": {
+    "shared": true,
+    "max": 4,
+    "min": 0
+  },
+  "implies": [
+    "native security writes",
+    "native coordinated IDs",
+    "native cookie/OAuth introspection/client/public-key reads"
+  ],
+  "validation": {
+    "targetedPassed": 74,
+    "nativeClientsPassed": 4,
+    "nativeIntrospectionSecurityGrantsPassed": 26,
+    "newGrantCasesPassed": 10,
+    "nativeBrowserPassed": 17,
+    "coreConfigPassed": 16,
+    "actualCoreHttpPassed": 11,
+    "defaultPassed": 215,
+    "defaultIgnored": 109,
+    "defaultSuites": 52,
+    "clippyWarningsDenied": true,
+    "format": true,
+    "staticContracts": true,
+    "lockedMetadataWorkspaces": 15,
+    "lateDeadlineRedGreen": true,
+    "fixtures": "owned loopback PostgreSQL18; restricted roles; disconnected retained grant writer; actual HTTP native code-write audit and retained PKCE exchange interoperability"
+  },
+  "review": {
+    "freshContext": true,
+    "materialFindings": 0,
+    "minorDeferrals": 0
+  },
+  "maximumMigration": 75,
+  "schemaOrCredentialsChanged": false,
+  "productionActivated": false,
+  "publicBuildAdmissionChanged": false,
+  "completeDriverMigration": false,
+  "measuredPerformanceImprovement": false,
+  "limits": [
+    "Code exchange/token persistence/refresh/private signing and retained caller-owned/domain paths remain explicit pending ports.",
+    "Authenticated canonical failures can precede a raced secondary resource error; scope array ordering remains unspecified set semantics.",
+    "Existing provider/binding snapshots retained; app_binding SELECT-only unchanged.",
+    "No production login, S3 benchmark, Neon compute gain or arbitrary public-build qualification claimed."
+  ]
+}

@@ -386,3 +386,37 @@ fn native_oauth_security_is_explicit_and_implies_its_native_dependencies() {
     env.insert("WEBDOCK_OAUTH_SECURITY_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
+
+#[test]
+fn native_oauth_grants_is_explicit_and_composes_native_authorities() {
+    use webdock_control_plane::config::{
+        IdBackend, OAuthGrantsBackend, OAuthIntrospectionBackend, OAuthSecurityBackend,
+        SessionReadBackend,
+    };
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().oauth_grants_backend,
+        OAuthGrantsBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_OAUTH_GRANTS_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    let c = runtime_config(&env).unwrap();
+    assert!(matches!(c.oauth_grants_backend, OAuthGrantsBackend::Native));
+    assert!(matches!(
+        c.oauth_security_backend,
+        OAuthSecurityBackend::Native
+    ));
+    assert!(matches!(
+        c.oauth_introspection_backend,
+        OAuthIntrospectionBackend::Native
+    ));
+    assert!(matches!(c.id_backend, IdBackend::Native));
+    assert!(matches!(c.session_read_backend, SessionReadBackend::Native));
+    env.insert("WEBDOCK_OAUTH_GRANTS_BACKEND".into(), "other".into());
+    assert!(runtime_config(&env).is_err());
+}

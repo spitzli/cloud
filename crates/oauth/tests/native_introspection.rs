@@ -22,6 +22,7 @@ struct Setup {
     legacy: Arc<OAuthService>,
     native: Arc<OAuthService>,
     security: Arc<OAuthService>,
+    grants: Arc<OAuthService>,
     pool: Pool,
     credentials: ClientAuthentication,
     auth_cookie: String,
@@ -137,12 +138,22 @@ impl Setup {
         let security = Arc::new(
             OAuthService::new(
                 DatabaseConnection::default(),
+                native_identity.clone(),
+                ids.clone(),
+                keys.clone(),
+                config(Some(credentials.client_id.clone())),
+            )
+            .with_native_security_store(pool.clone()),
+        );
+        let grants = Arc::new(
+            OAuthService::new(
+                DatabaseConnection::default(),
                 native_identity,
                 ids,
                 keys.clone(),
                 config(Some(credentials.client_id.clone())),
             )
-            .with_native_security_store(pool.clone()),
+            .with_native_grants_store(pool.clone()),
         );
         let auth_cookie = CookiePolicy::new(true, AUTH_SECRET)
             .unwrap()
@@ -157,6 +168,7 @@ impl Setup {
             legacy,
             native,
             security,
+            grants,
             pool,
             credentials,
             auth_cookie,
@@ -1098,4 +1110,365 @@ async fn native_security_late_error_rolls_back_pending_revocation() {
         true,
         "late invalid timestamp must roll back the earlier UPDATE"
     );
+}
+
+impl Setup {
+    fn request(&self) -> (AuthorizationRequest, String) {
+        let verifier = "n".repeat(64);
+        let challenge = URL_SAFE_NO_PAD.encode(Sha256::digest(verifier.as_bytes()));
+        let mut r = AuthorizationRequest::code(
+            self.credentials.client_id.clone(),
+            REDIRECT.into(),
+            "openid profile email offline_access".into(),
+            challenge,
+        );
+        r.state = Some("owned-state".into());
+        r.nonce = Some("owned-nonce".into());
+        (r, verifier)
+    }
+    async fn exchange_location(&self, location: &str, verifier: String) -> TokenResponse {
+        let url = url::Url::parse(location).unwrap();
+        let code = url
+            .query_pairs()
+            .find(|(k, _)| k == "code")
+            .unwrap()
+            .1
+            .into_owned();
+        assert_eq!(
+            url.query_pairs().find(|(k, _)| k == "iss").unwrap().1,
+            ISSUER
+        );
+        self.legacy
+            .exchange_code(CodeExchange {
+                client: self.credentials.clone(),
+                code,
+                redirect_uri: REDIRECT.into(),
+                code_verifier: verifier,
+            })
+            .await
+            .unwrap()
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; native authorization writes interoperate with existing PKCE code exchange"]
+async fn native_grants_create_actual_authorization_codes_without_retained_database() {
+    let s = Setup::start().await;
+    let (r, verifier) = s.request();
+    let AuthorizationOutcome::Redirect(location) =
+        s.grants.authorize(&s.auth_cookie, r).await.unwrap()
+    else {
+        panic!("code redirect expected")
+    };
+    let token = s.exchange_location(&location, verifier).await;
+    assert_eq!(s.active(&token.access_token).await["active"], true);
+}
+
+impl Setup {
+    async fn pending_consent(&self) -> (ConsentRequest, String) {
+        self.sql("UPDATE webdock_auth.\"oauthClient\" SET \"skipConsent\"=false")
+            .await;
+        let (mut r, verifier) = self.request();
+        r.prompt = Some("consent".into());
+        let AuthorizationOutcome::ConsentRequired(c) =
+            self.grants.authorize(&self.auth_cookie, r).await.unwrap()
+        else {
+            panic!("consent required")
+        };
+        (c, verifier)
+    }
+    async fn consent_counts(&self) -> (i64, i64, i64) {
+        let row=self.f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT (SELECT count(*) FROM webdock_auth.\"oauthConsent\") AS consents,(SELECT count(*) FROM webdock_auth.identity_oauth_request WHERE kind='consent') AS pending,(SELECT count(*) FROM webdock_auth.identity_oauth_request WHERE kind='code') AS codes")).await.unwrap().unwrap();
+        (
+            row.try_get("", "consents").unwrap(),
+            row.try_get("", "pending").unwrap(),
+            row.try_get("", "codes").unwrap(),
+        )
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; native consent approval is scoped, one-use and interoperable"]
+async fn native_grants_consent_approval_and_details_preserve_protocol() {
+    let s = Setup::start().await;
+    let (c, verifier) = s.pending_consent().await;
+    let mut actual = s
+        .grants
+        .consent_details(&s.auth_cookie, &c.request_id)
+        .await
+        .unwrap();
+    let mut expected = s
+        .legacy
+        .consent_details(&s.auth_cookie, &c.request_id)
+        .await
+        .unwrap();
+    actual.scopes.sort();
+    expected.scopes.sort();
+    assert_eq!(
+        serde_json::to_value(actual).unwrap(),
+        serde_json::to_value(expected).unwrap()
+    );
+    let AuthorizationOutcome::Redirect(location) = s
+        .grants
+        .consent(&s.auth_cookie, &c.request_id, true)
+        .await
+        .unwrap()
+    else {
+        panic!("approval code expected")
+    };
+    assert_eq!(s.consent_counts().await, (1, 0, 1));
+    assert!(matches!(
+        s.grants.consent(&s.auth_cookie, &c.request_id, true).await,
+        Err(Error::InvalidGrant)
+    ));
+    let token = s.exchange_location(&location, verifier).await;
+    assert_eq!(s.active(&token.access_token).await["active"], true);
+    let (mut r, _) = s.request();
+    r.scope = "openid profile".into();
+    assert!(
+        matches!(
+            s.grants.authorize(&s.auth_cookie, r).await.unwrap(),
+            AuthorizationOutcome::Redirect(_)
+        ),
+        "existing approved consent covers a subset"
+    );
+}
+#[tokio::test]
+#[ignore = "owned PG18; native consent denial preserves state/issuer and grants no code"]
+async fn native_grants_consent_denial_is_one_use_and_preserves_state() {
+    let s = Setup::start().await;
+    let (c, _) = s.pending_consent().await;
+    let AuthorizationOutcome::Redirect(location) = s
+        .grants
+        .consent(&s.auth_cookie, &c.request_id, false)
+        .await
+        .unwrap()
+    else {
+        panic!("denial redirect expected")
+    };
+    let url = url::Url::parse(&location).unwrap();
+    let p = url
+        .query_pairs()
+        .collect::<std::collections::HashMap<_, _>>();
+    assert_eq!(p["error"], "access_denied");
+    assert_eq!(p["state"], "owned-state");
+    assert_eq!(p["iss"], ISSUER);
+    assert!(!p.contains_key("code"));
+    assert_eq!(s.consent_counts().await, (0, 0, 0));
+    assert!(matches!(
+        s.grants
+            .consent_details(&s.auth_cookie, &c.request_id)
+            .await,
+        Err(Error::InvalidGrant)
+    ));
+}
+#[tokio::test]
+#[ignore = "owned PG18; consent rows and payload are bound to exact verified subject/session/client"]
+async fn native_grants_refuse_foreign_session_and_inconsistent_payload() {
+    let s = Setup::start().await;
+    let (c, _) = s.pending_consent().await;
+    s.sql(&format!("INSERT INTO webdock_auth.session(id,token,\"userId\",\"expiresAt\",\"updatedAt\") VALUES('grant-other-session','grant-other-cookie','{}',now()+interval '1 hour',now())",s.user)).await;
+    let other = CookiePolicy::new(true, AUTH_SECRET)
+        .unwrap()
+        .header("grant-other-cookie", 3600)
+        .unwrap()
+        .split(';')
+        .next()
+        .unwrap()
+        .to_owned();
+    assert!(matches!(
+        s.grants.consent(&other, &c.request_id, true).await,
+        Err(Error::InvalidGrant)
+    ));
+    s.sql("UPDATE webdock_auth.identity_oauth_request SET payload=jsonb_set(payload,'{subject}','\"backup\"') WHERE kind='consent'").await;
+    assert!(matches!(
+        s.grants.consent(&s.auth_cookie, &c.request_id, true).await,
+        Err(Error::InvalidGrant)
+    ));
+    assert_eq!(s.consent_counts().await, (0, 1, 0));
+}
+#[tokio::test]
+#[ignore = "owned PG18; fresh consent expiry and immutable discovery after request-row waits"]
+async fn native_grants_recheck_expiry_and_payload_after_consent_lock_wait() {
+    let s = Setup::start().await;
+    for expire in [true, false] {
+        let (c, _) = s.pending_consent().await;
+        let hash = legacy_token_hash(&c.request_id);
+        let gate = s.f.owner.begin().await.unwrap();
+        gate.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT token_hash FROM webdock_auth.identity_oauth_request WHERE token_hash=$1 FOR UPDATE",[hash.clone().into()])).await.unwrap();
+        let grants = s.grants.clone();
+        let cookie = s.auth_cookie.clone();
+        let id = c.request_id.clone();
+        let task = tokio::spawn(async move { grants.consent(&cookie, &id, true).await });
+        s.wait_lock("identity_oauth_request").await;
+        let sql = if expire {
+            "UPDATE webdock_auth.identity_oauth_request SET expires_at=clock_timestamp()-interval '1 second' WHERE token_hash=$1"
+        } else {
+            "UPDATE webdock_auth.identity_oauth_request SET payload=jsonb_set(payload,'{request,nonce}','\"changed\"') WHERE token_hash=$1"
+        };
+        gate.execute_raw(Statement::from_sql_and_values(
+            DbBackend::Postgres,
+            sql,
+            [hash.into()],
+        ))
+        .await
+        .unwrap();
+        gate.commit().await.unwrap();
+        assert!(matches!(task.await.unwrap(), Err(Error::InvalidGrant)));
+        let (consents, _, codes) = s.consent_counts().await;
+        assert_eq!(consents, 0);
+        assert_eq!(codes, 0);
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; expired cleanup is bounded and skips locked records"]
+async fn native_grants_expired_cleanup_does_not_wait_on_other_requests() {
+    let s = Setup::start().await;
+    let (r, _) = s.request();
+    s.grants.authorize(&s.auth_cookie, r).await.unwrap();
+    s.sql("INSERT INTO webdock_auth.identity_oauth_request(token_hash,kind,user_id,session_id,client_id,payload,expires_at) SELECT 'owned-expired-'||g,'code',r.user_id,r.session_id,r.client_id,r.payload,now()-interval '1 hour' FROM (SELECT * FROM webdock_auth.identity_oauth_request LIMIT 1) r CROSS JOIN generate_series(1,120) g").await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared("SELECT token_hash FROM webdock_auth.identity_oauth_request WHERE token_hash='owned-expired-1' FOR UPDATE").await.unwrap();
+    let (r, _) = s.request();
+    assert!(matches!(
+        tokio::time::timeout(
+            Duration::from_secs(2),
+            s.grants.authorize(&s.auth_cookie, r)
+        )
+        .await
+        .unwrap()
+        .unwrap(),
+        AuthorizationOutcome::Redirect(_)
+    ));
+    let count = s
+        .f
+        .owner
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT count(*) AS n FROM webdock_auth.identity_oauth_request WHERE expires_at<now()",
+        ))
+        .await
+        .unwrap()
+        .unwrap()
+        .try_get::<i64>("", "n")
+        .unwrap();
+    assert_eq!(count, 20);
+    gate.commit().await.unwrap();
+}
+#[tokio::test]
+#[ignore = "owned PG18; parallel approval cannot consume a consent request twice"]
+async fn native_grants_parallel_consent_only_issues_one_code() {
+    let s = Setup::start().await;
+    let (c, _) = s.pending_consent().await;
+    let (a, b) = tokio::join!(
+        s.grants.consent(&s.auth_cookie, &c.request_id, true),
+        s.grants.consent(&s.auth_cookie, &c.request_id, true)
+    );
+    let r = [a, b];
+    assert_eq!(
+        r.iter()
+            .filter(|r| matches!(r, Ok(AuthorizationOutcome::Redirect(_))))
+            .count(),
+        1
+    );
+    assert_eq!(
+        r.iter()
+            .filter(|r| matches!(r, Err(Error::InvalidGrant)))
+            .count(),
+        1
+    );
+    assert_eq!(s.consent_counts().await, (1, 0, 1));
+}
+#[tokio::test]
+#[ignore = "owned PG18; failed code persistence rolls back consent approval and request consumption"]
+async fn native_grants_late_write_error_rolls_back_the_whole_decision() {
+    let s = Setup::start().await;
+    let (c, _) = s.pending_consent().await;
+    s.sql("CREATE FUNCTION public.owned_grant_failure() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN IF NEW.kind='code' THEN RAISE EXCEPTION 'owned code failure' USING ERRCODE='40001';END IF;RETURN NEW;END $$;CREATE TRIGGER owned_grant_failure AFTER INSERT ON webdock_auth.identity_oauth_request FOR EACH ROW EXECUTE FUNCTION public.owned_grant_failure()").await;
+    assert!(matches!(
+        s.grants.consent(&s.auth_cookie, &c.request_id, true).await,
+        Err(Error::Configuration)
+    ));
+    assert_eq!(s.consent_counts().await, (0, 1, 0));
+    s.grants
+        .consent_details(&s.auth_cookie, &c.request_id)
+        .await
+        .unwrap();
+    s.sql("DROP TRIGGER owned_grant_failure ON webdock_auth.identity_oauth_request")
+        .await;
+    assert!(matches!(
+        s.grants
+            .consent(&s.auth_cookie, &c.request_id, true)
+            .await
+            .unwrap(),
+        AuthorizationOutcome::Redirect(_)
+    ));
+}
+#[tokio::test]
+#[ignore = "owned PG18; native prompts/max-age/PKCE/redirect checks and preview issuance refusal"]
+async fn native_grants_preserve_login_protocol_and_refuse_preview() {
+    let s = Setup::start().await;
+    let (r, _) = s.request();
+    assert!(matches!(
+        s.grants.authorize("", r).await.unwrap(),
+        AuthorizationOutcome::LoginRequired
+    ));
+    let (mut r, _) = s.request();
+    r.prompt = Some("none".into());
+    assert!(matches!(
+        s.grants.authorize("", r).await,
+        Err(Error::LoginRequired)
+    ));
+    let (mut r, _) = s.request();
+    r.redirect_uri = "https://wrong.example.test/callback".into();
+    assert!(s.grants.authorize(&s.auth_cookie, r).await.is_err());
+    let (mut r, _) = s.request();
+    r.code_challenge = "bad".into();
+    assert!(s.grants.authorize(&s.auth_cookie, r).await.is_err());
+    let (mut r, _) = s.request();
+    r.prompt = Some("login".into());
+    assert!(matches!(
+        s.grants.authorize(&s.auth_cookie, r).await.unwrap(),
+        AuthorizationOutcome::LoginRequired
+    ));
+    s.sql("UPDATE webdock_auth.session SET \"createdAt\"=now()-interval '1 hour'")
+        .await;
+    let (mut r, _) = s.request();
+    r.max_age = Some(1);
+    assert!(matches!(
+        s.grants.authorize(&s.auth_cookie, r).await.unwrap(),
+        AuthorizationOutcome::LoginRequired
+    ));
+    s.sql("UPDATE webdock_auth.\"user\" SET role='operator',\"twoFactorEnabled\"=true WHERE id<>'backup'").await;
+    s.sql(&format!("INSERT INTO webdock_auth.studio_tenant_preview(session_id,actor_id,customer_id,organization_id) VALUES('{}','{}','100','101')",s.session,s.user)).await;
+    let (r, _) = s.request();
+    assert!(matches!(
+        s.grants.authorize(&s.auth_cookie, r).await,
+        Err(Error::AccessDenied)
+    ));
+    let (_, _, codes) = s.consent_counts().await;
+    assert_eq!(codes, 0);
+}
+
+#[tokio::test]
+#[ignore = "owned PG18; late consent expiry after a pending write cannot issue a code"]
+async fn native_grants_recheck_consent_deadline_after_pending_writes() {
+    let s = Setup::start().await;
+    let (c, _) = s.pending_consent().await;
+    s.sql("CREATE FUNCTION public.owned_consent_delay() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN PERFORM pg_advisory_xact_lock(61731233);RETURN NEW;END $$;CREATE TRIGGER owned_consent_delay AFTER INSERT ON webdock_auth.\"oauthConsent\" FOR EACH ROW EXECUTE FUNCTION public.owned_consent_delay();UPDATE webdock_auth.identity_oauth_request SET expires_at=clock_timestamp()+interval '1 second' WHERE kind='consent'").await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared("SELECT pg_advisory_xact_lock(61731233)")
+        .await
+        .unwrap();
+    let grants = s.grants.clone();
+    let cookie = s.auth_cookie.clone();
+    let task = tokio::spawn(async move { grants.consent(&cookie, &c.request_id, true).await });
+    s.wait_lock("oauthConsent").await;
+    gate.execute_unprepared("SELECT pg_sleep(1.1)")
+        .await
+        .unwrap();
+    gate.commit().await.unwrap();
+    assert!(
+        matches!(task.await.unwrap(), Err(Error::InvalidGrant)),
+        "a decision expiring while its pending write waits must roll back"
+    );
+    assert_eq!(s.consent_counts().await, (0, 1, 0));
 }

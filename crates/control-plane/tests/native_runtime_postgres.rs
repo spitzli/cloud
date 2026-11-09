@@ -88,6 +88,11 @@ async fn actual_http_browser_authority_uses_native_postgres() {
 async fn actual_http_oauth_security_uses_native_postgres() {
     actual_core(NativeMode::OAuthSecurity).await;
 }
+#[tokio::test]
+#[ignore = "owned PostgreSQL18; actual native grant creation with PKCE browser handoff"]
+async fn actual_http_oauth_grants_use_native_postgres() {
+    actual_core(NativeMode::OAuthGrants).await;
+}
 #[derive(Clone, Copy)]
 enum NativeMode {
     Legacy,
@@ -99,12 +104,14 @@ enum NativeMode {
     OAuthClientReads,
     OAuthIntrospection,
     OAuthSecurity,
+    OAuthGrants,
 }
 async fn actual_core(mode: NativeMode) {
     let native = matches!(mode, NativeMode::Ids);
     let native_session = matches!(mode, NativeMode::SessionReads);
     let native_management = matches!(mode, NativeMode::SessionManagement);
-    let native_authority = matches!(mode, NativeMode::BrowserAuthority);
+    let native_grants = matches!(mode, NativeMode::OAuthGrants);
+    let native_authority = matches!(mode, NativeMode::BrowserAuthority) || native_grants;
     let native_browser = matches!(mode, NativeMode::BrowserFlows) || native_authority;
     let native_oauth = matches!(mode, NativeMode::OAuthClientReads);
     let native_security = matches!(mode, NativeMode::OAuthSecurity);
@@ -144,6 +151,9 @@ async fn actual_core(mode: NativeMode) {
         WITH hint AS MATERIALIZED(SELECT set_config('webdock.organization_allocation','{"customer_id":"100","organization_id":"101"}',true)) INSERT INTO webdock_admin.customers(id,name) SELECT '100','Owned HTTP customer' FROM hint;
         INSERT INTO webdock_auth.member(id,"organizationId","userId",role,"createdAt") VALUES('503','101','501','owner',now())"#).await.unwrap();
         sql(&owner,r#"INSERT INTO webdock_auth."oauthAccessToken"(id,token,"clientId","sessionId","userId",scopes,resources,"expiresAt","createdAt") VALUES('504',$1,'102','502','501','["openid","profile","email"]','[]',now()+interval '1 hour',now())"#,vec![webdock_oauth::legacy_token_hash("owned-http-access").into()]).await;
+    }
+    if native_grants {
+        owner.execute_unprepared("CREATE TABLE public.owned_oauth_grant_audit(app text);CREATE FUNCTION public.owned_oauth_grant_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_oauth_grant_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_oauth_grant_audit AFTER INSERT ON webdock_auth.identity_oauth_request FOR EACH ROW WHEN(NEW.kind='code') EXECUTE FUNCTION public.owned_oauth_grant_audit()").await.unwrap();
     }
     let before = journal(&owner).await;
     let account_counts = || {
@@ -277,6 +287,14 @@ async fn actual_core(mode: NativeMode) {
     command.env(
         "WEBDOCK_OAUTH_SECURITY_BACKEND",
         if native_security {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
+    command.env(
+        "WEBDOCK_OAUTH_GRANTS_BACKEND",
+        if native_grants {
             "tokio-postgres"
         } else {
             "sea-orm"
@@ -756,6 +774,10 @@ async fn actual_core(mode: NativeMode) {
             .unwrap();
         assert_eq!(response.status(), 200);
         assert_eq!(response.json::<Value>().await.unwrap()["active"], false);
+    }
+    if native_grants {
+        let n=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT count(*) AS n FROM public.owned_oauth_grant_audit WHERE app='spitzli-native-postgres'")).await.unwrap().unwrap().try_get::<i64>("","n").unwrap();
+        assert_eq!(n, 1, "actual HTTP code write must use native driver");
     }
     assert_eq!(
         before,
