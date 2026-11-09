@@ -96,7 +96,13 @@ pub enum SessionManagementBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum BrowserFlowBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub browser_flow_backend: BrowserFlowBackend,
     pub session_management_backend: SessionManagementBackend,
     pub session_read_backend: SessionReadBackend,
     pub id_backend: IdBackend,
@@ -162,7 +168,17 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         } else {
             session_read_backend
         };
+    let browser_flow_backend = match env.get("WEBDOCK_BROWSER_FLOW_BACKEND").map(String::as_str) {
+        None | Some("sea-orm") => BrowserFlowBackend::Legacy,
+        Some("tokio-postgres") => BrowserFlowBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_BROWSER_FLOW_BACKEND".into(),
+            ));
+        }
+    };
     Ok(RuntimeConfig {
+        browser_flow_backend,
         session_management_backend,
         session_read_backend,
         id_backend,

@@ -63,17 +63,24 @@ async fn actual_http_session_read_uses_native_postgres() {
 async fn actual_http_session_management_uses_native_postgres() {
     actual_core(NativeMode::SessionManagement).await;
 }
+#[tokio::test]
+#[ignore = "owned local PostgreSQL18; actual HTTP first-party login persists native nonce"]
+async fn actual_http_browser_login_begin_uses_native_flow_storage() {
+    actual_core(NativeMode::BrowserFlows).await;
+}
 #[derive(Clone, Copy)]
 enum NativeMode {
     Legacy,
     Ids,
     SessionReads,
     SessionManagement,
+    BrowserFlows,
 }
 async fn actual_core(mode: NativeMode) {
     let native = matches!(mode, NativeMode::Ids);
     let native_session = matches!(mode, NativeMode::SessionReads);
     let native_management = matches!(mode, NativeMode::SessionManagement);
+    let native_browser = matches!(mode, NativeMode::BrowserFlows);
     let fixture = fixture::DatabaseFixture::start().await;
     let owner = fixture.owner().await;
     if native_session || native_management {
@@ -82,6 +89,11 @@ async fn actual_core(mode: NativeMode) {
     if native_management {
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('foreign-user','Foreign','foreign@example.test',true,'user',false,false);
         INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('owned-other-session','owned-other-token','owned-session-user',now()+interval '1 hour',now()),('foreign-session','foreign-token','foreign-user',now()+interval '1 hour',now())"#).await.unwrap();
+    }
+    if native_browser {
+        let client_hash = webdock_oauth::legacy_token_hash("owned-core-browser-secret");
+        sql(&owner,r#"INSERT INTO webdock_auth."oauthClient"(id,"clientId","clientSecret",name,disabled,"skipConsent","enableEndSession",scopes,"redirectUris","postLogoutRedirectUris","grantTypes","responseTypes","tokenEndpointAuthMethod","requirePKCE","subjectType",metadata,"createdAt","updatedAt") VALUES('103','102',$1,'Owned browser',false,true,true,'["openid","profile","email"]','["http://localhost:3121/api/sso/callback","http://localhost:3120/api/sso/callback"]','["http://localhost:3121/login"]','["authorization_code","refresh_token"]','["code"]','client_secret_post',true,'public','{"webdock_binding":"104"}',now(),now())"#,vec![client_hash.into()]).await;
+        owner.execute_unprepared("INSERT INTO webdock_auth.app_binding(id,client_id,label,organization_id,enabled) VALUES('104','102','Owned browser',null,true);CREATE TABLE public.owned_browser_http_audit(app text);CREATE FUNCTION public.owned_browser_http_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_browser_http_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_browser_http_audit AFTER INSERT ON webdock_auth.identity_browser_flow FOR EACH ROW EXECUTE FUNCTION public.owned_browser_http_audit()").await.unwrap();
     }
     let before = journal(&owner).await;
     let account_counts = || {
@@ -171,6 +183,20 @@ async fn actual_core(mode: NativeMode) {
             "sea-orm"
         },
     );
+    command.env(
+        "WEBDOCK_BROWSER_FLOW_BACKEND",
+        if native_browser {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
+    if native_browser {
+        command
+            .env("WEBDOCK_SSO_CLIENT_ID", "102")
+            .env("WEBDOCK_SSO_CLIENT_SECRET", "owned-core-browser-secret")
+            .env("WEBDOCK_SSO_COOKIE_SECRET", secret);
+    }
     let output = std::fs::File::create(&log).unwrap();
     command
         .stdout(Stdio::from(output.try_clone().unwrap()))
@@ -332,6 +358,56 @@ async fn actual_core(mode: NativeMode) {
             .unwrap();
         assert_eq!(response.status(), 200);
         assert!(response.json::<Value>().await.unwrap().is_null());
+    }
+    if native_browser {
+        let client = reqwest::Client::builder()
+            .redirect(reqwest::redirect::Policy::none())
+            .timeout(Duration::from_secs(5))
+            .build()
+            .unwrap();
+        let response = client
+            .get(format!(
+                "http://127.0.0.1:{port}/api/sso/login?returnTo=%2Fprojects"
+            ))
+            .header("Host", "localhost:3121")
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 303);
+        let location = response
+            .headers()
+            .get("location")
+            .unwrap()
+            .to_str()
+            .unwrap();
+        let location = url::Url::parse(location).unwrap();
+        assert_eq!(
+            location.origin().ascii_serialization(),
+            "http://localhost:3125"
+        );
+        let params = location
+            .query_pairs()
+            .collect::<std::collections::HashMap<_, _>>();
+        assert_eq!(params["client_id"], "102");
+        assert_eq!(params["code_challenge_method"], "S256");
+        assert!(!params["state"].is_empty());
+        assert!(!params["nonce"].is_empty());
+        assert!(
+            response
+                .headers()
+                .get("set-cookie")
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .contains("HttpOnly")
+        );
+        let row=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT (SELECT count(*) FROM public.owned_browser_http_audit WHERE app='spitzli-native-postgres') AS native_writes,(SELECT payload FROM webdock_auth.identity_browser_flow LIMIT 1) AS payload")).await.unwrap().unwrap();
+        assert_eq!(row.try_get::<i64>("", "native_writes").unwrap(), 1);
+        assert!(
+            !row.try_get::<String>("", "payload")
+                .unwrap()
+                .contains(params["state"].as_ref())
+        );
     }
     assert_eq!(
         before,
