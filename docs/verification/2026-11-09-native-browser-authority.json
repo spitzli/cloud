@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-09",
+  "base": "8e32a6b07c5b1d9b0126d7a4f027eb27ef57ad8f",
+  "optIn": "WEBDOCK_BROWSER_AUTHORITY_BACKEND=tokio-postgres",
+  "default": "sea-orm",
+  "nativeOperations": [
+    "browser reference/canonical principal reads",
+    "browser revalidation",
+    "consuming revalidate_native_in",
+    "consuming revalidate_stored_authority_native_in"
+  ],
+  "corePool": {
+    "shared": true,
+    "max": 4,
+    "min": 0
+  },
+  "implies": [
+    "native browser flows",
+    "native OAuth introspection",
+    "native OAuth clients/public keys"
+  ],
+  "validation": {
+    "targetedPassed": 53,
+    "nativeOAuthClientsPassed": 4,
+    "nativeOAuthIntrospectionPassed": 9,
+    "nativeBrowserPassed": 17,
+    "newBrowserAuthorityPassed": 9,
+    "coreConfigPassed": 14,
+    "actualCoreHttpPassed": 9,
+    "defaultPassed": 213,
+    "defaultIgnored": 90,
+    "defaultSuites": 52,
+    "clippyWarningsDenied": true,
+    "format": true,
+    "staticContracts": true,
+    "lockedMetadataWorkspaces": 15,
+    "fixtures": "owned loopback PostgreSQL18; restricted roles; native reader disconnected from retained DB; actual HTTP PKCE login/callback/cookie/profile/revocation"
+  },
+  "review": {
+    "freshContext": true,
+    "productionCodeFindings": 0,
+    "testDocumentationCorrection": "Use actual opaque customer scope; mode changes invalidate old authority; same-scope read-only ceiling preserved. RED then GREEN.",
+    "unresolvedFindings": 0,
+    "minorDeferrals": 0
+  },
+  "maximumMigration": 75,
+  "schemaOrCredentialsChanged": false,
+  "productionActivated": false,
+  "publicBuildAdmissionChanged": false,
+  "completeDriverMigration": false,
+  "measuredPerformanceImprovement": false,
+  "limits": [
+    "Existing retained caller-owned browser/domain consumers and OAuth issuance/refresh/revocation/logout writes remain explicit pending ports.",
+    "Existing app-binding/provider/policy snapshot semantics retained; app_binding SELECT-only privileges unchanged.",
+    "No production login, S3 benchmark, Neon compute gain or arbitrary public-build qualification claimed."
+  ]
+}

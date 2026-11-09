@@ -60,6 +60,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         )),
         Err(_) => None,
     };
+    let native_browser_authority = matches!(
+        runtime.browser_authority_backend,
+        crate::config::BrowserAuthorityBackend::Native
+    );
     let native_browser_flows = matches!(
         runtime.browser_flow_backend,
         crate::config::BrowserFlowBackend::Native
@@ -220,7 +224,16 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             browser_config,
         )
         .map_err(|_| Error::Message("Invalid browser session configuration".into()))?;
-        if native_browser_flows {
+        if native_browser_authority {
+            browser = browser.with_native_authority_store(
+                native_bootstrap_pool
+                    .as_ref()
+                    .ok_or_else(|| {
+                        Error::Message("Native authentication storage unavailable".into())
+                    })?
+                    .clone(),
+            );
+        } else if native_browser_flows {
             browser = browser.with_native_flow_store(
                 native_bootstrap_pool
                     .as_ref()

@@ -78,6 +78,11 @@ async fn actual_http_jwks_uses_native_oauth_client_store() {
 async fn actual_http_token_introspection_uses_native_postgres() {
     actual_core(NativeMode::OAuthIntrospection).await;
 }
+#[tokio::test]
+#[ignore = "owned PostgreSQL18; actual native browser OAuth handoff and cookie session"]
+async fn actual_http_browser_authority_uses_native_postgres() {
+    actual_core(NativeMode::BrowserAuthority).await;
+}
 #[derive(Clone, Copy)]
 enum NativeMode {
     Legacy,
@@ -85,6 +90,7 @@ enum NativeMode {
     SessionReads,
     SessionManagement,
     BrowserFlows,
+    BrowserAuthority,
     OAuthClientReads,
     OAuthIntrospection,
 }
@@ -92,7 +98,8 @@ async fn actual_core(mode: NativeMode) {
     let native = matches!(mode, NativeMode::Ids);
     let native_session = matches!(mode, NativeMode::SessionReads);
     let native_management = matches!(mode, NativeMode::SessionManagement);
-    let native_browser = matches!(mode, NativeMode::BrowserFlows);
+    let native_authority = matches!(mode, NativeMode::BrowserAuthority);
+    let native_browser = matches!(mode, NativeMode::BrowserFlows) || native_authority;
     let native_oauth = matches!(mode, NativeMode::OAuthClientReads);
     let native_introspection = matches!(mode, NativeMode::OAuthIntrospection);
     let fixture = fixture::DatabaseFixture::start().await;
@@ -109,7 +116,7 @@ async fn actual_core(mode: NativeMode) {
         sql(&owner,r#"INSERT INTO webdock_auth."oauthClient"(id,"clientId","clientSecret",name,disabled,"skipConsent","enableEndSession",scopes,"redirectUris","postLogoutRedirectUris","grantTypes","responseTypes","tokenEndpointAuthMethod","requirePKCE","subjectType",metadata,"createdAt","updatedAt") VALUES('103','102',$1,'Owned browser',false,true,true,'["openid","profile","email"]','["http://localhost:3121/api/sso/callback","http://localhost:3120/api/sso/callback"]','["http://localhost:3121/login"]','["authorization_code","refresh_token"]','["code"]','client_secret_post',true,'public','{"webdock_binding":"104"}',now(),now())"#,vec![client_hash.into()]).await;
         owner.execute_unprepared("INSERT INTO webdock_auth.app_binding(id,client_id,label,organization_id,enabled) VALUES('104','102','Owned browser',null,true);CREATE TABLE public.owned_browser_http_audit(app text);CREATE FUNCTION public.owned_browser_http_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_browser_http_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_browser_http_audit AFTER INSERT ON webdock_auth.identity_browser_flow FOR EACH ROW EXECUTE FUNCTION public.owned_browser_http_audit()").await.unwrap();
     }
-    if native_oauth {
+    if native_oauth || native_authority {
         let keys = webdock_identity::SecretKeys::new(
             std::collections::BTreeMap::from([(
                 1,
@@ -125,7 +132,7 @@ async fn actual_core(mode: NativeMode) {
             .unwrap();
         tx.commit().await.unwrap();
     }
-    if native_introspection {
+    if native_introspection || native_authority {
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('501','HTTP user','http@example.test',true,'user',false,false);INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('502','owned-introspection-session','501',now()+interval '1 hour',now());
         WITH hint AS MATERIALIZED(SELECT set_config('webdock.organization_allocation','{"customer_id":"100","organization_id":"101"}',true)) INSERT INTO webdock_admin.customers(id,name) SELECT '100','Owned HTTP customer' FROM hint;
         INSERT INTO webdock_auth.member(id,"organizationId","userId",role,"createdAt") VALUES('503','101','501','owner',now())"#).await.unwrap();
@@ -221,7 +228,7 @@ async fn actual_core(mode: NativeMode) {
     );
     command.env(
         "WEBDOCK_BROWSER_FLOW_BACKEND",
-        if native_browser {
+        if native_browser && !native_authority {
             "tokio-postgres"
         } else {
             "sea-orm"
@@ -235,7 +242,7 @@ async fn actual_core(mode: NativeMode) {
     }
     command.env(
         "WEBDOCK_OAUTH_CLIENT_BACKEND",
-        if native_oauth || native_browser {
+        if (native_oauth || native_browser) && !native_authority {
             "tokio-postgres"
         } else {
             "sea-orm"
@@ -252,6 +259,14 @@ async fn actual_core(mode: NativeMode) {
     if native_introspection {
         command.env("WEBDOCK_STUDIO_CLIENT_ID", "102");
     }
+    command.env(
+        "WEBDOCK_BROWSER_AUTHORITY_BACKEND",
+        if native_authority {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
     let output = std::fs::File::create(&log).unwrap();
     command
         .stdout(Stdio::from(output.try_clone().unwrap()))
@@ -463,6 +478,123 @@ async fn actual_core(mode: NativeMode) {
                 .unwrap()
                 .contains(params["state"].as_ref())
         );
+        if native_authority {
+            let flow_cookie = response
+                .headers()
+                .get_all("set-cookie")
+                .iter()
+                .map(|v| v.to_str().unwrap())
+                .find(|v| v.starts_with("webdock-console.flow="))
+                .unwrap()
+                .split(';')
+                .next()
+                .unwrap()
+                .to_owned();
+            let auth_cookie = CookiePolicy::new(false, secret)
+                .unwrap()
+                .header("owned-introspection-session", 3600)
+                .unwrap()
+                .split(';')
+                .next()
+                .unwrap()
+                .to_owned();
+            let authorize = client
+                .get(format!(
+                    "http://127.0.0.1:{port}/api/auth/oauth2/authorize?{}",
+                    location.query().unwrap()
+                ))
+                .header("Host", "localhost:3125")
+                .header("Cookie", auth_cookie)
+                .send()
+                .await
+                .unwrap();
+            assert!(
+                authorize.status().is_redirection(),
+                "owned authorization must redirect"
+            );
+            let callback = url::Url::parse(
+                authorize
+                    .headers()
+                    .get("location")
+                    .unwrap()
+                    .to_str()
+                    .unwrap(),
+            )
+            .unwrap();
+            let response = client
+                .get(format!(
+                    "http://127.0.0.1:{port}/api/sso/callback?{}",
+                    callback.query().unwrap()
+                ))
+                .header("Host", "localhost:3121")
+                .header("Cookie", flow_cookie)
+                .send()
+                .await
+                .unwrap();
+            assert_eq!(response.status(), 303);
+            let signed = response
+                .headers()
+                .get_all("set-cookie")
+                .iter()
+                .map(|v| v.to_str().unwrap())
+                .find(|v| v.starts_with("webdock-console.session="))
+                .unwrap()
+                .split(';')
+                .next()
+                .unwrap()
+                .to_owned();
+            let gate = owner.begin().await.unwrap();
+            gate.execute_unprepared(
+                "SELECT token_hash FROM webdock_auth.identity_browser_session FOR UPDATE",
+            )
+            .await
+            .unwrap();
+            let http = client.clone();
+            let c = signed.clone();
+            let request = tokio::spawn(async move {
+                http.get(format!(
+                    "http://127.0.0.1:{port}/api/console/auth/get-session"
+                ))
+                .header("Host", "localhost:3121")
+                .header("Cookie", c)
+                .send()
+                .await
+                .unwrap()
+            });
+            let until = tokio::time::Instant::now() + Duration::from_secs(3);
+            loop {
+                let waiting=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE application_name='spitzli-native-postgres' AND wait_event_type='Lock' AND query LIKE '%identity_browser_session%' AND query LIKE '%FOR SHARE%') AS waiting")).await.unwrap().unwrap().try_get::<bool>("","waiting").unwrap();
+                if waiting {
+                    break;
+                }
+                assert!(
+                    tokio::time::Instant::now() < until,
+                    "actual cookie resolution must use native browser proof"
+                );
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+            gate.commit().await.unwrap();
+            let response = request.await.unwrap();
+            assert_eq!(response.status(), 200);
+            let profile: Value = response.json().await.unwrap();
+            assert_eq!(profile["user"]["id"], "501");
+            assert_eq!(profile["user"]["email"], "http@example.test");
+            owner
+                .execute_unprepared("DELETE FROM webdock_auth.identity_browser_session")
+                .await
+                .unwrap();
+            let response = client
+                .get(format!(
+                    "http://127.0.0.1:{port}/api/console/auth/get-session"
+                ))
+                .header("Host", "localhost:3121")
+                .header("Cookie", signed)
+                .send()
+                .await
+                .unwrap();
+            assert_eq!(response.status(), 200);
+            assert!(response.json::<Value>().await.unwrap().is_null());
+        }
     }
     if native_oauth {
         let gate = owner.begin().await.unwrap();

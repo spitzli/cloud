@@ -285,3 +285,50 @@ pub async fn revalidate_stored_authority(
     }
     Ok(principal)
 }
+
+/// Native trusted server-owned proof. Consume and retain the returned checked transaction.
+/// First-party browser validation precedes canonical reads to keep client→identity lock order.
+pub async fn revalidate_stored_authority_native_in<'a>(
+    identity: &webdock_identity::IdentityService,
+    auth_transaction: webdock_persistence::postgres::Transaction<'a>,
+    browser_sessions: Option<&BrowserSessions>,
+    subject: &str,
+    session_id: &str,
+    authority: &StoredAuthority,
+) -> Result<(
+    webdock_persistence::postgres::Transaction<'a>,
+    webdock_identity::Principal,
+)> {
+    tokio::time::timeout(std::time::Duration::from_secs(30), async move {
+        let (tx, principal) = if let StoredAuthority::FirstPartyBrowser { browser } = authority {
+            let (tx, current) = browser_sessions
+                .ok_or(Error::Unauthorized)?
+                .revalidate_native_in(auth_transaction, browser)
+                .await?;
+            (tx, current.principal)
+        } else {
+            let (tx, principal) = identity
+                .authenticate_session_native_in(auth_transaction, subject, session_id)
+                .await?;
+            (tx, principal.ok_or(Error::Unauthorized)?)
+        };
+        if !principal.can_access()
+            || principal.user_id != subject
+            || principal.session_id != session_id
+        {
+            return Err(Error::Unauthorized);
+        }
+        if let StoredAuthority::CustomerSession { customer_scope, .. } = authority {
+            if principal.customer_scope() != Some(customer_scope.as_str()) {
+                return Err(Error::Unauthorized);
+            }
+        } else if matches!(authority, StoredAuthority::LocalSession {})
+            && principal.in_tenant_preview()
+        {
+            return Err(Error::Unauthorized);
+        }
+        Ok((tx, principal))
+    })
+    .await
+    .map_err(|_| Error::Configuration)?
+}
