@@ -83,6 +83,11 @@ async fn actual_http_token_introspection_uses_native_postgres() {
 async fn actual_http_browser_authority_uses_native_postgres() {
     actual_core(NativeMode::BrowserAuthority).await;
 }
+#[tokio::test]
+#[ignore = "owned PostgreSQL18; actual native OAuth security write"]
+async fn actual_http_oauth_security_uses_native_postgres() {
+    actual_core(NativeMode::OAuthSecurity).await;
+}
 #[derive(Clone, Copy)]
 enum NativeMode {
     Legacy,
@@ -93,6 +98,7 @@ enum NativeMode {
     BrowserAuthority,
     OAuthClientReads,
     OAuthIntrospection,
+    OAuthSecurity,
 }
 async fn actual_core(mode: NativeMode) {
     let native = matches!(mode, NativeMode::Ids);
@@ -101,7 +107,8 @@ async fn actual_core(mode: NativeMode) {
     let native_authority = matches!(mode, NativeMode::BrowserAuthority);
     let native_browser = matches!(mode, NativeMode::BrowserFlows) || native_authority;
     let native_oauth = matches!(mode, NativeMode::OAuthClientReads);
-    let native_introspection = matches!(mode, NativeMode::OAuthIntrospection);
+    let native_security = matches!(mode, NativeMode::OAuthSecurity);
+    let native_introspection = matches!(mode, NativeMode::OAuthIntrospection) || native_security;
     let fixture = fixture::DatabaseFixture::start().await;
     let owner = fixture.owner().await;
     if native_session || native_management {
@@ -250,7 +257,7 @@ async fn actual_core(mode: NativeMode) {
     );
     command.env(
         "WEBDOCK_OAUTH_INTROSPECTION_BACKEND",
-        if native_introspection {
+        if native_introspection && !native_security {
             "tokio-postgres"
         } else {
             "sea-orm"
@@ -262,6 +269,14 @@ async fn actual_core(mode: NativeMode) {
     command.env(
         "WEBDOCK_BROWSER_AUTHORITY_BACKEND",
         if native_authority {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
+    command.env(
+        "WEBDOCK_OAUTH_SECURITY_BACKEND",
+        if native_security {
             "tokio-postgres"
         } else {
             "sea-orm"
@@ -683,12 +698,49 @@ async fn actual_core(mode: NativeMode) {
         assert_eq!(response.status(), 200);
         let profile: Value = response.json().await.unwrap();
         assert_eq!(profile["email"], "http@example.test");
-        owner
-            .execute_unprepared(
-                "UPDATE webdock_auth.\"oauthAccessToken\" SET revoked=now() WHERE id='504'",
+        if native_security {
+            let gate = owner.begin().await.unwrap();
+            gate.execute_unprepared(
+                "SELECT id FROM webdock_auth.\"user\" WHERE id='501' FOR UPDATE",
             )
             .await
             .unwrap();
+            let http = client.clone();
+            let request = tokio::spawn(async move {
+                http.post(format!("http://127.0.0.1:{port}/api/auth/oauth2/revoke"))
+                    .header("Host", "localhost:3125")
+                    .form(&[
+                        ("client_id", "102"),
+                        ("client_secret", "owned-core-browser-secret"),
+                        ("token", "owned-http-access"),
+                    ])
+                    .timeout(Duration::from_secs(5))
+                    .send()
+                    .await
+                    .unwrap()
+            });
+            let until = tokio::time::Instant::now() + Duration::from_secs(3);
+            loop {
+                let waiting=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE application_name='spitzli-native-postgres' AND wait_event_type='Lock' AND query LIKE '%webdock_auth.\"user\"%' AND query LIKE '%FOR UPDATE%') AS waiting")).await.unwrap().unwrap().try_get::<bool>("","waiting").unwrap();
+                if waiting {
+                    break;
+                }
+                assert!(
+                    tokio::time::Instant::now() < until,
+                    "native revocation owner fence not observed"
+                );
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+            gate.commit().await.unwrap();
+            assert_eq!(request.await.unwrap().status(), 200);
+        } else {
+            owner
+                .execute_unprepared(
+                    "UPDATE webdock_auth.\"oauthAccessToken\" SET revoked=now() WHERE id='504'",
+                )
+                .await
+                .unwrap();
+        }
         let response = client
             .post(format!(
                 "http://127.0.0.1:{port}/api/auth/oauth2/introspect"

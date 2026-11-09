@@ -21,6 +21,7 @@ struct Setup {
     f: fixture::Fixture,
     legacy: Arc<OAuthService>,
     native: Arc<OAuthService>,
+    security: Arc<OAuthService>,
     pool: Pool,
     credentials: ClientAuthentication,
     auth_cookie: String,
@@ -116,11 +117,24 @@ impl Setup {
         )
         .await
         .unwrap();
-        let native_identity = Arc::new(IdentityService::new(
-            DatabaseConnection::default(),
-            CookiePolicy::new(true, AUTH_SECRET).unwrap(),
-        ));
+        let native_identity = Arc::new(
+            IdentityService::new(
+                DatabaseConnection::default(),
+                CookiePolicy::new(true, AUTH_SECRET).unwrap(),
+            )
+            .with_native_session_reads(pool.clone()),
+        );
         let native = Arc::new(
+            OAuthService::new(
+                DatabaseConnection::default(),
+                native_identity.clone(),
+                ids.clone(),
+                keys.clone(),
+                config(Some(credentials.client_id.clone())),
+            )
+            .with_native_introspection(pool.clone()),
+        );
+        let security = Arc::new(
             OAuthService::new(
                 DatabaseConnection::default(),
                 native_identity,
@@ -128,7 +142,7 @@ impl Setup {
                 keys.clone(),
                 config(Some(credentials.client_id.clone())),
             )
-            .with_native_introspection(pool.clone()),
+            .with_native_security_store(pool.clone()),
         );
         let auth_cookie = CookiePolicy::new(true, AUTH_SECRET)
             .unwrap()
@@ -142,6 +156,7 @@ impl Setup {
             f,
             legacy,
             native,
+            security,
             pool,
             credentials,
             auth_cookie,
@@ -791,5 +806,296 @@ async fn native_introspection_preserves_organization_project_grants() {
     assert_eq!(
         s.native.introspect(&c, &t.access_token).await.unwrap()["active"],
         false
+    );
+}
+
+#[tokio::test]
+#[ignore = "owned PG18; native security writes with disconnected retained writer"]
+async fn native_security_revokes_real_access_refresh_and_legacy_jwt() {
+    use serde_json::json;
+    let s = Setup::start().await;
+    let t = s.issue().await;
+    s.security
+        .revoke(&s.credentials, &t.access_token)
+        .await
+        .unwrap();
+    assert_eq!(s.active(&t.access_token).await["active"], false);
+    assert_eq!(
+        s.active(t.refresh_token.as_ref().unwrap()).await["active"],
+        true
+    );
+    s.security
+        .revoke(&s.credentials, t.refresh_token.as_ref().unwrap())
+        .await
+        .unwrap();
+    assert_eq!(
+        s.active(t.refresh_token.as_ref().unwrap()).await["active"],
+        false
+    );
+    s.security
+        .revoke(&s.credentials, "unknown-token")
+        .await
+        .unwrap();
+    s.security
+        .revoke(&s.credentials, &t.access_token)
+        .await
+        .unwrap();
+    let now = chrono::Utc::now().timestamp();
+    let jwt=s.sign(&json!({"iss":ISSUER,"aud":format!("{ISSUER}/oauth2/userinfo"),"azp":s.credentials.client_id,"sub":s.user,"sid":s.session,"scope":"openid profile email","iat":now,"exp":now+300})).await;
+    assert_eq!(s.active(&jwt).await["active"], true);
+    s.security.revoke(&s.credentials, &jwt).await.unwrap();
+    assert_eq!(s.active(&jwt).await["active"], false);
+}
+
+#[tokio::test]
+#[ignore = "owned PG18; a canonical subject appearing after absence must not be used unfenced"]
+async fn native_security_refuses_a_subject_created_after_its_fence_check() {
+    use serde_json::json;
+    let s = Setup::start().await;
+    let now = chrono::Utc::now().timestamp();
+    let jwt=s.sign(&json!({"iss":ISSUER,"aud":format!("{ISSUER}/oauth2/userinfo"),"azp":s.credentials.client_id,"sub":"000-new-user","sid":s.session,"scope":"openid","iat":now,"exp":now+300})).await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_raw(Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        "SELECT id FROM webdock_auth.\"user\" WHERE id=$1 FOR UPDATE",
+        [s.user.clone().into()],
+    ))
+    .await
+    .unwrap();
+    let security = s.security.clone();
+    let c = s.credentials.clone();
+    let j = jwt.clone();
+    let task = tokio::spawn(async move { security.revoke(&c, &j).await });
+    s.wait_lock("user").await;
+    s.sql("INSERT INTO webdock_auth.\"user\"(id,name,email,\"emailVerified\",role,\"twoFactorEnabled\",\"mustChangePassword\") VALUES('000-new-user','New','new@example.test',true,'user',false,false)").await;
+    gate.commit().await.unwrap();
+    assert!(
+        matches!(task.await.unwrap(), Err(Error::Configuration)),
+        "a newly appearing subject was not protected by the earlier owner fence"
+    );
+}
+
+#[tokio::test]
+#[ignore = "owned PG18; native revocation cannot mutate foreign client records or bypass credentials"]
+async fn native_security_preserves_client_ownership_and_invalid_hint_semantics() {
+    let s = Setup::start().await;
+    let t = s.issue().await;
+    let c = s
+        .legacy
+        .provision_client(
+            &s.f.owner,
+            ClientRegistration {
+                name: "Other revoker".into(),
+                redirect_uris: vec![REDIRECT.into()],
+                post_logout_redirect_uris: vec![],
+                scopes: vec!["openid".into()],
+                auth_method: ClientAuthMethod::ClientSecretPost,
+                allow_refresh: false,
+                skip_consent: true,
+                purpose: ClientPurpose::Portal,
+            },
+        )
+        .await
+        .unwrap();
+    let c = ClientAuthentication {
+        client_id: c.client_id,
+        client_secret: c.client_secret,
+        method: ClientAuthMethod::ClientSecretPost,
+    };
+    s.security.revoke(&c, &t.access_token).await.unwrap();
+    assert_eq!(s.active(&t.access_token).await["active"], true);
+    let mut wrong = s.credentials.clone();
+    wrong.client_secret = Some("wrong".into());
+    assert!(matches!(
+        s.security.revoke(&wrong, &t.access_token).await,
+        Err(Error::InvalidClient)
+    ));
+    assert_eq!(s.active(&t.access_token).await["active"], true);
+    for invalid in ["malformed.jwt.hint", t.id_token.as_ref().unwrap()] {
+        s.security.revoke(&s.credentials, invalid).await.unwrap();
+    }
+    assert_eq!(
+        s.active(&t.access_token).await["active"],
+        true,
+        "ID-token revocation does not end the canonical session"
+    );
+}
+#[tokio::test]
+#[ignore = "owned PG18; native logout exact cookie/hint identity and redirect, expired signed hints allowed"]
+async fn native_security_logout_requires_exact_identity_and_redirect() {
+    let s = Setup::start().await;
+    let t = s.issue().await;
+    let request = || LogoutRequest {
+        id_token_hint: t.id_token.clone().unwrap(),
+        post_logout_redirect_uri: None,
+        state: None,
+    };
+    assert!(matches!(
+        s.security.end_session("", request()).await.unwrap(),
+        LogoutOutcome::ConfirmationRequired
+    ));
+    let mut bad = request();
+    bad.id_token_hint = "bad.hint.signature".into();
+    assert!(matches!(
+        s.security.end_session(&s.auth_cookie, bad).await.unwrap(),
+        LogoutOutcome::ConfirmationRequired
+    ));
+    let mut bad = request();
+    bad.post_logout_redirect_uri = Some("https://evil.example.test".into());
+    assert!(matches!(
+        s.security.end_session(&s.auth_cookie, bad).await,
+        Err(Error::InvalidRequest)
+    ));
+    let now = chrono::Utc::now().timestamp();
+    let wrong=s.sign(&serde_json::json!({"iss":ISSUER,"aud":s.credentials.client_id,"sub":"backup","sid":s.session,"iat":now,"exp":now+300})).await;
+    assert!(matches!(
+        s.security
+            .end_session(
+                &s.auth_cookie,
+                LogoutRequest {
+                    id_token_hint: wrong,
+                    post_logout_redirect_uri: None,
+                    state: None
+                }
+            )
+            .await
+            .unwrap(),
+        LogoutOutcome::ConfirmationRequired
+    ));
+    assert_eq!(s.active(&t.access_token).await["active"], true);
+    s.sql("UPDATE webdock_auth.\"oauthClient\" SET \"postLogoutRedirectUris\"='[\"https://console.example.test/login\"]'").await;
+    let expired=s.sign(&serde_json::json!({"iss":ISSUER,"aud":s.credentials.client_id,"sub":s.user,"sid":s.session,"iat":now-600,"exp":now-300})).await;
+    let outcome = s
+        .security
+        .end_session(
+            &s.auth_cookie,
+            LogoutRequest {
+                id_token_hint: expired,
+                post_logout_redirect_uri: Some("https://console.example.test/login".into()),
+                state: Some("owned state".into()),
+            },
+        )
+        .await
+        .unwrap();
+    let LogoutOutcome::Complete {
+        redirect,
+        set_cookie,
+    } = outcome
+    else {
+        panic!("verified own logout must complete")
+    };
+    let redirect = url::Url::parse(redirect.as_ref().unwrap()).unwrap();
+    assert_eq!(
+        redirect.origin().ascii_serialization(),
+        "https://console.example.test"
+    );
+    assert_eq!(
+        redirect
+            .query_pairs()
+            .find(|(k, _)| k == "state")
+            .unwrap()
+            .1,
+        "owned state"
+    );
+    assert!(set_cookie.contains("Max-Age=0"));
+    assert_eq!(s.active(&t.access_token).await["active"], false);
+}
+#[tokio::test]
+#[ignore = "owned PG18; logout serializes exact canonical owner, including setup-only sessions"]
+async fn native_security_parallel_logout_and_setup_session_are_safe() {
+    let s = Setup::start().await;
+    let t = s.issue().await;
+    s.sql("UPDATE webdock_auth.\"user\" SET \"mustChangePassword\"=true WHERE id<>'backup'")
+        .await;
+    let request = || LogoutRequest {
+        id_token_hint: t.id_token.clone().unwrap(),
+        post_logout_redirect_uri: None,
+        state: None,
+    };
+    let (a, b) = tokio::join!(
+        s.security.end_session(&s.auth_cookie, request()),
+        s.security.end_session(&s.auth_cookie, request())
+    );
+    let outcomes = [a.unwrap(), b.unwrap()];
+    assert_eq!(
+        outcomes
+            .iter()
+            .filter(|o| matches!(o, LogoutOutcome::Complete { .. }))
+            .count(),
+        1
+    );
+    assert_eq!(
+        outcomes
+            .iter()
+            .filter(|o| matches!(o, LogoutOutcome::ConfirmationRequired))
+            .count(),
+        1
+    );
+}
+#[tokio::test]
+#[ignore = "owned PG18; revocation fails closed on immutable owner change and cancels safely"]
+async fn native_security_rechecks_token_ownership_and_cancellation() {
+    let s = Setup::start().await;
+    let t = s.issue().await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared("SELECT id FROM webdock_auth.\"oauthAccessToken\" FOR UPDATE")
+        .await
+        .unwrap();
+    let security = s.security.clone();
+    let c = s.credentials.clone();
+    let token = t.access_token.clone();
+    let task = tokio::spawn(async move { security.revoke(&c, &token).await });
+    s.wait_lock("oauthAccessToken").await;
+    gate.execute_unprepared("UPDATE webdock_auth.\"oauthAccessToken\" SET \"sessionId\"=NULL")
+        .await
+        .unwrap();
+    gate.commit().await.unwrap();
+    assert!(matches!(task.await.unwrap(), Err(Error::Configuration)));
+    let row = s
+        .f
+        .owner
+        .query_one_raw(Statement::from_string(
+            DbBackend::Postgres,
+            "SELECT revoked IS NULL AS untouched FROM webdock_auth.\"oauthAccessToken\" LIMIT 1",
+        ))
+        .await
+        .unwrap()
+        .unwrap();
+    assert!(row.try_get::<bool>("", "untouched").unwrap());
+    s.sql(&format!(
+        "UPDATE webdock_auth.\"oauthAccessToken\" SET \"sessionId\"='{}'",
+        s.session
+    ))
+    .await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared("SELECT id FROM webdock_auth.\"oauthAccessToken\" FOR UPDATE")
+        .await
+        .unwrap();
+    let security = s.security.clone();
+    let c = s.credentials.clone();
+    let token = t.access_token.clone();
+    let task = tokio::spawn(async move { security.revoke(&c, &token).await });
+    s.wait_lock("oauthAccessToken").await;
+    task.abort();
+    assert!(matches!(task.await,Err(e)if e.is_cancelled()));
+    gate.commit().await.unwrap();
+    assert_eq!(s.active(&t.access_token).await["active"], true);
+}
+#[tokio::test]
+#[ignore = "owned PG18; failure after a revocation update rolls the complete security transaction back"]
+async fn native_security_late_error_rolls_back_pending_revocation() {
+    let s = Setup::start().await;
+    let now = chrono::Utc::now().timestamp();
+    let jwt=s.sign(&serde_json::json!({"iss":ISSUER,"aud":format!("{ISSUER}/oauth2/userinfo"),"azp":s.credentials.client_id,"sub":s.user,"sid":s.session,"scope":"openid","iat":now,"exp":i64::MAX})).await;
+    let hash = legacy_token_hash(&jwt);
+    s.sql(&format!("INSERT INTO webdock_auth.\"oauthAccessToken\"(id,token,\"clientId\",\"sessionId\",\"userId\",scopes,resources,\"expiresAt\",\"createdAt\") VALUES('owned-rollback','{hash}','{}','{}','{}','[\"openid\"]','[]',now()+interval '1 hour',now())",s.credentials.client_id,s.session,s.user)).await;
+    assert!(matches!(
+        s.security.revoke(&s.credentials, &jwt).await,
+        Err(Error::InvalidRequest)
+    ));
+    assert_eq!(
+        s.active(&jwt).await["active"],
+        true,
+        "late invalid timestamp must roll back the earlier UPDATE"
     );
 }

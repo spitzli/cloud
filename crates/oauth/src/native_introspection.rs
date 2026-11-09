@@ -483,6 +483,22 @@ impl OAuthService {
         }
         Ok(())
     }
+    pub(super) async fn verify_native_signed_claims(
+        &self,
+        tx: &Transaction<'_>,
+        token: &str,
+        check_expiry: bool,
+    ) -> Result<Value> {
+        let kid = crate::signing::header_key_id(token)?;
+        let row=tx.query_typed_opt(r#"SELECT "publicKey" FROM webdock_auth.jwks WHERE id=$1 AND(alg='RS256' OR alg IS NULL)"#,&[(&kid,Type::TEXT)]).await.map_err(|_|Error::Configuration)?.ok_or(Error::InvalidGrant)?;
+        let key: String = row.try_get("publicKey").map_err(|_| Error::Configuration)?;
+        crate::signing::verified_public_claims(
+            token,
+            &key,
+            self.config.issuer.as_str(),
+            check_expiry,
+        )
+    }
     async fn inspect_native_jwt<'a>(
         &self,
         tx: Transaction<'a>,
@@ -490,22 +506,7 @@ impl OAuthService {
         caller: Option<&str>,
         allow_preview: bool,
     ) -> Result<(Transaction<'a>, Value)> {
-        let kid = match crate::signing::header_key_id(token) {
-            Ok(kid) => kid,
-            Err(Error::InvalidGrant) => return Ok((tx, inactive())),
-            Err(error) => return Err(error),
-        };
-        let row=tx.query_typed_opt(r#"SELECT "publicKey" FROM webdock_auth.jwks WHERE id=$1 AND(alg='RS256' OR alg IS NULL)"#,&[(&kid,Type::TEXT)]).await.map_err(|_|Error::Configuration)?;
-        let Some(row) = row else {
-            return Ok((tx, inactive()));
-        };
-        let key: String = row.try_get("publicKey").map_err(|_| Error::Configuration)?;
-        let raw = match crate::signing::verified_public_claims(
-            token,
-            &key,
-            self.config.issuer.as_str(),
-            true,
-        ) {
+        let raw = match self.verify_native_signed_claims(&tx, token, true).await {
             Ok(raw) => raw,
             Err(Error::InvalidGrant) => return Ok((tx, inactive())),
             Err(error) => return Err(error),
