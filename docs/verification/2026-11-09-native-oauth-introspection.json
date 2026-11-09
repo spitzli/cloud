@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-09",
+  "base": "b05b0b604f24d10b9fa6d42bf7efa6441f320c7e",
+  "optIn": "WEBDOCK_OAUTH_INTROSPECTION_BACKEND=tokio-postgres",
+  "default": "sea-orm",
+  "nativeOperations": [
+    "owned standard/Portal/MCP introspection",
+    "UserInfo",
+    "consuming introspect_native_in/introspect_portal_native_in"
+  ],
+  "corePool": {
+    "shared": true,
+    "max": 4,
+    "min": 0
+  },
+  "validation": {
+    "targetedPassed": 42,
+    "nativeIntrospectionPassed": 9,
+    "nativeClientsPassed": 4,
+    "nativeBrowserPassed": 8,
+    "coreConfigPassed": 13,
+    "actualCoreHttpPassed": 8,
+    "defaultPassed": 212,
+    "defaultIgnored": 80,
+    "defaultSuites": 52,
+    "clippyWarningsDenied": true,
+    "format": true,
+    "staticContracts": true,
+    "lockedMetadataWorkspaces": 15,
+    "fixtures": "owned loopback PostgreSQL18; restricted roles; native reader disconnected from retained DB; synthetic provider tables"
+  },
+  "review": {
+    "freshContext": true,
+    "materialFindings": 0,
+    "minorDeferrals": 0
+  },
+  "maximumMigration": 75,
+  "schemaOrCredentialsChanged": false,
+  "productionActivated": false,
+  "publicBuildAdmissionChanged": false,
+  "completeDriverMigration": false,
+  "measuredPerformanceImprovement": false,
+  "limits": [
+    "Token issuance/refresh/revocation writes and retained caller-owned browser/MCP paths remain explicit pending ports.",
+    "Existing application binding/provider snapshot semantics retained; app_binding SELECT-only privileges unchanged.",
+    "No production login, S3 benchmark, Neon compute gain or arbitrary public-build qualification claimed."
+  ]
+}

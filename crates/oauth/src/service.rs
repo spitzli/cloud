@@ -1,5 +1,11 @@
 #[path = "native_client_store.rs"]
 mod native_client_store;
+#[path = "native_introspection.rs"]
+mod native_introspection;
+struct NativeOAuthStore {
+    pool: webdock_persistence::postgres::Pool,
+    introspection: bool,
+}
 use crate::{
     engine::{Engine, grant},
     types::{Client, GrantContext, SCOPES, valid_url},
@@ -30,7 +36,7 @@ struct Issuance<'a> {
 }
 pub struct OAuthService {
     pub(crate) db: DatabaseConnection,
-    native_client_store: Option<webdock_persistence::postgres::Pool>,
+    native_store: Option<NativeOAuthStore>,
     identity: Arc<IdentityService>,
     allocator: Arc<IdAllocator>,
     pub(crate) keys: Arc<SecretKeys>,
@@ -46,7 +52,7 @@ impl OAuthService {
     ) -> Self {
         Self {
             db,
-            native_client_store: None,
+            native_store: None,
             identity,
             allocator,
             keys,
@@ -54,11 +60,46 @@ impl OAuthService {
         }
     }
     pub fn with_native_client_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
-        self.native_client_store = Some(pool);
+        self.native_store = Some(NativeOAuthStore {
+            pool,
+            introspection: false,
+        });
         self
     }
+    pub fn with_native_introspection(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+        self.native_store = Some(NativeOAuthStore {
+            pool,
+            introspection: true,
+        });
+        self
+    }
+    pub(crate) fn native_introspection_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+        self.native_store
+            .as_ref()
+            .filter(|store| store.introspection)
+            .map(|store| &store.pool)
+    }
+    /// Trusted caller-owned introspection. Keep returned fences through domain completion.
+    pub async fn introspect_native_in<'a>(
+        &self,
+        tx: webdock_persistence::postgres::Transaction<'a>,
+        credentials: &ClientAuthentication,
+        token: &str,
+    ) -> Result<(webdock_persistence::postgres::Transaction<'a>, Value)> {
+        self.native_introspect_in(tx, credentials, token, false, false)
+            .await
+    }
+    pub async fn introspect_portal_native_in<'a>(
+        &self,
+        tx: webdock_persistence::postgres::Transaction<'a>,
+        credentials: &ClientAuthentication,
+        token: &str,
+    ) -> Result<(webdock_persistence::postgres::Transaction<'a>, Value)> {
+        self.native_introspect_in(tx, credentials, token, true, false)
+            .await
+    }
     pub(crate) fn native_client_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
-        self.native_client_store.as_ref()
+        self.native_store.as_ref().map(|store| &store.pool)
     }
     /// Trusted native transaction boundary retaining the canonical client fence until caller completion.
     pub async fn validate_portal_client_native_in<'a>(
@@ -616,6 +657,11 @@ impl OAuthService {
         credentials: &ClientAuthentication,
         token: &str,
     ) -> Result<Value> {
+        if self.native_introspection_pool().is_some() {
+            return self
+                .native_introspect(credentials, token, false, false)
+                .await;
+        }
         let tx = self.db.begin().await?;
         let caller = load_client(&tx, &credentials.client_id).await?;
         authenticate_client(&caller, credentials)?;
@@ -630,6 +676,11 @@ impl OAuthService {
         credentials: &ClientAuthentication,
         token: &str,
     ) -> Result<Value> {
+        if self.native_introspection_pool().is_some() {
+            return self
+                .native_introspect(credentials, token, true, false)
+                .await;
+        }
         self.portal_credentials(credentials)?;
         let tx = self.db.begin().await?;
         let result = self.introspect_portal_in(&tx, credentials, token).await?;
@@ -668,6 +719,11 @@ impl OAuthService {
         credentials: &ClientAuthentication,
         token: &str,
     ) -> Result<Value> {
+        if self.native_introspection_pool().is_some() {
+            return self
+                .native_introspect(credentials, token, false, true)
+                .await;
+        }
         let claims = self.introspect(credentials, token).await?;
         if claims["active"] != true
             || claims["token_type"] != "Bearer"
@@ -1025,6 +1081,9 @@ impl OAuthService {
         Ok(claims)
     }
     pub async fn userinfo(&self, token: &str) -> Result<Value> {
+        if self.native_introspection_pool().is_some() {
+            return self.native_userinfo(token).await;
+        }
         let tx = self.db.begin().await?;
         let claims = self.inspect(&tx, token, None, false).await?;
         if claims["active"] != true

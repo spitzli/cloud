@@ -66,41 +66,14 @@ impl OAuthService {
         token: &str,
         check_expiry: bool,
     ) -> Result<Value> {
-        use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
-        if token.len() > 16384 {
-            return Err(Error::InvalidGrant);
-        }
-        let header = token.split('.').next().ok_or(Error::InvalidGrant)?;
-        let header = JwsHeader::from_bytes(
-            &URL_SAFE_NO_PAD
-                .decode(header)
-                .map_err(|_| Error::InvalidGrant)?,
-        )
-        .map_err(|_| Error::InvalidGrant)?;
-        if header.algorithm() != Some("RS256") {
-            return Err(Error::InvalidGrant);
-        }
-        let kid = header.key_id().ok_or(Error::InvalidGrant)?;
+        let kid = header_key_id(token)?;
         let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT \"publicKey\" FROM webdock_auth.jwks WHERE id=$1 AND (alg='RS256' OR alg IS NULL)",[kid.into()])).await?.ok_or(Error::InvalidGrant)?;
-        let key = Jwk::from_bytes(row.try_get::<String>("", "publicKey")?.as_bytes())
-            .map_err(|_| Error::Crypto)?;
-        let (payload, _) = jws::deserialize_compact(
+        verified_public_claims(
             token,
-            &RS256.verifier_from_jwk(&key).map_err(|_| Error::Crypto)?,
+            &row.try_get::<String>("", "publicKey")?,
+            self.config.issuer.as_str(),
+            check_expiry,
         )
-        .map_err(|_| Error::InvalidGrant)?;
-        let claims: Value = serde_json::from_slice(&payload).map_err(|_| Error::InvalidGrant)?;
-        if claims["iss"] != self.config.issuer.as_str() {
-            return Err(Error::InvalidGrant);
-        }
-        let now = chrono::Utc::now().timestamp();
-        if check_expiry
-            && (claims["exp"].as_i64().is_none_or(|exp| exp <= now)
-                || claims["iat"].as_i64().is_none_or(|iat| iat > now + 60))
-        {
-            return Err(Error::InvalidGrant);
-        }
-        Ok(claims)
     }
     pub(crate) async fn sign_id_token(
         &self,
@@ -143,4 +116,47 @@ pub(crate) fn public_jwks(records: Vec<(String, String)>) -> Result<Value> {
         keys.push(serde_json::to_value(key).map_err(|_| Error::Crypto)?);
     }
     Ok(json!({"keys":keys}))
+}
+
+pub(crate) fn header_key_id(token: &str) -> Result<String> {
+    use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
+    if token.len() > 16384 {
+        return Err(Error::InvalidGrant);
+    }
+    let header = JwsHeader::from_bytes(
+        &URL_SAFE_NO_PAD
+            .decode(token.split('.').next().ok_or(Error::InvalidGrant)?)
+            .map_err(|_| Error::InvalidGrant)?,
+    )
+    .map_err(|_| Error::InvalidGrant)?;
+    if header.algorithm() != Some("RS256") {
+        return Err(Error::InvalidGrant);
+    }
+    Ok(header.key_id().ok_or(Error::InvalidGrant)?.into())
+}
+pub(crate) fn verified_public_claims(
+    token: &str,
+    raw_key: &str,
+    issuer: &str,
+    check_expiry: bool,
+) -> Result<Value> {
+    header_key_id(token)?;
+    let key = Jwk::from_bytes(raw_key.as_bytes()).map_err(|_| Error::Crypto)?;
+    let (payload, _) = jws::deserialize_compact(
+        token,
+        &RS256.verifier_from_jwk(&key).map_err(|_| Error::Crypto)?,
+    )
+    .map_err(|_| Error::InvalidGrant)?;
+    let claims: Value = serde_json::from_slice(&payload).map_err(|_| Error::InvalidGrant)?;
+    if claims["iss"] != issuer {
+        return Err(Error::InvalidGrant);
+    }
+    let now = chrono::Utc::now().timestamp();
+    if check_expiry
+        && (claims["exp"].as_i64().is_none_or(|exp| exp <= now)
+            || claims["iat"].as_i64().is_none_or(|iat| iat > now + 60))
+    {
+        return Err(Error::InvalidGrant);
+    }
+    Ok(claims)
 }

@@ -286,3 +286,31 @@ fn native_oauth_client_store_requires_explicit_opt_in() {
     env.insert("WEBDOCK_OAUTH_CLIENT_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
+
+#[test]
+fn native_oauth_introspection_requires_explicit_opt_in_and_implies_client_reads() {
+    use webdock_control_plane::config::{OAuthClientBackend, OAuthIntrospectionBackend};
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().oauth_introspection_backend,
+        OAuthIntrospectionBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_OAUTH_INTROSPECTION_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    let config = runtime_config(&env).unwrap();
+    assert!(matches!(
+        config.oauth_introspection_backend,
+        OAuthIntrospectionBackend::Native
+    ));
+    assert!(matches!(
+        config.oauth_client_backend,
+        OAuthClientBackend::Native
+    ));
+    env.insert("WEBDOCK_OAUTH_INTROSPECTION_BACKEND".into(), "other".into());
+    assert!(runtime_config(&env).is_err());
+}

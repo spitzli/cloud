@@ -106,7 +106,13 @@ pub enum OAuthClientBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum OAuthIntrospectionBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub oauth_introspection_backend: OAuthIntrospectionBackend,
     pub oauth_client_backend: OAuthClientBackend,
     pub browser_flow_backend: BrowserFlowBackend,
     pub session_management_backend: SessionManagementBackend,
@@ -192,7 +198,28 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
             ));
         }
     };
+    let oauth_introspection_backend = match env
+        .get("WEBDOCK_OAUTH_INTROSPECTION_BACKEND")
+        .map(String::as_str)
+    {
+        None | Some("sea-orm") => OAuthIntrospectionBackend::Legacy,
+        Some("tokio-postgres") => OAuthIntrospectionBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_OAUTH_INTROSPECTION_BACKEND".into(),
+            ));
+        }
+    };
+    let oauth_client_backend = if matches!(
+        oauth_introspection_backend,
+        OAuthIntrospectionBackend::Native
+    ) {
+        OAuthClientBackend::Native
+    } else {
+        oauth_client_backend
+    };
     Ok(RuntimeConfig {
+        oauth_introspection_backend,
         oauth_client_backend,
         browser_flow_backend,
         session_management_backend,
