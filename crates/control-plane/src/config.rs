@@ -101,7 +101,13 @@ pub enum BrowserFlowBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum OAuthClientBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub oauth_client_backend: OAuthClientBackend,
     pub browser_flow_backend: BrowserFlowBackend,
     pub session_management_backend: SessionManagementBackend,
     pub session_read_backend: SessionReadBackend,
@@ -177,7 +183,17 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
             ));
         }
     };
+    let oauth_client_backend = match env.get("WEBDOCK_OAUTH_CLIENT_BACKEND").map(String::as_str) {
+        None | Some("sea-orm") => OAuthClientBackend::Legacy,
+        Some("tokio-postgres") => OAuthClientBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_OAUTH_CLIENT_BACKEND".into(),
+            ));
+        }
+    };
     Ok(RuntimeConfig {
+        oauth_client_backend,
         browser_flow_backend,
         session_management_backend,
         session_read_backend,

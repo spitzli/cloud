@@ -69,7 +69,12 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             "Native browser storage requires first-party client configuration".into(),
         ));
     }
+    let native_oauth_clients = matches!(
+        runtime.oauth_client_backend,
+        crate::config::OAuthClientBackend::Native
+    );
     let native_bootstrap_pool = if native_browser_flows
+        || native_oauth_clients
         || matches!(
             runtime.session_read_backend,
             crate::config::SessionReadBackend::Native
@@ -164,13 +169,24 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             .ok(),
     )
     .map_err(|_| Error::Message("Invalid OAuth configuration".into()))?;
-    let oauth = std::sync::Arc::new(webdock_oauth::OAuthService::new(
+    let oauth = webdock_oauth::OAuthService::new(
         db.clone(),
         identity.clone(),
         ids.clone(),
         oauth_keys.clone(),
         oauth_config,
-    ));
+    );
+    let oauth = if native_oauth_clients {
+        oauth.with_native_client_store(
+            native_bootstrap_pool
+                .as_ref()
+                .ok_or_else(|| Error::Message("Native authentication storage unavailable".into()))?
+                .clone(),
+        )
+    } else {
+        oauth
+    };
+    let oauth = std::sync::Arc::new(oauth);
     let browser = if let Ok(client_id) = std::env::var("WEBDOCK_SSO_CLIENT_ID") {
         let client_secret = std::env::var("WEBDOCK_SSO_CLIENT_SECRET")
             .map_err(|_| Error::Message("Missing first-party client secret".into()))?;

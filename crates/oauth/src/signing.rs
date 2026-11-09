@@ -45,23 +45,20 @@ impl OAuthService {
         Ok(id)
     }
     pub async fn jwks(&self) -> Result<Value> {
-        let rows=self.db.query_all_raw(Statement::from_string(DbBackend::Postgres,"SELECT id,\"publicKey\" FROM webdock_auth.jwks WHERE alg='RS256' OR alg IS NULL ORDER BY \"createdAt\",id")).await?;
-        let mut keys = Vec::new();
-        for row in rows {
-            let raw: String = row.try_get("", "publicKey")?;
-            let mut key = Jwk::from_bytes(raw.as_bytes())
-                .map_err(|_| Error::Crypto)?
-                .to_public_key()
-                .map_err(|_| Error::Crypto)?;
-            if key.key_type() != "RSA" {
-                continue;
-            }
-            key.set_key_id(row.try_get::<String>("", "id")?);
-            key.set_algorithm("RS256");
-            key.set_key_use("sig");
-            keys.push(serde_json::to_value(key).map_err(|_| Error::Crypto)?);
+        if self.native_client_pool().is_some() {
+            return self.native_jwks().await;
         }
-        Ok(json!({"keys":keys}))
+        let rows=self.db.query_all_raw(Statement::from_string(DbBackend::Postgres,"SELECT id,\"publicKey\" FROM webdock_auth.jwks WHERE alg='RS256' OR alg IS NULL ORDER BY \"createdAt\",id")).await?;
+        let records = rows
+            .iter()
+            .map(|row| {
+                Ok((
+                    row.try_get::<String>("", "id")?,
+                    row.try_get::<String>("", "publicKey")?,
+                ))
+            })
+            .collect::<std::result::Result<Vec<_>, sea_orm::DbErr>>()?;
+        public_jwks(records)
     }
     pub(crate) async fn verify_signed_claims(
         &self,
@@ -127,4 +124,23 @@ impl OAuthService {
         )
         .map_err(|_| Error::Crypto)
     }
+}
+
+/// Public-key normalization shared by both stores. Private RSA parameters never leave here.
+pub(crate) fn public_jwks(records: Vec<(String, String)>) -> Result<Value> {
+    let mut keys = Vec::new();
+    for (id, raw) in records {
+        let mut key = Jwk::from_bytes(raw.as_bytes())
+            .map_err(|_| Error::Crypto)?
+            .to_public_key()
+            .map_err(|_| Error::Crypto)?;
+        if key.key_type() != "RSA" {
+            continue;
+        }
+        key.set_key_id(id);
+        key.set_algorithm("RS256");
+        key.set_key_use("sig");
+        keys.push(serde_json::to_value(key).map_err(|_| Error::Crypto)?);
+    }
+    Ok(json!({"keys":keys}))
 }

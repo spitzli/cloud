@@ -3994,6 +3994,8 @@ dependencies = [
  "chrono",
  "fallible-iterator",
  "postgres-protocol",
+ "serde_core",
+ "serde_json",
  "uuid",
 ]
 
@@ -6683,6 +6685,7 @@ dependencies = [
  "subtle",
  "thiserror 2.0.21",
  "tokio",
+ "tokio-postgres",
  "url",
  "webdock-identity",
  "webdock-persistence",

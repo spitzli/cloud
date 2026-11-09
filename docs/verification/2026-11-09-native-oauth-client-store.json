@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-09",
+  "scope": "Native first-party OAuth client validation and public-key reads",
+  "base": "b7502b7277c90f07b979ecd92f9d2610dbe1c209",
+  "maximumMigration": 75,
+  "optIn": "WEBDOCK_OAUTH_CLIENT_BACKEND=tokio-postgres",
+  "defaultBackend": "sea-orm",
+  "schemaMigration": false,
+  "keysRotated": false,
+  "credentialsChanged": false,
+  "productionActivation": false,
+  "packageVersionsChanged": false,
+  "pool": "Existing shared native bootstrap max4/min0 pool across authentication capabilities",
+  "contracts": [
+    "shared client domain parsing and constant-time credential verification",
+    "exact redirect/auth-method/disabled/DPoP/subject-type/required-scope checks",
+    "canonical client SHARE lock before fresh configuration read",
+    "consuming native-in API retains canonical client fence until completion",
+    "enabled portal binding uses retained SELECT-only privileges; validation not lasting user/bearer/resource grant",
+    "public-only JWK normalization shared across both readers, private RSA parameters stripped",
+    "bounded30second owned operations with checked transaction cleanup and no native-error fallback",
+    "existing caller-owned retained validation/introspection/grant APIs compatible and explicit"
+  ],
+  "targetedQualification": {
+    "passed": 31,
+    "failed": 0,
+    "ignored": 0,
+    "suites": {
+      "ownedNativeClients": 4,
+      "ownedRealBrowserOAuth": 8,
+      "coreRuntimeConfiguration": 12,
+      "actualCoreHttpAndLifecycle": 7
+    },
+    "environment": "Owned loopback PostgreSQL18, disconnected retained client store, no supplied DSN/provider network",
+    "cases": [
+      "native client/JWKS works without retained DB",
+      "wrong secret/method/redirect and inactive eligibility refused",
+      "private JWK deliberately placed in public column still returns no private RSA parameters",
+      "native client fence blocks concurrent client disable until caller completion",
+      "binding changes during client-lock wait observed without widening UPDATE privilege",
+      "client disabled while lock wait cannot validate"
+    ],
+    "actualHTTP": "Observed actual native JWKS query under owned table lock before checking public response; browser login begin co-enables native client and flow stores through shared pool"
+  },
+  "defaultRegressions": {
+    "passed": 211,
+    "failed": 0,
+    "ignored": 70,
+    "suites": 51
+  },
+  "clippy": "OAuth/browser/identity/Core all-targets -D warnings passed",
+  "format": "cargo fmt --all -- --check passed",
+  "independentLockedMetadataWorkspaces": 15,
+  "review": {
+    "criticalOrImportantFindings": 0,
+    "minorAccuracyCorrection": "Test ignore annotation now names only the canonical client fence; no binding-row fence claim.",
+    "freshIndependentReview": true
+  },
+  "ruling": "The actual schema grants bootstrap SELECT-only on app_binding. Do not widen privileges just to force a new row lock. Preserve retained binding validation; token/resource authorities must recheck current permissions. Binding state can change after validation as before.",
+  "remaining": "Token issuance/introspection, canonical identity writes and product persistence still have retained SeaORM/SQLx paths; full rewrite/performance/storage qualification remain ongoing. No speedup or Neon compute-cost claim."
+}
