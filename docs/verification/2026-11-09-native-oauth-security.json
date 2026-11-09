@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-09",
+  "base": "df5fcd383a1118e55234e0309cd234f58fa6af30",
+  "optIn": "WEBDOCK_OAUTH_SECURITY_BACKEND=tokio-postgres",
+  "default": "sea-orm",
+  "nativeOperations": [
+    "owned OAuth token revocation",
+    "owned end-session",
+    "shared native public signature verification"
+  ],
+  "corePool": {
+    "shared": true,
+    "max": 4,
+    "min": 0
+  },
+  "implies": [
+    "native coordinated IDs",
+    "native cookie reads",
+    "native OAuth introspection/clients/public keys"
+  ],
+  "validation": {
+    "targetedPassed": 62,
+    "nativeClientsPassed": 4,
+    "nativeIntrospectionSecurityPassed": 16,
+    "newSecurityCasesPassed": 7,
+    "nativeBrowserPassed": 17,
+    "coreConfigPassed": 15,
+    "actualCoreHttpPassed": 10,
+    "defaultPassed": 214,
+    "defaultIgnored": 98,
+    "defaultSuites": 52,
+    "clippyWarningsDenied": true,
+    "format": true,
+    "staticContracts": true,
+    "lockedMetadataWorkspaces": 15,
+    "phantomOwnerRedGreen": true,
+    "fixtures": "owned loopback PostgreSQL18; restricted roles; disconnected retained security writer; actual HTTP native revocation fence and result"
+  },
+  "review": {
+    "freshContext": true,
+    "materialFindings": 0,
+    "minorDeferrals": 0
+  },
+  "maximumMigration": 75,
+  "schemaOrCredentialsChanged": false,
+  "productionActivated": false,
+  "publicBuildAdmissionChanged": false,
+  "completeDriverMigration": false,
+  "measuredPerformanceImprovement": false,
+  "limits": [
+    "Issuance/refresh/consent/private signing and retained caller-owned/domain paths remain explicit pending ports.",
+    "Existing provider/binding snapshot semantics retained; app_binding SELECT-only privileges unchanged.",
+    "No production login, S3 benchmark, Neon compute gain or arbitrary public-build qualification claimed."
+  ]
+}

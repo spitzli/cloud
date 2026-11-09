@@ -2,9 +2,12 @@
 mod native_client_store;
 #[path = "native_introspection.rs"]
 mod native_introspection;
+#[path = "native_security.rs"]
+mod native_security;
 struct NativeOAuthStore {
     pool: webdock_persistence::postgres::Pool,
     introspection: bool,
+    security: bool,
 }
 use crate::{
     engine::{Engine, grant},
@@ -63,6 +66,7 @@ impl OAuthService {
         self.native_store = Some(NativeOAuthStore {
             pool,
             introspection: false,
+            security: false,
         });
         self
     }
@@ -70,8 +74,23 @@ impl OAuthService {
         self.native_store = Some(NativeOAuthStore {
             pool,
             introspection: true,
+            security: false,
         });
         self
+    }
+    pub fn with_native_security_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+        self.native_store = Some(NativeOAuthStore {
+            pool,
+            introspection: true,
+            security: true,
+        });
+        self
+    }
+    pub(crate) fn native_security_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+        self.native_store
+            .as_ref()
+            .filter(|s| s.security)
+            .map(|s| &s.pool)
     }
     pub(crate) fn native_introspection_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
         self.native_store
@@ -1113,6 +1132,9 @@ impl OAuthService {
         Ok(user)
     }
     pub async fn end_session(&self, cookie: &str, request: LogoutRequest) -> Result<LogoutOutcome> {
+        if self.native_security_pool().is_some() {
+            return self.native_end_session(cookie, request).await;
+        }
         if request.state.as_ref().is_some_and(|s| s.len() > 2048) {
             return Err(Error::InvalidRequest);
         }
@@ -1163,6 +1185,9 @@ impl OAuthService {
         })
     }
     pub async fn revoke(&self, credentials: &ClientAuthentication, token: &str) -> Result<()> {
+        if self.native_security_pool().is_some() {
+            return self.native_revoke(credentials, token).await;
+        }
         let tx = self.db.begin().await?;
         let client = load_client(&tx, &credentials.client_id).await?;
         authenticate_client(&client, credentials)?;
