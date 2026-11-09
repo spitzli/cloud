@@ -14,6 +14,7 @@ struct NativeOAuthStore {
     security: bool,
     grants: bool,
     tokens: bool,
+    mcp: bool,
 }
 use crate::{
     engine::{Engine, grant},
@@ -75,6 +76,7 @@ impl OAuthService {
             security: false,
             grants: false,
             tokens: false,
+            mcp: false,
         });
         self
     }
@@ -85,6 +87,7 @@ impl OAuthService {
             security: false,
             grants: false,
             tokens: false,
+            mcp: false,
         });
         self
     }
@@ -95,6 +98,7 @@ impl OAuthService {
             security: true,
             grants: false,
             tokens: false,
+            mcp: false,
         });
         self
     }
@@ -105,6 +109,7 @@ impl OAuthService {
             security: true,
             grants: true,
             tokens: false,
+            mcp: false,
         });
         self
     }
@@ -115,8 +120,33 @@ impl OAuthService {
             security: true,
             grants: true,
             tokens: true,
+            mcp: false,
         });
         self
+    }
+    /// Add native MCP references without disabling an existing native lifecycle.
+    pub fn with_native_mcp_authority(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+        if let Some(store) = &mut self.native_store {
+            store.pool = pool;
+            store.introspection = true;
+            store.mcp = true;
+        } else {
+            self.native_store = Some(NativeOAuthStore {
+                pool,
+                introspection: true,
+                security: false,
+                grants: false,
+                tokens: false,
+                mcp: true,
+            });
+        }
+        self
+    }
+    pub(crate) fn native_mcp_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+        self.native_store
+            .as_ref()
+            .filter(|s| s.mcp)
+            .map(|s| &s.pool)
     }
     pub(crate) fn native_tokens_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
         self.native_store

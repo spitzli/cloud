@@ -73,6 +73,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             "Native browser storage requires first-party client configuration".into(),
         ));
     }
+    let native_mcp_authority = matches!(
+        runtime.mcp_authority_backend,
+        crate::config::McpAuthorityBackend::Native
+    );
     let native_oauth_tokens = matches!(
         runtime.oauth_tokens_backend,
         crate::config::OAuthTokensBackend::Native
@@ -226,6 +230,16 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         )
     } else if native_oauth_clients {
         oauth.with_native_client_store(
+            native_bootstrap_pool
+                .as_ref()
+                .ok_or_else(|| Error::Message("Native authentication storage unavailable".into()))?
+                .clone(),
+        )
+    } else {
+        oauth
+    };
+    let oauth = if native_mcp_authority {
+        oauth.with_native_mcp_authority(
             native_bootstrap_pool
                 .as_ref()
                 .ok_or_else(|| Error::Message("Native authentication storage unavailable".into()))?
