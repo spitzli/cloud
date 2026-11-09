@@ -168,6 +168,21 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         } else {
             service
         };
+        let service = if matches!(
+            runtime.password_login_backend,
+            crate::config::PasswordLoginBackend::Native
+        ) {
+            service.with_native_password_login(
+                native_bootstrap_pool
+                    .as_ref()
+                    .ok_or_else(|| {
+                        Error::Message("Native password login storage unavailable".into())
+                    })?
+                    .clone(),
+            )
+        } else {
+            service
+        };
         let service = if let Ok(base) = std::env::var("NEON_AUTH_BASE_URL") {
             service.with_neon_auth(
                 webdock_identity::NeonAuthClient::new(&base, &config.auth_origin)

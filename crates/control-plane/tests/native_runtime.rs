@@ -524,3 +524,44 @@ fn native_account_recovery_is_explicit_and_preserves_other_capabilities() {
     env.insert("WEBDOCK_ACCOUNT_RECOVERY_BACKEND".into(), "unknown".into());
     assert!(runtime_config(&env).is_err());
 }
+
+#[test]
+fn native_password_login_is_explicit_and_composes_its_required_capabilities() {
+    use webdock_control_plane::config::{
+        AccountRecoveryBackend, IdBackend, PasswordLoginBackend, SessionManagementBackend,
+        SessionReadBackend,
+    };
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().password_login_backend,
+        PasswordLoginBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_PASSWORD_LOGIN_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    let c = runtime_config(&env).unwrap();
+    assert!(matches!(
+        c.password_login_backend,
+        PasswordLoginBackend::Native
+    ));
+    assert!(matches!(c.id_backend, IdBackend::Native));
+    assert!(matches!(c.session_read_backend, SessionReadBackend::Native));
+    assert!(matches!(
+        c.session_management_backend,
+        SessionManagementBackend::Native
+    ));
+    env.insert(
+        "WEBDOCK_ACCOUNT_RECOVERY_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    assert!(matches!(
+        runtime_config(&env).unwrap().account_recovery_backend,
+        AccountRecoveryBackend::Native
+    ));
+    env.insert("WEBDOCK_PASSWORD_LOGIN_BACKEND".into(), "unknown".into());
+    assert!(runtime_config(&env).is_err());
+}

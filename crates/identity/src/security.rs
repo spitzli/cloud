@@ -42,7 +42,7 @@ pub(crate) struct Actor {
 pub(crate) fn digest(value: &str) -> String {
     hex::encode(Sha256::digest(value.as_bytes()))
 }
-fn totp(secret: &str, email: &str) -> Result<totp_rs::Totp> {
+pub(crate) fn totp(secret: &str, email: &str) -> Result<totp_rs::Totp> {
     // Retained secrets are raw UTF-8 key material; the otpauth URL encodes those bytes as base32.
     totp_rs::Builder::new()
         .with_secret(secret.as_bytes().to_vec())
@@ -221,6 +221,9 @@ impl IdentityService {
         self.issue_session_with_source(tx, &actor.id, source).await
     }
     pub async fn complete_mfa(&self, cookie: &str, proof: MfaProof) -> Result<IssuedSession> {
+        if self.native_login.is_some() {
+            return self.native_complete_mfa(cookie, proof).await;
+        }
         let token = self
             .cookies
             .read_challenge(cookie)?

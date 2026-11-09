@@ -105,6 +105,7 @@ async fn actual_http_mcp_authority_uses_native_postgres() {
 }
 #[derive(Clone, Copy)]
 enum NativeMode {
+    PasswordLogin,
     AccountRecovery,
     Legacy,
     Ids,
@@ -124,8 +125,14 @@ enum NativeMode {
 async fn actual_http_account_recovery_uses_native_postgres() {
     actual_core(NativeMode::AccountRecovery).await;
 }
+#[tokio::test]
+#[ignore = "owned PostgreSQL18; actual native recovery/password/MFA/session HTTP flow"]
+async fn actual_http_password_and_mfa_login_use_native_postgres() {
+    actual_core(NativeMode::PasswordLogin).await;
+}
 async fn actual_core(mode: NativeMode) {
-    let native_recovery = matches!(mode, NativeMode::AccountRecovery);
+    let native_password = matches!(mode, NativeMode::PasswordLogin);
+    let native_recovery = matches!(mode, NativeMode::AccountRecovery) || native_password;
     let native_mcp = matches!(mode, NativeMode::McpAuthority);
     let native = matches!(mode, NativeMode::Ids);
     let native_session = matches!(mode, NativeMode::SessionReads);
@@ -143,6 +150,23 @@ async fn actual_core(mode: NativeMode) {
         let hash = webdock_identity::hash_password("Owned-original-password-123").unwrap();
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('owned-recovery-user','Owned recovery','recovery@example.test',true,'user',true,false);CREATE TABLE public.owned_recovery_audit(app text);CREATE FUNCTION public.owned_recovery_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_recovery_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_recovery_audit AFTER INSERT ON webdock_auth.identity_recovery_token FOR EACH ROW EXECUTE FUNCTION public.owned_recovery_audit()"#).await.unwrap();
         sql(&owner,r#"INSERT INTO webdock_auth.account(id,"accountId","providerId","userId",password,"updatedAt") VALUES('owned-recovery-credential','owned-recovery-user','credential','owned-recovery-user',$1,now())"#,vec![hash.into()]).await;
+    }
+    if native_password {
+        owner.execute_unprepared(r#"WITH hint AS MATERIALIZED(SELECT set_config('webdock.organization_allocation','{"customer_id":"61001","organization_id":"61002"}',true)) INSERT INTO webdock_admin.customers(id,name) SELECT '61001','Owned login customer' FROM hint;
+        WITH hint AS MATERIALIZED(SELECT set_config('webdock.organization_allocation','{"customer_id":"62001","organization_id":"62002"}',true)) INSERT INTO webdock_admin.customers(id,name) SELECT '62001','Foreign login customer' FROM hint;
+        INSERT INTO webdock_admin.projects(id,name,customer_id) VALUES('61003','Owned project','61001'),('62003','Foreign project','62001');
+        INSERT INTO webdock_auth.member(id,"organizationId","userId",role,"createdAt") VALUES('61004','61002','owned-recovery-user','owner',now())"#).await.unwrap();
+        let keys = webdock_identity::SecretKeys::new(
+            std::collections::BTreeMap::from([(
+                1,
+                "owned-native-http-secret-at-least-32bytes".into(),
+            )]),
+            1,
+            None,
+        )
+        .unwrap();
+        sql(&owner,r#"INSERT INTO webdock_auth."twoFactor"(id,secret,"backupCodes","userId",verified) VALUES('owned-password-factor',$1,$2,'owned-recovery-user',true)"#,vec![keys.encrypt("0123456789abcdefghijklmnopqrstuv").unwrap().into(),keys.encrypt("[\"owned-http-recovery-code\"]").unwrap().into()]).await;
+        owner.execute_unprepared("CREATE TABLE public.owned_login_audit(app text);CREATE FUNCTION public.owned_login_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_login_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_login_audit AFTER INSERT ON webdock_auth.session FOR EACH ROW EXECUTE FUNCTION public.owned_login_audit()").await.unwrap();
     }
     if native_session || native_management {
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('owned-session-user','Owned user','session@example.test',true,'user',false,false); INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('owned-session','owned-core-session-token','owned-session-user',now()+interval '1 hour',now())"#).await.unwrap();
@@ -360,6 +384,14 @@ async fn actual_core(mode: NativeMode) {
             "sea-orm"
         },
     );
+    command.env(
+        "WEBDOCK_PASSWORD_LOGIN_BACKEND",
+        if native_password {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
     if native_mcp {
         use std::os::unix::fs::PermissionsExt;
         let path = private.path().join("resource-secret");
@@ -509,6 +541,13 @@ async fn actual_core(mode: NativeMode) {
             .await
             .unwrap();
         assert_eq!(signin.status(), 200);
+        let mfa_cookie = signin
+            .headers()
+            .get_all("set-cookie")
+            .iter()
+            .map(|h| h.to_str().unwrap())
+            .find(|h| h.starts_with("webdock-auth.two_factor="))
+            .map(|h| h.split(';').next().unwrap().to_owned());
         assert!(
             signin
                 .headers()
@@ -519,6 +558,85 @@ async fn actual_core(mode: NativeMode) {
         );
         let body: Value = signin.json().await.unwrap();
         assert_eq!(body["twoFactorRedirect"], true);
+        if native_password {
+            let mfa_cookie = mfa_cookie.unwrap();
+            let endpoint =
+                format!("http://127.0.0.1:{port}/api/console/auth/two-factor/verify-backup-code");
+            let verified = client
+                .post(&endpoint)
+                .header("Host", "localhost:3121")
+                .header("Origin", "http://localhost:3121")
+                .header("Cookie", &mfa_cookie)
+                .json(&json!({"code":"owned-http-recovery-code"}))
+                .send()
+                .await
+                .unwrap();
+            assert_eq!(verified.status(), 200);
+            let session_cookie = verified
+                .headers()
+                .get_all("set-cookie")
+                .iter()
+                .map(|h| h.to_str().unwrap())
+                .find(|h| h.contains("session_token=") && !h.contains("Max-Age=0"))
+                .unwrap()
+                .split(';')
+                .next()
+                .unwrap()
+                .to_owned();
+            let session = client
+                .get(format!("http://127.0.0.1:{port}/v1/auth/session"))
+                .header("Cookie", &session_cookie)
+                .send()
+                .await
+                .unwrap();
+            assert_eq!(session.status(), 200);
+            let body: Value = session.json().await.unwrap();
+            assert_eq!(body["data"]["user"]["id"], "owned-recovery-user");
+            assert_eq!(body["data"]["user"]["role"], "user");
+            let project = client
+                .get(format!("http://127.0.0.1:{port}/api/console/project/61003"))
+                .header("Host", "localhost:3121")
+                .header("Cookie", &session_cookie)
+                .send()
+                .await
+                .unwrap();
+            let status = project.status();
+            let text = project.text().await.unwrap();
+            assert_eq!(status, 200, "owned project response: {text}");
+            let project: Value = serde_json::from_str(&text).unwrap();
+            assert_eq!(project["id"], "61003");
+            assert_eq!(project["customer"]["id"], "61001");
+            let foreign = client
+                .get(format!("http://127.0.0.1:{port}/api/console/project/62003"))
+                .header("Host", "localhost:3121")
+                .header("Cookie", &session_cookie)
+                .send()
+                .await
+                .unwrap();
+            assert_eq!(foreign.status(), 404);
+            let audit = owner
+                .query_one_raw(Statement::from_string(
+                    DbBackend::Postgres,
+                    "SELECT app FROM public.owned_login_audit",
+                ))
+                .await
+                .unwrap()
+                .unwrap();
+            assert_eq!(
+                audit.try_get::<String>("", "app").unwrap(),
+                "spitzli-native-postgres"
+            );
+            let replay = client
+                .post(&endpoint)
+                .header("Host", "localhost:3121")
+                .header("Origin", "http://localhost:3121")
+                .header("Cookie", mfa_cookie)
+                .json(&json!({"code":"owned-http-recovery-code"}))
+                .send()
+                .await
+                .unwrap();
+            assert_eq!(replay.status(), 401);
+        }
     }
     if native_session {
         let gate = owner.begin().await.unwrap();

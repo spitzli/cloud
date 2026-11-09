@@ -141,7 +141,13 @@ pub enum AccountRecoveryBackend {
     Legacy,
     Native,
 }
+#[derive(Clone, Copy)]
+pub enum PasswordLoginBackend {
+    Legacy,
+    Native,
+}
 pub struct RuntimeConfig {
+    pub password_login_backend: PasswordLoginBackend,
     pub account_recovery_backend: AccountRecoveryBackend,
     pub mcp_authority_backend: McpAuthorityBackend,
     pub oauth_tokens_backend: OAuthTokensBackend,
@@ -361,12 +367,38 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
             ));
         }
     };
-    let id_backend = if matches!(account_recovery_backend, AccountRecoveryBackend::Native) {
+    let password_login_backend = match env
+        .get("WEBDOCK_PASSWORD_LOGIN_BACKEND")
+        .map(String::as_str)
+    {
+        None | Some("sea-orm") => PasswordLoginBackend::Legacy,
+        Some("tokio-postgres") => PasswordLoginBackend::Native,
+        _ => {
+            return Err(Error::Message(
+                "Invalid WEBDOCK_PASSWORD_LOGIN_BACKEND".into(),
+            ));
+        }
+    };
+    let id_backend = if matches!(account_recovery_backend, AccountRecoveryBackend::Native)
+        || matches!(password_login_backend, PasswordLoginBackend::Native)
+    {
         IdBackend::Native
     } else {
         id_backend
     };
+    let session_read_backend = if matches!(password_login_backend, PasswordLoginBackend::Native) {
+        SessionReadBackend::Native
+    } else {
+        session_read_backend
+    };
+    let session_management_backend =
+        if matches!(password_login_backend, PasswordLoginBackend::Native) {
+            SessionManagementBackend::Native
+        } else {
+            session_management_backend
+        };
     Ok(RuntimeConfig {
+        password_login_backend,
         account_recovery_backend,
         mcp_authority_backend,
         oauth_tokens_backend,

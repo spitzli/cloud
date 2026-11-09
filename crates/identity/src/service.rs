@@ -1,3 +1,5 @@
+#[path = "native_login.rs"]
+mod native_login;
 #[path = "native_session.rs"]
 mod native_session;
 #[path = "native_session_management.rs"]
@@ -96,6 +98,7 @@ pub struct IdentityService {
     pub(crate) db: DatabaseConnection,
     native_sessions: Option<NativeSessionBackend>,
     pub(crate) native_recovery: Option<webdock_persistence::postgres::Pool>,
+    pub(crate) native_login: Option<webdock_persistence::postgres::Pool>,
     pub(crate) cookies: CookiePolicy,
     pub(crate) password_workers: Arc<Semaphore>,
     pub(crate) keys: Option<SecretKeys>,
@@ -112,6 +115,7 @@ impl IdentityService {
             db,
             native_sessions: None,
             native_recovery: None,
+            native_login: None,
             cookies,
             password_workers: Arc::new(Semaphore::new(4)),
             keys: None,
@@ -254,6 +258,9 @@ impl IdentityService {
             return Ok(PasswordAuthentication::Invalid);
         }
         let email = email.trim().to_lowercase();
+        if self.native_login.is_some() {
+            return self.native_authenticate_password(&email, password).await;
+        }
         let key = format!(
             "identity:password:{}",
             hex::encode(Sha256::digest(email.as_bytes()))

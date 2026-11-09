@@ -25,6 +25,7 @@ struct CookieEnvelope {
     session: String,
     cookie: String,
 }
+#[derive(Clone, PartialEq, Eq)]
 pub(crate) struct NeonMapping {
     pub(crate) user: String,
     pub(crate) subject: String,
@@ -148,12 +149,30 @@ impl IdentityService {
             .query_one_raw(Statement::from_sql_and_values(
                 DbBackend::Postgres,
                 "SELECT webdock_rls.neon_session_facts($1) AS facts",
-                [login.token.into()],
+                [login.token.clone().into()],
             ))
             .await?
             .ok_or(IdentityError::Unauthorized)?;
         let facts: Option<Value> = row.try_get("", "facts")?;
         let facts = facts.ok_or(IdentityError::Unauthorized)?;
+        self.source_from_login_facts(user, mapping, login, facts)
+    }
+    pub(crate) fn source_from_login_facts(
+        &self,
+        user: &str,
+        mapping: &NeonMapping,
+        login: NeonLogin,
+        facts: Value,
+    ) -> Result<(NeonSource, String)> {
+        if !mapping.enabled
+            || login.subject != mapping.subject
+            || self
+                .neon
+                .as_ref()
+                .is_none_or(|client| client.issuer() != mapping.issuer)
+        {
+            return Err(IdentityError::Unauthorized);
+        }
         let field = |key: &str| {
             facts[key]
                 .as_str()
