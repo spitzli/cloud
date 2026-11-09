@@ -60,6 +60,39 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         )),
         Err(_) => None,
     };
+    let native_browser_flows = matches!(
+        runtime.browser_flow_backend,
+        crate::config::BrowserFlowBackend::Native
+    );
+    if native_browser_flows && std::env::var("WEBDOCK_SSO_CLIENT_ID").is_err() {
+        return Err(Error::Message(
+            "Native browser storage requires first-party client configuration".into(),
+        ));
+    }
+    let native_bootstrap_pool = if native_browser_flows
+        || matches!(
+            runtime.session_read_backend,
+            crate::config::SessionReadBackend::Native
+        ) {
+        Some(
+            webdock_persistence::postgres::Pool::connect(
+                runtime.database.uri.as_str(),
+                "webdock_auth_bootstrap",
+                config.production,
+                webdock_persistence::postgres::Limits {
+                    max_connections: 4,
+                    min_connections: 0,
+                    ..Default::default()
+                },
+            )
+            .await
+            .map_err(|_| {
+                Error::Message("Native authentication storage database unavailable".into())
+            })?,
+        )
+    } else {
+        None
+    };
     let identity = std::sync::Arc::new({
         let service = webdock_identity::IdentityService::new(db.clone(), cookies)
             .with_secret_keys(keys)
@@ -74,18 +107,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             runtime.session_read_backend,
             crate::config::SessionReadBackend::Native
         ) {
-            let pool = webdock_persistence::postgres::Pool::connect(
-                runtime.database.uri.as_str(),
-                "webdock_auth_bootstrap",
-                config.production,
-                webdock_persistence::postgres::Limits {
-                    max_connections: 4,
-                    min_connections: 0,
-                    ..Default::default()
-                },
-            )
-            .await
-            .map_err(|_| Error::Message("Native session database unavailable".into()))?;
+            let pool = native_bootstrap_pool
+                .as_ref()
+                .ok_or_else(|| Error::Message("Native authentication storage unavailable".into()))?
+                .clone();
             if matches!(
                 runtime.session_management_backend,
                 crate::config::SessionManagementBackend::Native
@@ -168,6 +193,16 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             browser_config,
         )
         .map_err(|_| Error::Message("Invalid browser session configuration".into()))?;
+        if native_browser_flows {
+            browser = browser.with_native_flow_store(
+                native_bootstrap_pool
+                    .as_ref()
+                    .ok_or_else(|| {
+                        Error::Message("Native authentication storage unavailable".into())
+                    })?
+                    .clone(),
+            );
+        }
         if let Ok(until) = std::env::var("WEBDOCK_SSO_LEGACY_ACCEPT_UNTIL") {
             let until = until
                 .parse::<i64>()

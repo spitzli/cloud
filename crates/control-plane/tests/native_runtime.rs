@@ -240,3 +240,26 @@ fn native_session_management_is_explicit_and_shares_native_reads() {
     env.insert("WEBDOCK_SESSION_MANAGEMENT_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
+
+#[test]
+fn native_browser_flow_storage_requires_explicit_opt_in() {
+    use webdock_control_plane::config::BrowserFlowBackend;
+    let mut env = HashMap::from([(
+        "WEBDOCK_DATABASE_URL".into(),
+        "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
+    )]);
+    assert!(matches!(
+        runtime_config(&env).unwrap().browser_flow_backend,
+        BrowserFlowBackend::Legacy
+    ));
+    env.insert(
+        "WEBDOCK_BROWSER_FLOW_BACKEND".into(),
+        "tokio-postgres".into(),
+    );
+    assert!(matches!(
+        runtime_config(&env).unwrap().browser_flow_backend,
+        BrowserFlowBackend::Native
+    ));
+    env.insert("WEBDOCK_BROWSER_FLOW_BACKEND".into(), "other".into());
+    assert!(runtime_config(&env).is_err());
+}

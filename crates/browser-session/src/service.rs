@@ -1,5 +1,8 @@
+#[path = "native_store.rs"]
+mod native_store;
 use crate::*;
 use cookie::{Cookie, CookieJar, Key, SameSite};
+use native_store::NewBrowserSession;
 use openidconnect::{
     AccessToken, AccessTokenHash, ClientId, CsrfToken, IssuerUrl, Nonce, PkceCodeChallenge,
     PkceCodeVerifier,
@@ -24,6 +27,7 @@ pub struct BrowserSessions {
     cookie_key: Key,
     pub config: BrowserConfig,
     legacy: Option<LegacyCookies>,
+    native_store: Option<webdock_persistence::postgres::Pool>,
 }
 pub struct BrowserRedirect {
     pub location: String,
@@ -49,7 +53,12 @@ impl BrowserSessions {
             cookie_key: Key::derive_from(cookie_secret.as_bytes()),
             config,
             legacy: None,
+            native_store: None,
         })
+    }
+    pub fn with_native_flow_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+        self.native_store = Some(pool);
+        self
     }
     pub fn with_legacy(mut self, legacy: LegacyCookies) -> Self {
         self.legacy = Some(legacy);
@@ -136,7 +145,14 @@ impl BrowserSessions {
             return_to,
             origin: origin.into(),
         };
-        self.db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.identity_browser_flow(token_hash,app_origin,client_id,payload,expires_at) VALUES($1,$2,$3,$4,statement_timestamp()+interval '5 minutes')",[digest(&cookie_token).into(),origin.into(),self.config.client_id.clone().into(),self.keys.encrypt(&serde_json::to_string(&flow).map_err(|_|Error::Configuration)?)?.into()])).await?;
+        self.persist_flow(
+            &digest(&cookie_token),
+            origin,
+            &self
+                .keys
+                .encrypt(&serde_json::to_string(&flow).map_err(|_| Error::Configuration)?)?,
+        )
+        .await?;
         let mut authorize = self
             .config
             .issuer
@@ -177,22 +193,32 @@ impl BrowserSessions {
             .validate_portal_client(&self.config.credentials(), &callback)
             .await?;
         let flow = if let Some(token) = self.read(header, self.flow_name())? {
-            let tx = self.db.begin().await?;
-            let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT payload FROM webdock_auth.identity_browser_flow WHERE token_hash=$1 AND app_origin=$2 AND client_id=$3 AND expires_at>statement_timestamp() FOR UPDATE",[digest(&token).into(),origin.into(),self.config.client_id.clone().into()])).await?.ok_or(Error::Unauthorized)?;
-            let flow: Flow =
-                serde_json::from_str(&self.keys.decrypt(&row.try_get::<String>("", "payload")?)?)
-                    .map_err(|_| Error::Unauthorized)?;
-            if !bool::from(flow.state.as_bytes().ct_eq(state.as_bytes())) || flow.origin != origin {
-                return Err(Error::Unauthorized);
-            }
-            tx.execute_raw(Statement::from_sql_and_values(
+            if self.native_store.is_some() {
+                self.consume_native_flow(&digest(&token), origin, state)
+                    .await?
+            } else {
+                let tx = self.db.begin().await?;
+                let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT payload FROM webdock_auth.identity_browser_flow WHERE token_hash=$1 AND app_origin=$2 AND client_id=$3 AND expires_at>statement_timestamp() FOR UPDATE",[digest(&token).into(),origin.into(),self.config.client_id.clone().into()])).await?.ok_or(Error::Unauthorized)?;
+                let flow: Flow = serde_json::from_str(
+                    &self.keys.decrypt(&row.try_get::<String>("", "payload")?)?,
+                )
+                .map_err(|_| Error::Unauthorized)?;
+                if !bool::from(flow.state.as_bytes().ct_eq(state.as_bytes()))
+                    || flow.origin != origin
+                {
+                    return Err(Error::Unauthorized);
+                }
+                let consumed=tx.execute_raw(Statement::from_sql_and_values(
                 DbBackend::Postgres,
-                "DELETE FROM webdock_auth.identity_browser_flow WHERE token_hash=$1",
-                [digest(&token).into()],
-            ))
-            .await?;
-            tx.commit().await?;
-            flow
+                "DELETE FROM webdock_auth.identity_browser_flow WHERE token_hash=$1 AND app_origin=$2 AND client_id=$3 AND expires_at>statement_timestamp()",
+                [digest(&token).into(),origin.into(),self.config.client_id.clone().into()],
+            )).await?;
+                if consumed.rows_affected() != 1 {
+                    return Err(Error::Unauthorized);
+                }
+                tx.commit().await?;
+                flow
+            }
         } else {
             let old = self
                 .legacy
@@ -268,7 +294,20 @@ impl BrowserSessions {
                 .map(str::to_owned)
                 .collect(),
         };
-        self.db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.identity_browser_session(token_hash,app_origin,client_id,user_id,session_id,payload,expires_at) VALUES($1,$2,$3,$4,$5,$6,to_timestamp($7))",[digest(&token).into(),origin.into(),self.config.client_id.clone().into(),principal.user_id.into(),principal.session_id.into(),self.keys.encrypt(&serde_json::to_string(&stored).map_err(|_|Error::Configuration)?)?.into(),expires.into()])).await?;
+        self.persist_browser_session(
+            NewBrowserSession {
+                reference: digest(&token),
+                origin: origin.into(),
+                user: principal.user_id,
+                session: principal.session_id,
+                payload: self
+                    .keys
+                    .encrypt(&serde_json::to_string(&stored).map_err(|_| Error::Configuration)?)?,
+                expires,
+            },
+            false,
+        )
+        .await?;
         Ok(BrowserRedirect {
             location: app
                 .join(&flow.return_to)
@@ -351,7 +390,20 @@ impl BrowserSessions {
                     .collect(),
             };
             // This records the same bounded legacy authority; it issues no new browser credential.
-            self.db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.identity_browser_session(token_hash,app_origin,client_id,user_id,session_id,payload,expires_at) VALUES($1,$2,$3,$4,$5,$6,to_timestamp($7)) ON CONFLICT(token_hash) DO NOTHING",[reference.clone().into(),origin.into(),self.config.client_id.clone().into(),principal.user_id.into(),principal.session_id.into(),self.keys.encrypt(&serde_json::to_string(&tokens).map_err(|_|Error::Configuration)?)?.into(),expires.into()])).await?;
+            self.persist_browser_session(
+                NewBrowserSession {
+                    reference: reference.clone(),
+                    origin: origin.into(),
+                    user: principal.user_id,
+                    session: principal.session_id,
+                    payload: self.keys.encrypt(
+                        &serde_json::to_string(&tokens).map_err(|_| Error::Configuration)?,
+                    )?,
+                    expires,
+                },
+                true,
+            )
+            .await?;
             reference
         };
         self.reference(origin, &reference, None).await
@@ -545,11 +597,20 @@ impl BrowserSessions {
         let app = self.config.app(origin)?;
         let mut proof = None;
         if let Some(token) = self.read(header, self.cookie_name())? {
-            if let Some(row)=self.db.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"DELETE FROM webdock_auth.identity_browser_session WHERE token_hash=$1 AND app_origin=$2 AND client_id=$3 RETURNING payload,user_id,session_id",[digest(&token).into(),origin.into(),self.config.client_id.clone().into()])).await? {
-                let stored:StoredTokens=serde_json::from_str(&self.keys.decrypt(&row.try_get::<String>("","payload")?)?).map_err(|_|Error::Unauthorized)?;
-                self.oauth.revoke(&self.config.credentials(),&stored.access_token).await?;
-                if let Some(refresh)=stored.refresh_token.as_deref(){self.oauth.revoke(&self.config.credentials(),refresh).await?;}
-                proof=Some(serde_json::json!({"kind":"logout","subject":row.try_get::<String>("","user_id")?,"session_id":row.try_get::<String>("","session_id")?,"origin":origin}));
+            if let Some(row) = self.remove_browser_session(&digest(&token), origin).await? {
+                let stored: StoredTokens = serde_json::from_str(&self.keys.decrypt(&row.payload)?)
+                    .map_err(|_| Error::Unauthorized)?;
+                self.oauth
+                    .revoke(&self.config.credentials(), &stored.access_token)
+                    .await?;
+                if let Some(refresh) = stored.refresh_token.as_deref() {
+                    self.oauth
+                        .revoke(&self.config.credentials(), refresh)
+                        .await?;
+                }
+                proof = Some(
+                    serde_json::json!({"kind":"logout","subject":row.user,"session_id":row.session,"origin":origin}),
+                );
             }
         } else if let Some(legacy) = &self.legacy
             && let Some(stored) = legacy.read(header, self.old_name(false), 28800)?
@@ -570,7 +631,12 @@ impl BrowserSessions {
         let mut location = app.join("/login").map_err(|_| Error::Configuration)?;
         if let Some(proof) = proof {
             let token = CsrfToken::new_random().secret().clone();
-            self.db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.identity_browser_flow(token_hash,app_origin,client_id,payload,expires_at) VALUES($1,$2,$3,$4,statement_timestamp()+interval '5 minutes')",[digest(&token).into(),origin.into(),self.config.client_id.clone().into(),self.keys.encrypt(&proof.to_string())?.into()])).await?;
+            self.persist_flow(
+                &digest(&token),
+                origin,
+                &self.keys.encrypt(&proof.to_string())?,
+            )
+            .await?;
             location = self.config.issuer.clone();
             location.set_path("/logout");
             location.query_pairs_mut().append_pair("request", &token);
@@ -591,6 +657,9 @@ impl BrowserSessions {
         if limit == 0 || limit > 10000 {
             return Err(Error::InvalidInput);
         }
+        if self.native_store.is_some() {
+            return self.prune_native_store(limit).await;
+        }
         let mut count = 0;
         for table in ["identity_browser_flow", "identity_browser_session"] {
             count+=self.db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,format!("WITH expired AS (SELECT token_hash FROM webdock_auth.{table} WHERE expires_at<=statement_timestamp() ORDER BY expires_at LIMIT $1 FOR UPDATE SKIP LOCKED) DELETE FROM webdock_auth.{table} t USING expired e WHERE t.token_hash=e.token_hash"),[i64::from(limit).into()])).await?.rows_affected();
@@ -605,10 +674,9 @@ impl BrowserSessions {
         if request.len() > 512 {
             return Err(Error::InvalidInput);
         }
-        let row=self.db.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT payload FROM webdock_auth.identity_browser_flow WHERE token_hash=$1 AND client_id=$2 AND expires_at>statement_timestamp()",[digest(request).into(),self.config.client_id.clone().into()])).await?.ok_or(Error::Unauthorized)?;
+        let payload = self.logout_flow_payload(&digest(request)).await?;
         let proof: Value =
-            serde_json::from_str(&self.keys.decrypt(&row.try_get::<String>("", "payload")?)?)
-                .map_err(|_| Error::Unauthorized)?;
+            serde_json::from_str(&self.keys.decrypt(&payload)?).map_err(|_| Error::Unauthorized)?;
         if proof["kind"] != "logout" {
             return Err(Error::Unauthorized);
         }
@@ -630,8 +698,8 @@ impl BrowserSessions {
         confirmed: bool,
     ) -> Result<BrowserRedirect> {
         let proof = self.logout_proof(cookie, request).await?;
-        let deleted=self.db.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"DELETE FROM webdock_auth.identity_browser_flow WHERE token_hash=$1 AND client_id=$2 AND expires_at>statement_timestamp()",[digest(request).into(),self.config.client_id.clone().into()])).await?;
-        if deleted.rows_affected() != 1 {
+        let deleted = self.consume_logout_flow(&digest(request)).await?;
+        if !deleted {
             return Err(Error::Unauthorized);
         }
         let app = self.config.app(string(&proof, "origin")?)?;

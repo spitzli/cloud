@@ -1,0 +1,98 @@
+{
+  "date": "2026-11-09",
+  "scope": "Core API security release for expired-session lock-wait fencing",
+  "sourceCommit": "a403e4857101aa640cc7ae4132d1b45a2d5fda31",
+  "mergedPR": 87,
+  "image": "ghcr.io/spitzli/cloud@sha256:a1adbf902d49e3d0c7a8729df25c5ae622450c967d6185477f4b35cb04ab0f38",
+  "sourceArchiveSHA256": "78bbeaa928b105fcbdbf480ae11edf988d55d223335676422595b0c2b4605b58",
+  "buildRegion": "Existing verified EU dedicated BUILD server; own trusted source only",
+  "imageQualification": {
+    "actualCandidateExecutables": true,
+    "ownedPG18": true,
+    "journalCount": 74,
+    "latestMigration": 75,
+    "initialAndRepeatMigrationPassed": true,
+    "actualCoreReadyz": 200,
+    "sessionManagementModes": {
+      "sea-orm": {
+        "actualReadyz": 200,
+        "validOwnList": 200,
+        "expiredAfterLockWait": 401,
+        "gracefulShutdown": true,
+        "secretsAbsentFromLog": true
+      },
+      "tokio-postgres": {
+        "actualReadyz": 200,
+        "validOwnList": 200,
+        "expiredAfterLockWait": 401,
+        "gracefulShutdown": true,
+        "secretsAbsentFromLog": true
+      }
+    },
+    "actualControllerOnce": true,
+    "actualControllerIdleSurvived": true,
+    "controllerIdleShutdownSeconds": 0.019,
+    "productionDatabaseUsed": false,
+    "uid": 1001,
+    "binarySHA256": {
+      "candidate-core": "eea42ea5cf873632f5c8ac7ffc5a3189beafe2aff8057416c000b55222cbe71b",
+      "candidate-migrate": "802b577906e1564bc77f47e5e1003a9a341db50c27c21caec0934499f3fa53c6",
+      "candidate-controller": "46b965e084a8cbd5c2d823451f8ac4f3901e48a1677ec98fb0d6fa02339beb50"
+    }
+  },
+  "publication": {
+    "anonymousManifestAndConfigVerified": true,
+    "qualifiedAndPublishedDigestMatch": true,
+    "imageRuntimeUser": "65532:65532",
+    "volatilePublisherAuthRemoved": true
+  },
+  "rollout": {
+    "sourceCommit": "a403e4857101aa640cc7ae4132d1b45a2d5fda31",
+    "image": "ghcr.io/spitzli/cloud@sha256:a1adbf902d49e3d0c7a8729df25c5ae622450c967d6185477f4b35cb04ab0f38",
+    "onlyCoreApiImagesChanged": true,
+    "otherCoreDeploymentSpecsUnchanged": true,
+    "deploymentUIDPreserved": true,
+    "referencedSecretHashesUnchanged": true,
+    "schemaMigrationPerformed": false,
+    "actualRuntimeDigestVerified": true,
+    "publicReadyz": 200,
+    "rollbackImageRetained": "ghcr.io/spitzli/cloud@sha256:b41c6d02beaaecdb95ef250b52de300a066b20856d5011b26ddefa87675b191b"
+  },
+  "postRollout": {
+    "generation": 24,
+    "readyReplicas": 1,
+    "coreRestarts": 0,
+    "realtimeSealerRestarts": 0,
+    "publicEndpoints": [
+      {
+        "url": "https://api.spitzli.cloud/healthz",
+        "status": 200,
+        "jsonNull": false,
+        "healthStatus": "ok"
+      },
+      {
+        "url": "https://api.spitzli.cloud/readyz",
+        "status": 200,
+        "jsonNull": false,
+        "healthStatus": "ready"
+      },
+      {
+        "url": "https://auth.spitzli.cloud/api/auth/get-session",
+        "status": 200,
+        "jsonNull": true,
+        "healthStatus": null
+      },
+      {
+        "url": "https://console.spitzli.cloud/api/console/auth/get-session",
+        "status": 200,
+        "jsonNull": true,
+        "healthStatus": null
+      }
+    ],
+    "nativeBackendsActivated": false,
+    "autoscalingActivated": false,
+    "referencedSecretsUnchanged": true,
+    "customerRunWorkloadsChanged": false
+  },
+  "limitations": "Public anonymous endpoints and actual owned-image MFA/session regression gates are verified; no new production operator/customer login was performed without the unavailable interactive credential approval. The full driver rewrite is ongoing; subsequent PR88 changes are not in this image."
+}

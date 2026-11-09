@@ -1,0 +1,76 @@
+{
+  "date": "2026-11-09",
+  "scope": "Native encrypted first-party browser flow/session sidecar storage",
+  "base": "4b34ace196651fb13be95b5ba2f6dc3f5616b573",
+  "maximumMigration": 75,
+  "optIn": "WEBDOCK_BROWSER_FLOW_BACKEND=tokio-postgres",
+  "defaultBackend": "sea-orm",
+  "requiresExistingFirstPartyClientConfig": true,
+  "pool": "Single max4/min0 checked bootstrap pool, shared with native identity capabilities",
+  "schemaMigration": false,
+  "credentialsChanged": false,
+  "productionActivationForThisIncrement": false,
+  "newRegistryPackageVersions": false,
+  "retainedAuthorities": [
+    "OAuthclient/code/token validation",
+    "PKCE,nonce,IDtoken/at_hash",
+    "canonical identity and role/scope/expiry ceilings",
+    "caller-owned reference/introspection/revalidation fences"
+  ],
+  "nativeStorage": [
+    "encrypted flow creation",
+    "locked constant-time state/origin validation before fresh client/origin/expiry-guarded confirmed consumption",
+    "encrypted sidecar insert and bounded legacy-authority bridge",
+    "origin/client-bound browser sidecar removal",
+    "logout proof read and locked/fresh one-use consumption",
+    "bounded skip-locked expired housekeeping"
+  ],
+  "security": [
+    "native uncertainty never falls back",
+    "30second domain operation budgets and checked role/TLS/transaction scope",
+    "no native connection held through OAuth/identity work",
+    "nonce may already be consumed after an unknown COMMIT; no success/retry/fallback promise",
+    "retained callback and logout consumption also recheck expiry after locks"
+  ],
+  "targetedQualification": {
+    "passed": 25,
+    "failed": 0,
+    "ignored": 0,
+    "suites": {
+      "ownedBrowserOAuth": 8,
+      "coreRuntimeConfiguration": 11,
+      "actualCoreHttpAndLifecycle": 6
+    },
+    "ownedEnvironment": "Owned loopback PostgreSQL18 and actual internal OAuth/PKCE/OIDC engine, no supplied live DSN/provider network",
+    "cases": [
+      "wrong-state/client/origin does not burn valid flow",
+      "concurrent callback one winner and replay denied",
+      "encrypted payload and native write audit",
+      "native/retained callback expiry during lock wait denied",
+      "native/retained logout proof expiry during lock wait does not revoke canonical session",
+      "owner-bound one-use logout confirmation",
+      "bounded housekeeping skips locks and preserves active authority",
+      "canceled precommit callback with max1pool can retry valid flow",
+      "retained handoff/logout compatibility"
+    ],
+    "actualHTTP": "Existing303 redirect, PKCE/state/nonce, HttpOnly cookie and actual native nonce write; disabled-native negative control audit0 then enabled audit1"
+  },
+  "defaultRegressions": {
+    "passed": 210,
+    "failed": 0,
+    "ignored": 65,
+    "suites": 50
+  },
+  "clippy": "browser, OAuth, identity, Core all-targets -D warnings passed",
+  "format": "cargo fmt --all -- --check passed",
+  "independentLockedMetadataWorkspaces": 15,
+  "review": {
+    "importantFindings": 1,
+    "fixed": "Logout proof DELETE could wait until after expiry yet use pre-wait statement time. Added explicit row lock followed by a fresh expiry-guarded DELETE/count, native and retained RED then GREEN.",
+    "documentationAccuracyCorrection": "Cancellation guarantee is restricted to before COMMIT; uncertain outcomes may consume nonce and require restarting sign-in.",
+    "otherMaterialFindings": 0,
+    "reReview": false
+  },
+  "parentProductionRelease": "Sourcea403/imagea1adbf90 separately confirmed live with native backend flags disabled; recorded in2026-11-09-native-core-security-rollout.json. This browser-store code is not deployed.",
+  "remaining": "Broader OAuth/canonical identity and product persistence still retain SeaORM/SQLx paths. No latency, throughput or Neon compute-cost improvement is claimed."
+}

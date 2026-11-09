@@ -6104,6 +6104,7 @@ dependencies = [
  "subtle",
  "thiserror 2.0.21",
  "tokio",
+ "tokio-postgres",
  "url",
  "webdock-identity",
  "webdock-oauth",
