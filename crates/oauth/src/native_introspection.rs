@@ -303,7 +303,7 @@ impl OAuthService {
             .native_resources(&tx, &client, &resources, &scopes)
             .await
         {
-            Ok(()) => {}
+            Ok(_) => {}
             Err(Error::AccessDenied | Error::InvalidRequest | Error::InvalidScope) => {
                 return Ok((tx, inactive()));
             }
@@ -435,7 +435,7 @@ impl OAuthService {
         client: &Client,
         resources: &[String],
         scopes: &[String],
-    ) -> Result<()> {
+    ) -> Result<(i64, i64)> {
         if resources.len() > 8 || scopes.iter().any(|s| !client.scopes.contains(s)) {
             return Err(Error::InvalidScope);
         }
@@ -481,7 +481,7 @@ impl OAuthService {
         if access <= 0 || refresh <= 0 {
             return Err(Error::Configuration);
         }
-        Ok(())
+        Ok((access, refresh))
     }
     pub(super) async fn verify_native_signed_claims(
         &self,
@@ -555,7 +555,7 @@ impl OAuthService {
             .native_resources(&tx, &client, &resources, &scopes)
             .await
         {
-            Ok(()) => {}
+            Ok(_) => {}
             Err(Error::AccessDenied | Error::InvalidRequest | Error::InvalidScope) => {
                 return Ok((tx, inactive()));
             }

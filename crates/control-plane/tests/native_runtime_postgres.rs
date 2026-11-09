@@ -93,6 +93,11 @@ async fn actual_http_oauth_security_uses_native_postgres() {
 async fn actual_http_oauth_grants_use_native_postgres() {
     actual_core(NativeMode::OAuthGrants).await;
 }
+#[tokio::test]
+#[ignore = "owned PostgreSQL18; full native OAuth exchange/signature/refresh HTTP flow"]
+async fn actual_http_oauth_tokens_use_native_postgres() {
+    actual_core(NativeMode::OAuthTokens).await;
+}
 #[derive(Clone, Copy)]
 enum NativeMode {
     Legacy,
@@ -105,12 +110,14 @@ enum NativeMode {
     OAuthIntrospection,
     OAuthSecurity,
     OAuthGrants,
+    OAuthTokens,
 }
 async fn actual_core(mode: NativeMode) {
     let native = matches!(mode, NativeMode::Ids);
     let native_session = matches!(mode, NativeMode::SessionReads);
     let native_management = matches!(mode, NativeMode::SessionManagement);
-    let native_grants = matches!(mode, NativeMode::OAuthGrants);
+    let native_tokens = matches!(mode, NativeMode::OAuthTokens);
+    let native_grants = matches!(mode, NativeMode::OAuthGrants) || native_tokens;
     let native_authority = matches!(mode, NativeMode::BrowserAuthority) || native_grants;
     let native_browser = matches!(mode, NativeMode::BrowserFlows) || native_authority;
     let native_oauth = matches!(mode, NativeMode::OAuthClientReads);
@@ -154,6 +161,9 @@ async fn actual_core(mode: NativeMode) {
     }
     if native_grants {
         owner.execute_unprepared("CREATE TABLE public.owned_oauth_grant_audit(app text);CREATE FUNCTION public.owned_oauth_grant_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_oauth_grant_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_oauth_grant_audit AFTER INSERT ON webdock_auth.identity_oauth_request FOR EACH ROW WHEN(NEW.kind='code') EXECUTE FUNCTION public.owned_oauth_grant_audit()").await.unwrap();
+    }
+    if native_tokens {
+        owner.execute_unprepared("UPDATE webdock_auth.\"oauthClient\" SET scopes='[\"openid\",\"profile\",\"email\",\"offline_access\"]' WHERE \"clientId\"='102';CREATE TABLE public.owned_oauth_token_audit(app text,kind text);CREATE FUNCTION public.owned_oauth_token_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_oauth_token_audit VALUES(current_setting('application_name'),TG_TABLE_NAME);RETURN NEW;END $$;CREATE TRIGGER owned_oauth_token_audit AFTER INSERT ON webdock_auth.\"oauthAccessToken\" FOR EACH ROW EXECUTE FUNCTION public.owned_oauth_token_audit();CREATE TRIGGER owned_oauth_token_audit AFTER INSERT ON webdock_auth.\"oauthRefreshToken\" FOR EACH ROW EXECUTE FUNCTION public.owned_oauth_token_audit()").await.unwrap();
     }
     let before = journal(&owner).await;
     let account_counts = || {
@@ -294,7 +304,15 @@ async fn actual_core(mode: NativeMode) {
     );
     command.env(
         "WEBDOCK_OAUTH_GRANTS_BACKEND",
-        if native_grants {
+        if native_grants && !native_tokens {
+            "tokio-postgres"
+        } else {
+            "sea-orm"
+        },
+    );
+    command.env(
+        "WEBDOCK_OAUTH_TOKENS_BACKEND",
+        if native_tokens {
             "tokio-postgres"
         } else {
             "sea-orm"
@@ -531,10 +549,26 @@ async fn actual_core(mode: NativeMode) {
                 .next()
                 .unwrap()
                 .to_owned();
+            let authorize_query = if native_tokens {
+                let mut requested = location.clone();
+                let pairs = requested
+                    .query_pairs()
+                    .filter(|(k, _)| k != "scope")
+                    .map(|(k, v)| (k.into_owned(), v.into_owned()))
+                    .collect::<Vec<_>>();
+                requested.set_query(None);
+                requested
+                    .query_pairs_mut()
+                    .extend_pairs(pairs)
+                    .append_pair("scope", "openid profile email offline_access");
+                requested.query().unwrap().to_owned()
+            } else {
+                location.query().unwrap().to_owned()
+            };
             let authorize = client
                 .get(format!(
                     "http://127.0.0.1:{port}/api/auth/oauth2/authorize?{}",
-                    location.query().unwrap()
+                    authorize_query
                 ))
                 .header("Host", "localhost:3125")
                 .header("Cookie", auth_cookie)
@@ -612,6 +646,46 @@ async fn actual_core(mode: NativeMode) {
             let profile: Value = response.json().await.unwrap();
             assert_eq!(profile["user"]["id"], "501");
             assert_eq!(profile["user"]["email"], "http@example.test");
+            if native_tokens {
+                let raw = owner
+                    .query_one_raw(Statement::from_string(
+                        DbBackend::Postgres,
+                        "SELECT payload FROM webdock_auth.identity_browser_session LIMIT 1",
+                    ))
+                    .await
+                    .unwrap()
+                    .unwrap()
+                    .try_get::<String>("", "payload")
+                    .unwrap();
+                let keys = webdock_identity::SecretKeys::new(
+                    std::collections::BTreeMap::from([(1, secret.into())]),
+                    1,
+                    Some(secret.into()),
+                )
+                .unwrap();
+                let stored: Value = serde_json::from_str(&keys.decrypt(&raw).unwrap()).unwrap();
+                let refresh = stored["refresh_token"].as_str().unwrap();
+                let response = client
+                    .post(format!("http://127.0.0.1:{port}/api/auth/oauth2/token"))
+                    .header("Host", "localhost:3125")
+                    .form(&[
+                        ("grant_type", "refresh_token"),
+                        ("client_id", "102"),
+                        ("client_secret", "owned-core-browser-secret"),
+                        ("refresh_token", refresh),
+                    ])
+                    .send()
+                    .await
+                    .unwrap();
+                assert_eq!(response.status(), 200);
+                let result: Value = response.json().await.unwrap();
+                assert!(result["access_token"].as_str().is_some());
+                assert!(result["refresh_token"].as_str().is_some());
+                assert!(result["id_token"].as_str().is_some());
+                let row=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT count(*) FILTER(WHERE kind='oauthAccessToken') AS access,count(*) FILTER(WHERE kind='oauthRefreshToken') AS refresh FROM public.owned_oauth_token_audit WHERE app='spitzli-native-postgres'")).await.unwrap().unwrap();
+                assert_eq!(row.try_get::<i64>("", "access").unwrap(), 2);
+                assert_eq!(row.try_get::<i64>("", "refresh").unwrap(), 2);
+            }
             owner
                 .execute_unprepared("DELETE FROM webdock_auth.identity_browser_session")
                 .await

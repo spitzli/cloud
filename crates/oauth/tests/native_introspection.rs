@@ -23,6 +23,7 @@ struct Setup {
     native: Arc<OAuthService>,
     security: Arc<OAuthService>,
     grants: Arc<OAuthService>,
+    tokens: Arc<OAuthService>,
     pool: Pool,
     credentials: ClientAuthentication,
     auth_cookie: String,
@@ -148,12 +149,22 @@ impl Setup {
         let grants = Arc::new(
             OAuthService::new(
                 DatabaseConnection::default(),
+                native_identity.clone(),
+                ids.clone(),
+                keys.clone(),
+                config(Some(credentials.client_id.clone())),
+            )
+            .with_native_grants_store(pool.clone()),
+        );
+        let tokens = Arc::new(
+            OAuthService::new(
+                DatabaseConnection::default(),
                 native_identity,
                 ids,
                 keys.clone(),
                 config(Some(credentials.client_id.clone())),
             )
-            .with_native_grants_store(pool.clone()),
+            .with_native_tokens_store(pool.clone()),
         );
         let auth_cookie = CookiePolicy::new(true, AUTH_SECRET)
             .unwrap()
@@ -169,6 +180,7 @@ impl Setup {
             native,
             security,
             grants,
+            tokens,
             pool,
             credentials,
             auth_cookie,
@@ -1471,4 +1483,729 @@ async fn native_grants_recheck_consent_deadline_after_pending_writes() {
         "a decision expiring while its pending write waits must roll back"
     );
     assert_eq!(s.consent_counts().await, (0, 1, 0));
+}
+
+impl Setup {
+    async fn native_tokens(&self) -> TokenResponse {
+        let (r, verifier) = self.request();
+        let AuthorizationOutcome::Redirect(location) =
+            self.tokens.authorize(&self.auth_cookie, r).await.unwrap()
+        else {
+            panic!("native code expected")
+        };
+        let url = url::Url::parse(&location).unwrap();
+        let code = url
+            .query_pairs()
+            .find(|(k, _)| k == "code")
+            .unwrap()
+            .1
+            .into_owned();
+        self.tokens
+            .exchange_code(CodeExchange {
+                client: self.credentials.clone(),
+                code,
+                redirect_uri: REDIRECT.into(),
+                code_verifier: verifier,
+            })
+            .await
+            .unwrap()
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; complete native PKCE exchange/signature and refresh with disconnected retained writer"]
+async fn native_tokens_issue_verified_jwt_and_rotate_refresh() {
+    let s = Setup::start().await;
+    let t = s.native_tokens().await;
+    assert_eq!(t.expires_in, 28800);
+    assert_eq!(s.active(&t.access_token).await["active"], true);
+    let jwks = s.tokens.jwks().await.unwrap();
+    let key = josekit::jwk::Jwk::from_map(
+        jwks["keys"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|k| k["kid"] == s.key_id)
+            .unwrap()
+            .as_object()
+            .unwrap()
+            .clone(),
+    )
+    .unwrap();
+    let (payload, _) = josekit::jws::deserialize_compact(
+        t.id_token.as_ref().unwrap(),
+        &josekit::jws::RS256.verifier_from_jwk(&key).unwrap(),
+    )
+    .unwrap();
+    let c: serde_json::Value = serde_json::from_slice(&payload).unwrap();
+    assert_eq!(c["iss"], ISSUER);
+    assert_eq!(c["aud"], s.credentials.client_id);
+    assert_eq!(c["sub"], s.user);
+    assert_eq!(c["sid"], s.session);
+    assert_eq!(c["nonce"], "owned-nonce");
+    assert_eq!(
+        c["at_hash"],
+        URL_SAFE_NO_PAD.encode(&Sha256::digest(t.access_token.as_bytes())[..16])
+    );
+    let old = t.refresh_token.unwrap();
+    let next = s
+        .tokens
+        .refresh(RefreshExchange {
+            client: s.credentials.clone(),
+            refresh_token: old.clone(),
+            scope: Some("openid profile".into()),
+        })
+        .await
+        .unwrap();
+    assert_eq!(s.active(&old).await["active"], false);
+    assert_eq!(s.active(&next.access_token).await["active"], true);
+    assert!(
+        s.tokens
+            .refresh(RefreshExchange {
+                client: s.credentials.clone(),
+                refresh_token: old,
+                scope: None
+            })
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        s.active(&next.access_token).await["active"],
+        false,
+        "replay revokes the family before invalid_grant"
+    );
+}
+
+impl Setup {
+    async fn native_code(&self) -> (String, String) {
+        let (r, v) = self.request();
+        let AuthorizationOutcome::Redirect(location) =
+            self.tokens.authorize(&self.auth_cookie, r).await.unwrap()
+        else {
+            panic!("native code expected")
+        };
+        let url = url::Url::parse(&location).unwrap();
+        (
+            url.query_pairs()
+                .find(|(k, _)| k == "code")
+                .unwrap()
+                .1
+                .into_owned(),
+            v,
+        )
+    }
+    async fn token_counts(&self) -> (i64, i64) {
+        let r=self.f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT(SELECT count(*) FROM webdock_auth.\"oauthAccessToken\") AS access,(SELECT count(*) FROM webdock_auth.\"oauthRefreshToken\") AS refresh")).await.unwrap().unwrap();
+        (
+            r.try_get("", "access").unwrap(),
+            r.try_get("", "refresh").unwrap(),
+        )
+    }
+    async fn private_key(&self) -> String {
+        self.f
+            .owner
+            .query_one_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                "SELECT \"privateKey\" FROM webdock_auth.jwks WHERE id=$1",
+                [self.key_id.clone().into()],
+            ))
+            .await
+            .unwrap()
+            .unwrap()
+            .try_get("", "privateKey")
+            .unwrap()
+    }
+    async fn set_private_key(&self, value: &str) {
+        self.f
+            .owner
+            .execute_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                "UPDATE webdock_auth.jwks SET \"privateKey\"=$1 WHERE id=$2",
+                [value.into(), self.key_id.clone().into()],
+            ))
+            .await
+            .unwrap();
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; exact PKCE/client/redirect validation preserves code until successful one-use exchange"]
+async fn native_tokens_code_is_bound_and_consumed_once() {
+    let s = Setup::start().await;
+    let (code, v) = s.native_code().await;
+    let mut wrong = s.credentials.clone();
+    wrong.client_secret = Some("wrong".into());
+    assert!(matches!(
+        s.tokens
+            .exchange_code(CodeExchange {
+                client: wrong,
+                code: code.clone(),
+                redirect_uri: REDIRECT.into(),
+                code_verifier: v.clone()
+            })
+            .await,
+        Err(Error::InvalidClient)
+    ));
+    for (verifier, redirect) in [
+        ("x".repeat(64), REDIRECT),
+        (v.clone(), "https://wrong.example.test"),
+    ] {
+        assert!(matches!(
+            s.tokens
+                .exchange_code(CodeExchange {
+                    client: s.credentials.clone(),
+                    code: code.clone(),
+                    redirect_uri: redirect.into(),
+                    code_verifier: verifier
+                })
+                .await,
+            Err(Error::InvalidGrant)
+        ));
+        assert_eq!(s.token_counts().await, (0, 0));
+    }
+    let t = s
+        .tokens
+        .exchange_code(CodeExchange {
+            client: s.credentials.clone(),
+            code: code.clone(),
+            redirect_uri: REDIRECT.into(),
+            code_verifier: v.clone(),
+        })
+        .await
+        .unwrap();
+    assert_eq!(s.active(&t.access_token).await["active"], true);
+    assert!(matches!(
+        s.tokens
+            .exchange_code(CodeExchange {
+                client: s.credentials.clone(),
+                code,
+                redirect_uri: REDIRECT.into(),
+                code_verifier: v
+            })
+            .await,
+        Err(Error::InvalidGrant)
+    ));
+    assert_eq!(s.token_counts().await, (1, 1));
+}
+#[tokio::test]
+#[ignore = "owned PG18; private signing failures roll back code consumption and refresh rotation"]
+async fn native_tokens_signing_failure_preserves_pending_code_and_refresh() {
+    let s = Setup::start().await;
+    let original = s.private_key().await;
+    let (code, v) = s.native_code().await;
+    s.set_private_key("not-json").await;
+    assert!(matches!(
+        s.tokens
+            .exchange_code(CodeExchange {
+                client: s.credentials.clone(),
+                code: code.clone(),
+                redirect_uri: REDIRECT.into(),
+                code_verifier: v.clone()
+            })
+            .await,
+        Err(Error::Crypto)
+    ));
+    assert_eq!(s.token_counts().await, (0, 0));
+    s.set_private_key(&original).await;
+    let t = s
+        .tokens
+        .exchange_code(CodeExchange {
+            client: s.credentials.clone(),
+            code,
+            redirect_uri: REDIRECT.into(),
+            code_verifier: v,
+        })
+        .await
+        .unwrap();
+    s.set_private_key("not-json").await;
+    assert!(matches!(
+        s.tokens
+            .refresh(RefreshExchange {
+                client: s.credentials.clone(),
+                refresh_token: t.refresh_token.clone().unwrap(),
+                scope: None
+            })
+            .await,
+        Err(Error::Crypto)
+    ));
+    assert_eq!(s.token_counts().await, (1, 1));
+    assert_eq!(
+        s.active(t.refresh_token.as_ref().unwrap()).await["active"],
+        true
+    );
+    s.set_private_key(&original).await;
+    assert!(
+        s.tokens
+            .refresh(RefreshExchange {
+                client: s.credentials.clone(),
+                refresh_token: t.refresh_token.unwrap(),
+                scope: None
+            })
+            .await
+            .is_ok()
+    );
+}
+#[tokio::test]
+#[ignore = "owned PG18; parallel refresh replay commits family revocation, never two live rotations"]
+async fn native_tokens_parallel_refresh_revokes_the_replayed_family() {
+    let s = Setup::start().await;
+    let t = s.native_tokens().await;
+    let old = t.refresh_token.unwrap();
+    let request = || RefreshExchange {
+        client: s.credentials.clone(),
+        refresh_token: old.clone(),
+        scope: None,
+    };
+    let (a, b) = tokio::join!(s.tokens.refresh(request()), s.tokens.refresh(request()));
+    let mut issued = None;
+    let mut rejected = 0;
+    for r in [a, b] {
+        match r {
+            Ok(t) => {
+                assert!(issued.is_none());
+                issued = Some(t);
+            }
+            Err(Error::InvalidGrant) => rejected += 1,
+            _ => panic!("unexpected parallel refresh result"),
+        }
+    }
+    assert_eq!(rejected, 1);
+    let t = issued.unwrap();
+    assert_eq!(s.active(&t.access_token).await["active"], false);
+    assert_eq!(
+        s.active(t.refresh_token.as_ref().unwrap()).await["active"],
+        false
+    );
+}
+#[tokio::test]
+#[ignore = "owned PG18; refresh scope/session/provider refusal never rotates an unfenced or expired record"]
+async fn native_tokens_refresh_refuses_scope_changes_and_current_revocation() {
+    let s = Setup::start().await;
+    let t = s.native_tokens().await;
+    let token = t.refresh_token.unwrap();
+    assert!(matches!(
+        s.tokens
+            .refresh(RefreshExchange {
+                client: s.credentials.clone(),
+                refresh_token: token.clone(),
+                scope: Some("openid hosting:write".into())
+            })
+            .await,
+        Err(Error::InvalidScope)
+    ));
+    assert_eq!(s.active(&token).await["active"], true);
+    s.sql("UPDATE webdock_auth.\"user\" SET banned=true WHERE id<>'backup'")
+        .await;
+    assert!(matches!(
+        s.tokens
+            .refresh(RefreshExchange {
+                client: s.credentials.clone(),
+                refresh_token: token.clone(),
+                scope: None
+            })
+            .await,
+        Err(Error::AccessDenied)
+    ));
+    s.sql("UPDATE webdock_auth.\"user\" SET banned=false WHERE id<>'backup'")
+        .await;
+    assert_eq!(s.active(&token).await["active"], true);
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_raw(Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        "SELECT id FROM webdock_auth.\"user\" WHERE id=$1 FOR UPDATE",
+        [s.user.clone().into()],
+    ))
+    .await
+    .unwrap();
+    let writer = s.tokens.clone();
+    let c = s.credentials.clone();
+    let raw = token.clone();
+    let task = tokio::spawn(async move {
+        writer
+            .refresh(RefreshExchange {
+                client: c,
+                refresh_token: raw,
+                scope: None,
+            })
+            .await
+    });
+    s.wait_lock("user").await;
+    gate.execute_unprepared("UPDATE webdock_auth.\"oauthRefreshToken\" SET \"sessionId\"=NULL")
+        .await
+        .unwrap();
+    gate.commit().await.unwrap();
+    assert!(matches!(task.await.unwrap(), Err(Error::InvalidGrant)));
+    s.sql(&format!("UPDATE webdock_auth.\"oauthRefreshToken\" SET \"sessionId\"='{}',\"expiresAt\"=clock_timestamp()+interval '1 second'",s.session)).await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_raw(Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        "SELECT id FROM webdock_auth.\"user\" WHERE id=$1 FOR UPDATE",
+        [s.user.clone().into()],
+    ))
+    .await
+    .unwrap();
+    let writer = s.tokens.clone();
+    let c = s.credentials.clone();
+    let task = tokio::spawn(async move {
+        writer
+            .refresh(RefreshExchange {
+                client: c,
+                refresh_token: token,
+                scope: None,
+            })
+            .await
+    });
+    s.wait_lock("user").await;
+    gate.execute_unprepared("SELECT pg_sleep(1.1)")
+        .await
+        .unwrap();
+    gate.commit().await.unwrap();
+    assert!(matches!(task.await.unwrap(), Err(Error::InvalidGrant)));
+    let clean=s.f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT \"rotatedAt\" IS NULL AND revoked IS NULL AS clean FROM webdock_auth.\"oauthRefreshToken\" LIMIT 1")).await.unwrap().unwrap().try_get::<bool>("","clean").unwrap();
+    assert!(clean);
+}
+#[tokio::test]
+#[ignore = "owned PG18; code expiry/payload changes after lock waits and cancellation cannot produce tokens"]
+async fn native_tokens_code_discovery_cannot_change_while_waiting() {
+    let s = Setup::start().await;
+    for expire in [true, false] {
+        let (code, v) = s.native_code().await;
+        let hash = legacy_token_hash(&code);
+        let gate = s.f.owner.begin().await.unwrap();
+        gate.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT token_hash FROM webdock_auth.identity_oauth_request WHERE token_hash=$1 FOR UPDATE",[hash.clone().into()])).await.unwrap();
+        let writer = s.tokens.clone();
+        let c = s.credentials.clone();
+        let task = tokio::spawn(async move {
+            writer
+                .exchange_code(CodeExchange {
+                    client: c,
+                    code,
+                    redirect_uri: REDIRECT.into(),
+                    code_verifier: v,
+                })
+                .await
+        });
+        s.wait_lock("identity_oauth_request").await;
+        let sql = if expire {
+            "UPDATE webdock_auth.identity_oauth_request SET expires_at=clock_timestamp()-interval '1 second' WHERE token_hash=$1"
+        } else {
+            "UPDATE webdock_auth.identity_oauth_request SET payload=jsonb_set(payload,'{request,nonce}','\"replaced\"') WHERE token_hash=$1"
+        };
+        gate.execute_raw(Statement::from_sql_and_values(
+            DbBackend::Postgres,
+            sql,
+            [hash.into()],
+        ))
+        .await
+        .unwrap();
+        gate.commit().await.unwrap();
+        assert!(matches!(task.await.unwrap(), Err(Error::InvalidGrant)));
+        assert_eq!(s.token_counts().await, (0, 0));
+    }
+    let (code, v) = s.native_code().await;
+    let hash = legacy_token_hash(&code);
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_raw(Statement::from_sql_and_values(
+        DbBackend::Postgres,
+        "SELECT token_hash FROM webdock_auth.identity_oauth_request WHERE token_hash=$1 FOR UPDATE",
+        [hash.into()],
+    ))
+    .await
+    .unwrap();
+    let writer = s.tokens.clone();
+    let c = s.credentials.clone();
+    let task = tokio::spawn(async move {
+        writer
+            .exchange_code(CodeExchange {
+                client: c,
+                code,
+                redirect_uri: REDIRECT.into(),
+                code_verifier: v,
+            })
+            .await
+    });
+    s.wait_lock("identity_oauth_request").await;
+    task.abort();
+    assert!(matches!(task.await,Err(e)if e.is_cancelled()));
+    gate.commit().await.unwrap();
+    assert_eq!(s.token_counts().await, (0, 0));
+}
+#[tokio::test]
+#[ignore = "owned PG18; key eligibility and code deadlines remain live after signing and pending writes"]
+async fn native_tokens_recheck_key_and_code_deadlines() {
+    let s = Setup::start().await;
+    let (code, v) = s.native_code().await;
+    s.sql("UPDATE webdock_auth.jwks SET \"expiresAt\"=clock_timestamp()+interval '1 second'")
+        .await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared("SELECT id FROM webdock_auth.jwks FOR UPDATE")
+        .await
+        .unwrap();
+    let writer = s.tokens.clone();
+    let c = s.credentials.clone();
+    let task = tokio::spawn(async move {
+        writer
+            .exchange_code(CodeExchange {
+                client: c,
+                code,
+                redirect_uri: REDIRECT.into(),
+                code_verifier: v,
+            })
+            .await
+    });
+    s.wait_lock("jwks").await;
+    gate.execute_unprepared("SELECT pg_sleep(1.1)")
+        .await
+        .unwrap();
+    gate.commit().await.unwrap();
+    assert!(matches!(task.await.unwrap(), Err(Error::Crypto)));
+    assert_eq!(s.token_counts().await, (0, 0));
+    s.sql("CREATE FUNCTION public.owned_token_delete_delay() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN PERFORM pg_advisory_xact_lock(61731234);RETURN OLD;END $$;CREATE TRIGGER owned_token_delete_delay AFTER DELETE ON webdock_auth.identity_oauth_request FOR EACH ROW WHEN(OLD.kind='code') EXECUTE FUNCTION public.owned_token_delete_delay()").await;
+    for key_expires in [true, false] {
+        s.sql("UPDATE webdock_auth.jwks SET \"expiresAt\"=NULL")
+            .await;
+        let (code, v) = s.native_code().await;
+        if key_expires {
+            s.sql(
+                "UPDATE webdock_auth.jwks SET \"expiresAt\"=clock_timestamp()+interval '1 second'",
+            )
+            .await;
+        } else {
+            let hash = legacy_token_hash(&code);
+            s.f.owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.identity_oauth_request SET expires_at=clock_timestamp()+interval '1 second' WHERE token_hash=$1",[hash.into()])).await.unwrap();
+        }
+        let gate = s.f.owner.begin().await.unwrap();
+        gate.execute_unprepared("SELECT pg_advisory_xact_lock(61731234)")
+            .await
+            .unwrap();
+        let writer = s.tokens.clone();
+        let c = s.credentials.clone();
+        let task = tokio::spawn(async move {
+            writer
+                .exchange_code(CodeExchange {
+                    client: c,
+                    code,
+                    redirect_uri: REDIRECT.into(),
+                    code_verifier: v,
+                })
+                .await
+        });
+        s.wait_lock("identity_oauth_request").await;
+        gate.execute_unprepared("SELECT pg_sleep(1.1)")
+            .await
+            .unwrap();
+        gate.commit().await.unwrap();
+        let result = task.await.unwrap();
+        if key_expires {
+            assert!(matches!(result, Err(Error::Crypto)));
+        } else {
+            assert!(matches!(result, Err(Error::InvalidGrant)));
+        }
+        assert_eq!(s.token_counts().await, (0, 0));
+    }
+}
+#[tokio::test]
+#[ignore = "owned PG18; native resource access/refresh TTLs and original scope ceilings"]
+async fn native_tokens_preserve_mcp_ttls_and_scope_ceiling() {
+    let s = Setup::start().await;
+    let c = s
+        .legacy
+        .provision_client(
+            &s.f.owner,
+            ClientRegistration {
+                name: "Native token MCP".into(),
+                redirect_uris: vec![REDIRECT.into()],
+                post_logout_redirect_uris: vec![],
+                scopes: vec![
+                    "openid".into(),
+                    "hosting:read".into(),
+                    "hosting:write".into(),
+                    "offline_access".into(),
+                ],
+                auth_method: ClientAuthMethod::ClientSecretPost,
+                allow_refresh: true,
+                skip_consent: true,
+                purpose: ClientPurpose::McpHosting,
+            },
+        )
+        .await
+        .unwrap();
+    let c = ClientAuthentication {
+        client_id: c.client_id,
+        client_secret: c.client_secret,
+        method: ClientAuthMethod::ClientSecretPost,
+    };
+    s.sql(
+        "UPDATE webdock_auth.\"oauthResource\" SET \"accessTokenTtl\"=120,\"refreshTokenTtl\"=600",
+    )
+    .await;
+    let v = "t".repeat(64);
+    let challenge = URL_SAFE_NO_PAD.encode(Sha256::digest(v.as_bytes()));
+    let mut r = AuthorizationRequest::code(
+        c.client_id.clone(),
+        REDIRECT.into(),
+        "openid hosting:read offline_access".into(),
+        challenge,
+    );
+    r.resources = vec![RESOURCE.into()];
+    let AuthorizationOutcome::Redirect(location) =
+        s.tokens.authorize(&s.auth_cookie, r).await.unwrap()
+    else {
+        panic!("MCP code expected")
+    };
+    let url = url::Url::parse(&location).unwrap();
+    let code = url
+        .query_pairs()
+        .find(|(k, _)| k == "code")
+        .unwrap()
+        .1
+        .into_owned();
+    let t = s
+        .tokens
+        .exchange_code(CodeExchange {
+            client: c.clone(),
+            code,
+            redirect_uri: REDIRECT.into(),
+            code_verifier: v,
+        })
+        .await
+        .unwrap();
+    assert_eq!(t.expires_in, 120);
+    let record=s.f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT extract(epoch FROM (\"expiresAt\"-\"createdAt\"))::bigint AS ttl FROM webdock_auth.\"oauthRefreshToken\" LIMIT 1")).await.unwrap().unwrap();
+    assert_eq!(record.try_get::<i64>("", "ttl").unwrap(), 600);
+    let old = t.refresh_token.unwrap();
+    assert!(matches!(
+        s.tokens
+            .refresh(RefreshExchange {
+                client: c.clone(),
+                refresh_token: old.clone(),
+                scope: Some("openid hosting:write".into())
+            })
+            .await,
+        Err(Error::InvalidScope)
+    ));
+    let next = s
+        .tokens
+        .refresh(RefreshExchange {
+            client: c,
+            refresh_token: old,
+            scope: Some("openid hosting:read".into()),
+        })
+        .await
+        .unwrap();
+    assert_eq!(next.expires_in, 120);
+}
+
+#[tokio::test]
+#[ignore = "owned PG18; public PKCE client without OpenID does not require or generate signing keys"]
+async fn native_tokens_public_client_without_openid_needs_no_key() {
+    let s = Setup::start().await;
+    let c = s
+        .legacy
+        .provision_client(
+            &s.f.owner,
+            ClientRegistration {
+                name: "Public native MCP".into(),
+                redirect_uris: vec![REDIRECT.into()],
+                post_logout_redirect_uris: vec![],
+                scopes: vec!["hosting:read".into(), "offline_access".into()],
+                auth_method: ClientAuthMethod::None,
+                allow_refresh: true,
+                skip_consent: true,
+                purpose: ClientPurpose::McpHosting,
+            },
+        )
+        .await
+        .unwrap();
+    let c = ClientAuthentication {
+        client_id: c.client_id,
+        client_secret: None,
+        method: ClientAuthMethod::None,
+    };
+    s.sql("DELETE FROM webdock_auth.jwks").await;
+    let v = "p".repeat(64);
+    let challenge = URL_SAFE_NO_PAD.encode(Sha256::digest(v.as_bytes()));
+    let mut r = AuthorizationRequest::code(
+        c.client_id.clone(),
+        REDIRECT.into(),
+        "hosting:read offline_access".into(),
+        challenge,
+    );
+    r.resources = vec![RESOURCE.into()];
+    let AuthorizationOutcome::Redirect(location) =
+        s.tokens.authorize(&s.auth_cookie, r).await.unwrap()
+    else {
+        panic!("public code expected")
+    };
+    let url = url::Url::parse(&location).unwrap();
+    let code = url
+        .query_pairs()
+        .find(|(k, _)| k == "code")
+        .unwrap()
+        .1
+        .into_owned();
+    let t = s
+        .tokens
+        .exchange_code(CodeExchange {
+            client: c.clone(),
+            code,
+            redirect_uri: REDIRECT.into(),
+            code_verifier: v,
+        })
+        .await
+        .unwrap();
+    assert!(t.id_token.is_none());
+    assert_eq!(
+        s.tokens.introspect_mcp(&c, &t.access_token).await.unwrap()["active"],
+        true
+    );
+    let t = s
+        .tokens
+        .refresh(RefreshExchange {
+            client: c,
+            refresh_token: t.refresh_token.unwrap(),
+            scope: Some("hosting:read".into()),
+        })
+        .await
+        .unwrap();
+    assert!(t.id_token.is_none());
+    assert_eq!(
+        s.tokens.jwks().await.unwrap()["keys"]
+            .as_array()
+            .unwrap()
+            .len(),
+        0
+    );
+}
+
+#[tokio::test]
+#[ignore = "owned PG18; refresh expiry during a pending token INSERT rolls rotation and issuance back"]
+async fn native_tokens_refresh_deadline_after_pending_write_rolls_back() {
+    let s = Setup::start().await;
+    let t = s.native_tokens().await;
+    let refresh = t.refresh_token.unwrap();
+    s.sql("CREATE FUNCTION public.owned_refresh_insert_delay() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN PERFORM pg_advisory_xact_lock(61731235);RETURN NEW;END $$;CREATE TRIGGER owned_refresh_insert_delay AFTER INSERT ON webdock_auth.\"oauthAccessToken\" FOR EACH ROW EXECUTE FUNCTION public.owned_refresh_insert_delay();UPDATE webdock_auth.\"oauthRefreshToken\" SET \"expiresAt\"=clock_timestamp()+interval '1 second'").await;
+    let gate = s.f.owner.begin().await.unwrap();
+    gate.execute_unprepared("SELECT pg_advisory_xact_lock(61731235)")
+        .await
+        .unwrap();
+    let writer = s.tokens.clone();
+    let c = s.credentials.clone();
+    let task = tokio::spawn(async move {
+        writer
+            .refresh(RefreshExchange {
+                client: c,
+                refresh_token: refresh,
+                scope: None,
+            })
+            .await
+    });
+    s.wait_lock("oauthAccessToken").await;
+    gate.execute_unprepared("SELECT pg_sleep(1.1)")
+        .await
+        .unwrap();
+    gate.commit().await.unwrap();
+    assert!(matches!(task.await.unwrap(), Err(Error::InvalidGrant)));
+    assert_eq!(s.token_counts().await, (1, 1));
+    let clean=s.f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT \"rotatedAt\" IS NULL AND revoked IS NULL AS clean FROM webdock_auth.\"oauthRefreshToken\" LIMIT 1")).await.unwrap().unwrap().try_get::<bool>("","clean").unwrap();
+    assert!(clean);
+    assert_eq!(s.active(&t.access_token).await["active"], true);
 }

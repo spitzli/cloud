@@ -13,15 +13,15 @@ use tokio_postgres::types::Type;
 use webdock_identity::Principal;
 use webdock_persistence::postgres::Transaction;
 const BUDGET: Duration = Duration::from_secs(30);
-struct RequestRecord {
-    payload: Value,
-    user: String,
-    session: String,
-    client: String,
-    expires: DateTime<Utc>,
+pub(super) struct RequestRecord {
+    pub(super) payload: Value,
+    pub(super) user: String,
+    pub(super) session: String,
+    pub(super) client: String,
+    pub(super) expires: DateTime<Utc>,
 }
 impl RequestRecord {
-    fn context(&self) -> Result<GrantContext> {
+    pub(super) fn context(&self) -> Result<GrantContext> {
         let c: GrantContext =
             serde_json::from_value(self.payload.clone()).map_err(|_| Error::InvalidGrant)?;
         if c.subject != self.user
@@ -32,7 +32,7 @@ impl RequestRecord {
         }
         Ok(c)
     }
-    fn same(&self, r: &Self) -> bool {
+    pub(super) fn same(&self, r: &Self) -> bool {
         self.payload == r.payload
             && self.user == r.user
             && self.session == r.session
@@ -66,7 +66,7 @@ async fn store(tx: &Transaction<'_>, token: &str, kind: &str, c: &GrantContext) 
     if tx.execute_typed("INSERT INTO webdock_auth.identity_oauth_request(token_hash,kind,user_id,session_id,client_id,payload,expires_at) VALUES($1,$2,$3,$4,$5,$6,statement_timestamp()+interval '5 minutes')",&[(&hash,Type::TEXT),(&kind,Type::TEXT),(&c.subject,Type::TEXT),(&c.session_id,Type::TEXT),(&c.request.client_id,Type::TEXT),(&payload,Type::JSONB)]).await.map_err(|_|Error::Configuration)?!=1{return Err(Error::Configuration);}
     Ok(())
 }
-async fn live_deadline(tx: &Transaction<'_>, expires: DateTime<Utc>) -> Result<()> {
+pub(super) async fn live_deadline(tx: &Transaction<'_>, expires: DateTime<Utc>) -> Result<()> {
     let live: bool = tx
         .query_typed_one(
             "SELECT $1::timestamptz>clock_timestamp() AS live",
@@ -100,7 +100,7 @@ fn details(id: &str, client: &Client, c: &GrantContext) -> Result<ConsentRequest
     })
 }
 impl OAuthService {
-    async fn grant_actor<'a>(
+    pub(super) async fn grant_actor<'a>(
         &self,
         tx: Transaction<'a>,
         user: &str,
