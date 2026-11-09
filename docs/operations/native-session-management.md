@@ -61,3 +61,12 @@ services still have explicit retained paths pending their subsequent ports. This
 is not the completed database rewrite or a performance/Neon compute-cost claim.
 Disable management to return to retained session writes; the read-only flag can
 remain enabled independently. A normal Core restart applies the selected mode.
+
+The same optional management store also persists trusted workspace-API-token
+sessions and their user/session-constrained revocation. Issuance requires the
+injected coordinated allocator and returns only a confirmed session ID; its random
+canonical cookie token never leaves the store. AccessService still authorizes the
+member/workspace/write scope and creates the bearer-token binding. Bare IDs are
+not login proof, and Managed Auth's existing scoped automation exemption only
+applies after that explicit binding exists. The finite 1..366-day and label bounds
+remain unchanged. Retained mode stays compatible.

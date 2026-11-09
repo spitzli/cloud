@@ -30,6 +30,44 @@ impl IdentityService {
         }
         Ok((user, session))
     }
+    // Trusted workspace-token issuance. This never returns a canonical cookie token,
+    // and workspace authorization/binding remains the AccessService caller's job.
+    pub(crate) async fn native_issue_api_session(
+        &self,
+        user: &str,
+        label: &str,
+        days: i64,
+    ) -> Result<String> {
+        tokio::time::timeout(BUDGET,async {
+            let allocator=self.allocator.as_ref().ok_or(IdentityError::Configuration)?;
+            let mut connection=self.management_connection().await?;let tx=connection.transaction().await.map_err(|_|IdentityError::Persistence)?;
+            let id=allocator.allocate().await.map_err(|_|IdentityError::Allocation)?.to_string();
+            let token=hex::encode(crate::crypto::random::<32>()?);let days=days as i32;
+            if tx.execute_typed(r#"INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt","userAgent") VALUES($1,$2,$3,statement_timestamp()+make_interval(days=>$4::int),statement_timestamp(),$5)"#,&[(&id,Type::TEXT),(&token,Type::TEXT),(&user,Type::TEXT),(&days,Type::INT4),(&label,Type::TEXT)]).await.map_err(|_|IdentityError::Persistence)?!=1{return Err(IdentityError::Persistence);}
+            tx.commit().await.map_err(|_|IdentityError::Persistence)?;Ok(id)
+        }).await.map_err(|_|IdentityError::Persistence)?
+    }
+    pub(crate) async fn native_revoke_session(&self, user: &str, session: &str) -> Result<bool> {
+        tokio::time::timeout(BUDGET, async {
+            let mut connection = self.management_connection().await?;
+            let tx = connection
+                .transaction()
+                .await
+                .map_err(|_| IdentityError::Persistence)?;
+            let changed = tx
+                .execute_typed(
+                    r#"DELETE FROM webdock_auth.session WHERE id=$1 AND "userId"=$2"#,
+                    &[(&session, Type::TEXT), (&user, Type::TEXT)],
+                )
+                .await
+                .map_err(|_| IdentityError::Persistence)?
+                == 1;
+            tx.commit().await.map_err(|_| IdentityError::Persistence)?;
+            Ok(changed)
+        })
+        .await
+        .map_err(|_| IdentityError::Persistence)?
+    }
     pub(crate) async fn native_list_sessions(&self, cookie: &str) -> Result<Vec<SessionSummary>> {
         let token = self
             .cookies
