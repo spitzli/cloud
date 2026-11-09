@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { useApi, useSession } from "../context";
+import { projectQuery } from "../project-query";
+export { projectSchema } from "../project-query";
 
 // Discovery is scoped by the Core to the project and the viewer's self-service access;
 // admission is rechecked on every call.
@@ -94,19 +96,8 @@ export function invokePlugin(
     body: JSON.stringify({ pluginID: plugin, projectID, action, input, idempotencyKey: idempotencyKey ?? crypto.randomUUID() }),
   });
 }
-export const projectSchema = z.object({
-  url: z.string().nullish(),
-  repositoryURL: z.string().nullish(),
-  id: z.string(),
-  name: z.string(),
-  customer: z.object({ id: z.string(), name: z.string().nullable() }),
-  role: z.string().nullable(),
-});
 export function useProject(projectID: string) {
-  const api = useApi();
-  return useQuery({
-    queryKey: ["project", projectID],
-    queryFn: ({ signal }) => api.get(`/api/console/project/${encodeURIComponent(projectID)}`, projectSchema, signal),
-  });
+  const api=useApi(),session=useSession();
+  return useQuery(projectQuery(api,session,projectID));
 }
 export const revisionSchema = z.object({ revision: z.string() });

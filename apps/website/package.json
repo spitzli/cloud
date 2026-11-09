@@ -11,6 +11,7 @@
     "payload": "bun --env-file=.env.instance ../../node_modules/payload/bin.js --disable-transpile",
     "cms:types": "bun run payload generate:types",
     "cms:migrate": "PAYLOAD_MIGRATING=true bun run payload migrate",
+    "test:prefetch": "bun tests/intent-prefetch-production.mjs",
     "test:sso-policy": "bun test --isolate ./tests/sso-policy.test.ts"
   },
   "dependencies": {
