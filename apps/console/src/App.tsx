@@ -10,6 +10,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
   Navigate,
   RouterProvider,
 } from "@tanstack/react-router";
@@ -23,69 +24,31 @@ const AccountApp = lazy(() =>
 import { WorkspaceMembers, Workspaces } from "./Workspaces";
 import { LocaleProvider } from "./Locale";
 import { parseConsoleSearch } from "./search";
-const DatabaseDirectory = lazy(() =>
-  import("./Databases").then((module) => ({
-    default: module.DatabaseDirectory,
-  })),
-);
-const DatabaseViewer = lazy(() =>
-  import("./Databases").then((module) => ({ default: module.DatabaseViewer })),
-);
+const DatabaseDirectory = lazyRouteComponent(() => import("./Databases"), "DatabaseDirectory");
+const DatabaseViewer = lazyRouteComponent(() => import("./Databases"), "DatabaseViewer");
 import { Shell } from "./Shell";
-const Mail = lazy(() =>
-  import("./Mail").then((module) => ({ default: module.Mail })),
-);
-const Webmail = lazy(() =>
-  import("./Webmail").then((module) => ({ default: module.Webmail })),
-);
-const HostingDirectory = lazy(() =>
-  import("./Hosting").then((module) => ({ default: module.HostingDirectory })),
-);
-const HostingBuilds = lazy(() => import("./HostingBuilds").then((module) => ({default:module.HostingBuilds})));
-const HostingProject = lazy(() =>
-  import("./Hosting").then((module) => ({ default: module.HostingProject })),
-);
-const HostingApplication = lazy(() =>
-  import("./HostingApplication").then((module) => ({
-    default: module.HostingApplication,
-  })),
-);
-const HostingOperation = lazy(() =>
-  import("./HostingOperation").then((module) => ({
-    default: module.HostingOperation,
-  })),
-);
-const InstalledExtensions = lazy(() =>
-  import("./plugins/InstalledExtensions").then((module) => ({
-    default: module.InstalledExtensions,
-  })),
-);
-const InstallExtension = lazy(() => import("./plugins/InstallExtension").then((module) => ({ default: module.InstallExtension })));
-const ExtensionVersions = lazy(() => import("./plugins/ExtensionVersions").then((module) => ({ default: module.ExtensionVersions })));
-const PluginSettings = lazy(() =>
-  import("./plugins/SelfServicePolicy").then((module) => ({
-    default: module.PluginSettings,
-  })),
-);
-const ResourcePage = lazy(() =>
-  import("./plugins/ResourcePage").then((module) => ({
-    default: module.ResourcePage,
-  })),
-);
+const Mail = lazyRouteComponent(() => import("./Mail"), "Mail");
+const Webmail = lazyRouteComponent(() => import("./Webmail"), "Webmail");
+const HostingDirectory = lazyRouteComponent(() => import("./Hosting"), "HostingDirectory");
+const HostingBuilds = lazyRouteComponent(() => import("./HostingBuilds"), "HostingBuilds");
+const HostingProject = lazyRouteComponent(() => import("./Hosting"), "HostingProject");
+const HostingApplication = lazyRouteComponent(() => import("./HostingApplication"), "HostingApplication");
+const HostingOperation = lazyRouteComponent(() => import("./HostingOperation"), "HostingOperation");
+const InstalledExtensions = lazyRouteComponent(() => import("./plugins/InstalledExtensions"), "InstalledExtensions");
+const InstallExtension = lazyRouteComponent(() => import("./plugins/InstallExtension"), "InstallExtension");
+const ExtensionVersions = lazyRouteComponent(() => import("./plugins/ExtensionVersions"), "ExtensionVersions");
+const PluginSettings = lazyRouteComponent(() => import("./plugins/SelfServicePolicy"), "PluginSettings");
+const ResourcePage = lazyRouteComponent(() => import("./plugins/ResourcePage"), "ResourcePage");
 import { WorkspaceProjects } from "./WorkspaceProjects";
 import { useTenants } from "./WorkspaceNav";
 import { ProductPage } from "./plugins/ProductPage";
 import { Plans, WorkspaceUsage } from "./Usage";
 import { WorkspaceDomains } from "./Domains";
 import { WorkspaceApiTokens } from "./ApiTokens";
-const WorkspaceConnections = lazy(() => import("./Connections").then(module => ({ default: module.WorkspaceConnections })));
+const WorkspaceConnections = lazyRouteComponent(() => import("./Connections"), "WorkspaceConnections");
 import { Clusters } from "./Placement";
 import { ProjectPage } from "./ProjectPage";
-const ExtensionOperation = lazy(() =>
-  import("./plugins/ExtensionOperation").then((module) => ({
-    default: module.ExtensionOperation,
-  })),
-);
+const ExtensionOperation = lazyRouteComponent(() => import("./plugins/ExtensionOperation"), "ExtensionOperation");
 import {
   RegistryList,
   RegistryDetail,
@@ -195,6 +158,7 @@ const accountRoute = createRoute({
 const extensionsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/extensions",
+  loader: ({ preload }) => preload ? InstalledExtensions.preload?.() : undefined,
   component: () => (
     <OperatorOnly>
     <Suspense fallback={<Loading>Loading extensions…</Loading>}>
@@ -206,6 +170,7 @@ const extensionsRoute = createRoute({
 const installExtensionRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/extensions/install/$catalogID/$version",
+  loader: ({ preload }) => preload ? InstallExtension.preload?.() : undefined,
   component: () => {
     const { catalogID, version } = installExtensionRoute.useParams();
     return <OperatorOnly><Suspense fallback={<Loading>Loading release…</Loading>}><InstallExtension catalogID={catalogID} version={version} /></Suspense></OperatorOnly>;
@@ -214,6 +179,7 @@ const installExtensionRoute = createRoute({
 const extensionVersionsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/extensions/$plugin/releases",
+  loader: ({ preload }) => preload ? ExtensionVersions.preload?.() : undefined,
   component: () => {
     const { plugin } = extensionVersionsRoute.useParams();
     return <OperatorOnly><Suspense fallback={<Loading>Loading release history…</Loading>}><ExtensionVersions key={plugin} plugin={plugin} /></Suspense></OperatorOnly>;
@@ -237,6 +203,7 @@ const mailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/mail",
   validateSearch,
+  loader: ({ preload }) => preload ? Mail.preload?.() : undefined,
   component: () => {
     const { customer } = mailRoute.useSearch();
     return (
@@ -250,6 +217,7 @@ const inboxRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/mail/inbox/$mailboxID",
   validateSearch,
+  loader: ({ preload }) => preload ? Webmail.preload?.() : undefined,
   component: () => {
     const { customer } = inboxRoute.useSearch();
     const { mailboxID } = inboxRoute.useParams();
@@ -260,6 +228,7 @@ const hostingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/hosting",
   validateSearch,
+  loader: ({ preload }) => preload ? HostingDirectory.preload?.() : undefined,
   component: () => {
     const { customer } = hostingRoute.useSearch();
     return (
@@ -272,6 +241,7 @@ const hostingRoute = createRoute({
 const hostingProjectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/hosting/projects/$projectID",
+  loader: ({ preload }) => preload ? HostingProject.preload?.() : undefined,
   component: () => {
     const { projectID } = hostingProjectRoute.useParams();
     return (
@@ -284,11 +254,13 @@ const hostingProjectRoute = createRoute({
 const hostingBuildsRoute=createRoute({
   getParentRoute:()=>rootRoute,
   path:"/hosting/projects/$projectID/builds",
+  loader: ({ preload }) => preload ? HostingBuilds.preload?.() : undefined,
   component:()=>{const {projectID}=hostingBuildsRoute.useParams();return <Suspense fallback={<Loading>Loading builds…</Loading>}><HostingBuilds key={projectID} projectID={projectID}/></Suspense>;},
 });
 const hostingAppRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/hosting/apps/$appID",
+  loader: ({ preload }) => preload ? HostingApplication.preload?.() : undefined,
   component: () => {
     const { appID } = hostingAppRoute.useParams();
     return (
@@ -301,6 +273,7 @@ const hostingAppRoute = createRoute({
 const hostingSettingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/hosting/apps/$appID/settings",
+  loader: ({ preload }) => preload ? HostingApplication.preload?.() : undefined,
   component: () => {
     const { appID } = hostingSettingsRoute.useParams();
     return (
@@ -313,6 +286,7 @@ const hostingSettingsRoute = createRoute({
 const hostingLogsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/hosting/apps/$appID/logs",
+  loader: ({ preload }) => preload ? HostingApplication.preload?.() : undefined,
   component: () => {
     const { appID } = hostingLogsRoute.useParams();
     return (
@@ -325,6 +299,7 @@ const hostingLogsRoute = createRoute({
 const hostingOperationRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/hosting/operations/$operationID",
+  loader: ({ preload }) => preload ? HostingOperation.preload?.() : undefined,
   component: () => {
     const { operationID } = hostingOperationRoute.useParams();
     return (
@@ -337,6 +312,7 @@ const hostingOperationRoute = createRoute({
 const extensionRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/extensions/$plugin",
+  loader: ({ preload }) => preload ? PluginSettings.preload?.() : undefined,
   component: () => {
     const { plugin } = extensionRoute.useParams();
     return (
@@ -385,6 +361,7 @@ const apiTokensRoute = createRoute({
 const connectionsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/workspaces/$id/connections",
+  loader: ({ preload }) => preload ? WorkspaceConnections.preload?.() : undefined,
   component: () => {
     const { id } = connectionsRoute.useParams();
     return <Suspense fallback={<Loading>Loading connections…</Loading>}><WorkspaceConnections key={id} id={id} /></Suspense>;
@@ -422,6 +399,7 @@ const productRoute = createRoute({
 const resourceRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/workspaces/$customer/projects/$id/resources/$plugin/$resource",
+  loader: ({ preload }) => preload ? ResourcePage.preload?.() : undefined,
   component: () => {
     const { customer, id, plugin, resource } = resourceRoute.useParams();
     return (
@@ -434,6 +412,7 @@ const resourceRoute = createRoute({
 const extensionOperationRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/extensions/operations/$operationID",
+  loader: ({ preload }) => preload ? ExtensionOperation.preload?.() : undefined,
   component: () => {
     const { operationID } = extensionOperationRoute.useParams();
     return (
@@ -449,6 +428,7 @@ const databasesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/databases",
   validateSearch,
+  loader: ({ preload }) => preload ? DatabaseDirectory.preload?.() : undefined,
   component: () => {
     const { customer } = databasesRoute.useSearch();
     return (
@@ -465,6 +445,7 @@ const databaseViewerRoute = createRoute({
     ...validateSearch(search),
     managed: search.managed === true || search.managed === "true",
   }),
+  loader: ({ preload }) => preload ? DatabaseViewer.preload?.() : undefined,
   component: () => {
     const { id } = databaseViewerRoute.useParams();
     const { customer, managed } = databaseViewerRoute.useSearch();
@@ -532,6 +513,7 @@ const router = createRouter({
     detailRoute,
   ]),
   defaultPreload: "intent",
+  defaultPreloadDelay: 125,
 });
 declare module "@tanstack/react-router" {
   interface Register {

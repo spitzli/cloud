@@ -1,3 +1,4 @@
+import { IntentLink } from '@/components/intent-link';
 import Image from 'next/image';
 import {LanguagePicker} from '@webdock/i18n/picker';
 import {getRequestI18n} from '@webdock/i18n/next';
@@ -51,6 +52,6 @@ export default async function Home() {
       <section className="outlook wrap"><span className="outlook-icon" aria-hidden="true">⌘</span><div><h3>{page.outlookTitle}</h3><p>{page.outlookDescription}</p><a className="text-link" href="https://console.spitzli.cloud">{t("Open Console")} <span aria-hidden="true">↗</span></a></div><span className="planned">{t("By invitation")}</span></section>
       <section className="closing wrap"><p>{t("Got something in mind?")}</p><h2 className="whitespace-pre-line">{page.closingTitle}</h2><a className="button" href={contact}>{page.closingButton} <span aria-hidden="true">↗</span></a><span className="closing-mark" aria-hidden="true"><Mark/></span></section>
     </main>
-    <footer className="wrap site-footer"><a className="brand" href="#" aria-label={t("Spitzli Cloud home")}><Mark/>{"Spitzli Cloud"}</a><p>{t("A project by")} <a href="https://spitzli.dev" target="_blank" rel="noopener noreferrer">{"Spitzli Development"}</a></p><a href={`mailto:${page.contactEmail}`}>{page.contactEmail} <span aria-hidden="true">↗</span></a><nav aria-label={t("Legal")}><a href="/terms">{t("Terms")}</a><a href="/privacy">{t("Privacy")}</a><a href="/imprint">{t("Legal notice")}</a></nav><ThemePicker/><LanguagePicker className="language-picker"/></footer>
+    <footer className="wrap site-footer"><a className="brand" href="#" aria-label={t("Spitzli Cloud home")}><Mark/>{"Spitzli Cloud"}</a><p>{t("A project by")} <a href="https://spitzli.dev" target="_blank" rel="noopener noreferrer">{"Spitzli Development"}</a></p><a href={`mailto:${page.contactEmail}`}>{page.contactEmail} <span aria-hidden="true">↗</span></a><nav aria-label={t("Legal")}><IntentLink href="/terms">{t("Terms")}</IntentLink><IntentLink href="/privacy">{t("Privacy")}</IntentLink><IntentLink href="/imprint">{t("Legal notice")}</IntentLink></nav><ThemePicker/><LanguagePicker className="language-picker"/></footer>
   </>;
 }

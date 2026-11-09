@@ -1,3 +1,4 @@
+import { IntentLink } from '@/components/intent-link';
 import {getRequestI18n} from '@webdock/i18n/next';
 import type { Metadata } from 'next';
 
@@ -28,6 +29,6 @@ export default async function VercelGuide() {
     <p>{t("Disconnect in Studio to delete its stored access token. Also uninstall Spitzli Cloud Studio in your Vercel team’s integration settings to revoke permission at Vercel. Project mappings and audit records remain; contact us if you need them removed.")}</p>
     <h2>{t("Support")}</h2>
     <p>{t("Email support at")} <a href="mailto:dominik@spitzli.dev">{"dominik@spitzli.dev"}</a> {t("with the affected project and the visible error. Never include passwords, access tokens or environment-variable values.")}</p>
-    <p>{t("Read the")} <a href="/terms">{t("terms of use")}</a> {t("and the")} <a href="/privacy">{t("privacy notice")}</a> {t("before connecting.")}</p>
+    <p>{t("Read the")} <IntentLink href="/terms">{t("terms of use")}</IntentLink> {t("and the")} <IntentLink href="/privacy">{t("privacy notice")}</IntentLink> {t("before connecting.")}</p>
   </article>;
 }

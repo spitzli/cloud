@@ -1,3 +1,4 @@
+import { useProjectIntent } from "./project-intent";
 import { tenantsSchema } from "./workspace-contracts";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,6 +26,7 @@ export function WorkspaceProjects({ id }: { id: string }) {
   const session = useSession();
   const client = useQueryClient();
   const navigate = useNavigate();
+  const intent=useProjectIntent();
   const tenants = useQuery({ queryKey: ["tenants"], queryFn: ({ signal }) => api.get("/api/console/tenants", tenantsSchema, signal) });
   const projects = useQuery({
     queryKey: ["workspace-projects", id],
@@ -114,7 +116,7 @@ export function WorkspaceProjects({ id }: { id: string }) {
                     <div className="mb-5 flex min-w-0 items-center gap-3">
                       <span className="grid size-9 shrink-0 place-items-center rounded-md border border-outline bg-soft"><FolderSimpleIcon size={20} aria-hidden /></span>
                       <h3 id={`workspace-project-${project.id}`} className="min-w-0 truncate text-sm font-semibold" title={project.name}>
-                        <Link className={ui.rowLink} to="/workspaces/$customer/projects/$id" params={{ customer: id, id: project.id }}>{project.name}</Link>
+                        <Link className={ui.rowLink} to="/workspaces/$customer/projects/$id" params={{ customer: id, id: project.id }} onMouseEnter={() => { intent.hover(project.id); }} onMouseLeave={intent.cancel} onFocus={() => { intent.focus(project.id); }} onBlur={intent.cancel}>{project.name}</Link>
                       </h3>
                     </div>
                     {workspace.pending ? <p className="text-xs text-muted">Loading resources…</p> : workspace.error || workspace.incomplete ? <p className="text-xs text-muted">Resource details unavailable.</p> : resources.length ? (

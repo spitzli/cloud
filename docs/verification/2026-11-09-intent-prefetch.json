@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-09",
+  "base": "ed159748c4daaf1ee72564dd3dc1211614a5cb0d",
+  "scope": {
+    "console": "React19.2.8 / Vite8.3.4 / TanStack Router1.170.45 / Query5.104.5",
+    "website": "Next16.3.8 / React19.2.8"
+  },
+  "behavior": {
+    "heavyRoutes": "Code-only preload on navigation intent; normal cold navigation retains existing Suspense loading UI",
+    "projectCards": "125ms hover or immediate keyboard focus warms one current-authority scoped summary;15s dedup; abort on private-cache retirement; speculative retry disabled",
+    "publicLinks": "Same-origin Next Link prefetch on hover/focus; no viewport prefetch; external/auth/hash anchors unchanged"
+  },
+  "validation": {
+    "consoleBuild": true,
+    "consoleTypecheck": true,
+    "consoleUnitsPassed": 251,
+    "consoleUnitFiles": 41,
+    "browserFixtures": [
+      "prefetch-loading",
+      "intent-prefetch",
+      "workspace-home",
+      "resource-navigation",
+      "project-context",
+      "customer-scope-recovery"
+    ],
+    "slowChunkCases": [
+      "direct Connections entry",
+      "cold in-app Connections click"
+    ],
+    "nextProductionFixture": [
+      "no viewport RSC prefetch",
+      "real hover RSC prefetch",
+      "real keyboard focus RSC prefetch",
+      "client navigation after intent"
+    ],
+    "websitePolicyUnitsPassed": 5,
+    "websiteTypecheck": true,
+    "fixtures": "Owned local HTTP fixtures; exact source IntentLink in isolated installed Next production app; no provider/DB configuration",
+    "consoleStrictLint": true,
+    "websiteTouchedFileLint": true
+  },
+  "review": {
+    "freshContext": true,
+    "importantFindingsFixed": 1,
+    "minorFindingsFixed": 1,
+    "fix": "Restrict18 route code loaders to preload requests; RED/GREEN held-chunk regression",
+    "additionalConcretePrivacyFindings": 0
+  },
+  "maximumMigration": 75,
+  "schemaChanged": false,
+  "credentialsChanged": false,
+  "productionChanged": false,
+  "publicBuildAdmissionChanged": false,
+  "completeBackendRewrite": false,
+  "generalLatencyOrNeonComputeGainMeasured": false,
+  "limits": [
+    "The actual public website production CMS build/render was not exercised.",
+    "Existing large editor/runtime chunk warnings remain.",
+    "This increment does not complete the separate native backend/driver migration."
+  ]
+}

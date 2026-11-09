@@ -1,3 +1,4 @@
+import { IntentLink } from '@/components/intent-link';
 import { getRequestI18n } from '@webdock/i18n/next';
 import type { Metadata } from 'next';
 
@@ -19,7 +20,7 @@ export default async function Privacy() {
     <p>{t("This notice explains how we process personal data on Spitzli Cloud’s website and in its account, Console, hosting, database and Mail services. Customer-operated websites and applications have their own controllers and privacy notices.")}</p>
     <h2>{t("1. Controller and contact")}</h2>
     <p>{t("Dominik Spitzli, trading as Spitzli Development, Emsoldstrasse 40, 26180 Rastede, Germany.")}</p>
-    <p>{t("For privacy questions and requests concerning your data, contact:")} <a href="mailto:dominik@spitzli.dev">dominik@spitzli.dev</a>. <a href="/imprint">{t("Legal notice")}</a>.</p>
+    <p>{t("For privacy questions and requests concerning your data, contact:")} <a href="mailto:dominik@spitzli.dev">dominik@spitzli.dev</a>. <IntentLink href="/imprint">{t("Legal notice")}</IntentLink>.</p>
     <p>{t("We are the controller for our website, customer relationships, accounts and service administration. When we host or handle personal data for a customer, we act on their instructions under a data-processing agreement (Article 28 GDPR). This notice does not replace that agreement.")}</p>
     <h2>{t("2. Data, purposes and legal bases")}</h2>
     <p>{t("When you visit Spitzli Cloud, we and our hosting providers process technical request data, including IP address, requested URL, time, browser and operating-system information, to deliver the site, diagnose errors and prevent misuse. This is based on our legitimate interest in secure, reliable operation (Article 6(1)(f) GDPR). Fonts are served locally.")}</p>
