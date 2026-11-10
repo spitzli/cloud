@@ -12,7 +12,7 @@ def main():
     report={'scope':'actual kernel UID65532 recovery IPC info/denials only; no canonical Core grant/data/volume acceptance','binarySHA256':hashlib.sha256(binary.read_bytes()).hexdigest(),'imageID':image,'priorHarnessFailures':['docker cp into read-only created layer denied','fixture omitted CAP_CHOWN before required UID65 stage setup','fixture Root cleanup lacked DAC_OVERRIDE on enrolled UID65 private directory']}
     volumes=[]
     try:
-        container=fixture.create('ipc',image,['--network=none','--cap-drop=ALL','--cap-add=SETUID','--cap-add=SETGID','--cap-add=CHOWN','--cap-add=DAC_OVERRIDE','--tmpfs','/owned:rw,nodev,nosuid,noexec,size=64m,mode=755'],entrypoint='/usr/local/bin/recovery-ipc-probe',env={'WEBDOCK_DISPOSABLE_RECOVERY_IPC':'yes'},command_args=['--ignored','--exact','disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denial'])
+        container=fixture.create('ipc',image,['--network=none','--cap-drop=ALL','--cap-add=SETUID','--cap-add=SETGID','--cap-add=CHOWN','--cap-add=DAC_OVERRIDE','--tmpfs','/owned:rw,nodev,nosuid,noexec,size=64m,mode=755'],entrypoint='/usr/local/bin/recovery-ipc-probe',env={'SPITZLI_DISPOSABLE_RECOVERY_IPC':'yes'},command_args=['--ignored','--exact','disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denial'])
         volumes=[m['Name'] for m in fixture.inspect(container)['Mounts'] if m['Type']=='volume']
         fixture.docker('cp',str(binary),container+':/usr/local/bin/recovery-ipc-probe')
         result=fixture.docker('start','--attach',container,allowed=True,timeout=40);code=fixture.inspect(container)['State']['ExitCode'];report['exitCode']=code

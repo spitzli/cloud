@@ -26,9 +26,9 @@ class MailRunnerTests(unittest.TestCase):
   rust=(m.ROOT/'crates/control-plane/tests/support/recovery_mail_component.rs').read_text();ce=re.search(r'const CE_IMAGE: &str = "([^"]+)";',rust)[1];self.assertEqual(ce,m.CE)
   mail='localhost/owned/recovery-component@sha256:'+'a'*64
   for reference in (ce,mail):
-   result=subprocess.run(['bash','-c','set -eu;reference=$1;OWNED_CE=$2;WEBDOCK_RECOVERY_MAIL_IMAGE=$3;'+block+';printf "%s" "$wanted"','owned-unit',reference,ce,mail],capture_output=True,timeout=2)
+   result=subprocess.run(['bash','-c','set -eu;reference=$1;OWNED_CE=$2;SPITZLI_RECOVERY_MAIL_IMAGE=$3;'+block+';printf "%s" "$wanted"','owned-unit',reference,ce,mail],capture_output=True,timeout=2)
    self.assertEqual(result.returncode,0);self.assertEqual(result.stdout.decode(),reference)
-  denied=subprocess.run(['bash','-c','set -eu;reference=$1;OWNED_CE=$2;WEBDOCK_RECOVERY_MAIL_IMAGE=$3;'+block,'owned-unit','foreign.invalid/image@sha256:'+'b'*64,ce,mail],capture_output=True,timeout=2)
+  denied=subprocess.run(['bash','-c','set -eu;reference=$1;OWNED_CE=$2;SPITZLI_RECOVERY_MAIL_IMAGE=$3;'+block,'owned-unit','foreign.invalid/image@sha256:'+'b'*64,ce,mail],capture_output=True,timeout=2)
   self.assertEqual(denied.returncode,64)
  def test_actual_generated_mail_dockerfile_is_finite_scratch_closure(self):
   recipe=m.mail_image_recipe('a'*12,'webdock.recovery-component-run','webdock.recovery-component-kind','native-recovery-component','wd-owned-recovery-component:'+'b'*12)

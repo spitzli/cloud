@@ -65,7 +65,7 @@ class Docker:
                 if self.fail == "unobserved-bootstrap":
                     raise subprocess.CalledProcessError(1, argv)
                 name = "buildx_buildkit_" + self.builder["Nodes"][0]["Name"]
-                self.container = {"Id": "a" * 64, "Name": "/" + name, "Image": "sha256:" + "b" * 64, "Config": {"Image": MODULE.BUILDKIT, "Env": ["WEBDOCK_BACKEND_PACKAGE_OWNER=" + self.nonce]}, "HostConfig": {"Memory": 8 * 1024**3, "MemorySwap": 8 * 1024**3, "CpuPeriod": 100000, "CpuQuota": 400000, "Privileged": True, "PidsLimit": 0}, "Mounts": [{"Type": "volume", "Name": self.volume["Name"], "Destination": "/var/lib/buildkit", "RW": True}]}
+                self.container = {"Id": "a" * 64, "Name": "/" + name, "Image": "sha256:" + "b" * 64, "Config": {"Image": MODULE.BUILDKIT, "Env": ["SPITZLI_BACKEND_PACKAGE_OWNER=" + self.nonce]}, "HostConfig": {"Memory": 8 * 1024**3, "MemorySwap": 8 * 1024**3, "CpuPeriod": 100000, "CpuQuota": 400000, "Privileged": True, "PidsLimit": 0}, "Mounts": [{"Type": "volume", "Name": self.volume["Name"], "Destination": "/var/lib/buildkit", "RW": True}]}
                 if self.fail == "budget":
                     self.container["HostConfig"]["Memory"] = 1
             elif args[0] == "update":

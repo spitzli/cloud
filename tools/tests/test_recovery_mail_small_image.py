@@ -39,7 +39,7 @@ class MailSmallImageTests(unittest.TestCase):
   self.assertIn("store['availableBytes']>=budget['additionalBytesRequired']",source);self.assertIn("store['availableInodes']>=budget['additionalInodesRequired']",source);self.assertIn("store['capacityBytes']//5",source);self.assertIn("store['inodeCapacity']//10",source)
   self.assertIn('python3 -B /owned/mail-state.py precore',r.MAIL_PRECORE)
   self.assertIn('/bin/sleep',P('crates/agent/src/recovery/kubernetes.rs').read_text());self.assertIn('/bin/tar',P('crates/agent/src/recovery/kubernetes.rs').read_text())
-  fixture=P('crates/control-plane/tests/support/recovery_mail_component.rs').read_text();self.assertIn('let helper_image = std::env::var("WEBDOCK_RECOVERY_MAIL_IMAGE").unwrap();',fixture)
+  fixture=P('crates/control-plane/tests/support/recovery_mail_component.rs').read_text();self.assertIn('let helper_image = std::env::var("SPITZLI_RECOVERY_MAIL_IMAGE").unwrap();',fixture)
 if __name__=='__main__':unittest.main()
 
 class WorkerStageProjectionTests(unittest.TestCase):
@@ -52,7 +52,7 @@ class WorkerStageProjectionTests(unittest.TestCase):
    receipt=state.worker_log_projection(raw,b'',0,'complete');self.assertEqual(receipt['lines'],[]);self.assertEqual(receipt['category'],'over_limit')
  def test_fixture_flag_is_only_baked_in_owned_mail_image(self):
   recipe=r.mail_image_recipe('a'*12,'run','kind','own','wd-owned-recovery-component:'+'b'*12)
-  self.assertIn('ENV WEBDOCK_RECOVERY_COMPONENT_TEST=1',recipe)
+  self.assertIn('ENV SPITZLI_RECOVERY_COMPONENT_TEST=1',recipe)
 
  def test_log_grammar_matches_every_static_rust_enum_variant(self):
   import re

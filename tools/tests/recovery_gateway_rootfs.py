@@ -154,7 +154,7 @@ def smoke_file_plumbing(root,stage_file,invocation,fixed_path):
         if not stat.S_ISDIR(metadata.st_mode) or metadata.st_uid!=0 or stat.S_IMODE(metadata.st_mode)!=0o755:raise ValueError('image mount parent contract')
     source=root/'source';private=root/'private';target=root/'run/webdock';results={}
     if source.exists() or source.is_symlink() or private.exists() or private.is_symlink() or list(target.iterdir()):raise ValueError('smoke fixture collision')
-    environment={'PATH':fixed_path,'LC_ALL':'C','WEBDOCK_RECOVERY_COMPONENT_TEST':'1'}
+    environment={'PATH':fixed_path,'LC_ALL':'C','SPITZLI_RECOVERY_COMPONENT_TEST':'1'}
     try:
         source.mkdir(mode=0o750);os.chown(source,0,65532);source.chmod(0o750)
         private.mkdir(mode=0o770);os.chown(private,0,65532);private.chmod(0o770)
@@ -195,7 +195,7 @@ def smoke_system_dns(root,probe,invocation,fixed_path):
     metadata=etc.lstat()
     if not stat.S_ISDIR(metadata.st_mode) or metadata.st_uid!=0 or metadata.st_gid!=0 or stat.S_IMODE(metadata.st_mode)!=0o755 or list(etc.iterdir()) or tool.exists() or tool.is_symlink():raise ValueError('fresh image DNS parent required')
     files={'resolv.conf':b'nameserver 192.0.2.53\noptions attempts:1 timeout:1\n','hosts':b'127.0.0.1 localhost\n::1 localhost\n','hostname':b'owned-mail-constructor\n'}
-    cases={};environment={'PATH':fixed_path,'LC_ALL':'C','WEBDOCK_RECOVERY_COMPONENT_TEST':'1'}
+    cases={};environment={'PATH':fixed_path,'LC_ALL':'C','SPITZLI_RECOVERY_COMPONENT_TEST':'1'}
     try:
         shutil.copyfile(probe,tool);tool.chmod(0o555)
         for name,data in files.items():
@@ -205,7 +205,7 @@ def smoke_system_dns(root,probe,invocation,fixed_path):
             if case=='malformed':(etc/'resolv.conf').write_bytes(b'nameserver not-an-ip\n')
             if case=='missing':(etc/'resolv.conf').unlink()
             if case=='inaccessible':(etc/'resolv.conf').write_bytes(files['resolv.conf']);(etc/'resolv.conf').chmod(0o644);etc.chmod(0o700)
-            result=subprocess.run(command,capture_output=True,timeout=5,env={**environment,'WEBDOCK_DNS_CONSTRUCTOR_EXPECT':'ok' if expected else 'deny'})
+            result=subprocess.run(command,capture_output=True,timeout=5,env={**environment,'SPITZLI_DNS_CONSTRUCTOR_EXPECT':'ok' if expected else 'deny'})
             rows=re.findall(rb'(?:^|\.\.\. )mail_dns_constructor (\{[^\n]+\})',result.stdout,re.M)
             if result.returncode or result.stderr or len(result.stdout)>4096 or len(rows)!=1:raise ValueError('actual resolver constructor smoke failed')
             row=json.loads(rows[0]);wanted={'constructorOk':expected,'readable':case not in ('missing','inaccessible'),'readErrno':2 if case=='missing' else 13 if case=='inaccessible' else None}

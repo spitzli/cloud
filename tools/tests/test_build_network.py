@@ -130,7 +130,7 @@ class BuildNetwork(unittest.TestCase):
         self.assertTrue(path.is_file())
         module = load('network_probe', path)
         dockerfile = module.dockerfile()
-        self.assertIn("RUN <<'WEBDOCK_NETWORK_PROBE'\n", dockerfile)
+        self.assertIn("RUN <<'SPITZLI_NETWORK_PROBE'\n", dockerfile)
         shell = module.probe_script()
         result = subprocess.run(['sh', '-n'], input=shell, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)

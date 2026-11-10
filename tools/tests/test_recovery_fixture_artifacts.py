@@ -134,7 +134,7 @@ class ArtifactSelectionTests(unittest.TestCase):
         self.assertEqual(namespace['report']['liveRootLockSHA256'],'b'*64)
         self.assertEqual(namespace['report']['rootLock'],inputs['compilation']['rootLockSHA256'])
         create=next(n for n in ast.walk(main) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='create' and any(k.arg=='env' for k in n.keywords))
-        env=next(k.value for k in create.keywords if k.arg=='env');driver=next(v for k,v in zip(env.keys,env.values) if isinstance(k,ast.Constant) and k.value=='WEBDOCK_RECOVERY_COMPONENT_DRIVER')
+        env=next(k.value for k in create.keywords if k.arg=='env');driver=next(v for k,v in zip(env.keys,env.values) if isinstance(k,ast.Constant) and k.value=='SPITZLI_RECOVERY_COMPONENT_DRIVER')
         self.assertEqual(eval(compile(ast.Expression(driver),runner.__file__,'eval'),namespace),'docker')
 
     def test_nonregular_input_is_rejected_before_open(self):
@@ -338,7 +338,7 @@ class ModernPrimaryScriptTests(unittest.TestCase):
 
     def test_postgres_execution_selector_is_verified_root_not_classic_config(self):
         _,main=self.script();call=next(n for n in ast.walk(main) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='create' and any(k.arg=='env' for k in n.keywords))
-        env=next(k.value for k in call.keywords if k.arg=='env');selector=next(v for k,v in zip(env.keys,env.values) if isinstance(k,ast.Constant) and k.value=='WEBDOCK_RECOVERY_POSTGRES_IMAGE_ID')
+        env=next(k.value for k in call.keywords if k.arg=='env');selector=next(v for k,v in zip(env.keys,env.values) if isinstance(k,ast.Constant) and k.value=='SPITZLI_RECOVERY_POSTGRES_IMAGE_ID')
         context={'report':{'importBindings':{runner.PG:{'rootDigest':'authenticated-root-id','configurationID':'not-a-runtime-selector'}}},'PG':runner.PG}
         self.assertEqual(eval(compile(ast.Expression(selector),runner.__file__,'eval'),context),'authenticated-root-id')
 

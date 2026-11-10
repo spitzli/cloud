@@ -95,7 +95,7 @@ def run(s3_path, mc, access):
         fixture = private / "fixture.json"
         fixture.write_text(json.dumps({"address": address, "username": username, "password": password, "containerId": custody, "runId": nonce}))
         fixture.chmod(0o600)
-        environment = {**os.environ, "WEBDOCK_REGISTRY_S3_TEST_CONFIG": str(fixture)}
+        environment = {**os.environ, "SPITZLI_REGISTRY_S3_TEST_CONFIG": str(fixture)}
 
         def test(case):
             log = run_output / f"{case}.log"
