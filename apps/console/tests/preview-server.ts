@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { recordSchema } from "../src/api";
 import { workbench } from "./workbench-fixtures";
+import { customerFixture } from "./customer-fixture";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const records = {
   projects: [
@@ -128,6 +129,16 @@ async function serve(
   next: () => void,
 ) {
   const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "127.0.0.1"}`);
+  if (process.env.WEBDOCK_CUSTOMER_FIXTURE === "1") {
+    const result = await customerFixture(req, url);
+    if (result) {
+      res.statusCode = result.status;
+      result.headers.forEach((value, key) => res.setHeader(key, value));
+      res.setHeader("Cache-Control", "no-store");
+      res.end(await result.text());
+      return;
+    }
+  }
   const send = (data: unknown) => {
     res.setHeader("Content-Type", "application/json");
     res.setHeader("Cache-Control", "no-store");
@@ -179,6 +190,12 @@ async function serve(
     return;
   }
   if (!url.pathname.startsWith("/v1/operator/registry/")) {
+    // Unhandled fixture calls must never fall through to the development Core proxy.
+    if (/^\/(api|v1)\//.test(url.pathname)) {
+      res.statusCode = 404;
+      send({ error: { message: "Not implemented by this browser fixture." } });
+      return;
+    }
     next();
     return;
   }
@@ -214,7 +231,7 @@ async function prebuilt() {
 async function development() {
   const instance = await createServer({
     root,
-    cacheDir: fileURLToPath(new URL('../../../.runtime-test/vite-cache/preview', import.meta.url)),
+    cacheDir: fileURLToPath(new URL(`../../../.runtime-test/vite-cache/preview-${process.env.WEBDOCK_PREVIEW_PORT ?? '3121'}`, import.meta.url)),
     server: { host: "127.0.0.1", port: Number(process.env.WEBDOCK_PREVIEW_PORT ?? 3121), strictPort: false },
     plugins: [{
       name: "test-only-api",

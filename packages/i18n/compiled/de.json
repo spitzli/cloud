@@ -836,6 +836,9 @@
   "All project databases": [
     "Alle Projektdatenbanken"
   ],
+  "All projects": [
+    "Alle Projekte"
+  ],
   "All records": [
     "Alle Einträge"
   ],
@@ -4416,6 +4419,9 @@
   "Filter by name or ID": [
     "Nach Name oder ID filtern"
   ],
+  "Filter by project": [
+    "Nach Projekt filtern"
+  ],
   "Filter by status": [
     "Nach Status filtern"
   ],
@@ -4430,6 +4436,9 @@
   ],
   "Find a person": [
     "Person suchen"
+  ],
+  "Find a workspace or project": [
+    "Workspace oder Projekt finden"
   ],
   "Find an API request by route or request ID to diagnose failures. HTTP 2xx means the request succeeded; check the message for delivery status.": [
     "Finde einen API-Aufruf über Route oder Request-ID, um Fehler zu untersuchen. HTTP 2xx bedeutet einen erfolgreichen Aufruf; den Zustellstatus findest du bei der Nachricht."
@@ -6909,8 +6918,14 @@
   "No matching requests on this page.": [
     "Keine passenden Anfragen auf dieser Seite."
   ],
+  "No matching resources": [
+    "Keine passenden Ressourcen"
+  ],
   "No matching results. Clear the filters to see all entries.": [
     "Keine passenden Ergebnisse. Entferne die Filter, um alle Einträge zu sehen."
+  ],
+  "No matching workspaces or projects": [
+    "Keine passenden Workspaces oder Projekte"
   ],
   "No matching workspaces.": [
     "Keine passenden Arbeitsbereiche."
@@ -9666,8 +9681,14 @@
   "Search requests on this page": [
     "Anfragen auf dieser Seite suchen"
   ],
+  "Search resources": [
+    "Ressourcen suchen"
+  ],
   "Search resources and services": [
     "Ressourcen und Dienste suchen"
+  ],
+  "Search resources…": [
+    "Ressourcen suchen…"
   ],
   "Search text or label": [
     "Text oder Bezeichnung suchen"
@@ -9683,6 +9704,12 @@
   ],
   "Search websites…": [
     "Website suchen …"
+  ],
+  "Search workspaces and projects": [
+    "Workspaces und Projekte suchen"
+  ],
+  "Search workspaces and projects…": [
+    "Workspaces und Projekte suchen…"
   ],
   "Search {field}": [
     "{field} suchen"
@@ -11603,6 +11630,12 @@
   ],
   "Try another name or domain.": [
     "Versuche einen anderen Namen oder eine Domain."
+  ],
+  "Try another name or open all workspaces.": [
+    "Versuche einen anderen Namen oder öffne alle Workspaces."
+  ],
+  "Try another name or project.": [
+    "Versuche einen anderen Namen oder ein anderes Projekt."
   ],
   "Try another name, contact or email address.": [
     "Versuche einen anderen Namen, Kontakt oder eine andere E-Mail-Adresse."

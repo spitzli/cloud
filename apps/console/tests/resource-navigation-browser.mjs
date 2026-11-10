@@ -46,7 +46,7 @@ try {
     await s.page.getByRole('group', { name: 'Project destination' }).getByText('Writable project', { exact: true }).waitFor();
     assert.equal(await s.page.getByRole('combobox', { name: 'Project', exact: true }).count(), 0, 'single eligible destination is shown directly');
     await s.page.getByRole('textbox', { name: 'Note name' }).fill('Created note');await s.page.getByRole('button', { name: 'Create', exact: true }).click();
-    await s.page.getByRole('heading', { name: 'Created note', exact: true }).waitFor();await s.page.getByRole('link', { name: 'Writable project', exact: true }).waitFor();assert.equal(s.calls.filter(c => c.body?.action === 'notes.create').length, 1);assert.deepEqual(s.errors, []);await s.context.close();
+    await s.page.getByRole('heading', { name: 'Created note', exact: true }).waitFor();await s.page.getByRole('main').getByRole('link', { name: 'Writable project', exact: true }).waitFor();assert.equal(s.calls.filter(c => c.body?.action === 'notes.create').length, 1);assert.deepEqual(s.errors, []);await s.context.close();
   }
   let s = await open(browser, { failed: true });await s.page.goto(previewOrigin + '/workspaces/101/products/echo-demo');
   await s.page.getByRole('button', { name: 'Try again' }).waitFor();s.recover();await s.page.getByRole('button', { name: 'Try again' }).click();

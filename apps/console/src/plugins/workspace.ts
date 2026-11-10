@@ -31,11 +31,12 @@ export interface WorkspacePlugin {
   sources: { project: WorkspaceProject; view: PluginView }[];
 }
 
-export function useWorkspaceProjects(customer: string) {
+export function useWorkspaceProjects(customer: string | undefined) {
   const api = useApi();
   return useQuery({
     queryKey: ["workspace-projects", customer],
-    queryFn: ({ signal }) => api.get(`/api/console/tenant/${encodeURIComponent(customer)}/projects`, workspaceProjectsSchema, signal),
+    enabled: Boolean(customer),
+    queryFn: ({ signal }) => api.get(`/api/console/tenant/${encodeURIComponent(customer ?? "")}/projects`, workspaceProjectsSchema, signal),
   });
 }
 /** Every plugin with a self-service area, merged across the workspace's projects.
@@ -64,5 +65,7 @@ export function useWorkspacePlugins(customer: string) {
       merged.set(view.manifest.name, entry);
     }
   });
-  return { projects, plugins: [...merged.values()].sort((a, b) => pluginNav(a.plugin).label.localeCompare(pluginNav(b.plugin).label)), pending, error, incomplete: views.some((v) => v.isError), refetch: () => Promise.all([projects.refetch(), ...views.map((view) => view.refetch())]) };
+  const failedProjects = new Set((projects.data ?? []).filter((_, index) => views[index]?.isError).map(project => project.id));
+  const pendingProjects = new Set((projects.data ?? []).filter((_, index) => views[index]?.isPending).map(project => project.id));
+  return { projects, failedProjects, pendingProjects, plugins: [...merged.values()].sort((a, b) => pluginNav(a.plugin).label.localeCompare(pluginNav(b.plugin).label)), pending, error, incomplete: views.some((v) => v.isError), refetch: () => Promise.all([projects.refetch(), ...views.map((view) => view.refetch())]) };
 }

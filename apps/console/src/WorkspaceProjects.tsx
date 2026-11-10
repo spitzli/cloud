@@ -70,7 +70,7 @@ export function WorkspaceProjects({ id }: { id: string }) {
         </div>
         <div className="flex items-center gap-2">
           <button type="button" aria-label="Refresh workspace" className={ui.button("quiet", "icon")} disabled={refreshing} onClick={() => { void refresh(); }}><ArrowClockwiseIcon aria-hidden className={refreshing ? "animate-spin" : ""} /></button>
-          {canCreate && !adding ? <button className={ui.button()} onClick={() => { setAdding(true); }}>New project</button> : null}
+          {canCreate && !adding ? <button className={ui.button()} onClick={() => { create.reset(); setAdding(true); }}>New project</button> : null}
         </div>
       </div>
       {adding ? (
@@ -111,6 +111,7 @@ export function WorkspaceProjects({ id }: { id: string }) {
             <ul aria-label="Projects" className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
               {filtered.map((project) => {
                 const resources = workspace.plugins.flatMap((plugin) => plugin.resources.filter((resource) => resource.project.id === project.id).map((resource) => ({ ...resource, plugin: plugin.plugin })));
+                const pending = workspace.pendingProjects.has(project.id), unavailable = workspace.failedProjects.has(project.id);
                 return <li key={project.id} className="min-w-0">
                   <article aria-labelledby={`workspace-project-${project.id}`} className={ui.cx(ui.card, ui.clickableRow, "flex h-full min-h-44 flex-col p-5")}>
                     <div className="mb-5 flex min-w-0 items-center gap-3">
@@ -119,11 +120,11 @@ export function WorkspaceProjects({ id }: { id: string }) {
                         <Link className={ui.rowLink} to="/workspaces/$customer/projects/$id" params={{ customer: id, id: project.id }} onMouseEnter={() => { intent.hover(project.id); }} onMouseLeave={intent.cancel} onFocus={() => { intent.focus(project.id); }} onBlur={intent.cancel}>{project.name}</Link>
                       </h3>
                     </div>
-                    {workspace.pending ? <p className="text-xs text-muted">Loading resources…</p> : workspace.error || workspace.incomplete ? <p className="text-xs text-muted">Resource details unavailable.</p> : resources.length ? (
+                    {pending ? <p className="text-xs text-muted">Loading resources…</p> : unavailable ? <p className="text-xs text-muted">Resource details unavailable.</p> : resources.length ? (
                       <ul aria-label={`Resources in ${project.name}`} className="mb-4 grid gap-1 text-[13px] text-muted">{resources.slice(0, 2).map((resource) => <li key={`${resource.plugin}:${resource.id}`} className="truncate" title={resource.name}>{resource.name}</li>)}</ul>
                     ) : <p className="text-[13px] text-muted">No extension resources linked.</p>}
                     <div className="mt-auto flex items-center justify-between gap-3 border-t border-outline pt-3 text-xs text-muted">
-                      <span>{workspace.pending || workspace.error || workspace.incomplete ? "Extension resources" : `${String(resources.length)} ${resources.length === 1 ? "extension resource" : "extension resources"}`}</span>
+                      <span>{pending || unavailable ? "Extension resources" : `${String(resources.length)} ${resources.length === 1 ? "extension resource" : "extension resources"}`}</span>
                       <span>Open project</span>
                     </div>
                   </article>
