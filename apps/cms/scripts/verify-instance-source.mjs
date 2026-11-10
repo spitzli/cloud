@@ -19,7 +19,7 @@ const config = (await import('../src/payload.config.ts')).default
 const payload = await getPayload({ config })
 const ledger = JSON.parse(fs.readFileSync('.backups/instance-blob-copies.json', 'utf8'))
 const instancePaths = {
-  webdock: process.env.WEBDOCK_INSTANCE_PATH || '../website',
+  webdock: process.env.SPITZLI_INSTANCE_PATH || '../website',
   spitzli: process.env.SPITZLI_INSTANCE_PATH || '../../../spitzli',
   stall: process.env.STALL_INSTANCE_PATH || '/home/newt/Projekte/Personal/spitzli-backup-roelfs-20261002/stall-eichenbruch',
 }

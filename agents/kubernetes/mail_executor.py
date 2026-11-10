@@ -164,7 +164,7 @@ def execute_mail(packet, checkpoint):
         check_owner(service, p, True)
         return MailClient('http://' + service['spec']['clusterIP'] + ':8080', username, password)
 
-    with open(os.environ.get('WEBDOCK_EXECUTOR_LOCK', '/run/lock/webdock-managed-executor.lock'), 'w') as lock:
+    with open(os.environ.get('SPITZLI_EXECUTOR_LOCK', '/run/lock/webdock-managed-executor.lock'), 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         renew()
         existing = get('namespace', namespace)
@@ -235,7 +235,7 @@ def mail_capability(nodes):
     import subprocess
     from storage import private, StorageError
     try:
-        path = private(Path(os.environ.get('WEBDOCK_MAIL_CONFIG', '/etc/webdock-mail.json')))
+        path = private(Path(os.environ.get('SPITZLI_MAIL_CONFIG', '/etc/webdock-mail.json')))
         config = json.loads(path.read_text())
         if set(config) != {'image', 'node'} or nodes != [config['node']] or not re.fullmatch(r'[A-Za-z0-9.:-]+/[A-Za-z0-9_./-]+@sha256:[a-f0-9]{64}', config['image']):
             return None

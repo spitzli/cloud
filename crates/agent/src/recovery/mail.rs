@@ -945,7 +945,7 @@ async fn restore_inner(
             "--provision-roles-from",
         ])
         .arg(roles)
-        .env("WEBDOCK_MIGRATION_DATABASE_URL", source)
+        .env("SPITZLI_MIGRATION_DATABASE_URL", source)
         .env("DATABASE_RLS_SECRET", rls.trim_end())
         .stdin(Stdio::null())
         .stdout(Stdio::null())

@@ -149,7 +149,7 @@ fn fixed_build_filesystem_enforces_enospc_checks_mount_identity_and_fences_retir
         sync::{Arc, atomic::AtomicBool},
     };
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_STORAGE_TEST").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_STORAGE_TEST").as_deref(),
         Ok("yes")
     );
     assert!(std::path::Path::new("/.dockerenv").is_file());

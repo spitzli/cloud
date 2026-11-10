@@ -227,7 +227,7 @@ def retention_plan(destination,app_id):
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('action',choices=['backup','restore']);parser.add_argument('--config',type=Path,required=True);parser.add_argument('--directory',type=Path,required=True);parser.add_argument('--prune',action='store_true',help='After a verified backup, retain seven daily and four weekly sets for this app only')
     args=parser.parse_args();c=configuration(args.config)
-    with open(os.environ.get('WEBDOCK_EXECUTOR_LOCK','/run/lock/webdock-managed-executor.lock'),'a') as lock:
+    with open(os.environ.get('SPITZLI_EXECUTOR_LOCK','/run/lock/webdock-managed-executor.lock'),'a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
         result=backup(c,args.directory) if args.action=='backup' else restore(c,args.directory)
         if args.prune:

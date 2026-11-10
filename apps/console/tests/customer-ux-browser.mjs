@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import { fromRepo } from './repo.mjs';
-process.env.WEBDOCK_CUSTOMER_FIXTURE = '1';
+process.env.SPITZLI_CUSTOMER_FIXTURE = '1';
 const { server, previewOrigin } = await import('./preview-server.ts');
 const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {}) });
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: 'en-GB' });
@@ -20,7 +20,7 @@ await context.route('**/*', route => {
 const output = fromRepo('.runtime-test/customer-ux/');
 await mkdir(output, { recursive: true });
 async function check(name, run) {
-  if (process.env.WEBDOCK_CUSTOMER_UX_CASE && !name.includes(process.env.WEBDOCK_CUSTOMER_UX_CASE)) return;
+  if (process.env.SPITZLI_CUSTOMER_UX_CASE && !name.includes(process.env.SPITZLI_CUSTOMER_UX_CASE)) return;
   try { await run(); checks.push({ name, passed: true }); console.log(`PASS ${name}`); }
   catch (error) { await page.screenshot({ path: new URL('failure-' + checks.length + '.png', output).pathname, fullPage: true }); await writeFile(new URL('failure-' + checks.length + '.txt', output), await page.locator('body').innerText()); checks.push({ name, passed: false, error: error.message }); failures.push(name); console.error(`FAIL ${name}: ${error.message}`); }
 }

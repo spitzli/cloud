@@ -165,10 +165,10 @@ class InstallerTests(unittest.TestCase):
         job = {**JOB, 'manifestRaw':json.dumps({'name':'example','version':'1.0.0','image':'registry.example/p@sha256:'+'a'*64,'navigation':[{'path':'/ui'}]})}
         resources = installer.runtime_resources({'runtime':runtime}, job, 'TOKEN', 'PUBLIC KEY', 'CERT', 'KEY')
         identity = next(item for item in resources if item['kind']=='Secret' and item['type']=='Opaque')['stringData']
-        self.assertEqual(identity['WEBDOCK_PLUGIN_CONSOLE_ORIGIN'], 'https://console.example.test')
-        self.assertEqual(identity['WEBDOCK_PLUGIN_PUBLIC_KEY'], 'PUBLIC KEY')
-        self.assertEqual(identity['WEBDOCK_PLUGIN_RUNTIME_TOKEN'], 'TOKEN')
-        self.assertNotIn('WEBDOCK_PLUGIN_HOST_PUBLIC_KEY', identity)
+        self.assertEqual(identity['SPITZLI_PLUGIN_CONSOLE_ORIGIN'], 'https://console.example.test')
+        self.assertEqual(identity['SPITZLI_PLUGIN_PUBLIC_KEY'], 'PUBLIC KEY')
+        self.assertEqual(identity['SPITZLI_PLUGIN_RUNTIME_TOKEN'], 'TOKEN')
+        self.assertNotIn('SPITZLI_PLUGIN_HOST_PUBLIC_KEY', identity)
         deployment = next(item for item in resources if item['kind']=='Deployment')
         self.assertEqual(deployment['spec']['template']['spec']['securityContext']['runAsUser'],1000)
         runtime.pop('consoleOrigin')
@@ -202,8 +202,8 @@ class InstallerTests(unittest.TestCase):
             job={**JOB,'manifestRaw':json.dumps({'name':'headless','version':'1.0.0','image':'registry.example/p@sha256:'+'a'*64,'navigation':[]})}
             resources=installer.runtime_resources({'runtime':headless},job,'TOKEN','PUBLIC KEY','CERT','KEY')
             identity=next(item for item in resources if item['kind']=='Secret' and item['type']=='Opaque')['stringData']
-            self.assertNotIn('WEBDOCK_PLUGIN_CONSOLE_ORIGIN',identity)
-            self.assertEqual(identity['WEBDOCK_PLUGIN_PUBLIC_KEY'],'PUBLIC KEY')
+            self.assertNotIn('SPITZLI_PLUGIN_CONSOLE_ORIGIN',identity)
+            self.assertEqual(identity['SPITZLI_PLUGIN_PUBLIC_KEY'],'PUBLIC KEY')
 
     def test_api_hairpin_egress_uses_only_configured_ingress_pods(self):
         config = {'runtime': {'namespace': 'plugins', 'apiNamespace': 'platform', 'apiPodLabels': {'app': 'webdock-api'},

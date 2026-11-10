@@ -290,7 +290,7 @@ async fn mail_only_native_core_daemon_handles_lost_acks_and_retains_instance() {
 #[ignore = "requires built Console, owned Docker CE image and local restricted database fixture"]
 async fn native_console_drives_incoming_mail_activation_and_retained_suspension() {
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_BROWSER_TEST").as_deref(),
+        std::env::var("SPITZLI_MAIL_BROWSER_TEST").as_deref(),
         Ok("1")
     );
     fixture(Scenario::Browser).await;
@@ -299,20 +299,20 @@ async fn native_console_drives_incoming_mail_activation_and_retained_suspension(
 #[ignore = "requires built Console, owned Docker CE image and local restricted database fixture"]
 async fn native_console_applies_mail_domains_mailboxes_and_access() {
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_BROWSER_TEST").as_deref(),
+        std::env::var("SPITZLI_MAIL_BROWSER_TEST").as_deref(),
         Ok("1")
     );
     fixture(Scenario::BrowserConfiguration).await;
 }
 async fn fixture(scenario: Scenario) {
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_NATIVE_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_MAIL_NATIVE_DOCKER_TEST").as_deref(),
         Ok("1")
     );
-    let image = std::env::var("WEBDOCK_MAIL_RUNTIME_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_MAIL_RUNTIME_IMAGE").unwrap();
     assert!(spitzli_supervisor::image_digest(&image));
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
     assert_eq!(url.path(), "/webdock_rls_test");
     assert!(url.query().is_none());
@@ -381,7 +381,7 @@ async fn run(
     sql(&owner,"INSERT INTO webdock_auth.agent_transport_enrollment(installation,agent_id,generation,cluster_id,credential_hash,transport,unix_uid) VALUES($1,'mail-agent',1,'200',$2,'unix',$3)",vec![installation.into(),credential_hash.into(),i64::from(rustix::process::geteuid().as_raw()).into()]).await;
     let auth = role("AUTH_DATABASE_URL", name, url).await;
     let business = role("DATABASE_URL", name, url).await;
-    let worker = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", name, url).await;
+    let worker = role("SPITZLI_PLUGIN_WORKER_DATABASE_URL", name, url).await;
     let cookies = CookiePolicy::new(false, "native-mail-cookie-fixture-key-atleast32").unwrap();
     let cookie = format!(
         "{}={}",

@@ -13,17 +13,17 @@ concurrency:
   cancel-in-progress: false
 jobs:
   qualification:
-    if: github.repository == 'spitzli/cloud' && vars.WEBDOCK_BLACKSMITH_REGION != '' && ((github.event_name == 'push' && github.ref == 'refs/heads/ci/blacksmith-qualification') || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/ci/blacksmith-qualification')))
+    if: github.repository == 'spitzli/cloud' && vars.SPITZLI_BLACKSMITH_REGION != '' && ((github.event_name == 'push' && github.ref == 'refs/heads/ci/blacksmith-qualification') || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/ci/blacksmith-qualification')))
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 15
     env:
-      WEBDOCK_OCI_BACKEND: blacksmith-buildx
-      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+      SPITZLI_OCI_BACKEND: blacksmith-buildx
+      SPITZLI_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
     steps:
       - name: Require reviewed Blacksmith execution
         shell: bash
         env:
-          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
         run: |
           set -euo pipefail
           case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac

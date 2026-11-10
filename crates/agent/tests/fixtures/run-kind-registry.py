@@ -30,7 +30,7 @@ for source,target in [(executables[0],'registry-test'),('/usr/local/bin/helm','h
     with tempfile.TemporaryDirectory(prefix='webdock-registry-artifact-') as temporary:
         copy=pathlib.Path(temporary)/pathlib.Path(target).name;shutil.copyfile(source,copy);copy.chmod(0o755);docker('cp',str(copy),node+':'+fixture+'/'+target)
 docker('cp','deploy/helm/webdock-plugin',node+':'+fixture+'/chart')
-result=subprocess.run(engine+['exec','-e','WEBDOCK_DISPOSABLE_NODE_TEST=yes','-e','WEBDOCK_KUBE_TEST_CONFIG='+fixture+'/kubeconfig','-e','WEBDOCK_KUBE_TEST_CONTEXT='+args.context,'-e','WEBDOCK_REGISTRY_FIXTURE_DIR='+fixture,node,fixture+'/lib/ld-linux-x86-64.so.2','--library-path',fixture+'/lib',fixture+'/registry-test','owned_kind','--ignored','--nocapture'])
+result=subprocess.run(engine+['exec','-e','SPITZLI_DISPOSABLE_NODE_TEST=yes','-e','SPITZLI_KUBE_TEST_CONFIG='+fixture+'/kubeconfig','-e','SPITZLI_KUBE_TEST_CONTEXT='+args.context,'-e','SPITZLI_REGISTRY_FIXTURE_DIR='+fixture,node,fixture+'/lib/ld-linux-x86-64.so.2','--library-path',fixture+'/lib',fixture+'/registry-test','owned_kind','--ignored','--nocapture'])
 docker('exec',node,'rm','-r','--',fixture)
 if attached:docker('network','disconnect','kind',args.outer_container)
 raise SystemExit(result.returncode)

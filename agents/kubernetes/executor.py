@@ -154,8 +154,8 @@ def referenced_environment(objects):
 
 def kubectl(*args,obj=None,timeout=20):
     command=['k3s','kubectl']
-    if os.environ.get('WEBDOCK_KUBECTL_CACHE_DIR'):
-        command+=['--cache-dir',os.environ['WEBDOCK_KUBECTL_CACHE_DIR']]
+    if os.environ.get('SPITZLI_KUBECTL_CACHE_DIR'):
+        command+=['--cache-dir',os.environ['SPITZLI_KUBECTL_CACHE_DIR']]
     result=subprocess.run([*command,*args],input=json.dumps(obj) if obj is not None else None,capture_output=True,text=True,timeout=timeout)
     if result.returncode:
         if any(k in result.stderr for k in ['Webdock:','violates PodSecurity','exceeded quota']):raise ExecutionError('admission_rejected')
@@ -370,7 +370,7 @@ def execute(p):
 def main(packet):
     try:
         # Serializes remote invocations even across interrupted/restarted local bridges.
-        with open(os.environ.get('WEBDOCK_EXECUTOR_LOCK','/run/lock/webdock-managed-executor.lock'),'w') as lock:
+        with open(os.environ.get('SPITZLI_EXECUTOR_LOCK','/run/lock/webdock-managed-executor.lock'),'w') as lock:
             fcntl.flock(lock,fcntl.LOCK_EX)
             result=execute(packet)
         print(json.dumps({'outcome':'succeeded','proof':result}))

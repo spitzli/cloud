@@ -40,7 +40,7 @@ async fn sql(db: &impl ConnectionTrait, query: &str, values: Vec<sea_orm::Value>
 #[tokio::test]
 #[ignore = "creates and removes an isolated database on the owned restricted fixture server"]
 async fn invitation_dispatch_binds_live_customer_owner_scope() {
-    let mut offline = guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL");
+    let mut offline = guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL");
     let admin = Database::connect(offline.as_str()).await.unwrap();
     let name = format!(
         "webdock_access_invite_{}_{}_test",

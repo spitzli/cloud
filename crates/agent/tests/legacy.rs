@@ -128,8 +128,8 @@ async fn existing_kubernetes_uid_local_volume_data_and_secret_references_survive
             Ok(())
         }
     }
-    let config_path = PathBuf::from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap());
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let config_path = PathBuf::from(std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap());
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("kind-webdock-rust-"));
     let config = Config::from_custom_kubeconfig(
         Kubeconfig::read_from(&config_path).unwrap(),
@@ -161,7 +161,7 @@ async fn existing_kubernetes_uid_local_volume_data_and_secret_references_survive
     let mut spec = spec();
     spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
     spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
-    spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
+    spec.image = std::env::var("SPITZLI_KUBE_TEST_IMAGE").unwrap();
     spec.arguments.extend(["-h".into(), "/data".into()]);
     spec.volume = Some(RetainedVolume {
         mount_path: "/data".into(),
@@ -447,13 +447,13 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
     use spitzli_agent::storage::{StorageClient, StoragePacket, StoragePool};
     use std::{os::unix::fs::PermissionsExt, sync::Arc, time::Duration};
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_NODE_TEST").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_NODE_TEST").as_deref(),
         Ok("yes")
     );
     assert_eq!(rustix::process::geteuid().as_raw(), 0);
     assert!(std::path::Path::new("/.dockerenv").is_file());
-    let kubeconfig = std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap();
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let kubeconfig = std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap();
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("kind-webdock-rust-"));
     let config = Config::from_custom_kubeconfig(
         Kubeconfig::read_from(&kubeconfig).unwrap(),
@@ -505,7 +505,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
     let mut spec = spec();
     spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
     spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
-    spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
+    spec.image = std::env::var("SPITZLI_KUBE_TEST_IMAGE").unwrap();
     spec.memory_bytes = 134217728;
     spec.volume = Some(RetainedVolume {
         mount_path: "/data".into(),

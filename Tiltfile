@@ -6,12 +6,12 @@
 local('bun tools/dev/local.mjs secrets', quiet=True)
 local('bun tools/dev/minio.mjs', quiet=True)
 
-# WEBDOCK_DEV_HTTPS=1 tilt up: Console and account pages over HTTPS (needs mkcert; reset when switching).
-https = os.getenv('WEBDOCK_DEV_HTTPS', '') == '1'
+# SPITZLI_DEV_HTTPS=1 tilt up: Console and account pages over HTTPS (needs mkcert; reset when switching).
+https = os.getenv('SPITZLI_DEV_HTTPS', '') == '1'
 scheme = 'https' if https else 'http'
 tls_env = {
-    'WEBDOCK_DEV_TLS_CERT': os.path.join(config.main_dir, '.dev-local/tls/cert.pem'),
-    'WEBDOCK_DEV_TLS_KEY': os.path.join(config.main_dir, '.dev-local/tls/key.pem'),
+    'SPITZLI_DEV_TLS_CERT': os.path.join(config.main_dir, '.dev-local/tls/cert.pem'),
+    'SPITZLI_DEV_TLS_KEY': os.path.join(config.main_dir, '.dev-local/tls/key.pem'),
 } if https else {}
 
 docker_compose('deploy/dev/compose.yaml', project_name='webdock-dev')
@@ -20,8 +20,8 @@ dc_resource('registry', labels=['infra'], links=[link('http://127.0.0.1:5005/v2/
 dc_resource('mailpit', labels=['infra'], links=[link('http://127.0.0.1:55026', 'Mailpit')])
 dc_resource('shared-postgres', labels=['infra'])
 dc_resource('minio', labels=['infra'], links=[
-    link('http://127.0.0.1:' + os.getenv('WEBDOCK_DEV_S3_PORT', '55900'), 'S3'),
-    link('http://127.0.0.1:' + os.getenv('WEBDOCK_DEV_MINIO_CONSOLE_PORT', '55901'), 'MinIO'),
+    link('http://127.0.0.1:' + os.getenv('SPITZLI_DEV_S3_PORT', '55900'), 'S3'),
+    link('http://127.0.0.1:' + os.getenv('SPITZLI_DEV_MINIO_CONSOLE_PORT', '55901'), 'MinIO'),
 ])
 dc_resource('k3s', labels=['infra'])
 local_resource(
@@ -100,7 +100,7 @@ local_resource(
 # Plugin workloads: Core's agent listener and one enrolled agent for the local k3s.
 local_resource(
     'agent-control',
-    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && export WEBDOCK_WORKLOADS_ENABLED=true && rm -f .dev-local/agent/run/control.sock && exec target/debug/spitzli-agent-control --config \"$PWD/.dev-local/agent/agent-control.json\"'",
+    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && export SPITZLI_WORKLOADS_ENABLED=true && rm -f .dev-local/agent/run/control.sock && exec target/debug/spitzli-agent-control --config \"$PWD/.dev-local/agent/agent-control.json\"'",
     deps=['target/debug/spitzli-agent-control', '.dev-local/runtime.env'],
     resource_deps=['seed', 'core-build'],
     readiness_probe=probe(exec=exec_action(['test', '-S', '.dev-local/agent/run/control.sock']), period_secs=1),

@@ -220,7 +220,7 @@ async fn case(name: String, owner: DatabaseConnection, mode: Failure) {
     );
     let auth = connection(&name, "AUTH_DATABASE_URL").await;
     let business = connection(&name, "DATABASE_URL").await;
-    let worker = connection(&name, "WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await;
+    let worker = connection(&name, "SPITZLI_PLUGIN_WORKER_DATABASE_URL").await;
     let (identity, actor) = identity(auth.clone(), ids.clone()).await;
     let (_, app_actor) = support::identity(auth.clone(), ids.clone()).await;
     let cluster = ids.allocate().await.unwrap().to_string();
@@ -606,7 +606,7 @@ async fn case(name: String, owner: DatabaseConnection, mode: Failure) {
 #[ignore = "creates only fresh uniquely named databases in the verified local restricted-role fixture"]
 async fn stale_database_delivery_cannot_poison_unrelated_hosting_and_heartbeat() {
     let source =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(source.host_str(), Some("127.0.0.1"));
     assert_eq!(source.path(), "/webdock_rls_test");
     let control = Database::connect(source.as_str()).await.unwrap();
@@ -626,7 +626,7 @@ async fn stale_database_delivery_cannot_poison_unrelated_hosting_and_heartbeat()
             .unwrap();
         let test_name = name.clone();
         let result = tokio::spawn(async move {
-            let owner = connection(&test_name, "WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+            let owner = connection(&test_name, "SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
             spitzli_persistence::migrations::bootstrap(
                 &owner,
                 &test_name,

@@ -51,7 +51,7 @@ def main():
     lock=os.open(Path(config['root'])/'_pool'/'service.lock',os.O_WRONLY|os.O_CREAT|os.O_NOFOLLOW,0o600)
     fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     storage.restore()
-    path=Path(os.environ.get('WEBDOCK_STORAGE_SOCKET','/run/webdock-storage/control.sock'))
+    path=Path(os.environ.get('SPITZLI_STORAGE_SOCKET','/run/webdock-storage/control.sock'))
     storage.private(path.parent,directory=True)
     if path.exists():
         if not path.is_socket() or path.is_symlink() or path.stat().st_uid!=0:raise SystemExit('Unsafe socket path')

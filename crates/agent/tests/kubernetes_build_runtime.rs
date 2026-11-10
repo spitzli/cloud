@@ -155,7 +155,7 @@ async fn verify_owned_http(pods: &Api<Pod>, pod_name: &str) {
 }
 
 async fn sample_owned_run_during_build_outage(pods: &Api<Pod>, pod_name: &str, image_id: &str) {
-    let Some(path) = std::env::var_os("WEBDOCK_BUILD_OUTAGE_TEST_WORK") else {
+    let Some(path) = std::env::var_os("SPITZLI_BUILD_OUTAGE_TEST_WORK") else {
         return;
     };
     let root = PathBuf::from(path);
@@ -282,15 +282,15 @@ async fn publish_verified_oci(
 #[ignore = "requires --publish-only with an actual validated Kubernetes-built OCI archive"]
 async fn real_build_oci_publishes_and_registry_readback_matches() {
     assert_eq!(
-        std::env::var("WEBDOCK_BUILD_PUBLISH_TEST").as_deref(),
+        std::env::var("SPITZLI_BUILD_PUBLISH_TEST").as_deref(),
         Ok("1")
     );
-    let registry: std::net::SocketAddr = std::env::var("WEBDOCK_BUILD_RUN_REGISTRY")
+    let registry: std::net::SocketAddr = std::env::var("SPITZLI_BUILD_RUN_REGISTRY")
         .unwrap()
         .parse()
         .unwrap();
     assert!(registry.ip().is_loopback());
-    let oci_path = private_path("WEBDOCK_BUILD_RUN_OCI");
+    let oci_path = private_path("SPITZLI_BUILD_RUN_OCI");
     assert!(oci_path.metadata().unwrap().len() <= MAX_OUTPUT);
     let (_directory, _store, _artifact, image, digest) =
         publish_verified_oci(std::fs::read(oci_path).unwrap(), registry).await;
@@ -310,7 +310,7 @@ async fn real_build_registry_digest_rolls_out_and_failed_rollout_remains_recover
 #[ignore = "requires --health-only with an actual Kubernetes-built Railpack OCI archive"]
 async fn real_build_registry_digest_serves_http_under_native_runtime_policy() {
     assert_eq!(
-        std::env::var("WEBDOCK_BUILD_HEALTH_TEST").as_deref(),
+        std::env::var("SPITZLI_BUILD_HEALTH_TEST").as_deref(),
         Ok("1")
     );
     runtime_acceptance(true).await;
@@ -318,18 +318,18 @@ async fn real_build_registry_digest_serves_http_under_native_runtime_policy() {
 
 async fn runtime_acceptance(health_only: bool) {
     assert_eq!(
-        std::env::var("WEBDOCK_BUILD_RUNTIME_TEST").as_deref(),
+        std::env::var("SPITZLI_BUILD_RUNTIME_TEST").as_deref(),
         Ok("1")
     );
-    let kubeconfig = private_path("WEBDOCK_KUBE_TEST_CONFIG");
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let kubeconfig = private_path("SPITZLI_KUBE_TEST_CONFIG");
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("k3d-webdock-rust-build-run-"));
-    let registry: std::net::SocketAddr = std::env::var("WEBDOCK_BUILD_RUN_REGISTRY")
+    let registry: std::net::SocketAddr = std::env::var("SPITZLI_BUILD_RUN_REGISTRY")
         .unwrap()
         .parse()
         .unwrap();
     assert!(registry.ip().is_loopback());
-    let oci_path = private_path("WEBDOCK_BUILD_RUN_OCI");
+    let oci_path = private_path("SPITZLI_BUILD_RUN_OCI");
     assert!(oci_path.metadata().unwrap().len() <= MAX_OUTPUT);
     let oci = std::fs::read(oci_path).unwrap();
     let image_digest = validate_oci(&oci).unwrap();

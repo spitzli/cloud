@@ -168,7 +168,7 @@ def execute_configuration(packet, checkpoint):
         lease(packet)
         if time.monotonic()-last > 20:
             packet['leaseUntil']=checkpoint()['leaseUntil'];lease(packet);last=time.monotonic()
-    with open(os.environ.get('WEBDOCK_EXECUTOR_LOCK','/run/lock/webdock-managed-executor.lock'),'a') as lock:
+    with open(os.environ.get('SPITZLI_EXECUTOR_LOCK','/run/lock/webdock-managed-executor.lock'),'a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
         guard()
         namespace='wd-mail-'+packet['customerID'];name='app-'+packet['customerID']

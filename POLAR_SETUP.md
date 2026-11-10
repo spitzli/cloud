@@ -45,7 +45,7 @@ A Python urllib probe was rejected by an edge browser-signature rule (403). The 
 
 ## Local development
 
-Use `bun run --filter @spitzli/api dev` with the existing local database configuration and `WEBDOCK_API_DOMAINS` including `auth,portal,registry,billing`. The full Webdock API also requires its usual DB/auth configuration; the three Polar keys do not replace it. No long-running dev server was started by this setup.
+Use `bun run --filter @spitzli/api dev` with the existing local database configuration and `SPITZLI_API_DOMAINS` including `auth,portal,registry,billing`. The full Webdock API also requires its usual DB/auth configuration; the three Polar keys do not replace it. No long-running dev server was started by this setup.
 
 ## Webdock catalog
 

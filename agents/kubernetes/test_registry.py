@@ -42,7 +42,7 @@ class CapabilityTests(unittest.TestCase):
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/'config';p.write_text(json.dumps({'version':1,'euStorageEvidence':'DE','projects':{'2':{'repository':'r.example/c-1/p-2','pullSecret':'pull','readOnly':True,'credentialScopeEvidence':'verified'}}}))
-            with patch.dict('os.environ',{'WEBDOCK_REGISTRY_CONFIG':str(p)}),patch.object(Path,'lstat',return_value=SimpleNamespace(st_mode=0o100600,st_uid=0)):
+            with patch.dict('os.environ',{'SPITZLI_REGISTRY_CONFIG':str(p)}),patch.object(Path,'lstat',return_value=SimpleNamespace(st_mode=0o100600,st_uid=0)):
                 self.assertFalse(registry.capability(['kubectl'],lambda *a,**k:SimpleNamespace(stdout='Opaque')))
                 calls=[]
                 def ready(command,**kwargs):calls.append(command);return SimpleNamespace(stdout='kubernetes.io/dockerconfigjson')

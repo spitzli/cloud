@@ -337,10 +337,10 @@ impl DockerAdapter {
         }
         if let Some(plugin) = &spec.plugin {
             config.env = Some(vec![
-                format!("WEBDOCK_PLUGIN_ID={}", plugin.plugin_id),
-                format!("WEBDOCK_PLUGIN_VERSION={}", plugin.version),
-                format!("WEBDOCK_PLUGIN_GENERATION={}", plugin.runtime_generation),
-                format!("WEBDOCK_PLUGIN_MANIFEST_SHA256={}", plugin.manifest_sha256),
+                format!("SPITZLI_PLUGIN_ID={}", plugin.plugin_id),
+                format!("SPITZLI_PLUGIN_VERSION={}", plugin.version),
+                format!("SPITZLI_PLUGIN_GENERATION={}", plugin.runtime_generation),
+                format!("SPITZLI_PLUGIN_MANIFEST_SHA256={}", plugin.manifest_sha256),
             ]);
             config.labels.as_mut().unwrap().insert(
                 "webdock.dev/manifest-sha256".into(),

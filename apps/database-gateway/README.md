@@ -5,7 +5,7 @@ Studio embeds the Tabularis explorer, SQL editor and data grid. The API authoriz
 ## Registered project databases
 
 1. Apply the existing Auth, hosting and Studio migrations first, then run `node --import tsx legacy/control-plane/scripts/legacy/migrate-databases.ts` with the Auth migration database credentials. The new tables live in `webdock_auth`; use the existing schema owner/runtime privilege conventions.
-2. Configure Auth with `WEBDOCK_DATABASE_GATEWAY_ORIGIN` and a random `WEBDOCK_DATABASE_GATEWAY_SECRET` of at least 32 characters. The gateway uses the same secret. Auth also needs its existing `BETTER_AUTH_SECRET`, Studio OAuth consumer configuration and hosting region configuration. Production authorization retains the existing verified-region gate (`WEBDOCK_HOSTING_EU_VERIFIED=true` for the verified non-Vercel runtime, or the existing `vercel-fra1` policy).
+2. Configure Auth with `SPITZLI_DATABASE_GATEWAY_ORIGIN` and a random `SPITZLI_DATABASE_GATEWAY_SECRET` of at least 32 characters. The gateway uses the same secret. Auth also needs its existing `BETTER_AUTH_SECRET`, Studio OAuth consumer configuration and hosting region configuration. Production authorization retains the existing verified-region gate (`SPITZLI_HOSTING_EU_VERIFIED=true` for the verified non-Vercel runtime, or the existing `vercel-fra1` policy).
 3. Configure and start the native Rust gateway using `.env.example` and `cargo run -p spitzli-database-gateway` from the repository root. Put TLS in front of it, including WebSocket upgrades. Use a gateway hostname on the same site as Studio, for example `database.webdock.dev` and `studio.webdock.dev`. The session cookie is HttpOnly, SameSite=Strict, Secure over HTTPS, and scoped to its workspace path. Cross-site embedding is not supported.
 4. Provision a separate Tabularis process/container **and storage directory for every database binding, user and permission profile**. Restrict network access to the gateway and the assigned database. Configure only the assigned saved connection; do not mount unrelated credentials, plugins or host files. Runtime origins must be explicitly included in the gateway allowlist.
 5. Use a dedicated PostgreSQL login whose actual privileges match the grant. A read role has only CONNECT, schema USAGE and SELECT on approved objects. A write role adds only intended INSERT/UPDATE/DELETE (and required sequence permissions). Schema roles may manage only their own project schema. Remove inherited/public privileges that would expose other tenants. The gateway does not infer SQL permissions from text; PostgreSQL enforces them, including arbitrary SQL typed into the console. SQLite runtimes instead receive only the approved project volume; the production Lunares grants allow full schema/data access to that volume. A read-only SQLite grant requires a separately verified read-only connection and mount.
@@ -25,7 +25,7 @@ launch it. The existing project database workflow above remains separate.
 Deploy the API migration `legacy/control-plane/drizzle/0022_managed_database_viewer.sql` through
 the normal migration runner, then install the matching platform RLS policies with
 `legacy/control-plane/scripts/install-platform-rls.ts`. Deploy the API routes before activating
-the gateway feature. `WEBDOCK_AUTH_ORIGIN` must point to the **Auth hostname** serving the API-owned
+the gateway feature. `SPITZLI_AUTH_ORIGIN` must point to the **Auth hostname** serving the API-owned
 legacy route `/api/databases/gateway` (normally `https://auth.webdock.dev`).
 The API implementation preserves this host boundary; using `api.webdock.dev`
 for this route returns 404. When Auth shares the gateway's cluster, public HTTPS
@@ -33,19 +33,19 @@ is translated to Traefik's private pod port 8443 before network-policy evaluatio
 The renderer permits only the gateway to reach kube-system's Traefik pods on that
 port, in addition to public HTTPS; it retains normal hostname/TLS verification. API and gateway use
 the same gateway secret. Configure `https://console.webdock.dev` and any legacy
-Studio origin in `WEBDOCK_DATABASE_BROWSER_ORIGINS`.
+Studio origin in `SPITZLI_DATABASE_BROWSER_ORIGINS`.
 
 Build the gateway image with the pinned Tabularis runtime image already available
 locally. Its Dockerfile copies Node 24 into `webdock-tabularis:production-fdd6c0a6`,
 retaining the runtime's Linux libraries and web assets. Override `TABULARIS_IMAGE`
 only with the matching verified source commit/image digest. The runtime process
 still runs as UID/GID 65532 with no extra capabilities; it needs a writable private
-`/tmp` volume. Set `WEBDOCK_DATABASE_MANAGED_RUNTIMES=true` to enable it, and set
+`/tmp` volume. Set `SPITZLI_DATABASE_MANAGED_RUNTIMES=true` to enable it, and set
 `TABULARIS_EXPECTED_COMMIT` to `vendor/tabularis-web-ui.json`'s full source commit.
 A missing executable, incompatible build or exhausted capacity fails closed.
 
 The default limit is eight simultaneous processes; configure
-`WEBDOCK_DATABASE_RUNTIME_CAPACITY` (1–64) to fit the deployment's tested memory
+`SPITZLI_DATABASE_RUNTIME_CAPACITY` (1–64) to fit the deployment's tested memory
 budget. Each gateway session gets one process, one private mode-0700 temporary
 directory and exactly one saved PostgreSQL connection. Credentials and its CA are
 mode-0600 files; PostgreSQL uses `verify-full` TLS. The loopback listener has its own
@@ -116,7 +116,7 @@ node --import tsx --test packages/database-contracts/src/index.test.ts
 node --env-file=.env.database-test.local --import tsx --test legacy/control-plane/tests/ported-auth/databases/integration.test.ts
 ```
 
-The Auth integration test intentionally resets schemas only in the dedicated fixture database `postgres://…@127.0.0.1:55441/webdock_admin_test`; it refuses other destinations. Do not point this test at a shared development or production database. Real-runtime tests are opt-in with `WEBDOCK_DATABASE_RUNTIME_TEST=true` and use local reader/writer runtimes on ports 3138/3158, with their protected HTTPS proxies on 3139/3159. See the test sources and the verification record for fixture requirements.
+The Auth integration test intentionally resets schemas only in the dedicated fixture database `postgres://…@127.0.0.1:55441/webdock_admin_test`; it refuses other destinations. Do not point this test at a shared development or production database. Real-runtime tests are opt-in with `SPITZLI_DATABASE_RUNTIME_TEST=true` and use local reader/writer runtimes on ports 3138/3158, with their protected HTTPS proxies on 3139/3159. See the test sources and the verification record for fixture requirements.
 
 `scripts/database-browser-fixture.ts` supplies deterministic test identities and sealed Studio cookies for the isolated browser check. It does not replace or validate the complete production OIDC login ceremony. Its local secrets are synthetic fixture values; it refuses production mode and any database outside the dedicated test endpoint.
 
@@ -128,7 +128,7 @@ Build the gateway with `npm run build -w @spitzli/database-gateway`, then build 
 
 The cluster's admission policy also requires the `security.webdock.dev/ready=true` namespace label. Set it only after applying and inspecting the rendered ResourceQuota, network policies and Restricted Pod Security labels. Build `deploy/TLS.Dockerfile` for the TLS sidecar: it removes Caddy's privileged-port file capability, allowing port 8443 with all capabilities dropped. No admission policy exemption is required.
 
-After authenticated runtime checks pass, the explicitly invoked offline Auth script `legacy/control-plane/scripts/legacy/provision-database-browser.ts <private-inventory.json>` can register the verified schema-access grants. It requires `WEBDOCK_DATABASE_OPERATOR_ID`, an active MFA-enabled operator, and validates each subject's existing customer membership. Use the Auth production environment and keep inventory secrets out of logs/Git. Running it again replaces those grants and revokes their previous sessions through the revision increment.
+After authenticated runtime checks pass, the explicitly invoked offline Auth script `legacy/control-plane/scripts/legacy/provision-database-browser.ts <private-inventory.json>` can register the verified schema-access grants. It requires `SPITZLI_DATABASE_OPERATOR_ID`, an active MFA-enabled operator, and validates each subject's existing customer membership. Use the Auth production environment and keep inventory secrets out of logs/Git. Running it again replaces those grants and revokes their previous sessions through the revision increment.
 
 ## Moving one PostgreSQL browser runtime
 
@@ -212,7 +212,7 @@ self-signed test CA. It checks schema/data edits, verified TLS (including reject
 of an unrelated CA), connection scoping, revocation and temporary-state cleanup:
 
 ```sh
-WEBDOCK_MANAGED_RUNTIME_TEST_BINARY=/path/to/tabularis \
+SPITZLI_MANAGED_RUNTIME_TEST_BINARY=/path/to/tabularis \
   node --import tsx --test apps/database-gateway/tests/managed-real-runtime.test.ts
 ```
 
@@ -221,7 +221,7 @@ revision changes, secret redaction, and opt-in behavior without Docker.
 
 To exercise the actual packaged runtime and its stamped commit, build the gateway
 image and replace the binary variable above with
-`WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE=spitzli-database-gateway:managed-viewer-test`.
+`SPITZLI_MANAGED_RUNTIME_TEST_IMAGE=spitzli-database-gateway:managed-viewer-test`.
 This variant also verifies UID 65532 with a read-only root filesystem, all Linux
 capabilities dropped, no privilege escalation, a 256 PID limit and private tmpfs.
 Its test containers use host networking solely to reach the disposable loopback
@@ -235,4 +235,4 @@ The production gateway executable now lives in `crates/database-gateway`; see it
 docker build -f deploy/docker/database-gateway.Dockerfile -t spitzli-database-gateway:rust-local .
 ```
 
-To run the retained PostgreSQL/TLS acceptance against the native host binary, set `WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY` to `target/debug/spitzli-database-gateway`, alongside the existing `WEBDOCK_MANAGED_RUNTIME_TEST_BINARY` and `WEBDOCK_MANAGED_RUNTIME_TEST_WEB_ROOT` for the pinned browser runtime. The image variant uses `WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE=spitzli-database-gateway:rust-local`. Both create only disposable local databases. The TypeScript server sources remain a temporary contract-test oracle while all current cases move to native tests; they are not an active production entrypoint.
+To run the retained PostgreSQL/TLS acceptance against the native host binary, set `SPITZLI_MANAGED_RUNTIME_TEST_GATEWAY_BINARY` to `target/debug/spitzli-database-gateway`, alongside the existing `SPITZLI_MANAGED_RUNTIME_TEST_BINARY` and `SPITZLI_MANAGED_RUNTIME_TEST_WEB_ROOT` for the pinned browser runtime. The image variant uses `SPITZLI_MANAGED_RUNTIME_TEST_IMAGE=spitzli-database-gateway:rust-local`. Both create only disposable local databases. The TypeScript server sources remain a temporary contract-test oracle while all current cases move to native tests; they are not an active production entrypoint.

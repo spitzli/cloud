@@ -42,7 +42,7 @@ test("managed runtimes isolate sessions, save one verified connection, and singl
       assert.equal((await stat(join(directory, "connections.json"))).mode & 0o777, 0o600);
       assert.equal(await readFile(join(directory, "ca.crt"), "utf8"), "private-ca");
       const processInfo = JSON.parse(await readFile(join(directory, "process.json"), "utf8"));
-      assert.equal(processInfo.env.WEBDOCK_DATABASE_GATEWAY_SECRET, undefined); assert.equal(processInfo.env.RUST_LOG, "off");
+      assert.equal(processInfo.env.SPITZLI_DATABASE_GATEWAY_SECRET, undefined); assert.equal(processInfo.env.RUST_LOG, "off");
       assert.ok(!JSON.stringify(processInfo.args).includes("private-password"));
     }
     await assert.rejects(manager.acquire("three", access()), /capacity/i);

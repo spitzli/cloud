@@ -143,9 +143,9 @@ class PluginDeployTests(unittest.TestCase):
         deployment = self.kube.created[-1]
         self.assertEqual(deployment['spec']['template']['spec']['containers'][0]['image'], IMAGE)
         identity = self.kube.created[1]['stringData']
-        self.assertEqual(identity['WEBDOCK_PLUGIN_PUBLIC_KEY'], self.public_key)
-        self.assertEqual(identity['WEBDOCK_PLUGIN_RUNTIME_TOKEN'], result['binding']['credential'])
-        self.assertEqual(json.loads(identity['WEBDOCK_PLUGIN_CONFIGURATION']), JOB['configuration'])
+        self.assertEqual(identity['SPITZLI_PLUGIN_PUBLIC_KEY'], self.public_key)
+        self.assertEqual(identity['SPITZLI_PLUGIN_RUNTIME_TOKEN'], result['binding']['credential'])
+        self.assertEqual(json.loads(identity['SPITZLI_PLUGIN_CONFIGURATION']), JOB['configuration'])
         self.assertNotIn(self.private_key, json.dumps(self.kube.created))
         certificate = self.kube.created[2]['stringData']['tls.crt']
         self.assertEqual(result['binding']['ca'], certificate)
@@ -172,9 +172,9 @@ class PluginDeployTests(unittest.TestCase):
         with patch('plugin_installer.Kubernetes',return_value=self.kube):
             installer.deploy_runtime(config,self.control,job)
         identity=next(item for item in self.kube.created if item['kind']=='Secret' and item['type']=='Opaque')['stringData']
-        self.assertEqual(identity['WEBDOCK_PLUGIN_CONSOLE_ORIGIN'],'https://console.example.test')
-        self.assertEqual(identity['WEBDOCK_PLUGIN_PUBLIC_KEY'],self.public_key)
-        self.assertNotIn('WEBDOCK_PLUGIN_HOST_PUBLIC_KEY',identity)
+        self.assertEqual(identity['SPITZLI_PLUGIN_CONSOLE_ORIGIN'],'https://console.example.test')
+        self.assertEqual(identity['SPITZLI_PLUGIN_PUBLIC_KEY'],self.public_key)
+        self.assertNotIn('SPITZLI_PLUGIN_HOST_PUBLIC_KEY',identity)
 
     def test_missing_or_invalid_ui_console_origin_creates_no_resource(self):
         config=copy.deepcopy(CONFIG)

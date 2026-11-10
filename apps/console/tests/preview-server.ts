@@ -129,7 +129,7 @@ async function serve(
   next: () => void,
 ) {
   const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "127.0.0.1"}`);
-  if (process.env.WEBDOCK_CUSTOMER_FIXTURE === "1") {
+  if (process.env.SPITZLI_CUSTOMER_FIXTURE === "1") {
     const result = await customerFixture(req, url);
     if (result) {
       res.statusCode = result.status;
@@ -208,7 +208,7 @@ async function serve(
   send(data);
 }
 // Optional exact EU-built artifact: serve it without invoking the Vite compiler.
-const artifact = process.env.WEBDOCK_BROWSER_DIST;
+const artifact = process.env.SPITZLI_BROWSER_DIST;
 async function prebuilt() {
   if (!artifact || !isAbsolute(artifact) || !statSync(`${artifact}/index.html`).isFile()) {
     throw new Error("Explicit absolute compiled Console artifact required");
@@ -216,7 +216,7 @@ async function prebuilt() {
   const instance = await preview({
     root, configFile: false, envDir: false,
     build: { outDir: artifact },
-    preview: { host: "127.0.0.1", port: Number(process.env.WEBDOCK_PREVIEW_PORT ?? 3121), strictPort: false },
+    preview: { host: "127.0.0.1", port: Number(process.env.SPITZLI_PREVIEW_PORT ?? 3121), strictPort: false },
     plugins: [{
       name: "test-only-prebuilt-api",
       configurePreviewServer(server) {
@@ -231,8 +231,8 @@ async function prebuilt() {
 async function development() {
   const instance = await createServer({
     root,
-    cacheDir: fileURLToPath(new URL(`../../../.runtime-test/vite-cache/preview-${process.env.WEBDOCK_PREVIEW_PORT ?? '3121'}`, import.meta.url)),
-    server: { host: "127.0.0.1", port: Number(process.env.WEBDOCK_PREVIEW_PORT ?? 3121), strictPort: false },
+    cacheDir: fileURLToPath(new URL(`../../../.runtime-test/vite-cache/preview-${process.env.SPITZLI_PREVIEW_PORT ?? '3121'}`, import.meta.url)),
+    server: { host: "127.0.0.1", port: Number(process.env.SPITZLI_PREVIEW_PORT ?? 3121), strictPort: false },
     plugins: [{
       name: "test-only-api",
       configureServer(server) {

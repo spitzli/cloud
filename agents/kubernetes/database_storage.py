@@ -50,7 +50,7 @@ def persistent_volume(value, path):
 
 
 def dispatch(action,value):
-    if os.environ.get('WEBDOCK_DATABASE_STORAGE')!='1':raise ValueError('Separate PostgreSQL storage service required')
+    if os.environ.get('SPITZLI_DATABASE_STORAGE')!='1':raise ValueError('Separate PostgreSQL storage service required')
     if action=='database.capability':
         if not isinstance(value,list) or any(not isinstance(n,str) for n in value):raise ValueError('Invalid database nodes')
         config=storage.configuration()

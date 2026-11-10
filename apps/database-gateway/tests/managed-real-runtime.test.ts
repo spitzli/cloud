@@ -12,7 +12,7 @@ import { createGateway } from "../src/server";
 
 // Explicit opt-in: this creates only a disposable loopback Docker database with synthetic credentials.
 test("real managed process negotiates, uses verified PostgreSQL TLS, edits schema and erases session state", {
-  skip: !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_BINARY && !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE && !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY, timeout: 60_000,
+  skip: !process.env.SPITZLI_MANAGED_RUNTIME_TEST_BINARY && !process.env.SPITZLI_MANAGED_RUNTIME_TEST_IMAGE && !process.env.SPITZLI_MANAGED_RUNTIME_TEST_GATEWAY_BINARY, timeout: 60_000,
 }, async t => {
   const directory = await mkdtemp(join(tmpdir(), "managed-real-test-"));
   const container = "webdock-managed-viewer-test-" + randomUUID();
@@ -30,7 +30,7 @@ test("real managed process negotiates, uses verified PostgreSQL TLS, edits schem
   assert.ok(ready);
   execFileSync("docker", ["exec", "-i", container, "psql", "-U", "postgres", "-v", "ON_ERROR_STOP=1"], { input: "CREATE ROLE tenant LOGIN PASSWORD 'managed-fixture-password'; CREATE DATABASE tenant OWNER tenant;", stdio: ["pipe", "ignore", "pipe"] });
   const port = Number(execFileSync("docker", ["port", container, "5432/tcp"], { encoding: "utf8" }).trim().split(":").pop());
-  const manager = createManagedRuntimeManager({ executable: process.env.WEBDOCK_MANAGED_RUNTIME_TEST_BINARY || "/usr/local/bin/tabularis", temporaryDirectory: directory, capacity: 2 });
+  const manager = createManagedRuntimeManager({ executable: process.env.SPITZLI_MANAGED_RUNTIME_TEST_BINARY || "/usr/local/bin/tabularis", temporaryDirectory: directory, capacity: 2 });
   const expiresAt = new Date(Date.now() + 60_000).toISOString();
   let revoked = false, ca = await readFile(join(directory, "ca.crt"), "utf8");
   const control = async (body: Record<string, string>) => {
@@ -41,7 +41,7 @@ test("real managed process negotiates, uses verified PostgreSQL TLS, edits schem
   };
   let origin: string;
   const gatewayContainer = container + "-gateway";
-  if (process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY) {
+  if (process.env.SPITZLI_MANAGED_RUNTIME_TEST_GATEWAY_BINARY) {
     // The existing real database/TLS acceptance now also runs against the native Rust gateway.
     const api = createServer(async (req, res) => {
       try {
@@ -58,18 +58,18 @@ test("real managed process negotiates, uses verified PostgreSQL TLS, edits schem
     await new Promise<void>(resolve=>reserve.close(()=>resolve()));
     origin=`http://127.0.0.1:${reserved.port}`;
     const pin=JSON.parse(await readFile(new URL("../../../vendor/tabularis-web-ui.json",import.meta.url),"utf8"));
-    const child=spawn(process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY,[],{stdio:"ignore",env:{
+    const child=spawn(process.env.SPITZLI_MANAGED_RUNTIME_TEST_GATEWAY_BINARY,[],{stdio:"ignore",env:{
       PATH:process.env.PATH,LANG:"C.UTF-8",RUST_LOG:"off",HOST:"127.0.0.1",PORT:String(reserved.port),
-      WEBDOCK_AUTH_ORIGIN:`http://127.0.0.1:${address.port}`,WEBDOCK_DATABASE_GATEWAY_ORIGIN:origin,
-      WEBDOCK_DATABASE_BROWSER_ORIGINS:"http://localhost:3120",WEBDOCK_DATABASE_GATEWAY_SECRET:"fixture-secret-".repeat(3),
-      WEBDOCK_DATABASE_MANAGED_RUNTIMES:"true",WEBDOCK_DATABASE_RUNTIME_CAPACITY:"2",WEBDOCK_DATABASE_RUNTIME_DIRECTORY:directory,
-      TABULARIS_EXPECTED_COMMIT:pin.sourceCommit,TABULARIS_EXECUTABLE:process.env.WEBDOCK_MANAGED_RUNTIME_TEST_BINARY,
-      TABULARIS_WEB_ROOT:process.env.WEBDOCK_MANAGED_RUNTIME_TEST_WEB_ROOT,
+      SPITZLI_AUTH_ORIGIN:`http://127.0.0.1:${address.port}`,SPITZLI_DATABASE_GATEWAY_ORIGIN:origin,
+      SPITZLI_DATABASE_BROWSER_ORIGINS:"http://localhost:3120",SPITZLI_DATABASE_GATEWAY_SECRET:"fixture-secret-".repeat(3),
+      SPITZLI_DATABASE_MANAGED_RUNTIMES:"true",SPITZLI_DATABASE_RUNTIME_CAPACITY:"2",SPITZLI_DATABASE_RUNTIME_DIRECTORY:directory,
+      TABULARIS_EXPECTED_COMMIT:pin.sourceCommit,TABULARIS_EXECUTABLE:process.env.SPITZLI_MANAGED_RUNTIME_TEST_BINARY,
+      TABULARIS_WEB_ROOT:process.env.SPITZLI_MANAGED_RUNTIME_TEST_WEB_ROOT,
     }});
     const exited=once(child,"exit");t.after(async()=>{if(child.exitCode===null&&child.signalCode===null){child.kill("SIGTERM");const force=setTimeout(()=>child.kill("SIGKILL"),2000);try{await exited;}finally{clearTimeout(force);}}});
     let available=false;for(let i=0;i<100&&!available;i++){try{available=(await fetch(origin+"/healthz")).ok;}catch{await new Promise(resolve=>setTimeout(resolve,50));}}
     assert.ok(available,"Native database gateway must start");
-  } else   if (process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE && !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY) {
+  } else   if (process.env.SPITZLI_MANAGED_RUNTIME_TEST_IMAGE && !process.env.SPITZLI_MANAGED_RUNTIME_TEST_GATEWAY_BINARY) {
     const api = createServer(async (req, res) => {
       try {
         assert.equal(req.headers.authorization, "Bearer " + "fixture-secret-".repeat(3));
@@ -87,10 +87,10 @@ test("real managed process negotiates, uses verified PostgreSQL TLS, edits schem
     const pin = JSON.parse(await readFile(new URL("../../../vendor/tabularis-web-ui.json", import.meta.url), "utf8"));
     t.after(() => { try { execFileSync("docker", ["rm", "-f", gatewayContainer], { stdio: "ignore" }); } catch {} });
     execFileSync("docker", ["run", "--detach", "--rm", "--name", gatewayContainer, "--network", "host", "--read-only", "--cap-drop=ALL", "--security-opt=no-new-privileges", "--pids-limit=256", "--memory=512m", "--cpus=1", "--tmpfs", "/tmp:rw,nosuid,nodev,size=128m,mode=1777",
-      "-e", `HOST=127.0.0.1`, "-e", `PORT=${reserved.port}`, "-e", `WEBDOCK_AUTH_ORIGIN=http://127.0.0.1:${address.port}`,
-      "-e", `WEBDOCK_DATABASE_GATEWAY_ORIGIN=${origin}`, "-e", "WEBDOCK_DATABASE_BROWSER_ORIGINS=http://localhost:3120",
-      "-e", "WEBDOCK_DATABASE_GATEWAY_SECRET=" + "fixture-secret-".repeat(3), "-e", "WEBDOCK_DATABASE_MANAGED_RUNTIMES=true",
-      "-e", "WEBDOCK_DATABASE_RUNTIME_CAPACITY=2", "-e", `TABULARIS_EXPECTED_COMMIT=${pin.sourceCommit}`, process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE], { stdio: "ignore" });
+      "-e", `HOST=127.0.0.1`, "-e", `PORT=${reserved.port}`, "-e", `SPITZLI_AUTH_ORIGIN=http://127.0.0.1:${address.port}`,
+      "-e", `SPITZLI_DATABASE_GATEWAY_ORIGIN=${origin}`, "-e", "SPITZLI_DATABASE_BROWSER_ORIGINS=http://localhost:3120",
+      "-e", "SPITZLI_DATABASE_GATEWAY_SECRET=" + "fixture-secret-".repeat(3), "-e", "SPITZLI_DATABASE_MANAGED_RUNTIMES=true",
+      "-e", "SPITZLI_DATABASE_RUNTIME_CAPACITY=2", "-e", `TABULARIS_EXPECTED_COMMIT=${pin.sourceCommit}`, process.env.SPITZLI_MANAGED_RUNTIME_TEST_IMAGE], { stdio: "ignore" });
     assert.equal(execFileSync("docker", ["exec", gatewayContainer, "id", "-u"], { encoding: "utf8" }).trim(), "65532");
     let available = false;
     for (let i = 0; i < 50 && !available; i++) {
@@ -126,7 +126,7 @@ test("real managed process negotiates, uses verified PostgreSQL TLS, edits schem
   const tls = await query("SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()"); assert.deepEqual(tls.body.data.rows, [[true]]);
   const crossTarget = await rpc("execute_query", { connectionId: "456", query: "select 1" }); assert.equal(crossTarget.status, 403);
   revoked = true; assert.equal((await query("SELECT 1")).status, 401);
-  if (process.env.WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE && !process.env.WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY) {
+  if (process.env.SPITZLI_MANAGED_RUNTIME_TEST_IMAGE && !process.env.SPITZLI_MANAGED_RUNTIME_TEST_GATEWAY_BINARY) {
     const files = execFileSync("docker", ["exec", gatewayContainer, "find", "/tmp", "-maxdepth", "1", "-type", "d", "(", "-name", "webdock-tabularis-*", "-o", "-name", "webdock-database-*", ")"], { encoding: "utf8" });
     assert.equal(files.trim(), "");
   } else assert.deepEqual((await readdir(directory)).filter(name => name.startsWith("webdock-tabularis-") || name.startsWith("webdock-database-")), []);

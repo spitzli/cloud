@@ -22,10 +22,10 @@ impl Authorizer for Authority {
 #[tokio::test]
 #[ignore = "requires explicit owned disposable Kind context and digest image"]
 async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets() {
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("kind-webdock-rust-"));
     let config = Config::from_custom_kubeconfig(
-        Kubeconfig::read_from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap()).unwrap(),
+        Kubeconfig::read_from(std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap()).unwrap(),
         &KubeConfigOptions {
             context: Some(context),
             ..Default::default()
@@ -40,7 +40,7 @@ async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets
     let mut spec = support::spec();
     spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
     spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
-    spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
+    spec.image = std::env::var("SPITZLI_KUBE_TEST_IMAGE").unwrap();
     spec.arguments=vec!["sh".into(),"-c".into(),"printf '%s\\n' \"$FIXTURE_TOKEN\"; printf %s \"$FIXTURE_TOKEN\" >/tmp/index.html; exec httpd -f -p 8080 -h /tmp".into()];
     let allowance = ResourceAllowance {
         apps: 2,

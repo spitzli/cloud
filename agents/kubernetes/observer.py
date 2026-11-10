@@ -46,8 +46,8 @@ def observation(document, sequence=1, generation=1, strict_ready=True):
 
 def collect_observation():
     command=['k3s','kubectl']
-    if os.environ.get('WEBDOCK_KUBECTL_CACHE_DIR'):
-        command+=['--cache-dir',os.environ['WEBDOCK_KUBECTL_CACHE_DIR']]
+    if os.environ.get('SPITZLI_KUBECTL_CACHE_DIR'):
+        command+=['--cache-dir',os.environ['SPITZLI_KUBECTL_CACHE_DIR']]
     result=subprocess.run(command+['get','nodes','-o','json'],check=True,capture_output=True,text=True,timeout=15)
     observed=observation(json.loads(result.stdout))
     from storage_client import capability

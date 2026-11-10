@@ -47,7 +47,7 @@ async fn disposable_database_pool_keeps_uid_content_identity_and_separate_rpc() 
         path::Path,
     };
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_STORAGE_TEST").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_STORAGE_TEST").as_deref(),
         Ok("yes")
     );
     assert!(Path::new("/.dockerenv").exists());

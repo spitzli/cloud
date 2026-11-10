@@ -132,18 +132,18 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
         .with_test_writer()
         .try_init();
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_DATABASE_TEST").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_DATABASE_TEST").as_deref(),
         Ok("yes")
     );
     assert_eq!(rustix::process::geteuid().as_raw(), 0);
-    let target: std::net::SocketAddr = std::env::var("WEBDOCK_DATABASE_TEST_PG_TARGET")
+    let target: std::net::SocketAddr = std::env::var("SPITZLI_DATABASE_TEST_PG_TARGET")
         .unwrap()
         .parse()
         .unwrap();
     assert!(matches!(target.ip(),std::net::IpAddr::V4(ip) if ip.is_private()));
     assert_eq!(target.port(), 5432);
     let source =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(source.host_str(), Some("127.0.0.1"));
     assert_eq!(source.path(), "/webdock_rls_test");
     let listener =
@@ -169,7 +169,7 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
         .unwrap();
     let init_name = name.clone();
     let initialized = tokio::spawn(async move {
-        let owner = connection(&init_name, "WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+        let owner = connection(&init_name, "SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
         spitzli_persistence::migrations::bootstrap(
             &owner,
             &init_name,
@@ -210,7 +210,7 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
     let task_owner = owner.clone();
     let task_name = name.clone();
     let test=tokio::spawn(async move{
-        let auth=connection(&task_name,"AUTH_DATABASE_URL").await;let business=connection(&task_name,"DATABASE_URL").await;let worker=connection(&task_name,"WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await;
+        let auth=connection(&task_name,"AUTH_DATABASE_URL").await;let business=connection(&task_name,"DATABASE_URL").await;let worker=connection(&task_name,"SPITZLI_PLUGIN_WORKER_DATABASE_URL").await;
         let (identity,actor)=identity(auth.clone(),ids.clone()).await;
         let secret=std::env::var("BETTER_AUTH_SECRET").unwrap();let context_secret=std::env::var("DATABASE_RLS_SECRET").unwrap();
         let hosting=Arc::new(spitzli_hosting::HostingService::new(business.clone(),auth.clone(),worker.clone(),context_secret.clone(),secret.clone(),ids.clone()).await.unwrap());
@@ -228,8 +228,8 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
         let socket=base.join("control.sock");let listener=tokio::net::UnixListener::bind(&socket).unwrap();std::fs::set_permissions(&socket,std::fs::Permissions::from_mode(0o600)).unwrap();let (stop,shutdown)=tokio::sync::oneshot::channel();let rpc=lossy.clone();
         let server=tokio::spawn(async move{tonic::transport::Server::builder().add_service(core.service()).add_service(DatabaseControlServer::new(Service(rpc))).serve_with_incoming_shutdown(tokio_stream::wrappers::UnixListenerStream::new(listener),async{let _=shutdown.await;}).await.unwrap();});
         let state=base.join("agent");std::fs::create_dir(&state).unwrap();std::fs::set_permissions(&state,std::fs::Permissions::from_mode(0o700)).unwrap();
-        let chart=std::path::PathBuf::from(std::env::var("WEBDOCK_DATABASE_TEST_CHART").unwrap());
-        let mut config=spitzli_agent::config::AgentConfig{version:1,installation,agent_id:"database-fixture".into(),generation:1,state_directory:state,control:spitzli_agent::config::ControlEndpoint::Unix{path:socket},runtime:spitzli_agent::config::RuntimeConfiguration::Kubernetes{kubeconfig:std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap().into(),context:std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap(),helm:std::env::var("WEBDOCK_DATABASE_TEST_HELM").unwrap().into(),chart_sha256:spitzli_agent::kubernetes::ApprovedChart::digest(&chart).unwrap(),chart,storage_socket:None,storage_node:None,public_routing:None},database_runtime:Some(runtime_path),mail_runtime:None,recovery_runtime:None,mail_configuration_enabled:false,policy:Default::default(),workloads:false,plugin_runtime_enabled:false};
+        let chart=std::path::PathBuf::from(std::env::var("SPITZLI_DATABASE_TEST_CHART").unwrap());
+        let mut config=spitzli_agent::config::AgentConfig{version:1,installation,agent_id:"database-fixture".into(),generation:1,state_directory:state,control:spitzli_agent::config::ControlEndpoint::Unix{path:socket},runtime:spitzli_agent::config::RuntimeConfiguration::Kubernetes{kubeconfig:std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap().into(),context:std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap(),helm:std::env::var("SPITZLI_DATABASE_TEST_HELM").unwrap().into(),chart_sha256:spitzli_agent::kubernetes::ApprovedChart::digest(&chart).unwrap(),chart,storage_socket:None,storage_node:None,public_routing:None},database_runtime:Some(runtime_path),mail_runtime:None,recovery_runtime:None,mail_configuration_enabled:false,policy:Default::default(),workloads:false,plugin_runtime_enabled:false};
         let mut daemon=Daemon::open(config.clone()).await.unwrap();daemon.connect().await.unwrap();assert!(!daemon.cycle().await.unwrap());let mut daemon=Some(daemon);
         let authority=StoredAuthority::LocalSession{};
         service.execute_managed(&actor,&authority,json!({"action":"databases.pools.register","clusterID":cluster,"node":node,"poolID":pool,"revision":1,"idempotencyKey":"owned-native-pool-register"})).await.unwrap();
@@ -238,7 +238,7 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
         let offer=service.execute_managed(&actor,&authority,json!({"action":"databases.offers.create","projectID":project,"planRevisionID":plan["id"],"name":"Owned native database","idempotencyKey":"owned-native-offer-create"})).await.unwrap();
         let accepted=service.execute_managed(&actor,&authority,json!({"action":"databases.acceptOrder","offerID":offer["id"],"projectID":project,"idempotencyKey":"owned-native-order-accept"})).await.unwrap();
         let database=accepted["databaseID"].as_str().unwrap();let record=row(&task_owner,"SELECT to_jsonb(d) AS value FROM webdock_auth.hosting_database d WHERE id=$1",database).await;let backend_id=record["backend_id"].as_str().unwrap().to_owned();*task_backend.lock().unwrap()=Some(backend_id.clone());
-        use std::io::Write;let host_marker=format!("webdock-native-domain-{cluster}");let host_line=format!("\n{} db-{backend_id}.fixture.test # {host_marker}\n",std::env::var("WEBDOCK_DATABASE_TEST_NODE_IP").unwrap());std::fs::OpenOptions::new().append(true).open("/etc/hosts").unwrap().write_all(host_line.as_bytes()).unwrap();
+        use std::io::Write;let host_marker=format!("webdock-native-domain-{cluster}");let host_line=format!("\n{} db-{backend_id}.fixture.test # {host_marker}\n",std::env::var("SPITZLI_DATABASE_TEST_NODE_IP").unwrap());std::fs::OpenOptions::new().append(true).open("/etc/hosts").unwrap().write_all(host_line.as_bytes()).unwrap();
         eprintln!("native domain action: create");
         drive(&mut daemon,&config,&task_owner,database,"ready").await;
         {let checkpoints=lossy.checkpoints.lock().unwrap();assert!(checkpoints.len()>=2);assert_eq!(checkpoints[0],checkpoints[1]);}

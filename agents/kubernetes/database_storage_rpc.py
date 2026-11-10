@@ -19,7 +19,7 @@ def reject():
 def main():
     try:
         if os.geteuid() != 0:raise ValueError('Root required')
-        if os.environ.get('WEBDOCK_STORAGE_SOCKET', SOCKET) != SOCKET:
+        if os.environ.get('SPITZLI_STORAGE_SOCKET', SOCKET) != SOCKET:
             raise ValueError('Socket overrides are not supported')
         raw = sys.stdin.buffer.readline(4097)
         if len(raw) > 4096 or not raw.endswith(b'\n'):raise ValueError('Invalid request bounds')

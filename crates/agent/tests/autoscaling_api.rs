@@ -233,7 +233,7 @@ async fn running_count_is_observed_not_the_requested_deployment_size() {
 }
 
 #[tokio::test]
-#[ignore = "isolated process with WEBDOCK_AGENT_AUTOSCALING_ENABLED=true"]
+#[ignore = "isolated process with SPITZLI_AGENT_AUTOSCALING_ENABLED=true"]
 async fn unchanged_policy_fences_delayed_older_replacement() {
     assert!(autoscaling::enabled());
     let mut spec = spec();

@@ -4,20 +4,20 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import { fromRepo } from './repo.mjs';
-const reportPath=process.env.WEBDOCK_NATIVE_UPDATE_FIXTURE;
+const reportPath=process.env.SPITZLI_NATIVE_UPDATE_FIXTURE;
 assert.ok(reportPath?.startsWith(fromRepo('.runtime-test/native-plugin-updates/').pathname),'An owned update fixture is required');
 const readJSON=async path=>JSON.parse(await readFile(path,'utf8'));
 const report=await readJSON(reportPath);assert.equal(report.fixture,true);
 const {paths}=report,directory=paths.directory,statePath=directory+'/acceptance-state.json',cookiesPath=directory+'/acceptance-cookies.json';
 let state;try{state=await readJSON(statePath);}catch(error){if(error.code!=='ENOENT')throw error;state={};}
 if(!state.initialAcceptanceComplete){
- const result=spawnSync('bun',['apps/console/tests/plugin-installation-native.mjs'],{env:{...process.env,WEBDOCK_NATIVE_INSTALL_FIXTURE:reportPath},encoding:'utf8'});
+ const result=spawnSync('bun',['apps/console/tests/plugin-installation-native.mjs'],{env:{...process.env,SPITZLI_NATIVE_INSTALL_FIXTURE:reportPath},encoding:'utf8'});
  await writeFile(directory+'/initial-browser.log',(result.stdout??'')+(result.stderr??''),{mode:0o600});
  assert.equal(result.status,0,'Initial native acceptance failed; inspect its sanitized log');
  state=await readJSON(statePath);state.initialAcceptanceComplete=true;await writeFile(statePath,JSON.stringify(state),{mode:0o600});
 }
 const core=await readJSON(paths.coreEnvironment),catalog=await readJSON(paths.catalog),operator=await readJSON(paths.operatorInput);
-const origin=core.WEBDOCK_CONSOLE_ORIGIN;assert.equal(origin,'http://127.0.0.1:6121');
+const origin=core.SPITZLI_CONSOLE_ORIGIN;assert.equal(origin,'http://127.0.0.1:6121');
 const browser=await chromium.launch({headless:true});
 const context=await browser.newContext({storageState:await readJSON(cookiesPath),viewport:{width:1280,height:900}});
 const page=await context.newPage();page.setDefaultTimeout(15000);
@@ -36,7 +36,7 @@ async function resource(){
  await page.getByRole('button',{name:'Show password',exact:true}).click();const secret=await(await reply).json();secrets.push(secret.value,secret.uri);
  await page.getByRole('button',{name:'Hide',exact:true}).click();return{view,password:secret.value};
 }
-const {Client}=await import('pg');const ca=await readFile(process.env.WEBDOCK_NATIVE_DATABASE_CA??fromRepo('.dev-local/ca/ca.crt'));
+const {Client}=await import('pg');const ca=await readFile(process.env.SPITZLI_NATIVE_DATABASE_CA??fromRepo('.dev-local/ca/ca.crt'));
 async function readSentinel(value){const sql=new Client({host:'127.0.0.1',port:value.view.port,database:value.view.database,user:value.view.user,password:value.password,ssl:{ca,servername:value.view.host,rejectUnauthorized:true},connectionTimeoutMillis:10000,query_timeout:10000});await sql.connect();try{assert.equal((await sql.query('SELECT value FROM native_installer_acceptance')).rows[0].value,42);}finally{await sql.end();}}
 function kube(args){const result=spawnSync('kubectl',['--kubeconfig',paths.kubeconfig,'--context','webdock-dev',...args],{encoding:'utf8'});assert.equal(result.status,0,'Owned Kubernetes observation failed');return result.stdout;}
 async function observeGenerations(current,version){
@@ -76,7 +76,7 @@ async function change(kind,version,generation){
  }
  const before=await(await page.request.get(origin+'/api/console/plugins/operations/'+state[key])).json();
  if(['failed','blocked'].includes(before.status)){
-  assert.equal(process.env.WEBDOCK_NATIVE_UPDATE_RETRY,'true','Lifecycle requires an explicit retained retry: '+before.condition);
+  assert.equal(process.env.SPITZLI_NATIVE_UPDATE_RETRY,'true','Lifecycle requires an explicit retained retry: '+before.condition);
   await page.goto(origin+'/extensions/operations/'+state[key]);
   const reply=page.waitForResponse(response=>new URL(response.url()).pathname.endsWith('/retry')&&response.request().method()==='POST');
   await page.getByRole('button',{name:'Retry '+kind,exact:true}).click();const response=await reply;assert.equal(response.status(),200);state[key]=(await response.json()).id;await save();

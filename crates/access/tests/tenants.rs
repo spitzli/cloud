@@ -31,7 +31,7 @@ fn cookie(s: &str) -> &str {
 #[tokio::test]
 #[ignore = "requires owned retained-schema restricted fixture"]
 async fn tenant_invites_roles_and_revocation_preserve_restricted_boundaries() {
-    let offline = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let offline = Database::connect(guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     offline
@@ -1245,7 +1245,7 @@ async fn tenant_invites_roles_and_revocation_preserve_restricted_boundaries() {
 #[tokio::test]
 #[ignore = "requires freshly migrated owned PostgreSQL restricted fixture"]
 async fn workspace_icons_use_live_tenant_authority() {
-    let offline = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let offline = Database::connect(guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     // The schema-only native fixture has no retained allocator singleton row.

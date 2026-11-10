@@ -85,7 +85,7 @@ if args.database:
     addresses=[api_service['spec']['clusterIP']]+[a['address'] for a in nodes[0]['status']['addresses'] if a['type']=='InternalIP']
     import ipaddress
     cidrs=[address+('/32' if ipaddress.ip_address(address).version==4 else '/128') for address in addresses]
-    extra=['-e','WEBDOCK_DATABASE_TEST_NODE_IP='+addresses[1],'-e','WEBDOCK_DISPOSABLE_DATABASE_TEST=yes','-e','WEBDOCK_DATABASE_TEST_CA='+fixture+'/ca.crt','-e','WEBDOCK_DATABASE_TEST_IMAGE='+versions['POSTGRES_IMAGE'],'-e','WEBDOCK_DATABASE_TEST_POOLER_IMAGE='+versions['PGBOUNCER_IMAGE'],'-e','WEBDOCK_DATABASE_TEST_API_CIDRS='+json.dumps(cidrs)]
+    extra=['-e','SPITZLI_DATABASE_TEST_NODE_IP='+addresses[1],'-e','SPITZLI_DISPOSABLE_DATABASE_TEST=yes','-e','SPITZLI_DATABASE_TEST_CA='+fixture+'/ca.crt','-e','SPITZLI_DATABASE_TEST_IMAGE='+versions['POSTGRES_IMAGE'],'-e','SPITZLI_DATABASE_TEST_POOLER_IMAGE='+versions['PGBOUNCER_IMAGE'],'-e','SPITZLI_DATABASE_TEST_API_CIDRS='+json.dumps(cidrs)]
 attached_database = None
 if args.domain:
     import hashlib
@@ -102,7 +102,7 @@ if args.domain:
     parse = 'process.stdout.write(JSON.stringify(require("node:util").parseEnv(require("node:fs").readFileSync(process.argv[1], "utf8"))))'
     private = json.loads(subprocess.check_output([str(node24), '-e', parse, str(env_file)]))
     source = json.loads(subprocess.check_output([str(node24), '-e', parse, str(pathlib.Path('legacy/control-plane/.env.test.local').resolve())]))
-    owner = urllib.parse.urlsplit(private['WEBDOCK_TEST_MIGRATION_DATABASE_URL'])
+    owner = urllib.parse.urlsplit(private['SPITZLI_TEST_MIGRATION_DATABASE_URL'])
     original_url = urllib.parse.urlsplit(source['API_TEST_DATABASE_URL'])
     assert owner.hostname == '127.0.0.1' and owner.path == '/webdock_rls_test' and not owner.query
     assert (owner.hostname, owner.port, owner.username, owner.password) == (original_url.hostname, original_url.port, original_url.username, original_url.password)
@@ -116,9 +116,9 @@ if args.domain:
     assert ipaddress.ip_address(address).is_private
     docker('cp', '/usr/local/bin/helm', node + ':' + fixture + '/helm')
     docker('cp', str(pathlib.Path('deploy/helm/webdock-plugin').resolve()), node + ':' + fixture + '/chart')
-    extra += ['--env-file', str(env_file), '-e', 'WEBDOCK_DATABASE_TEST_PG_TARGET=' + address + ':5432', '-e', 'WEBDOCK_DATABASE_TEST_HELM=' + fixture + '/helm', '-e', 'WEBDOCK_DATABASE_TEST_CHART=' + fixture + '/chart']
+    extra += ['--env-file', str(env_file), '-e', 'SPITZLI_DATABASE_TEST_PG_TARGET=' + address + ':5432', '-e', 'SPITZLI_DATABASE_TEST_HELM=' + fixture + '/helm', '-e', 'SPITZLI_DATABASE_TEST_CHART=' + fixture + '/chart']
 try:
-    result = subprocess.run(engine + ['exec', *extra, '-e', 'WEBDOCK_DISPOSABLE_NODE_TEST=yes', '-e', 'WEBDOCK_KUBE_TEST_CONFIG=' + fixture + '/kubeconfig', '-e', 'WEBDOCK_KUBE_TEST_CONTEXT=' + args.context, '-e', 'WEBDOCK_KUBE_TEST_IMAGE=' + args.image, node, fixture + '/lib/ld-linux-x86-64.so.2', '--library-path', fixture + '/lib', fixture + '/legacy-test', 'owned_database_domain' if args.domain else ('disposable_database' if args.database else 'disposable_node'), '--ignored', '--nocapture'])
+    result = subprocess.run(engine + ['exec', *extra, '-e', 'SPITZLI_DISPOSABLE_NODE_TEST=yes', '-e', 'SPITZLI_KUBE_TEST_CONFIG=' + fixture + '/kubeconfig', '-e', 'SPITZLI_KUBE_TEST_CONTEXT=' + args.context, '-e', 'SPITZLI_KUBE_TEST_IMAGE=' + args.image, node, fixture + '/lib/ld-linux-x86-64.so.2', '--library-path', fixture + '/lib', fixture + '/legacy-test', 'owned_database_domain' if args.domain else ('disposable_database' if args.database else 'disposable_node'), '--ignored', '--nocapture'])
 finally:
     if attached_database:
         docker('network', 'disconnect', 'kind', attached_database)

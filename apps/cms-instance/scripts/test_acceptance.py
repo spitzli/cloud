@@ -9,7 +9,7 @@ spec.loader.exec_module(module)
 
 class AcceptanceSafetyTests(unittest.TestCase):
     def test_inherited_live_configuration_and_preloads_are_not_forwarded(self):
-        self.assertEqual(module.clean_environment({'PATH':'/bin','HOME':'/home/test','DATABASE_URL':'live','PGPASSWORD':'live','PAYLOAD_SECRET':'live','CMS_MIGRATING':'true','NODE_OPTIONS':'--import=evil','WEBDOCK_SSO_CLIENT_SECRET':'live'}),{'PATH':'/bin','HOME':'/home/test'})
+        self.assertEqual(module.clean_environment({'PATH':'/bin','HOME':'/home/test','DATABASE_URL':'live','PGPASSWORD':'live','PAYLOAD_SECRET':'live','CMS_MIGRATING':'true','NODE_OPTIONS':'--import=evil','SPITZLI_SSO_CLIENT_SECRET':'live'}),{'PATH':'/bin','HOME':'/home/test'})
 
     def test_cleanup_requires_the_exact_random_run_directory(self):
         self.assertEqual(module.fixture_path('/tmp/webdock-cms-acceptance-0123456789abcdef','0123456789abcdef').name,'webdock-cms-acceptance-0123456789abcdef')

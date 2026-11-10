@@ -15,7 +15,7 @@ fn api_error(_: kube::Error) -> ExecutionError {
 
 /// Opt-in is set only after the operator qualifies metrics and HPA lifecycle.
 pub fn enabled() -> bool {
-    std::env::var("WEBDOCK_AGENT_AUTOSCALING_ENABLED").as_deref() == Ok("true")
+    std::env::var("SPITZLI_AGENT_AUTOSCALING_ENABLED").as_deref() == Ok("true")
 }
 
 pub fn identity(spec: &RuntimeSpec) -> Result<(String, String, Value)> {

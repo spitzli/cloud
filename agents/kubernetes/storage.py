@@ -28,7 +28,7 @@ def private(path, directory=False):
 
 
 def configuration(validate_pool=True):
-    path=private(Path(os.environ.get('WEBDOCK_STORAGE_CONFIG','/etc/webdock-storage.json')))
+    path=private(Path(os.environ.get('SPITZLI_STORAGE_CONFIG','/etc/webdock-storage.json')))
     value=json.loads(path.read_text())
     if set(value)!={'root','node','clusterID','poolID','capacityBytes','reserveBytes'}:raise StorageError('Invalid storage configuration')
     private(Path(value['root']),directory=True)

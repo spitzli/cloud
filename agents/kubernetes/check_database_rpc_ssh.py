@@ -56,7 +56,7 @@ def main():
                 config = root / ('pool-'+str(i)+'.json')
                 config.write_text(json.dumps({'root':str(pool),'node':'pool-'+str(i),'clusterID':'456','poolID':pool_id,'capacityBytes':1073741824,'reserveBytes':67108864}));config.chmod(0o600)
                 path = socket_root / ('primary.sock' if i == 0 else 'control.sock')
-                process = subprocess.Popen([sys.executable,str(source/'storage_service.py')], env={**os.environ,'WEBDOCK_STORAGE_CONFIG':str(config),'WEBDOCK_STORAGE_SOCKET':str(path),'WEBDOCK_DATABASE_STORAGE':'1'}, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                process = subprocess.Popen([sys.executable,str(source/'storage_service.py')], env={**os.environ,'SPITZLI_STORAGE_CONFIG':str(config),'SPITZLI_STORAGE_SOCKET':str(path),'SPITZLI_DATABASE_STORAGE':'1'}, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 processes.append(process);wait_socket(path,process)
                 routes.append({'node':'pool-'+str(i),'poolID':pool_id,'storageSocket':str(path)})
             denied = subprocess.run([sys.executable,str(source/'database_storage_rpc.py')],input=b'{"action":"database.capability","value":[]}\n',capture_output=True,user=65532,group=65532,timeout=5)

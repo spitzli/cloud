@@ -11,7 +11,7 @@ from mail_client import MailClient
 from urllib.request import Request
 
 
-@unittest.skipUnless(os.environ.get('WEBDOCK_MAIL_DOCKER_TEST') == '1', 'Explicit local Docker integration test')
+@unittest.skipUnless(os.environ.get('SPITZLI_MAIL_DOCKER_TEST') == '1', 'Explicit local Docker integration test')
 class MailClientIntegrationTests(unittest.TestCase):
     def test_restricted_bootstrap_high_ports_and_permanent_credentials(self):
         endpoint = os.environ.get('DOCKER_HOST')

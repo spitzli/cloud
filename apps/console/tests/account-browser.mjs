@@ -15,7 +15,7 @@ const {authenticatorId}=await cdp.send('WebAuthn.addVirtualAuthenticator',{optio
 try {
   await context.addCookies([{name:'payload-token',value:'retained-local-fixture',domain:'127.0.0.1',path:'/',httpOnly:true,sameSite:'Lax'}]);
   await page.goto(consoleOrigin+'/projects');
-  const initialForce=process.env.WEBDOCK_ACCOUNT_FORCE_INITIAL;
+  const initialForce=process.env.SPITZLI_ACCOUNT_FORCE_INITIAL;
   if(initialForce){
     assert.ok(['prompt','max_age'].includes(initialForce),'Unknown forced account fixture flow');
     const beginning=await page.request.get(consoleOrigin+'/api/sso/login',{maxRedirects:0});

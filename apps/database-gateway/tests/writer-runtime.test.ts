@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-test("separate writer runtime can edit rows but cannot change schema or access auth data", { skip: process.env.WEBDOCK_DATABASE_RUNTIME_TEST !== "true" }, async () => {
+test("separate writer runtime can edit rows but cannot change schema or access auth data", { skip: process.env.SPITZLI_DATABASE_RUNTIME_TEST !== "true" }, async () => {
   const launch = await fetch("http://localhost:3136/api/databases/bridge", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ accessToken: "bob-fixture-token", command: { action: "open", bindingID: "10000" } }) }).then(r => r.json());
   const response = await fetch("http://localhost:3137/session", { method: "POST", headers: { Origin: "http://localhost:3130", "Content-Type": "application/json" }, body: JSON.stringify({ code: launch.data.code }) });

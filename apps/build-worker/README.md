@@ -113,7 +113,7 @@ Errors after publication enter `needs-reconciliation`, never blind retries.
 
 ## Agent pulls
 
-The hosting agent reads optional root-owned `WEBDOCK_REGISTRY_CONFIG`:
+The hosting agent reads optional root-owned `SPITZLI_REGISTRY_CONFIG`:
 
 ```json
 {"version":1,"euStorageEvidence":"verified record","projects":{"123":{
@@ -231,11 +231,11 @@ artifact-only installer configuration. UI plugins require operator-owned
 `runtime.consoleOrigin` plus their existing UI ingress/TLS settings. Set the exact
 canonical HTTPS Console origin (for example `https://console.example.com`), with
 no trailing slash, path, credentials, query, fragment or wildcard. It is validated
-and emitted unchanged as `WEBDOCK_PLUGIN_CONSOLE_ORIGIN`; it is never inferred
+and emitted unchanged as `SPITZLI_PLUGIN_CONSOLE_ORIGIN`; it is never inferred
 from the API `hostOrigin`. Headless installations may omit Console/UI fields.
 
-The public invocation key remains plaintext PEM in `WEBDOCK_PLUGIN_PUBLIC_KEY`;
-`WEBDOCK_PLUGIN_RUNTIME_TOKEN` remains the independent private runtime credential.
+The public invocation key remains plaintext PEM in `SPITZLI_PLUGIN_PUBLIC_KEY`;
+`SPITZLI_PLUGIN_RUNTIME_TOKEN` remains the independent private runtime credential.
 TLS files are mounted at `/runtime-tls/tls.crt` and `/runtime-tls/tls.key`.
 Kubernetes starts installed plugins as UID/GID 1000 with a read-only root, even if
 the image declares another non-root default. A UI image must be readable by that

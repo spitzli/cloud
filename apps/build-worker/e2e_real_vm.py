@@ -39,7 +39,7 @@ def main():
          'sourceSHA':'a'*40,'recipe':'dockerfile','rootDirectory':'.','buildEnvironment':{},
          'limits':{'cpu':2,'memoryMiB':2048,'diskBytes':24*1024**3,'durationSeconds':180}}
     original_hash=args.image_sha256
-    os.environ['WEBDOCK_TEST_HOST_ONLY']='host-only-must-never-enter-vm'
+    os.environ['SPITZLI_TEST_HOST_ONLY']='host-only-must-never-enter-vm'
     common='FROM scratch\nCOPY busybox /busybox\nSHELL ["/busybox", "sh", "-c"]\n'
     checks=[]
     def run(name,dockerfile,expected=None):
@@ -59,10 +59,10 @@ def main():
         (scratch/'evidence.json').write_text(json.dumps({'qemu':'/usr/bin/qemu-system-x86_64','accelerator':'kvm','network':'none','imageSHA256':original_hash,'checks':checks},indent=2))
         print(json.dumps({key:value for key,value in result.items() if key!='logs'}),flush=True)
     run('http-app',
-        'RUN --mount=type=cache,target=/cache test ! -e /cache/previous && /busybox touch /cache/previous && test -z "$WEBDOCK_TEST_HOST_ONLY" && test ! -e /etc/webdock-build-worker/credential && ! /busybox wget -T 2 -q -O - http://169.254.169.254/\n'
+        'RUN --mount=type=cache,target=/cache test ! -e /cache/previous && /busybox touch /cache/previous && test -z "$SPITZLI_TEST_HOST_ONLY" && test ! -e /etc/webdock-build-worker/credential && ! /busybox wget -T 2 -q -O - http://169.254.169.254/\n'
         'COPY index.html /www/index.html\nUSER 65532:65532\nEXPOSE 8080\nENTRYPOINT ["/busybox","httpd","-f","-p","8080","-h","/www"]\n')
     run('fresh-second-build',
-        'RUN --mount=type=cache,target=/cache test ! -e /cache/previous && test -z "$WEBDOCK_TEST_HOST_ONLY"\nCOPY index.html /www/index.html\n')
+        'RUN --mount=type=cache,target=/cache test ! -e /cache/previous && test -z "$SPITZLI_TEST_HOST_ONLY"\nCOPY index.html /www/index.html\n')
     run('failed-command','RUN echo authored-failure-visible; exit 17\n','build_failed')
     assert 'authored-failure-visible' in checks[-1]['logs']
     run('log-limit','RUN /busybox yes bounded-log-flood\n','build_failed')

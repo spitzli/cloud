@@ -13,12 +13,12 @@ from storage import ensure, purge, configuration, capability, read_record, run, 
 
 
 def main():
-    if os.geteuid()!=0 or os.environ.get('WEBDOCK_DISPOSABLE_STORAGE_TEST')!='yes':
+    if os.geteuid()!=0 or os.environ.get('SPITZLI_DISPOSABLE_STORAGE_TEST')!='yes':
         raise SystemExit('Requires explicit disposable root test environment')
     base=Path(tempfile.mkdtemp(prefix='webdock-storage-acceptance-'));base.chmod(0o700)
     root=base/'volumes';root.mkdir(mode=0o700)
     config=base/'config.json';config.write_text(json.dumps({'root':str(root),'poolID':str(uuid.uuid4()),'node':'test-node','clusterID':'789','capacityBytes':268435456,'reserveBytes':67108864}));config.chmod(0o600)
-    os.environ['WEBDOCK_STORAGE_CONFIG']=str(config)
+    os.environ['SPITZLI_STORAGE_CONFIG']=str(config)
     initialize()
     packet={'appID':'123','projectID':'456','clusterID':'789','revision':1,'spec':{'volumeBytes':134217728}}
     _,path=ensure(packet);data=Path(path)

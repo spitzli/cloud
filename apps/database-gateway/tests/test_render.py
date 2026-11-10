@@ -136,9 +136,9 @@ class RendererTest(unittest.TestCase):
         pod = gateway['spec']['template']['spec']
         container = pod['containers'][0]
         env = {x['name']: x['value'] for x in container['env']}
-        self.assertEqual(env['WEBDOCK_DATABASE_MANAGED_RUNTIMES'], 'true')
-        self.assertEqual(env['WEBDOCK_DATABASE_RUNTIME_CAPACITY'], '4')
-        self.assertEqual(env['WEBDOCK_AUTH_ORIGIN'], 'https://auth.webdock.dev')
+        self.assertEqual(env['SPITZLI_DATABASE_MANAGED_RUNTIMES'], 'true')
+        self.assertEqual(env['SPITZLI_DATABASE_RUNTIME_CAPACITY'], '4')
+        self.assertEqual(env['SPITZLI_AUTH_ORIGIN'], 'https://auth.webdock.dev')
         self.assertIn({'name': 'managed-runtime-state', 'mountPath': '/tmp'}, container['volumeMounts'])
         self.assertIn({'name': 'managed-runtime-state', 'emptyDir': {'medium': 'Memory', 'sizeLimit': '128Mi'}}, pod['volumes'])
         self.assertEqual(container['resources']['limits']['memory'], '1280Mi')
