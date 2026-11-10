@@ -4,6 +4,13 @@ use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::Signer;
 use http_body_util::BodyExt;
 use serde_json::{Value, json};
+use spitzli_mail_protocol::{
+    LeaseClaims,
+    native_control::{Control, ControlError, ControlServer},
+    outbox::SendLease,
+    wire as mail,
+};
+use spitzli_plugin_runtime::{PeerIdentity, PinnedMutualTls, wire};
 use std::{
     os::unix::fs::PermissionsExt,
     process::Stdio,
@@ -19,13 +26,6 @@ use tokio::{
 };
 use tonic::{Request, Response, Status};
 use tower::ServiceExt;
-use spitzli_mail_protocol::{
-    LeaseClaims,
-    native_control::{Control, ControlError, ControlServer},
-    outbox::SendLease,
-    wire as mail,
-};
-use spitzli_plugin_runtime::{PeerIdentity, PinnedMutualTls, wire};
 
 struct Row {
     job: Option<SendLease>,

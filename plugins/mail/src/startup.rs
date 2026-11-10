@@ -1,6 +1,6 @@
 //! Listener-scoped retained reconciliation: candidates can be probed without customer effects.
-use std::{future::Future, time::Duration};
 use spitzli_plugin_runtime::HostClient;
+use std::{future::Future, time::Duration};
 
 #[derive(Clone, Copy)]
 pub(super) enum LifetimeEvent {

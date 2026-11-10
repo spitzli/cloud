@@ -1,6 +1,6 @@
-use std::sync::Arc;
 use spitzli_mail::{payload::PgPrivatePayloadStore, store::Store};
 use spitzli_mail_runtime::PrivatePayloadStore;
+use std::sync::Arc;
 
 #[test]
 fn retained_hex_key_is_purpose_bound_and_strict() {

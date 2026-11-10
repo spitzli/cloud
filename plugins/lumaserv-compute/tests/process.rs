@@ -1,6 +1,9 @@
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::{Signer, SigningKey};
 use serde_json::{Value, json};
+use spitzli_plugin_http::{HttpBinding, HttpRule};
+use spitzli_plugin_protocol::{InvocationClaims, Manifest};
+use spitzli_plugin_runtime::{UnixSocket, wire};
 use std::{
     collections::BTreeMap,
     os::unix::fs::PermissionsExt,
@@ -12,9 +15,6 @@ use std::{
 };
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tonic::{Request, Response, Status};
-use spitzli_plugin_http::{HttpBinding, HttpRule};
-use spitzli_plugin_protocol::{InvocationClaims, Manifest};
-use spitzli_plugin_runtime::{UnixSocket, wire};
 
 const PROJECT: &str = "1428d399-8861-40a5-a85f-6ed4c669bae0";
 const SERVER: &str = "2428d399-8861-40a5-a85f-6ed4c669bae0";

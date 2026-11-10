@@ -1,13 +1,13 @@
 //! Real plugin storage on a disposable local PostgreSQL (`WEBDOCK_MAIL_PLUGIN_TEST_ADMIN_URL`, loopback),
 //! an in-test SMTP catcher and an in-test turboSMTP stand-in. No message leaves this process.
 use serde_json::{Value, json};
+use spitzli_mail::{Dns, Handler, Plugin, Settings, seal::Sealer, store::Store, transport};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 use std::sync::{Arc, Mutex};
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use tokio_postgres::NoTls;
-use spitzli_mail::{Dns, Handler, Plugin, Settings, seal::Sealer, store::Store, transport};
-use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use spitzli_plugin_runtime::ActionHandler;
 
 fn admin_url() -> url::Url {
     let url = url::Url::parse(

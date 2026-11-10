@@ -3,8 +3,8 @@
 //! the cluster's agent applies the objects and reports readiness, pod problems and recent logs.
 use serde::Deserialize;
 use serde_json::{Value, json};
-use uuid::Uuid;
 use spitzli_plugin_protocol::PluginError;
+use uuid::Uuid;
 
 pub use spitzli_plugin_kit::workloads::{HostWorkloads, Workloads};
 

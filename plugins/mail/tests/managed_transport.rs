@@ -1,13 +1,13 @@
 //! Local HTTP provider stand-in only; no provider resource, credential or real mail.
 use serde_json::json;
-use tokio::{
-    io::{AsyncReadExt, AsyncWriteExt},
-    net::TcpListener,
-};
 use spitzli_mail::transport::{Platform, Route, Sender};
 use spitzli_mail_runtime::{
     message::prepare_action_message,
     outbox::{PayloadFormat, SendLease},
+};
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::TcpListener,
 };
 #[tokio::test]
 async fn one_http_attempt_preserves_rejection_and_unknown_classifier() {

@@ -2,6 +2,14 @@
 mod common;
 use ed25519_dalek::SigningKey;
 use serde_json::json;
+use spitzli_mail_protocol::{
+    wire::{
+        mail_authority_server::{MailAuthority, MailAuthorityServer},
+        mail_runtime_client::MailRuntimeClient,
+    },
+    *,
+};
+use spitzli_plugin_runtime::{PeerIdentity, UnixSocket, authenticated_peer};
 use std::{
     collections::HashSet,
     os::unix::fs::{MetadataExt, PermissionsExt},
@@ -12,14 +20,6 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 use tonic::{Request, Response, Status};
-use spitzli_mail_protocol::{
-    wire::{
-        mail_authority_server::{MailAuthority, MailAuthorityServer},
-        mail_runtime_client::MailRuntimeClient,
-    },
-    *,
-};
-use spitzli_plugin_runtime::{PeerIdentity, UnixSocket, authenticated_peer};
 #[derive(Clone)]
 struct Core {
     key: ed25519_dalek::VerifyingKey,

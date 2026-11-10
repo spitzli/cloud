@@ -3,12 +3,12 @@ use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statemen
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_build::{BuildService, RepositoryProvider, RepositoryRef, VerifiedCommit};
 use std::{
     collections::BTreeMap,
     path::{Path, PathBuf},
     sync::Arc,
 };
-use spitzli_build::{BuildService, RepositoryProvider, RepositoryRef, VerifiedCommit};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 fn first_attempt() -> u32 {
     1

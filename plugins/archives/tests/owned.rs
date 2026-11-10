@@ -1,7 +1,6 @@
 #![cfg(feature = "local-test")]
 use serde::Deserialize;
 use serde_json::json;
-use std::{os::unix::fs::PermissionsExt, sync::Arc};
 use spitzli_archives::{
     Engine,
     backend::{Backend, BackendConfig},
@@ -9,6 +8,7 @@ use spitzli_archives::{
 };
 use spitzli_plugin_host::storage::{StorageAuthority, StorageGateway};
 use spitzli_plugin_protocol::{PluginError, storage::StorageAuthorization};
+use std::{os::unix::fs::PermissionsExt, sync::Arc};
 #[derive(Deserialize)]
 struct Fixture {
     database: String,

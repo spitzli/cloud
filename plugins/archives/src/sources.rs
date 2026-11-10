@@ -1,11 +1,11 @@
 //! Existing pinned Core channel; no public transport can ask for private source material.
 use crate::{MAX_BYTES, Result, now};
-use std::path::Path;
-use tokio::io::{AsyncSeekExt, AsyncWriteExt};
 use spitzli_export_protocol::{
     SourceKind, SourceRef,
     wire::{self, export_sources_client::ExportSourcesClient},
 };
+use std::path::Path;
+use tokio::io::{AsyncSeekExt, AsyncWriteExt};
 #[derive(Clone)]
 pub struct Sources {
     client: ExportSourcesClient<tonic::transport::Channel>,

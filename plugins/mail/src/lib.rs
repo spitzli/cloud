@@ -14,10 +14,10 @@ pub mod transport;
 
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::sync::Arc;
-use uuid::Uuid;
 use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
 use spitzli_plugin_runtime::ActionHandler;
+use std::sync::Arc;
+use uuid::Uuid;
 
 type Result<T> = std::result::Result<T, PluginError>;
 pub const PLUGIN_ID: &str = "mail";

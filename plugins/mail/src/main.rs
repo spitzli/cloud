@@ -1,8 +1,8 @@
 //! Mail runtime over private Unix sockets or pinned mTLS, with its own metadata database.
 use serde::Deserialize;
-use std::{path::PathBuf, process::ExitCode, sync::Arc};
 use spitzli_plugin_kit::transport::{CoreTls, ListenTls, RuntimeTransport};
 use spitzli_plugin_runtime::{self as runtime};
+use std::{path::PathBuf, process::ExitCode, sync::Arc};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
 mod startup;

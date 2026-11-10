@@ -9,9 +9,9 @@ pub mod sdk;
 pub mod store;
 
 use serde_json::Value;
-use std::sync::Arc;
 use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
 use spitzli_plugin_runtime::ActionHandler;
+use std::sync::Arc;
 pub struct Handler(pub Arc<engine::Engine>);
 #[tonic::async_trait]
 impl ActionHandler for Handler {

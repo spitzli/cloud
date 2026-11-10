@@ -2,7 +2,6 @@
 //! Uses existing owned Core fixture without changing its catalog, gateway or migrations.
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
-use std::sync::Arc;
 use spitzli_identity::{CookiePolicy, IdentityService};
 use spitzli_plugin_host::{
     AdmissionInput, FileBindings, HostService,
@@ -10,6 +9,7 @@ use spitzli_plugin_host::{
 };
 use spitzli_plugin_protocol::{Manifest, storage::StoragePlan};
 use spitzli_plugin_runtime::{CorePeer, PeerIdentity, RemoteAuthority, Runtime, UnixSocket, wire};
+use std::sync::Arc;
 #[allow(
     dead_code,
     reason = "shared existing fixture includes unused jobs helpers"

@@ -1,11 +1,11 @@
 //! Private safety interlock tests. These do not manufacture Core backup authority.
-use std::sync::Arc;
-use uuid::Uuid;
 use spitzli_mail::{
     payload::PgPrivatePayloadStore,
     store::{Domain, Store},
 };
 use spitzli_mail_runtime::PrivatePayloadStore;
+use std::sync::Arc;
+use uuid::Uuid;
 
 async fn connect(url: &str) -> Store {
     match std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_CA") {

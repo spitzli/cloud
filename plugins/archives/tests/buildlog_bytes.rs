@@ -1,6 +1,6 @@
 //! Offline private-RPC byte-contract tests; this mock does not qualify Core authority.
-use std::pin::Pin;
 use spitzli_export_protocol::{SourceKind, SourceRef, wire};
+use std::pin::Pin;
 #[derive(Clone)]
 struct Source {
     bytes: Vec<u8>,

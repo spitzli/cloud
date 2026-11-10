@@ -2,10 +2,10 @@
 use reqwest::{Client, Method, StatusCode};
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::{collections::HashMap, time::Duration};
 use spitzli_repository_protocol::{
     self as protocol, ErrorCode, LeaseClaims, PluginError, Result, runtime::Handler,
 };
+use std::{collections::HashMap, time::Duration};
 fn denied() -> PluginError {
     PluginError::denied()
 }

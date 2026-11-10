@@ -1,9 +1,9 @@
 //! Durable action ingress. No transport runs in an invocation future.
 use crate::{Plugin, Result, invalid, store_error};
 use serde_json::{Value, json};
-use std::sync::Arc;
 use spitzli_mail_runtime::{PrivatePayloadStore, SendControl};
 use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, PluginError};
+use std::sync::Arc;
 
 pub struct Delivery {
     pub control: Arc<dyn SendControl>,

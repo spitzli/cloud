@@ -1,13 +1,6 @@
 //! Existing normalized repository protocol under exact archives job/attempt authority.
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
-use std::{
-    os::unix::fs::PermissionsExt,
-    sync::{
-        Arc, Mutex,
-        atomic::{AtomicBool, AtomicUsize, Ordering},
-    },
-};
 use spitzli_export_protocol::{SourceKind, SourceRef};
 use spitzli_identity::{CookiePolicy, IdentityService};
 use spitzli_plugin_host::{
@@ -15,6 +8,13 @@ use spitzli_plugin_host::{
 };
 use spitzli_plugin_runtime::{PeerIdentity, UnixSocket};
 use spitzli_repository_protocol::{self as repository, runtime};
+use std::{
+    os::unix::fs::PermissionsExt,
+    sync::{
+        Arc, Mutex,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
+    },
+};
 #[allow(
     dead_code,
     reason = "existing owned Core fixture also supplies other job helpers"

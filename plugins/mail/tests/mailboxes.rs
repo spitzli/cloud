@@ -3,11 +3,11 @@
 //! (`WEBDOCK_MAIL_PLUGIN_TEST_ADMIN_URL`, loopback). A stand-in for Core and the cluster's agent
 //! applies the engine's objects with kubectl in a namespace of the test's own.
 use serde_json::{Value, json};
-use std::{process::Command, sync::Mutex, time::Duration};
-use tokio_postgres::NoTls;
 use spitzli_mail::{Dns, Handler, Plugin, Settings, engine, seal::Sealer, store::Store, transport};
 use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, PluginError};
 use spitzli_plugin_runtime::ActionHandler;
+use std::{process::Command, sync::Mutex, time::Duration};
+use tokio_postgres::NoTls;
 
 const IMAGE: &str = "docker.io/stalwartlabs/stalwart@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3";
 

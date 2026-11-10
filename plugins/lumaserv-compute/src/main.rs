@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use spitzli_plugin_runtime::{self as runtime, HostClient};
 use std::{
     collections::BTreeMap,
     io::Read,
@@ -7,7 +8,6 @@ use std::{
     process::ExitCode,
     sync::Arc,
 };
-use spitzli_plugin_runtime::{self as runtime, HostClient};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
 #[derive(Deserialize)]

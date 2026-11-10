@@ -2,8 +2,8 @@
 use crate::store::Store;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use sha2::{Digest, Sha256};
-use std::sync::Arc;
 use spitzli_mail_runtime::{Error, PrivatePayloadStore, Result, SavedPayload, secrets::MailCipher};
+use std::sync::Arc;
 
 pub fn payload_key(retained_hex: &str) -> Result<String> {
     spitzli_mail_runtime::secrets::private_payload_key_from_hex(retained_hex)

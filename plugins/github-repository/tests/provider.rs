@@ -5,6 +5,8 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use serde_json::{Value, json};
+use spitzli_github_repository::GithubProvider;
+use spitzli_repository_protocol::{Action, LeaseClaims, runtime::Handler};
 use std::{
     io::Write,
     sync::{
@@ -12,8 +14,6 @@ use std::{
         atomic::{AtomicUsize, Ordering},
     },
 };
-use spitzli_github_repository::GithubProvider;
-use spitzli_repository_protocol::{Action, LeaseClaims, runtime::Handler};
 #[derive(Clone)]
 struct Fixture {
     origin: String,
@@ -266,8 +266,8 @@ impl spitzli_repository_protocol::wire::repository_authority_server::RepositoryA
     }
 }
 async fn installed_process(private: &std::path::Path, origin: &str) {
-    use std::os::unix::fs::PermissionsExt;
     use spitzli_repository_protocol::{self as p, runtime, wire};
+    use std::os::unix::fs::PermissionsExt;
     let directory = tempfile::tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let callback_path = directory.path().join("core.sock");

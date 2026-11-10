@@ -16,9 +16,9 @@ pub mod store;
 pub use engine::Engine;
 
 use serde_json::{Value, json};
-use std::sync::Arc;
 use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
 use spitzli_plugin_runtime::{ActionHandler, HostClient, JobHandler};
+use std::sync::Arc;
 
 pub fn validate_manifest(manifest: &Manifest) -> std::result::Result<(), PluginError> {
     let mut actual = manifest.as_json().clone();

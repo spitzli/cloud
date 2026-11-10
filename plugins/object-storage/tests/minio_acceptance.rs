@@ -7,7 +7,6 @@ use aws_sdk_s3::{
     primitives::ByteStream,
 };
 use serde_json::{Value, json};
-use std::{os::unix::fs::PermissionsExt, path::PathBuf, sync::Arc};
 use spitzli_object_storage_plugin::{
     engine::Engine,
     provider::Provider,
@@ -15,6 +14,7 @@ use spitzli_object_storage_plugin::{
     store::Store,
 };
 use spitzli_plugin_kit::seal::Sealer;
+use std::{os::unix::fs::PermissionsExt, path::PathBuf, sync::Arc};
 mod support;
 
 fn client(endpoint: &str, key: &str, secret: &str) -> Client {

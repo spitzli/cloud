@@ -1,9 +1,5 @@
 //! Product action custody with a deliberate controlled Core stand-in, using owned TLS PostgreSQL.
 use serde_json::{Value, json};
-use std::sync::{
-    Arc, Mutex,
-    atomic::{AtomicBool, Ordering},
-};
 use spitzli_mail::{
     Dns, Handler, Plugin, Settings, delivery::Delivery, payload::PgPrivatePayloadStore,
     seal::Sealer, store::Store, transport,
@@ -11,6 +7,10 @@ use spitzli_mail::{
 use spitzli_mail_runtime::{ControlError, PrivatePayloadStore, SendControl};
 use spitzli_plugin_protocol::{ErrorCode, InvocationClaims};
 use spitzli_plugin_runtime::ActionHandler;
+use std::sync::{
+    Arc, Mutex,
+    atomic::{AtomicBool, Ordering},
+};
 struct NoDns;
 #[tonic::async_trait]
 impl Dns for NoDns {

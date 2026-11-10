@@ -7,8 +7,8 @@ use aws_sdk_s3::{
     types::ExpirationStatus,
 };
 use serde::Deserialize;
-use std::time::Duration;
 use spitzli_object_storage::{ObjectReceipt, S3Config, Store};
+use std::time::Duration;
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct BackendConfig {

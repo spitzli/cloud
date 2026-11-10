@@ -2,11 +2,11 @@
 //! disposable local PostgreSQL (`WEBDOCK_HOSTING_PLUGIN_TEST_ADMIN_URL`, loopback). The objects
 //! themselves run on the local k3s in the live dev stack.
 use serde_json::{Value, json};
-use std::sync::{Arc, Mutex};
-use tokio_postgres::NoTls;
 use spitzli_hosting::{Handler, Plugin, Settings, placement, seal::Sealer, store::Store};
 use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
 use spitzli_plugin_runtime::ActionHandler;
+use std::sync::{Arc, Mutex};
+use tokio_postgres::NoTls;
 
 const IMAGE: &str = "nginx:stable-alpine";
 

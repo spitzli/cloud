@@ -1,13 +1,13 @@
 //! Explicitly installed provider process. Configuration cannot enroll or approve itself.
 use serde::Deserialize;
+use spitzli_mail_protocol::runtime::{MutualTls, RemoteAuthority, Runtime, UnixSocket};
+use spitzli_plugin_runtime::{CorePeer, PinnedMutualTls};
 use std::{
     io::Read,
     os::unix::fs::{MetadataExt, OpenOptionsExt},
     path::{Path, PathBuf},
     sync::Arc,
 };
-use spitzli_mail_protocol::runtime::{MutualTls, RemoteAuthority, Runtime, UnixSocket};
-use spitzli_plugin_runtime::{CorePeer, PinnedMutualTls};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

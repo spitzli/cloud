@@ -7,13 +7,13 @@ pub use spitzli_plugin_kit::seal;
 
 use serde::Deserialize;
 use serde_json::{Value, json};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 use std::{
     collections::HashSet,
     sync::{Arc, Mutex},
 };
 use uuid::Uuid;
-use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use spitzli_plugin_runtime::ActionHandler;
 
 type Result<T> = std::result::Result<T, PluginError>;
 pub const PLUGIN_ID: &str = "hosting";

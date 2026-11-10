@@ -3,13 +3,13 @@
 //! Dedicated instances go to a stand-in for Core's `plugin.workloads`; they run on the local k3s
 //! in the live dev stack.
 use serde_json::{Value, json};
-use std::sync::{Arc, Mutex};
-use tokio_postgres::NoTls;
 use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest};
 use spitzli_plugin_runtime::ActionHandler;
 use spitzli_postgres::{
     Handler, Plugin, dedicated, seal::Sealer, shared::SharedServer, store::Store,
 };
+use std::sync::{Arc, Mutex};
+use tokio_postgres::NoTls;
 
 /// What Core holds for the units: the objects of the last apply and what the agent reported.
 #[derive(Default)]

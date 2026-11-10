@@ -1,3 +1,4 @@
+use spitzli_plugin_runtime::{HostClient, UnixSocket, wire};
 use std::{
     os::unix::fs::MetadataExt,
     path::PathBuf,
@@ -9,7 +10,6 @@ use std::{
 };
 use tokio::sync::{mpsc, oneshot};
 use tonic::{Request, Response, Status};
-use spitzli_plugin_runtime::{HostClient, UnixSocket, wire};
 
 #[derive(Clone)]
 struct Host {
@@ -834,9 +834,9 @@ impl LifetimeTls {
 
 #[tokio::test]
 async fn actual_delivery_listener_survives_gateway_401_and_authorization_transition() {
+    use spitzli_plugin_runtime::{CorePeer, MutualTls, RemoteAuthority, Runtime};
     use std::os::unix::fs::PermissionsExt;
     use tower::ServiceExt;
-    use spitzli_plugin_runtime::{CorePeer, MutualTls, RemoteAuthority, Runtime};
     let mut f = Fixture::new().await;
     let mut ca_params = rcgen::CertificateParams::new(Vec::<String>::new()).unwrap();
     ca_params

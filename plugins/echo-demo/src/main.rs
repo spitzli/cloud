@@ -1,5 +1,6 @@
 //! Co-located demo runtime over private Unix sockets. Use the generic chart for remote mTLS plugins.
 use serde::Deserialize;
+use spitzli_plugin_runtime::{self as runtime, HostClient};
 use std::{
     io::Read,
     os::unix::fs::{MetadataExt, OpenOptionsExt},
@@ -7,7 +8,6 @@ use std::{
     process::ExitCode,
     sync::Arc,
 };
-use spitzli_plugin_runtime::{self as runtime, HostClient};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
 #[derive(Deserialize)]

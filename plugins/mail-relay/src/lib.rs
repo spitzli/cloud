@@ -1,13 +1,13 @@
 //! Standalone relay provider. Never linked into the platform Core.
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::{collections::HashSet, time::Duration};
 use spitzli_mail_message::{Sender, envelope_address, prepare_message};
 use spitzli_mail_protocol::{
     LeaseClaims,
     runtime::Handler,
     wire::{SendReceipt, send_receipt::State},
 };
+use std::{collections::HashSet, time::Duration};
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]

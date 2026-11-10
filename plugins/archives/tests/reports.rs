@@ -1,12 +1,12 @@
 //! Real Core RLS projection: user-editable spreadsheet formulas never become report cells.
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
-use std::sync::Arc;
 use spitzli_identity::{CookiePolicy, IdentityService};
 use spitzli_plugin_host::{
     AdmissionInput, ExportSources, FileBindings, HostService, InvocationScope,
 };
 use spitzli_plugin_runtime::PeerIdentity;
+use std::sync::Arc;
 #[allow(
     dead_code,
     reason = "existing owned Core fixture also serves job tests"

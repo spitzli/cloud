@@ -3,9 +3,9 @@
 //! is just a new apply. Customers connect through Traefik, routed by TLS server name.
 use serde::Deserialize;
 use serde_json::{Value, json};
-use uuid::Uuid;
 pub use spitzli_plugin_kit::workloads::{HostWorkloads, Workloads};
 use spitzli_plugin_protocol::PluginError;
+use uuid::Uuid;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

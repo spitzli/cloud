@@ -7,10 +7,6 @@ use crate::{
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::{
-    sync::Arc,
-    time::{Duration, SystemTime, UNIX_EPOCH},
-};
 use spitzli_mail_protocol::{
     sha256, valid_digest, verify_lease,
     wire::{LeaseProof, mail_authority_client::MailAuthorityClient},
@@ -21,6 +17,10 @@ use spitzli_mail_runtime::{
     message::{DispatchMessage, PreparedMessage},
     outbox::{Receipt, SendLease},
     provider_transport::{ProviderBinding, SendAuthorization, metadata_bytes},
+};
+use std::{
+    sync::Arc,
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 #[derive(Deserialize)]

@@ -1,7 +1,7 @@
 //! Explicit operator cutover entry point. No provider/private database credentials.
 use serde::Deserialize;
-use std::{net::SocketAddr, path::PathBuf, process::ExitCode, sync::Arc};
 use spitzli_plugin_kit::{read_file, transport::CoreTls};
+use std::{net::SocketAddr, path::PathBuf, process::ExitCode, sync::Arc};
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Configuration {

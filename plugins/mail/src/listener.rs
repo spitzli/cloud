@@ -6,8 +6,8 @@ use axum::{
     middleware::{self, Next},
     response::Response,
 };
-use std::{future::Future, sync::Arc, time::Duration};
 use spitzli_plugin_runtime::{CorePeer, MutualTls, Runtime, UnixSocket};
+use std::{future::Future, sync::Arc, time::Duration};
 
 pub fn native_routes(router: Router, peers: Vec<CorePeer>) -> Router {
     let peers = Arc::new(peers);

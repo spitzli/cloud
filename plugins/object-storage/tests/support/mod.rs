@@ -1,7 +1,7 @@
 //! Test-only databases on the fresh container owned by fixtures/postgres.py.
 use serde_json::Value;
-use tokio_postgres::Client;
 use spitzli_object_storage_plugin::store::Store;
+use tokio_postgres::Client;
 
 pub fn database_url(database: &str) -> String {
     assert!(

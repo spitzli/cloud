@@ -10,12 +10,12 @@ use crate::{
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use std::{os::unix::fs::MetadataExt, path::PathBuf, sync::Arc};
-use tokio::sync::Semaphore;
-use uuid::Uuid;
 use spitzli_plugin_protocol::storage::{
     Attachment, StorageAuthorization, StorageDirection, StoragePlan,
 };
+use std::{os::unix::fs::MetadataExt, path::PathBuf, sync::Arc};
+use tokio::sync::Semaphore;
+use uuid::Uuid;
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Create {

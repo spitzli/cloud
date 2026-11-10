@@ -1,7 +1,6 @@
 //! Actual producer Engine + AWS SDK presigns through Core's binary kernel, fresh resources only.
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use std::{os::unix::fs::PermissionsExt, sync::Arc};
 use spitzli_object_storage_plugin::{
     engine::Engine,
     sdk::{BackendConfig, Control},
@@ -13,6 +12,7 @@ use spitzli_plugin_protocol::{
     PluginError,
     storage::{StorageAuthorization, StoragePlan},
 };
+use std::{os::unix::fs::PermissionsExt, sync::Arc};
 
 struct Live {
     engine: Arc<Engine>,

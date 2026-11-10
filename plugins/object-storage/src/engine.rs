@@ -5,9 +5,9 @@ use crate::{
 };
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_plugin_kit::seal::Sealer;
 use std::{sync::Arc, time::Duration};
 use uuid::Uuid;
-use spitzli_plugin_kit::seal::Sealer;
 type Result<T> = std::result::Result<T, &'static str>;
 pub struct Engine {
     pub(crate) store: Store,

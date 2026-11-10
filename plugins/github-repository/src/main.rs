@@ -1,12 +1,12 @@
 //! Standalone provider process; private configuration and authenticated Core callback are required.
 use serde::Deserialize;
+use spitzli_repository_protocol::{runtime, verify_descriptor};
 use std::{
     io::Read,
     os::unix::fs::{MetadataExt, OpenOptionsExt},
     path::{Path, PathBuf},
     sync::Arc,
 };
-use spitzli_repository_protocol::{runtime, verify_descriptor};
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Configuration {

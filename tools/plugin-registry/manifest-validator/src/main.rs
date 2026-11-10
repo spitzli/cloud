@@ -1,5 +1,5 @@
-use std::io::{self, Read, Write};
 use spitzli_plugin_protocol::Manifest;
+use std::io::{self, Read, Write};
 
 const MAX_REGISTRY_BYTES: usize = 64 * 1024;
 

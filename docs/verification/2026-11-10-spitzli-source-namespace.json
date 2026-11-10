@@ -74,5 +74,24 @@
     "Source namespace phase, not complete removal of all legacy strings",
     "Website live CMS HTTP integration tests need a configured owned server; policy/types/controlled Next tests passed",
     "No production Core/agent/database/credentials/flag changes; no provider/auth/full-platform E2E claim"
-  ]
+  ],
+  "ciFormatFollowup": {
+    "failedHead": "802f5040c3a68b032e60d38ac24aec6a1cd7289d",
+    "failedJob": "https://github.com/spitzli/cloud/actions/runs/42831266091/job/129881619326",
+    "runner": "blacksmith-4vcpu-ubuntu-2404-ska34kx5y26geyg2",
+    "cause": "Standalone plugin import ordering after the source namespace rename; root cargo fmt --all does not format separate workspaces",
+    "fix": "cargo fmt across all standalone package manifests",
+    "sourceFilesFormatted": 59,
+    "formatCheckCoverage": {
+      "rootWorkspace": "passed",
+      "standaloneManifests": 13
+    },
+    "canonicalStandaloneChecks": {
+      "manifests": 10,
+      "commands": 30,
+      "allPassed": true
+    },
+    "runtimeLogicChanged": false,
+    "frozenMigrationsAndRetainedCodecs": "unchanged"
+  }
 }
