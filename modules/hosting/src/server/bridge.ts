@@ -76,7 +76,7 @@ export function createHostingBridge(dependencies: Dependencies) {
     request: Request,
     accessToken: string,
   ): Promise<HostingActor> {
-    const clientID = dependencies.env.WEBDOCK_STUDIO_CLIENT_ID,
+    const clientID = dependencies.env.SPITZLI_STUDIO_CLIENT_ID,
       basic = request.headers.get("authorization") || "";
     if (
       !clientID ||

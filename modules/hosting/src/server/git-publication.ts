@@ -44,7 +44,7 @@ export function createHostingGitPublication(dependencies: Dependencies) {
   function gitRegistryRepository(
     customerID: string,
     projectID: string,
-    host = dependencies.env.WEBDOCK_GIT_REGISTRY_HOST,
+    host = dependencies.env.SPITZLI_GIT_REGISTRY_HOST,
   ) {
     if (
       !host ||

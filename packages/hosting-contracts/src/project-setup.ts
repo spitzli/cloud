@@ -69,7 +69,7 @@ export const setupConfigurationSchema = z
       .object({
         connectionID: resourceID,
         domainID: resourceID,
-        variable: environmentNameSchema.default("WEBDOCK_MAIL_API_KEY"),
+        variable: environmentNameSchema.default("SPITZLI_MAIL_API_KEY"),
       })
       .strict()
       .nullable()

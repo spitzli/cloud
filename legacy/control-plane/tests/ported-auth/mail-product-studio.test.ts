@@ -15,8 +15,8 @@ const { startTenantPreview, exitTenantPreview } =
 test.after(() => database.end());
 test("registered Mail bridge operations retain live membership and deny hidden preview writes", async () => {
   await withMailProductFixture(async (f) => {
-    const previous = process.env.WEBDOCK_STUDIO_CLIENT_ID;
-    process.env.WEBDOCK_STUDIO_CLIENT_ID = "mail-studio-fixture";
+    const previous = process.env.SPITZLI_STUDIO_CLIENT_ID;
+    process.env.SPITZLI_STUDIO_CLIENT_ID = "mail-studio-fixture";
     const call = (
       principal: typeof f.admin.principal,
       operation: string,
@@ -107,8 +107,8 @@ test("registered Mail bridge operations retain live membership and deny hidden p
         await exitTenantPreview(who);
       }
     } finally {
-      if (previous === undefined) delete process.env.WEBDOCK_STUDIO_CLIENT_ID;
-      else process.env.WEBDOCK_STUDIO_CLIENT_ID = previous;
+      if (previous === undefined) delete process.env.SPITZLI_STUDIO_CLIENT_ID;
+      else process.env.SPITZLI_STUDIO_CLIENT_ID = previous;
     }
   });
 });

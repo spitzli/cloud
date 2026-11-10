@@ -52,8 +52,8 @@ def render(api_image, gateway_image):
                            'failureThreshold': 12 if probe == 'startupProbe' else 3}
                    for probe in ('startupProbe', 'readinessProbe', 'livenessProbe')}}
 
-    common = {'WEBDOCK_AUTH_ORIGIN': 'https://auth.webdock.dev'}
-    api = container('api', api_image, 3139, '512Mi', {**common, 'WEBDOCK_NATIVE_MAIL_SENDING_ENABLED': 'true', 'MAIL_PAYLOAD_DIRECTORY': '/data/payloads'},
+    common = {'SPITZLI_AUTH_ORIGIN': 'https://auth.webdock.dev'}
+    api = container('api', api_image, 3139, '512Mi', {**common, 'SPITZLI_NATIVE_MAIL_SENDING_ENABLED': 'true', 'MAIL_PAYLOAD_DIRECTORY': '/data/payloads'},
                     ['MAIL_SEND_WORKER_SECRET', 'MAIL_GATEWAY_SECRET', 'MAIL_ENCRYPTION_KEY'])
     api['volumeMounts'] = [{'name': 'payloads', 'mountPath': '/data'}]
     gateway = container('gateway', gateway_image, 3138, '256Mi', {**common, 'MAIL_BROWSER_ORIGINS': 'https://studio.webdock.dev', 'MAIL_SEND_INTERNAL_ORIGIN': 'http://127.0.0.1:3139'}, ['MAIL_GATEWAY_SECRET'])

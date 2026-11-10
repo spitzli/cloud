@@ -62,7 +62,7 @@ test("real hosting OAuth grants customer access, rejects Registry scope and obse
   await migrateHosting(database, mcpResource);
   const root = await login(true),
     customer = await login();
-  const previous = process.env.WEBDOCK_STUDIO_CLIENT_ID;
+  const previous = process.env.SPITZLI_STUDIO_CLIENT_ID;
   const cid = (
     await database.query(
       "INSERT INTO webdock_admin.customers(id,name) VALUES(webdock_auth.next_snowflake(),'Hosting OAuth fixture') RETURNING id",
@@ -114,7 +114,7 @@ test("real hosting OAuth grants customer access, rejects Registry scope and obse
     };
     const app = await create(true),
       resource = await create(false);
-    process.env.WEBDOCK_STUDIO_CLIENT_ID = resource.client_id;
+    process.env.SPITZLI_STUDIO_CLIENT_ID = resource.client_id;
     const verifier = randomBytes(32).toString("base64url");
     const params = new URLSearchParams({
       client_id: app.client_id,
@@ -230,7 +230,7 @@ test("real hosting OAuth grants customer access, rejects Registry scope and obse
       401,
     );
   } finally {
-    process.env.WEBDOCK_STUDIO_CLIENT_ID = previous;
+    process.env.SPITZLI_STUDIO_CLIENT_ID = previous;
     await database.query(
       'DELETE FROM webdock_auth.member WHERE "organizationId"=$1',
       [org],

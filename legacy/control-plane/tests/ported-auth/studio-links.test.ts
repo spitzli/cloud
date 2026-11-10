@@ -71,14 +71,14 @@ test("Studio links use a configured canonical origin and keep business links loc
   );
   assert.equal(
     studioURL("/sites", {
-      WEBDOCK_STUDIO_ORIGIN: "https://studio.example.test/",
+      SPITZLI_STUDIO_ORIGIN: "https://studio.example.test/",
     }),
     "https://studio.example.test/sites",
   );
   assert.equal(
     studioURL("/tenants", {
       NODE_ENV: "development",
-      WEBDOCK_STUDIO_ORIGIN: "http://localhost:3120",
+      SPITZLI_STUDIO_ORIGIN: "http://localhost:3120",
     }),
     "http://localhost:3120/tenants",
   );
@@ -92,7 +92,7 @@ test("Studio links use a configured canonical origin and keep business links loc
     "http://localhost:3120",
   ]) {
     assert.throws(() =>
-      studioURL("/tenants", { ...enabled, WEBDOCK_STUDIO_ORIGIN: origin }),
+      studioURL("/tenants", { ...enabled, SPITZLI_STUDIO_ORIGIN: origin }),
     );
   }
   for (const path of ["https://evil.test", "//evil.test", "/\\evil.test"])

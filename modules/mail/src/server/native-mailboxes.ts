@@ -433,7 +433,7 @@ export function createNativeMailboxes(
   async function getTenantMailboxes(headers: Headers, customerID: string) {
     return withAuthenticatedDatabase(headers, async () => {
       await getTenant(headers, customerID);
-      if (env.WEBDOCK_NATIVE_MAILBOXES_ENABLED !== "true") return null;
+      if (env.SPITZLI_NATIVE_MAILBOXES_ENABLED !== "true") return null;
       const session = await resolveSessionReference(headers);
       if (!session) mailUnavailable();
       return transaction((db) =>
@@ -453,7 +453,7 @@ export function createNativeMailboxes(
     input: Record<string, string>,
   ) {
     return withAuthenticatedDatabase(headers, async () => {
-      if (env.WEBDOCK_NATIVE_MAILBOXES_ENABLED !== "true") mailUnavailable();
+      if (env.SPITZLI_NATIVE_MAILBOXES_ENABLED !== "true") mailUnavailable();
       const session = await resolveSessionReference(headers);
       if (!session) mailUnavailable();
       await transaction((db) =>

@@ -53,7 +53,7 @@ function fixture(available: readonly string[]) {
       databaseCalls++;
       throw Error("Database options selected");
     },
-    env: { WEBDOCK_SETUP_ENABLED: "true" },
+    env: { SPITZLI_SETUP_ENABLED: "true" },
   });
   return {
     runtime,

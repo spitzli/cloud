@@ -48,7 +48,7 @@ export function createNativeSending(dependencies: NativeSendingDependencies) {
 
   async function getNativeSending(headers: Headers, customerID: string) {
     return withAuthenticatedDatabase(headers, async () => {
-      if (env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED !== "true") return null;
+      if (env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED !== "true") return null;
       const identity = await actor(headers);
       let apiOrigin: string | null = null;
       if (env.MAIL_API_ORIGIN) {

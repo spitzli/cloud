@@ -1486,7 +1486,7 @@ test("BYOK Vercel callback binds the tenant session and selected projects gate p
   });
   const before = { ...process.env };
   Object.assign(process.env, {
-    WEBDOCK_STUDIO_ORIGIN: "https://studio.example.invalid",
+    SPITZLI_STUDIO_ORIGIN: "https://studio.example.invalid",
   });
   const teamID = "team_" + key(),
     configurationID = "icfg_" + key();

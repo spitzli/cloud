@@ -25,9 +25,9 @@ test("Git OAuth is confined to the trusted interactive bridge", () => {
 
 test("Git OAuth redirect comes only from trusted configured origins", () => {
   const base = {
-    WEBDOCK_GITHUB_CLIENT_ID: "Iv1.fixture",
-    WEBDOCK_GITHUB_APP_SLUG: "webdock",
-    WEBDOCK_GIT_STUDIO_ORIGIN: "https://studio.example",
+    SPITZLI_GITHUB_CLIENT_ID: "Iv1.fixture",
+    SPITZLI_GITHUB_APP_SLUG: "webdock",
+    SPITZLI_GIT_STUDIO_ORIGIN: "https://studio.example",
   };
   assert.equal(
     gitOAuthSettings(base).redirectURI,
@@ -40,7 +40,7 @@ test("Git OAuth redirect comes only from trusted configured origins", () => {
     "http://studio.example",
   ]) {
     assert.throws(() =>
-      gitOAuthSettings({ ...base, WEBDOCK_GIT_STUDIO_ORIGIN: origin }),
+      gitOAuthSettings({ ...base, SPITZLI_GIT_STUDIO_ORIGIN: origin }),
     );
   }
 });

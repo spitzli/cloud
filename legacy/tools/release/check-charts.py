@@ -35,7 +35,7 @@ for modules in [
     {'configVersion': 1, 'modules': {'mail': {'state': 'draining'}}},
     {'configVersion': 1, 'modules': {'hosting': {'enabled': True}, 'databases': {'state': 'enabled'}}},
 ]:
-    assert 'WEBDOCK_MODULES' in render(chart, {**platform, 'modules': modules})
+    assert 'SPITZLI_MODULES' in render(chart, {**platform, 'modules': modules})
 for modules in [
     'string-config-is-no-longer-supported',
     {'configVersion': 2, 'modules': {}},
@@ -62,7 +62,7 @@ database_values={'enabled':True,'image':image,'existingSecret':'gateway-config'}
 gateway=render(database_chart,database_values)
 assert gateway.count('kind: Deployment')==1 and 'kind: Secret' not in gateway and 'kind: PersistentVolume' not in gateway
 assert 'runAsUser: 65532' in gateway and 'automountServiceAccountToken: false' in gateway
-assert 'WEBDOCK_DATABASE_MANAGED_RUNTIMES' in gateway
+assert 'SPITZLI_DATABASE_MANAGED_RUNTIMES' in gateway
 render(database_chart,{**database_values,'runtimeCapacity':65},False)
 render(database_chart,{**database_values,'tabularisCommit':'0'*40},False)
 render(database_chart,{**database_values,'image':'gateway:latest'},False)

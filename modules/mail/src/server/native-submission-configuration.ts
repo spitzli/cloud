@@ -47,7 +47,7 @@ export function createNativeSubmissionConfiguration(
     serviceRevision: string,
     force = false,
   ) {
-    if (env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED !== "true") return null;
+    if (env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED !== "true") return null;
     let connection: Awaited<ReturnType<typeof nativeRelay>>;
     try {
       connection = await nativeRelay(db, customerID);
@@ -176,7 +176,7 @@ export function createNativeSubmissionConfiguration(
     db: Connection,
     clusterID: string,
   ) {
-    if (env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED !== "true") return;
+    if (env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED !== "true") return;
     const row = (
       await db.query(
         `SELECT s.customer_id FROM webdock_mail.service s JOIN webdock_mail.instance i USING(customer_id) JOIN webdock_mail.send_transport t USING(customer_id)

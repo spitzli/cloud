@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {randomUUID} from 'node:crypto';import {createPluginJobs} from '../../src/plugin-jobs.ts';
-const port=Number(process.env.WEBDOCK_TEST_REDIS_PORT);
+const port=Number(process.env.SPITZLI_TEST_REDIS_PORT);
 test('periodic jobs do not evict completed idempotency records from the shared queue',{skip:!port,timeout:10000},async()=>{
  const scope={pluginID:'notes',customerID:'1',projectID:'2',runtimeGeneration:'1',grantRevision:'1'};let ticks=0;
  const service=createPluginJobs({prefix:'retention-'+randomUUID(),connection:{host:'127.0.0.1',port},authority:{authorize:async()=>({scope,jobs:['work','tick']}),canRun:async()=>true},execute:async(_s,name)=>{if(name==='tick')ticks++;return null;}});

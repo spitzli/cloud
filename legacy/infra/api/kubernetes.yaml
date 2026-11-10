@@ -40,11 +40,11 @@ spec:
             # Match the platform pooler's per-role concurrency within its total budget of 10.
             - {name: DATABASE_POOL_MAX, value: "2"}
             - {name: REGISTRY_POOL_MAX, value: "2"}
-            - {name: WEBDOCK_CONSOLE_ORIGIN, value: "https://console.webdock.dev"}
-            - {name: WEBDOCK_SETUP_ENABLED, value: "true"}
+            - {name: SPITZLI_CONSOLE_ORIGIN, value: "https://console.webdock.dev"}
+            - {name: SPITZLI_SETUP_ENABLED, value: "true"}
             - {name: MAIL_API_ORIGIN, value: "https://api.webdock.dev"}
             - {name: SMTP_PORT, value: "587"}
-            - {name: WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS, value: "178.104.141.95/32"}
+            - {name: SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS, value: "178.104.141.95/32"}
           envFrom:
             - secretRef: {name: api-runtime}
           ports:

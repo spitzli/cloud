@@ -34,7 +34,7 @@ test("native Mail routes reject destinations the hosting agent cannot apply", as
   const { applicationMailRoute } =
     await import("../../src/modules/hosting/mail-binding");
   const origin = process.env.MAIL_API_ORIGIN,
-    cidrs = process.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS;
+    cidrs = process.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS;
   try {
     process.env.MAIL_API_ORIGIN = "https://mail.example.test";
     for (const value of [
@@ -44,21 +44,21 @@ test("native Mail routes reject destinations the hosting agent cannot apply", as
       "0:0:0:0:0:0:0:1/128",
       "0:0:0:0:0:0:0:0/128",
     ]) {
-      process.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS = value;
+      process.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS = value;
       assert.throws(
         () => applicationMailRoute(),
         /verified native Mail API egress/,
         value,
       );
     }
-    process.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS =
+    process.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS =
       "10.96.0.12/32,2001:db8::1/128";
     assert.equal(applicationMailRoute().egressCIDRs.length, 2);
   } finally {
     if (origin === undefined) delete process.env.MAIL_API_ORIGIN;
     else process.env.MAIL_API_ORIGIN = origin;
     if (cidrs === undefined)
-      delete process.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS;
-    else process.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS = cidrs;
+      delete process.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS;
+    else process.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS = cidrs;
   }
 });

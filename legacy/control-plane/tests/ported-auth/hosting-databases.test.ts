@@ -237,8 +237,8 @@ test("database migration, operator catalog and tenant ordering use real transact
   await subtest(
     "concurrent order retries provision once and last shared slot cannot be oversold",
     async () => {
-      const old = process.env.WEBDOCK_DATABASE_PUBLIC_ENABLED;
-      process.env.WEBDOCK_DATABASE_PUBLIC_ENABLED = "true";
+      const old = process.env.SPITZLI_DATABASE_PUBLIC_ENABLED;
+      process.env.SPITZLI_DATABASE_PUBLIC_ENABLED = "true";
       try {
         const cluster = (
           await database.query(
@@ -284,7 +284,7 @@ test("database migration, operator catalog and tenant ordering use real transact
             ],
           )
         ).rows[0].id;
-        process.env.WEBDOCK_DATABASE_CLUSTER_ID = cluster;
+        process.env.SPITZLI_DATABASE_CLUSTER_ID = cluster;
         await executeHosting(root, {
           action: "databases.plans.setAvailability",
           planRevisionID: planID,
@@ -587,7 +587,7 @@ test("database migration, operator catalog and tenant ordering use real transact
           revision: 1,
           idempotencyKey: key(),
         });
-        process.env.WEBDOCK_DATABASE_DOMAIN = "example.invalid";
+        process.env.SPITZLI_DATABASE_DOMAIN = "example.invalid";
         const dedicatedPlan = {
           ...plan,
           kind: "dedicated",
@@ -1242,10 +1242,10 @@ test("database migration, operator catalog and tenant ordering use real transact
         );
       } finally {
         if (old === undefined)
-          delete process.env.WEBDOCK_DATABASE_PUBLIC_ENABLED;
-        else process.env.WEBDOCK_DATABASE_PUBLIC_ENABLED = old;
-        delete process.env.WEBDOCK_DATABASE_CLUSTER_ID;
-        delete process.env.WEBDOCK_DATABASE_DOMAIN;
+          delete process.env.SPITZLI_DATABASE_PUBLIC_ENABLED;
+        else process.env.SPITZLI_DATABASE_PUBLIC_ENABLED = old;
+        delete process.env.SPITZLI_DATABASE_CLUSTER_ID;
+        delete process.env.SPITZLI_DATABASE_DOMAIN;
       }
     },
   );

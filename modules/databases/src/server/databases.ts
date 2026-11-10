@@ -208,7 +208,7 @@ export function createHostingDatabases(dependencies: Dependencies) {
           customerID: access.customerID,
           clusterID:
             source?.cluster_id ??
-            resourceID.parse(dependencies.env.WEBDOCK_DATABASE_CLUSTER_ID),
+            resourceID.parse(dependencies.env.SPITZLI_DATABASE_CLUSTER_ID),
         };
       });
       return dependencies.withDatabaseScope(
@@ -313,7 +313,7 @@ export function createHostingDatabases(dependencies: Dependencies) {
         else {
           if (
             cmd.availability === "public" &&
-            dependencies.env.WEBDOCK_DATABASE_PUBLIC_ENABLED !== "true"
+            dependencies.env.SPITZLI_DATABASE_PUBLIC_ENABLED !== "true"
           )
             throw new HostingError(
               409,
@@ -374,7 +374,7 @@ export function createHostingDatabases(dependencies: Dependencies) {
           throw new HostingError(409, "This database plan is not available.");
         if (
           plan.availability === "public" &&
-          dependencies.env.WEBDOCK_DATABASE_PUBLIC_ENABLED !== "true"
+          dependencies.env.SPITZLI_DATABASE_PUBLIC_ENABLED !== "true"
         )
           throw new HostingError(
             409,

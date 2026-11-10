@@ -19,8 +19,8 @@ test("confirmed setup survives worker restarts without duplicate applications an
   const db = new Pool({ connectionString: url.href });
   await db.query(hostingSchemaSQL);
   const f = await createSetupFixture(db);
-  const enabled = process.env.WEBDOCK_SETUP_ENABLED;
-  process.env.WEBDOCK_SETUP_ENABLED = "true";
+  const enabled = process.env.SPITZLI_SETUP_ENABLED;
+  process.env.SPITZLI_SETUP_ENABLED = "true";
   try {
     const command = {
       action: "setup.save",
@@ -173,8 +173,8 @@ test("confirmed setup survives worker restarts without duplicate applications an
     assert.equal(done.resources.appID, first.resources.appID);
     assert.equal(JSON.stringify(done).includes("never-public"), false);
   } finally {
-    if (enabled === undefined) delete process.env.WEBDOCK_SETUP_ENABLED;
-    else process.env.WEBDOCK_SETUP_ENABLED = enabled;
+    if (enabled === undefined) delete process.env.SPITZLI_SETUP_ENABLED;
+    else process.env.SPITZLI_SETUP_ENABLED = enabled;
     await f.cleanup();
     await db.end();
   }
@@ -209,7 +209,7 @@ test("setup preflight rejects every managed-name collision and blocked drafts ca
           ...configuration,
           mail: { connectionID: "1", domainID: "2", variable: "MAIL_KEY" },
         },
-        environment: [{ name: "WEBDOCK_MAIL_API_URL", value: "manual" }],
+        environment: [{ name: "SPITZLI_MAIL_API_URL", value: "manual" }],
       },
       {
         configuration: {
@@ -225,7 +225,7 @@ test("setup preflight rejects every managed-name collision and blocked drafts ca
           mail: {
             connectionID: "1",
             domainID: "2",
-            variable: "WEBDOCK_MAIL_API_URL",
+            variable: "SPITZLI_MAIL_API_URL",
           },
         },
         environment: [],
@@ -313,7 +313,7 @@ test("setup preflight rejects every managed-name collision and blocked drafts ca
       executeHosting(f.actor, {
         ...command,
         revision: fixed.revision,
-        environment: [{ name: "WEBDOCK_MAIL_API_URL", value: null }],
+        environment: [{ name: "SPITZLI_MAIL_API_URL", value: null }],
         idempotencyKey: randomUUID(),
       }),
       /Managed service variables/,

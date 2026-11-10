@@ -17,7 +17,7 @@ export interface NativeKeysDependencies {
 export function createNativeKeys(dependencies: NativeKeysDependencies) {
   const { authorizeMail, env } = dependencies;
   function requireNativeSending() {
-    if (env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED !== "true") mailUnavailable();
+    if (env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED !== "true") mailUnavailable();
   }
 
   /** Caller supplies the resolved From address; this never accepts a caller-selected customer. */

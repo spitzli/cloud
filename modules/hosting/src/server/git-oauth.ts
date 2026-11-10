@@ -25,7 +25,7 @@ export function createHostingGitOauth(dependencies: Dependencies) {
     env: Record<string, string | undefined> = dependencies.env,
   ) {
     try {
-      const origin = new URL(env.WEBDOCK_GIT_STUDIO_ORIGIN!);
+      const origin = new URL(env.SPITZLI_GIT_STUDIO_ORIGIN!);
       const local =
         env.NODE_ENV !== "production" &&
         origin.protocol === "http:" &&
@@ -37,13 +37,13 @@ export function createHostingGitOauth(dependencies: Dependencies) {
         origin.pathname !== "/" ||
         origin.search ||
         origin.hash ||
-        !env.WEBDOCK_GITHUB_CLIENT_ID ||
-        !/^[a-z0-9-]{1,100}$/.test(env.WEBDOCK_GITHUB_APP_SLUG ?? "")
+        !env.SPITZLI_GITHUB_CLIENT_ID ||
+        !/^[a-z0-9-]{1,100}$/.test(env.SPITZLI_GITHUB_APP_SLUG ?? "")
       )
         throw Error();
       return {
-        clientID: env.WEBDOCK_GITHUB_CLIENT_ID,
-        appSlug: env.WEBDOCK_GITHUB_APP_SLUG!,
+        clientID: env.SPITZLI_GITHUB_CLIENT_ID,
+        appSlug: env.SPITZLI_GITHUB_APP_SLUG!,
         redirectURI: `${origin.origin}/api/hosting/git/callback`,
       };
     } catch {

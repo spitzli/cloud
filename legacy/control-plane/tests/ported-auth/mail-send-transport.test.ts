@@ -26,8 +26,8 @@ test("managed relay setup keeps provider keys private, is idempotent and fences 
       "SELECT settings FROM webdock_auth.platform_settings WHERE id=true",
     )
   ).rows[0];
-  const previous = process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED;
-  process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED = "true";
+  const previous = process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED;
+  process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED = "true";
   process.env.MAIL_ENCRYPTION_KEY ??= randomBytes(32).toString("base64");
   const password = randomBytes(24).toString("base64url");
   const user = await createIdentity({
@@ -161,8 +161,8 @@ test("managed relay setup keeps provider keys private, is idempotent and fences 
     assert.equal(creates, 2);
   } finally {
     if (previous === undefined)
-      delete process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED;
-    else process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED = previous;
+      delete process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED;
+    else process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED = previous;
     await database.query(
       "DELETE FROM webdock_mail.api_key WHERE customer_id=$1",
       [customer],

@@ -33,7 +33,7 @@
     "test:api": "cargo test --locked -p spitzli-control-plane",
     "build:api": "cargo build --locked -p spitzli-control-plane --bins",
     "test:modules": "bun tools/tests/modules.mjs",
-    "test:distribution": "python3 tools/release/check-compose.py && python3 tools/release/check-charts.py && python3 tools/release/check-autoscaling-charts.py && WEBDOCK_AGENT_AUTOSCALING_ENABLED=true cargo test --locked -p spitzli-agent --features kubernetes --test autoscaling_api -- --include-ignored && cargo test --locked -p spitzli-control-plane --test probes",
+    "test:distribution": "python3 tools/release/check-compose.py && python3 tools/release/check-charts.py && python3 tools/release/check-autoscaling-charts.py && SPITZLI_AGENT_AUTOSCALING_ENABLED=true cargo test --locked -p spitzli-agent --features kubernetes --test autoscaling_api -- --include-ignored && cargo test --locked -p spitzli-control-plane --test probes",
     "test:plugin-jobs": "cargo test --locked -p spitzli-plugin-host --test jobs -- --include-ignored --test-threads=1",
     "dev:console": "bun run --filter @spitzli/console dev",
     "build:console": "bun run --filter @spitzli/console build",

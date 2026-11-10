@@ -79,9 +79,9 @@ export function createHostingGitVercel(dependencies: Dependencies) {
     const mode = binding?.mode ?? target.mode;
     if (target.mode && binding && target.mode !== binding.mode) throw denied();
     if (mode === "platform") {
-      const token = dependencies.env.WEBDOCK_GIT_VERCEL_TOKEN,
-        teamID = dependencies.env.WEBDOCK_GIT_VERCEL_TEAM_ID,
-        configurationID = dependencies.env.WEBDOCK_GIT_VERCEL_CONFIGURATION_ID;
+      const token = dependencies.env.SPITZLI_GIT_VERCEL_TOKEN,
+        teamID = dependencies.env.SPITZLI_GIT_VERCEL_TEAM_ID,
+        configurationID = dependencies.env.SPITZLI_GIT_VERCEL_CONFIGURATION_ID;
       if (
         !binding ||
         !token ||
@@ -170,7 +170,7 @@ export function createHostingGitVercel(dependencies: Dependencies) {
     for (const [key, value] of Object.entries(input.buildEnvironment)) {
       if (
         !/^[A-Z_][A-Z0-9_]{0,127}$/.test(key) ||
-        /^(VERCEL|WEBDOCK|GITHUB|AWS|KUBERNETES|DOCKER|REGISTRY)_/.test(key) ||
+        /^(VERCEL|SPITZLI|WEBDOCK|GITHUB|AWS|KUBERNETES|DOCKER|REGISTRY)_/.test(key) ||
         [
           "NODE_OPTIONS",
           "PATH",

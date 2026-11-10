@@ -13,9 +13,9 @@ test -z "$(git status --porcelain --untracked-files=normal)" || { echo "Release 
 mkdir -p "$out"
 test -z "$(ls -A "$out")" || { echo 'Output directory must be empty' >&2; exit 1; }
 revision=$(git rev-parse HEAD)
-case "${WEBDOCK_RELEASE_CMS:-false}" in true|false) ;; *) echo 'WEBDOCK_RELEASE_CMS must be true or false' >&2; exit 1;; esac
-case "${WEBDOCK_RELEASE_DATABASES:-false}" in true|false) ;; *) echo 'WEBDOCK_RELEASE_DATABASES must be true or false' >&2; exit 1;; esac
-if [ "${WEBDOCK_RELEASE_DATABASES:-false}" = true ]; then
+case "${SPITZLI_RELEASE_CMS:-false}" in true|false) ;; *) echo 'SPITZLI_RELEASE_CMS must be true or false' >&2; exit 1;; esac
+case "${SPITZLI_RELEASE_DATABASES:-false}" in true|false) ;; *) echo 'SPITZLI_RELEASE_DATABASES must be true or false' >&2; exit 1;; esac
+if [ "${SPITZLI_RELEASE_DATABASES:-false}" = true ]; then
   : "${TABULARIS_IMAGE:?Database artifacts require the verified immutable runtime image}"
   bun -e 'if(!/^[a-z0-9][a-z0-9./:_-]*@sha256:[a-f0-9]{64}$/.test(process.env.TABULARIS_IMAGE||""))throw Error("Immutable Tabularis image digest required")'
 fi
@@ -27,14 +27,14 @@ for target in api-core console-core console auth api worker migrate; do
 done
 docker buildx build --platform "$platform" --file deploy/docker/agent.Dockerfile --label "org.opencontainers.image.source=https://github.com/spitzli/webdock" --label "org.opencontainers.image.revision=$revision" --label "org.opencontainers.image.version=$version" --provenance=mode=max --sbom=true --output "type=oci,compression=gzip,force-compression=true,dest=$out/agent.oci.tar" .
 docker buildx build --platform "$platform" --file infra/mail/Dockerfile --label "org.opencontainers.image.source=https://github.com/spitzli/webdock" --label "org.opencontainers.image.revision=$revision" --label "org.opencontainers.image.version=$version" --provenance=mode=max --sbom=true --output "type=oci,compression=gzip,force-compression=true,dest=$out/mail-runtime.oci.tar" infra/mail
-if [ "${WEBDOCK_RELEASE_DATABASES:-false}" = true ]; then
+if [ "${SPITZLI_RELEASE_DATABASES:-false}" = true ]; then
   tabularis_commit=$(bun -e 'import {readFileSync} from "node:fs"; console.log(JSON.parse(readFileSync("vendor/tabularis-web-ui.json")).sourceCommit)')
   for target in database-gateway tabularis-runtime; do
     docker buildx build --platform "$platform" --file "deploy/docker/$target.Dockerfile"       --build-arg "TABULARIS_IMAGE=$TABULARIS_IMAGE" --build-arg "TABULARIS_SOURCE_COMMIT=$tabularis_commit"       --provenance=mode=max --sbom=true --output "type=oci,compression=gzip,force-compression=true,dest=$out/$target.oci.tar" .
   done
   helm package deploy/helm/spitzli-databases --version "$version" --app-version "$version" --destination "$out"
 fi
-if [ "${WEBDOCK_RELEASE_CMS:-false}" = true ]; then
+if [ "${SPITZLI_RELEASE_CMS:-false}" = true ]; then
   for target in cms-instance managed-cms; do
     case "$target" in cms-instance) dockerfile=apps/cms-instance/Dockerfile ;; managed-cms) dockerfile=extensions/managed-cms/Dockerfile ;; esac
     docker buildx build --platform "$platform" --file "$dockerfile" \
@@ -46,8 +46,8 @@ fi
 helm package deploy/helm/webdock --version "$version" --app-version "$version" --destination "$out"
 helm package deploy/helm/spitzli-agent --version "$version" --app-version "$version" --destination "$out"
 bun tools/release/verify-architecture.mjs "$out" "$platform" "$revision"
-if [ "${WEBDOCK_RELEASE_CMS:-false}" = true ]; then
-  bun run - "$out" "${WEBDOCK_RELEASE_REGISTRY:-ghcr.io/spitzli/webdock}" <<'JS'
+if [ "${SPITZLI_RELEASE_CMS:-false}" = true ]; then
+  bun run - "$out" "${SPITZLI_RELEASE_REGISTRY:-ghcr.io/spitzli/webdock}" <<'JS'
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createManifest } from "./extensions/managed-cms/src/manifest.ts";

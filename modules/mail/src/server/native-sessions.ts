@@ -40,7 +40,7 @@ export function createNativeSessions(dependencies: NativeSessionsDependencies) {
     transaction,
   } = dependencies;
   function enabled() {
-    if (env.WEBDOCK_NATIVE_MAILBOXES_ENABLED !== "true") mailUnavailable();
+    if (env.SPITZLI_NATIVE_MAILBOXES_ENABLED !== "true") mailUnavailable();
   }
 
   function validToken(value: string) {

@@ -12,22 +12,22 @@ x-runtime: &runtime
 services:
   console:
     <<: *runtime
-    image: ${WEBDOCK_CONSOLE_IMAGE:?Set immutable Console image}
+    image: ${SPITZLI_CONSOLE_IMAGE:?Set immutable Console image}
     tmpfs: ['/tmp:rw,nosuid,size=64m,mode=1777', '/app/apps/console/.next/cache:rw,nosuid,size=128m,mode=1777']
     env_file: [./console.env]
     ports: ['127.0.0.1:3120:3120']
   auth:
     <<: *runtime
-    image: ${WEBDOCK_AUTH_IMAGE:?Set immutable Auth image}
+    image: ${SPITZLI_AUTH_IMAGE:?Set immutable Auth image}
     tmpfs: ['/tmp:rw,nosuid,size=64m,mode=1777', '/app/apps/auth/.next/cache:rw,nosuid,size=128m,mode=1777']
     env_file: [./auth.env]
     ports: ['127.0.0.1:3125:3125']
   api:
     <<: *runtime
-    image: ${WEBDOCK_API_IMAGE:?Set immutable API image}
+    image: ${SPITZLI_API_IMAGE:?Set immutable API image}
     env_file: [./api.env]
     environment:
-      WEBDOCK_MODULES: ${WEBDOCK_MODULES:?Set reviewed module configuration}
+      SPITZLI_MODULES: ${SPITZLI_MODULES:?Set reviewed module configuration}
     ports: ['127.0.0.1:3130:3130']
     healthcheck:
       test: [CMD, bun, -e, "if(!(await fetch('http://127.0.0.1:3130/readyz')).ok)process.exit(1)"]
@@ -49,21 +49,21 @@ services:
   worker:
     <<: *runtime
     profiles: [workers]
-    image: ${WEBDOCK_WORKER_IMAGE:?Set immutable worker image}
+    image: ${SPITZLI_WORKER_IMAGE:?Set immutable worker image}
     depends_on:
       jobs-redis: {condition: service_healthy}
     env_file: [./worker.env]
     environment:
-      WEBDOCK_JOBS_REDIS_URL: redis://jobs-redis:6379/0
-      WEBDOCK_JOBS_PREFIX: webdock
-      WEBDOCK_MODULES: ${WEBDOCK_MODULES:?Set reviewed module configuration}
+      SPITZLI_JOBS_REDIS_URL: redis://jobs-redis:6379/0
+      SPITZLI_JOBS_PREFIX: webdock
+      SPITZLI_MODULES: ${SPITZLI_MODULES:?Set reviewed module configuration}
   migrate:
     <<: *runtime
-    image: ${WEBDOCK_MIGRATE_IMAGE:?Set immutable migration image}
+    image: ${SPITZLI_MIGRATE_IMAGE:?Set immutable migration image}
     restart: 'no'
     profiles: [migration]
     env_file: [./migrator.env]
-    command: ['${WEBDOCK_MIGRATION_TARGET:?Set exact host:port/database}']
+    command: ['${SPITZLI_MIGRATION_TARGET:?Set exact host:port/database}']
 
 volumes:
   jobs-redis:

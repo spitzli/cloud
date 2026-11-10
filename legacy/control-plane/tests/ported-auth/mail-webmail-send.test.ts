@@ -49,8 +49,8 @@ test("Webmail queues once, survives logout, authorizes DATA and repairs Sent wit
   const nonce = randomBytes(6).toString("hex"),
     key = randomBytes(32).toString("base64");
   Object.assign(process.env, {
-    WEBDOCK_NATIVE_MAIL_SENDING_ENABLED: "true",
-    WEBDOCK_NATIVE_MAILBOXES_ENABLED: "true",
+    SPITZLI_NATIVE_MAIL_SENDING_ENABLED: "true",
+    SPITZLI_NATIVE_MAILBOXES_ENABLED: "true",
     MAIL_ENCRYPTION_KEY: key,
     MAIL_GATEWAY_SECRET: "g".repeat(43),
     MAIL_SEND_WORKER_SECRET: "w".repeat(43),
@@ -516,8 +516,8 @@ test("Webmail queues once, survives logout, authorizes DATA and repairs Sent wit
         "DELETE FROM webdock_auth.platform_settings WHERE id=true",
       );
     for (const name of [
-      "WEBDOCK_NATIVE_MAIL_SENDING_ENABLED",
-      "WEBDOCK_NATIVE_MAILBOXES_ENABLED",
+      "SPITZLI_NATIVE_MAIL_SENDING_ENABLED",
+      "SPITZLI_NATIVE_MAILBOXES_ENABLED",
       "MAIL_ENCRYPTION_KEY",
       "MAIL_GATEWAY_SECRET",
       "MAIL_SEND_WORKER_SECRET",

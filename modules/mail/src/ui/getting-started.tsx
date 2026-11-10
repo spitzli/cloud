@@ -59,7 +59,7 @@ export function MailGettingStarted({ context }: { context: MailPageContext }) {
           </strong>
           <p>
             {i18n.t(
-              "Choose Sending only for your application. Save the key as WEBDOCK_MAIL_API_KEY on your server; it is shown once. Never put it in browser code.",
+              "Choose Sending only for your application. Save the key as SPITZLI_MAIL_API_KEY on your server; it is shown once. Never put it in browser code.",
             )}
           </p>
         </li>

@@ -30,7 +30,7 @@ spec:
             - secretRef:
                 name: {{ required (printf "components.%s.existingSecret is required" $name) $component.existingSecret }}
           env:
-            - {name: WEBDOCK_MODULES, value: {{ $.Values.modules | toJson | quote }}}
+            - {name: SPITZLI_MODULES, value: {{ $.Values.modules | toJson | quote }}}
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false

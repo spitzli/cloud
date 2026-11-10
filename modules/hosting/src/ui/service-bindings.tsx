@@ -83,7 +83,7 @@ function ConnectServiceState({
               const kind = e.target.value as "postgres" | "mail";
               setKind(kind);
               setVariable(
-                kind === "postgres" ? "DATABASE_URL" : "WEBDOCK_MAIL_API_KEY",
+                kind === "postgres" ? "DATABASE_URL" : "SPITZLI_MAIL_API_KEY",
               );
             }}
           >

@@ -2024,8 +2024,8 @@
   "Choose EU or global sending infrastructure.": [
     "Wähle die europäische oder globale Versandinfrastruktur."
   ],
-  "Choose Sending only for your application. Save the key as WEBDOCK_MAIL_API_KEY on your server; it is shown once. Never put it in browser code.": [
-    "Wähle „Nur Versand“ für deine Anwendung. Speichere den einmalig angezeigten Key als WEBDOCK_MAIL_API_KEY auf deinem Server. Er gehört niemals in Browser-Code."
+  "Choose Sending only for your application. Save the key as SPITZLI_MAIL_API_KEY on your server; it is shown once. Never put it in browser code.": [
+    "Wähle „Nur Versand“ für deine Anwendung. Speichere den einmalig angezeigten Key als SPITZLI_MAIL_API_KEY auf deinem Server. Er gehört niemals in Browser-Code."
   ],
   "Choose a Neon project in Frankfurt, Germany. Other regions are not enabled for database attachments in this release.": [
     "Wähle ein Neon-Projekt in Frankfurt, Deutschland. Andere Regionen sind in dieser Version nicht für Datenbankverknüpfungen freigeschaltet."
@@ -8904,8 +8904,8 @@
   "Replace image": [
     "Bild ersetzen"
   ],
-  "Replace mail@example.com with an address on your verified domain and set WEBDOCK_MAIL_API_KEY in your server environment. Keep the simulator recipient for this first request.": [
-    "Ersetze mail@example.com durch eine Adresse deiner verifizierten Domain und setze WEBDOCK_MAIL_API_KEY in deiner Serverumgebung. Behalte für den ersten Aufruf den Simulator-Empfänger bei."
+  "Replace mail@example.com with an address on your verified domain and set SPITZLI_MAIL_API_KEY in your server environment. Keep the simulator recipient for this first request.": [
+    "Ersetze mail@example.com durch eine Adresse deiner verifizierten Domain und setze SPITZLI_MAIL_API_KEY in deiner Serverumgebung. Behalte für den ersten Aufruf den Simulator-Empfänger bei."
   ],
   "Replace management key": [
     "Verwaltungszugang ersetzen"

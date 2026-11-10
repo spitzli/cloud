@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { randomBytes, createHash } from "node:crypto";
 import pg from "pg";
 import { withDatabaseScope } from "@spitzli/database-runtime";
-const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const fixtureFile = process.env.SPITZLI_RLS_FIXTURE_FILE;
 test(
   "Mail server paths work as constrained session/key/worker roles without external sends",
   { skip: !fixtureFile },

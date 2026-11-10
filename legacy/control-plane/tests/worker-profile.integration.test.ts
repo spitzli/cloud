@@ -1,7 +1,7 @@
 import { initializePluginState } from "../src/modules/plugins/bootstrap";
 import { test, expect } from "bun:test";
 import { Pool } from "pg";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "worker boots, finishes an empty storage batch and drains without bootstrap credentials",
   async () => {
@@ -55,9 +55,9 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
           BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
           BETTER_AUTH_URL: "http://localhost:3125",
           AUTH_TEST_MAIL: "true",
-          WEBDOCK_WORKER_DOMAINS: "storage",
-          WEBDOCK_JOBS_REDIS_URL: process.env.WEBDOCK_JOBS_REDIS_URL,
-          WEBDOCK_JOBS_PREFIX: "worker-profile-" + Date.now(),
+          SPITZLI_WORKER_DOMAINS: "storage",
+          SPITZLI_JOBS_REDIS_URL: process.env.SPITZLI_JOBS_REDIS_URL,
+          SPITZLI_JOBS_PREFIX: "worker-profile-" + Date.now(),
         },
         stdout: "pipe",
         stderr: "pipe",

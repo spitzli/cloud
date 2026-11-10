@@ -51,7 +51,7 @@ export function createTenantKeys(dependencies: Dependencies) {
   async function accessToKeys(headers: Headers, customerID: string) {
     const access = await getTenant(headers, customerID);
     if (
-      process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED === "true" &&
+      process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED === "true" &&
       !access.operator
     )
       fail("Use Spitzli Cloud Mail sending to manage native API keys.");
@@ -161,7 +161,7 @@ export function createTenantKeys(dependencies: Dependencies) {
       const permissions = input.permissions || [],
         ips = input.ips || [];
       if (input.action === "create") {
-        if (process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED === "true")
+        if (process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED === "true")
           fail("Use Spitzli Cloud Mail sending to manage native API keys.");
         if (
           isInternalMailKey(label) ||

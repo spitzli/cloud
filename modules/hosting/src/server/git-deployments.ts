@@ -553,16 +553,16 @@ export function createHostingGitDeployments(dependencies: Dependencies) {
           canBindPlatform:
             access.operator && access.project?.provider === "vercel",
           blockers: [
-            ...(!dependencies.env.WEBDOCK_GITHUB_APP_ID ||
+            ...(!dependencies.env.SPITZLI_GITHUB_APP_ID ||
             !(
-              dependencies.env.WEBDOCK_GITHUB_APP_PRIVATE_KEY ||
-              dependencies.env.WEBDOCK_GITHUB_PRIVATE_KEY
+              dependencies.env.SPITZLI_GITHUB_APP_PRIVATE_KEY ||
+              dependencies.env.SPITZLI_GITHUB_PRIVATE_KEY
             )
               ? [
                   "Configure the GitHub App ID and private key in the private Auth environment.",
                 ]
               : []),
-            ...(!dependencies.env.WEBDOCK_GITHUB_WEBHOOK_SECRET
+            ...(!dependencies.env.SPITZLI_GITHUB_WEBHOOK_SECRET
               ? [
                   "Configure the GitHub webhook secret before enabling push builds.",
                 ]
@@ -584,7 +584,7 @@ export function createHostingGitDeployments(dependencies: Dependencies) {
                 ]
               : []),
             ...(access.project?.provider === "k3s" &&
-            !dependencies.env.WEBDOCK_GIT_REGISTRY_HOST
+            !dependencies.env.SPITZLI_GIT_REGISTRY_HOST
               ? ["Configure verified artifact and registry storage."]
               : []),
           ],

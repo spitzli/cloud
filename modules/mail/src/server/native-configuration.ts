@@ -163,7 +163,7 @@ export function createNativeConfiguration(
   }
 
   async function claimMailConfiguration(agent: Agent) {
-    if (env.WEBDOCK_NATIVE_MAILBOXES_ENABLED !== "true") return null;
+    if (env.SPITZLI_NATIVE_MAILBOXES_ENABLED !== "true") return null;
     const settings = mailAgentConfig();
     return transaction(async (db) => {
       const active = await verifyMailAgent(db, agent);

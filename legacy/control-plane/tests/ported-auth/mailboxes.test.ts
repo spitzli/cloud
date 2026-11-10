@@ -179,7 +179,7 @@ test("management does not grant mailbox access; explicit grants and current memb
       ).accountID,
       "group",
     );
-    process.env.WEBDOCK_NATIVE_MAILBOXES_ENABLED = "true";
+    process.env.SPITZLI_NATIVE_MAILBOXES_ENABLED = "true";
     process.env.MAIL_GATEWAY_ORIGIN = "https://mail-gateway.example.com";
     process.env.MAIL_MANAGED_CLUSTER_ID = "local-test";
     process.env.MAIL_ENCRYPTION_KEY = randomBytes(32).toString("base64");

@@ -11,7 +11,7 @@ import {
   claimOperation,
   completeOperation,
 } from "../src/modules/hosting/operations";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "setup worker uses restricted credentials, fences stale claims and resumes to observed readiness",
   async () => {
@@ -23,8 +23,8 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       (await db.query("SELECT singleton FROM webdock_auth.plugin_bootstrap"))
         .rows.length > 0;
     const f = await createSetupFixture(db);
-    const old = process.env.WEBDOCK_SETUP_ENABLED;
-    process.env.WEBDOCK_SETUP_ENABLED = "true";
+    const old = process.env.SPITZLI_SETUP_ENABLED;
+    process.env.SPITZLI_SETUP_ENABLED = "true";
     let worker: import("bun").Subprocess<"pipe", "pipe", "pipe"> | undefined;
     try {
       const saved = await executeHosting(f.actor, {
@@ -125,8 +125,8 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
           BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
           BETTER_AUTH_URL: "http://localhost:3125",
           AUTH_TEST_MAIL: "true",
-          WEBDOCK_WORKER_DOMAINS: "hosting",
-          WEBDOCK_SETUP_ENABLED: "true",
+          SPITZLI_WORKER_DOMAINS: "hosting",
+          SPITZLI_SETUP_ENABLED: "true",
         },
         stdout: "pipe",
         stderr: "pipe",
@@ -217,8 +217,8 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
         worker.kill("SIGKILL");
         await worker.exited;
       }
-      if (old === undefined) delete process.env.WEBDOCK_SETUP_ENABLED;
-      else process.env.WEBDOCK_SETUP_ENABLED = old;
+      if (old === undefined) delete process.env.SPITZLI_SETUP_ENABLED;
+      else process.env.SPITZLI_SETUP_ENABLED = old;
       await f.cleanup();
       if (!hadPluginBootstrap) {
         await db.query(

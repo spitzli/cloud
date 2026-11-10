@@ -71,7 +71,7 @@ export function createHostingSetupPreview(dependencies: Dependencies) {
     };
     const managedNames = [
       ...(config.database.mode === "none" ? [] : [config.database.variable]),
-      ...(config.mail ? [config.mail.variable, "WEBDOCK_MAIL_API_URL"] : []),
+      ...(config.mail ? [config.mail.variable, "SPITZLI_MAIL_API_URL"] : []),
     ];
     if (
       new Set(managedNames).size !== managedNames.length ||
@@ -113,7 +113,7 @@ export function createHostingSetupPreview(dependencies: Dependencies) {
         );
         return;
       }
-      if (dependencies.env.WEBDOCK_SETUP_ENABLED !== "true")
+      if (dependencies.env.SPITZLI_SETUP_ENABLED !== "true")
         result.blockers.push(
           "Enable the project setup worker before deploying.",
         );
@@ -159,7 +159,7 @@ export function createHostingSetupPreview(dependencies: Dependencies) {
       if (
         config.database.mode === "new" &&
         !input.databaseID &&
-        dependencies.env.WEBDOCK_DATABASE_CLUSTER_ID !==
+        dependencies.env.SPITZLI_DATABASE_CLUSTER_ID !==
           access.project.cluster_id
       )
         result.blockers.push(
@@ -221,7 +221,7 @@ export function createHostingSetupPreview(dependencies: Dependencies) {
             "Configure verified build capacity before deploying from Git.",
           );
         if (
-          !dependencies.env.WEBDOCK_GIT_REGISTRY_HOST ||
+          !dependencies.env.SPITZLI_GIT_REGISTRY_HOST ||
           agent?.capabilities?.registryVersion !== 1
         )
           result.blockers.push(

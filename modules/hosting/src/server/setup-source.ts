@@ -124,7 +124,7 @@ export function createHostingSetupSource(dependencies: Dependencies) {
       return {
         applications,
         builds: await dependencies.setupBuildCapabilities(db, cmd.projectID),
-        enabled: dependencies.env.WEBDOCK_SETUP_ENABLED === "true",
+        enabled: dependencies.env.SPITZLI_SETUP_ENABLED === "true",
         project: {
           ...project,
           projectID: cmd.projectID,

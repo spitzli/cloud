@@ -178,7 +178,7 @@ export function SetupServiceFields({
                   ? {
                       connectionID: domains[0].id,
                       domainID: domains[0].domainID!,
-                      variable: "WEBDOCK_MAIL_API_KEY",
+                      variable: "SPITZLI_MAIL_API_KEY",
                     }
                   : null,
               })

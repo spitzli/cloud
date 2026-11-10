@@ -42,10 +42,10 @@ jq -e '.supportedArchitectures == ["linux/amd64"]' manifest.json
 The checksum command checks only downloaded files. For direct registry pulls, the verified manifest supplies the executable image digests:
 
 ```sh
-export WEBDOCK_API_CORE_IMAGE="ghcr.io/spitzli/webdock/api-core@$(jq -r '.artifacts[] | select(.file == "api-core.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
-export WEBDOCK_CONSOLE_CORE_IMAGE="ghcr.io/spitzli/webdock/console-core@$(jq -r '.artifacts[] | select(.file == "console-core.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
-export WEBDOCK_AUTH_IMAGE="ghcr.io/spitzli/webdock/auth@$(jq -r '.artifacts[] | select(.file == "auth.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
-export WEBDOCK_MIGRATE_IMAGE="ghcr.io/spitzli/webdock/migrate@$(jq -r '.artifacts[] | select(.file == "migrate.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
+export SPITZLI_API_CORE_IMAGE="ghcr.io/spitzli/webdock/api-core@$(jq -r '.artifacts[] | select(.file == "api-core.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
+export SPITZLI_CONSOLE_CORE_IMAGE="ghcr.io/spitzli/webdock/console-core@$(jq -r '.artifacts[] | select(.file == "console-core.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
+export SPITZLI_AUTH_IMAGE="ghcr.io/spitzli/webdock/auth@$(jq -r '.artifacts[] | select(.file == "auth.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
+export SPITZLI_MIGRATE_IMAGE="ghcr.io/spitzli/webdock/migrate@$(jq -r '.artifacts[] | select(.file == "migrate.oci.tar") | .oci.manifests[] | select(.platform == "linux/amd64") | .digest' manifest.json)"
 ```
 
 These public packages require no registry login. The migrator is used only during offline administration, not as a running Core service.
@@ -56,7 +56,7 @@ For local Docker import, repeat for each selected image:
 
 ```sh
 skopeo copy oci-archive:api-core.oci.tar docker-daemon:webdock-api-core:0.1.0-alpha.2
-export WEBDOCK_API_CORE_IMAGE="$(docker image inspect webdock-api-core:0.1.0-alpha.2 --format '{{.Id}}')"
+export SPITZLI_API_CORE_IMAGE="$(docker image inspect webdock-api-core:0.1.0-alpha.2 --format '{{.Id}}')"
 ```
 
 This selects an immutable local image ID. For registry pulls, use `artifacts[].oci.registryDigest`, also recorded in `architectureEvidence.imageRegistryDigests`. This is the validated single root image/index digest that is published to the registry. Older releases without these fields can use the signed executable digest in `artifacts[].oci.manifests[]` for your architecture, or a separately verified registry root digest. **Do not use `oci.indexDigest` as a registry pull reference**: it identifies the archive's `index.json`, which can differ from the registry's root manifest.
@@ -83,7 +83,7 @@ Prepare a private environment for the offline command:
 | `DATABASE_URL_UNPOOLED` | Direct administrator URL for this empty database |
 | `DATABASE_CA_CERT` | Trusted PEM CA for the database server; required outside loopback |
 | `DATABASE_CONTEXT_SECRET` | Random signing secret of at least 32 bytes, retained across upgrades |
-| `WEBDOCK_BOOTSTRAP_EMPTY_DATABASE` | `true` for this first operation only |
+| `SPITZLI_BOOTSTRAP_EMPTY_DATABASE` | `true` for this first operation only |
 | `MIGRATION_ROLE_PASSWORDS` | JSON object with a distinct strong password for every role below |
 
 The role-password object must contain exactly these keys, each with a different 24–256-character password without whitespace:
@@ -106,12 +106,12 @@ Store credentials in a secret manager or owner-only files (`0600`), never in sou
 bun --no-env-file tools/migrations/install.ts db.example.com:5432/webdock
 ```
 
-After success, change `DATABASE_URL_UNPOOLED` to the new **`webdock_offline_migrate`** login. Remove `WEBDOCK_BOOTSTRAP_EMPTY_DATABASE` and `MIGRATION_ROLE_PASSWORDS` from the command environment. Keep the same CA and context signing secret. Subsequent schema upgrades use this restricted offline login, never the original administrator.
+After success, change `DATABASE_URL_UNPOOLED` to the new **`webdock_offline_migrate`** login. Remove `SPITZLI_BOOTSTRAP_EMPTY_DATABASE` and `MIGRATION_ROLE_PASSWORDS` from the command environment. Keep the same CA and context signing secret. Subsequent schema upgrades use this restricted offline login, never the original administrator.
 
 Initialize the empty plugin installation state before any API startup. Schema installation alone is insufficient:
 
 ```sh
-export WEBDOCK_MODULES='{"configVersion":1,"modules":{}}'
+export SPITZLI_MODULES='{"configVersion":1,"modules":{}}'
 bun --no-env-file tools/plugins/bootstrap.ts db.example.com:5432/webdock fresh
 ```
 
@@ -122,10 +122,10 @@ Now complete [initial operator setup](/developers/initial-setup) using that offl
 Use `deploy/compose/compose.core.yaml` from the matching source tag. Place private `api.env`, `console.env`, `auth.env` and `migrator.env` files beside it. Retain the four verified image selectors from the preceding step (or the immutable local IDs after archive import), and set the exact migration target:
 
 ```sh
-export WEBDOCK_MIGRATION_TARGET='db.example.com:5432/webdock'
+export SPITZLI_MIGRATION_TARGET='db.example.com:5432/webdock'
 ```
 
-The API requires four distinct HTTPS origins: `WEBDOCK_API_ORIGIN`, `BETTER_AUTH_URL`, `WEBDOCK_STUDIO_ORIGIN` and `WEBDOCK_CONSOLE_ORIGIN`. Use your own hostnames consistently. Production connections require verified database TLS and these separate role URLs:
+The API requires four distinct HTTPS origins: `SPITZLI_API_ORIGIN`, `BETTER_AUTH_URL`, `SPITZLI_STUDIO_ORIGIN` and `SPITZLI_CONSOLE_ORIGIN`. Use your own hostnames consistently. Production connections require verified database TLS and these separate role URLs:
 
 | API variable | Database login or value |
 | --- | --- |
@@ -137,23 +137,23 @@ The API requires four distinct HTTPS origins: `WEBDOCK_API_ORIGIN`, `BETTER_AUTH
 | `DATABASE_POOL_MAX`, `REGISTRY_POOL_MAX` | `2` each |
 | `DATABASE_RLS_SECRET` | Exactly the installer's `DATABASE_CONTEXT_SECRET` |
 | `BETTER_AUTH_SECRET` | A separate random secret of at least 32 characters |
-| `WEBDOCK_AUTH_PROVIDER` | `{"provider":"better-auth"}` |
-| `WEBDOCK_OAUTH_PROVIDER` | `better-auth` |
-| `WEBDOCK_INGRESS_SECRET` | A separate random secret of at least 32 characters |
-| `WEBDOCK_TRUSTED_PROXIES` | Exact CIDRs of the actual reverse-proxy peers |
+| `SPITZLI_AUTH_PROVIDER` | `{"provider":"better-auth"}` |
+| `SPITZLI_OAUTH_PROVIDER` | `better-auth` |
+| `SPITZLI_INGRESS_SECRET` | A separate random secret of at least 32 characters |
+| `SPITZLI_TRUSTED_PROXIES` | Exact CIDRs of the actual reverse-proxy peers |
 
 Copy the initial operator output's `environment` values into **API configuration only**, including issuer, Studio/Console origins, matching client IDs, client secret and SSO cookie secret. Never give API or either frontend the offline database URL. Preserve signing and encryption secrets across restarts and upgrades.
 
 For authentication mail, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and an explicit operator-owned `SMTP_FROM`. Ports other than 465 require STARTTLS; 465 uses implicit TLS. Test delivery from your own domain. This transport is independent of the customer Mail product. First login, password change and TOTP setup do not require sending mail, but invitations and recovery do.
 
-Both frontends need `WEBDOCK_API_ORIGIN`; use the reachable **HTTPS** API origin, not an internal `http://api:3130` URL. Auth also needs `BETTER_AUTH_URL` and `WEBDOCK_CONSOLE_ORIGIN`. Console needs `WEBDOCK_STUDIO_ORIGIN` and `WEBDOCK_CONSOLE_ORIGIN`. Do not give either frontend database, Better Auth or SSO sealing secrets. The core Compose file fixes API domains to `auth,portal,registry` and the module selection to empty; it needs no worker or Redis image.
+Both frontends need `SPITZLI_API_ORIGIN`; use the reachable **HTTPS** API origin, not an internal `http://api:3130` URL. Auth also needs `BETTER_AUTH_URL` and `SPITZLI_CONSOLE_ORIGIN`. Console needs `SPITZLI_STUDIO_ORIGIN` and `SPITZLI_CONSOLE_ORIGIN`. Do not give either frontend database, Better Auth or SSO sealing secrets. The core Compose file fixes API domains to `auth,portal,registry` and the module selection to empty; it needs no worker or Redis image.
 
 If running offline commands through the migration image, its default entrypoint runs schema installation. For plugin initialization, explicitly override it after replacing bootstrap credentials in `migrator.env` with the offline login:
 
 ```sh
 docker compose -f deploy/compose/compose.core.yaml --profile migration run --rm migrate
 docker compose -f deploy/compose/compose.core.yaml --profile migration run --rm \
-  --entrypoint bun -e WEBDOCK_MODULES='{"configVersion":1,"modules":{}}' migrate \
+  --entrypoint bun -e SPITZLI_MODULES='{"configVersion":1,"modules":{}}' migrate \
   --no-env-file tools/plugins/bootstrap.ts db.example.com:5432/webdock fresh
 ```
 
@@ -177,7 +177,7 @@ For every API-bound request, replace client-supplied forwarding headers with:
 | `X-Forwarded-Host` | Exact public hostname, including port when non-default |
 | `X-Forwarded-Proto` | `https` |
 | `X-Forwarded-For` | One validated client IP, not a comma-separated chain |
-| `X-Webdock-Ingress-Token` | The API's `WEBDOCK_INGRESS_SECRET` |
+| `X-Webdock-Ingress-Token` | The API's `SPITZLI_INGRESS_SECRET` |
 
 Remove inbound `X-Webdock-Client-IP`; API derives it after verification. Allow only the reviewed proxy peers to reach API. Unverified direct production requests are rejected, except container-loopback `/healthz` and `/readyz` probes. Frontend server-to-API calls must also pass through this trusted HTTPS ingress.
 
@@ -246,7 +246,7 @@ docker build -f deploy/docker/database-gateway.Dockerfile \
   -t spitzli-database-gateway:local .
 ```
 
-For a release candidate, supply an immutable runtime image digest matching that vendor record. Set `WEBDOCK_RELEASE_DATABASES=true` and `TABULARIS_IMAGE` before running the release builder. It includes `database-gateway.oci.tar`, `tabularis-runtime.oci.tar` and the `spitzli-databases` chart only after the packaged gateway passes the native PostgreSQL/TLS test. The default nine-image candidate does not contain these optional artifacts.
+For a release candidate, supply an immutable runtime image digest matching that vendor record. Set `SPITZLI_RELEASE_DATABASES=true` and `TABULARIS_IMAGE` before running the release builder. It includes `database-gateway.oci.tar`, `tabularis-runtime.oci.tar` and the `spitzli-databases` chart only after the packaged gateway passes the native PostgreSQL/TLS test. The default nine-image candidate does not contain these optional artifacts.
 
 The optional Compose file uses a separate private `database-gateway.env` and the `databases` profile:
 
@@ -254,7 +254,7 @@ The optional Compose file uses a separate private `database-gateway.env` and the
 docker compose -f deploy/compose/compose.databases.yaml --profile databases up -d
 ```
 
-Set `WEBDOCK_DATABASE_GATEWAY_IMAGE` to the verified gateway digest and `TABULARIS_EXPECTED_COMMIT` to the recorded full source commit. The private environment includes the canonical `WEBDOCK_AUTH_ORIGIN`, `WEBDOCK_DATABASE_GATEWAY_ORIGIN`, allowed `WEBDOCK_DATABASE_BROWSER_ORIGINS`, and the server-only `WEBDOCK_DATABASE_GATEWAY_SECRET` shared with the API. The Auth origin must route the existing `/api/databases/gateway` control endpoint to the API. Keep browser and gateway origins same-site for the strict session cookie.
+Set `SPITZLI_DATABASE_GATEWAY_IMAGE` to the verified gateway digest and `TABULARIS_EXPECTED_COMMIT` to the recorded full source commit. The private environment includes the canonical `SPITZLI_AUTH_ORIGIN`, `SPITZLI_DATABASE_GATEWAY_ORIGIN`, allowed `SPITZLI_DATABASE_BROWSER_ORIGINS`, and the server-only `SPITZLI_DATABASE_GATEWAY_SECRET` shared with the API. The Auth origin must route the existing `/api/databases/gateway` control endpoint to the API. Keep browser and gateway origins same-site for the strict session cookie.
 
 For Kubernetes, render the separate `deploy/helm/spitzli-databases` chart. It is disabled by default and requires an existing Secret, immutable image and explicit ingress/egress rules. `managedRuntimes: true` enables the existing per-session process manager; choose a tested `runtimeCapacity`. Registered databases continue using individually provisioned, allowlisted runtime origins. Use `runtimeCAConfigMap` for an existing registered-runtime trust bundle when needed; never disable TLS verification.
 
@@ -285,8 +285,8 @@ The alpha does not certify every provider integration. Additional cloud services
 
 `tools/release/smoke-core-images.mjs` accepts the core API, core Console, Auth and migration image references. It resolves their image IDs, creates an owned isolated PostgreSQL 18 fixture with verified TLS, runs the packaged installer, initializes empty plugin state, provisions an operator and requires the actual production core API's `/readyz` to pass. Both exact frontend images must serve static chunks with read-only filesystems. Fixture credentials are generated per run and removed with the owned fixture.
 
-This image smoke does **not** claim browser login, public HTTPS ingress or SMTP delivery. The separate opt-in `WEBDOCK_TEST_OPERATOR=true bun --no-env-file test tools/migrations/operator.integration.test.ts` exercises real password replacement, TOTP and OAuth/PKCE against its disposable fixture. Before exposing your installation, verify these flows through your own HTTPS origins, test Console customer/project access, foreign-origin rejection, logout revocation and recovery email. The local tests do not certify your DNS, proxy or provider configuration.
+This image smoke does **not** claim browser login, public HTTPS ingress or SMTP delivery. The separate opt-in `SPITZLI_TEST_OPERATOR=true bun --no-env-file test tools/migrations/operator.integration.test.ts` exercises real password replacement, TOTP and OAuth/PKCE against its disposable fixture. Before exposing your installation, verify these flows through your own HTTPS origins, test Console customer/project access, foreign-origin rejection, logout revocation and recovery email. The local tests do not certify your DNS, proxy or provider configuration.
 
 ## Core job queues
 
-Platform workers now require `WEBDOCK_JOBS_REDIS_URL` and use BullMQ for durable dispatch. Give each installation a distinct `WEBDOCK_JOBS_PREFIX`, persistent Redis storage, `noeviction`, and restricted network access. The Compose workers profile supplies `jobs-redis`; Helm workers read the connection URL from their existing Secret. Existing PostgreSQL operation journals and leases must be retained. See [plugin background jobs](/developers/plugin-jobs) for the separate plugin-facing interface and current deployment limitations.
+Platform workers now require `SPITZLI_JOBS_REDIS_URL` and use BullMQ for durable dispatch. Give each installation a distinct `SPITZLI_JOBS_PREFIX`, persistent Redis storage, `noeviction`, and restricted network access. The Compose workers profile supplies `jobs-redis`; Helm workers read the connection URL from their existing Secret. Existing PostgreSQL operation journals and leases must be retained. See [plugin background jobs](/developers/plugin-jobs) for the separate plugin-facing interface and current deployment limitations.

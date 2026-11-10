@@ -63,7 +63,7 @@ for (const selected of ["clerk", "better-auth"]) {
         cwd: new URL("../../../", import.meta.url).pathname,
         env: {
           ...process.env,
-          WEBDOCK_AUTH_PROVIDER: JSON.stringify(
+          SPITZLI_AUTH_PROVIDER: JSON.stringify(
             selected === "clerk"
               ? {
                   provider: "clerk",
@@ -73,11 +73,11 @@ for (const selected of ["clerk", "better-auth"]) {
                 }
               : { provider: "better-auth" },
           ),
-          WEBDOCK_OAUTH_PROVIDER: "better-auth",
-          WEBDOCK_STUDIO_CLIENT_ID: "studio",
+          SPITZLI_OAUTH_PROVIDER: "better-auth",
+          SPITZLI_STUDIO_CLIENT_ID: "studio",
           BETTER_AUTH_URL: "http://localhost:3125",
-          WEBDOCK_MODULES: '{"configVersion":1,"modules":{}}',
-          WEBDOCK_API_DOMAINS: "auth,portal",
+          SPITZLI_MODULES: '{"configVersion":1,"modules":{}}',
+          SPITZLI_API_DOMAINS: "auth,portal",
           DATABASE_URL:
             "postgres://fixture:fixture@localhost:5432/webdock_test",
         },

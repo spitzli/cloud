@@ -50,7 +50,7 @@ spec:
             command:
             - bun
             - -e
-            - process.env.WEBDOCK_PROCESS_ROLE='worker';const{databasePools,workerDatabase}=await
+            - process.env.SPITZLI_PROCESS_ROLE='worker';const{databasePools,workerDatabase}=await
               import('./dist/db/runtime.ts');try{await(await import('./dist/db/readiness.ts')).verifyWorkerReadiness(workerDatabase,['storage','hosting']);}finally{await
               databasePools.close();}
           periodSeconds: 10
@@ -69,7 +69,7 @@ spec:
             command:
             - bun
             - -e
-            - process.env.WEBDOCK_PROCESS_ROLE='worker';const{databasePools,workerDatabase}=await
+            - process.env.SPITZLI_PROCESS_ROLE='worker';const{databasePools,workerDatabase}=await
               import('./dist/db/runtime.ts');try{await(await import('./dist/db/readiness.ts')).verifyWorkerReadiness(workerDatabase,['storage','hosting']);}finally{await
               databasePools.close();}
           periodSeconds: 60
@@ -81,39 +81,39 @@ spec:
         - bun
         - dist/worker.ts
         env:
-        - name: WEBDOCK_SETUP_ENABLED
+        - name: SPITZLI_SETUP_ENABLED
           value: 'true'
         - name: MAIL_API_ORIGIN
           value: https://api.webdock.dev
-        - name: WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS
+        - name: SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS
           value: 178.104.141.95/32
-        - name: WEBDOCK_WORKER_DOMAINS
+        - name: SPITZLI_WORKER_DOMAINS
           value: storage,hosting
-        - name: WEBDOCK_GITHUB_APP_ID
+        - name: SPITZLI_GITHUB_APP_ID
           valueFrom:
             secretKeyRef:
               name: api-runtime
-              key: WEBDOCK_GITHUB_APP_ID
-        - name: WEBDOCK_GITHUB_APP_PRIVATE_KEY
+              key: SPITZLI_GITHUB_APP_ID
+        - name: SPITZLI_GITHUB_APP_PRIVATE_KEY
           valueFrom:
             secretKeyRef:
               name: api-runtime
-              key: WEBDOCK_GITHUB_APP_PRIVATE_KEY
-        - name: WEBDOCK_DATABASE_CLUSTER_ID
+              key: SPITZLI_GITHUB_APP_PRIVATE_KEY
+        - name: SPITZLI_DATABASE_CLUSTER_ID
           valueFrom:
             secretKeyRef:
               name: api-runtime
-              key: WEBDOCK_DATABASE_CLUSTER_ID
-        - name: WEBDOCK_DATABASE_DOMAIN
+              key: SPITZLI_DATABASE_CLUSTER_ID
+        - name: SPITZLI_DATABASE_DOMAIN
           valueFrom:
             secretKeyRef:
               name: api-runtime
-              key: WEBDOCK_DATABASE_DOMAIN
-        - name: WEBDOCK_HOSTING_EU_VERIFIED
+              key: SPITZLI_DATABASE_DOMAIN
+        - name: SPITZLI_HOSTING_EU_VERIFIED
           valueFrom:
             secretKeyRef:
               name: api-runtime
-              key: WEBDOCK_HOSTING_EU_VERIFIED
+              key: SPITZLI_HOSTING_EU_VERIFIED
       volumes:
       - name: tmp
         emptyDir:

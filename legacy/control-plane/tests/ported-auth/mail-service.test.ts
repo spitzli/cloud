@@ -312,8 +312,8 @@ test("activation is explicit and idempotent, pending changes serialize, and susp
 
 test("Mail activation requires current operator access and customer reads remain tenant-scoped", async () => {
   await database.query(nativeMailSchemaSQL);
-  const oldFlag = process.env.WEBDOCK_NATIVE_MAIL_ENABLED;
-  process.env.WEBDOCK_NATIVE_MAIL_ENABLED = "true";
+  const oldFlag = process.env.SPITZLI_NATIVE_MAIL_ENABLED;
+  process.env.SPITZLI_NATIVE_MAIL_ENABLED = "true";
   const root = await identity(true),
     member = await identity(),
     outsider = await identity();
@@ -367,8 +367,8 @@ test("Mail activation requires current operator access and customer reads remain
       0,
     );
   } finally {
-    if (oldFlag === undefined) delete process.env.WEBDOCK_NATIVE_MAIL_ENABLED;
-    else process.env.WEBDOCK_NATIVE_MAIL_ENABLED = oldFlag;
+    if (oldFlag === undefined) delete process.env.SPITZLI_NATIVE_MAIL_ENABLED;
+    else process.env.SPITZLI_NATIVE_MAIL_ENABLED = oldFlag;
     await database.query('DELETE FROM webdock_auth."user" WHERE id=ANY($1)', [
       [root.id, member.id, outsider.id],
     ]);
@@ -524,21 +524,21 @@ test("managed Mail reserves cluster capacity atomically and retained volumes rem
 });
 
 test('draining rejects first incoming activation but permits resuming a retained suspended service', async () => {
-  const oldModules = process.env.WEBDOCK_MODULES, oldFlag = process.env.WEBDOCK_NATIVE_MAIL_ENABLED;
+  const oldModules = process.env.SPITZLI_MODULES, oldFlag = process.env.SPITZLI_NATIVE_MAIL_ENABLED;
   const settings = (await database.query('SELECT settings FROM webdock_auth.platform_settings WHERE id=true')).rows[0];
   const root = await identity(true);
   const customer = (await database.query("INSERT INTO webdock_admin.customers(id,name) VALUES(webdock_auth.next_snowflake(),'Draining fixture') RETURNING id")).rows[0].id;
   try {
-    process.env.WEBDOCK_NATIVE_MAIL_ENABLED = 'true';
-    process.env.WEBDOCK_MODULES = JSON.stringify({configVersion:1,modules:{mail:{state:'draining'}}});
+    process.env.SPITZLI_NATIVE_MAIL_ENABLED = 'true';
+    process.env.SPITZLI_MODULES = JSON.stringify({configVersion:1,modules:{mail:{state:'draining'}}});
     await database.query(`INSERT INTO webdock_auth.platform_settings(id,settings) VALUES(true,'{"mailEnabled":true}') ON CONFLICT(id) DO UPDATE SET settings=excluded.settings`);
     await assert.rejects(manageTenantMailService(root.headers,customer,{action:'activate',revision:'0'}),/draining/);
     await database.query("INSERT INTO webdock_mail.service(customer_id,instance_key,host_id,state) VALUES($1,$2,'primary','suspended')",[customer,'mail-'+customer]);
     await manageTenantMailService(root.headers,customer,{action:'activate',revision:'1'});
     assert.equal((await getMailService(database,customer)).enabled,true);
   } finally {
-    if(oldModules===undefined)delete process.env.WEBDOCK_MODULES;else process.env.WEBDOCK_MODULES=oldModules;
-    if(oldFlag===undefined)delete process.env.WEBDOCK_NATIVE_MAIL_ENABLED;else process.env.WEBDOCK_NATIVE_MAIL_ENABLED=oldFlag;
+    if(oldModules===undefined)delete process.env.SPITZLI_MODULES;else process.env.SPITZLI_MODULES=oldModules;
+    if(oldFlag===undefined)delete process.env.SPITZLI_NATIVE_MAIL_ENABLED;else process.env.SPITZLI_NATIVE_MAIL_ENABLED=oldFlag;
     await database.query('DELETE FROM webdock_mail.operation WHERE customer_id=$1',[customer]);
     await database.query('DELETE FROM webdock_mail.service WHERE customer_id=$1',[customer]);
     if(settings)await database.query('UPDATE webdock_auth.platform_settings SET settings=$1 WHERE id=true',[JSON.stringify(settings.settings)]);

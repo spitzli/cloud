@@ -2,7 +2,7 @@
 # Do not start until docs/operations/api-cutover.md host and pool gates pass.
 name: webdock-api
 x-runtime: &runtime
-  image: ${WEBDOCK_API_IMAGE:?Use the reviewed immutable image digest}
+  image: ${SPITZLI_API_IMAGE:?Use the reviewed immutable image digest}
   restart: unless-stopped
   read_only: true
   cap_drop: [ALL]
@@ -49,7 +49,7 @@ services:
 networks:
   ingress:
     external: true
-    name: ${WEBDOCK_INGRESS_NETWORK:?Use the existing controlled ingress network}
+    name: ${SPITZLI_INGRESS_NETWORK:?Use the existing controlled ingress network}
   outbound: {}
   cache:
     internal: true
