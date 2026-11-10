@@ -3,7 +3,7 @@
 use crate::store::Store;
 use tokio_postgres::Client;
 use uuid::Uuid;
-type Result<T> = std::result::Result<T, webdock_plugin_kit::Error>;
+type Result<T> = std::result::Result<T, spitzli_plugin_kit::Error>;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RecoveryState {

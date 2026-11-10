@@ -17,15 +17,15 @@ COPY plugins/archives/manifest.json /src/plugins/archives/manifest.json
 COPY plugins/archives/migrations /src/plugins/archives/migrations
 RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/plugins/archives/runtime/target \
     cargo build --manifest-path plugins/archives/runtime/Cargo.toml --locked --release --features local-native-fixture -j 2 \
-    && cp plugins/archives/runtime/target/release/webdock-archives /webdock-archives
+    && cp plugins/archives/runtime/target/release/spitzli-archives /spitzli-archives
 
 # Official PostgreSQL 18.6 client/server image. Only pg_dump is invoked by the archive executable.
 FROM docker.io/library/postgres:18-trixie@sha256:edb0c08dc33befd0262ab3b5cf1c4f3f8cfd8b09e88c05b45adee29d6761ddb6 AS runtime
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=build --chown=65532:65532 --chmod=0500 /webdock-archives /usr/local/bin/webdock-archives
+COPY --from=build --chown=65532:65532 --chmod=0500 /spitzli-archives /usr/local/bin/spitzli-archives
 COPY --from=fixture --chmod=0444 /ca.crt /usr/local/share/ca-certificates/native-archives.crt
 USER 0
 RUN chmod 0755 /usr/local/share/ca-certificates && chmod 0444 /usr/local/share/ca-certificates/native-archives.crt && cat /usr/local/share/ca-certificates/native-archives.crt >> /etc/ssl/certs/ca-certificates.crt
 ENV HOME=/tmp
 USER 65532:65532
-ENTRYPOINT ["/usr/local/bin/webdock-archives"]
+ENTRYPOINT ["/usr/local/bin/spitzli-archives"]

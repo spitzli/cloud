@@ -1,8 +1,8 @@
 //! Mail runtime over private Unix sockets or pinned mTLS, with its own metadata database.
 use serde::Deserialize;
 use std::{path::PathBuf, process::ExitCode, sync::Arc};
-use webdock_plugin_kit::transport::{CoreTls, ListenTls, RuntimeTransport};
-use webdock_plugin_runtime::{self as runtime};
+use spitzli_plugin_kit::transport::{CoreTls, ListenTls, RuntimeTransport};
+use spitzli_plugin_runtime::{self as runtime};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
 mod startup;
@@ -83,14 +83,14 @@ struct Configuration {
     storage_url: String,
     storage_ca: Option<PathBuf>,
     secret_key_hex: String,
-    platform_transport: webdock_mail::transport::Platform,
+    platform_transport: spitzli_mail::transport::Platform,
     #[serde(default)]
     trust_unverified_domains: bool,
-    mailboxes: Option<webdock_mail::engine::EngineConfig>,
-    delivery: Option<webdock_mail::executor::DeliveryConfiguration>,
+    mailboxes: Option<spitzli_mail::engine::EngineConfig>,
+    delivery: Option<spitzli_mail::executor::DeliveryConfiguration>,
 }
 fn certificate_leaf(path: &std::path::Path) -> Result<Vec<u8>, Error> {
-    rustls_pemfile::certs(&mut std::io::Cursor::new(webdock_plugin_kit::read_file(
+    rustls_pemfile::certs(&mut std::io::Cursor::new(spitzli_plugin_kit::read_file(
         path, false,
     )?))
     .next()
@@ -149,7 +149,7 @@ async fn run() -> Result<(), Error> {
         return Err("unexpected argument".into());
     }
     StartupStage::ConfigRead.emit();
-    let configuration_bytes = match webdock_plugin_kit::read_file(&path, true) {
+    let configuration_bytes = match spitzli_plugin_kit::read_file(&path, true) {
         Ok(bytes) => bytes,
         Err(error) => {
             report_config_read_failure(&path, &error);
@@ -168,16 +168,16 @@ async fn run() -> Result<(), Error> {
     StartupStage::Transport.emit();
     transport.validate()?;
     StartupStage::ManifestRead.emit();
-    let manifest_bytes = webdock_plugin_kit::read_file(&config.manifest, false)?;
+    let manifest_bytes = spitzli_plugin_kit::read_file(&config.manifest, false)?;
     StartupStage::ManifestDecode.emit();
-    let manifest = webdock_plugin_protocol::Manifest::parse(&manifest_bytes)?;
-    webdock_mail::validate_manifest(&manifest)?;
+    let manifest = spitzli_plugin_protocol::Manifest::parse(&manifest_bytes)?;
+    spitzli_mail::validate_manifest(&manifest)?;
     StartupStage::Platform.emit();
     config.platform_transport.validate()?;
     if config.trust_unverified_domains
         && !matches!(
             config.platform_transport,
-            webdock_mail::transport::Platform::Smtp { .. }
+            spitzli_mail::transport::Platform::Smtp { .. }
         )
     {
         return Err("unverified domains are trusted only with a loopback catcher".into());
@@ -185,20 +185,20 @@ async fn run() -> Result<(), Error> {
     StartupStage::Store.emit();
     let store = match config.storage_ca {
         Some(path) => {
-            webdock_mail::store::Store::connect_tls(
+            spitzli_mail::store::Store::connect_tls(
                 &config.storage_url,
-                &webdock_plugin_kit::read_file(&path, false)?,
+                &spitzli_plugin_kit::read_file(&path, false)?,
             )
             .await?
         }
-        None => webdock_mail::store::Store::connect(&config.storage_url).await?,
+        None => spitzli_mail::store::Store::connect(&config.storage_url).await?,
     };
     StartupStage::CoreClient.emit();
     let client = transport.core_client_lazy().await?;
     StartupStage::Engines.emit();
     let engines = match config.mailboxes {
-        Some(mailboxes) => Some(webdock_mail::engine::Engines::new(
-            Box::new(webdock_mail::engine::HostWorkloads {
+        Some(mailboxes) => Some(spitzli_mail::engine::Engines::new(
+            Box::new(spitzli_mail::engine::HostWorkloads {
                 client: client.clone(),
                 plugin: manifest.id().into(),
                 generation: config.generation,
@@ -208,18 +208,18 @@ async fn run() -> Result<(), Error> {
         None => None,
     };
     StartupStage::Plugin.emit();
-    let plugin = webdock_mail::Plugin::new(
+    let plugin = spitzli_mail::Plugin::new(
         store,
         {
             StartupStage::Sealer.emit();
-            webdock_mail::seal::Sealer::new(&config.secret_key_hex)?
+            spitzli_mail::seal::Sealer::new(&config.secret_key_hex)?
         },
-        webdock_mail::transport::Sender::new(webdock_mail::transport::TURBOSMTP_ORIGIN),
+        spitzli_mail::transport::Sender::new(spitzli_mail::transport::TURBOSMTP_ORIGIN),
         Box::new({
             StartupStage::Dns.emit();
-            webdock_mail::SystemDns::new()?
+            spitzli_mail::SystemDns::new()?
         }),
-        webdock_mail::Settings {
+        spitzli_mail::Settings {
             platform: config.platform_transport.clone(),
             trust_unverified_domains: config.trust_unverified_domains,
         },
@@ -243,7 +243,7 @@ async fn run() -> Result<(), Error> {
             if delivery.gateway_peers.len() > 16
                 || delivery.gateway_peers.iter().any(|peer| match peer {
                     runtime::CorePeer::MutualTls { certificate_sha256 } => {
-                        !webdock_mail_protocol::valid_digest(certificate_sha256)
+                        !spitzli_mail_protocol::valid_digest(certificate_sha256)
                     }
                     runtime::CorePeer::Unix { .. } => false,
                 })
@@ -258,28 +258,28 @@ async fn run() -> Result<(), Error> {
                 }
             }
             StartupStage::Payloads.emit();
-            let payloads: Arc<dyn webdock_mail_runtime::PrivatePayloadStore> = Arc::new(
-                webdock_mail::payload::PgPrivatePayloadStore::new(
+            let payloads: Arc<dyn spitzli_mail_runtime::PrivatePayloadStore> = Arc::new(
+                spitzli_mail::payload::PgPrivatePayloadStore::new(
                     plugin.store(),
                     &config.secret_key_hex,
                 )
                 .await?,
             );
             StartupStage::DeliveryPolicy.emit();
-            let policy = webdock_mail::executor::Policy::new(
+            let policy = spitzli_mail::executor::Policy::new(
                 plugin.store(),
                 config.platform_transport.clone(),
                 {
                     StartupStage::Sealer.emit();
-                    webdock_mail::seal::Sealer::new(&config.secret_key_hex)?
+                    spitzli_mail::seal::Sealer::new(&config.secret_key_hex)?
                 },
                 delivery.native_accounts,
             )?;
             StartupStage::NativeControl.emit();
-            let control: Arc<dyn webdock_mail_runtime::SendControl> =
-                webdock_mail::executor::FencedControl::new(
+            let control: Arc<dyn spitzli_mail_runtime::SendControl> =
+                spitzli_mail::executor::FencedControl::new(
                     Arc::new(
-                        webdock_mail_protocol::native_control::NativeControlClient::new(
+                        spitzli_mail_protocol::native_control::NativeControlClient::new(
                             client.channel(),
                             config.generation,
                         )?,
@@ -298,7 +298,7 @@ async fn run() -> Result<(), Error> {
                 .map(|tls| certificate_leaf(&tls.certificate))
                 .transpose()?;
             StartupStage::ProviderBinding.emit();
-            let binding = webdock_mail::executor::resolve_provider_binding(
+            let binding = spitzli_mail::executor::resolve_provider_binding(
                 delivery.provider_binding,
                 config.generation,
                 &manifest_bytes,
@@ -306,16 +306,16 @@ async fn run() -> Result<(), Error> {
                 callback_leaf.as_deref(),
             )?;
             StartupStage::ManagedTransport.emit();
-            let executor = webdock_mail::executor::ManagedTransport::new(
+            let executor = spitzli_mail::executor::ManagedTransport::new(
                 policy,
                 client.channel(),
                 binding,
                 &delivery.native_lease_issuer_public_key_hex,
-                webdock_mail::transport::Sender::new(webdock_mail::transport::TURBOSMTP_ORIGIN),
+                spitzli_mail::transport::Sender::new(spitzli_mail::transport::TURBOSMTP_ORIGIN),
                 config.generation,
             )?;
-            native_router = webdock_mail::listener::native_routes(
-                webdock_mail_runtime::send_api::SendApi::new(control.clone(), payloads.clone())
+            native_router = spitzli_mail::listener::native_routes(
+                spitzli_mail_runtime::send_api::SendApi::new(control.clone(), payloads.clone())
                     .router(),
                 delivery.gateway_peers,
             );
@@ -328,7 +328,7 @@ async fn run() -> Result<(), Error> {
                 transport: Box::new(executor),
             });
             StartupStage::DeliveryWiring.emit();
-            plugin.with_delivery(webdock_mail::delivery::Delivery::new(control, payloads))?
+            plugin.with_delivery(spitzli_mail::delivery::Delivery::new(control, payloads))?
         } else {
             plugin
         };
@@ -338,7 +338,7 @@ async fn run() -> Result<(), Error> {
         config.generation,
         ed25519_dalek::VerifyingKey::from_bytes(&key)?,
         Arc::new(authority),
-        Arc::new(webdock_mail::Handler(plugin.clone())),
+        Arc::new(spitzli_mail::Handler(plugin.clone())),
     )?;
     let shutdown = async {
         #[cfg(unix)]
@@ -377,7 +377,7 @@ async fn run() -> Result<(), Error> {
             startup::serve_delivery(
                 |stopped| async {
                     Ok(
-                        webdock_mail::listener::serve_unix(runtime, native_router, socket, async {
+                        spitzli_mail::listener::serve_unix(runtime, native_router, socket, async {
                             let _ = stopped.await;
                         })
                         .await?,
@@ -385,7 +385,7 @@ async fn run() -> Result<(), Error> {
                 },
                 shutdown,
                 client,
-                webdock_mail::PLUGIN_ID,
+                spitzli_mail::PLUGIN_ID,
                 config.generation,
                 resume,
                 dispatch,
@@ -397,7 +397,7 @@ async fn run() -> Result<(), Error> {
             let listener = tokio::net::TcpListener::bind(tls.address).await?;
             startup::serve_delivery(
                 |stopped| async {
-                    Ok(webdock_mail::listener::serve_mtls(
+                    Ok(spitzli_mail::listener::serve_mtls(
                         runtime,
                         native_router,
                         listener,
@@ -410,7 +410,7 @@ async fn run() -> Result<(), Error> {
                 },
                 shutdown,
                 client,
-                webdock_mail::PLUGIN_ID,
+                spitzli_mail::PLUGIN_ID,
                 config.generation,
                 resume,
                 dispatch,

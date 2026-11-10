@@ -3783,7 +3783,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-archives-native"
+name = "spitzli-archives-native"
 version = "0.3.0"
 dependencies = [
  "async-trait",
@@ -3802,15 +3802,15 @@ dependencies = [
  "tonic",
  "url",
  "uuid",
- "webdock-export-protocol",
- "webdock-object-storage",
- "webdock-plugin-kit",
- "webdock-plugin-protocol",
- "webdock-plugin-runtime",
+ "spitzli-export-protocol",
+ "spitzli-object-storage",
+ "spitzli-plugin-kit",
+ "spitzli-plugin-protocol",
+ "spitzli-plugin-runtime",
 ]
 
 [[package]]
-name = "webdock-export-protocol"
+name = "spitzli-export-protocol"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
@@ -3827,7 +3827,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-object-storage"
+name = "spitzli-object-storage"
 version = "0.1.0"
 dependencies = [
  "bytes",
@@ -3845,7 +3845,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-plugin-kit"
+name = "spitzli-plugin-kit"
 version = "0.1.0"
 dependencies = [
  "aes-gcm",
@@ -3862,12 +3862,12 @@ dependencies = [
  "tonic",
  "url",
  "uuid",
- "webdock-plugin-protocol",
- "webdock-plugin-runtime",
+ "spitzli-plugin-protocol",
+ "spitzli-plugin-runtime",
 ]
 
 [[package]]
-name = "webdock-plugin-protocol"
+name = "spitzli-plugin-protocol"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
@@ -3884,7 +3884,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-plugin-runtime"
+name = "spitzli-plugin-runtime"
 version = "0.1.0"
 dependencies = [
  "ed25519-dalek",
@@ -3905,7 +3905,7 @@ dependencies = [
  "tonic-prost-build",
  "tower",
  "url",
- "webdock-plugin-protocol",
+ "spitzli-plugin-protocol",
  "x509-parser",
 ]
 

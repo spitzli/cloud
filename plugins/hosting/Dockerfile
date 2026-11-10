@@ -5,9 +5,9 @@ WORKDIR /src
 COPY . .
 RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/plugins/hosting/target \
     cargo build --manifest-path plugins/hosting/Cargo.toml --locked --release \
-    && cp plugins/hosting/target/release/webdock-hosting /webdock-hosting
+    && cp plugins/hosting/target/release/spitzli-hosting /spitzli-hosting
 
 FROM docker.io/library/debian:trixie-slim
-COPY --from=build /webdock-hosting /usr/local/bin/webdock-hosting
+COPY --from=build /spitzli-hosting /usr/local/bin/spitzli-hosting
 USER 65532:65532
-ENTRYPOINT ["/usr/local/bin/webdock-hosting"]
+ENTRYPOINT ["/usr/local/bin/spitzli-hosting"]

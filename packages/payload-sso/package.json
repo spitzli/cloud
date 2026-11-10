@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/payload-sso",
+  "name": "@spitzli/payload-sso",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "payload": "4.0.0-canary.37"
   },
   "dependencies": {
-    "@webdock/oauth-session": "*"
+    "@spitzli/oauth-session": "*"
   },
   "license": "Apache-2.0"
 }

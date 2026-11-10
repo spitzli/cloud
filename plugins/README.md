@@ -27,7 +27,7 @@ On 2026-11-02 the owner withdrew `postgres` and four legacy entries from the pub
 
 ## Native Console UI conventions
 
-First-party views use the host's `@webdock/plugin-ui` recipes and state components.
+First-party views use the host's `@spitzli/plugin-ui` recipes and state components.
 The Core owns typography, themes, inputs, actions, cards, tables and resource
 spacing; plugins should not ship an independent dashboard shell or copy a theme.
 Use `ui.resourceGrid` for resource sections and keep explicit full-width controls

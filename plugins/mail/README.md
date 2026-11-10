@@ -173,7 +173,7 @@ operator prerequisite.
 
 ## Native public gateway and cutover
 
-`webdock-mail-gateway` is packaged alongside the plugin executable. Its private JSON
+`spitzli-mail-gateway` is packaged alongside the plugin executable. Its private JSON
 has `listen` (HTTP ingress socket), `runtime` (the existing strict CoreTls shape with
 the runtime's HTTPS origin/domain, separate gateway certificate/key, CA and runtime
 leaf pin), and `preauthentication:{origin,secretFile,authority}` for the existing Core

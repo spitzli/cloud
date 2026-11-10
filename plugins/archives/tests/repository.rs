@@ -8,13 +8,13 @@ use std::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
     },
 };
-use webdock_export_protocol::{SourceKind, SourceRef};
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{
+use spitzli_export_protocol::{SourceKind, SourceRef};
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{
     AdmissionInput, ExportJob, ExportSources, FileBindings, HostService, InvocationScope,
 };
-use webdock_plugin_runtime::{PeerIdentity, UnixSocket};
-use webdock_repository_protocol::{self as repository, runtime};
+use spitzli_plugin_runtime::{PeerIdentity, UnixSocket};
+use spitzli_repository_protocol::{self as repository, runtime};
 #[allow(
     dead_code,
     reason = "existing owned Core fixture also supplies other job helpers"
@@ -68,7 +68,7 @@ impl runtime::Handler for Provider {
             std::future::pending::<()>().await;
         }
         Ok(
-            webdock_build::artifact::Archive::from_files(std::collections::BTreeMap::from([(
+            spitzli_build::artifact::Archive::from_files(std::collections::BTreeMap::from([(
                 "README.md".into(),
                 b"owned committed source\n".to_vec(),
             )]))
@@ -79,7 +79,7 @@ impl runtime::Handler for Provider {
     }
 }
 struct Adapter {
-    gate: Arc<webdock_build::RepositoryAdmission>,
+    gate: Arc<spitzli_build::RepositoryAdmission>,
     proof: Mutex<Option<ExportJob>>,
     hold_data: AtomicBool,
     validations: AtomicUsize,
@@ -94,21 +94,21 @@ impl ExportSources for Adapter {
         t: &sea_orm::DatabaseTransaction,
         k: SourceKind,
         id: &str,
-    ) -> webdock_plugin_protocol::Result<SourceRef> {
+    ) -> spitzli_plugin_protocol::Result<SourceRef> {
         if k != SourceKind::Project {
-            return Err(webdock_plugin_protocol::PluginError::denied());
+            return Err(spitzli_plugin_protocol::PluginError::denied());
         }
         self.gate
             .export_binding(s, t, id)
             .await
-            .map_err(|_| webdock_plugin_protocol::PluginError::denied())
+            .map_err(|_| spitzli_plugin_protocol::PluginError::denied())
     }
     async fn validate(
         &self,
         s: &InvocationScope,
         t: &sea_orm::DatabaseTransaction,
         r: &SourceRef,
-    ) -> webdock_plugin_protocol::Result<()> {
+    ) -> spitzli_plugin_protocol::Result<()> {
         let count = self.validations.fetch_add(1, Ordering::SeqCst) + 1;
         if self.hold_data.load(Ordering::SeqCst) && count == 3 {
             self.entered.notify_one();
@@ -117,19 +117,19 @@ impl ExportSources for Adapter {
         self.gate
             .validate_export_source(s, t, r)
             .await
-            .map_err(|_| webdock_plugin_protocol::PluginError::denied())
+            .map_err(|_| spitzli_plugin_protocol::PluginError::denied())
     }
     async fn archive(
         &self,
         p: ExportJob,
         s: &InvocationScope,
         r: &SourceRef,
-    ) -> webdock_plugin_protocol::Result<(SourceRef, Vec<u8>)> {
+    ) -> spitzli_plugin_protocol::Result<(SourceRef, Vec<u8>)> {
         *self.proof.lock().unwrap() = Some(p.clone());
         self.gate
             .archive_for_export(p, s, r)
             .await
-            .map_err(|_| webdock_plugin_protocol::PluginError::denied())
+            .map_err(|_| spitzli_plugin_protocol::PluginError::denied())
     }
 }
 #[tokio::test]
@@ -178,7 +178,7 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
             .ok()
             .unwrap()
             .with_storage_gateway(Arc::new(
-                webdock_plugin_host::storage::StorageGateway::new(f.directory.path().into())
+                spitzli_plugin_host::storage::StorageGateway::new(f.directory.path().into())
                     .unwrap(),
             )),
     );
@@ -201,14 +201,14 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
     std::fs::write(&binding_path,json!({"runtimes":{"repository-export":{"descriptor":descriptor,"publisherKeyId":"fixture","publisherPublicKeyHex":hex::encode(publisher.verifying_key().as_bytes()),"registryUrl":"https://registry.invalid","transport":{"kind":"unix","path":repo_path}}}}).to_string()).unwrap();
     std::fs::set_permissions(&binding_path, std::fs::Permissions::from_mode(0o600)).unwrap();
     let gate = Arc::new(
-        webdock_build::RepositoryAdmission::new(
+        spitzli_build::RepositoryAdmission::new(
             f.database
                 .role_with_connections("webdock_worker_runtime", 12)
                 .await,
             "owned-plugin-jobs-rls-secret-32bytes".into(),
             f.host.clone(),
             issuer.clone(),
-            Arc::new(webdock_build::FileRepositoryBindings::new(binding_path)),
+            Arc::new(spitzli_build::FileRepositoryBindings::new(binding_path)),
         )
         .await
         .unwrap(),
@@ -276,22 +276,22 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
             .await
             .unwrap();
     }));
-    let channel = webdock_plugin_runtime::unix_channel(&host_path)
+    let channel = spitzli_plugin_runtime::unix_channel(&host_path)
         .await
         .unwrap();
     let mut client =
-        webdock_export_protocol::wire::export_sources_client::ExportSourcesClient::new(channel);
+        spitzli_export_protocol::wire::export_sources_client::ExportSourcesClient::new(channel);
     let business = f.database.role("webdock_auth_runtime").await;
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             f.database.url.as_str(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
     );
     let hosting = Arc::new(
-        webdock_hosting::HostingService::new(
+        spitzli_hosting::HostingService::new(
             business.clone(),
             f.auth.clone(),
             f.database.role("webdock_worker_runtime").await,
@@ -302,7 +302,7 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
         .await
         .unwrap(),
     );
-    let build_service = webdock_build::BuildService::new(
+    let build_service = spitzli_build::BuildService::new(
         business.clone(),
         f.database.role("webdock_worker_runtime").await,
         "owned-plugin-jobs-rls-secret-32bytes".into(),
@@ -315,7 +315,7 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
     .with_session_authority(f.auth.clone(), f.identity.clone(), None)
     .await
     .unwrap();
-    let signer = webdock_identity::RlsSigner::new(
+    let signer = spitzli_identity::RlsSigner::new(
         "owned-plugin-jobs-rls-secret-32bytes",
         "webdock_auth_runtime",
     )
@@ -338,9 +338,9 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
         };
         let resource = uuid::Uuid::new_v4().to_string();
         sql(&f.owner,"INSERT INTO webdock_auth.plugin_resource(plugin_id,resource_id,offering_id,customer_id,project_id,name,created_via,created_by) VALUES('archives',$1,'archive','123','124','Source','operator','operator')",vec![resource.clone().into()]).await;
-        let a=f.host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.create","input":{"request_id":uuid::Uuid::new_v4(),"kind":"project","source_id":"602","retention_seconds":3600},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(actor)).await.unwrap();
+        let a=f.host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.create","input":{"request_id":uuid::Uuid::new_v4(),"kind":"project","source_id":"602","retention_seconds":3600},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(actor)).await.unwrap();
         let binding = client
-            .bind(webdock_export_protocol::wire::SourceRequest {
+            .bind(spitzli_export_protocol::wire::SourceRequest {
                 invocation_token: a.token,
                 kind: "project".into(),
                 source_id: "602".into(),
@@ -349,14 +349,14 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
             .await
             .unwrap()
             .into_inner();
-        let a=f.host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.generate","input":{"resource_id":resource},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(actor)).await.unwrap();
+        let a=f.host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.generate","input":{"resource_id":resource},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(actor)).await.unwrap();
         let h = f.host.authenticate(peer(), &a.token).await.unwrap();
         f.host.jobs_enqueue(&h,json!({"name":"archives.produce","payload":{"resource_id":resource},"idempotencyKey":format!("archive-{resource}")})).await.unwrap();
         let lease = f.host.claim_job(Some("archives")).await.unwrap().unwrap();
         provider.pause.store(cancelled, Ordering::SeqCst);
         adapter.validations.store(0, Ordering::SeqCst);
         adapter.hold_data.store(disconnect, Ordering::SeqCst);
-        let request = webdock_export_protocol::wire::SourceRequest {
+        let request = spitzli_export_protocol::wire::SourceRequest {
             invocation_token: lease.invocation().token.clone(),
             kind: String::new(),
             source_id: String::new(),
@@ -395,7 +395,7 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
                     "held real Core RPC must not release cached bytes after actual Git disconnect"
                 );
                 f.host
-                    .complete_job(&lease, Err(webdock_plugin_protocol::PluginError::denied()))
+                    .complete_job(&lease, Err(spitzli_plugin_protocol::PluginError::denied()))
                     .await
                     .unwrap();
                 continue;
@@ -405,7 +405,7 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
                 bytes.extend(chunk.data);
             }
             assert_eq!(
-                webdock_build::artifact::Archive::read(&bytes, 33554432)
+                spitzli_build::artifact::Archive::read(&bytes, 33554432)
                     .unwrap()
                     .files()["README.md"],
                 b"owned committed source\n"
@@ -430,12 +430,12 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
             );
             // An issued opaque transfer must recheck retained source authority after
             // an actual projects.update change, even though the Core job succeeded.
-            let admitted=f.host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.download","input":{"resource_id":resource},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(actor)).await.unwrap();
+            let admitted=f.host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.download","input":{"resource_id":resource},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(actor)).await.unwrap();
             let handle = f.host.authenticate(peer(), &admitted.token).await.unwrap();
-            let plan = webdock_plugin_protocol::storage::StoragePlan {
+            let plan = spitzli_plugin_protocol::storage::StoragePlan {
                 version: 1,
                 binding: "archives".into(),
-                direction: webdock_plugin_protocol::storage::StorageDirection::Download,
+                direction: spitzli_plugin_protocol::storage::StorageDirection::Download,
                 resource_id: resource.clone(),
                 resource_epoch: uuid::Uuid::new_v4().to_string(),
                 url: "https://storage.example.test/bucket/owned-source".into(),
@@ -443,7 +443,7 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
                 expires_at: chrono::Utc::now().timestamp() + 120,
                 exact_bytes: bytes.len() as u64,
                 expected_sha256: Some(repository::sha256(&bytes)),
-                attachment: webdock_plugin_protocol::storage::Attachment {
+                attachment: spitzli_plugin_protocol::storage::Attachment {
                     filename: "project.tar.gz".into(),
                     content_type: "application/gzip".into(),
                 },
@@ -464,9 +464,9 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
                 .retain_storage_plan(&handle, plan, "c".repeat(64))
                 .await
                 .unwrap();
-            let caller = webdock_plugin_host::storage::StorageCaller::browser(
+            let caller = spitzli_plugin_host::storage::StorageCaller::browser(
                 actor,
-                webdock_browser_session::StoredAuthority::local_session(actor),
+                spitzli_browser_session::StoredAuthority::local_session(actor),
                 true,
             );
             let access = f
@@ -474,7 +474,7 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
                 .storage_access(&descriptor.id, "GET", &caller)
                 .await
                 .unwrap();
-            let validation = webdock_export_protocol::wire::Validation {
+            let validation = spitzli_export_protocol::wire::Validation {
                 invocation_token: String::new(),
                 storage_authorization_json: serde_json::to_vec(&access.authorization).unwrap(),
                 reference_json: serde_json::to_vec(&r).unwrap(),
@@ -486,7 +486,7 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
                 .storage_access(&api_descriptor.id, "GET", &caller)
                 .await
                 .unwrap();
-            let api_validation = webdock_export_protocol::wire::Validation {
+            let api_validation = spitzli_export_protocol::wire::Validation {
                 storage_authorization_json: serde_json::to_vec(&api_access.authorization).unwrap(),
                 ..validation.clone()
             };
@@ -583,7 +583,7 @@ async fn exact_plugin_job_claim_owns_repository_stream_and_cancellation_retires_
             )
             .await
             .unwrap();
-            let a=f.host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.delete","input":{"resource_id":resource},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(actor)).await.unwrap();
+            let a=f.host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.delete","input":{"resource_id":resource},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(actor)).await.unwrap();
             let h = f.host.authenticate(peer(), &a.token).await.unwrap();
             f.host
                 .jobs_cancel(&h, json!({"id":lease.id()}))

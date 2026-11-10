@@ -8,7 +8,7 @@ use aws_sdk_s3::{
 };
 use serde::Deserialize;
 use std::time::Duration;
-use webdock_object_storage::{ObjectReceipt, S3Config, Store};
+use spitzli_object_storage::{ObjectReceipt, S3Config, Store};
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct BackendConfig {
@@ -52,7 +52,7 @@ impl Backend {
         };
         #[cfg(not(feature = "local-native-fixture"))]
         let fixture_deadline: Option<i64> = None;
-        let credentials = webdock_object_storage::Credentials::new(
+        let credentials = spitzli_object_storage::Credentials::new(
             c.credentials.access_key_id.clone(),
             c.credentials.secret_access_key.clone(),
         )

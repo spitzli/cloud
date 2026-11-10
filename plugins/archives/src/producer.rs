@@ -12,7 +12,7 @@ pub struct DatabaseSource {
 }
 /// Remote material only comes from the private Core source RPC, never user-selected URL/SQL.
 pub async fn dump_managed(
-    material: webdock_export_protocol::wire::DatabaseMaterial,
+    material: spitzli_export_protocol::wire::DatabaseMaterial,
     root: &Path,
 ) -> Result<tokio::fs::File> {
     use tokio::io::AsyncWriteExt;
@@ -45,7 +45,7 @@ pub async fn dump_managed(
         .map_err(|_| "Private source trust staging unavailable")?;
     std::fs::write(ca.path(), material.ca_certificate.as_bytes())
         .map_err(|_| "Private source trust staging unavailable")?;
-    let client = webdock_plugin_kit::postgres::connect(
+    let client = spitzli_plugin_kit::postgres::connect(
         uri.as_str(),
         Some(material.ca_certificate.as_bytes()),
     )

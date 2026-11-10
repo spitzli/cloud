@@ -6,7 +6,7 @@ use std::{
     path::{Path, PathBuf},
     sync::Arc,
 };
-use webdock_repository_protocol::{runtime, verify_descriptor};
+use spitzli_repository_protocol::{runtime, verify_descriptor};
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Configuration {
@@ -129,10 +129,10 @@ async fn run() -> Result<(), Error> {
             authority,
             server_certificate_sha256,
         } => {
-            webdock_plugin_runtime::pinned_mtls_channel(
+            spitzli_plugin_runtime::pinned_mtls_channel(
                 origin.clone(),
                 domain.clone(),
-                webdock_plugin_runtime::PinnedMutualTls {
+                spitzli_plugin_runtime::PinnedMutualTls {
                     certificate: file(certificate, false)?,
                     private_key: file(private_key, true)?,
                     authority: file(authority, false)?,
@@ -146,14 +146,14 @@ async fn run() -> Result<(), Error> {
         channel,
         descriptor.plugin_id,
         config.generation,
-        webdock_repository_protocol::sha256(config.descriptor.as_bytes()),
+        spitzli_repository_protocol::sha256(config.descriptor.as_bytes()),
         config.core_peers,
     )?;
     let pem = file(&config.app_private_key, true)?;
-    let provider = webdock_github_repository::GithubProvider::new(config.app_id, &pem)?;
+    let provider = spitzli_github_repository::GithubProvider::new(config.app_id, &pem)?;
     #[cfg(feature = "local-provider-test")]
     let provider = if let Some(origin) = config.test_origin {
-        webdock_github_repository::GithubProvider::loopback_test(config.app_id, &pem, &origin)?
+        spitzli_github_repository::GithubProvider::loopback_test(config.app_id, &pem, &origin)?
     } else {
         provider
     };

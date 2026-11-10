@@ -1,5 +1,5 @@
 [package]
-name = "webdock-archives"
+name = "spitzli-archives"
 version = "0.3.0"
 edition = "2024"
 rust-version = "1.94"
@@ -9,19 +9,19 @@ publish = false
 [workspace]
 
 [dependencies]
-webdock-export-protocol={path="../../crates/export-protocol"}
+spitzli-export-protocol={path="../../crates/export-protocol"}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "time", "process", "io-util", "fs"] }
-webdock-plugin-protocol = { path = "../../crates/plugin-protocol" }
-webdock-plugin-runtime = { path = "../../crates/plugin-runtime" }
-webdock-plugin-kit = { path = "../../crates/plugin-kit" }
+spitzli-plugin-protocol = { path = "../../crates/plugin-protocol" }
+spitzli-plugin-runtime = { path = "../../crates/plugin-runtime" }
+spitzli-plugin-kit = { path = "../../crates/plugin-kit" }
 tonic = { version = "0.14.6", features = ["transport"] }
 ed25519-dalek = "2"
 hex = "0.4"
 uuid = { version = "1", features = ["v4"] }
 tokio-postgres = { version = "0.7", features = ["with-uuid-1"] }
-webdock-object-storage = { path = "../../crates/object-storage" }
+spitzli-object-storage = { path = "../../crates/object-storage" }
 aws-sdk-s3 = { version = "=1.137.0", default-features = false, features = ["rt-tokio", "rustls", "default-https-client"] }
 url = "2"
 rustix = { version = "1", features = ["process"] }
@@ -33,24 +33,24 @@ tempfile = "3"
 
 [features]
 local-native-fixture = []
-local-test = ["webdock-object-storage/local-test"]
+local-test = ["spitzli-object-storage/local-test"]
 
 [dev-dependencies]
-webdock-hosting={path="../../crates/hosting"}
-webdock-repository-protocol={path="../../crates/repository-protocol"}
+spitzli-hosting={path="../../crates/hosting"}
+spitzli-repository-protocol={path="../../crates/repository-protocol"}
 chrono = "0.4"
-webdock-databases={path="../../crates/databases"}
-webdock-build={path="../../crates/build"}
+spitzli-databases={path="../../crates/databases"}
+spitzli-build={path="../../crates/build"}
 rcgen = "0.14"
 tokio-stream = { version = "0.1", features = ["net"] }
 sea-orm = { version = "=2.0.4", default-features = false, features = ["macros", "sqlx-postgres", "runtime-tokio-rustls", "with-json", "with-chrono"] }
-webdock-identity = { path = "../../crates/identity" }
-webdock-browser-session = { path = "../../crates/browser-session" }
-webdock-persistence = { path = "../../crates/persistence" }
-webdock-ids = { path = "../../crates/ids" }
+spitzli-identity = { path = "../../crates/identity" }
+spitzli-browser-session = { path = "../../crates/browser-session" }
+spitzli-persistence = { path = "../../crates/persistence" }
+spitzli-ids = { path = "../../crates/ids" }
 
-webdock-plugin-host = { path = "../../crates/plugin-host" }
-webdock-plugin-http = { path = "../../crates/plugin-http" }
+spitzli-plugin-host = { path = "../../crates/plugin-host" }
+spitzli-plugin-http = { path = "../../crates/plugin-http" }
 futures-util = "0.3"
 
 

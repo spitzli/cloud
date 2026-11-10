@@ -3,7 +3,7 @@
 //! invoking project before touching it.
 pub mod placement;
 pub mod store;
-pub use webdock_plugin_kit::seal;
+pub use spitzli_plugin_kit::seal;
 
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -12,8 +12,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 use uuid::Uuid;
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::ActionHandler;
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 
 type Result<T> = std::result::Result<T, PluginError>;
 pub const PLUGIN_ID: &str = "hosting";

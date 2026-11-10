@@ -1,1 +1,1 @@
-export { safeAdminReturnTo } from '@webdock/oauth-session/return-to'
+export { safeAdminReturnTo } from '@spitzli/oauth-session/return-to'

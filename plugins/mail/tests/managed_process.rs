@@ -19,13 +19,13 @@ use tokio::{
 };
 use tonic::{Request, Response, Status};
 use tower::ServiceExt;
-use webdock_mail_protocol::{
+use spitzli_mail_protocol::{
     LeaseClaims,
     native_control::{Control, ControlError, ControlServer},
     outbox::SendLease,
     wire as mail,
 };
-use webdock_plugin_runtime::{PeerIdentity, PinnedMutualTls, wire};
+use spitzli_plugin_runtime::{PeerIdentity, PinnedMutualTls, wire};
 
 struct Row {
     job: Option<SendLease>,
@@ -110,7 +110,7 @@ impl Control for State {
         v: Value,
     ) -> Result<Value, ControlError> {
         if generation != 2
-            || !matches!(peer,PeerIdentity::MutualTls{certificates} if certificates.first().is_some_and(|c|webdock_mail_protocol::sha256(c)==self.credential))
+            || !matches!(peer,PeerIdentity::MutualTls{certificates} if certificates.first().is_some_and(|c|spitzli_mail_protocol::sha256(c)==self.credential))
         {
             return Err(ControlError { status: 403 });
         }
@@ -130,12 +130,12 @@ impl Control for State {
             "send.admitAction" => {
                 let a=&v["submission"];
                 let token=a["invocationToken"].as_str().unwrap();
-                let claims=webdock_plugin_protocol::verify_invocation(token,&self.issuer.verifying_key(),"mail",2,now()).unwrap();
+                let claims=spitzli_plugin_protocol::verify_invocation(token,&self.issuer.verifying_key(),"mail",2,now()).unwrap();
                 assert_eq!(claims.action,"mail.send");assert!(claims.job.is_none());
-                let compiled=webdock_mail_message::compile_action(a["input"].clone(),&self.action_domain).unwrap();
-                let proposed=json!({"payloadRef":a["payloadRef"],"payloadBytes":compiled.payload.len(),"requestHash":webdock_mail_protocol::sha256(&compiled.payload),"envelope":compiled.envelope});
+                let compiled=spitzli_mail_message::compile_action(a["input"].clone(),&self.action_domain).unwrap();
+                let proposed=json!({"payloadRef":a["payloadRef"],"payloadBytes":compiled.payload.len(),"requestHash":spitzli_mail_protocol::sha256(&compiled.payload),"envelope":compiled.envelope});
                 let source=json!({"executor":"managed-mail-v1","payloadStoreID":"mail:platform:v1","payloadStoreVersion":1,"executorGeneration":2,"projectID":claims.project_id,"resourceID":a["input"]["resource_id"],"domain":self.action_domain,"privatePolicySha256":a["privatePolicySha256"]});
-                self.admit(&mut row,&proposed,format!("action:{}",webdock_mail_protocol::sha256(token.as_bytes())),source)
+                self.admit(&mut row,&proposed,format!("action:{}",spitzli_mail_protocol::sha256(token.as_bytes())),source)
             }
             "send.commitPayload" => {
                 row.state = "queued".into();
@@ -210,7 +210,7 @@ impl State {
             payload_ref: s["payloadRef"].as_str().unwrap().into(),
             payload_bytes: s["payloadBytes"].as_i64().unwrap() as i32,
             request_hash: s["requestHash"].as_str().unwrap().into(),
-            payload_format: webdock_mail_protocol::PayloadFormat::Request,
+            payload_format: spitzli_mail_protocol::PayloadFormat::Request,
             source_context,
             route: json!({"kind":"direct","pluginID":"mail","generation":2,"transportRevision":1,"grantRevision":1,"configurationRevision":0,"descriptorSha256":self.descriptor,"bindingSha256":"d".repeat(64)}),
             envelope: s["envelope"].clone(),
@@ -233,7 +233,7 @@ impl mail::mail_authority_server::MailAuthority for Host {
         &self,
         request: Request<mail::LeaseProof>,
     ) -> Result<Response<mail::AttemptReply>, Status> {
-        let c = webdock_mail_protocol::verify_lease(
+        let c = spitzli_mail_protocol::verify_lease(
             &request.into_inner().lease_token,
             &self.issuer.verifying_key(),
             "mail",
@@ -304,14 +304,14 @@ async fn channel(
     root: &rcgen::Certificate,
     pin: &rcgen::Certificate,
 ) -> tonic::transport::Channel {
-    webdock_plugin_runtime::pinned_mtls_channel(
+    spitzli_plugin_runtime::pinned_mtls_channel(
         origin,
         "localhost".into(),
         PinnedMutualTls {
             certificate: cert.pem().into_bytes(),
             private_key: key.serialize_pem().into_bytes(),
             authority: root.pem().into_bytes(),
-            server_certificate_sha256: webdock_mail_protocol::sha256(pin.der()),
+            server_certificate_sha256: spitzli_mail_protocol::sha256(pin.der()),
         },
     )
     .await
@@ -431,7 +431,7 @@ async fn actual_mail_process_shared_endpoint_candidate_gateway_pin_receipts_and_
     let (core_cert, core_key) = certificate(&issuer);
     let (gateway_cert, gateway_key) = certificate(&issuer);
     let (wrong_cert, wrong_key) = certificate(&issuer);
-    let descriptor = webdock_mail_protocol::sha256(include_bytes!("../manifest.json"));
+    let descriptor = spitzli_mail_protocol::sha256(include_bytes!("../manifest.json"));
     let state = Arc::new(State {
         row: Mutex::new(Row {
             job: None,
@@ -449,7 +449,7 @@ async fn actual_mail_process_shared_endpoint_candidate_gateway_pin_receipts_and_
         data: AtomicUsize::new(0),
         action_domain: format!("owned-process-{}.test", uuid::Uuid::new_v4().simple()),
         descriptor: descriptor.clone(),
-        credential: webdock_mail_protocol::sha256(runtime_cert.der()),
+        credential: spitzli_mail_protocol::sha256(runtime_cert.der()),
         issuer: ed25519_dalek::SigningKey::from_bytes(&[31; 32]),
     });
     let smtp = TcpListener::bind("127.0.0.1:0").await.unwrap();
@@ -496,7 +496,7 @@ async fn actual_mail_process_shared_endpoint_candidate_gateway_pin_receipts_and_
     let runtime_pem = write(dir.path(), "runtime.crt", runtime_cert.pem());
     let runtime_key_path = write(dir.path(), "runtime.key", runtime_key.serialize_pem());
     let ca_path = write(dir.path(), "ca.crt", root.pem());
-    let config = json!({"manifest":manifest,"issuerPublicKeyHex":hex::encode(state.issuer.verifying_key().as_bytes()),"generation":2,"listenTls":{"address":format!("127.0.0.1:{port}"),"certificate":runtime_pem,"privateKey":runtime_key_path,"authority":ca_path},"coreTls":{"origin":format!("https://localhost:{core_port}"),"domain":"localhost","certificate":runtime_pem,"privateKey":runtime_key_path,"authority":ca_path,"serverCertificateSha256":webdock_mail_protocol::sha256(core_cert.der())},"corePeers":[{"kind":"mutualTls","certificateSha256":webdock_mail_protocol::sha256(core_cert.der())}],"storageUrl":std::env::var("WEBDOCK_MAIL_TASK3_TEST_URL").unwrap(),"storageCa":std::env::var("WEBDOCK_MAIL_TASK3_TEST_CA").unwrap(),"secretKeyHex":"24".repeat(32),"trustUnverifiedDomains":true,"platformTransport":{"kind":"smtp","host":"127.0.0.1","port":smtp_port},"delivery":{"nativeLeaseIssuerPublicKeyHex":hex::encode(state.issuer.verifying_key().as_bytes()),"providerBinding":{"pluginID":"mail","generation":2,"descriptorSha256":descriptor,"workerID":"mail","workerGeneration":2,"workerCredentialSha256":state.credential},"gatewayPeers":[{"kind":"mutualTls","certificateSha256":webdock_mail_protocol::sha256(gateway_cert.der())}],"nativeAccounts":[{"customerID":"7101","accountID":null,"mode":"managed","transportRevision":1,"bindingRevision":1,"byokRevision":null,"transport":{"kind":"smtp","host":"127.0.0.1","port":smtp_port}}]}});
+    let config = json!({"manifest":manifest,"issuerPublicKeyHex":hex::encode(state.issuer.verifying_key().as_bytes()),"generation":2,"listenTls":{"address":format!("127.0.0.1:{port}"),"certificate":runtime_pem,"privateKey":runtime_key_path,"authority":ca_path},"coreTls":{"origin":format!("https://localhost:{core_port}"),"domain":"localhost","certificate":runtime_pem,"privateKey":runtime_key_path,"authority":ca_path,"serverCertificateSha256":spitzli_mail_protocol::sha256(core_cert.der())},"corePeers":[{"kind":"mutualTls","certificateSha256":spitzli_mail_protocol::sha256(core_cert.der())}],"storageUrl":std::env::var("WEBDOCK_MAIL_TASK3_TEST_URL").unwrap(),"storageCa":std::env::var("WEBDOCK_MAIL_TASK3_TEST_CA").unwrap(),"secretKeyHex":"24".repeat(32),"trustUnverifiedDomains":true,"platformTransport":{"kind":"smtp","host":"127.0.0.1","port":smtp_port},"delivery":{"nativeLeaseIssuerPublicKeyHex":hex::encode(state.issuer.verifying_key().as_bytes()),"providerBinding":{"pluginID":"mail","generation":2,"descriptorSha256":descriptor,"workerID":"mail","workerGeneration":2,"workerCredentialSha256":state.credential},"gatewayPeers":[{"kind":"mutualTls","certificateSha256":spitzli_mail_protocol::sha256(gateway_cert.der())}],"nativeAccounts":[{"customerID":"7101","accountID":null,"mode":"managed","transportRevision":1,"bindingRevision":1,"byokRevision":null,"transport":{"kind":"smtp","host":"127.0.0.1","port":smtp_port}}]}});
     // Normal installer profile must bootstrap without a post-admission credential override.
     let mut config = config;
     config["delivery"]
@@ -509,7 +509,7 @@ async fn actual_mail_process_shared_endpoint_candidate_gateway_pin_receipts_and_
         serde_json::to_vec(&config).unwrap(),
     );
     let spawn = || {
-        tokio::process::Command::new(env!("CARGO_BIN_EXE_webdock-mail"))
+        tokio::process::Command::new(env!("CARGO_BIN_EXE_spitzli-mail"))
             .arg(&path)
             .kill_on_drop(true)
             .stdout(Stdio::null())
@@ -605,7 +605,7 @@ async fn actual_mail_process_shared_endpoint_candidate_gateway_pin_receipts_and_
         .payload_ref
         .clone();
     let store = Arc::new(
-        webdock_mail::store::Store::connect_tls(
+        spitzli_mail::store::Store::connect_tls(
             &std::env::var("WEBDOCK_MAIL_TASK3_TEST_URL").unwrap(),
             &std::fs::read(std::env::var("WEBDOCK_MAIL_TASK3_TEST_CA").unwrap()).unwrap(),
         )
@@ -613,11 +613,11 @@ async fn actual_mail_process_shared_endpoint_candidate_gateway_pin_receipts_and_
         .unwrap(),
     );
     let payload =
-        webdock_mail::payload::PgPrivatePayloadStore::new(store.clone(), &"24".repeat(32))
+        spitzli_mail::payload::PgPrivatePayloadStore::new(store.clone(), &"24".repeat(32))
             .await
             .unwrap();
     assert!(
-        webdock_mail_runtime::PrivatePayloadStore::get(&payload, "7101", &reference)
+        spitzli_mail_runtime::PrivatePayloadStore::get(&payload, "7101", &reference)
             .await
             .is_ok()
     );
@@ -665,7 +665,7 @@ async fn actual_mail_process_shared_endpoint_candidate_gateway_pin_receipts_and_
     );
     assert!(!process.wait().await.unwrap().success());
     assert!(
-        webdock_mail_runtime::PrivatePayloadStore::get(&payload, "7101", &forced_ref)
+        spitzli_mail_runtime::PrivatePayloadStore::get(&payload, "7101", &forced_ref)
             .await
             .is_ok()
     );

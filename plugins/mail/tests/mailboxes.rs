@@ -5,9 +5,9 @@
 use serde_json::{Value, json};
 use std::{process::Command, sync::Mutex, time::Duration};
 use tokio_postgres::NoTls;
-use webdock_mail::{Dns, Handler, Plugin, Settings, engine, seal::Sealer, store::Store, transport};
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, PluginError};
-use webdock_plugin_runtime::ActionHandler;
+use spitzli_mail::{Dns, Handler, Plugin, Settings, engine, seal::Sealer, store::Store, transport};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 
 const IMAGE: &str = "docker.io/stalwartlabs/stalwart@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3";
 

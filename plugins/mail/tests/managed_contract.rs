@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_mail::{
+use spitzli_mail::{
     delivery::{private_policy_digest, public_reply},
     executor::DeliveryConfiguration,
     transport::Platform,
@@ -67,17 +67,17 @@ fn strict_delivery_config_has_explicit_native_issuer_and_account_selection() {
 
 #[test]
 fn binding_derives_only_normal_mtls_and_validates_explicit_enrollment() {
-    use webdock_mail::executor::resolve_provider_binding;
+    use spitzli_mail::executor::resolve_provider_binding;
     let raw = b"exact raw manifest bytes";
     let derived =
         resolve_provider_binding(None, 2, raw, Some(b"own leaf"), Some(b"own leaf")).unwrap();
     assert_eq!(
         derived.descriptor_sha256,
-        webdock_mail_protocol::sha256(raw)
+        spitzli_mail_protocol::sha256(raw)
     );
     assert_eq!(
         derived.worker_credential_sha256,
-        webdock_mail_protocol::sha256(b"own leaf")
+        spitzli_mail_protocol::sha256(b"own leaf")
     );
     assert_eq!(derived.worker_id, "mail");
     assert!(resolve_provider_binding(None, 2, raw, None, None).is_err());

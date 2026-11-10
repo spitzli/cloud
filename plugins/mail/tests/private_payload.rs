@@ -1,17 +1,17 @@
 use std::sync::Arc;
-use webdock_mail::{payload::PgPrivatePayloadStore, store::Store};
-use webdock_mail_runtime::PrivatePayloadStore;
+use spitzli_mail::{payload::PgPrivatePayloadStore, store::Store};
+use spitzli_mail_runtime::PrivatePayloadStore;
 
 #[test]
 fn retained_hex_key_is_purpose_bound_and_strict() {
-    let a = webdock_mail::payload::payload_key(&"24".repeat(32)).unwrap();
+    let a = spitzli_mail::payload::payload_key(&"24".repeat(32)).unwrap();
     assert_eq!(
         a,
-        webdock_mail::payload::payload_key(&"24".repeat(32)).unwrap()
+        spitzli_mail::payload::payload_key(&"24".repeat(32)).unwrap()
     );
     assert_ne!(a, "24".repeat(32));
     for bad in ["", "24", &"XX".repeat(32)] {
-        assert!(webdock_mail::payload::payload_key(bad).is_err());
+        assert!(spitzli_mail::payload::payload_key(bad).is_err());
     }
 }
 
@@ -61,7 +61,7 @@ async fn postgres_immutable_tenant_key_and_retention() {
             .is_err()
     );
     assert!(payload.put("101", "bad", b"x").await.is_err());
-    let domain = webdock_mail::store::Domain {
+    let domain = spitzli_mail::store::Domain {
         id: uuid::Uuid::new_v4(),
         domain: format!("owned-{}.test", uuid::Uuid::new_v4().simple()),
         token: "fixture".into(),
@@ -99,7 +99,7 @@ async fn postgres_immutable_tenant_key_and_retention() {
             .is_err()
     );
     let ca = std::fs::read(std::env::var("WEBDOCK_MAIL_TASK3_TEST_CA").unwrap()).unwrap();
-    let client = webdock_plugin_kit::postgres::connect(&url, Some(&ca))
+    let client = spitzli_plugin_kit::postgres::connect(&url, Some(&ca))
         .await
         .unwrap();
     client

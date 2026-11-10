@@ -1,7 +1,7 @@
 //! Mail as a plugin: sending domains, delivery through the platform or a project's own
 //! turboSMTP account, and a send action exposed to the Console, the public API and MCP.
 //! The Core admits every call; this plugin checks again that records belong to the invoking project.
-pub use webdock_plugin_kit::seal;
+pub use spitzli_plugin_kit::seal;
 pub mod delivery;
 pub mod engine;
 pub mod executor;
@@ -16,8 +16,8 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use std::sync::Arc;
 use uuid::Uuid;
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::ActionHandler;
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 
 type Result<T> = std::result::Result<T, PluginError>;
 pub const PLUGIN_ID: &str = "mail";

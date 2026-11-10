@@ -4,9 +4,9 @@
 use serde::Deserialize;
 use serde_json::{Value, json};
 use uuid::Uuid;
-use webdock_plugin_protocol::PluginError;
+use spitzli_plugin_protocol::PluginError;
 
-pub use webdock_plugin_kit::workloads::{HostWorkloads, Workloads};
+pub use spitzli_plugin_kit::workloads::{HostWorkloads, Workloads};
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

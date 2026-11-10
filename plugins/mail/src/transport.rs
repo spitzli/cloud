@@ -69,14 +69,14 @@ impl Sender {
     pub async fn submit_prepared(
         &self,
         route: Route<'_>,
-        job: &webdock_mail_runtime::outbox::SendLease,
-        message: &webdock_mail_runtime::message::DispatchMessage,
-        prepared: &webdock_mail_runtime::message::PreparedMessage,
-    ) -> webdock_mail_runtime::outbox::Receipt {
-        use webdock_mail_runtime::outbox::Receipt;
+        job: &spitzli_mail_runtime::outbox::SendLease,
+        message: &spitzli_mail_runtime::message::DispatchMessage,
+        prepared: &spitzli_mail_runtime::message::PreparedMessage,
+    ) -> spitzli_mail_runtime::outbox::Receipt {
+        use spitzli_mail_runtime::outbox::Receipt;
         let (key, secret) = match route {
             Route::Platform(Platform::Smtp { host, port }) => {
-                return match webdock_mail_runtime::smtp::submit_loopback(
+                return match spitzli_mail_runtime::smtp::submit_loopback(
                     host,
                     *port,
                     &prepared.from,
@@ -117,7 +117,7 @@ impl Sender {
         let Ok(body) = serde_json::to_vec(&body) else {
             return Receipt::Rejected {};
         };
-        if body.len() > 2 * webdock_mail_protocol::MAX_MIME_BYTES as usize + 65536 {
+        if body.len() > 2 * spitzli_mail_protocol::MAX_MIME_BYTES as usize + 65536 {
             return Receipt::Rejected {};
         }
         let response = self

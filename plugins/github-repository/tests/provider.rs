@@ -12,8 +12,8 @@ use std::{
         atomic::{AtomicUsize, Ordering},
     },
 };
-use webdock_github_repository::GithubProvider;
-use webdock_repository_protocol::{Action, LeaseClaims, runtime::Handler};
+use spitzli_github_repository::GithubProvider;
+use spitzli_repository_protocol::{Action, LeaseClaims, runtime::Handler};
 #[derive(Clone)]
 struct Fixture {
     origin: String,
@@ -222,15 +222,15 @@ struct TestCore {
     active: Arc<std::sync::atomic::AtomicBool>,
 }
 #[tonic::async_trait]
-impl webdock_repository_protocol::wire::repository_authority_server::RepositoryAuthority
+impl spitzli_repository_protocol::wire::repository_authority_server::RepositoryAuthority
     for TestCore
 {
     async fn authorize_peer(
         &self,
-        request: tonic::Request<webdock_repository_protocol::wire::PeerProof>,
-    ) -> Result<tonic::Response<webdock_repository_protocol::wire::AuthorityReply>, tonic::Status>
+        request: tonic::Request<spitzli_repository_protocol::wire::PeerProof>,
+    ) -> Result<tonic::Response<spitzli_repository_protocol::wire::AuthorityReply>, tonic::Status>
     {
-        webdock_repository_protocol::runtime::peer(&request)?;
+        spitzli_repository_protocol::runtime::peer(&request)?;
         let proof = request.into_inner();
         if !self.active.load(Ordering::SeqCst)
             || proof.plugin_id != "github-repository"
@@ -240,19 +240,19 @@ impl webdock_repository_protocol::wire::repository_authority_server::RepositoryA
             return Err(tonic::Status::permission_denied("fixture revoked"));
         }
         Ok(tonic::Response::new(
-            webdock_repository_protocol::wire::AuthorityReply { active: true },
+            spitzli_repository_protocol::wire::AuthorityReply { active: true },
         ))
     }
     async fn authorize(
         &self,
-        request: tonic::Request<webdock_repository_protocol::wire::LeaseProof>,
-    ) -> Result<tonic::Response<webdock_repository_protocol::wire::AuthorityReply>, tonic::Status>
+        request: tonic::Request<spitzli_repository_protocol::wire::LeaseProof>,
+    ) -> Result<tonic::Response<spitzli_repository_protocol::wire::AuthorityReply>, tonic::Status>
     {
-        webdock_repository_protocol::runtime::peer(&request)?;
+        spitzli_repository_protocol::runtime::peer(&request)?;
         if !self.active.load(Ordering::SeqCst) {
             return Err(tonic::Status::permission_denied("fixture revoked"));
         }
-        webdock_repository_protocol::verify_lease(
+        spitzli_repository_protocol::verify_lease(
             &request.into_inner().lease_token,
             &self.issuer,
             "github-repository",
@@ -261,13 +261,13 @@ impl webdock_repository_protocol::wire::repository_authority_server::RepositoryA
         )
         .map_err(|_| tonic::Status::permission_denied("invalid fixture lease"))?;
         Ok(tonic::Response::new(
-            webdock_repository_protocol::wire::AuthorityReply { active: true },
+            spitzli_repository_protocol::wire::AuthorityReply { active: true },
         ))
     }
 }
 async fn installed_process(private: &std::path::Path, origin: &str) {
     use std::os::unix::fs::PermissionsExt;
-    use webdock_repository_protocol::{self as p, runtime, wire};
+    use spitzli_repository_protocol::{self as p, runtime, wire};
     let directory = tempfile::tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let callback_path = directory.path().join("core.sock");
@@ -323,7 +323,7 @@ async fn installed_process(private: &std::path::Path, origin: &str) {
         }
     }
     let mut child = Child(
-        std::process::Command::new(env!("CARGO_BIN_EXE_webdock-github-repository"))
+        std::process::Command::new(env!("CARGO_BIN_EXE_spitzli-github-repository"))
             .arg(&config_path)
             .stdin(std::process::Stdio::null())
             .stdout(std::process::Stdio::null())

@@ -1,5 +1,5 @@
 [package]
-name="webdock-github-repository"
+name="spitzli-github-repository"
 version="0.1.0"
 edition="2024"
 rust-version="1.94"
@@ -11,8 +11,8 @@ license="AGPL-3.0-only"
 local-provider-test=[]
 
 [dependencies]
-webdock-plugin-runtime={path="../../crates/plugin-runtime"}
-webdock-repository-protocol={path="../../crates/repository-protocol"}
+spitzli-plugin-runtime={path="../../crates/plugin-runtime"}
+spitzli-repository-protocol={path="../../crates/repository-protocol"}
 async-trait="0.1"
 serde={version="1",features=["derive"]}
 serde_json="1"

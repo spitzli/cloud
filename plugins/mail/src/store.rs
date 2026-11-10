@@ -121,10 +121,10 @@ pub struct CustomerFence {
 }
 
 impl Store {
-    pub async fn connect(url: &str) -> Result<Self, webdock_plugin_kit::Error> {
-        webdock_plugin_kit::loopback(url)?;
+    pub async fn connect(url: &str) -> Result<Self, spitzli_plugin_kit::Error> {
+        spitzli_plugin_kit::loopback(url)?;
         Ok(Self(
-            webdock_plugin_kit::storage(url, "mail", MIGRATIONS).await?,
+            spitzli_plugin_kit::storage(url, "mail", MIGRATIONS).await?,
             Arc::new(Connection {
                 url: url.into(),
                 ca: None,
@@ -134,9 +134,9 @@ impl Store {
         ))
     }
     /// Remote metadata storage verifies the actual PostgreSQL hostname with the private CA.
-    pub async fn connect_tls(url: &str, ca: &[u8]) -> Result<Self, webdock_plugin_kit::Error> {
+    pub async fn connect_tls(url: &str, ca: &[u8]) -> Result<Self, spitzli_plugin_kit::Error> {
         Ok(Self(
-            webdock_plugin_kit::storage_tls(url, ca, "mail", MIGRATIONS).await?,
+            spitzli_plugin_kit::storage_tls(url, ca, "mail", MIGRATIONS).await?,
             Arc::new(Connection {
                 url: url.into(),
                 ca: Some(ca.into()),
@@ -432,14 +432,14 @@ impl Store {
     pub(crate) fn recovery_slots(&self) -> Arc<tokio::sync::Semaphore> {
         self.1.recovery_slots.clone()
     }
-    pub(crate) async fn private_connection(&self) -> Result<Client, webdock_plugin_kit::Error> {
-        webdock_plugin_kit::postgres::connect(&self.1.url, self.1.ca.as_deref()).await
+    pub(crate) async fn private_connection(&self) -> Result<Client, spitzli_plugin_kit::Error> {
+        spitzli_plugin_kit::postgres::connect(&self.1.url, self.1.ca.as_deref()).await
     }
     pub async fn customer_fence(
         &self,
         customer: &str,
-    ) -> Result<CustomerFence, webdock_plugin_kit::Error> {
-        if !webdock_mail_runtime::proof::valid_id(customer) {
+    ) -> Result<CustomerFence, spitzli_plugin_kit::Error> {
+        if !spitzli_mail_runtime::proof::valid_id(customer) {
             return Err("invalid customer fence".into());
         }
         let permit = tokio::time::timeout(
@@ -450,7 +450,7 @@ impl Store {
         .map_err(|_| "customer fence deadline")?
         .map_err(|_| "customer fence unavailable")?;
         let client =
-            webdock_plugin_kit::postgres::connect(&self.1.url, self.1.ca.as_deref()).await?;
+            spitzli_plugin_kit::postgres::connect(&self.1.url, self.1.ca.as_deref()).await?;
         client.batch_execute("BEGIN; SET LOCAL lock_timeout='5s'; SET LOCAL statement_timeout='10s'; SET LOCAL idle_in_transaction_session_timeout='60s'").await.map_err(|_| "customer fence unavailable")?;
         client
             .query_one(

@@ -1,4 +1,4 @@
-import { configureOAuthSession } from '@webdock/oauth-session'
+import { configureOAuthSession } from '@spitzli/oauth-session'
 import assert from 'node:assert/strict'
 import { afterEach, test } from 'node:test'
 import { adminSSORedirect, safeAdminReturnTo, configurePayloadSSO, intersectRoles, validateIdentity } from './index.ts'

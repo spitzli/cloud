@@ -36,7 +36,7 @@ The retained implementation notes below include platform integration procedures.
 Commands referring to Core, `tools/` or `apps/console` require the [platform source
 checkout](https://github.com/spitzli/webdock); they are not standalone setup steps.
 
-This independent Rust workspace implements the retained relay provider's send API. Core does not depend on it. Shared `webdock-mail-message` supplies message validation/MIME sanitation; `webdock-mail-protocol` supplies tenant/job leases and authenticated streaming. The shared DB-free `webdock-plugin-http` transport uses Reqwest/Rustls for named, address-pinned HTTPS requests without redirects or automatic retries.
+This independent Rust workspace implements the retained relay provider's send API. Core does not depend on it. Shared `spitzli-mail-message` supplies message validation/MIME sanitation; `spitzli-mail-protocol` supplies tenant/job leases and authenticated streaming. The shared DB-free `spitzli-plugin-http` transport uses Reqwest/Rustls for named, address-pinned HTTPS requests without redirects or automatic retries.
 
 Build with `cargo build --manifest-path Cargo.toml --release --locked`. The binary takes exactly one absolute, owned, private configuration file. The file contains `pluginID`, semantic `version`, `generation`, `descriptorSha256`, `issuerPublicKeyHex`, `worker`, `corePeer`, `listen` and `core`. It contains no tenant's relay key. Configuration is bounded to 64 KiB; symlinks, shared permissions and multiply linked files are rejected.
 

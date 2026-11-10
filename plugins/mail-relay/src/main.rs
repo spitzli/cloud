@@ -6,8 +6,8 @@ use std::{
     path::{Path, PathBuf},
     sync::Arc,
 };
-use webdock_mail_protocol::runtime::{MutualTls, RemoteAuthority, Runtime, UnixSocket};
-use webdock_plugin_runtime::{CorePeer, PinnedMutualTls};
+use spitzli_mail_protocol::runtime::{MutualTls, RemoteAuthority, Runtime, UnixSocket};
+use spitzli_plugin_runtime::{CorePeer, PinnedMutualTls};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -119,7 +119,7 @@ async fn main() -> Result<(), Error> {
     let issuer =
         ed25519_dalek::VerifyingKey::from_bytes(&issuer).map_err(|_| "Invalid issuer key")?;
     let channel = match config.core {
-        Core::Unix { path } => webdock_plugin_runtime::unix_channel(path).await?,
+        Core::Unix { path } => spitzli_plugin_runtime::unix_channel(path).await?,
         Core::MutualTls {
             origin,
             domain,
@@ -128,7 +128,7 @@ async fn main() -> Result<(), Error> {
             authority,
             certificate_sha256,
         } => {
-            webdock_plugin_runtime::pinned_mtls_channel(
+            spitzli_plugin_runtime::pinned_mtls_channel(
                 origin,
                 domain,
                 PinnedMutualTls {
@@ -142,12 +142,12 @@ async fn main() -> Result<(), Error> {
         }
     };
     #[cfg(not(feature = "local-provider-test"))]
-    let relay = webdock_mail_relay::Relay::new();
+    let relay = spitzli_mail_relay::Relay::new();
     #[cfg(feature = "local-provider-test")]
     let relay = if let Some(origin) = config.test_origin {
-        webdock_mail_relay::Relay::local_fixture(&origin)?
+        spitzli_mail_relay::Relay::local_fixture(&origin)?
     } else {
-        webdock_mail_relay::Relay::new()
+        spitzli_mail_relay::Relay::new()
     };
     let runtime = Runtime::new(
         config.plugin_id,

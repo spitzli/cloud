@@ -5,9 +5,9 @@ WORKDIR /src
 COPY . .
 RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/plugins/echo-demo/target \
     cargo build --manifest-path plugins/echo-demo/Cargo.toml --locked --release \
-    && cp plugins/echo-demo/target/release/webdock-echo-demo /webdock-echo-demo
+    && cp plugins/echo-demo/target/release/spitzli-echo-demo /spitzli-echo-demo
 
 FROM docker.io/library/debian:trixie-slim
-COPY --from=build /webdock-echo-demo /usr/local/bin/webdock-echo-demo
+COPY --from=build /spitzli-echo-demo /usr/local/bin/spitzli-echo-demo
 USER 65532:65532
-ENTRYPOINT ["/usr/local/bin/webdock-echo-demo"]
+ENTRYPOINT ["/usr/local/bin/spitzli-echo-demo"]

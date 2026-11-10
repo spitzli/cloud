@@ -3,9 +3,9 @@ use serde_json::{Value, json};
 use std::sync::{Arc, Mutex};
 use tokio_postgres::NoTls;
 use uuid::Uuid;
-use webdock_mail::{Dns, Handler, Plugin, Settings, engine, seal::Sealer, store::Store, transport};
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, PluginError};
-use webdock_plugin_runtime::ActionHandler;
+use spitzli_mail::{Dns, Handler, Plugin, Settings, engine, seal::Sealer, store::Store, transport};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 
 #[derive(Clone, Default)]
 struct Host(Arc<Mutex<Vec<(String, Value)>>>);

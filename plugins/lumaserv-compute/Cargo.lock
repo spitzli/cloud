@@ -2535,7 +2535,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-lumaserv-compute"
+name = "spitzli-lumaserv-compute"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
@@ -2550,13 +2550,13 @@ dependencies = [
  "tokio-rustls",
  "tonic",
  "uuid",
- "webdock-plugin-http",
- "webdock-plugin-protocol",
- "webdock-plugin-runtime",
+ "spitzli-plugin-http",
+ "spitzli-plugin-protocol",
+ "spitzli-plugin-runtime",
 ]
 
 [[package]]
-name = "webdock-plugin-http"
+name = "spitzli-plugin-http"
 version = "0.1.0"
 dependencies = [
  "futures-util",
@@ -2567,7 +2567,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-plugin-protocol"
+name = "spitzli-plugin-protocol"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
@@ -2584,7 +2584,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-plugin-runtime"
+name = "spitzli-plugin-runtime"
 version = "0.1.0"
 dependencies = [
  "ed25519-dalek",
@@ -2605,7 +2605,7 @@ dependencies = [
  "tonic-prost-build",
  "tower",
  "url",
- "webdock-plugin-protocol",
+ "spitzli-plugin-protocol",
  "x509-parser",
 ]
 

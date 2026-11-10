@@ -1,5 +1,5 @@
-use webdock_archives::model::{Archive, Kind, State};
-use webdock_export_protocol::{SourceKind, SourceRef};
+use spitzli_archives::model::{Archive, Kind, State};
+use spitzli_export_protocol::{SourceKind, SourceRef};
 #[test]
 fn every_observed_producer_requires_its_exact_managed_source_kind_and_binding() {
     let mut archive = Archive {

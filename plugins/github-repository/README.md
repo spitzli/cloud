@@ -36,7 +36,7 @@ The retained implementation notes below include platform integration procedures.
 Commands referring to Core, `tools/` or `apps/console` require the [platform source
 checkout](https://github.com/spitzli/webdock); they are not standalone setup steps.
 
-This standalone Rust workspace implements scoped GitHub commit resolution and source archives. It is not a Core dependency. Build it with `cargo build --manifest-path Cargo.toml --release --locked`; run the resulting `webdock-github-repository` binary with one absolute private configuration file path. Shared protocol/runtime crates are build dependencies, while provider credentials and vendor behavior stay here.
+This standalone Rust workspace implements scoped GitHub commit resolution and source archives. It is not a Core dependency. Build it with `cargo build --manifest-path Cargo.toml --release --locked`; run the resulting `spitzli-github-repository` binary with one absolute private configuration file path. Shared protocol/runtime crates are build dependencies, while provider credentials and vendor behavior stay here.
 
 The process requires a publisher-signed repository descriptor, its pinned public key, the Core lease issuer public key, current runtime generation, GitHub App ID and a private RSA key file. The descriptor must match the separately installed plugin manifest, version and image digest. Configuration uses these fields:
 

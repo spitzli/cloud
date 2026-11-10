@@ -5,8 +5,8 @@ use std::sync::{
     Arc,
     atomic::{AtomicUsize, Ordering},
 };
-use webdock_mail_protocol::{LeaseClaims, runtime::Handler, wire::send_receipt::State};
-use webdock_mail_relay::Relay;
+use spitzli_mail_protocol::{LeaseClaims, runtime::Handler, wire::send_receipt::State};
+use spitzli_mail_relay::Relay;
 fn claims() -> LeaseClaims {
     LeaseClaims {
         v: 1,

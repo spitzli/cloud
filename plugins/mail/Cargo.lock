@@ -3454,7 +3454,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-mail"
+name = "spitzli-mail"
 version = "0.3.0"
 dependencies = [
  "async-trait",
@@ -3478,16 +3478,16 @@ dependencies = [
  "tower",
  "url",
  "uuid",
- "webdock-mail-message",
- "webdock-mail-protocol",
- "webdock-mail-runtime",
- "webdock-plugin-kit",
- "webdock-plugin-protocol",
- "webdock-plugin-runtime",
+ "spitzli-mail-message",
+ "spitzli-mail-protocol",
+ "spitzli-mail-runtime",
+ "spitzli-plugin-kit",
+ "spitzli-plugin-protocol",
+ "spitzli-plugin-runtime",
 ]
 
 [[package]]
-name = "webdock-mail-message"
+name = "spitzli-mail-message"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
@@ -3505,7 +3505,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-mail-protocol"
+name = "spitzli-mail-protocol"
 version = "0.1.0"
 dependencies = [
  "async-trait",
@@ -3524,11 +3524,11 @@ dependencies = [
  "tonic-prost",
  "tonic-prost-build",
  "uuid",
- "webdock-plugin-runtime",
+ "spitzli-plugin-runtime",
 ]
 
 [[package]]
-name = "webdock-mail-runtime"
+name = "spitzli-mail-runtime"
 version = "0.1.0"
 dependencies = [
  "aes-gcm",
@@ -3558,14 +3558,14 @@ dependencies = [
  "tower",
  "url",
  "uuid",
- "webdock-mail-message",
- "webdock-mail-protocol",
- "webdock-plugin-runtime",
+ "spitzli-mail-message",
+ "spitzli-mail-protocol",
+ "spitzli-plugin-runtime",
  "x509-parser",
 ]
 
 [[package]]
-name = "webdock-plugin-kit"
+name = "spitzli-plugin-kit"
 version = "0.1.0"
 dependencies = [
  "aes-gcm",
@@ -3582,12 +3582,12 @@ dependencies = [
  "tonic",
  "url",
  "uuid",
- "webdock-plugin-protocol",
- "webdock-plugin-runtime",
+ "spitzli-plugin-protocol",
+ "spitzli-plugin-runtime",
 ]
 
 [[package]]
-name = "webdock-plugin-protocol"
+name = "spitzli-plugin-protocol"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
@@ -3604,7 +3604,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-plugin-runtime"
+name = "spitzli-plugin-runtime"
 version = "0.1.0"
 dependencies = [
  "ed25519-dalek",
@@ -3625,7 +3625,7 @@ dependencies = [
  "tonic-prost-build",
  "tower",
  "url",
- "webdock-plugin-protocol",
+ "spitzli-plugin-protocol",
  "x509-parser",
 ]
 

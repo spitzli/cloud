@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/module-sdk",
+  "name": "@spitzli/module-sdk",
   "version": "0.1.0",
   "private": true,
   "type": "module",

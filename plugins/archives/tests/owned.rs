@@ -2,13 +2,13 @@
 use serde::Deserialize;
 use serde_json::json;
 use std::{os::unix::fs::PermissionsExt, sync::Arc};
-use webdock_archives::{
+use spitzli_archives::{
     Engine,
     backend::{Backend, BackendConfig},
     producer::DatabaseSource,
 };
-use webdock_plugin_host::storage::{StorageAuthority, StorageGateway};
-use webdock_plugin_protocol::{PluginError, storage::StorageAuthorization};
+use spitzli_plugin_host::storage::{StorageAuthority, StorageGateway};
+use spitzli_plugin_protocol::{PluginError, storage::StorageAuthorization};
 #[derive(Deserialize)]
 struct Fixture {
     database: String,
@@ -28,7 +28,7 @@ impl StorageAuthority for Live {
             .map_err(|_| PluginError::denied())
     }
 }
-fn authorization(p: &webdock_plugin_protocol::storage::StoragePlan) -> StorageAuthorization {
+fn authorization(p: &spitzli_plugin_protocol::storage::StoragePlan) -> StorageAuthorization {
     StorageAuthorization {
         version: 1,
         transfer_id: uuid::Uuid::new_v4().to_string(),
@@ -57,7 +57,7 @@ async fn durable_exports_diagnostics_and_binary_delivery_use_exact_owned_bytes()
         .permissions(std::fs::Permissions::from_mode(0o700))
         .tempdir()
         .unwrap();
-    let binding = webdock_plugin_http::storage::StorageBinding {
+    let binding = spitzli_plugin_http::storage::StorageBinding {
         origin: f.backend.config.endpoint.clone(),
         addresses: vec!["127.0.0.1".parse().unwrap()],
         ca: None,

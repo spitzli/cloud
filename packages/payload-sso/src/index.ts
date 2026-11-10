@@ -1,6 +1,6 @@
 import type { CollectionConfig, Field, Payload } from 'payload'
-import { configureOAuthSession, safeAdminReturnTo, type Identity, type OAuthSessionOptions } from '@webdock/oauth-session'
-export { safeAdminReturnTo, intersectRoles, validateIdentity } from '@webdock/oauth-session'
+import { configureOAuthSession, safeAdminReturnTo, type Identity, type OAuthSessionOptions } from '@spitzli/oauth-session'
+export { safeAdminReturnTo, intersectRoles, validateIdentity } from '@spitzli/oauth-session'
 /** Payload preserves deep links in `redirect` when sending anonymous requests to login. */
 export function adminSSORedirect(enforced: boolean, segments: string[] = [], searchParams: Record<string, unknown> = {}): string | null {
   if (!enforced) return null
