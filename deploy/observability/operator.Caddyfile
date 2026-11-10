@@ -29,7 +29,7 @@ prometheus.spitzli.cloud {
  }
  route {
   basic_auth {
-   webdock-operator {$WEBDOCK_OBS_OPERATOR_HASH}
+   webdock-operator {$SPITZLI_OBS_OPERATOR_HASH}
   }
   @admin path /-/quit /-/reload /api/v1/admin/* /api/v1/write /api/v1/otlp/* /debug/*
   respond @admin 404

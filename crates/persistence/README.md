@@ -10,7 +10,7 @@ The database trigger prevents checkpoint rollback or identity/layout mutation; r
 
 `allocate_at` accepts an explicit clock value for deterministic tests/integrations. Ordinary platform code uses `allocate` and the database clock. Clock rollback, sequence exhaustion, missing metadata or incompatible state fail rather than emit a guessed value.
 
-Verification: `WEBDOCK_ID_TEST_DATABASE_URL=... cargo test -p spitzli-persistence --test ids -- --ignored` requires an owned literal-loopback database ending in `_test`. It applies the additive schema there and preserves committed checkpoints between runs.
+Verification: `SPITZLI_ID_TEST_DATABASE_URL=... cargo test -p spitzli-persistence --test ids -- --ignored` requires an owned literal-loopback database ending in `_test`. It applies the additive schema there and preserves committed checkpoints between runs.
 
 ## Shared database connection policy
 
@@ -33,7 +33,7 @@ Neither verification nor ordinary upgrade adds missing provenance or repairs an 
 Role-creation verification runs only in a newly owned PostgreSQL Docker container:
 
 ```sh
-WEBDOCK_BOOTSTRAP_DOCKER_TEST=1 cargo test -p spitzli-persistence --test roles -- --ignored
+SPITZLI_BOOTSTRAP_DOCKER_TEST=1 cargo test -p spitzli-persistence --test roles -- --ignored
 ```
 
 The migration integration fixture uses a fresh uniquely named database with existing roles, then removes that database. It checks marker tampering, missing/changed journal entries, ownership and repeated initialization without modifying shared role credentials.

@@ -7,7 +7,7 @@ The current Core is a standalone native Rust service. It composes identity, OAut
 
 ## Source and artifacts
 
-Use [spitzli/cloud](https://github.com/spitzli/cloud) and its pinned toolchains. Root `package.json` supplies the current commands; `Cargo.toml` defines the native workspace. `apps/console/dist` is the built browser artifact, selected through `WEBDOCK_UI_DIST` for Core's static serving mode.
+Use [spitzli/cloud](https://github.com/spitzli/cloud) and its pinned toolchains. Root `package.json` supplies the current commands; `Cargo.toml` defines the native workspace. `apps/console/dist` is the built browser artifact, selected through `SPITZLI_UI_DIST` for Core's static serving mode.
 
 [deploy/docker/Dockerfile](https://github.com/spitzli/cloud/blob/main/deploy/docker/Dockerfile) has separate `core`, `migrate`, `bootstrap-operator`, `agent-control`, `plugin-control` and `plugin-controller` targets. The backend Dockerfile (`deploy/docker/backend.Dockerfile`) packages the backend separately from the frontend. Match the artifact and source revision to the deployment being changed.
 

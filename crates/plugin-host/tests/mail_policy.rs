@@ -44,7 +44,7 @@ async fn role(key: &str, name: &str, owner: &url::Url) -> DatabaseConnection {
 #[ignore = "creates and removes an isolated owned local database"]
 async fn tenant_mail_policy_is_scoped_current_and_locked_through_handoff() {
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert!(matches!(url.host_str(), Some("localhost" | "127.0.0.1")));
     assert_eq!(url.path(), "/webdock_rls_test");
     assert!(url.query().is_none());
@@ -63,7 +63,7 @@ async fn tenant_mail_policy_is_scoped_current_and_locked_through_handoff() {
   owner.execute_unprepared("INSERT INTO webdock_auth.plugin_installation(id,kind,state,desired_state,version) VALUES('mail','builtin','enabled','enabled','1.0.0') ON CONFLICT(id) DO UPDATE SET state='enabled'; INSERT INTO webdock_auth.plugin_installation(id,kind,state,desired_state,version,runtime,current_generation) VALUES('mail-policy-fixture','external','enabled','enabled','1.0.0','ready',1); INSERT INTO webdock_mail.send_transport(customer_id,mode,revision,state,region,encrypted_credentials) VALUES('123','managed',1,'ready','eu','private-fixture-ciphertext'); INSERT INTO webdock_mail.provider_binding(customer_id,plugin_id,revision,transport_revision) VALUES('123','mail-policy-fixture',1,1)").await.unwrap();
   owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.plugin_release(plugin_id,version,manifest_bytes,manifest_sha256,image,registry_url,signer_key_id) VALUES('mail-policy-fixture','1.0.0',$1,$2,$3,'https://registry.invalid','fixture')",[raw.into(),hash.into(),image.into()])).await.unwrap();
   owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.plugin_runtime(plugin_id,generation,version,image,status,configuration_revision,credential_hash,namespace,service_name) VALUES('mail-policy-fixture',1,'1.0.0',$1,'ready',0,$2,'fixtures','fixture-mail')",[image.into(),"a".repeat(64).into()])).await.unwrap();owner.execute_unprepared("INSERT INTO webdock_auth.plugin_configuration(plugin_id,approved_capabilities,configuration) VALUES('mail-policy-fixture','[\"plugin.http.request\"]','{}')").await.unwrap();
-  let worker=role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;let business=role("DATABASE_URL",&name,&url).await;
+  let worker=role("SPITZLI_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;let business=role("DATABASE_URL",&name,&url).await;
   for purpose in [None,Some("mail-webmail-gateway"),Some("plugin-controller")]{let tx=context(&worker,purpose).await;assert!(policy(&tx,false).await.is_none());tx.rollback().await.unwrap();}
   let file=tempfile::NamedTempFile::new().unwrap();std::fs::set_permissions(file.path(),std::fs::Permissions::from_mode(0o600)).unwrap();let bindings=json!({"runtimes":{"mail-policy-fixture":{"generation":1,"namespace":"fixtures","service":"fixture-mail","credentialSha256":"a".repeat(64),"peers":[{"kind":"unix","uid":rustix::process::geteuid().as_raw()}]}}});std::fs::write(file.path(),bindings.to_string()).unwrap();
   let host=HostService::new(business.clone(),worker.clone(),KEY.into(),Arc::new(spitzli_persistence::IdAllocator::new(business.clone(),spitzli_ids::Identity::platform(0,2).unwrap())),Arc::new(FileBindings::new(file.path().into())),ed25519_dalek::SigningKey::from_bytes(&[33;32])).await.unwrap();

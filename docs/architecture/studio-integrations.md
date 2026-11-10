@@ -25,7 +25,7 @@ Studio requires its own operator login before GitHub connection. GitHub OAuth us
 
 Repository selection reloads the authorized installation and repository list from GitHub before saving the verified canonical repository URL. Removing GitHub installation access therefore prevents subsequent selection. Existing repository URLs remain ordinary project inventory; disconnecting GitHub does not delete them.
 
-Configuration uses production-only `WEBDOCK_GITHUB_CLIENT_ID`, `WEBDOCK_GITHUB_CLIENT_SECRET`, and `WEBDOCK_GITHUB_APP_SLUG`. Cookie encryption derives a separate key from the Studio SSO cookie secret. The GitHub App private key is not needed or deployed by this user-authorized integration.
+Configuration uses production-only `SPITZLI_GITHUB_CLIENT_ID`, `SPITZLI_GITHUB_CLIENT_SECRET`, and `SPITZLI_GITHUB_APP_SLUG`. Cookie encryption derives a separate key from the Studio SSO cookie secret. The GitHub App private key is not needed or deployed by this user-authorized integration.
 
 ## Passkeys
 
@@ -65,11 +65,11 @@ The API is another interface to the same Webdock registry resource and accepts t
 
 Collections are `customers`, `projects`, `cms-instances` and read-only `audit-events`. Projects support a `customer` ID filter; CMS connections support `project`; activity supports `targetCollection` and `targetID`. MCP `list_records` accepts the same filters. IDs are decimal strings. Unsupported filters, duplicate query parameters and unknown fields are rejected. Use JSON bodies (max 64 KiB). Deletion, identity changes and infrastructure operations are unavailable. Creates are not idempotent; after an ambiguous response, inspect the registry before retrying.
 
-Example (the host client supplies `WEBDOCK_ACCESS_TOKEN`; never commit it):
+Example (the host client supplies `SPITZLI_ACCESS_TOKEN`; never commit it):
 
 ```sh
 curl --fail-with-body \
-  -H "Authorization: Bearer $WEBDOCK_ACCESS_TOKEN" \
+  -H "Authorization: Bearer $SPITZLI_ACCESS_TOKEN" \
   'https://studio.webdock.dev/api/registry/projects?customer=123&status=active&sort=name'
 ```
 
@@ -105,7 +105,7 @@ The server-side `deleteVercelProject` adapter is reserved for the operator-autho
 
 References: [delete project endpoint](https://vercel.com/docs/rest-api/projects/delete-a-project), [integration permissions and scope upgrades](https://vercel.com/docs/integrations/create-integration/vercel-api-integrations).
 
-Configure `WEBDOCK_VERCEL_CLIENT_ID`, `WEBDOCK_VERCEL_CLIENT_SECRET`, `WEBDOCK_VERCEL_INTEGRATION_SLUG`, `WEBDOCK_VERCEL_TEAM_ID`, and `WEBDOCK_VERCEL_TEAM_SLUG` (required for the private dashboard installation URL) on Studio. Its callback is `https://studio.webdock.dev/api/vercel/callback`. Before deployment run `bun --env-file=.env.instance scripts/migrate-vercel.ts` from `apps/admin`; this adds only the connection and project-reference tables.
+Configure `SPITZLI_VERCEL_CLIENT_ID`, `SPITZLI_VERCEL_CLIENT_SECRET`, `SPITZLI_VERCEL_INTEGRATION_SLUG`, `SPITZLI_VERCEL_TEAM_ID`, and `SPITZLI_VERCEL_TEAM_SLUG` (required for the private dashboard installation URL) on Studio. Its callback is `https://studio.webdock.dev/api/vercel/callback`. Before deployment run `bun --env-file=.env.instance scripts/migrate-vercel.ts` from `apps/admin`; this adds only the connection and project-reference tables.
 
 Start installation from Studio → Integrations after signing in as an operator. The encrypted ten-minute flow cookie binds the callback to that operator, team, app and origin. Code exchange verifies the returned installation and its exact read scopes. The persistent access token is encrypted using a purpose-separated key derived from Studio's SSO cookie secret and is never returned to browser JavaScript, MCP or the registry API. Secret rotation therefore requires reconnecting. Installation revocation and denied provider access produce a visible connection error.
 
@@ -121,7 +121,7 @@ Production verification (2026-10-04): private Webdock Studio integration install
 
 Platform operators can preview `/projects/{id}/delete`, use `GET /api/registry/projects/{id}/deletion` and `DELETE /api/registry/projects/{id}` with `{confirmName,planHash}`, or MCP `preview_project_deletion` / `delete_project`. Destructive REST/MCP operations require `webdock:write`; tenant admins are not platform operators. Native Auth validates the live operator and session independently before any provider deletion. Tenant-preview sessions cannot delete.
 
-The shared deletion service validates unique CMS/hosting mappings, exact Vercel team/project/domain, OAuth website binding/customer/origin, and a dedicated isolated database runtime credential. `WEBDOCK_MANAGED_DATABASES` is a sensitive server-only map from schema to `{url}`; root/owner database credentials are rejected. Currently only isolated `demo_…` schemas with scoped runtime roles are supported. Run `scripts/migrate-project-deletion.ts` explicitly before enabling this feature. It creates an independent durable journal; no automatic production schema push.
+The shared deletion service validates unique CMS/hosting mappings, exact Vercel team/project/domain, OAuth website binding/customer/origin, and a dedicated isolated database runtime credential. `SPITZLI_MANAGED_DATABASES` is a sensitive server-only map from schema to `{url}`; root/owner database credentials are rejected. Currently only isolated `demo_…` schemas with scoped runtime roles are supported. Run `scripts/migrate-project-deletion.ts` explicitly before enabling this feature. It creates an independent durable journal; no automatic production schema push.
 
 Hosting, website identity and CMS schema are removed before registry rows. External failures retain registry rows and the journal. Repeating the same confirmed plan resumes completed work; provider/auth evidence also supports recovery when a response is lost. Changes to critical resource mappings block retries; ordinary notes/status/label edits do not. Renames require the current project name. Database dependencies into other schemas and elevated/shared runtime roles block deletion. Historical audit records, customer/tenant accounts and user accounts are retained. The local-only lead tracker and external mailbox drafts are not silently accessed by the hosted service.
 

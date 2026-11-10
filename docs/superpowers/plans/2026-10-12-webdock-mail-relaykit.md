@@ -744,11 +744,11 @@ test("tenant preview rejects a hidden test-send request", async () => {
 - [ ] Webhooks vollständig: URL+Events, Create/Disable/Enable/Delete, Secret einmalig, Rotation, Versuchshistorie mit Status/Antwortauszug und Replay. Beim Secretwechsel klarstellen, dass Pending-Retries sofort den neuen Key nutzen.
 - [ ] Sperrliste mit Grund/Quelle/Datum, Suche/Filter, manueller Sperre und bestätigter lokaler Entsperrung. Bestehende Provider-Sperre separat anzeigen; nicht den Eindruck einer vollständigen Providerentsperrung erwecken.
 - [ ] Request-Logs nur für Admin/Owner/Full-Key; Query/Status/Datum/Request-ID und redigierte Detailansicht. Berechtigungswechsel zwischen Liste und Detail muss Zugriff entziehen.
-- [ ] Quickstart mit kopierbaren cURL-/fetch-Beispielen für Send, To/Cc/Bcc, Anhänge/CID, Idempotenz/Unknown, Batch/202-Polling, Schedule/Cancel, Simulator und Webhook-Verifikation. Nur Platzhalter `WEBDOCK_MAIL_API_KEY`; Dokumentationsbeispiele gegen Fixture-API ausführen.
+- [ ] Quickstart mit kopierbaren cURL-/fetch-Beispielen für Send, To/Cc/Bcc, Anhänge/CID, Idempotenz/Unknown, Batch/202-Polling, Schedule/Cancel, Simulator und Webhook-Verifikation. Nur Platzhalter `SPITZLI_MAIL_API_KEY`; Dokumentationsbeispiele gegen Fixture-API ausführen.
 
 ```sh
 curl https://auth.webdock.dev/api/mail/v1/emails \
-  -H "Authorization: Bearer $WEBDOCK_MAIL_API_KEY" \
+  -H "Authorization: Bearer $SPITZLI_MAIL_API_KEY" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: order-42-receipt" \
   -d '{"from":"Shop <mail@example.com>","to":"delivered@test.mail.webdock.dev","subject":"Receipt","text":"Thank you."}'

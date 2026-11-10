@@ -1,6 +1,6 @@
 # Native browser session authority
 
-`WEBDOCK_BROWSER_AUTHORITY_BACKEND=tokio-postgres` opts browser reference reads,
+`SPITZLI_BROWSER_AUTHORITY_BACKEND=tokio-postgres` opts browser reference reads,
 revalidation and canonical principal checks into direct PostgreSQL. The default
 remains `sea-orm`; unknown values fail startup. It implies native browser flow
 storage, OAuth introspection and OAuth client/public-key reads. Core requires its

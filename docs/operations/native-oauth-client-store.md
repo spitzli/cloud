@@ -1,6 +1,6 @@
 # Native OAuth client and public-key reads
 
-`WEBDOCK_OAUTH_CLIENT_BACKEND=tokio-postgres` opts first-party client validation
+`SPITZLI_OAUTH_CLIENT_BACKEND=tokio-postgres` opts first-party client validation
 and public JWKS reads into direct PostgreSQL. Default `sea-orm` remains unchanged;
 unknown values fail startup. Core reuses the same bounded max4/min0 native
 bootstrap pool as identity/browser capabilities when combined. No extra identity

@@ -9,9 +9,9 @@ CLI. Its valid TLS endpoint now forwards page paths and queries to
 
 ## Public origins and protocol identities
 
-`WEBDOCK_AUTH_ORIGIN` is the canonical account origin. During this migration,
-`WEBDOCK_PASSKEY_RP_ORIGIN=https://auth.webdock.dev` and
-`WEBDOCK_OAUTH_ISSUER_ORIGIN=https://auth.webdock.dev` explicitly retain the
+`SPITZLI_AUTH_ORIGIN` is the canonical account origin. During this migration,
+`SPITZLI_PASSKEY_RP_ORIGIN=https://auth.webdock.dev` and
+`SPITZLI_OAUTH_ISSUER_ORIGIN=https://auth.webdock.dev` explicitly retain the
 existing WebAuthn RP and OAuth issuer (`/api/auth`). Both settings default to the
 canonical Auth origin outside a migration. Startup validates exact origins and
 production TLS; it does not accept wildcard origins or change keys.

@@ -41,10 +41,10 @@ print(json.dumps(plugin_installer.runtime_resources(config,job,value['token'],va
   const identity = resources.find(item => item.kind === "Secret" && item.type === "Opaque").stringData;
   const tls = resources.find(item => item.kind === "Secret" && item.type === "kubernetes.io/tls").stringData;
   const pod = resources.find(item => item.kind === "Deployment").spec.template.spec;
-  assert.equal(identity.WEBDOCK_PLUGIN_PUBLIC_KEY, publicKey);
-  assert.ok(identity.WEBDOCK_PLUGIN_RUNTIME_TOKEN === token, "Installer retains the runtime credential");
-  assert.equal(identity.WEBDOCK_PLUGIN_CONSOLE_ORIGIN, "https://console.example.test");
-  assert.ok(!Object.hasOwn(identity, "WEBDOCK_PLUGIN_HOST_PUBLIC_KEY"));
+  assert.equal(identity.SPITZLI_PLUGIN_PUBLIC_KEY, publicKey);
+  assert.ok(identity.SPITZLI_PLUGIN_RUNTIME_TOKEN === token, "Installer retains the runtime credential");
+  assert.equal(identity.SPITZLI_PLUGIN_CONSOLE_ORIGIN, "https://console.example.test");
+  assert.ok(!Object.hasOwn(identity, "SPITZLI_PLUGIN_HOST_PUBLIC_KEY"));
   assert.equal(pod.securityContext.runAsUser, 1000);
   assert.equal(pod.volumes.find(volume => volume.name === "tls").secret.defaultMode, 0o440);
   // Host fixture remains 0700; individual readonly binds expose only the generated TLS files.
@@ -85,14 +85,14 @@ print(json.dumps(plugin_installer.runtime_resources(config,job,value['token'],va
   });
   const health = await https("/healthz");
   assert.equal(health.status, 200);
-  assert.equal(health.body.pluginID, identity.WEBDOCK_PLUGIN_ID);
-  assert.equal(health.body.version, identity.WEBDOCK_PLUGIN_VERSION);
-  assert.equal(health.body.generation, Number(identity.WEBDOCK_PLUGIN_GENERATION));
-  const payload = { input: { invalid: true }, configuration: {}, hostOrigin: identity.WEBDOCK_PLUGIN_HOST_URL };
+  assert.equal(health.body.pluginID, identity.SPITZLI_PLUGIN_ID);
+  assert.equal(health.body.version, identity.SPITZLI_PLUGIN_VERSION);
+  assert.equal(health.body.generation, Number(identity.SPITZLI_PLUGIN_GENERATION));
+  const payload = { input: { invalid: true }, configuration: {}, hostOrigin: identity.SPITZLI_PLUGIN_HOST_URL };
   assert.equal((await https("/actions/cms.instances", payload)).status, 401);
   const invocation = privateKey => {
     const now = Math.floor(Date.now() / 1000);
-    const body = Buffer.from(JSON.stringify({ v: 1, id: randomUUID(), pluginID: identity.WEBDOCK_PLUGIN_ID, generation: 1,
+    const body = Buffer.from(JSON.stringify({ v: 1, id: randomUUID(), pluginID: identity.SPITZLI_PLUGIN_ID, generation: 1,
       action: "cms.instances", projectID: "123", customerID: "101", iat: now, exp: now + 50 })).toString("base64url");
     return body + "." + sign(null, Buffer.from(body), privateKey).toString("base64url");
   };

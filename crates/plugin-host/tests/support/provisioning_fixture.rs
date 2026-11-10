@@ -25,7 +25,7 @@ impl Drop for Fixture {
 impl Fixture {
     pub async fn start() -> Self {
         assert_eq!(
-            std::env::var("WEBDOCK_PLUGIN_PROVISIONING_DOCKER_TEST").as_deref(),
+            std::env::var("SPITZLI_PLUGIN_PROVISIONING_DOCKER_TEST").as_deref(),
             Ok("1")
         );
         let directory = tempfile::tempdir().unwrap();

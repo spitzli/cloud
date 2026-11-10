@@ -8,7 +8,7 @@ Implemented v1 is single-primary PostgreSQL 18 with CloudNativePG, a separate bo
 
 ## Provisioning and accounting
 
-Operator: Infrastructure → cluster → Managed PostgreSQL. Register only a qualified, already carved-out database pool. Provision a Shared backend explicitly. Create immutable tariff revisions; availability starts disabled. Pilot and public visibility are explicit operator actions, and public orders additionally require `WEBDOCK_DATABASE_PUBLIC_ENABLED=true` in Auth. No signup or project-creation hook provisions a database.
+Operator: Infrastructure → cluster → Managed PostgreSQL. Register only a qualified, already carved-out database pool. Provision a Shared backend explicitly. Create immutable tariff revisions; availability starts disabled. Pilot and public visibility are explicit operator actions, and public orders additionally require `SPITZLI_DATABASE_PUBLIC_ENABLED=true` in Auth. No signup or project-creation hook provisions a database.
 
 Customer: tenant → Managed PostgreSQL → project → review order. The price, resource scope and absence of backups are accepted before reservation/provisioning. Dedicated provisions directly after acceptance; Shared requires free slots and logical allowance on a ready operator pool. Repeated order acceptance reuses the accepted order. Billing starts only after the authenticated agent proves actual readiness and verified connections. Pause does not end billing. Cancellation requests are separate from retained deletion; invoice handling remains manual.
 
@@ -20,7 +20,7 @@ Physical promises include paused instances and retained volumes. Shared is reser
 2. Use the explicit owner migration runner: `bun apps/auth/scripts/migrate-hosting-databases.ts /private/owner.env`. The file supplies `DATABASE_URL_UNPOOLED` (or `DATABASE_URL`) and optional `AUTH_DB_ROLE`. Run after existing Auth/Hosting/Mail schema migrations. It is transactional, adds tables and narrowly scoped runtime grants, and enables no offer. Keep owner credentials offline. Never push schema from HTTP or heartbeats.
 3. Verify pinned images in `infra/postgres/versions.env` with upstream signatures. Install the pinned CNPG controller in `cnpg-system`; retain the existing cert-manager. Inspect controller health and CRDs before agent capability activation.
 4. Carve out a separate pool without a capacity gap: lower approved native App storage allowance first, reduce the selected App helper ceiling while preserving all existing allocations, create the separate DB helper pool, observe it, then restore the approved aggregate ceiling and register the DB partition. Never increase either ceiling above measured disk minus host reserve. Preserve at least the existing production host reserve; pilot's smaller reserve is test-only.
-5. Use a root-owned, mode-0600 `/etc/webdock-postgres-storage.json` in the existing storage-v1 configuration shape with its own `root`, `poolID`, node/cluster identity, capacity and reserve. Run `webdock-postgres-storage.service` on the selected DB node with the dedicated socket. Deploy `database_storage.py` alongside a compatible reviewed `storage.py`, `storage_service.py` and `storage_client.py`. The ordinary App service must not get `WEBDOCK_DATABASE_STORAGE=1`. Never substitute local-path requested capacity for an enforced filesystem.
+5. Use a root-owned, mode-0600 `/etc/webdock-postgres-storage.json` in the existing storage-v1 configuration shape with its own `root`, `poolID`, node/cluster identity, capacity and reserve. Run `webdock-postgres-storage.service` on the selected DB node with the dedicated socket. Deploy `database_storage.py` alongside a compatible reviewed `storage.py`, `storage_service.py` and `storage_client.py`. The ordinary App service must not get `SPITZLI_DATABASE_STORAGE=1`. Never substitute local-path requested capacity for an enforced filesystem.
 6. The managed agent needs `databases.py` and `database_migrations.py` plus the updated daemon/observer/storage client. The BYOK installer is intentionally separate: this product runs on native managed infrastructure. Do not replace unrelated Mail modules or their keys. Agent configuration `/etc/webdock-postgres.json` must be root-owned mode 0600 and contain exactly `image`, `poolerImage`, `issuer`, `apiCIDRs`, `podCIDRs`, `storageSocket`, `caFile`. Images require version tag AND digest. The CA file contains public certificates only. The selected ClusterIssuer must issue the external hostname and internal service names; the local pilot CA is not a production issuer.
 7. Render and inspect `python3 infra/postgres/boundary.py --kubeconfig /private/explicit-kubeconfig`; apply only with `--apply`. Restrictive DB policies are installed before resource-version-fenced App-policy exceptions. Verify CEL type checks and run `check_boundary.py`. Namespace labels are privileged: ordinary App identities may not create/modify namespaces, admission or RBAC. Preserve that existing RBAC boundary.
 8. Configure real endpoint DNS and the reserved TCP ports 32000–32199 to the selected node, including host/provider firewall policy. Verify TLS hostname and CA from the external customer path. The current local `.example.invalid` DNS shim is solely test infrastructure. Auth carries management requests, never customer SQL.
@@ -201,10 +201,10 @@ checks the `databases` read/provision feature gate and forwards `databases.*`
 commands through the native schema; no new Core plugin caller is required. This
 drill exercises the domain plus real agent gRPC, not the later Console journey.
 
-Core placement configuration uses `WEBDOCK_DATABASE_CLUSTER_ID`,
-`WEBDOCK_DATABASE_DOMAIN`, `WEBDOCK_DATABASE_PUBLIC_ENABLED` (keep false for this
-milestone) and optional `WEBDOCK_CONTROL_DATABASE_ID`. The effective database cipher
-key is the existing `WEBDOCK_HOSTING_ENCRYPTION_KEY`; the current initializer falls
+Core placement configuration uses `SPITZLI_DATABASE_CLUSTER_ID`,
+`SPITZLI_DATABASE_DOMAIN`, `SPITZLI_DATABASE_PUBLIC_ENABLED` (keep false for this
+milestone) and optional `SPITZLI_CONTROL_DATABASE_ID`. The effective database cipher
+key is the existing `SPITZLI_HOSTING_ENCRYPTION_KEY`; the current initializer falls
 back to `BETTER_AUTH_SECRET` if it is absent. Preserve the actual effective key,
 independently retained Auth/RLS identity keys and TLS issuer identity; a newly
 generated replacement cannot open historical credential versions. The fixture uses

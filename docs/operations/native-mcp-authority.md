@@ -1,6 +1,6 @@
 # Native MCP authority references
 
-`WEBDOCK_MCP_AUTHORITY_BACKEND=tokio-postgres` opts the owned bearer-to-MCP
+`SPITZLI_MCP_AUTHORITY_BACKEND=tokio-postgres` opts the owned bearer-to-MCP
 reference boundary into direct PostgreSQL. Default `sea-orm` stays unchanged;
 unknown values fail startup. It selects native client/introspection/public-key
 reads using Core's shared max4/min0 bootstrap pool. The capability adds to an

@@ -1,5 +1,5 @@
 {{- $image := required "image is required" .Values.image -}}
-{{- $apiHost := required "apiHost must match the authority of WEBDOCK_API_ORIGIN" .Values.apiHost -}}
+{{- $apiHost := required "apiHost must match the authority of SPITZLI_API_ORIGIN" .Values.apiHost -}}
 {{- if not (regexMatch "^[a-z0-9.-]+(:[0-9]{1,5})?/[a-z0-9_./-]+@sha256:[a-f0-9]{64}$" $image) -}}
 {{- fail "image must be pinned by SHA-256 digest" -}}
 {{- end -}}

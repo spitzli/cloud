@@ -68,8 +68,8 @@ RUSTUP_TOOLCHAIN=1.94.0 CC_x86_64_unknown_linux_musl=clang \
   bash crates/build/tools/prepare-local-vm.sh --allow-disposable-local-vm \
   "$PWD/.runtime-test/build-vm-frontend-OWNED"
 
-WEBDOCK_FRONTEND_VM_TEST=1 \
-  WEBDOCK_FRONTEND_VM_ROOT="$PWD/.runtime-test/build-vm-frontend-OWNED" \
+SPITZLI_FRONTEND_VM_TEST=1 \
+  SPITZLI_FRONTEND_VM_ROOT="$PWD/.runtime-test/build-vm-frontend-OWNED" \
   cargo +1.94.0 test --offline --locked --release -p spitzli-build \
   --no-default-features --test frontend_vm -- --include-ignored --nocapture
 ```

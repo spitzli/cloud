@@ -26,8 +26,8 @@ cargo clippy -p spitzli-registry --all-targets -- -D warnings
 
 The ignored PostgreSQL integration test requires an already provisioned local
 `webdock_rls_test` with native identity/RLS and ID migrations. It reads
-`WEBDOCK_TEST_MIGRATION_DATABASE_URL` (fixture owner),
-`WEBDOCK_REGISTRY_DATABASE_URL` (restricted registry role), `AUTH_DATABASE_URL`
+`SPITZLI_TEST_MIGRATION_DATABASE_URL` (fixture owner),
+`SPITZLI_REGISTRY_DATABASE_URL` (restricted registry role), `AUTH_DATABASE_URL`
 (identity fixture reads), and `DATABASE_RLS_SECRET`. Run it with:
 
 ```sh

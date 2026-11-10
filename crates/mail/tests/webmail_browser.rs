@@ -81,7 +81,7 @@ async fn console_opens_a_granted_mailbox_through_the_real_gateway_and_engine() {
         "Build the Console before acceptance"
     );
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
     assert_eq!(url.path(), "/webdock_rls_test");
     assert!(url.query().is_none());
@@ -175,7 +175,7 @@ async fn run(
 
     let auth = role("AUTH_DATABASE_URL", url).await;
     let business = role("DATABASE_URL", url).await;
-    let worker = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
+    let worker = role("SPITZLI_PLUGIN_WORKER_DATABASE_URL", url).await;
     let cookies = CookiePolicy::new(true, "webmail-browser-cookie-fixture-key-atleast32").unwrap();
     let cookie = (
         cookies.name().to_owned(),
@@ -248,9 +248,9 @@ async fn run(
     )
     .unwrap();
     let config = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
-        ("WEBDOCK_STUDIO_ORIGIN".into(), core_origin.clone()),
-        ("WEBDOCK_AUTH_ORIGIN".into(), auth_origin.clone()),
-        ("WEBDOCK_FEATURES".into(), r#"{"mail":"enabled"}"#.into()),
+        ("SPITZLI_STUDIO_ORIGIN".into(), core_origin.clone()),
+        ("SPITZLI_AUTH_ORIGIN".into(), auth_origin.clone()),
+        ("SPITZLI_FEATURES".into(), r#"{"mail":"enabled"}"#.into()),
     ]))
     .unwrap();
     let router = build_app_with_domains(
@@ -312,7 +312,7 @@ async fn run(
         Duration::from_secs(180),
         tokio::process::Command::new("node")
             .arg(root.join("apps/console/tests/webmail-native-browser.mjs"))
-            .env("WEBDOCK_WEBMAIL_BROWSER_FIXTURE", &descriptor)
+            .env("SPITZLI_WEBMAIL_BROWSER_FIXTURE", &descriptor)
             .current_dir(root)
             .kill_on_drop(true)
             .output(),

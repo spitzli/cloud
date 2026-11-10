@@ -292,8 +292,8 @@ exact private metadata database/container, fixture URL file and sealer key. The
 runner prints only the exact container/directory names, never credentials.
 
 For an interrupted MinIO fixture, keep that owned PostgreSQL container available
-and point `WEBDOCK_OBJECT_STORAGE_RECOVERY` at its exact `acceptance-<uuid>`
-directory and `WEBDOCK_OBJECT_STORAGE_MINIO_CONFIG` at the same private backend
+and point `SPITZLI_OBJECT_STORAGE_RECOVERY` at its exact `acceptance-<uuid>`
+directory and `SPITZLI_OBJECT_STORAGE_MINIO_CONFIG` at the same private backend
 file. Run only the ignored `recover_exact_owned_fixture` test. Recovery reads the
 owned private `storage.json` in that acceptance directory, verifies the saved
 binding/tag and fixture policy, and removes only those recorded buckets/users.

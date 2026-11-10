@@ -7,7 +7,7 @@ migration tools still retain explicit legacy paths.
 
 ## Opt-in and compatibility
 
-`WEBDOCK_ID_BACKEND=tokio-postgres` selects the native allocator in the HTTP Core.
+`SPITZLI_ID_BACKEND=tokio-postgres` selects the native allocator in the HTTP Core.
 The default remains `sea-orm`. Unknown values fail startup. Existing credentials,
 database, ID layout and migration history remain unchanged; no new Neon project
 is required. There is no automatic production activation.

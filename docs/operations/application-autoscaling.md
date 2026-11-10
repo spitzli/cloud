@@ -68,10 +68,10 @@ An older agent must never interpret an automatic policy as fixed replicas.
 3. Roll out compatible agents with the reviewed HPA permissions limited to their
    application namespaces. `deploy/helm/spitzli-agent` keeps mutation permissions
    disabled unless `autoscalingEnabled` is true. No build-pod permissions change.
-4. Set `WEBDOCK_AGENT_AUTOSCALING_ENABLED=true` only on a qualified agent. For the
+4. Set `SPITZLI_AGENT_AUTOSCALING_ENABLED=true` only on a qualified agent. For the
    Helm agent chart this is controlled by `autoscalingEnabled`.
 5. Roll out compatible Core/Console, then set
-   `WEBDOCK_HOSTING_AUTOSCALING_ENABLED=true`. Console enables automatic mode only
+   `SPITZLI_HOSTING_AUTOSCALING_ENABLED=true`. Console enables automatic mode only
    where Core reports it available. Existing fixed apps remain unchanged.
 6. Test one explicitly opted-in stateless application, record up/down transitions,
    stopped-state durability, current counts and successful fixed-mode transition.
@@ -91,17 +91,17 @@ bun test packages/hosting-contracts/src
 bun test apps/console/tests/hosting-autoscaling.test.ts
 cargo test --locked -p spitzli-supervisor --test autoscaling
 cargo test --locked -p spitzli-hosting --test autoscaling
-WEBDOCK_HOSTING_AUTOSCALING_ENABLED=true cargo test --locked \
+SPITZLI_HOSTING_AUTOSCALING_ENABLED=true cargo test --locked \
   -p spitzli-hosting --test autoscaling_postgres -- --ignored
-WEBDOCK_AGENT_AUTOSCALING_ENABLED=true cargo test --locked -p spitzli-agent --features kubernetes --test autoscaling_api -- --include-ignored
+SPITZLI_AGENT_AUTOSCALING_ENABLED=true cargo test --locked -p spitzli-agent --features kubernetes --test autoscaling_api -- --include-ignored
 bun apps/console/tests/autoscaling-browser.mjs
 ```
 
 The PostgreSQL test creates and removes its own PostgreSQL 18 fixture. It accepts
 no external DSN. Real HPA tests additionally require an owned loopback Kubernetes
-context named `kind-webdock-rust-*`, `WEBDOCK_KUBE_TEST_CONFIG`,
-`WEBDOCK_KUBE_TEST_CONTEXT`, a digest-pinned `WEBDOCK_KUBE_TEST_IMAGE` containing
-BusyBox and `WEBDOCK_AGENT_AUTOSCALING_ENABLED=true`:
+context named `kind-webdock-rust-*`, `SPITZLI_KUBE_TEST_CONFIG`,
+`SPITZLI_KUBE_TEST_CONTEXT`, a digest-pinned `SPITZLI_KUBE_TEST_IMAGE` containing
+BusyBox and `SPITZLI_AGENT_AUTOSCALING_ENABLED=true`:
 
 ```sh
 cargo test --locked -p spitzli-agent --features kubernetes \

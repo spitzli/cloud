@@ -46,7 +46,7 @@ fn admission(plugin: &str, project: &str, action: &str, key: &str) -> AdmissionI
 #[tokio::test]
 #[ignore = "requires local retained-schema restricted roles and signed RLS fixture"]
 async fn real_admission_data_cas_receipts_authority_revocation_and_admin() {
-    let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let owner = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     let nonce = format!(
         "rust-host-{}-{}",
         std::process::id(),
@@ -133,7 +133,7 @@ async fn real_admission_data_cas_receipts_authority_revocation_and_admin() {
     let host = Arc::new(
         HostService::new(
             db("DATABASE_URL").await,
-            db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+            db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,
@@ -931,7 +931,7 @@ async fn remote_host_roundtrip(
             .status(),
         StatusCode::OK
     );
-    let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let owner = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     sql(
         &owner,
         "UPDATE webdock_auth.\"oauthClient\" SET disabled=true WHERE \"clientId\"=$1",
@@ -994,7 +994,7 @@ async fn invocation_revoke_race(
     let host = Arc::new(
         HostService::new(
             bounded_database("DATABASE_URL", &data_name).await,
-            bounded_database("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", &control_name).await,
+            bounded_database("SPITZLI_PLUGIN_WORKER_DATABASE_URL", &control_name).await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,

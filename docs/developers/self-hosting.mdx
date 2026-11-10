@@ -21,17 +21,17 @@ docker build -f deploy/docker/Dockerfile --target migrate -t spitzli-migrate:loc
 
 Use the variable names in `crates/control-plane/.env.example`. Supply private restricted-role database credentials, the existing identity/RLS keys and exact Auth, Console and Studio protocol origins through the runtime environment. Never put offline migration credentials into Core. Configure ingress to preserve those canonical hosts and terminate HTTPS.
 
-For an isolated single-host installation, `deploy/compose/compose.yaml` runs only Core. Supply a reviewed immutable image through `WEBDOCK_CORE_IMAGE` and a private `core.env` beside the Compose file. It binds to loopback port 3130; ingress is independently managed. `deploy/helm/webdock` contains the native Kubernetes deployment contract and requires a digest-pinned image, an existing private runtime Secret and `apiHost` matching the hostname and optional port of `WEBDOCK_API_ORIGIN`. HTTP probes use that authority to pass Core's host boundary. Plugins and execution listeners need their own explicitly configured processes and private transports.
+For an isolated single-host installation, `deploy/compose/compose.yaml` runs only Core. Supply a reviewed immutable image through `SPITZLI_CORE_IMAGE` and a private `core.env` beside the Compose file. It binds to loopback port 3130; ingress is independently managed. `deploy/helm/webdock` contains the native Kubernetes deployment contract and requires a digest-pinned image, an existing private runtime Secret and `apiHost` matching the hostname and optional port of `SPITZLI_API_ORIGIN`. HTTP probes use that authority to pass Core's host boundary. Plugins and execution listeners need their own explicitly configured processes and private transports.
 
 ## Offline schema setup
 
-Run `spitzli-migrate` separately with `WEBDOCK_MIGRATION_DATABASE_URL` and an exact target:
+Run `spitzli-migrate` separately with `SPITZLI_MIGRATION_DATABASE_URL` and an exact target:
 
 ```sh
 cargo run --locked -p spitzli-control-plane --bin spitzli-migrate -- --target db.example.invalid:5432/webdock
 ```
 
-For a fresh empty database, the reviewed CLI supports `--initialize-empty` and explicit role provisioning from a private file. Consult `crates/control-plane/README.md`; initialization refuses existing platform state. For a containerized migration, use the separate `deploy/compose/compose.migration.yaml`, a private `migrator.env`, `WEBDOCK_MIGRATE_IMAGE` and `WEBDOCK_MIGRATION_TARGET`. Starting Core never starts this migration service.
+For a fresh empty database, the reviewed CLI supports `--initialize-empty` and explicit role provisioning from a private file. Consult `crates/control-plane/README.md`; initialization refuses existing platform state. For a containerized migration, use the separate `deploy/compose/compose.migration.yaml`, a private `migrator.env`, `SPITZLI_MIGRATE_IMAGE` and `SPITZLI_MIGRATION_TARGET`. Starting Core never starts this migration service.
 
 Continue with [initial operator setup](/developers/initial-setup). Preserve retained identifiers, signing material, Mail encryption keys and volumes when adopting an existing installation.
 

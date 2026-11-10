@@ -7,7 +7,7 @@ For a new empty operator-owned installation, after native migrations complete, c
 
 ## Prepare private input
 
-Supply `DATABASE_URL_UNPOOLED`, the retained identity/RLS secrets and exact canonical origins in the private command environment. Prepare an owner-only JSON file with `email`, `name`, `password`, `authOrigin`, `studioOrigin` and `consoleOrigin`. The origins must exactly match the environment and be distinct. HTTPS is required outside explicitly allowed loopback development. The password may instead come from `WEBDOCK_INITIAL_OPERATOR_PASSWORD`; provide it in only one place.
+Supply `DATABASE_URL_UNPOOLED`, the retained identity/RLS secrets and exact canonical origins in the private command environment. Prepare an owner-only JSON file with `email`, `name`, `password`, `authOrigin`, `studioOrigin` and `consoleOrigin`. The origins must exactly match the environment and be distinct. HTTPS is required outside explicitly allowed loopback development. The password may instead come from `SPITZLI_INITIAL_OPERATOR_PASSWORD`; provide it in only one place.
 
 The input and output contain credentials. Keep them out of source control, logs and browser storage. Do not use production identities in acceptance tests.
 

@@ -58,6 +58,6 @@ FROM runtime AS build-controller
 ENTRYPOINT ["/usr/local/bin/spitzli-kubernetes-build-worker"]
 
 FROM runtime AS backend
-ENV WEBDOCK_BIND_ADDRESS=0.0.0.0 PORT=3130
+ENV SPITZLI_BIND_ADDRESS=0.0.0.0 PORT=3130
 EXPOSE 3130
 ENTRYPOINT ["/usr/local/bin/spitzli-control-plane"]

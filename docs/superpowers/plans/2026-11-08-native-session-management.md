@@ -4,7 +4,7 @@
 
 **Goal:** Port actual self-service session listing, renewal, revocation and logout to native PostgreSQL and provide the locked native canonical-session boundary needed by subsequent service ports.
 
-**Architecture:** Extend the existing optional native session backend with an explicit management capability; share one pool for reads/management. Direct typed SQL keeps canonical user/session row locks and checks local/provider authority in a fresh statement after those locks. The Core opts in using `WEBDOCK_SESSION_MANAGEMENT_BACKEND=tokio-postgres`, which also selects native cookie reads. Keep the read-only flag and legacy default compatible.
+**Architecture:** Extend the existing optional native session backend with an explicit management capability; share one pool for reads/management. Direct typed SQL keeps canonical user/session row locks and checks local/provider authority in a fresh statement after those locks. The Core opts in using `SPITZLI_SESSION_MANAGEMENT_BACKEND=tokio-postgres`, which also selects native cookie reads. Keep the read-only flag and legacy default compatible.
 
 **Spec:** `docs/superpowers/specs/2026-11-08-native-performance-runtime-design.md`
 

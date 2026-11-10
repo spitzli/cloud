@@ -48,7 +48,7 @@ The operator may override these paths with `--request`, `--source-metadata`,
 `--source`, `--tools`, `--secrets`, `--cancel-file`, and `--output-dir`. All
 arguments are explicit absolute filesystem paths. There are no URL or credential
 arguments. Missing input fails immediately: arrange bounded input delivery before
-startup. If supplied by the Job, `WEBDOCK_COMMIT_SHA` must match provider metadata.
+startup. If supplied by the Job, `SPITZLI_COMMIT_SHA` must match provider metadata.
 Transfers and collection require separately scoped authority outside this runner.
 
 Request JSON fields are `sourceSha` (40/64 lowercase hex), `archiveSha256`
@@ -249,7 +249,7 @@ customer code. Configured Job identity environment values must match the handoff
 
 After the builder finishes, the image entrypoint invokes `spitzli-build-runner
 upload` with the same configuration and `/workspace/output`. Upload requires
-`WEBDOCK_JOB_UID` from the exact DownwardAPI field
+`SPITZLI_JOB_UID` from the exact DownwardAPI field
 `metadata.labels['batch.kubernetes.io/controller-uid']`; no customer-selected field
 reference or UID argument is accepted. It PUTs only the current attempt's bounded
 `attempt.json`, `status.json`, `image.tar` (success only), `build.log` and

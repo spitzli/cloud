@@ -110,8 +110,8 @@ cargo clippy -p spitzli-plugin-host --all-targets --all-features -- -D warnings
 
 The ignored PostgreSQL integration test needs the retained local `webdock_rls_test`
 fixture and these explicitly supplied environment variables:
-`WEBDOCK_TEST_MIGRATION_DATABASE_URL`, `DATABASE_URL`,
-`WEBDOCK_PLUGIN_WORKER_DATABASE_URL`, `AUTH_DATABASE_URL`, and
+`SPITZLI_TEST_MIGRATION_DATABASE_URL`, `DATABASE_URL`,
+`SPITZLI_PLUGIN_WORKER_DATABASE_URL`, `AUTH_DATABASE_URL`, and
 `DATABASE_RLS_SECRET`. URLs must be loopback, name that exact database, and have no
 query overrides. Run all local checks with:
 

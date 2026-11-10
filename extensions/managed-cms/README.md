@@ -25,7 +25,7 @@ bun extensions/managed-cms/manifest.ts \
   managed-cms.plugin.json
 ```
 
-The runtime listens privately with TLS on port 3443, and serves its sandboxed UI on port 3444. It uses the installer's standard `WEBDOCK_PLUGIN_PUBLIC_KEY` PEM, runtime token, generation, host URL and TLS-file contract. Its exact Console CSP comes from operator-configured `runtime.consoleOrigin`, emitted as `WEBDOCK_PLUGIN_CONSOLE_ORIGIN`; the installer must be upgraded and configured before UI installation. The installed pod runs as UID/GID 1000, overriding the image's default 65532. No CMS credentials are embedded in the UI.
+The runtime listens privately with TLS on port 3443, and serves its sandboxed UI on port 3444. It uses the installer's standard `SPITZLI_PLUGIN_PUBLIC_KEY` PEM, runtime token, generation, host URL and TLS-file contract. Its exact Console CSP comes from operator-configured `runtime.consoleOrigin`, emitted as `SPITZLI_PLUGIN_CONSOLE_ORIGIN`; the installer must be upgraded and configured before UI installation. The installed pod runs as UID/GID 1000, overriding the image's default 65532. No CMS credentials are embedded in the UI.
 
 ## Installation prerequisites
 
@@ -33,7 +33,7 @@ Use a Full installation with Hosting and Databases, migration 0048 or later, the
 
 Before serving a new CMS image, run its bounded migration job, including `20261018_201453_managed_media_trash`. This additive migration retains existing tables and files.
 
-Configure `WEBDOCK_APPROVED_CMS_TEMPLATE` identically on API and worker, and the matching root-owned agent approval. See [operator configuration](../../agents/kubernetes/APP_TEMPLATES.md) for its exact shape, certificate renewal, migration recovery and matched backups. Install and grant the plugin using Webdock's normal reviewed plugin lifecycle. Each instance owns its cert-manager Certificate, Ingress and TLS Secret; certificate private keys are not copied from a wildcard Secret. Wildcard DNS still routes its hostname to the approved ingress. Installation alone does not create a customer instance; **Create CMS** does.
+Configure `SPITZLI_APPROVED_CMS_TEMPLATE` identically on API and worker, and the matching root-owned agent approval. See [operator configuration](../../agents/kubernetes/APP_TEMPLATES.md) for its exact shape, certificate renewal, migration recovery and matched backups. Install and grant the plugin using Webdock's normal reviewed plugin lifecycle. Each instance owns its cert-manager Certificate, Ingress and TLS Secret; certificate private keys are not copied from a wildcard Secret. Wildcard DNS still routes its hostname to the approved ingress. Installation alone does not create a customer instance; **Create CMS** does.
 
 ## Content and access
 

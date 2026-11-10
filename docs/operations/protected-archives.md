@@ -35,7 +35,7 @@ root filesystem, bounded `/tmp`, and the existing approved egress controls.
 
 Enable the fixed private source lane with `exportSources: true` in the owned native
 plugin configuration. Use the same native database encryption secret as the existing
-DatabaseService (canonical `WEBDOCK_HOSTING_ENCRYPTION_KEY`, otherwise configured Auth
+DatabaseService (canonical `SPITZLI_HOSTING_ENCRYPTION_KEY`, otherwise configured Auth
 secret), the existing database gateway origin, native identity and restricted pools.
 This reader is a composition of the existing DatabaseService and RepositoryAdmission,
 not a second source/auth database.

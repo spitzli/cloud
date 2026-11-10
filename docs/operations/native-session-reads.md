@@ -1,6 +1,6 @@
 # Native session reads and signed tenant context
 
-`WEBDOCK_SESSION_READ_BACKEND=tokio-postgres` opts the HTTP Core's canonical
+`SPITZLI_SESSION_READ_BACKEND=tokio-postgres` opts the HTTP Core's canonical
 cookie/session reads into the direct PostgreSQL driver. The default remains
 `sea-orm`; unknown values fail startup. This flag is separate from the ID backend
 flag. Password, MFA/passkey issuance, browser/OAuth flow storage and other identity

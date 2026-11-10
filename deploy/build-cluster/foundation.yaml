@@ -230,7 +230,7 @@ spec:
       && (!has(variables.p.securityContext.sysctls) || size(variables.p.securityContext.sysctls) == 0)))
     message: Pod profile overrides and custom sysctls are forbidden.
   - expression: variables.deletionCleanup || (variables.containers.all(c, !has(c.envFrom) && (!has(c.env) || c.env.all(e, (!has(e.valueFrom) || (variables.mappingHelper
-      && c.image == variables.approvedRunner && e.name == 'WEBDOCK_JOB_UID' && has(e.valueFrom.fieldRef) && e.valueFrom.fieldRef.apiVersion == 'v1' && e.valueFrom.fieldRef.fieldPath
+      && c.image == variables.approvedRunner && e.name == 'SPITZLI_JOB_UID' && has(e.valueFrom.fieldRef) && e.valueFrom.fieldRef.apiVersion == 'v1' && e.valueFrom.fieldRef.fieldPath
       == "metadata.labels['batch.kubernetes.io/controller-uid']")))) && (!has(c.ports) || c.ports.all(p, !has(p.hostPort) || p.hostPort == 0))))
     message: Indirect credential/environment references and host ports are forbidden.
   - expression: variables.deletionCleanup || (variables.containers.all(c, has(c.resources) && has(c.resources.limits) && has(c.resources.requests) && ['cpu',

@@ -85,7 +85,7 @@ It does not rotate an existing context key. The installer key named
 `DATABASE_CONTEXT_SECRET` must equal Auth's runtime `DATABASE_RLS_SECRET`.
 Auth additionally needs separate `AUTH_DATABASE_URL` and `DATABASE_WORKER_URL`;
 its ordinary `DATABASE_URL` uses `webdock_auth_runtime`. Set
-`WEBDOCK_CONTROL_DATABASE_ID=103217546714419200`, preserve all existing Auth/Mail/
+`SPITZLI_CONTROL_DATABASE_ID=103217546714419200`, preserve all existing Auth/Mail/
 SSO encryption keys, and supply the PEM `DATABASE_CA_CERT` to platform services.
 Use direct port 32000 for offline work/browser access and pooled port 32001 for
 the application service URLs. Never deploy the temporary offline login to Vercel.

@@ -52,7 +52,7 @@ async fn agent(db: &sea_orm::DatabaseConnection, cluster: &str) -> sea_orm::Data
 async fn setup() -> (Fixture, Arc<HostService>, String) {
     // The shared fixture supports the retained overlap allocator; a fresh disposable schema has
     // no authentication allocator row until its first explicit fixture setup.
-    let raw = std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap();
+    let raw = std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap();
     let target = url::Url::parse(&raw).unwrap();
     assert!(
         matches!(target.host_str(), Some("localhost" | "127.0.0.1"))
@@ -460,7 +460,7 @@ async fn customer_reports_preserve_usage_notices_logs_and_current_revision_fence
     )
     .await
     .unwrap();
-    let worker_url = std::env::var("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").unwrap();
+    let worker_url = std::env::var("SPITZLI_PLUGIN_WORKER_DATABASE_URL").unwrap();
     let worker = sea_orm::Database::connect(worker_url).await.unwrap();
     let report = json!({"usage":{"cpu":12,"memory":41},"problems":[{"reason":"CrashLoopBackOff"}],"logs":[format!("{} first line",chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Nanos,true))]});
     let tx = agent(&worker, &cluster).await;

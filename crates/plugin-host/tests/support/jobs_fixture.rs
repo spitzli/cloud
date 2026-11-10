@@ -22,7 +22,7 @@ impl Drop for DatabaseFixture {
 }
 impl DatabaseFixture {
     pub async fn start() -> Self {
-        let local = std::env::var_os("WEBDOCK_PLUGIN_TEST_LOCAL_POSTGRES").map(|value| {
+        let local = std::env::var_os("SPITZLI_PLUGIN_TEST_LOCAL_POSTGRES").map(|value| {
             assert_eq!(value, "1", "local PostgreSQL fixture switch accepts only 1");
             local_postgres::LocalPostgres::start()
         });

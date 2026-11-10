@@ -1,7 +1,7 @@
 # Reviewed immutable Core image and private native runtime environment, supplied by the operator.
 image: ''
 existingSecret: ''
-# Authority (host and optional port) of WEBDOCK_API_ORIGIN, used by the HTTP probes.
+# Authority (host and optional port) of SPITZLI_API_ORIGIN, used by the HTTP probes.
 apiHost: ''
 # Private routing preserves the certificate's DNS identity; never disable DB TLS verification.
 databaseCAConfigMap: ''

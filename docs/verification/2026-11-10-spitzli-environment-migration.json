@@ -1,0 +1,169 @@
+{
+  "date": "2026-11-10",
+  "scope": "Canonical environment names and migration safeguards",
+  "phase": 2,
+  "baseCommit": "dbde2b8a359cb992e643cbc7ceb542b9452ccd1c",
+  "priorNamespacePR": {
+    "url": "https://github.com/spitzli/cloud/pull/101",
+    "mergeCommit": "dbde2b8a359cb992e643cbc7ceb542b9452ccd1c",
+    "qualifiedHead": "d4bfb89421ccd8b74ab47703d7b8cb40ccbff66a",
+    "runner": "blacksmith-4vcpu-ubuntu-2404-wr3jcd47vkdjqbzz",
+    "conclusion": "success",
+    "job": "https://github.com/spitzli/cloud/actions/runs/42874545656/job/130034261309"
+  },
+  "sourceEnvironmentNames": 420,
+  "canonicalPrefix": "SPITZLI_",
+  "converter": {
+    "path": "tools/migrations/rename_environment.py",
+    "formats": [
+      "dotenv",
+      "JSON string map",
+      "Kubernetes Secret data/stringData"
+    ],
+    "sourceAndValuesPreserved": true,
+    "outputMode": "0600",
+    "noOverwrite": true,
+    "noEvaluationOrValueLogging": true,
+    "rejects": [
+      "conflicting/duplicate keys",
+      "malformed/multiline ambiguity",
+      "unresolved legacy variable interpolation in dotenv",
+      "public/unowned/nonregular/symlink input",
+      "unsafe output directories and existing output"
+    ],
+    "tests": 12
+  },
+  "githubCIBindings": [
+    {
+      "scope": "orgs/spitzli/actions/variables",
+      "source": "WEBDOCK_BLACKSMITH_BUILDER_READY",
+      "canonical": "SPITZLI_BLACKSMITH_BUILDER_READY",
+      "created": true,
+      "sameValue": true,
+      "sameVisibility": true,
+      "sameSelectedRepositories": true,
+      "selectedRepositoryCount": 17,
+      "legacyRetainedForTransition": true
+    },
+    {
+      "scope": "orgs/spitzli/actions/variables",
+      "source": "WEBDOCK_BLACKSMITH_READY",
+      "canonical": "SPITZLI_BLACKSMITH_READY",
+      "created": true,
+      "sameValue": true,
+      "sameVisibility": true,
+      "sameSelectedRepositories": true,
+      "selectedRepositoryCount": 17,
+      "legacyRetainedForTransition": true
+    },
+    {
+      "scope": "orgs/spitzli/actions/variables",
+      "source": "WEBDOCK_BLACKSMITH_REGION",
+      "canonical": "SPITZLI_BLACKSMITH_REGION",
+      "created": true,
+      "sameValue": true,
+      "sameVisibility": true,
+      "sameSelectedRepositories": true,
+      "selectedRepositoryCount": 17,
+      "legacyRetainedForTransition": true
+    },
+    {
+      "scope": "repos/spitzli/cloud/actions/variables",
+      "source": "WEBDOCK_BLACKSMITH_READY",
+      "canonical": "SPITZLI_BLACKSMITH_READY",
+      "created": true,
+      "sameValue": true,
+      "sameVisibility": true,
+      "sameSelectedRepositories": true,
+      "selectedRepositoryCount": 0,
+      "legacyRetainedForTransition": true
+    }
+  ],
+  "checks": {
+    "canonicalNativeAndStandaloneCommands": 52,
+    "nativeAndStandaloneTests": {
+      "passed": 762,
+      "ignored": 109
+    },
+    "canonicalFrontend": "passed after exact-built-artifact pin; lint/types/251 component tests/build/28 browser suites",
+    "customerAcceptance": {
+      "routeThemeViewportChecks": 180,
+      "journeyGroups": 9,
+      "source": "synthetic loopback HTTP"
+    },
+    "fixtureAndRetainedCodecAndBuildBoundaries": 58,
+    "rustBuildBoundaryRegressions": "passed with canonical and retained prefixes blocked",
+    "sdkCli": 30,
+    "releaseSdkPolicy": 11,
+    "pythonReleasePolicies": 17,
+    "pythonNativeReleaseAndExportPolicies": 22,
+    "pluginCITests": 56,
+    "blacksmithWorkflowTests": 8,
+    "qualityRunner": "unit/integration and strict Clippy passed",
+    "website": "6 policy tests, typecheck and actual controlled Next production intent passed",
+    "chartsComposeFmtAndI18n": "passed"
+  },
+  "review": {
+    "review": "self-review",
+    "independent": false,
+    "findings": [
+      {
+        "severity": "important",
+        "scope": "Customer build environment boundaries during prefix transition",
+        "reproduced": [
+          "legacy-environment-denial-red.log",
+          "vercel-environment-denial-red.log"
+        ],
+        "problem": "Global environment prefix replacement must retain the legacy deny-prefix; the Vercel regex also needs the new canonical prefix",
+        "fix": "Both old and canonical namespaces are forbidden for customer build variables before provider reads or runner preparation",
+        "regressions": [
+          "crates/build/tests/contracts.rs",
+          "crates/build/tests/container_runner.rs",
+          "modules/hosting/tests/environment-namespace.test.mjs"
+        ],
+        "canonicalCI": "New hosting boundary tests included in first Bun fixture command",
+        "resolved": true
+      },
+      {
+        "severity": "important",
+        "scope": "Native and extension release SDK provenance validators",
+        "problem": "Generic legacy-only package-prefix predicates missed canonical SDK crate names after phase1",
+        "reproduced": [
+          "native-sdk-namespace-red.log",
+          "release-sdk-namespace-red.log"
+        ],
+        "fix": "Validate canonical and retained SDK dependency namespaces, including existing target/alias handling; prebuild validator before CLI release tests in CI",
+        "regressions": [
+          "tools/plugins/test_native_release.py",
+          "tools/plugin-release/release.test.mjs"
+        ],
+        "resolved": true
+      }
+    ]
+  },
+  "testHarnessCorrections": [
+    "Gateway fixture verifies exact readonly mount sources/targets instead of incidental checkout-path substrings",
+    "Canonical Console browser gate pins the artifact built immediately beforehand",
+    "Rust manifest validator is built before CLI release tests to avoid cold-compile test timeouts"
+  ],
+  "preserved": {
+    "immutableSqlCodecsAndHistoryFiles": 172,
+    "privateRuntimeConfigurations": "unchanged",
+    "credentialValues": "unchanged",
+    "schemasRolesAndAuthProtocolValues": "unchanged",
+    "runtimeRolloutPerformed": false,
+    "oldCIBindings": "retained until remaining consumers migrate"
+  },
+  "remaining": [
+    "Migrate remaining independent consumer workflow/configuration bindings before removing legacy CI variables",
+    "Prepare and qualify matching Core/agent/build/plugin artifacts and private configuration rollout",
+    "Database schema/role/record and versioned encrypted-data migration",
+    "Auth/wire protocol and Kubernetes/service/state identity transition",
+    "Visible branding, external provider names, derived artifacts and final production verification"
+  ],
+  "fullInternalMigrationComplete": false,
+  "limitations": [
+    "Owned/synthetic source qualification, not genuine customer/provider or full-platform E2E",
+    "Earlier local browser development-mode timeout is preserved in the log; the corrected canonical compiled-artifact gate passed"
+  ]
+}

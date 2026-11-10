@@ -90,7 +90,7 @@ spec:
         - name: agent
           image: {{ .Values.image | quote }}
           env:
-            - name: WEBDOCK_AGENT_AUTOSCALING_ENABLED
+            - name: SPITZLI_AGENT_AUTOSCALING_ENABLED
               value: {{ .Values.autoscalingEnabled | quote }}
           securityContext:
             readOnlyRootFilesystem: true

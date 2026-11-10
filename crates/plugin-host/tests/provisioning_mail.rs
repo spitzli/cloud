@@ -13,7 +13,7 @@ fn retained_pvc(input: &Value) -> bool {
 }
 
 #[tokio::test]
-#[ignore = "owned disposable TLS PostgreSQL; requires WEBDOCK_PLUGIN_PROVISIONING_DOCKER_TEST=1 and WEBDOCK_MAIL_RUNTIME_BINARY"]
+#[ignore = "owned disposable TLS PostgreSQL; requires SPITZLI_PLUGIN_PROVISIONING_DOCKER_TEST=1 and SPITZLI_MAIL_RUNTIME_BINARY"]
 async fn mail_binary_tls_callbacks_unix_restart_and_private_diagnostics() {
     let mut f = Fixture::new().await;
     f.calls.active.store(1, Ordering::SeqCst);

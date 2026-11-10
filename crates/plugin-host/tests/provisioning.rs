@@ -89,7 +89,7 @@ fn runtime_leaf_has_exact_san_both_ekus_and_enrollable_fingerprint() {
 #[path = "support/provisioning_fixture.rs"]
 mod fixture;
 #[tokio::test]
-#[ignore = "requires WEBDOCK_PLUGIN_PROVISIONING_DOCKER_TEST=1; creates only an owned disposable local container"]
+#[ignore = "requires SPITZLI_PLUGIN_PROVISIONING_DOCKER_TEST=1; creates only an owned disposable local container"]
 async fn tls_login_isolation_and_exact_replay() {
     use spitzli_plugin_host::provisioning::{ProvisioningError, storage::MetadataProvisioner};
     let f = fixture::Fixture::start().await;
@@ -253,13 +253,13 @@ async fn tls_login_isolation_and_exact_replay() {
 #[path = "support/runtime_fixture.rs"]
 mod runtime_fixture;
 #[tokio::test]
-#[ignore = "requires owned Docker fixture and WEBDOCK_POSTGRES_RUNTIME_BINARY pointing to the locally built PostgreSQL runtime"]
+#[ignore = "requires owned Docker fixture and SPITZLI_POSTGRES_RUNTIME_BINARY pointing to the locally built PostgreSQL runtime"]
 async fn actual_postgres_binary_starts_over_pinned_mtls_and_private_unix() {
     use runtime_fixture::{Child, DenyHost, private};
     use spitzli_plugin_host::provisioning::storage::MetadataProvisioner;
     use spitzli_plugin_runtime::{PinnedMutualTls, connect_pinned_mtls, wire};
     let binary =
-        std::env::var_os("WEBDOCK_POSTGRES_RUNTIME_BINARY").expect("explicit owned test binary");
+        std::env::var_os("SPITZLI_POSTGRES_RUNTIME_BINARY").expect("explicit owned test binary");
     let f = fixture::Fixture::start().await;
     let directory = tempfile::tempdir_in(f.directory.path()).unwrap();
     {

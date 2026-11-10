@@ -27,10 +27,10 @@ spec:
             - secretRef: {name: {{ .Values.existingSecret }}}
           env:
             - {name: TABULARIS_EXPECTED_COMMIT, value: {{ .Values.tabularisCommit | quote }}}
-            - {name: WEBDOCK_DATABASE_MANAGED_RUNTIMES, value: {{ .Values.managedRuntimes | toString | quote }}}
-            - {name: WEBDOCK_DATABASE_RUNTIME_CAPACITY, value: {{ .Values.runtimeCapacity | toString | quote }}}
+            - {name: SPITZLI_DATABASE_MANAGED_RUNTIMES, value: {{ .Values.managedRuntimes | toString | quote }}}
+            - {name: SPITZLI_DATABASE_RUNTIME_CAPACITY, value: {{ .Values.runtimeCapacity | toString | quote }}}
             {{- if .Values.runtimeCAConfigMap }}
-            - {name: WEBDOCK_DATABASE_RUNTIME_CA_FILE, value: /runtime-trust/ca.crt}
+            - {name: SPITZLI_DATABASE_RUNTIME_CA_FILE, value: /runtime-trust/ca.crt}
             {{- end }}
           securityContext:
             readOnlyRootFilesystem: true

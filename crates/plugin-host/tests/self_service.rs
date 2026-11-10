@@ -78,7 +78,7 @@ pub struct Fixture {
 impl Fixture {
     /// Operator; owner, admin and member of customer A; owner of customer B.
     pub async fn new() -> Self {
-        let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+        let owner = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
         let nonce = format!(
             "self-service-{}-{}",
             std::process::id(),
@@ -370,7 +370,7 @@ impl Fixture {
         std::sync::Arc::new(
             HostService::new(
                 db("DATABASE_URL").await,
-                db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+                db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
                 std::env::var("DATABASE_RLS_SECRET").unwrap(),
                 std::sync::Arc::new(spitzli_persistence::IdAllocator::new(
                     db("DATABASE_URL").await,

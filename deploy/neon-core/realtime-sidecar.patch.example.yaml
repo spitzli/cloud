@@ -16,7 +16,7 @@ spec:
           env:
             - name: NEON_REALTIME_URL
               valueFrom: {secretKeyRef: {name: webdock-core-realtime, key: NEON_REALTIME_URL}}
-            - {name: WEBDOCK_REALTIME_SOCKET, value: /run/webdock-live/private/sdk.sock}
+            - {name: SPITZLI_REALTIME_SOCKET, value: /run/webdock-live/private/sdk.sock}
           volumeMounts:
             - {name: realtime-socket, mountPath: /run/webdock-live}
         - name: realtime-sealer
@@ -30,8 +30,8 @@ spec:
             readOnlyRootFilesystem: true
             capabilities: {drop: [ALL]}
           env:
-            - {name: WEBDOCK_REALTIME_SOCKET, value: /run/webdock-live/private/sdk.sock}
-            - {name: WEBDOCK_REALTIME_DATABASE, value: neondb}
+            - {name: SPITZLI_REALTIME_SOCKET, value: /run/webdock-live/private/sdk.sock}
+            - {name: SPITZLI_REALTIME_DATABASE, value: neondb}
             - name: NEON_REALTIME_SECRET
               valueFrom: {secretKeyRef: {name: webdock-core-realtime, key: NEON_REALTIME_SECRET}}
           volumeMounts:

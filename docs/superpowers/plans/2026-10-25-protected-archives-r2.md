@@ -71,7 +71,7 @@ scope retirement. usePluginStorage is object-storage-only and NOT used.
 - SourceRef + HMAC contract RED→GREEN (2 tests).
 - New readonly helper actual owned PostgreSQL test GREEN: SELECT/default future grants,
   DML/DDL/SET ROLE/foreign DB denied, disable kills connection, password rotation/drop.
-- Local wrapper WEBDOCK_ARCHIVES_SKIP_CORE=1 passed owned MinIO/dump/restore + readonly
+- Local wrapper SPITZLI_ARCHIVES_SKIP_CORE=1 passed owned MinIO/dump/restore + readonly
   tests; Core bootstrap deliberately skipped during prior schema hold, exact cleanup.
 - UI RED→GREEN: frozen create retry and no cache/context-retired object URL (2 tests).
   One lint optional-chain fix pending before fresh final lint/typecheck.

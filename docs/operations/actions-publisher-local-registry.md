@@ -289,7 +289,7 @@ all existing systemd hardening and `storage.conf` drop-ins. Use a new drop-in:
 WorkingDirectory=/opt/webdock-hosting-agent-releases/ACTIONS_RELEASE
 ExecStart=
 ExecStart=/usr/bin/python3 /opt/webdock-hosting-agent-releases/ACTIONS_RELEASE/daemon.py --credentials /var/lib/webdock-hosting-agent/connection.json --interval 15
-Environment=WEBDOCK_REGISTRY_CONFIG=/etc/webdock-registry/agent-policy.json
+Environment=SPITZLI_REGISTRY_CONFIG=/etc/webdock-registry/agent-policy.json
 ```
 
 Prepare root-owned 0600 `agent-policy.json`:
@@ -345,7 +345,7 @@ Root-owned 0640 publisher configuration, readable only by its service group:
 Use `ZZ` with explicit “unverified” location evidence if physical location has not
 been independently verified; an IP address does not prove location. The hosting
 registry policy's `euStorageEvidence` must reference real verified evidence.
-Configure control-plane `WEBDOCK_GIT_REGISTRY_HOST=127.0.0.1:5443` through its private
+Configure control-plane `SPITZLI_GIT_REGISTRY_HOST=127.0.0.1:5443` through its private
 configuration channel. Do not print the rest of that environment. Enroll the
 artifact-only role, store the returned credential privately, then enable the
 publisher only after all following acceptance checks pass.

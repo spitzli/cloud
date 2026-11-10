@@ -4,7 +4,7 @@
 
 **Goal:** Introduce the bounded direct tokio-postgres runtime and port central ID allocation through it.
 
-**Architecture:** Use maintained Deadpool for pooling and tokio-postgres transactions, not an ORM/SQL translation facade. A small ownership guard discards connections on cancelled or unconfirmed transactions; every transaction verifies role and clean session scope on its actual backend. Keep the existing allocator explicitly as the temporary legacy/offline path while the new Core path is opted in via `WEBDOCK_ID_BACKEND=tokio-postgres`.
+**Architecture:** Use maintained Deadpool for pooling and tokio-postgres transactions, not an ORM/SQL translation facade. A small ownership guard discards connections on cancelled or unconfirmed transactions; every transaction verifies role and clean session scope on its actual backend. Keep the existing allocator explicitly as the temporary legacy/offline path while the new Core path is opted in via `SPITZLI_ID_BACKEND=tokio-postgres`.
 
 **Spec:** `docs/superpowers/specs/2026-11-08-native-performance-runtime-design.md`
 

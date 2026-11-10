@@ -2,7 +2,7 @@
 name: webdock-native-migration
 services:
   migrate:
-    image: ${WEBDOCK_MIGRATE_IMAGE:?Set the reviewed immutable native migration image}
+    image: ${SPITZLI_MIGRATE_IMAGE:?Set the reviewed immutable native migration image}
     restart: 'no'
     user: '65532:65532'
     read_only: true
@@ -13,4 +13,4 @@ services:
     mem_limit: 1g
     cpus: 1
     env_file: [./migrator.env]
-    command: ['--target', '${WEBDOCK_MIGRATION_TARGET:?Set exact host:port/database}']
+    command: ['--target', '${SPITZLI_MIGRATION_TARGET:?Set exact host:port/database}']

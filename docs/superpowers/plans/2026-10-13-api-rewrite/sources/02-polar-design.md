@@ -86,7 +86,7 @@ flowchart LR
 
 Die Allowlist enthält zusätzlich die bewusst migrierten API-/Agent-/MCP-Routen aus dem Rewrite-Plan. Loginseiten, `/admin`, statische Frontend-Dateien und unbekannte Pfade antworten auf dem API-Host 404. Auth-Backendrouten werden ausschließlich auf dem kanonischen Auth-Host ausgeführt. Keine Browserweiterleitung des Webhook-POSTs. Traefik-Regeln und API prüfen den Host; das ersetzt keine Signatur-/Clientprüfung. Der API-Port ist nicht direkt öffentlich erreichbar und akzeptiert Proxy-Header nur vom eigenen Ingress.
 
-`WEBDOCK_API_ORIGIN=https://api.webdock.dev` entkoppelt Studio-Backendaufrufe vom unveränderten `WEBDOCK_AUTH_ISSUER`. Während der Migration wird der bestehende Studio-Delegationsvertrag erhalten. Der Rewrite-Plan verlagert auch die Studio-OIDC-Callback-/Sessionarbeit ins API-Backend; verbleibende Next-Server-Actions sind reine UI-/Transportadapter.
+`SPITZLI_API_ORIGIN=https://api.webdock.dev` entkoppelt Studio-Backendaufrufe vom unveränderten `SPITZLI_AUTH_ISSUER`. Während der Migration wird der bestehende Studio-Delegationsvertrag erhalten. Der Rewrite-Plan verlagert auch die Studio-OIDC-Callback-/Sessionarbeit ins API-Backend; verbleibende Next-Server-Actions sind reine UI-/Transportadapter.
 
 Umsetzung als Elysia-Routen. Better Auth und Polar-Webhooks brauchen unveränderte Request-Bodys und explizite Elysia-Parserkonfiguration. Alle Pfad-/Hostregeln werden an einem vollständigen Routingmanifest getestet; keine pauschale Weiterleitung sämtlicher Frontendpfade. Siehe API-Rewrite-Plan für FSR-Startprüfungen und Buildkonzept.
 

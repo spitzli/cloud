@@ -213,7 +213,7 @@ async fn real_minio_multipart_restart_integrity_and_policy_isolation() {
         denied_bucket: String,
     }
     let input =
-        std::env::var_os("WEBDOCK_S3_TEST_CONFIG").expect("private fixture config required");
+        std::env::var_os("SPITZLI_S3_TEST_CONFIG").expect("private fixture config required");
     let bytes = std::fs::read(input).unwrap();
     let fixture: Fixture = serde_json::from_slice(&bytes).unwrap();
     let store = Store::loopback_test(fixture.config.clone(), fixture.credentials).unwrap();

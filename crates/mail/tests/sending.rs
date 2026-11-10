@@ -153,7 +153,7 @@ async fn state(owner: &DatabaseConnection, id: &str) -> String {
 #[ignore = "creates and removes one isolated owned local sending database"]
 async fn installed_policy_and_authenticated_callbacks_fence_every_external_attempt() {
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert!(matches!(url.host_str(), Some("localhost" | "127.0.0.1")));
     assert_eq!(url.path(), "/webdock_rls_test");
     assert!(url.query().is_none());
@@ -187,7 +187,7 @@ async fn run(url: &url::Url, name: &str) {
     seed(&owner).await;
     let auth = role("AUTH_DATABASE_URL", url).await;
     let business = role("DATABASE_URL", url).await;
-    let worker = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
+    let worker = role("SPITZLI_PLUGIN_WORKER_DATABASE_URL", url).await;
     let ids = Arc::new(spitzli_persistence::IdAllocator::new(
         business.clone(),
         spitzli_ids::Identity::platform(0, 2).unwrap(),

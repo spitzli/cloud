@@ -34,7 +34,7 @@ Paid bases fence manual-plan overwrite, including old/raw writers; extras remain
 
 ## Worker and recovery
 
-Run the shared image with `bun dist/worker.ts`, only worker credentials, `WEBDOCK_WORKER_DOMAINS=billing` and explicit `WEBDOCK_BILLING_WORKER_ENVIRONMENTS=sandbox` or reviewed `sandbox,live`. The worker uses PostgreSQL leases/CAS and bounded retry delays; stale workers cannot finish another claim. A process restart reclaims only expired leases. Sales/publication disabled does not stop webhook receipt, reconciliation or termination processing.
+Run the shared image with `bun dist/worker.ts`, only worker credentials, `SPITZLI_WORKER_DOMAINS=billing` and explicit `SPITZLI_BILLING_WORKER_ENVIRONMENTS=sandbox` or reviewed `sandbox,live`. The worker uses PostgreSQL leases/CAS and bounded retry delays; stale workers cannot finish another claim. A process restart reclaims only expired leases. Sales/publication disabled does not stop webhook receipt, reconciliation or termination processing.
 
 Studio Billing shows pending/review counts and oldest queue/reconciliation times. Retry controls only reset read operations (`webhook`, `reconcile`, `catalog`); receipt conflicts, unsupported versions and missing bodies remain quarantined. They cannot repeat checkout/product/endpoint/subscription writes. Use the customer billing review to trigger a fresh read. Inspect provider facts before resolving an ambiguous write; preserve its operation IDs and original acceptance. Do not delete a job or create a second checkout as a retry mechanism.
 

@@ -1,6 +1,6 @@
 # Native session management
 
-`WEBDOCK_SESSION_MANAGEMENT_BACKEND=tokio-postgres` opts the Core into native
+`SPITZLI_SESSION_MANAGEMENT_BACKEND=tokio-postgres` opts the Core into native
 self-service session listing, renewal, own-session revocation, revoke-other and
 logout. It also selects native cookie reads, using the same bounded max4/min0
 pool. The older read-only flag remains supported. Unknown values fail startup;

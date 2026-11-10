@@ -229,7 +229,7 @@ NetworkPolicy selects the specific app and only the database destination/port. U
 
 **Interfaces**
 
-Use the task 3 `mail` selection. `bindApplicationMail(actor,input)` is internal to `services.bind` and returns `ServiceBindingView`. Its key is always `sending_access`, bound to the selected `domainID`. Inject the configured key variable (default `WEBDOCK_MAIL_API_KEY`) and `WEBDOCK_MAIL_API_URL`; neither contains Turbo account credentials.
+Use the task 3 `mail` selection. `bindApplicationMail(actor,input)` is internal to `services.bind` and returns `ServiceBindingView`. Its key is always `sending_access`, bound to the selected `domainID`. Inject the configured key variable (default `SPITZLI_MAIL_API_KEY`) and `SPITZLI_MAIL_API_URL`; neither contains Turbo account credentials.
 
 Extract the transaction body of `createMailKey` into `createMailKeyInTransaction(db,actor,input)`. Existing public callers continue using `createMailKey`, with the same validation and rate limits. The binding path uses one verified session scope and one transaction for Mail permission checks, key hash insertion, encrypted key storage and binding insertion. This is not a generic worker credential-minting bypass.
 

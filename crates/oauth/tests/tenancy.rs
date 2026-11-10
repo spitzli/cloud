@@ -19,7 +19,7 @@ fn cookie(h: &str) -> &str {
 async fn public_client_grants_follow_live_tenant_membership_and_explicit_revocation() {
     let auth_url = url("AUTH_DATABASE_URL");
     let db = Database::connect(auth_url.clone()).await.unwrap();
-    let offline = Database::connect(url("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let offline = Database::connect(url("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     offline

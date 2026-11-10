@@ -92,7 +92,7 @@ current enrollment, native runtime capability, private network addresses, Traefi
 entrypoint and enforced network policies before producing a target profile.
 
 The inspected serving Core has an empty file-based runtime map and a Unix plugin
-configuration. Merely setting `WEBDOCK_NATIVE_PLUGIN_CONFIG` does not start the
+configuration. Merely setting `SPITZLI_NATIVE_PLUGIN_CONFIG` does not start the
 private callback listener or installer. Separately supervise:
 
 ```sh
@@ -109,8 +109,8 @@ CA signing key. Core HTTP and callback need their retained client/server identit
 public CA and narrow private configuration, not that CA signing key.
 
 HTTP and callback must use the same Neon connection encryption key selection:
-`WEBDOCK_HOSTING_ENCRYPTION_KEY`, then `BETTER_AUTH_SECRET`, then
-`WEBDOCK_AUTH_SECRET`. Preserve the currently selected key. Private browser/OAuth
+`SPITZLI_HOSTING_ENCRYPTION_KEY`, then `BETTER_AUTH_SECRET`, then
+`SPITZLI_AUTH_SECRET`. Preserve the currently selected key. Private browser/OAuth
 authority uses the retained protocol issuer, independently of the canonical public
 login hostname. Do not rotate MFA, passkey identities, user passwords or keys as
 part of this rollout.

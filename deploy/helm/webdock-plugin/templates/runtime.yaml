@@ -65,13 +65,13 @@ spec:
               drop: [ALL]
           {{- if .Values.plugin }}
           env:
-            - name: WEBDOCK_PLUGIN_ID
+            - name: SPITZLI_PLUGIN_ID
               value: {{ .Values.plugin.pluginId | quote }}
-            - name: WEBDOCK_PLUGIN_VERSION
+            - name: SPITZLI_PLUGIN_VERSION
               value: {{ .Values.plugin.version | quote }}
-            - name: WEBDOCK_PLUGIN_GENERATION
+            - name: SPITZLI_PLUGIN_GENERATION
               value: {{ .Values.plugin.runtimeGeneration | quote }}
-            - name: WEBDOCK_PLUGIN_MANIFEST_SHA256
+            - name: SPITZLI_PLUGIN_MANIFEST_SHA256
               value: {{ .Values.plugin.manifestSha256 | quote }}
           {{- end }}
           resources: {{ .Values.resources | toJson }}

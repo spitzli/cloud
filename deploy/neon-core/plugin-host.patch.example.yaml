@@ -37,7 +37,7 @@ spec:
       containers:
         - name: core
           env:
-            - {name: WEBDOCK_NATIVE_PLUGIN_CONFIG, value: /private-plugins/data/plugin-config.json}
+            - {name: SPITZLI_NATIVE_PLUGIN_CONFIG, value: /private-plugins/data/plugin-config.json}
           volumeMounts:
             - {name: plugin-private, mountPath: /private-plugins, readOnly: true}
       volumes:

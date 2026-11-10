@@ -38,8 +38,8 @@ background prefetch of every footer route.
 bun run --filter @spitzli/console build
 bun run --filter @spitzli/console lint
 bun test --isolate apps/console/tests
-WEBDOCK_BROWSER_DIST="$PWD/apps/console/dist" bun apps/console/tests/intent-prefetch-browser.mjs
-WEBDOCK_BROWSER_DIST="$PWD/apps/console/dist" bun apps/console/tests/prefetch-loading-browser.mjs
+SPITZLI_BROWSER_DIST="$PWD/apps/console/dist" bun apps/console/tests/intent-prefetch-browser.mjs
+SPITZLI_BROWSER_DIST="$PWD/apps/console/dist" bun apps/console/tests/prefetch-loading-browser.mjs
 bun test --isolate apps/website/tests/waitlist-release.test.tsx apps/website/tests/sso-policy.test.ts apps/website/tests/cms-bridge-policy.test.ts
 bun run --filter @spitzli/web test:prefetch
 ```

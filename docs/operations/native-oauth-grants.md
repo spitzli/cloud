@@ -1,6 +1,6 @@
 # Native OAuth authorization and consent
 
-`WEBDOCK_OAUTH_GRANTS_BACKEND=tokio-postgres` opts authorization request creation,
+`SPITZLI_OAUTH_GRANTS_BACKEND=tokio-postgres` opts authorization request creation,
 consent details and consent decisions into direct PostgreSQL. The default remains
 `sea-orm`; unknown values fail startup. Core also selects native security writes,
 coordinated IDs, cookie reads and OAuth introspection/client reads, reusing the

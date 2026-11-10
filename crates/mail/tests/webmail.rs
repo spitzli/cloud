@@ -34,7 +34,7 @@ async fn role(key: &str, name: &str, host: &url::Url) -> DatabaseConnection {
 #[ignore = "creates and removes an owned local Webmail database"]
 async fn explicit_mailbox_grant_one_use_launch_revocation_and_secret_boundary() {
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
     assert_eq!(url.path(), "/webdock_rls_test");
     assert!(url.query().is_none());
@@ -65,7 +65,7 @@ async fn explicit_mailbox_grant_one_use_launch_revocation_and_secret_boundary() 
         let encryption=STANDARD.encode([29u8;32]);let sealed=MailCipher::new(&encryption).unwrap().seal(&json!({"username":"native-alice","password":"retained-fixture-password"}),"identity:123:304").unwrap();
         sql(&owner,"INSERT INTO webdock_mail.identity(id,customer_id,subject,provider_id,encrypted_credentials,state) VALUES('304','123','alice','principal1',$1,'ready')",vec![sealed.into()]).await;
         sql(&owner,"INSERT INTO webdock_mail.mailbox_grant(customer_id,mailbox_id,subject,enabled,revision,applied_revision,member_id) VALUES('123','303','alice',true,1,1,'member-alice')",vec![]).await;
-        let auth=role("AUTH_DATABASE_URL",&name,&url).await;let business=role("DATABASE_URL",&name,&url).await;let worker=role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;
+        let auth=role("AUTH_DATABASE_URL",&name,&url).await;let business=role("DATABASE_URL",&name,&url).await;let worker=role("SPITZLI_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;
         let cookies=CookiePolicy::new(false,"local-webmail-cookie-fixture-key-at-least32").unwrap();let alice_cookie=format!("{}={}",cookies.name(),cookies.sign("alice-token").unwrap());let operator_cookie=format!("{}={}",cookies.name(),cookies.sign("operator-token").unwrap());
         let identity=Arc::new(IdentityService::new(auth.clone(),cookies));let alice=identity.authenticate_cookie(&alice_cookie).await.unwrap().unwrap();let operator=identity.authenticate_cookie(&operator_cookie).await.unwrap().unwrap();
         let ids=Arc::new(spitzli_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,spitzli_ids::Identity::platform(0,2).unwrap()));

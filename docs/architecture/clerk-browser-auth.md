@@ -1,6 +1,6 @@
 # Selectable browser authentication
 
-The browser provider is an installation choice, parsed by `@spitzli/auth-configuration` from `WEBDOCK_AUTH_PROVIDER`. Absence preserves Better Auth. A configured object with issuer, authorized parties and audience defaults to Clerk when provider is omitted; explicit Clerk configuration selects exactly one browser entrypoint and requires an issuer and authorized-party list. Existing configurations require an audience; explicit `tokenMode: "session"` accepts native Clerk session tokens without an audience and rejects a simultaneous audience setting. New installation manifests should select Clerk explicitly. This change does not switch existing deployments or enroll their accounts.
+The browser provider is an installation choice, parsed by `@spitzli/auth-configuration` from `SPITZLI_AUTH_PROVIDER`. Absence preserves Better Auth. A configured object with issuer, authorized parties and audience defaults to Clerk when provider is omitted; explicit Clerk configuration selects exactly one browser entrypoint and requires an issuer and authorized-party list. Existing configurations require an audience; explicit `tokenMode: "session"` accepts native Clerk session tokens without an audience and rejects a simultaneous audience setting. New installation manifests should select Clerk explicitly. This change does not switch existing deployments or enroll their accounts.
 
 ## Trust boundaries
 
@@ -42,8 +42,8 @@ The resume dispatch disables further refresh and clears the handoff cookie on su
 
 ## Core-only protocol selection
 
-`WEBDOCK_AUTH_PROVIDER` selects browser identity. With Clerk selected,
-`WEBDOCK_OAUTH_PROVIDER` defaults to `disabled`: core Console requests use verified
+`SPITZLI_AUTH_PROVIDER` selects browser identity. With Clerk selected,
+`SPITZLI_OAUTH_PROVIDER` defaults to `disabled`: core Console requests use verified
 Clerk principals and local membership/RLS validation without constructing Better
 Auth or requiring `BETTER_AUTH_SECRET`. The older `/v1/studio` compatibility bridge,
 OAuth client management, and OAuth introspection require the OAuth capability.
@@ -51,7 +51,7 @@ OAuth client management, and OAuth introspection require the OAuth capability.
 Existing Better Auth installations keep their bundled browser and OAuth runtime.
 To retain the existing issuer, audience, opaque-token introspection, revocation,
 and MCP clients during a Clerk rollout, explicitly set
-`WEBDOCK_OAUTH_PROVIDER=better-auth`. This compatibility mode still requires the
+`SPITZLI_OAUTH_PROVIDER=better-auth`. This compatibility mode still requires the
 Better Auth secret and existing OAuth provisioning; it is not a second independent
 Clerk OAuth implementation. MCP startup fails if OAuth is disabled. Clerk JWTs
 are never treated as the existing OAuth tokens. Supporting direct Clerk MCP later
@@ -62,7 +62,7 @@ return 404 when OAuth is disabled. Native Console registry/plugin operations and
 isolated plugin data transports retain their own authorization boundaries.
 
 Selected Clerk Console traffic uses `/v1/console` with a server-only
-`WEBDOCK_CONSOLE_SERVICE_KEY`, the configured Clerk audience and authorized
+`SPITZLI_CONSOLE_SERVICE_KEY`, the configured Clerk audience and authorized
 parties, and live session/membership verification. Provision the existing
 `webdock_auth.clerk_identity` and `clerk_organization` mappings before cutover.
 Older adapter mapping tables are not automatically reinterpreted or migrated;

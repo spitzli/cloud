@@ -1,6 +1,6 @@
 # Native OAuth revocation and logout
 
-`WEBDOCK_OAUTH_SECURITY_BACKEND=tokio-postgres` opts token revocation and
+`SPITZLI_OAUTH_SECURITY_BACKEND=tokio-postgres` opts token revocation and
 end-session into direct PostgreSQL. Default `sea-orm` remains unchanged; unknown
 values fail startup. Core also selects native coordinated IDs, cookie session
 reads and OAuth introspection/client/public-key reads. It reuses the existing
