@@ -44,7 +44,7 @@ async fn setup_rejects_unreviewed_targets_before_creating_private_output() {
 #[path = "support/plugin_setup_fixture.rs"]
 mod fixture;
 #[tokio::test]
-#[ignore = "requires WEBDOCK_PLUGIN_SETUP_DOCKER_TEST=1; exclusively owned fresh native PostgreSQL"]
+#[ignore = "requires SPITZLI_PLUGIN_SETUP_DOCKER_TEST=1; exclusively owned fresh native PostgreSQL"]
 async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_seed_rows() {
     use std::os::unix::fs::MetadataExt;
     let f = fixture::Fixture::start().await;

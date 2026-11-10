@@ -12,7 +12,7 @@ struct Args {
 }
 fn fixture_path() -> std::path::PathBuf {
     let name =
-        std::env::var("WEBDOCK_ACCOUNT_FIXTURE").unwrap_or_else(|_| "account-browser.json".into());
+        std::env::var("SPITZLI_ACCOUNT_FIXTURE").unwrap_or_else(|_| "account-browser.json".into());
     assert!(
         name.len() <= 96
             && name.starts_with("account-browser")
@@ -48,7 +48,7 @@ async fn main() {
     let path = fixture_path();
     let url = guarded("AUTH_DATABASE_URL");
     let db = Database::connect(&url).await.unwrap();
-    let owner = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let owner = Database::connect(guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     if args.repair {

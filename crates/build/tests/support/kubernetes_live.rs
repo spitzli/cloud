@@ -102,7 +102,7 @@ fn evidence(path: &Path, value: &Value) {
 
 fn owned_database() -> (PathBuf, Value) {
     let path = PathBuf::from(
-        std::env::var_os("WEBDOCK_KUBERNETES_LIVE_CUSTODY")
+        std::env::var_os("SPITZLI_KUBERNETES_LIVE_CUSTODY")
             .expect("owned local PostgreSQL custody"),
     );
     let custody: Value = serde_json::from_slice(&private_read(&path, 16384)).unwrap();
@@ -126,7 +126,7 @@ fn owned_database() -> (PathBuf, Value) {
         custody["runID"]
     );
     let database =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(database.host_str(), Some("127.0.0.1"));
     assert_eq!(database.path(), "/webdock_rls_test");
     assert_eq!(
@@ -610,7 +610,7 @@ fn assert_railpack_run(bytes: &[u8], nonce: &str, sha: &str) -> String {
 #[ignore = "explicit private evidence from an already completed owned Railpack build; no cluster or provider calls"]
 fn kubernetes_live_verify_retained_railpack_evidence() {
     let directory =
-        PathBuf::from(std::env::var_os("WEBDOCK_KUBERNETES_RETAINED_EVIDENCE").unwrap());
+        PathBuf::from(std::env::var_os("SPITZLI_KUBERNETES_RETAINED_EVIDENCE").unwrap());
     private_dir(&directory);
     let receipts = std::fs::read_dir(directory.join("dispatcher"))
         .unwrap()
@@ -668,7 +668,7 @@ fn kubernetes_live_verify_retained_railpack_evidence() {
             .as_array()
             .unwrap()
             .iter()
-            .any(|e| e["name"] == "WEBDOCK_COMMIT_SHA" && e["value"] == source)
+            .any(|e| e["name"] == "SPITZLI_COMMIT_SHA" && e["value"] == source)
     );
     for logs in [
         receipt["logs"].as_str().unwrap(),
@@ -757,7 +757,7 @@ struct LiveInputs {
 }
 
 fn live_inputs() -> LiveInputs {
-    let config_path = PathBuf::from(std::env::var_os("WEBDOCK_KUBERNETES_LIVE_CONFIG").unwrap());
+    let config_path = PathBuf::from(std::env::var_os("SPITZLI_KUBERNETES_LIVE_CONFIG").unwrap());
     let config: LiveConfig =
         serde_json::from_slice(&private_read(&config_path, 128 * 1024)).unwrap();
     assert!((30..=1800).contains(&config.timeout_seconds));
@@ -822,13 +822,13 @@ async fn kubernetes_live_railpack_retains_verified_image_and_temporary_proxy_sec
 async fn kubernetes_live_reconcile_retained_native_fixture() {
     let (_, custody) = owned_database();
     let inputs = live_inputs();
-    let directory = PathBuf::from(std::env::var_os("WEBDOCK_NATIVE_RECOVERY_DIRECTORY").unwrap());
+    let directory = PathBuf::from(std::env::var_os("SPITZLI_NATIVE_RECOVERY_DIRECTORY").unwrap());
     assert_eq!(
         directory.parent().unwrap(),
         inputs.config.evidence_directory
     );
     private_dir(&directory);
-    let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let owner = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     let records = owner
         .query_all_raw(Statement::from_string(
             DbBackend::Postgres,
@@ -843,7 +843,7 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
         HostingService::new(
             db("DATABASE_URL").await,
             db("AUTH_DATABASE_URL").await,
-            db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+            db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             std::env::var("BETTER_AUTH_SECRET").unwrap(),
             Arc::new(spitzli_persistence::IdAllocator::new(
@@ -857,7 +857,7 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
     let service = Arc::new(
         BuildService::new(
             db("DATABASE_URL").await,
-            db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+            db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,
@@ -1019,7 +1019,7 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
         "owned node stop failed; retain custody"
     );
     evidence(
-        &PathBuf::from(std::env::var_os("WEBDOCK_KUBERNETES_LIVE_CLEANUP_PROOF").unwrap()),
+        &PathBuf::from(std::env::var_os("SPITZLI_KUBERNETES_LIVE_CLEANUP_PROOF").unwrap()),
         &json!({"containerID":custody["containerID"],"allJobsAbsent":true,"physicalStorageRetired":true,"evidenceDirectory":directory}),
     );
     server.abort();
@@ -1028,7 +1028,7 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
 async fn run_live_acceptance(railpack_build: bool) {
     let (_custody_path, custody) = owned_database();
     let cleanup_path =
-        PathBuf::from(std::env::var_os("WEBDOCK_KUBERNETES_LIVE_CLEANUP_PROOF").unwrap());
+        PathBuf::from(std::env::var_os("SPITZLI_KUBERNETES_LIVE_CLEANUP_PROOF").unwrap());
     let LiveInputs {
         config,
         kube_config,
@@ -1087,7 +1087,7 @@ async fn run_live_acceptance(railpack_build: bool) {
     let service = Arc::new(
         BuildService::new(
             db("DATABASE_URL").await,
-            db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+            db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,
@@ -1481,7 +1481,7 @@ async fn run_live_acceptance(railpack_build: bool) {
     }
 
     let proof_path =
-        PathBuf::from(std::env::var_os("WEBDOCK_KUBERNETES_LIVE_CLEANUP_PROOF").unwrap());
+        PathBuf::from(std::env::var_os("SPITZLI_KUBERNETES_LIVE_CLEANUP_PROOF").unwrap());
     evidence(
         &proof_path,
         &json!({"containerID":custody["containerID"],"allJobsAbsent":absent,"evidenceDirectory":directory}),

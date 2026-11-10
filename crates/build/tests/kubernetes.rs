@@ -179,10 +179,10 @@ async fn export_owned_fixed_volume_admission_fixture() {
         os::unix::fs::{MetadataExt, OpenOptionsExt, PermissionsExt},
     };
     let (mut config, mut request) = hard_fixture();
-    config.runner_image = std::env::var("WEBDOCK_VOLUME_TEST_RUNNER_IMAGE").unwrap();
+    config.runner_image = std::env::var("SPITZLI_VOLUME_TEST_RUNNER_IMAGE").unwrap();
     config.service_account = "webdock-build-job".into();
     config.hold_execution = true;
-    if let Some(input) = std::env::var_os("WEBDOCK_VOLUME_TEST_REQUEST") {
+    if let Some(input) = std::env::var_os("SPITZLI_VOLUME_TEST_REQUEST") {
         let path = std::path::PathBuf::from(input);
         let file = std::fs::OpenOptions::new()
             .read(true)
@@ -208,7 +208,7 @@ async fn export_owned_fixed_volume_admission_fixture() {
         }]);
     }
 
-    let path = std::path::PathBuf::from(std::env::var("WEBDOCK_VOLUME_TEST_MANIFEST").unwrap());
+    let path = std::path::PathBuf::from(std::env::var("SPITZLI_VOLUME_TEST_MANIFEST").unwrap());
     let parent = path.parent().unwrap();
     let meta = parent.symlink_metadata().unwrap();
     assert!(
@@ -935,7 +935,7 @@ async fn rootless_idmap_exception_is_typed_and_bound_to_qualified_namespace_and_
         spec["initContainers"][0]["securityContext"]["allowPrivilegeEscalation"],
         false
     );
-    assert!(spec["containers"][0]["env"].as_array().unwrap().contains(&json!({"name":"WEBDOCK_JOB_UID","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"metadata.labels['batch.kubernetes.io/controller-uid']"}}})));
+    assert!(spec["containers"][0]["env"].as_array().unwrap().contains(&json!({"name":"SPITZLI_JOB_UID","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"metadata.labels['batch.kubernetes.io/controller-uid']"}}})));
     assert_eq!(
         spec["containers"][0]["command"],
         json!(["/usr/local/bin/webdock-build-entrypoint"])

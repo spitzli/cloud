@@ -26,11 +26,11 @@ impl Authorizer for Authority {
 #[tokio::test]
 #[ignore = "requires explicit owned disposable Kind context and digest image"]
 async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
-    let kubeconfig = std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap();
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let kubeconfig = std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap();
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("kind-webdock-rust-native-"));
     let config = Config::from_custom_kubeconfig(
-        Kubeconfig::read_from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap()).unwrap(),
+        Kubeconfig::read_from(std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap()).unwrap(),
         &KubeConfigOptions {
             context: Some(context.clone()),
             ..Default::default()
@@ -45,7 +45,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
     let mut spec = support::spec();
     spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
     spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
-    spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
+    spec.image = std::env::var("SPITZLI_KUBE_TEST_IMAGE").unwrap();
     let allowance = ResourceAllowance {
         apps: 2,
         cpu_millicores: 1000,

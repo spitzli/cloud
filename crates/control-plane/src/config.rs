@@ -21,9 +21,9 @@ impl AuthCompatibility {
                 platform.production,
             )
         };
-        let passkey_rp_origin = url::Url::parse(&origin("WEBDOCK_PASSKEY_RP_ORIGIN")?)
+        let passkey_rp_origin = url::Url::parse(&origin("SPITZLI_PASSKEY_RP_ORIGIN")?)
             .map_err(|_| spitzli_core::ContractError("Invalid passkey RP origin".into()))?;
-        let oauth_issuer = format!("{}/api/auth", origin("WEBDOCK_OAUTH_ISSUER_ORIGIN")?);
+        let oauth_issuer = format!("{}/api/auth", origin("SPITZLI_OAUTH_ISSUER_ORIGIN")?);
         Ok(Self {
             passkey_rp_origin,
             oauth_issuer,
@@ -168,13 +168,13 @@ pub struct RuntimeConfig {
 pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeConfig> {
     let platform = PlatformConfig::from_map(env).map_err(|e| Error::Message(e.to_string()))?;
     let database_url = env
-        .get("WEBDOCK_DATABASE_URL")
-        .ok_or_else(|| Error::Message("Missing WEBDOCK_DATABASE_URL".into()))?;
+        .get("SPITZLI_DATABASE_URL")
+        .ok_or_else(|| Error::Message("Missing SPITZLI_DATABASE_URL".into()))?;
     let uri =
         spitzli_persistence::connection::ConnectionUrl::parse(database_url, platform.production)
             .map_err(|_| Error::Message("Invalid PostgreSQL connection policy".into()))?;
     let binding = env
-        .get("WEBDOCK_BIND_ADDRESS")
+        .get("SPITZLI_BIND_ADDRESS")
         .map(String::as_str)
         .unwrap_or("127.0.0.1");
     if binding.is_empty() || binding.chars().any(char::is_whitespace) {
@@ -190,29 +190,29 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
     } else {
         binding.to_owned()
     };
-    let id_backend = match env.get("WEBDOCK_ID_BACKEND").map(String::as_str) {
+    let id_backend = match env.get("SPITZLI_ID_BACKEND").map(String::as_str) {
         None | Some("sea-orm") => IdBackend::Legacy,
         Some("tokio-postgres") => IdBackend::Native,
-        _ => return Err(Error::Message("Invalid WEBDOCK_ID_BACKEND".into())),
+        _ => return Err(Error::Message("Invalid SPITZLI_ID_BACKEND".into())),
     };
-    let session_read_backend = match env.get("WEBDOCK_SESSION_READ_BACKEND").map(String::as_str) {
+    let session_read_backend = match env.get("SPITZLI_SESSION_READ_BACKEND").map(String::as_str) {
         None | Some("sea-orm") => SessionReadBackend::Legacy,
         Some("tokio-postgres") => SessionReadBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_SESSION_READ_BACKEND".into(),
+                "Invalid SPITZLI_SESSION_READ_BACKEND".into(),
             ));
         }
     };
     let session_management_backend = match env
-        .get("WEBDOCK_SESSION_MANAGEMENT_BACKEND")
+        .get("SPITZLI_SESSION_MANAGEMENT_BACKEND")
         .map(String::as_str)
     {
         None | Some("sea-orm") => SessionManagementBackend::Legacy,
         Some("tokio-postgres") => SessionManagementBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_SESSION_MANAGEMENT_BACKEND".into(),
+                "Invalid SPITZLI_SESSION_MANAGEMENT_BACKEND".into(),
             ));
         }
     };
@@ -222,63 +222,63 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         } else {
             session_read_backend
         };
-    let browser_flow_backend = match env.get("WEBDOCK_BROWSER_FLOW_BACKEND").map(String::as_str) {
+    let browser_flow_backend = match env.get("SPITZLI_BROWSER_FLOW_BACKEND").map(String::as_str) {
         None | Some("sea-orm") => BrowserFlowBackend::Legacy,
         Some("tokio-postgres") => BrowserFlowBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_BROWSER_FLOW_BACKEND".into(),
+                "Invalid SPITZLI_BROWSER_FLOW_BACKEND".into(),
             ));
         }
     };
-    let oauth_client_backend = match env.get("WEBDOCK_OAUTH_CLIENT_BACKEND").map(String::as_str) {
+    let oauth_client_backend = match env.get("SPITZLI_OAUTH_CLIENT_BACKEND").map(String::as_str) {
         None | Some("sea-orm") => OAuthClientBackend::Legacy,
         Some("tokio-postgres") => OAuthClientBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_OAUTH_CLIENT_BACKEND".into(),
+                "Invalid SPITZLI_OAUTH_CLIENT_BACKEND".into(),
             ));
         }
     };
     let oauth_introspection_backend = match env
-        .get("WEBDOCK_OAUTH_INTROSPECTION_BACKEND")
+        .get("SPITZLI_OAUTH_INTROSPECTION_BACKEND")
         .map(String::as_str)
     {
         None | Some("sea-orm") => OAuthIntrospectionBackend::Legacy,
         Some("tokio-postgres") => OAuthIntrospectionBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_OAUTH_INTROSPECTION_BACKEND".into(),
+                "Invalid SPITZLI_OAUTH_INTROSPECTION_BACKEND".into(),
             ));
         }
     };
     let oauth_security_backend = match env
-        .get("WEBDOCK_OAUTH_SECURITY_BACKEND")
+        .get("SPITZLI_OAUTH_SECURITY_BACKEND")
         .map(String::as_str)
     {
         None | Some("sea-orm") => OAuthSecurityBackend::Legacy,
         Some("tokio-postgres") => OAuthSecurityBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_OAUTH_SECURITY_BACKEND".into(),
+                "Invalid SPITZLI_OAUTH_SECURITY_BACKEND".into(),
             ));
         }
     };
-    let oauth_grants_backend = match env.get("WEBDOCK_OAUTH_GRANTS_BACKEND").map(String::as_str) {
+    let oauth_grants_backend = match env.get("SPITZLI_OAUTH_GRANTS_BACKEND").map(String::as_str) {
         None | Some("sea-orm") => OAuthGrantsBackend::Legacy,
         Some("tokio-postgres") => OAuthGrantsBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_OAUTH_GRANTS_BACKEND".into(),
+                "Invalid SPITZLI_OAUTH_GRANTS_BACKEND".into(),
             ));
         }
     };
-    let oauth_tokens_backend = match env.get("WEBDOCK_OAUTH_TOKENS_BACKEND").map(String::as_str) {
+    let oauth_tokens_backend = match env.get("SPITZLI_OAUTH_TOKENS_BACKEND").map(String::as_str) {
         None | Some("sea-orm") => OAuthTokensBackend::Legacy,
         Some("tokio-postgres") => OAuthTokensBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_OAUTH_TOKENS_BACKEND".into(),
+                "Invalid SPITZLI_OAUTH_TOKENS_BACKEND".into(),
             ));
         }
     };
@@ -308,12 +308,12 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         } else {
             oauth_introspection_backend
         };
-    let mcp_authority_backend = match env.get("WEBDOCK_MCP_AUTHORITY_BACKEND").map(String::as_str) {
+    let mcp_authority_backend = match env.get("SPITZLI_MCP_AUTHORITY_BACKEND").map(String::as_str) {
         None | Some("sea-orm") => McpAuthorityBackend::Legacy,
         Some("tokio-postgres") => McpAuthorityBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_MCP_AUTHORITY_BACKEND".into(),
+                "Invalid SPITZLI_MCP_AUTHORITY_BACKEND".into(),
             ));
         }
     };
@@ -324,14 +324,14 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
             oauth_introspection_backend
         };
     let browser_authority_backend = match env
-        .get("WEBDOCK_BROWSER_AUTHORITY_BACKEND")
+        .get("SPITZLI_BROWSER_AUTHORITY_BACKEND")
         .map(String::as_str)
     {
         None | Some("sea-orm") => BrowserAuthorityBackend::Legacy,
         Some("tokio-postgres") => BrowserAuthorityBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_BROWSER_AUTHORITY_BACKEND".into(),
+                "Invalid SPITZLI_BROWSER_AUTHORITY_BACKEND".into(),
             ));
         }
     };
@@ -356,26 +356,26 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         oauth_client_backend
     };
     let account_recovery_backend = match env
-        .get("WEBDOCK_ACCOUNT_RECOVERY_BACKEND")
+        .get("SPITZLI_ACCOUNT_RECOVERY_BACKEND")
         .map(String::as_str)
     {
         None | Some("sea-orm") => AccountRecoveryBackend::Legacy,
         Some("tokio-postgres") => AccountRecoveryBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_ACCOUNT_RECOVERY_BACKEND".into(),
+                "Invalid SPITZLI_ACCOUNT_RECOVERY_BACKEND".into(),
             ));
         }
     };
     let password_login_backend = match env
-        .get("WEBDOCK_PASSWORD_LOGIN_BACKEND")
+        .get("SPITZLI_PASSWORD_LOGIN_BACKEND")
         .map(String::as_str)
     {
         None | Some("sea-orm") => PasswordLoginBackend::Legacy,
         Some("tokio-postgres") => PasswordLoginBackend::Native,
         _ => {
             return Err(Error::Message(
-                "Invalid WEBDOCK_PASSWORD_LOGIN_BACKEND".into(),
+                "Invalid SPITZLI_PASSWORD_LOGIN_BACKEND".into(),
             ));
         }
     };
@@ -436,15 +436,15 @@ mod auth_compatibility {
         let env = HashMap::from([
             ("NODE_ENV".into(), "production".into()),
             (
-                "WEBDOCK_API_ORIGIN".into(),
+                "SPITZLI_API_ORIGIN".into(),
                 "https://api.spitzli.cloud".into(),
             ),
             (
-                "WEBDOCK_AUTH_ORIGIN".into(),
+                "SPITZLI_AUTH_ORIGIN".into(),
                 "https://auth.spitzli.cloud".into(),
             ),
             (
-                "WEBDOCK_STUDIO_ORIGIN".into(),
+                "SPITZLI_STUDIO_ORIGIN".into(),
                 "https://studio.spitzli.cloud".into(),
             ),
         ]);
@@ -482,11 +482,11 @@ mod auth_compatibility {
     fn explicit_protocol_origins_preserve_identifiers_without_changing_account() {
         let (mut env, platform) = production();
         env.insert(
-            "WEBDOCK_PASSKEY_RP_ORIGIN".into(),
+            "SPITZLI_PASSKEY_RP_ORIGIN".into(),
             "https://auth.webdock.dev/".into(),
         );
         env.insert(
-            "WEBDOCK_OAUTH_ISSUER_ORIGIN".into(),
+            "SPITZLI_OAUTH_ISSUER_ORIGIN".into(),
             "https://auth.webdock.dev/".into(),
         );
         let compatibility = AuthCompatibility::from_map(&env, &platform).unwrap();
@@ -508,7 +508,7 @@ mod auth_compatibility {
 
     #[test]
     fn invalid_production_protocol_origins_are_rejected() {
-        for key in ["WEBDOCK_PASSKEY_RP_ORIGIN", "WEBDOCK_OAUTH_ISSUER_ORIGIN"] {
+        for key in ["SPITZLI_PASSKEY_RP_ORIGIN", "SPITZLI_OAUTH_ISSUER_ORIGIN"] {
             for invalid in [
                 "http://auth.webdock.dev",
                 "http://localhost:3125",

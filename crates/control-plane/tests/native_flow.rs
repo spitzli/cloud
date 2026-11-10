@@ -64,7 +64,7 @@ async fn call(
 #[tokio::test]
 #[ignore = "requires the explicitly owned restricted-role fixture"]
 async fn native_http_setup_mfa_registry_audit_and_revocation_are_connected() {
-    let owner = Database::connect(target("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let owner = Database::connect(target("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     let auth_url = target("AUTH_DATABASE_URL");
@@ -108,7 +108,7 @@ async fn native_http_setup_mfa_registry_audit_and_revocation_are_connected() {
     owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_admin.users(id,name,email,role,auth_subject) VALUES($1,'HTTP fixture',$2,'operator',$3)",[mapping.into(),email.clone().into(),user.clone().into()])).await.unwrap();
     let registry = Arc::new(
         spitzli_registry::RegistryService::new(
-            Database::connect(target("WEBDOCK_REGISTRY_DATABASE_URL"))
+            Database::connect(target("SPITZLI_REGISTRY_DATABASE_URL"))
                 .await
                 .unwrap(),
             RlsSigner::new(

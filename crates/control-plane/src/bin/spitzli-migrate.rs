@@ -21,7 +21,7 @@ struct Args {
 async fn main() -> Result<(), MigrationError> {
     let args = Args::parse();
     let raw =
-        std::env::var("WEBDOCK_MIGRATION_DATABASE_URL").map_err(|_| MigrationError::Target)?;
+        std::env::var("SPITZLI_MIGRATION_DATABASE_URL").map_err(|_| MigrationError::Target)?;
     let connection = spitzli_persistence::connection::ConnectionUrl::parse(&raw, false)
         .map_err(|_| MigrationError::Target)?;
     connection

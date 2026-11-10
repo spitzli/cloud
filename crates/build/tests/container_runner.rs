@@ -155,6 +155,7 @@ fn rejects_runtime_controls_and_mutable_or_mismatched_frontend() {
         "BASH_ENV",
         "BUILDKIT_HOST",
         "DOCKER_CONFIG",
+        "SPITZLI_WORKER_TOKEN",
         "WEBDOCK_WORKER_TOKEN",
         "GIT_CONFIG_COUNT",
         "PYTHONPATH",
@@ -423,7 +424,7 @@ fn container_fake_tools_export_valid_oci_and_redact_customer_secrets() {
     )
     .unwrap();
     let output = fixture.path().join("output");
-    let binary = std::env::var_os("WEBDOCK_TEST_RUNNER_BINARY")
+    let binary = std::env::var_os("SPITZLI_TEST_RUNNER_BINARY")
         .unwrap_or_else(|| "/usr/local/bin/spitzli-build-runner".into());
     let invoke = |output: &Path| {
         std::process::Command::new(&binary)

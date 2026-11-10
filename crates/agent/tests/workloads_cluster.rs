@@ -1,5 +1,5 @@
 //! The workload executor against a real disposable cluster: the local dev k3s
-//! (`WEBDOCK_WORKLOAD_TEST_KUBECONFIG`, context `webdock-dev`). Everything lives in one unique
+//! (`SPITZLI_WORKLOAD_TEST_KUBECONFIG`, context `webdock-dev`). Everything lives in one unique
 //! namespace that the test removes.
 #![cfg(feature = "kubernetes")]
 use kube::{
@@ -13,7 +13,7 @@ use spitzli_agent::workloads::WorkloadExecutor;
 use std::time::Duration;
 
 async fn client() -> Client {
-    let path = std::env::var("WEBDOCK_WORKLOAD_TEST_KUBECONFIG").expect("local dev kubeconfig");
+    let path = std::env::var("SPITZLI_WORKLOAD_TEST_KUBECONFIG").expect("local dev kubeconfig");
     let options = KubeConfigOptions {
         context: Some("webdock-dev".into()),
         ..Default::default()

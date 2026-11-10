@@ -20,9 +20,9 @@ pub fn encryption_key(
     env: &std::collections::HashMap<String, String>,
 ) -> Result<&str, spitzli_core::ContractError> {
     [
-        "WEBDOCK_HOSTING_ENCRYPTION_KEY",
+        "SPITZLI_HOSTING_ENCRYPTION_KEY",
         "BETTER_AUTH_SECRET",
-        "WEBDOCK_AUTH_SECRET",
+        "SPITZLI_AUTH_SECRET",
     ]
     .iter()
     .find_map(|key| env.get(*key).map(String::as_str))
@@ -110,15 +110,15 @@ mod retained_connection_key_tests {
     #[test]
     fn private_callbacks_and_http_preserve_the_same_connection_key_priority() {
         let mut env = std::collections::HashMap::from([
-            ("WEBDOCK_AUTH_SECRET".into(), "fixture-auth".into()),
+            ("SPITZLI_AUTH_SECRET".into(), "fixture-auth".into()),
             ("BETTER_AUTH_SECRET".into(), "fixture-better".into()),
             (
-                "WEBDOCK_HOSTING_ENCRYPTION_KEY".into(),
+                "SPITZLI_HOSTING_ENCRYPTION_KEY".into(),
                 "fixture-hosting".into(),
             ),
         ]);
         assert_eq!(encryption_key(&env).unwrap(), "fixture-hosting");
-        env.remove("WEBDOCK_HOSTING_ENCRYPTION_KEY");
+        env.remove("SPITZLI_HOSTING_ENCRYPTION_KEY");
         assert_eq!(encryption_key(&env).unwrap(), "fixture-better");
         env.remove("BETTER_AUTH_SECRET");
         assert_eq!(encryption_key(&env).unwrap(), "fixture-auth");
@@ -128,7 +128,7 @@ mod retained_connection_key_tests {
     #[test]
     fn an_explicit_empty_key_is_not_silently_replaced() {
         let env = std::collections::HashMap::from([
-            ("WEBDOCK_HOSTING_ENCRYPTION_KEY".into(), String::new()),
+            ("SPITZLI_HOSTING_ENCRYPTION_KEY".into(), String::new()),
             ("BETTER_AUTH_SECRET".into(), "fixture-other".into()),
         ]);
         assert_eq!(encryption_key(&env).unwrap(), "");

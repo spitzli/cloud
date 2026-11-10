@@ -126,11 +126,11 @@ async fn database_order_retirement_does_not_hide_existing_database_access() {
     for enabled in [false, true] {
         let config = PlatformConfig::from_map(&HashMap::from([
             (
-                "WEBDOCK_FEATURES".into(),
+                "SPITZLI_FEATURES".into(),
                 r#"{"databases":"enabled"}"#.into(),
             ),
             (
-                "WEBDOCK_DATABASE_NEW_ORDERS_ENABLED".into(),
+                "SPITZLI_DATABASE_NEW_ORDERS_ENABLED".into(),
                 enabled.to_string(),
             ),
         ]))
@@ -150,7 +150,7 @@ async fn database_order_retirement_does_not_hide_existing_database_access() {
 #[test]
 fn native_database_boot_keeps_explicit_runtime_policy() {
     let env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     let config = runtime_config(&env).unwrap();
@@ -168,7 +168,7 @@ fn database_configuration_rejects_query_authority_overrides_and_tls_downgrades()
         "?sslmode=verify-full&ssl-mode=disable",
     ] {
         let env = HashMap::from([(
-            "WEBDOCK_DATABASE_URL".into(),
+            "SPITZLI_DATABASE_URL".into(),
             format!("postgres://runtime:fixture@127.0.0.1/webdock_test{suffix}"),
         )]);
         assert!(runtime_config(&env).is_err(), "query override was accepted");

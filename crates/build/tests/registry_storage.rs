@@ -24,7 +24,7 @@ fn fixture() -> Fixture {
         let _ = rustls::crypto::ring::default_provider().install_default();
     }
     let path = std::path::PathBuf::from(
-        std::env::var_os("WEBDOCK_REGISTRY_S3_TEST_CONFIG")
+        std::env::var_os("SPITZLI_REGISTRY_S3_TEST_CONFIG")
             .expect("explicit private registry fixture"),
     );
     let metadata = path.symlink_metadata().unwrap();

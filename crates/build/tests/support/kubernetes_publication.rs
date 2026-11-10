@@ -40,7 +40,7 @@ async fn kubernetes_publication_stages_fresh_operation_before_build_success_and_
         sql(&f.owner,"UPDATE webdock_auth.hosting_agent SET observation=jsonb_set(observation,'{capabilities,registryVersion}','1') WHERE cluster_id=$1",vec![f.cluster.clone().into()]).await;
         let service = BuildService::new(
             db("DATABASE_URL").await,
-            db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+            db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,

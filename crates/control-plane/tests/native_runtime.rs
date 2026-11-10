@@ -6,7 +6,7 @@ use tokio::sync::{Notify, oneshot};
 #[test]
 fn native_startup_keeps_explicit_pool_and_binding_policy() {
     let env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     let config = runtime_config(&env).unwrap();
@@ -24,26 +24,26 @@ fn native_startup_keeps_explicit_pool_and_binding_policy() {
 fn native_id_backend_requires_an_explicit_supported_choice() {
     use spitzli_control_plane::config::IdBackend;
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
         runtime_config(&env).unwrap().id_backend,
         IdBackend::Legacy
     ));
-    env.insert("WEBDOCK_ID_BACKEND".into(), "tokio-postgres".into());
+    env.insert("SPITZLI_ID_BACKEND".into(), "tokio-postgres".into());
     assert!(matches!(
         runtime_config(&env).unwrap().id_backend,
         IdBackend::Native
     ));
-    env.insert("WEBDOCK_ID_BACKEND".into(), "typo".into());
+    env.insert("SPITZLI_ID_BACKEND".into(), "typo".into());
     assert!(runtime_config(&env).is_err());
 }
 
 #[test]
 fn native_startup_errors_do_not_include_database_credentials() {
     let env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:never-show-this@127.0.0.1/db?host=foreign.invalid".into(),
     )]);
     let error = runtime_config(&env).err().unwrap();
@@ -56,10 +56,10 @@ fn native_binding_preserves_existing_bracketed_ipv6_addresses() {
     for (binding, expected) in [("[::]", "::"), ("[::1]", "::1"), ("::1", "::1")] {
         let env = HashMap::from([
             (
-                "WEBDOCK_DATABASE_URL".into(),
+                "SPITZLI_DATABASE_URL".into(),
                 "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
             ),
-            ("WEBDOCK_BIND_ADDRESS".into(), binding.into()),
+            ("SPITZLI_BIND_ADDRESS".into(), binding.into()),
         ]);
         assert_eq!(runtime_config(&env).unwrap().server.binding, expected);
     }
@@ -70,25 +70,25 @@ fn retained_production_environment_still_enforces_tls_policy() {
     let mut env = HashMap::from([
         ("LOCO_ENV".into(), "production".into()),
         (
-            "WEBDOCK_API_ORIGIN".into(),
+            "SPITZLI_API_ORIGIN".into(),
             "https://api.example.test".into(),
         ),
         (
-            "WEBDOCK_AUTH_ORIGIN".into(),
+            "SPITZLI_AUTH_ORIGIN".into(),
             "https://auth.example.test".into(),
         ),
         (
-            "WEBDOCK_STUDIO_ORIGIN".into(),
+            "SPITZLI_STUDIO_ORIGIN".into(),
             "https://studio.example.test".into(),
         ),
         (
-            "WEBDOCK_DATABASE_URL".into(),
+            "SPITZLI_DATABASE_URL".into(),
             "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
         ),
     ]);
     assert!(runtime_config(&env).is_err());
     env.insert(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test?sslmode=verify-full".into(),
     );
     assert!(runtime_config(&env).unwrap().platform.production);
@@ -189,7 +189,7 @@ fn native_identity_uncertainty_is_service_unavailability() {
 fn native_session_read_backend_requires_explicit_opt_in() {
     use spitzli_control_plane::config::SessionReadBackend;
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -197,14 +197,14 @@ fn native_session_read_backend_requires_explicit_opt_in() {
         SessionReadBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_SESSION_READ_BACKEND".into(),
+        "SPITZLI_SESSION_READ_BACKEND".into(),
         "tokio-postgres".into(),
     );
     assert!(matches!(
         runtime_config(&env).unwrap().session_read_backend,
         SessionReadBackend::Native
     ));
-    env.insert("WEBDOCK_SESSION_READ_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_SESSION_READ_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -212,7 +212,7 @@ fn native_session_read_backend_requires_explicit_opt_in() {
 fn native_session_management_is_explicit_and_shares_native_reads() {
     use spitzli_control_plane::config::{SessionManagementBackend, SessionReadBackend};
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -220,7 +220,7 @@ fn native_session_management_is_explicit_and_shares_native_reads() {
         SessionManagementBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_SESSION_MANAGEMENT_BACKEND".into(),
+        "SPITZLI_SESSION_MANAGEMENT_BACKEND".into(),
         "tokio-postgres".into(),
     );
     let config = runtime_config(&env).unwrap();
@@ -232,12 +232,12 @@ fn native_session_management_is_explicit_and_shares_native_reads() {
         config.session_read_backend,
         SessionReadBackend::Native
     ));
-    env.insert("WEBDOCK_SESSION_READ_BACKEND".into(), "sea-orm".into());
+    env.insert("SPITZLI_SESSION_READ_BACKEND".into(), "sea-orm".into());
     assert!(matches!(
         runtime_config(&env).unwrap().session_read_backend,
         SessionReadBackend::Native
     ));
-    env.insert("WEBDOCK_SESSION_MANAGEMENT_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_SESSION_MANAGEMENT_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -245,7 +245,7 @@ fn native_session_management_is_explicit_and_shares_native_reads() {
 fn native_browser_flow_storage_requires_explicit_opt_in() {
     use spitzli_control_plane::config::BrowserFlowBackend;
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -253,14 +253,14 @@ fn native_browser_flow_storage_requires_explicit_opt_in() {
         BrowserFlowBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_BROWSER_FLOW_BACKEND".into(),
+        "SPITZLI_BROWSER_FLOW_BACKEND".into(),
         "tokio-postgres".into(),
     );
     assert!(matches!(
         runtime_config(&env).unwrap().browser_flow_backend,
         BrowserFlowBackend::Native
     ));
-    env.insert("WEBDOCK_BROWSER_FLOW_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_BROWSER_FLOW_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -268,7 +268,7 @@ fn native_browser_flow_storage_requires_explicit_opt_in() {
 fn native_oauth_client_store_requires_explicit_opt_in() {
     use spitzli_control_plane::config::OAuthClientBackend;
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -276,14 +276,14 @@ fn native_oauth_client_store_requires_explicit_opt_in() {
         OAuthClientBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_OAUTH_CLIENT_BACKEND".into(),
+        "SPITZLI_OAUTH_CLIENT_BACKEND".into(),
         "tokio-postgres".into(),
     );
     assert!(matches!(
         runtime_config(&env).unwrap().oauth_client_backend,
         OAuthClientBackend::Native
     ));
-    env.insert("WEBDOCK_OAUTH_CLIENT_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_OAUTH_CLIENT_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -291,7 +291,7 @@ fn native_oauth_client_store_requires_explicit_opt_in() {
 fn native_oauth_introspection_requires_explicit_opt_in_and_implies_client_reads() {
     use spitzli_control_plane::config::{OAuthClientBackend, OAuthIntrospectionBackend};
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -299,7 +299,7 @@ fn native_oauth_introspection_requires_explicit_opt_in_and_implies_client_reads(
         OAuthIntrospectionBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_OAUTH_INTROSPECTION_BACKEND".into(),
+        "SPITZLI_OAUTH_INTROSPECTION_BACKEND".into(),
         "tokio-postgres".into(),
     );
     let config = runtime_config(&env).unwrap();
@@ -311,7 +311,7 @@ fn native_oauth_introspection_requires_explicit_opt_in_and_implies_client_reads(
         config.oauth_client_backend,
         OAuthClientBackend::Native
     ));
-    env.insert("WEBDOCK_OAUTH_INTROSPECTION_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_OAUTH_INTROSPECTION_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -321,7 +321,7 @@ fn native_browser_authority_is_explicit_and_shares_native_dependencies() {
         BrowserAuthorityBackend, BrowserFlowBackend, OAuthClientBackend, OAuthIntrospectionBackend,
     };
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -329,7 +329,7 @@ fn native_browser_authority_is_explicit_and_shares_native_dependencies() {
         BrowserAuthorityBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_BROWSER_AUTHORITY_BACKEND".into(),
+        "SPITZLI_BROWSER_AUTHORITY_BACKEND".into(),
         "tokio-postgres".into(),
     );
     let config = runtime_config(&env).unwrap();
@@ -349,7 +349,7 @@ fn native_browser_authority_is_explicit_and_shares_native_dependencies() {
         config.oauth_introspection_backend,
         OAuthIntrospectionBackend::Native
     ));
-    env.insert("WEBDOCK_BROWSER_AUTHORITY_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_BROWSER_AUTHORITY_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -360,7 +360,7 @@ fn native_oauth_security_is_explicit_and_implies_its_native_dependencies() {
         SessionReadBackend,
     };
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -368,7 +368,7 @@ fn native_oauth_security_is_explicit_and_implies_its_native_dependencies() {
         OAuthSecurityBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_OAUTH_SECURITY_BACKEND".into(),
+        "SPITZLI_OAUTH_SECURITY_BACKEND".into(),
         "tokio-postgres".into(),
     );
     let c = runtime_config(&env).unwrap();
@@ -383,7 +383,7 @@ fn native_oauth_security_is_explicit_and_implies_its_native_dependencies() {
     ));
     assert!(matches!(c.id_backend, IdBackend::Native));
     assert!(matches!(c.session_read_backend, SessionReadBackend::Native));
-    env.insert("WEBDOCK_OAUTH_SECURITY_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_OAUTH_SECURITY_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -394,7 +394,7 @@ fn native_oauth_grants_is_explicit_and_composes_native_authorities() {
         SessionReadBackend,
     };
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -402,7 +402,7 @@ fn native_oauth_grants_is_explicit_and_composes_native_authorities() {
         OAuthGrantsBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_OAUTH_GRANTS_BACKEND".into(),
+        "SPITZLI_OAUTH_GRANTS_BACKEND".into(),
         "tokio-postgres".into(),
     );
     let c = runtime_config(&env).unwrap();
@@ -417,7 +417,7 @@ fn native_oauth_grants_is_explicit_and_composes_native_authorities() {
     ));
     assert!(matches!(c.id_backend, IdBackend::Native));
     assert!(matches!(c.session_read_backend, SessionReadBackend::Native));
-    env.insert("WEBDOCK_OAUTH_GRANTS_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_OAUTH_GRANTS_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -427,7 +427,7 @@ fn native_oauth_tokens_is_explicit_and_composes_the_complete_owned_lifecycle() {
         IdBackend, OAuthGrantsBackend, OAuthSecurityBackend, OAuthTokensBackend, SessionReadBackend,
     };
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -435,7 +435,7 @@ fn native_oauth_tokens_is_explicit_and_composes_the_complete_owned_lifecycle() {
         OAuthTokensBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_OAUTH_TOKENS_BACKEND".into(),
+        "SPITZLI_OAUTH_TOKENS_BACKEND".into(),
         "tokio-postgres".into(),
     );
     let c = runtime_config(&env).unwrap();
@@ -447,7 +447,7 @@ fn native_oauth_tokens_is_explicit_and_composes_the_complete_owned_lifecycle() {
     ));
     assert!(matches!(c.id_backend, IdBackend::Native));
     assert!(matches!(c.session_read_backend, SessionReadBackend::Native));
-    env.insert("WEBDOCK_OAUTH_TOKENS_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_OAUTH_TOKENS_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -457,7 +457,7 @@ fn native_mcp_authority_is_explicit_and_additive_to_existing_capabilities() {
         McpAuthorityBackend, OAuthIntrospectionBackend, OAuthTokensBackend,
     };
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -465,7 +465,7 @@ fn native_mcp_authority_is_explicit_and_additive_to_existing_capabilities() {
         McpAuthorityBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_MCP_AUTHORITY_BACKEND".into(),
+        "SPITZLI_MCP_AUTHORITY_BACKEND".into(),
         "tokio-postgres".into(),
     );
     assert!(matches!(
@@ -477,14 +477,14 @@ fn native_mcp_authority_is_explicit_and_additive_to_existing_capabilities() {
         OAuthIntrospectionBackend::Native
     ));
     env.insert(
-        "WEBDOCK_OAUTH_TOKENS_BACKEND".into(),
+        "SPITZLI_OAUTH_TOKENS_BACKEND".into(),
         "tokio-postgres".into(),
     );
     assert!(matches!(
         runtime_config(&env).unwrap().oauth_tokens_backend,
         OAuthTokensBackend::Native
     ));
-    env.insert("WEBDOCK_MCP_AUTHORITY_BACKEND".into(), "other".into());
+    env.insert("SPITZLI_MCP_AUTHORITY_BACKEND".into(), "other".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -494,7 +494,7 @@ fn native_account_recovery_is_explicit_and_preserves_other_capabilities() {
         AccountRecoveryBackend, IdBackend, SessionManagementBackend,
     };
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -502,7 +502,7 @@ fn native_account_recovery_is_explicit_and_preserves_other_capabilities() {
         AccountRecoveryBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_ACCOUNT_RECOVERY_BACKEND".into(),
+        "SPITZLI_ACCOUNT_RECOVERY_BACKEND".into(),
         "tokio-postgres".into(),
     );
     assert!(matches!(
@@ -514,14 +514,14 @@ fn native_account_recovery_is_explicit_and_preserves_other_capabilities() {
         IdBackend::Native
     ));
     env.insert(
-        "WEBDOCK_SESSION_MANAGEMENT_BACKEND".into(),
+        "SPITZLI_SESSION_MANAGEMENT_BACKEND".into(),
         "tokio-postgres".into(),
     );
     assert!(matches!(
         runtime_config(&env).unwrap().session_management_backend,
         SessionManagementBackend::Native
     ));
-    env.insert("WEBDOCK_ACCOUNT_RECOVERY_BACKEND".into(), "unknown".into());
+    env.insert("SPITZLI_ACCOUNT_RECOVERY_BACKEND".into(), "unknown".into());
     assert!(runtime_config(&env).is_err());
 }
 
@@ -532,7 +532,7 @@ fn native_password_login_is_explicit_and_composes_its_required_capabilities() {
         SessionReadBackend,
     };
     let mut env = HashMap::from([(
-        "WEBDOCK_DATABASE_URL".into(),
+        "SPITZLI_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
     )]);
     assert!(matches!(
@@ -540,7 +540,7 @@ fn native_password_login_is_explicit_and_composes_its_required_capabilities() {
         PasswordLoginBackend::Legacy
     ));
     env.insert(
-        "WEBDOCK_PASSWORD_LOGIN_BACKEND".into(),
+        "SPITZLI_PASSWORD_LOGIN_BACKEND".into(),
         "tokio-postgres".into(),
     );
     let c = runtime_config(&env).unwrap();
@@ -555,13 +555,13 @@ fn native_password_login_is_explicit_and_composes_its_required_capabilities() {
         SessionManagementBackend::Native
     ));
     env.insert(
-        "WEBDOCK_ACCOUNT_RECOVERY_BACKEND".into(),
+        "SPITZLI_ACCOUNT_RECOVERY_BACKEND".into(),
         "tokio-postgres".into(),
     );
     assert!(matches!(
         runtime_config(&env).unwrap().account_recovery_backend,
         AccountRecoveryBackend::Native
     ));
-    env.insert("WEBDOCK_PASSWORD_LOGIN_BACKEND".into(), "unknown".into());
+    env.insert("SPITZLI_PASSWORD_LOGIN_BACKEND".into(), "unknown".into());
     assert!(runtime_config(&env).is_err());
 }

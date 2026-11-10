@@ -64,7 +64,7 @@ impl GuestRequest {
                 || !k.bytes().enumerate().all(|(i, b)| {
                     b == b'_' || b.is_ascii_alphabetic() || (i > 0 && b.is_ascii_digit())
                 })
-                || ["VERCEL_", "AWS_", "WEBDOCK_", "DOCKER_", "GIT_"]
+                || ["VERCEL_", "AWS_", "SPITZLI_", "WEBDOCK_", "DOCKER_", "GIT_"]
                     .iter()
                     .any(|p| k.starts_with(p))
                 || ["PATH", "HOME", "NODE_OPTIONS", "LD_PRELOAD", "PYTHONPATH"]

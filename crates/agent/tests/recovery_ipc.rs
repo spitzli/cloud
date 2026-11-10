@@ -9,8 +9,8 @@ fn write(path: &Path, value: &impl serde::Serialize) {
 #[tokio::test]
 #[ignore = "requires an exclusively owned root fixture with actual UID switching; no host mounts/socket"]
 async fn disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denial() {
-    if let Ok(mode) = std::env::var("WEBDOCK_RECOVERY_IPC_CHILD") {
-        let socket = std::env::var("WEBDOCK_RECOVERY_IPC_SOCKET").unwrap();
+    if let Ok(mode) = std::env::var("SPITZLI_RECOVERY_IPC_CHILD") {
+        let socket = std::env::var("SPITZLI_RECOVERY_IPC_SOCKET").unwrap();
         if mode == "spoof-root" {
             use tokio::io::AsyncReadExt;
             let listener = tokio::net::UnixListener::bind(&socket).unwrap();
@@ -50,7 +50,7 @@ async fn disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denia
         return;
     }
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_RECOVERY_IPC").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_RECOVERY_IPC").as_deref(),
         Ok("yes")
     );
     assert_eq!(rustix::process::geteuid().as_raw(), 0);
@@ -118,8 +118,8 @@ async fn disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denia
                 "--exact",
                 "disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denial",
             ])
-            .env("WEBDOCK_RECOVERY_IPC_CHILD", mode)
-            .env("WEBDOCK_RECOVERY_IPC_SOCKET", &socket)
+            .env("SPITZLI_RECOVERY_IPC_CHILD", mode)
+            .env("SPITZLI_RECOVERY_IPC_SOCKET", &socket)
             .uid(uid)
             .gid(gid)
             .status()
@@ -135,8 +135,8 @@ async fn disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denia
             "--exact",
             "disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denial",
         ])
-        .env("WEBDOCK_RECOVERY_IPC_CHILD", "denied")
-        .env("WEBDOCK_RECOVERY_IPC_SOCKET", &socket)
+        .env("SPITZLI_RECOVERY_IPC_CHILD", "denied")
+        .env("SPITZLI_RECOVERY_IPC_SOCKET", &socket)
         .uid(65532)
         .gid(65532)
         .status()
@@ -155,8 +155,8 @@ async fn disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denia
             "--exact",
             "disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denial",
         ])
-        .env("WEBDOCK_RECOVERY_IPC_CHILD", "spoof-root")
-        .env("WEBDOCK_RECOVERY_IPC_SOCKET", &spoof_socket)
+        .env("SPITZLI_RECOVERY_IPC_CHILD", "spoof-root")
+        .env("SPITZLI_RECOVERY_IPC_SOCKET", &spoof_socket)
         .uid(65532)
         .gid(65532)
         .spawn()

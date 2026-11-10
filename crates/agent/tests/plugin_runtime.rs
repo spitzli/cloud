@@ -254,12 +254,12 @@ fn actual_stage_script_copies_projection_symlinks_into_private_owned_regular_fil
 async fn owned_cluster_executes_real_digest_artifact_and_keeps_uids_on_restart() {
     use kube::config::{KubeConfigOptions, Kubeconfig};
     let path =
-        std::path::PathBuf::from(std::env::var("WEBDOCK_PLUGIN_RUNTIME_TEST_KUBECONFIG").unwrap());
-    let context = std::env::var("WEBDOCK_PLUGIN_RUNTIME_TEST_CONTEXT").unwrap();
+        std::path::PathBuf::from(std::env::var("SPITZLI_PLUGIN_RUNTIME_TEST_KUBECONFIG").unwrap());
+    let context = std::env::var("SPITZLI_PLUGIN_RUNTIME_TEST_CONTEXT").unwrap();
     let isolated =
         context.starts_with("kind-webdock-rust-") || context.starts_with("k3d-webdock-rust-");
     let explicit_dev = context == "webdock-dev"
-        && std::env::var("WEBDOCK_PLUGIN_RUNTIME_ALLOW_DEV_K3S").as_deref() == Ok("true");
+        && std::env::var("SPITZLI_PLUGIN_RUNTIME_ALLOW_DEV_K3S").as_deref() == Ok("true");
     assert!(
         isolated || explicit_dev,
         "an explicitly owned cluster is required"
@@ -289,7 +289,7 @@ async fn owned_cluster_executes_real_digest_artifact_and_keeps_uids_on_restart()
 
     let client = kube::Client::try_from(config).unwrap();
     let bytes = spitzli_agent::config::read_private(
-        &std::path::PathBuf::from(std::env::var("WEBDOCK_PLUGIN_RUNTIME_TEST_CLAIM").unwrap()),
+        &std::path::PathBuf::from(std::env::var("SPITZLI_PLUGIN_RUNTIME_TEST_CLAIM").unwrap()),
         512 * 1024,
     )
     .unwrap();

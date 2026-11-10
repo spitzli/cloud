@@ -166,7 +166,7 @@ mod database_discovery_tests {
             neon_connections: None,
             realtime: None,
             config: spitzli_core::config::PlatformConfig::from_map(
-                &std::collections::HashMap::from([("WEBDOCK_FEATURES".into(), features.into())]),
+                &std::collections::HashMap::from([("SPITZLI_FEATURES".into(), features.into())]),
             )
             .unwrap(),
             db: sea_orm::DatabaseConnection::default(),

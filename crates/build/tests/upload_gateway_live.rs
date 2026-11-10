@@ -160,11 +160,11 @@ fn unmount(root: &Path) {
 #[ignore = "requires script-owned user/mount namespace and dedicated tmpfs"]
 async fn real_tmpfs_and_native_http_upload_gate() {
     let root = PathBuf::from(
-        std::env::var_os("WEBDOCK_UPLOAD_LIVE_ROOT")
+        std::env::var_os("SPITZLI_UPLOAD_LIVE_ROOT")
             .expect("use tools/tests/build-upload-gateway.sh"),
     );
     let evidence = PathBuf::from(
-        std::env::var_os("WEBDOCK_UPLOAD_LIVE_EVIDENCE").expect("evidence path required"),
+        std::env::var_os("SPITZLI_UPLOAD_LIVE_EVIDENCE").expect("evidence path required"),
     );
     assert!(root.is_absolute());
     let root_fd = File::open(&root).unwrap();

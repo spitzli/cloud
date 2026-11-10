@@ -75,10 +75,10 @@ fn claim(image: &str) -> MailClaim {
 #[ignore = "explicit local Docker CE fixture"]
 async fn incoming_bootstrap_checkpoint_replay_retained_suspend_and_guard() {
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
         Ok("1")
     );
-    let image=std::env::var("WEBDOCK_MAIL_RUNTIME_IMAGE").expect("set the reviewed restricted Mail image repository@sha256 digest built from infra/mail/Dockerfile");
+    let image=std::env::var("SPITZLI_MAIL_RUNTIME_IMAGE").expect("set the reviewed restricted Mail image repository@sha256 digest built from infra/mail/Dockerfile");
     let installation = format!("test{}", &uuid::Uuid::new_v4().simple().to_string()[..12]);
     let _cleanup = Cleanup(installation.clone());
     let runtime =
@@ -434,10 +434,10 @@ fn docker_status(kind: &str, name: &str) -> Option<String> {
 }
 async fn interrupted_allocation(phase: Interruption) {
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
         Ok("1")
     );
-    let image = std::env::var("WEBDOCK_MAIL_RUNTIME_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_MAIL_RUNTIME_IMAGE").unwrap();
     let installation = format!("test{}", &uuid::Uuid::new_v4().simple().to_string()[..12]);
     let _cleanup = Cleanup(installation.clone());
     let runtime =
@@ -574,10 +574,10 @@ async fn reject_altered_initializer(
 async fn ce_configuration_group_user_dkim_contract() {
     use serde_json::{Value, json};
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
         Ok("1")
     );
-    let image = std::env::var("WEBDOCK_MAIL_RUNTIME_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_MAIL_RUNTIME_IMAGE").unwrap();
     let installation = format!("cfg{}", &uuid::Uuid::new_v4().simple().to_string()[..12]);
     let _cleanup = Cleanup(installation.clone());
     let runtime = DockerMailRuntime::connect("/var/run/docker.sock", image.clone(), installation)
@@ -753,10 +753,10 @@ async fn native_configuration_replays_checkpoint_and_contracts_membership_withou
     use spitzli_agent::mail::configuration::ConfigurationRuntime;
     use spitzli_agent_protocol::mail_configuration::*;
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
         Ok("1")
     );
-    let image = std::env::var("WEBDOCK_MAIL_RUNTIME_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_MAIL_RUNTIME_IMAGE").unwrap();
     let installation = format!("cfg{}", &uuid::Uuid::new_v4().simple().to_string()[..12]);
     let _cleanup = Cleanup(installation.clone());
     let runtime =
@@ -911,10 +911,10 @@ async fn stopped_replacement_pins_the_same_volume_across_remove_rename_start() {
     };
     use serde_json::json;
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
         Ok("1")
     );
-    let image = std::env::var("WEBDOCK_MAIL_RUNTIME_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_MAIL_RUNTIME_IMAGE").unwrap();
     let installation = format!("rcv{}", &uuid::Uuid::new_v4().simple().to_string()[..12]);
     let _cleanup = Cleanup(installation.clone());
     let runtime = DockerMailRuntime::connect("/var/run/docker.sock", image, installation.clone())
@@ -925,7 +925,7 @@ async fn stopped_replacement_pins_the_same_volume_across_remove_rename_start() {
         accept: AtomicBool::new(true),
         checkpoint: Mutex::new(None),
     };
-    let mut operation = claim(&std::env::var("WEBDOCK_MAIL_RUNTIME_IMAGE").unwrap());
+    let mut operation = claim(&std::env::var("SPITZLI_MAIL_RUNTIME_IMAGE").unwrap());
     let original = runtime.execute(&operation, &authority).await.unwrap();
     management(&operation, &original, "x:Domain/set", json!({"create":{"retained":{"name":"custody-retained.example.test","description":"owned fixture retained data"}}})).await;
     let docker =

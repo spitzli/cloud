@@ -47,7 +47,7 @@ impl Authorizer for Authority {
 #[ignore = "explicit owned privileged nested Engine fixture; no host trust or socket mutations"]
 async fn scoped_registry_requires_tls_and_readonly_credentials_even_for_cached_images() {
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_REGISTRY_TEST").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_REGISTRY_TEST").as_deref(),
         Ok("yes")
     );
     assert_eq!(rustix::process::geteuid().as_raw(), 0);
@@ -347,7 +347,7 @@ async fn scoped_registry_requires_tls_and_readonly_credentials_even_for_cached_i
         .await;
     let _ = engine.remove_network(&format!("{name}-net")).await;
     let keep =
-        result.is_ok() && std::env::var("WEBDOCK_KEEP_REGISTRY_FIXTURE").as_deref() == Ok("yes");
+        result.is_ok() && std::env::var("SPITZLI_KEEP_REGISTRY_FIXTURE").as_deref() == Ok("yes");
     if keep {
         let _ = base.keep();
         eprintln!(
@@ -403,12 +403,12 @@ async fn owned_kind_uses_project_pull_secret_and_private_registry_ca() {
     };
     use spitzli_agent::kubernetes::{ApprovedChart, KubernetesAdapter};
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_NODE_TEST").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_NODE_TEST").as_deref(),
         Ok("yes")
     );
     assert_eq!(rustix::process::geteuid().as_raw(), 0);
     assert!(std::path::Path::new("/.dockerenv").is_file());
-    let fixture = std::path::PathBuf::from(std::env::var("WEBDOCK_REGISTRY_FIXTURE_DIR").unwrap());
+    let fixture = std::path::PathBuf::from(std::env::var("SPITZLI_REGISTRY_FIXTURE_DIR").unwrap());
     let state: serde_json::Value = serde_json::from_slice(
         &spitzli_agent::config::read_private(&fixture.join("registry-state.json"), 65536).unwrap(),
     )
@@ -441,8 +441,8 @@ async fn owned_kind_uses_project_pull_secret_and_private_registry_ca() {
         state["ca"].as_str().unwrap().as_bytes(),
     );
     private(&cert_directory.join("hosts.toml"),format!("server = \"https://{authority}\"\n[host.\"https://{authority}\"]\n  capabilities = [\"pull\", \"resolve\"]\n  ca = \"{}/ca.crt\"\n",cert_directory.display()).as_bytes());
-    let kubeconfig = std::path::PathBuf::from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap());
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let kubeconfig = std::path::PathBuf::from(std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap());
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("kind-webdock-rust-"));
     let config = Config::from_custom_kubeconfig(
         Kubeconfig::read_from(&kubeconfig).unwrap(),

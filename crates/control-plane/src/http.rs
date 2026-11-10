@@ -501,7 +501,7 @@ mod tests {
     fn public_webmail_configuration_requires_the_feature_and_excludes_account_surface() {
         use std::collections::HashMap;
         let enabled = super::PlatformConfig::from_map(&HashMap::from([(
-            "WEBDOCK_FEATURES".to_owned(),
+            "SPITZLI_FEATURES".to_owned(),
             r#"{"mail":"enabled"}"#.to_owned(),
         )]))
         .unwrap();
@@ -552,7 +552,7 @@ mod tests {
     #[test]
     fn route_authorities_preserve_protocol_precedence_and_path_boundaries() {
         let config = PlatformConfig::from_map(&HashMap::from([(
-            "WEBDOCK_CONSOLE_ORIGIN".into(),
+            "SPITZLI_CONSOLE_ORIGIN".into(),
             "http://localhost:3140".into(),
         )]))
         .unwrap();
@@ -624,7 +624,7 @@ mod tests {
     #[test]
     fn ui_authorities_apply_only_when_ui_is_enabled() {
         let config = PlatformConfig::from_map(&HashMap::from([(
-            "WEBDOCK_CONSOLE_ORIGIN".into(),
+            "SPITZLI_CONSOLE_ORIGIN".into(),
             "http://localhost:3140".into(),
         )]))
         .unwrap();

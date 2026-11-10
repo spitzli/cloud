@@ -12,9 +12,9 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     let db = crate::db::connect_bootstrap(runtime).await?;
     let auth_compatibility = AuthCompatibility::from_map(&env, &config)
         .map_err(|error| Error::Message(error.to_string()))?;
-    let secret = std::env::var("WEBDOCK_AUTH_SECRET")
+    let secret = std::env::var("SPITZLI_AUTH_SECRET")
         .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
-        .map_err(|_| Error::Message("Missing WEBDOCK_AUTH_SECRET".into()))?;
+        .map_err(|_| Error::Message("Missing SPITZLI_AUTH_SECRET".into()))?;
     let cookies = spitzli_identity::CookiePolicy::new(
         config.auth_origin.starts_with("https://"),
         secret.clone(),
@@ -47,12 +47,12 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     let ids = std::sync::Arc::new(allocator);
     // Account mail (activation, reset, invitations) leaves from Core itself. Only a loopback
     // catch-all is supported here; hosted installations use the separate Mail API dispatcher.
-    let account_mail = match std::env::var("WEBDOCK_ACCOUNT_SMTP") {
+    let account_mail = match std::env::var("SPITZLI_ACCOUNT_SMTP") {
         Ok(smtp) => Some(std::sync::Arc::new(
             spitzli_mail::account_delivery::MailDelivery::loopback(
                 smtp.parse()
-                    .map_err(|_| Error::Message("Invalid WEBDOCK_ACCOUNT_SMTP".into()))?,
-                &std::env::var("WEBDOCK_ACCOUNT_MAIL_FROM")
+                    .map_err(|_| Error::Message("Invalid SPITZLI_ACCOUNT_SMTP".into()))?,
+                &std::env::var("SPITZLI_ACCOUNT_MAIL_FROM")
                     .unwrap_or_else(|_| "webdock@example.test".into()),
                 &config.auth_origin,
             )
@@ -68,7 +68,7 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         runtime.browser_flow_backend,
         crate::config::BrowserFlowBackend::Native
     );
-    if native_browser_flows && std::env::var("WEBDOCK_SSO_CLIENT_ID").is_err() {
+    if native_browser_flows && std::env::var("SPITZLI_SSO_CLIENT_ID").is_err() {
         return Err(Error::Message(
             "Native browser storage requires first-party client configuration".into(),
         ));
@@ -196,8 +196,8 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             None => service,
         }
     });
-    let registry_url = std::env::var("WEBDOCK_REGISTRY_DATABASE_URL")
-        .map_err(|_| Error::Message("Missing WEBDOCK_REGISTRY_DATABASE_URL".into()))?;
+    let registry_url = std::env::var("SPITZLI_REGISTRY_DATABASE_URL")
+        .map_err(|_| Error::Message("Missing SPITZLI_REGISTRY_DATABASE_URL".into()))?;
     let registry_db =
         crate::db::connect_runtime(&registry_url, "webdock_registry_runtime", config.production)
             .await?;
@@ -218,10 +218,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     );
     let oauth_config = spitzli_oauth::OAuthConfig::new(
         &auth_compatibility.oauth_issuer,
-        &std::env::var("WEBDOCK_MCP_RESOURCE")
+        &std::env::var("SPITZLI_MCP_RESOURCE")
             .unwrap_or_else(|_| format!("{}/api/mcp", config.studio_origin)),
-        std::env::var("WEBDOCK_STUDIO_CLIENT_ID")
-            .or_else(|_| std::env::var("WEBDOCK_SSO_CLIENT_ID"))
+        std::env::var("SPITZLI_STUDIO_CLIENT_ID")
+            .or_else(|_| std::env::var("SPITZLI_SSO_CLIENT_ID"))
             .ok(),
     )
     .map_err(|_| Error::Message("Invalid OAuth configuration".into()))?;
@@ -281,10 +281,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         oauth
     };
     let oauth = std::sync::Arc::new(oauth);
-    let browser = if let Ok(client_id) = std::env::var("WEBDOCK_SSO_CLIENT_ID") {
-        let client_secret = std::env::var("WEBDOCK_SSO_CLIENT_SECRET")
+    let browser = if let Ok(client_id) = std::env::var("SPITZLI_SSO_CLIENT_ID") {
+        let client_secret = std::env::var("SPITZLI_SSO_CLIENT_SECRET")
             .map_err(|_| Error::Message("Missing first-party client secret".into()))?;
-        let cookie_secret = std::env::var("WEBDOCK_SSO_COOKIE_SECRET")
+        let cookie_secret = std::env::var("SPITZLI_SSO_COOKIE_SECRET")
             .map_err(|_| Error::Message("Missing first-party cookie secret".into()))?;
         let browser_config = spitzli_browser_session::BrowserConfig::new(
             config.console_origin(),
@@ -322,7 +322,7 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
                     .clone(),
             );
         }
-        if let Ok(until) = std::env::var("WEBDOCK_SSO_LEGACY_ACCEPT_UNTIL") {
+        if let Ok(until) = std::env::var("SPITZLI_SSO_LEGACY_ACCEPT_UNTIL") {
             let until = until
                 .parse::<i64>()
                 .map_err(|_| Error::Message("Invalid legacy cookie deadline".into()))?;
@@ -339,7 +339,7 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     } else {
         None
     };
-    let session_url = std::env::var("WEBDOCK_SESSION_DATABASE_URL")
+    let session_url = std::env::var("SPITZLI_SESSION_DATABASE_URL")
         .or_else(|_| std::env::var("DATABASE_URL"))
         .map_err(|_| Error::Message("Missing session database URL".into()))?;
     let session_db =
@@ -400,13 +400,13 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         != spitzli_core::features::FeatureState::Disabled
         || config.features.state("databases") != spitzli_core::features::FeatureState::Disabled
     {
-        let session_url = std::env::var("WEBDOCK_SESSION_DATABASE_URL")
-            .map_err(|_| Error::Message("Missing WEBDOCK_SESSION_DATABASE_URL".into()))?;
-        let worker_url = std::env::var("WEBDOCK_WORKER_DATABASE_URL")
-            .map_err(|_| Error::Message("Missing WEBDOCK_WORKER_DATABASE_URL".into()))?;
+        let session_url = std::env::var("SPITZLI_SESSION_DATABASE_URL")
+            .map_err(|_| Error::Message("Missing SPITZLI_SESSION_DATABASE_URL".into()))?;
+        let worker_url = std::env::var("SPITZLI_WORKER_DATABASE_URL")
+            .map_err(|_| Error::Message("Missing SPITZLI_WORKER_DATABASE_URL".into()))?;
         // Retained application ciphertext uses the auth secret, distinct from
         // native Mail's separate MAIL_ENCRYPTION_KEY. Preserve it during rotation.
-        let environment_secret = std::env::var("WEBDOCK_HOSTING_ENCRYPTION_KEY")
+        let environment_secret = std::env::var("SPITZLI_HOSTING_ENCRYPTION_KEY")
             .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
             .unwrap_or_else(|_| secret.clone());
         let session_db =
@@ -435,8 +435,8 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             .map_err(|_| Error::Message("Invalid public site control origins".into()))?
             .with_session_authority(identity.clone(), browser.clone())
             .with_recovery_signer_configuration(
-                std::env::var_os("WEBDOCK_RECOVERY_SIGNER_KEY").map(std::path::PathBuf::from),
-                std::env::var_os("WEBDOCK_RECOVERY_SIGNER_DIRECTORY").map(std::path::PathBuf::from),
+                std::env::var_os("SPITZLI_RECOVERY_SIGNER_KEY").map(std::path::PathBuf::from),
+                std::env::var_os("SPITZLI_RECOVERY_SIGNER_DIRECTORY").map(std::path::PathBuf::from),
             )
             .map_err(|_| {
                 Error::Message("Independent recovery signer configuration is invalid".into())
@@ -445,14 +445,14 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     } else {
         None
     };
-    let plugin_config = std::env::var("WEBDOCK_NATIVE_PLUGIN_CONFIG")
+    let plugin_config = std::env::var("SPITZLI_NATIVE_PLUGIN_CONFIG")
         .ok()
         .map(|path| crate::plugin_config::PluginConfig::load(std::path::Path::new(&path)))
         .transpose()
         .map_err(|_| Error::Message("Invalid native plugin configuration".into()))?;
     let plugins = if let Some(plugin_config) = &plugin_config {
-        let worker_url = std::env::var("WEBDOCK_WORKER_DATABASE_URL")
-            .map_err(|_| Error::Message("Missing WEBDOCK_WORKER_DATABASE_URL".into()))?;
+        let worker_url = std::env::var("SPITZLI_WORKER_DATABASE_URL")
+            .map_err(|_| Error::Message("Missing SPITZLI_WORKER_DATABASE_URL".into()))?;
         Some(std::sync::Arc::new(
             crate::plugins::PluginEndpoints::initialize(
                 crate::plugins::PluginDependencies {
@@ -513,10 +513,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     let build = if config.features.state("hosting")
         != spitzli_core::features::FeatureState::Disabled
         && let Some(hosting) = &hosting
-        && let Ok(registry_host) = std::env::var("WEBDOCK_BUILD_REGISTRY_HOST")
+        && let Ok(registry_host) = std::env::var("SPITZLI_BUILD_REGISTRY_HOST")
     {
-        let worker_url = std::env::var("WEBDOCK_WORKER_DATABASE_URL")
-            .map_err(|_| Error::Message("Missing WEBDOCK_WORKER_DATABASE_URL".into()))?;
+        let worker_url = std::env::var("SPITZLI_WORKER_DATABASE_URL")
+            .map_err(|_| Error::Message("Missing SPITZLI_WORKER_DATABASE_URL".into()))?;
         let mut service = spitzli_build::BuildService::new(
             crate::db::connect_runtime(&session_url, "webdock_auth_runtime", config.production)
                 .await?,
@@ -539,9 +539,9 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             service = service.with_repository_provider(std::sync::Arc::new(
                 spitzli_build::PluginRepositoryProvider::new(repository.clone()),
             ));
-            if let Some(path) = std::env::var_os("WEBDOCK_GITHUB_BUILD_WEBHOOK_SECRET_FILE") {
+            if let Some(path) = std::env::var_os("SPITZLI_GITHUB_BUILD_WEBHOOK_SECRET_FILE") {
                 let plugin =
-                    std::env::var("WEBDOCK_GITHUB_REPOSITORY_PLUGIN_ID").map_err(|_| {
+                    std::env::var("SPITZLI_GITHUB_REPOSITORY_PLUGIN_ID").map_err(|_| {
                         Error::Message("Missing GitHub repository plugin binding".into())
                     })?;
                 let verifier = spitzli_build::GithubWebhookVerifier::from_private_file(
@@ -559,17 +559,17 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     let databases = if config.features.state("databases")
         != spitzli_core::features::FeatureState::Disabled
     {
-        let session_url = std::env::var("WEBDOCK_SESSION_DATABASE_URL")
-            .map_err(|_| Error::Message("Missing WEBDOCK_SESSION_DATABASE_URL".into()))?;
-        let worker_url = std::env::var("WEBDOCK_WORKER_DATABASE_URL")
-            .map_err(|_| Error::Message("Missing WEBDOCK_WORKER_DATABASE_URL".into()))?;
-        let encryption_secret = std::env::var("WEBDOCK_HOSTING_ENCRYPTION_KEY")
+        let session_url = std::env::var("SPITZLI_SESSION_DATABASE_URL")
+            .map_err(|_| Error::Message("Missing SPITZLI_SESSION_DATABASE_URL".into()))?;
+        let worker_url = std::env::var("SPITZLI_WORKER_DATABASE_URL")
+            .map_err(|_| Error::Message("Missing SPITZLI_WORKER_DATABASE_URL".into()))?;
+        let encryption_secret = std::env::var("SPITZLI_HOSTING_ENCRYPTION_KEY")
             .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
             .unwrap_or_else(|_| secret.clone());
-        let gateway_origin = std::env::var("WEBDOCK_DATABASE_GATEWAY_ORIGIN")
-            .map_err(|_| Error::Message("Missing WEBDOCK_DATABASE_GATEWAY_ORIGIN".into()))?;
-        let gateway_secret = std::env::var("WEBDOCK_DATABASE_GATEWAY_SECRET")
-            .map_err(|_| Error::Message("Missing WEBDOCK_DATABASE_GATEWAY_SECRET".into()))?;
+        let gateway_origin = std::env::var("SPITZLI_DATABASE_GATEWAY_ORIGIN")
+            .map_err(|_| Error::Message("Missing SPITZLI_DATABASE_GATEWAY_ORIGIN".into()))?;
+        let gateway_secret = std::env::var("SPITZLI_DATABASE_GATEWAY_SECRET")
+            .map_err(|_| Error::Message("Missing SPITZLI_DATABASE_GATEWAY_SECRET".into()))?;
         let service = spitzli_databases::DatabaseService::new(
             crate::db::connect_runtime(&session_url, "webdock_auth_runtime", config.production)
                 .await?,
@@ -587,11 +587,11 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         .map_err(|_| Error::Message("Database initialization failed".into()))?
         .with_new_orders_enabled(config.database_new_orders_enabled)
         .with_management(spitzli_databases::ManagementConfig {
-            cluster_id: std::env::var("WEBDOCK_DATABASE_CLUSTER_ID").ok(),
-            endpoint_domain: std::env::var("WEBDOCK_DATABASE_DOMAIN").ok(),
-            public_ordering: std::env::var("WEBDOCK_DATABASE_PUBLIC_ENABLED").as_deref()
+            cluster_id: std::env::var("SPITZLI_DATABASE_CLUSTER_ID").ok(),
+            endpoint_domain: std::env::var("SPITZLI_DATABASE_DOMAIN").ok(),
+            public_ordering: std::env::var("SPITZLI_DATABASE_PUBLIC_ENABLED").as_deref()
                 == Ok("true"),
-            protected_database_id: std::env::var("WEBDOCK_CONTROL_DATABASE_ID").ok(),
+            protected_database_id: std::env::var("SPITZLI_CONTROL_DATABASE_ID").ok(),
             lease_secret: Some(
                 std::env::var("BETTER_AUTH_SECRET").unwrap_or_else(|_| secret.clone()),
             ),
@@ -604,10 +604,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     } else {
         None
     };
-    let incoming_mail = std::env::var("WEBDOCK_NATIVE_MAILBOXES_ENABLED").as_deref() == Ok("true");
-    let incoming_mail_admin = std::env::var("WEBDOCK_NATIVE_MAIL_ENABLED").as_deref() == Ok("true");
+    let incoming_mail = std::env::var("SPITZLI_NATIVE_MAILBOXES_ENABLED").as_deref() == Ok("true");
+    let incoming_mail_admin = std::env::var("SPITZLI_NATIVE_MAIL_ENABLED").as_deref() == Ok("true");
     let sending_mail =
-        std::env::var("WEBDOCK_NATIVE_MAIL_SENDING_ENABLED").as_deref() == Ok("true");
+        std::env::var("SPITZLI_NATIVE_MAIL_SENDING_ENABLED").as_deref() == Ok("true");
     let mail = if config.features.state("mail") != spitzli_core::features::FeatureState::Disabled
         && (incoming_mail || sending_mail || incoming_mail_admin)
     {
@@ -616,13 +616,13 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         let dependencies = spitzli_mail::MailDependencies {
             auth: db.clone(),
             business: crate::db::connect_runtime(
-                &required("WEBDOCK_SESSION_DATABASE_URL")?,
+                &required("SPITZLI_SESSION_DATABASE_URL")?,
                 "webdock_auth_runtime",
                 config.production,
             )
             .await?,
             worker: crate::db::connect_runtime(
-                &required("WEBDOCK_WORKER_DATABASE_URL")?,
+                &required("SPITZLI_WORKER_DATABASE_URL")?,
                 "webdock_worker_runtime",
                 config.production,
             )
@@ -726,7 +726,7 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     if let Some(ui) = &ui {
         let database_gateway = databases
             .as_ref()
-            .and_then(|_| std::env::var("WEBDOCK_DATABASE_GATEWAY_ORIGIN").ok());
+            .and_then(|_| std::env::var("SPITZLI_DATABASE_GATEWAY_ORIGIN").ok());
         let mail_gateway = mail
             .as_deref()
             .and_then(crate::mail::MailEndpoints::gateway_origin)

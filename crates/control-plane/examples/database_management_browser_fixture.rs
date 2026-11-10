@@ -20,7 +20,7 @@ async fn main() {
     let fixture: Value =
         serde_json::from_slice(&std::fs::read(".runtime-test/database-browser.json").unwrap())
             .unwrap();
-    let owner = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let owner = Database::connect(guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     let valid=owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT p.id FROM webdock_admin.projects p JOIN webdock_admin.customers c ON c.id=p.customer_id WHERE p.id=$1 AND c.id=$2 AND p.name='Database browser fixture' AND c.name='Database browser fixture'",[fixture["projectID"].as_str().unwrap().into(),fixture["customerID"].as_str().unwrap().into()])).await.unwrap();

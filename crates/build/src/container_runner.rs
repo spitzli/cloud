@@ -98,6 +98,7 @@ fn environment(values: &BTreeMap<String, String>) -> Result<()> {
                 .enumerate()
                 .all(|(i, b)| b == b'_' || b.is_ascii_alphabetic() || (i > 0 && b.is_ascii_digit()))
             || [
+                "SPITZLI_",
                 "WEBDOCK_",
                 "AWS_",
                 "AZURE_",

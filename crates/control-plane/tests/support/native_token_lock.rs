@@ -111,7 +111,7 @@ async fn revoke(app: &Router, secrets: &Value, token: &str) -> StatusCode {
             ("client_id", secrets["clientID"].as_str().unwrap()),
             (
                 "client_secret",
-                secrets["environment"]["WEBDOCK_SSO_CLIENT_SECRET"]
+                secrets["environment"]["SPITZLI_SSO_CLIENT_SECRET"]
                     .as_str()
                     .unwrap(),
             ),
@@ -199,7 +199,7 @@ pub(super) async fn check(c: Context<'_>) {
     let credentials = spitzli_oauth::ClientAuthentication {
         client_id: c.secrets["clientID"].as_str().unwrap().to_owned(),
         client_secret: Some(
-            c.secrets["environment"]["WEBDOCK_SSO_CLIENT_SECRET"]
+            c.secrets["environment"]["SPITZLI_SSO_CLIENT_SECRET"]
                 .as_str()
                 .unwrap()
                 .to_owned(),

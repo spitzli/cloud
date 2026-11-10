@@ -36,6 +36,7 @@ fn customer_environment_never_changes_host_or_guest_control_configuration() {
         "PATH",
         "LD_PRELOAD",
         "GIT_CONFIG_GLOBAL",
+        "SPITZLI_TOKEN",
         "WEBDOCK_TOKEN",
         "AWS_SECRET_ACCESS_KEY",
     ] {

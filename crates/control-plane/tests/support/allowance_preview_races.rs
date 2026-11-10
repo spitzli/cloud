@@ -255,7 +255,7 @@ pub(super) async fn check(c: &Context<'_>) {
             preview_first(c, &a, &b, &path, mode, action, revision).await;
         }
     }
-    if std::env::var("WEBDOCK_ALLOWANCE_BUILTIN_FENCE_TEST").as_deref() == Ok("1") {
+    if std::env::var("SPITZLI_ALLOWANCE_BUILTIN_FENCE_TEST").as_deref() == Ok("1") {
         builtin_participates(c, &b, &native.session_id).await;
     }
     retained_configuration_failure(c, &a, &path, &native.session_id, revision).await;
@@ -358,7 +358,7 @@ async fn retained_configuration_failure(
         vec![
             c.secrets["clientID"].as_str().unwrap().into(),
             spitzli_oauth::legacy_token_hash(
-                c.secrets["environment"]["WEBDOCK_SSO_CLIENT_SECRET"]
+                c.secrets["environment"]["SPITZLI_SSO_CLIENT_SECRET"]
                     .as_str()
                     .unwrap(),
             )

@@ -19,7 +19,7 @@ pub(super) mod mail_component;
 
 pub(super) async fn fixture() -> Fixture {
     assert_eq!(
-        std::env::var("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref(),
+        std::env::var("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref(),
         Ok("1")
     );
     assert_eq!(rustix::process::geteuid().as_raw(), 0);
@@ -32,7 +32,7 @@ pub(super) async fn fixture() -> Fixture {
     drop(listener);
     let nonce = uuid::Uuid::new_v4().simple().to_string();
     let password = format!("{nonce}{}", uuid::Uuid::new_v4().simple());
-    let postgres_image = std::env::var("WEBDOCK_RECOVERY_POSTGRES_IMAGE_ID").unwrap();
+    let postgres_image = std::env::var("SPITZLI_RECOVERY_POSTGRES_IMAGE_ID").unwrap();
     assert!(
         postgres_image
             .strip_prefix("sha256:")
@@ -126,7 +126,7 @@ pub(super) async fn fixture() -> Fixture {
     fixture
 }
 pub(super) fn enabled() -> bool {
-    std::env::var("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1")
+    std::env::var("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1")
 }
 pub(super) enum RecoveryPhase {
     OfflineBootstrap,
@@ -366,7 +366,7 @@ pub(super) async fn check(
     let enrollment_input = path.join("agent-input.json");
     let enrollment_output = path.join("agent-output.json");
     let docker_source =
-        std::env::var("WEBDOCK_RECOVERY_COMPONENT_DRIVER").as_deref() == Ok("docker");
+        std::env::var("SPITZLI_RECOVERY_COMPONENT_DRIVER").as_deref() == Ok("docker");
     let mut reviewed_enrollment = json!({"platformID":"owned-recovery","agentID":"native-agent","name":"Owned isolated recovery node","country":"de","region":"eu","locationEvidence":"Disposable network-none local component, no production claim","transport":{"kind":"unix","uid":0}});
     if docker_source {
         reviewed_enrollment["runtimeKind"] = json!("docker");
@@ -477,7 +477,7 @@ pub(super) async fn check(
     let state = path.join("agent-state");
     directory(&state);
     let config = path.join("agent.json");
-    let mut agent_config = json!({"version":1,"installation":"owned-recovery","agentId":"native-agent","generation":1,"stateDirectory":state,"control":{"kind":"unix","path":control_path},"runtime":{"kind":"kubernetes","kubeconfig":"/etc/rancher/k3s/k3s.yaml","context":"default","helm":"/usr/bin/true","chart":"/owned/chart","chartSha256":std::env::var("WEBDOCK_RECOVERY_CHART_SHA256").unwrap(),"storageSocket":storage_socket},"workloads":false,"pluginRuntimeEnabled":false});
+    let mut agent_config = json!({"version":1,"installation":"owned-recovery","agentId":"native-agent","generation":1,"stateDirectory":state,"control":{"kind":"unix","path":control_path},"runtime":{"kind":"kubernetes","kubeconfig":"/etc/rancher/k3s/k3s.yaml","context":"default","helm":"/usr/bin/true","chart":"/owned/chart","chartSha256":std::env::var("SPITZLI_RECOVERY_CHART_SHA256").unwrap(),"storageSocket":storage_socket},"workloads":false,"pluginRuntimeEnabled":false});
     if docker_source {
         agent_config["runtime"] = fixture_docker_runtime(&storage_socket);
     }
