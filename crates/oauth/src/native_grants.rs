@@ -8,10 +8,10 @@ use crate::{
 };
 use chrono::{DateTime, Utc};
 use serde_json::{Value, json};
+use spitzli_identity::Principal;
+use spitzli_persistence::postgres::Transaction;
 use std::time::Duration;
 use tokio_postgres::types::Type;
-use webdock_identity::Principal;
-use webdock_persistence::postgres::Transaction;
 const BUDGET: Duration = Duration::from_secs(30);
 pub(super) struct RequestRecord {
     pub(super) payload: Value,

@@ -1,10 +1,10 @@
-import {msgid} from '@webdock/i18n';
+import {msgid} from '@spitzli/i18n';
 
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import Link from "next/link";
 import {requireRegistryOperator as requireOperator} from "../lib/registry-page";
 import {studioCall} from "../lib/studio-client";
-import type {VercelView} from "@webdock/api-client/integrations";
+import type {VercelView} from "@spitzli/api-client/integrations";
 import { VercelLinkForm } from "./vercel-link-form";
 export async function VercelIntegration({
   status,

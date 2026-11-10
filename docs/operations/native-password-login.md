@@ -47,11 +47,11 @@ harness needs local Docker and provisions restricted loopback PostgreSQL 18.
 It does not need production credentials, 1Password or live provider access.
 
 ```sh
-CARGO_BUILD_JOBS=2 cargo test --locked -p webdock-identity --test native_password_login -- --include-ignored --test-threads=1
-CARGO_BUILD_JOBS=2 cargo test --locked -p webdock-identity --lib native_login::tests -- --include-ignored --test-threads=1
-CARGO_BUILD_JOBS=2 cargo test --locked -p webdock-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
-cargo test --locked -p webdock-identity -p webdock-browser-session -p webdock-oauth -p webdock-control-plane --lib --tests
-cargo clippy --locked -p webdock-identity -p webdock-control-plane --all-targets -- -D warnings
+CARGO_BUILD_JOBS=2 cargo test --locked -p spitzli-identity --test native_password_login -- --include-ignored --test-threads=1
+CARGO_BUILD_JOBS=2 cargo test --locked -p spitzli-identity --lib native_login::tests -- --include-ignored --test-threads=1
+CARGO_BUILD_JOBS=2 cargo test --locked -p spitzli-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
+cargo test --locked -p spitzli-identity -p spitzli-browser-session -p spitzli-oauth -p spitzli-control-plane --lib --tests
+cargo clippy --locked -p spitzli-identity -p spitzli-control-plane --all-targets -- -D warnings
 cargo fmt --all -- --check
 cargo run --locked --manifest-path tools/quality/Cargo.toml -- contracts "$PWD"
 ```

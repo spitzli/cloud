@@ -1,5 +1,5 @@
+use spitzli_persistence::migrations::verify_legacy_history;
 use std::collections::BTreeMap;
-use webdock_persistence::migrations::verify_legacy_history;
 
 #[test]
 fn retained_history_is_adopted_only_with_exact_names_and_checksums() {
@@ -31,7 +31,7 @@ fn retained_history_is_adopted_only_with_exact_names_and_checksums() {
 #[tokio::test]
 #[ignore = "requires the owned retained-schema local fixture"]
 async fn offline_upgrade_uses_retained_journal_and_denies_runtime_roles() {
-    use webdock_persistence::migrations::{MigrationError, upgrade};
+    use spitzli_persistence::migrations::{MigrationError, upgrade};
     let owner = std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap();
     let url = url::Url::parse(&owner).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
@@ -60,7 +60,7 @@ async fn offline_upgrade_uses_retained_journal_and_denies_runtime_roles() {
 #[ignore = "creates and removes a uniquely owned local fixture database"]
 async fn fresh_native_bootstrap_has_complete_schema_and_rejects_reinitialization() {
     use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
-    use webdock_persistence::migrations::{bootstrap, upgrade, verify_bootstrap_baseline};
+    use spitzli_persistence::migrations::{bootstrap, upgrade, verify_bootstrap_baseline};
     let raw = std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap();
     let mut url = url::Url::parse(&raw).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
@@ -92,7 +92,7 @@ async fn fresh_native_bootstrap_has_complete_schema_and_rejects_reinitialization
         assert_eq!(runtime_url.host_str(),url.host_str());assert_eq!(runtime_url.port(),url.port());
         runtime_url.set_path(&format!("/{name}"));
         let runtime=Database::connect(runtime_url.as_str()).await.unwrap();
-        assert!(webdock_persistence::migrations::native_schema_ready(&runtime).await);
+        assert!(spitzli_persistence::migrations::native_schema_ready(&runtime).await);
         use sha2::{Digest,Sha256};
         let native_checksum=hex::encode(Sha256::digest(include_bytes!("../schema/baseline.sql")));
         let row=db.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT checksum FROM webdock_api_migrations.baseline WHERE id")).await.unwrap().unwrap();
@@ -116,10 +116,10 @@ async fn fresh_native_bootstrap_has_complete_schema_and_rejects_reinitialization
         assert!(verify_bootstrap_baseline(&tx).await.is_err());
         tx.rollback().await.unwrap();
         db.execute_unprepared("UPDATE webdock_api_migrations.rust_journal SET checksum='\\x00'::bytea WHERE version=1").await.unwrap();
-        assert!(!webdock_persistence::migrations::native_schema_ready(&runtime).await);
+        assert!(!spitzli_persistence::migrations::native_schema_ready(&runtime).await);
         assert!(verify_bootstrap_baseline(&db).await.is_err(),"native marker requires exact native journal");
         runtime.close().await.unwrap();
-        Ok::<_,webdock_persistence::migrations::MigrationError>(())
+        Ok::<_,spitzli_persistence::migrations::MigrationError>(())
     }.await;
     db.close().await.unwrap();
     control

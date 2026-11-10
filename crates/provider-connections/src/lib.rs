@@ -10,10 +10,10 @@ use sea_orm::{
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_browser_session::{BrowserSessions, StoredAuthority, revalidate_stored_authority};
+use spitzli_identity::{IdentityService, Principal, RlsSigner};
+use spitzli_secrets::SecretCipher;
 use std::sync::Arc;
-use webdock_browser_session::{BrowserSessions, StoredAuthority, revalidate_stored_authority};
-use webdock_identity::{IdentityService, Principal, RlsSigner};
-use webdock_secrets::SecretCipher;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -544,20 +544,20 @@ impl Connections {
         Ok(result)
     }
 }
-fn authority_error(error: webdock_browser_session::Error) -> Error {
+fn authority_error(error: spitzli_browser_session::Error) -> Error {
     match error {
-        webdock_browser_session::Error::Database(_)
-        | webdock_browser_session::Error::Configuration
-        | webdock_browser_session::Error::Identity(
-            webdock_identity::IdentityError::Configuration
-            | webdock_identity::IdentityError::Crypto
-            | webdock_identity::IdentityError::RateLimited
-            | webdock_identity::IdentityError::Database(_)
-            | webdock_identity::IdentityError::Allocation
-            | webdock_identity::IdentityError::Worker
-            | webdock_identity::IdentityError::Persistence,
+        spitzli_browser_session::Error::Database(_)
+        | spitzli_browser_session::Error::Configuration
+        | spitzli_browser_session::Error::Identity(
+            spitzli_identity::IdentityError::Configuration
+            | spitzli_identity::IdentityError::Crypto
+            | spitzli_identity::IdentityError::RateLimited
+            | spitzli_identity::IdentityError::Database(_)
+            | spitzli_identity::IdentityError::Allocation
+            | spitzli_identity::IdentityError::Worker
+            | spitzli_identity::IdentityError::Persistence,
         ) => Error::Unavailable,
-        webdock_browser_session::Error::OAuth(error) if error.status() >= 500 => Error::Unavailable,
+        spitzli_browser_session::Error::OAuth(error) if error.status() >= 500 => Error::Unavailable,
         _ => Error::Forbidden,
     }
 }

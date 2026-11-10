@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { uiLabel } from "@/lib/ui-labels";
 import { HostingForm } from "@/components/hosting/form";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { HostingRefresh } from "@/components/hosting/refresh";
 import { HostingProjectHeader } from '@/components/hosting/project-context';

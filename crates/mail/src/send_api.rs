@@ -20,7 +20,7 @@ use std::{sync::Arc, time::Duration};
 pub struct SendApi {
     control: Arc<dyn SendControl>,
     store: Arc<PrivatePayloadStore>,
-    public: Arc<webdock_mail_runtime::send_api::SendApi>,
+    public: Arc<spitzli_mail_runtime::send_api::SendApi>,
     internal_secret: Option<String>,
 }
 fn fail(status: u16) -> ControlError {
@@ -44,7 +44,7 @@ fn reply(status: StatusCode, body: Value) -> Response {
 impl SendApi {
     pub fn new(control: Arc<dyn SendControl>, store: Arc<PrivatePayloadStore>) -> Arc<Self> {
         Arc::new(Self {
-            public: webdock_mail_runtime::send_api::SendApi::new(control.clone(), store.clone()),
+            public: spitzli_mail_runtime::send_api::SendApi::new(control.clone(), store.clone()),
             control,
             store,
             internal_secret: None,
@@ -63,7 +63,7 @@ impl SendApi {
         Ok(Arc::new(Self {
             control: control.clone(),
             store: store.clone(),
-            public: webdock_mail_runtime::send_api::SendApi::new(control.clone(), store.clone()),
+            public: spitzli_mail_runtime::send_api::SendApi::new(control.clone(), store.clone()),
             internal_secret: Some(secret),
         }))
     }

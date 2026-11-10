@@ -57,7 +57,7 @@ async fn retained_jobs_authorized_scope_and_installation_lock_fence_disable() {
     owner_url.set_path(&format!("/{name}"));
     let outcome=std::panic::AssertUnwindSafe(async {
         let owner=Database::connect(owner_url.as_str()).await.unwrap();
-        webdock_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
+        spitzli_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
         let seed=owner.begin().await.unwrap();
         seed.execute_unprepared("SELECT set_config('webdock.organization_allocation','{\"customer_id\":\"123\",\"organization_id\":\"124\"}',true)").await.unwrap();
         seed.execute_unprepared("INSERT INTO webdock_admin.customers(id,name) VALUES('123','Continuation fixture')").await.unwrap();

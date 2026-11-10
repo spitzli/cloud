@@ -8,7 +8,7 @@ try {
   await database.query(
     "CREATE SCHEMA IF NOT EXISTS webdock_admin; CREATE SCHEMA IF NOT EXISTS webdock_auth",
   );
-  const { snowflakeSchemaSQL } = await import("@webdock/snowflake");
+  const { snowflakeSchemaSQL } = await import("@spitzli/snowflake");
   await database.query(snowflakeSchemaSQL("webdock_admin", 0));
   if (
     !(
@@ -99,7 +99,7 @@ try {
     const exported = await import(`../../src/modules/${module}.ts`);
     for (const name of names) await database.query(exported[name]);
   }
-  const native = await import("@webdock/mail-core/schema");
+  const native = await import("@spitzli/mail-core/schema");
   await database.query(native.nativeMailSchemaSQL);
   await database.query(native.nativeMailClusterSchemaSQL);
   for (const [module, name] of [
@@ -111,7 +111,7 @@ try {
       (await import(`../../src/modules/mail/${module}.ts`))[name],
     );
   await database.query(
-    (await import("@webdock/mail-core/outbox")).outboxSchemaSQL,
+    (await import("@spitzli/mail-core/outbox")).outboxSchemaSQL,
   );
   for (const [, ddl] of (await import("../../src/modules/mail/product/schema"))
     .mailProductMigrations)

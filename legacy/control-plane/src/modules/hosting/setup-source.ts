@@ -1,5 +1,5 @@
 import { setupProductAvailable } from "./product-admission";
-import { createHostingSetupSource } from "@webdock/module-hosting/server/setup-source";
+import { createHostingSetupSource } from "@spitzli/module-hosting/server/setup-source";
 import { setupBuildCapabilities } from "./setup-capabilities";
 import { readSetup } from "./project-setup";
 import { createGitHubProvider } from "./git-github";

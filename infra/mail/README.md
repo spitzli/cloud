@@ -8,9 +8,9 @@ Requires Bun, a local Linux Docker engine, Docker Compose and installed workspac
 
 ```sh
 bun install --frozen-lockfile
-bun test -w @webdock/mail
-bun run --filter @webdock/mail check
-bun run --filter @webdock/mail test:integration
+bun test -w @spitzli/mail
+bun run --filter @spitzli/mail check
+bun run --filter @spitzli/mail test:integration
 ```
 
 The integration command creates a randomly named `webdock-mail-test-*` Compose project, runs the real server tests and removes that project's containers, networks and volumes even when a test fails. Images stay cached. No existing mail service, credential, DNS record or Turbo callback is used. Do not run the test file directly against a persistent deployment.
@@ -93,7 +93,7 @@ The acceptance test requires that explicit reviewed digest and never pulls an im
 ```sh
 WEBDOCK_MAIL_RUNTIME_IMAGE=REGISTRY/IMAGE@sha256:DIGEST \
 WEBDOCK_MAIL_RUNTIME_DOCKER_TEST=1 \
-cargo test -p webdock-agent --test mail_runtime --no-default-features \
+cargo test -p spitzli-agent --test mail_runtime --no-default-features \
   --features docker -- --ignored
 ```
 

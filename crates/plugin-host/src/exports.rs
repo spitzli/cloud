@@ -2,8 +2,8 @@
 use super::*;
 use base64::engine::general_purpose::STANDARD;
 use futures_util::Stream;
+use spitzli_export_protocol::{CHUNK_BYTES, MAX_BYTES, MAX_METADATA, SourceKind, SourceRef, wire};
 use std::pin::Pin;
-use webdock_export_protocol::{CHUNK_BYTES, MAX_BYTES, MAX_METADATA, SourceKind, SourceRef, wire};
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -247,7 +247,7 @@ impl wire::export_sources_server::ExportSources for ExportRpc {
         &self,
         request: tonic::Request<wire::Invocation>,
     ) -> std::result::Result<tonic::Response<wire::Choices>, tonic::Status> {
-        let peer = webdock_plugin_runtime::authenticated_peer(&request)?;
+        let peer = spitzli_plugin_runtime::authenticated_peer(&request)?;
         let r = request.into_inner();
         let h = self
             .host
@@ -272,7 +272,7 @@ impl wire::export_sources_server::ExportSources for ExportRpc {
         &self,
         request: tonic::Request<wire::SourceRequest>,
     ) -> std::result::Result<tonic::Response<wire::Binding>, tonic::Status> {
-        let peer = webdock_plugin_runtime::authenticated_peer(&request)?;
+        let peer = spitzli_plugin_runtime::authenticated_peer(&request)?;
         let r = request.into_inner();
         let h = self
             .host
@@ -304,7 +304,7 @@ impl wire::export_sources_server::ExportSources for ExportRpc {
         &self,
         request: tonic::Request<wire::SourceRequest>,
     ) -> std::result::Result<tonic::Response<wire::DatabaseMaterial>, tonic::Status> {
-        let peer = webdock_plugin_runtime::authenticated_peer(&request)?;
+        let peer = spitzli_plugin_runtime::authenticated_peer(&request)?;
         let r = request.into_inner();
         let h = self
             .host
@@ -339,7 +339,7 @@ impl wire::export_sources_server::ExportSources for ExportRpc {
         &self,
         request: tonic::Request<wire::SourceRequest>,
     ) -> std::result::Result<tonic::Response<Self::StreamStream>, tonic::Status> {
-        let peer = webdock_plugin_runtime::authenticated_peer(&request)?;
+        let peer = spitzli_plugin_runtime::authenticated_peer(&request)?;
         let r = request.into_inner();
         let h = self
             .host
@@ -366,7 +366,7 @@ impl wire::export_sources_server::ExportSources for ExportRpc {
                 .build_log(&scope, &a.tx, &source)
                 .await
                 .map_err(failure)?;
-            if bytes.len() > webdock_export_protocol::MAX_BUILD_LOG_BYTES {
+            if bytes.len() > spitzli_export_protocol::MAX_BUILD_LOG_BYTES {
                 return Err(tonic::Status::resource_exhausted("Build log limit"));
             }
             Some(bytes)
@@ -420,7 +420,7 @@ impl wire::export_sources_server::ExportSources for ExportRpc {
         &self,
         request: tonic::Request<wire::Validation>,
     ) -> std::result::Result<tonic::Response<wire::Active>, tonic::Status> {
-        let peer = webdock_plugin_runtime::authenticated_peer(&request)?;
+        let peer = spitzli_plugin_runtime::authenticated_peer(&request)?;
         let r = request.into_inner();
         let source = if r.reference_json.is_empty() {
             None
@@ -428,7 +428,7 @@ impl wire::export_sources_server::ExportSources for ExportRpc {
             Some(reference(&r.reference_json).map_err(failure)?)
         };
         if !r.storage_authorization_json.is_empty() {
-            let a: webdock_plugin_protocol::storage::StorageAuthorization =
+            let a: spitzli_plugin_protocol::storage::StorageAuthorization =
                 serde_json::from_slice(&r.storage_authorization_json)
                     .map_err(|_| failure(PluginError::denied()))?;
             let (scope, tx) = self

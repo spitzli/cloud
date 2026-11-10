@@ -93,7 +93,7 @@ fn platform_limits(mut value: Value) -> Value {
     value
 }
 
-type Authority<'a> = Option<&'a webdock_browser_session::StoredAuthority>;
+type Authority<'a> = Option<&'a spitzli_browser_session::StoredAuthority>;
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PlanInput {
@@ -244,7 +244,7 @@ impl HostService {
             .map_err(plan_error)?;
         if deleted.rows_affected() == 0 {
             return Err(PluginError::new(
-                webdock_plugin_protocol::ErrorCode::NotFound,
+                spitzli_plugin_protocol::ErrorCode::NotFound,
                 "Plan not found",
             ));
         }
@@ -271,7 +271,7 @@ impl HostService {
             [customer.into(), input.plan_id.into(), platform_limits(input.overrides).into(), actor.user_id.clone().into()])).await.map_err(|e| {
                 let text = e.to_string();
                 if text.contains("customer_plan_customer_id_fkey") || text.contains("customer_plan_plan_id_fkey") {
-                    PluginError::new(webdock_plugin_protocol::ErrorCode::NotFound, "Customer or plan not found")
+                    PluginError::new(spitzli_plugin_protocol::ErrorCode::NotFound, "Customer or plan not found")
                 } else {
                     plan_error(e)
                 }

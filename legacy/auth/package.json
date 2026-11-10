@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/auth",
+  "name": "@spitzli/auth",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -23,14 +23,14 @@
     "next": "16.3.8",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "@webdock/i18n": "*",
-    "@webdock/hosting-contracts": "*",
-    "@webdock/search": "*",
-    "@webdock/database-contracts": "*",
-    "@webdock/mail-contracts": "*",
+    "@spitzli/i18n": "*",
+    "@spitzli/hosting-contracts": "*",
+    "@spitzli/search": "*",
+    "@spitzli/database-contracts": "*",
+    "@spitzli/mail-contracts": "*",
     "ipaddr.js": "2.3.0",
     "@scalar/api-reference": "1.73.1",
-    "@webdock/api-client": "*"
+    "@spitzli/api-client": "*"
   },
   "devDependencies": {
     "@types/node": "^24",

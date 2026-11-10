@@ -1,1 +1,1 @@
-export {searchFormURL} from '@webdock/search/url';
+export {searchFormURL} from '@spitzli/search/url';

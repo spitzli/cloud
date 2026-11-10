@@ -1,7 +1,7 @@
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::{Signer, SigningKey};
 use serde_json::{Value, json};
-use webdock_plugin_protocol::{Manifest, verify_invocation};
+use spitzli_plugin_protocol::{Manifest, verify_invocation};
 
 fn fixture() -> Value {
     serde_json::from_str(include_str!("fixtures/project-notes.json")).unwrap()
@@ -216,7 +216,7 @@ fn native_lifecycle_allows_only_immediate_data_http_jobs() {
 
 #[test]
 fn availability_requires_all_live_authority_dimensions() {
-    use webdock_plugin_protocol::{ActionPolicy, Availability};
+    use spitzli_plugin_protocol::{ActionPolicy, Availability};
     let manifest = Manifest::parse(&serde_json::to_vec(&fixture()).unwrap()).unwrap();
     let caps = vec!["plugin.data.read".into(), "plugin.data.write".into()];
     let valid = ActionPolicy {
@@ -292,7 +292,7 @@ fn availability_requires_all_live_authority_dimensions() {
 
 #[test]
 fn values_enforce_nested_schemas_without_external_references() {
-    use webdock_plugin_protocol::validate_value;
+    use spitzli_plugin_protocol::validate_value;
     let schema = json!({"type":"object","additionalProperties":false,"required":["items"],"properties":{"items":{"type":"array","maxItems":2,"items":{"type":"integer","minimum":1}}}});
     assert!(validate_value(Some(&schema), &json!({"items":[1,2]})).is_ok());
     for input in [

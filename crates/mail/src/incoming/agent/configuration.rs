@@ -1,7 +1,7 @@
 //! Native configuration execution never adopts historical jobs or expands restriction authority.
 use super::*;
+use spitzli_agent_protocol::mail_configuration::*;
 use std::collections::{BTreeMap, BTreeSet};
-use webdock_agent_protocol::mail_configuration::*;
 mod authority;
 mod callbacks;
 mod snapshot;

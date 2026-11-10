@@ -42,7 +42,7 @@ Files: root `Cargo.toml`, `rust-toolchain.toml`, `.gitignore`; `crates/core/{Car
 Interfaces: `RecordId::parse(&str) -> Result<RecordId, ContractError>` with JSON string-only serialization; `FeatureState::{Enabled,Draining,Disabled}`; `FeatureSet::require(feature, mutation_kind) -> Result<(), ContractError>`; `PlatformConfig::from_map(&HashMap<String,String>) -> Result<PlatformConfig, ContractError>`.
 
 - [ ] Write negative/positive tests for Snowflake overflow/numeric JSON, unknown features, draining admission and canonical HTTPS/loopback origins.
-- [ ] Run tests against missing/stub behavior, implement the contracts, run `cargo test -p webdock-core` and format/lint.
+- [ ] Run tests against missing/stub behavior, implement the contracts, run `cargo test -p spitzli-core` and format/lint.
 - [ ] Commit the tested contracts and workspace. Resolve dependency versions into the shared lockfile.
 
 ### 2. Loco API runtime and persistence boundary

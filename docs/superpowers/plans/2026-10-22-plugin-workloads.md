@@ -32,7 +32,7 @@ All tasks are done and were run live on the local stack (Tilt, k3s, enrolled age
 - Hosting: apps answer on `http://<name>-<id>.apps.localhost:55480`; logs, environment, stop/start and delete go through the unit.
 - Dedicated PostgreSQL: CloudNativePG 0.29.1 (chart, installed by k3s), one `Cluster` per instance, reached on `pg-<id>.db.localhost:55442` with `sslmode=require`.
 - Mail: one Stalwart engine per project with a deny-all-egress NetworkPolicy; IMAPS on 55993 and submission on 55465, by server name.
-- Plugins share the host call through `webdock_plugin_kit::workloads`.
+- Plugins share the host call through `spitzli_plugin_kit::workloads`.
 
 Rulings made while building:
 

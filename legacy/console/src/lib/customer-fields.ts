@@ -1,5 +1,5 @@
 
-import { msgid } from '@webdock/i18n';
+import { msgid } from '@spitzli/i18n';
 import type { EditorField } from "../components/editor";
 import type { Customer } from "../payload-types";
 

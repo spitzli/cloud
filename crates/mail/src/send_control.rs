@@ -1,1 +1,1 @@
-pub use webdock_mail_runtime::send_control::*;
+pub use spitzli_mail_runtime::send_control::*;

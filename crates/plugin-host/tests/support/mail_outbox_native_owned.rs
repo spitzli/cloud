@@ -4,6 +4,7 @@ use axum::Router;
 use rcgen::{BasicConstraints, CertificateParams, IsCa, KeyPair, KeyUsagePurpose};
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use serde_json::{Value, json};
+use spitzli_plugin_host::provisioning::tls::{RuntimeIdentity, issue_runtime_identity};
 use std::{
     collections::BTreeMap,
     os::unix::fs::OpenOptionsExt,
@@ -20,7 +21,6 @@ use tokio::{
     time::{sleep, timeout},
 };
 use tokio_rustls::{TlsAcceptor, rustls};
-use webdock_plugin_host::provisioning::tls::{RuntimeIdentity, issue_runtime_identity};
 
 pub const PG_IMAGE: &str = "docker.io/library/postgres@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911";
 // Canonical qualification of the UNPUBLISHED local wd-mail-outbox-oci RepoDigest.
@@ -466,7 +466,7 @@ impl Pg {
             &self.url,
         )?;
         for _ in 0..150 {
-            if webdock_plugin_kit::postgres::connect(&self.url, Some(self.pki.ca.as_bytes()))
+            if spitzli_plugin_kit::postgres::connect(&self.url, Some(self.pki.ca.as_bytes()))
                 .await
                 .is_ok()
             {
@@ -897,7 +897,7 @@ impl Drop for Server {
 }
 
 pub fn passwords() -> BTreeMap<String, String> {
-    webdock_persistence::roles::LOGIN_ROLES
+    spitzli_persistence::roles::LOGIN_ROLES
         .iter()
         .map(|name| ((*name).into(), secret()))
         .collect()

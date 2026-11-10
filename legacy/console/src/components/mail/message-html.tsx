@@ -1,2 +1,2 @@
 "use client";
-export { MessageHTML } from "@webdock/module-mail/ui/message-html";
+export { MessageHTML } from "@spitzli/module-mail/ui/message-html";

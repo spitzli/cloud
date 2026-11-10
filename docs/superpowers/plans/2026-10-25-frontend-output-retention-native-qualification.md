@@ -23,7 +23,7 @@ draft remains a historical review artifact.
    allowlist in `git_release_authority`; preserve its remaining body, owner,
    SECURITY DEFINER/search path, and existing execution ACL.
 4. No Cargo declaration/lock changes are needed. SQLx automatically embeds0053;
-   compile the normal `webdock-migrate`, Build/Core service and Hosting test code
+   compile the normal `spitzli-migrate`, Build/Core service and Hosting test code
    against the finalized journal. Do not use an old migration binary, patch SQL
    rows around readiness, or bootstrap before the coordination gate.
 5. Prepared: `tools/tests/build-storage.py` has an explicit `--frontend-only` selector

@@ -1,4 +1,4 @@
-import { retainedMailChecks } from "@webdock/database-runtime";
+import { retainedMailChecks } from "@spitzli/database-runtime";
 /** Only these tables receive installation-wide SELECT for the signed preflight scope. */
 export const modulePreflightChecks = {
   hosting: [

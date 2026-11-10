@@ -1,12 +1,12 @@
 "use client";
 import type { ComponentProps } from "react";
 import { DatabaseActionBoundary } from "../databases/action-boundary";
-import { resourceScope as hostingUIScope } from "@webdock/console-kit/resource-scope";
+import { resourceScope as hostingUIScope } from "@spitzli/console-kit/resource-scope";
 import {
   DatabaseOrderForm as DatabaseOrderFormView,
   DatabasePlanForm as DatabasePlanFormView,
-} from "@webdock/module-databases/ui/databases";
-export type { DatabaseCatalogEntry } from "@webdock/module-databases/ui/databases";
+} from "@spitzli/module-databases/ui/databases";
+export type { DatabaseCatalogEntry } from "@spitzli/module-databases/ui/databases";
 export function DatabaseOrderForm(
   props: ComponentProps<typeof DatabaseOrderFormView>,
 ) {

@@ -233,7 +233,7 @@ impl HostService {
                 "Lifecycle requires the retained approved capabilities",
             ));
         }
-        webdock_plugin_protocol::validate_value(
+        spitzli_plugin_protocol::validate_value(
             Some(&entry.manifest.as_json()["configuration"]),
             &c["configuration"],
         )?;
@@ -464,7 +464,7 @@ impl HostService {
             Some(h) => h,
             None => self.initial_schema_baseline(tx, plugin).await?,
         };
-        let manifest = webdock_plugin_protocol::Manifest::parse(
+        let manifest = spitzli_plugin_protocol::Manifest::parse(
             row.try_get::<String>("", "manifest_bytes")
                 .map_err(db_error)?
                 .as_bytes(),
@@ -495,7 +495,7 @@ impl HostService {
         let mut target = Value::Null;
         for row in rows {
             let version: String = row.try_get("", "version").map_err(db_error)?;
-            let manifest = webdock_plugin_protocol::Manifest::parse(
+            let manifest = spitzli_plugin_protocol::Manifest::parse(
                 row.try_get::<String>("", "manifest_bytes")
                     .map_err(db_error)?
                     .as_bytes(),

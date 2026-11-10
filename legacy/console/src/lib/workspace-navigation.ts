@@ -1,4 +1,4 @@
-import { msgid } from '@webdock/i18n';
+import { msgid } from '@spitzli/i18n';
 
 const within = (path: string, base: string) => path === base || path.startsWith(base + '/');
 export function mainArea(path: string, operator: boolean): string | null {

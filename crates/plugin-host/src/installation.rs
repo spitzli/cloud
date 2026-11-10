@@ -6,14 +6,14 @@ use crate::{
 };
 use sea_orm::{ConnectionTrait, DatabaseTransaction, DbBackend, QueryResult, Statement};
 use serde::{Deserialize, Serialize};
-use std::{collections::BTreeMap, sync::Arc};
-use webdock_agent_protocol::plugin::{
+use spitzli_agent_protocol::plugin::{
     PluginRuntimeAction, PluginRuntimeCheckpoint, PluginRuntimeClaim, PluginRuntimeCompletion,
     PluginRuntimeLease, PluginRuntimeMaterial, PluginRuntimeOutcome, PluginRuntimeSpec,
 };
-use webdock_browser_session::StoredAuthority;
-use webdock_hosting::AgentIdentity;
-use webdock_secrets::SecretCipher;
+use spitzli_browser_session::StoredAuthority;
+use spitzli_hosting::AgentIdentity;
+use spitzli_secrets::SecretCipher;
+use std::{collections::BTreeMap, sync::Arc};
 
 pub(crate) struct InstallationConfig {
     pub catalog: Arc<Catalog>,

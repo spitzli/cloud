@@ -1,5 +1,5 @@
 
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import { customerFields } from "../../../../../lib/customer-fields";
 import Link from "next/link";
 import { Editor } from "../../../../../components/editor";

@@ -1,7 +1,7 @@
 import { guardOperation } from "./operations";
 import { templateAgentRequest } from "./plugin-template-runtime";
-import { createHostingAgentApi } from "@webdock/module-hosting/server/agent-api";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { createHostingAgentApi } from "@spitzli/module-hosting/server/agent-api";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { authDatabase } from "../../db/runtime";
 import {
   databaseObservationConfig,

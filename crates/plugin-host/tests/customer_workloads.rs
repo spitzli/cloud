@@ -6,9 +6,9 @@ use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use shared::Fixture;
+use spitzli_plugin_host::HostService;
+use spitzli_plugin_runtime::PeerIdentity;
 use std::sync::Arc;
-use webdock_plugin_host::HostService;
-use webdock_plugin_runtime::PeerIdentity;
 
 async fn sql(db: &impl ConnectionTrait, query: &str, values: Vec<sea_orm::Value>) {
     db.execute_raw(Statement::from_sql_and_values(
@@ -97,7 +97,7 @@ async fn apply(
     owner: Value,
     unit: &str,
     objects: Value,
-) -> Result<Value, webdock_plugin_protocol::PluginError> {
+) -> Result<Value, spitzli_plugin_protocol::PluginError> {
     let mut input = json!({"unit":unit,"objects":objects});
     input
         .as_object_mut()

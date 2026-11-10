@@ -1,7 +1,7 @@
 //! A plugin's `plugin.workloads` calls to Core (`apply`, `observe`, `remove`) behind a trait, so
 //! plugin tests can stand in for Core and the cluster.
 use serde_json::Value;
-use webdock_plugin_protocol::PluginError;
+use spitzli_plugin_protocol::PluginError;
 
 #[tonic::async_trait]
 pub trait Workloads: Send + Sync + 'static {
@@ -9,7 +9,7 @@ pub trait Workloads: Send + Sync + 'static {
 }
 /// The plugin runtime's own calls, authenticated as its runtime binding.
 pub struct HostWorkloads {
-    pub client: webdock_plugin_runtime::HostClient,
+    pub client: spitzli_plugin_runtime::HostClient,
     pub plugin: String,
     pub generation: u64,
 }

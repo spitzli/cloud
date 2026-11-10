@@ -1,1 +1,1 @@
-export * from "@webdock/module-cms/ui";
+export * from "@spitzli/module-cms/ui";

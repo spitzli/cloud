@@ -3,6 +3,26 @@ use crate::catcher::{Catcher, Counts, Limits, Mode};
 use futures_util::FutureExt;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
+use spitzli_control_plane::{
+    http::{Services, build_app_with_domains},
+    mail::{MailEndpoints, MailProviderPolicy},
+    plugin_config::RuntimeConnections,
+    plugins::PluginEndpoints,
+};
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_mail::{
+    MailDependencies,
+    keys::{KeyCommand, NativeKeys},
+    managed_control::ManagedControl,
+    sending::{Sending, SendingConfig},
+    submissions::Submissions,
+};
+use spitzli_mail_protocol::{
+    native_control::{Control, ControlError, ControlServer, NativeControlClient},
+    sha256,
+};
+use spitzli_plugin_host::{FileBindings, HostService, ManagedBindings};
+use spitzli_plugin_runtime::{PeerIdentity, PinnedMutualTls};
 use std::{
     collections::HashMap,
     os::unix::fs::PermissionsExt,
@@ -18,26 +38,6 @@ use tokio::{
     sync::Notify,
     time::{sleep, timeout},
 };
-use webdock_control_plane::{
-    http::{Services, build_app_with_domains},
-    mail::{MailEndpoints, MailProviderPolicy},
-    plugin_config::RuntimeConnections,
-    plugins::PluginEndpoints,
-};
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_mail::{
-    MailDependencies,
-    keys::{KeyCommand, NativeKeys},
-    managed_control::ManagedControl,
-    sending::{Sending, SendingConfig},
-    submissions::Submissions,
-};
-use webdock_mail_protocol::{
-    native_control::{Control, ControlError, ControlServer, NativeControlClient},
-    sha256,
-};
-use webdock_plugin_host::{FileBindings, HostService, ManagedBindings};
-use webdock_plugin_runtime::{PeerIdentity, PinnedMutualTls};
 #[path = "mail_outbox_native_installer.rs"]
 mod installer;
 #[path = "mail_outbox_native_owned.rs"]
@@ -66,8 +66,8 @@ pub async fn wait_for_fence_witness<T>(
 pub fn fixture_core_configuration(
     auth: &str,
     console: &str,
-) -> Result<webdock_core::config::PlatformConfig, webdock_core::ContractError> {
-    webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+) -> Result<spitzli_core::config::PlatformConfig, spitzli_core::ContractError> {
+    spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
         ("WEBDOCK_AUTH_ORIGIN".into(), auth.into()),
         ("WEBDOCK_CONSOLE_ORIGIN".into(), console.into()),
         ("WEBDOCK_FEATURES".into(), "{\"mail\":\"enabled\"}".into()),
@@ -410,9 +410,9 @@ pub struct Fixture {
     invocation_key: ed25519_dalek::SigningKey,
     issuer: ed25519_dalek::SigningKey,
     pki: Pki,
-    core_identity: webdock_plugin_host::provisioning::tls::RuntimeIdentity,
-    runtime_identity: webdock_plugin_host::provisioning::tls::RuntimeIdentity,
-    gateway_identity: webdock_plugin_host::provisioning::tls::RuntimeIdentity,
+    core_identity: spitzli_plugin_host::provisioning::tls::RuntimeIdentity,
+    runtime_identity: spitzli_plugin_host::provisioning::tls::RuntimeIdentity,
+    gateway_identity: spitzli_plugin_host::provisioning::tls::RuntimeIdentity,
     control: Option<NativeControlClient>,
     cleanup_complete: bool,
     process_cleanup_uncertain: bool,
@@ -462,13 +462,13 @@ impl Fixture {
         )?;
         let binary = owned::stage_elf(
             &binary,
-            &tools.join("webdock-mail"),
+            &tools.join("spitzli-mail"),
             owned::MAIL_ELF_SHA,
             24_999_272,
         )?;
         let gateway_binary = owned::stage_elf(
             &gateway_binary,
-            &tools.join("webdock-mail-gateway"),
+            &tools.join("spitzli-mail-gateway"),
             owned::GATEWAY_ELF_SHA,
             9_989_392,
         )?;
@@ -684,12 +684,12 @@ impl Fixture {
         self.owner = Some(self.platform.owner().await?);
         let passwords = owned::passwords();
         checked(
-            webdock_persistence::roles::provision_roles(self.db()?, "webdock_task4", &passwords)
+            spitzli_persistence::roles::provision_roles(self.db()?, "webdock_task4", &passwords)
                 .await,
             "fresh restricted role bootstrap failed",
         )?;
         checked(
-            webdock_persistence::migrations::bootstrap(
+            spitzli_persistence::migrations::bootstrap(
                 self.db()?,
                 "webdock_task4",
                 &self.rls_secret,
@@ -748,10 +748,10 @@ impl Fixture {
             )?
         );
         let identity = Arc::new(IdentityService::new(auth.clone(), cookies));
-        let ids = Arc::new(webdock_persistence::IdAllocator::new(
+        let ids = Arc::new(spitzli_persistence::IdAllocator::new(
             allocation,
             checked(
-                webdock_ids::Identity::platform(0, 2),
+                spitzli_ids::Identity::platform(0, 2),
                 "fixture allocator identity failed",
             )?,
         ));
@@ -808,7 +808,7 @@ impl Fixture {
             host = checked(
                 host.with_installation(
                     Arc::new(checked(
-                        webdock_plugin_host::Catalog::from_bytes(
+                        spitzli_plugin_host::Catalog::from_bytes(
                             &serde_json::to_vec(&catalog)
                                 .map_err(|_| "installer catalog encode failed")?,
                         ),
@@ -973,7 +973,7 @@ impl Fixture {
         self.control = Some(checked(
             NativeControlClient::new(
                 checked(
-                    webdock_plugin_runtime::pinned_mtls_channel(
+                    spitzli_plugin_runtime::pinned_mtls_channel(
                         origin,
                         "localhost".into(),
                         self.runtime_tls(),
@@ -1118,14 +1118,14 @@ impl Fixture {
         Ok(())
     }
     async fn prepare_metadata(&mut self) -> TestResult {
-        use webdock_plugin_host::provisioning::storage::{MetadataProvisioner, StoragePlan};
+        use spitzli_plugin_host::provisioning::storage::{MetadataProvisioner, StoragePlan};
         let provisioner = checked(
             MetadataProvisioner::connect(&self.metadata.url, Some(self.metadata.pki.ca.as_bytes()))
                 .await,
             "fresh metadata provisioner failed",
         )?;
         let platform = checked(
-            webdock_control_plane::plugins::installation::worker::platform_storage_identity(
+            spitzli_control_plane::plugins::installation::worker::platform_storage_identity(
                 self.db()?,
             )
             .await,
@@ -1152,7 +1152,7 @@ impl Fixture {
         )?;
         private(&self.path("metadata.url"), &storage.url)?;
         self.meta = Some(checked(
-            webdock_plugin_kit::postgres::connect(
+            spitzli_plugin_kit::postgres::connect(
                 &storage.url,
                 Some(self.metadata.pki.ca.as_bytes()),
             )
@@ -1175,7 +1175,7 @@ impl Fixture {
             core.keys
                 .manage(
                     &principal,
-                    &webdock_browser_session::StoredAuthority::local_session(&principal),
+                    &spitzli_browser_session::StoredAuthority::local_session(&principal),
                     "123",
                     KeyCommand::Create {
                         label: "Task4 isolated key".into(),
@@ -1225,7 +1225,7 @@ impl Fixture {
             if let Ok(connection) = connections.load("mail")
                 && let Ok(mut client) = connection.connect().await
                 && client
-                    .health(webdock_plugin_runtime::wire::HealthRequest {})
+                    .health(spitzli_plugin_runtime::wire::HealthRequest {})
                     .await
                     .is_ok()
             {
@@ -1491,7 +1491,7 @@ impl Fixture {
             .ok_or("actual handoff lease token absent")?
             .to_owned();
         let channel = checked(
-            webdock_plugin_runtime::pinned_mtls_channel(
+            spitzli_plugin_runtime::pinned_mtls_channel(
                 self.callback_origin.clone(),
                 "localhost".into(),
                 self.runtime_tls(),
@@ -1500,9 +1500,9 @@ impl Fixture {
             "real replay authority channel failed",
         )?;
         let mut authority =
-            webdock_mail_protocol::wire::mail_authority_client::MailAuthorityClient::new(channel);
+            spitzli_mail_protocol::wire::mail_authority_client::MailAuthorityClient::new(channel);
         let replay = authority
-            .begin_attempt(webdock_mail_protocol::wire::LeaseProof { lease_token: token })
+            .begin_attempt(spitzli_mail_protocol::wire::LeaseProof { lease_token: token })
             .await;
         scrub_json(&mut auth);
         match replay {
@@ -1722,7 +1722,7 @@ impl Fixture {
         }
         if self.source == Source::Native {
             let request = checked(
-                webdock_mail::message::SendRequest::parse(
+                spitzli_mail::message::SendRequest::parse(
                     self.input("new intent"),
                     chrono::Utc::now(),
                 ),
@@ -1862,7 +1862,7 @@ impl Fixture {
             Revocation::Key=>{
                 let core=self.core.as_ref().ok_or("real Core absent")?;
                 let principal=checked(core.identity.authenticate_cookie(&self.cookie).await,"fixture key revocation authentication failed")?.ok_or("fixture principal absent")?;
-                checked(core.keys.manage(&principal,&webdock_browser_session::StoredAuthority::local_session(&principal),"123",KeyCommand::Revoke{key_id:self.native_key_id.clone()}).await,"actual native key revocation failed")?;
+                checked(core.keys.manage(&principal,&spitzli_browser_session::StoredAuthority::local_session(&principal),"123",KeyCommand::Revoke{key_id:self.native_key_id.clone()}).await,"actual native key revocation failed")?;
             }
             Revocation::Actor=>sql(self.db()?,"UPDATE webdock_auth.\"user\" SET banned=true WHERE id='task4-actor'",vec![]).await?,
             Revocation::Grant=>sql(self.db()?,"UPDATE webdock_auth.plugin_grant SET revoked_at=now() WHERE plugin_id='mail' AND project_id='234'",vec![]).await?,
@@ -1919,7 +1919,7 @@ impl Fixture {
         let core = self.core.as_ref().ok_or("real Core absent")?;
         let legacy = checked(
             core.queue
-                .execute(webdock_mail::submissions::QueueCommand::Claim {})
+                .execute(spitzli_mail::submissions::QueueCommand::Claim {})
                 .await,
             "actual legacy claim failed",
         )?;
@@ -1999,7 +1999,7 @@ impl Fixture {
         )?);
         let key = STANDARD.encode(hash.finalize());
         let cipher = checked(
-            webdock_mail::secrets::MailCipher::new(&key),
+            spitzli_mail::secrets::MailCipher::new(&key),
             "actual Mail cipher construction failed",
         )?;
         let mut encoded: String = checked(
@@ -2040,7 +2040,7 @@ impl Fixture {
         Ok(())
     }
     async fn actual_preparation(&self, lease: &Value) -> TestResult<(String, Value)> {
-        use webdock_mail::message::{SendRequest, prepare_action_message, prepare_message};
+        use spitzli_mail::message::{SendRequest, prepare_action_message, prepare_message};
         let value = self.private_request(lease).await?;
         let request = if self.source == Source::Action {
             checked(
@@ -2077,11 +2077,11 @@ impl Fixture {
             )?
         };
         let digest = checked(
-            webdock_mail::proof::message_digest(&prepared.raw),
+            spitzli_mail::proof::message_digest(&prepared.raw),
             "actual MIME digest failed",
         )?;
         let commitment = checked(
-            webdock_mail::provider_transport::preparation(&message, &prepared),
+            spitzli_mail::provider_transport::preparation(&message, &prepared),
             "actual MIME preparation commitment failed",
         )?;
         Ok((
@@ -2117,7 +2117,7 @@ impl Fixture {
         let current = checked(
             NativeControlClient::new(
                 checked(
-                    webdock_plugin_runtime::pinned_mtls_channel(
+                    spitzli_plugin_runtime::pinned_mtls_channel(
                         self.callback_origin.clone(),
                         "localhost".into(),
                         self.runtime_tls(),
@@ -2146,7 +2146,7 @@ impl Fixture {
             "owned metadata URL unavailable",
         )?;
         let mut connection = checked(
-            webdock_plugin_kit::postgres::connect(&storage, Some(self.metadata.pki.ca.as_bytes()))
+            spitzli_plugin_kit::postgres::connect(&storage, Some(self.metadata.pki.ca.as_bytes()))
                 .await,
             "owned cross-process fence connection failed",
         )?;
@@ -2211,7 +2211,7 @@ impl Fixture {
         Ok(())
     }
     pub async fn generic_material_and_reader_fence(&mut self) -> TestResult {
-        use webdock_plugin_runtime::InvocationAuthority;
+        use spitzli_plugin_runtime::InvocationAuthority;
         let (_, pem) = checked(
             x509_parser::pem::parse_x509_pem(self.runtime_identity.certificate_pem.as_bytes()),
             "actual runtime leaf invalid",

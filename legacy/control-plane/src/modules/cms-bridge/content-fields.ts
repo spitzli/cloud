@@ -1,1 +1,1 @@
-export * from "@webdock/module-cms/server/content-fields";
+export * from "@spitzli/module-cms/server/content-fields";

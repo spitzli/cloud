@@ -11,10 +11,10 @@ async fn final_core_retries_after_actual_runtime_saturation() {
 }
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{AdmissionInput, FileBindings, HostService};
+use spitzli_plugin_runtime::PeerIdentity;
 use std::sync::Arc;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{AdmissionInput, FileBindings, HostService};
-use webdock_plugin_runtime::PeerIdentity;
 
 #[tokio::test]
 #[ignore = "owns a disposable PostgreSQL18 container"]
@@ -93,7 +93,7 @@ async fn legacy_rows_cancel_and_verifier_outage_preserves_pending_work() {
     f.auth.close().await.unwrap();
     assert_eq!(
         f.host.claim_job(None).await.err().unwrap().code,
-        webdock_plugin_protocol::ErrorCode::Unavailable
+        spitzli_plugin_protocol::ErrorCode::Unavailable
     );
     assert_eq!(scalar(&f.owner,"SELECT to_jsonb(count(*)) AS value FROM webdock_auth.plugin_job_execution WHERE status='pending'").await,json!(1));
 }
@@ -115,7 +115,7 @@ async fn scalar(db: &DatabaseConnection, query: &str) -> Value {
 #[tokio::test]
 #[ignore = "owns a disposable PostgreSQL18 container"]
 async fn leases_retry_exhaustion_cancellation_and_stale_effects_are_fenced() {
-    use webdock_plugin_protocol::{ErrorCode, PluginError};
+    use spitzli_plugin_protocol::{ErrorCode, PluginError};
     let f = fixture::JobFixture::start().await;
     let request = f.enqueue("lease-recovery").await;
     let (a, b) = tokio::join!(f.host.claim_job(None), f.host.claim_job(None));
@@ -238,7 +238,7 @@ async fn leases_retry_exhaustion_cancellation_and_stale_effects_are_fenced() {
 #[tokio::test]
 #[ignore = "owns a disposable PostgreSQL18 container"]
 async fn strict_contract_sql_scope_and_pool_one_concurrent_admission() {
-    use webdock_plugin_protocol::ErrorCode;
+    use spitzli_plugin_protocol::ErrorCode;
     let f = fixture::JobFixture::start().await;
     let handle = f.handle("start", "contract-parent").await;
     let good = json!({"name":"work","payload":{},"idempotencyKey":"contract-one"});
@@ -318,7 +318,7 @@ async fn strict_contract_sql_scope_and_pool_one_concurrent_admission() {
         "completed"
     );
     sql(&f.owner,"INSERT INTO webdock_admin.projects(id,name,customer_id) VALUES('126','Foreign project','123')",vec![]).await;
-    let foreign=f.host.admit_with_authority(&f.actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"126","action":"start","input":{},"idempotencyKey":"foreign-parent"})).unwrap(),true,&webdock_browser_session::StoredAuthority::LocalSession{}).await.unwrap();
+    let foreign=f.host.admit_with_authority(&f.actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"126","action":"start","input":{},"idempotencyKey":"foreign-parent"})).unwrap(),true,&spitzli_browser_session::StoredAuthority::LocalSession{}).await.unwrap();
     let foreign = f.host.authenticate(peer(), &foreign.token).await.unwrap();
     assert_eq!(
         f.host
@@ -459,8 +459,8 @@ async fn actor_policy_invalidation_cancels_and_pending_jobs_drain() {
     f.host
         .complete_job(
             &lease,
-            Err(webdock_plugin_protocol::PluginError::new(
-                webdock_plugin_protocol::ErrorCode::Unavailable,
+            Err(spitzli_plugin_protocol::PluginError::new(
+                spitzli_plugin_protocol::ErrorCode::Unavailable,
                 "transient",
             )),
         )
@@ -610,7 +610,7 @@ async fn durable_job_survives_parent_cleanup_and_uses_original_session() {
     let fixture = fixture::JobFixture::start().await;
     let host = &fixture.host;
     let actor = &fixture.actor;
-    let admitted=host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":"start","input":{},"idempotencyKey":"parent-action"})).unwrap(),true,&webdock_browser_session::StoredAuthority::LocalSession{}).await.unwrap();
+    let admitted=host.admit_with_authority(actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":"start","input":{},"idempotencyKey":"parent-action"})).unwrap(),true,&spitzli_browser_session::StoredAuthority::LocalSession{}).await.unwrap();
     let handle = host
         .authenticate(
             PeerIdentity::Unix {

@@ -34,9 +34,9 @@ inspection and other OAuth persistence remain explicit retained paths pending
 later ports; this is not a complete OAuth backend switch or performance claim.
 
 ```sh
-cargo test --locked -p webdock-oauth --test native_clients -- --include-ignored --test-threads=1
-cargo test --locked -p webdock-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
-cargo clippy --locked -p webdock-oauth -p webdock-control-plane --all-targets -- -D warnings
+cargo test --locked -p spitzli-oauth --test native_clients -- --include-ignored --test-threads=1
+cargo test --locked -p spitzli-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
+cargo clippy --locked -p spitzli-oauth -p spitzli-control-plane --all-targets -- -D warnings
 cargo fmt --all -- --check
 ```
 

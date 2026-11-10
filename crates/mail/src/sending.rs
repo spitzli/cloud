@@ -15,15 +15,15 @@ use ed25519_dalek::SigningKey;
 use sea_orm::DatabaseTransaction;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::{collections::HashSet, sync::Arc};
-use webdock_mail_protocol::{
+use spitzli_mail_protocol::{
     LeaseClaims, sha256, valid_digest, verify_lease,
     wire::{
         self,
         mail_authority_server::{MailAuthority, MailAuthorityServer},
     },
 };
-use webdock_plugin_runtime::PeerIdentity;
+use spitzli_plugin_runtime::PeerIdentity;
+use std::{collections::HashSet, sync::Arc};
 
 pub struct ProviderSnapshot {
     pub customer_id: String,
@@ -37,7 +37,7 @@ pub struct ProviderSnapshot {
     pub execution: ProviderExecution,
 }
 pub enum ProviderExecution {
-    LegacyHttp(webdock_plugin_http::HttpBinding),
+    LegacyHttp(spitzli_plugin_http::HttpBinding),
     Managed {
         transport: Value,
         credentials_sha256: String,
@@ -74,7 +74,7 @@ pub struct Sending {
     pub(crate) webmail: Option<Arc<crate::webmail::WebmailService>>,
     pub(crate) policy: Arc<dyn ProviderPolicy>,
 }
-pub use webdock_mail_protocol::outbox::Preparation;
+pub use spitzli_mail_protocol::outbox::Preparation;
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Envelope {
@@ -435,7 +435,7 @@ impl Sending {
         if !valid_digest(digest)
             || !valid_digest(&preparation.metadata_sha256)
             || !valid_digest(&preparation.mime_sha256)
-            || !(1..=webdock_mail_protocol::MAX_MIME_BYTES).contains(&preparation.mime_bytes)
+            || !(1..=spitzli_mail_protocol::MAX_MIME_BYTES).contains(&preparation.mime_bytes)
         {
             return Err(Error::Invalid);
         }
@@ -745,7 +745,7 @@ impl MailAuthority for Sending {
         &self,
         request: tonic::Request<wire::LeaseProof>,
     ) -> std::result::Result<tonic::Response<wire::GuardReply>, tonic::Status> {
-        let peer = webdock_plugin_runtime::authenticated_peer(&request)?;
+        let peer = spitzli_plugin_runtime::authenticated_peer(&request)?;
         self.callback(&peer, &request.into_inner().lease_token, false)
             .await
             .map_err(|_| denied())?;
@@ -755,7 +755,7 @@ impl MailAuthority for Sending {
         &self,
         request: tonic::Request<wire::LeaseProof>,
     ) -> std::result::Result<tonic::Response<wire::AttemptReply>, tonic::Status> {
-        let peer = webdock_plugin_runtime::authenticated_peer(&request)?;
+        let peer = spitzli_plugin_runtime::authenticated_peer(&request)?;
         let configuration = self
             .callback(&peer, &request.into_inner().lease_token, true)
             .await

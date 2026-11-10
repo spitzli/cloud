@@ -1,10 +1,10 @@
 //! Private authenticated transport for the existing persisted HostService capabilities.
 use crate::*;
 use serde_json::Value;
+use spitzli_plugin_protocol::{InvocationClaims, Result};
+use spitzli_plugin_runtime::{InvocationAuthority, authenticated_peer, wire};
 use std::sync::Arc;
 use tonic::{Request, Response, Status};
-use webdock_plugin_protocol::{InvocationClaims, Result};
-use webdock_plugin_runtime::{InvocationAuthority, authenticated_peer, wire};
 pub struct HostRpc {
     host: Arc<HostService>,
     permits: tokio::sync::Semaphore,
@@ -29,7 +29,7 @@ fn failure(error: PluginError) -> Status {
         ErrorCode::DeadlineExceeded => tonic::Code::DeadlineExceeded,
         ErrorCode::Unavailable => tonic::Code::Unavailable,
     };
-    let message = webdock_plugin_protocol::public_message(error.code, &error.message)
+    let message = spitzli_plugin_protocol::public_message(error.code, &error.message)
         .unwrap_or_else(|| "Plugin host request denied".into());
     Status::new(code, message)
 }

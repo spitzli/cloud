@@ -3,19 +3,19 @@ import type {
   DatabaseOffer,
   DatabaseOrderState,
   DatabaseCredentials,
-} from "@webdock/module-databases/ui-types";
+} from "@spitzli/module-databases/ui-types";
 export type {
   DatabaseOffer,
   DatabaseOrderState,
   DatabaseCredentials,
-} from "@webdock/module-databases/ui-types";
+} from "@spitzli/module-databases/ui-types";
 import { revalidatePath } from "next/cache";
 import {
   hostingError,
   resourceID,
   databasePlanSchema,
   type DatabasePlan,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { hostingCall } from "./hosting-client";
 
 export async function prepareDatabaseOffer(

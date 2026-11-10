@@ -1,6 +1,6 @@
 use rcgen::{BasicConstraints, CertificateParams, IsCa, KeyPair, KeyUsagePurpose};
 use sha2::{Digest, Sha256};
-use webdock_plugin_host::provisioning::{storage::StoragePlan, tls::issue_runtime_identity};
+use spitzli_plugin_host::provisioning::{storage::StoragePlan, tls::issue_runtime_identity};
 
 #[test]
 fn storage_names_are_stable_bounded_and_platform_scoped() {
@@ -91,7 +91,7 @@ mod fixture;
 #[tokio::test]
 #[ignore = "requires WEBDOCK_PLUGIN_PROVISIONING_DOCKER_TEST=1; creates only an owned disposable local container"]
 async fn tls_login_isolation_and_exact_replay() {
-    use webdock_plugin_host::provisioning::{ProvisioningError, storage::MetadataProvisioner};
+    use spitzli_plugin_host::provisioning::{ProvisioningError, storage::MetadataProvisioner};
     let f = fixture::Fixture::start().await;
     let provisioner = MetadataProvisioner::connect(&f.admin_url, Some(f.ca.as_bytes()))
         .await
@@ -125,7 +125,7 @@ async fn tls_login_isolation_and_exact_replay() {
     )
     .unwrap();
     let storage = provisioner.provision(&plan).await.unwrap();
-    let app = webdock_plugin_kit::postgres::connect(&storage.url, Some(f.ca.as_bytes()))
+    let app = spitzli_plugin_kit::postgres::connect(&storage.url, Some(f.ca.as_bytes()))
         .await
         .unwrap();
     let row = app
@@ -173,7 +173,7 @@ async fn tls_login_isolation_and_exact_replay() {
         let mut uri = url::Url::parse(&storage.url).unwrap();
         uri.set_path(name);
         assert!(
-            webdock_plugin_kit::postgres::connect(uri.as_str(), Some(f.ca.as_bytes()))
+            spitzli_plugin_kit::postgres::connect(uri.as_str(), Some(f.ca.as_bytes()))
                 .await
                 .is_err()
         );
@@ -191,7 +191,7 @@ async fn tls_login_isolation_and_exact_replay() {
         Some(ProvisioningError::Ownership)
     );
     assert!(
-        webdock_plugin_kit::postgres::connect(&storage.url, Some(f.ca.as_bytes()))
+        spitzli_plugin_kit::postgres::connect(&storage.url, Some(f.ca.as_bytes()))
             .await
             .is_ok()
     );
@@ -243,7 +243,7 @@ async fn tls_login_isolation_and_exact_replay() {
     .unwrap();
     let bad = provisioner.provision(&bad_runtime_host).await.unwrap();
     assert!(
-        webdock_plugin_kit::postgres::connect(&bad.url, Some(f.ca.as_bytes()))
+        spitzli_plugin_kit::postgres::connect(&bad.url, Some(f.ca.as_bytes()))
             .await
             .is_err(),
         "the runtime independently verifies its private endpoint hostname"
@@ -256,8 +256,8 @@ mod runtime_fixture;
 #[ignore = "requires owned Docker fixture and WEBDOCK_POSTGRES_RUNTIME_BINARY pointing to the locally built PostgreSQL runtime"]
 async fn actual_postgres_binary_starts_over_pinned_mtls_and_private_unix() {
     use runtime_fixture::{Child, DenyHost, private};
-    use webdock_plugin_host::provisioning::storage::MetadataProvisioner;
-    use webdock_plugin_runtime::{PinnedMutualTls, connect_pinned_mtls, wire};
+    use spitzli_plugin_host::provisioning::storage::MetadataProvisioner;
+    use spitzli_plugin_runtime::{PinnedMutualTls, connect_pinned_mtls, wire};
     let binary =
         std::env::var_os("WEBDOCK_POSTGRES_RUNTIME_BINARY").expect("explicit owned test binary");
     let f = fixture::Fixture::start().await;
@@ -382,7 +382,7 @@ async fn actual_postgres_binary_starts_over_pinned_mtls_and_private_unix() {
             .manifest_json,
         manifest
     );
-    let app = webdock_plugin_kit::postgres::connect(
+    let app = spitzli_plugin_kit::postgres::connect(
         config["storageUrl"].as_str().unwrap(),
         Some(f.ca.as_bytes()),
     )
@@ -431,7 +431,7 @@ async fn actual_postgres_binary_starts_over_pinned_mtls_and_private_unix() {
     );
     drop(client);
     drop(child);
-    let mut core_socket = webdock_plugin_runtime::UnixSocket::bind(path.join("core.sock")).unwrap();
+    let mut core_socket = spitzli_plugin_runtime::UnixSocket::bind(path.join("core.sock")).unwrap();
     let incoming = core_socket.incoming().unwrap();
     let (unix_stop_tx, unix_stop_rx) = tokio::sync::oneshot::channel::<()>();
     let unix_server = tokio::spawn(
@@ -454,7 +454,7 @@ async fn actual_postgres_binary_starts_over_pinned_mtls_and_private_unix() {
             child.0.try_wait().unwrap().is_none(),
             "private Unix runtime exited (private diagnostics suppressed)"
         );
-        if let Ok(c) = webdock_plugin_runtime::connect_unix(path.join("plugin.sock")).await {
+        if let Ok(c) = spitzli_plugin_runtime::connect_unix(path.join("plugin.sock")).await {
             unix_client = Some(c);
             break;
         }

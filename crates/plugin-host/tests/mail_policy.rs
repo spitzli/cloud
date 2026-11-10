@@ -6,8 +6,8 @@ use sea_orm::{
 };
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_plugin_host::{FileBindings, HostService};
 use std::{os::unix::fs::PermissionsExt, sync::Arc};
-use webdock_plugin_host::{FileBindings, HostService};
 const KEY: &str = "mail-policy-owned-test-secret-at-least-32bytes";
 async fn context(db: &DatabaseConnection, purpose: Option<&str>) -> DatabaseTransaction {
     let tx = db.begin().await.unwrap();
@@ -56,7 +56,7 @@ async fn tenant_mail_policy_is_scoped_current_and_locked_through_handoff() {
         .unwrap();
     url.set_path(&format!("/{name}"));
     let outcome=std::panic::AssertUnwindSafe(async{
-  let owner=Database::connect(url.as_str()).await.unwrap();webdock_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();owner.execute_unprepared(include_str!("../migrations/0002_mail_policy.sql")).await.unwrap();
+  let owner=Database::connect(url.as_str()).await.unwrap();spitzli_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();owner.execute_unprepared(include_str!("../migrations/0002_mail_policy.sql")).await.unwrap();
   let seed=owner.begin().await.unwrap();seed.execute_unprepared("SELECT set_config('webdock.organization_allocation','{\"customer_id\":\"123\",\"organization_id\":\"124\"}',true)").await.unwrap();seed.execute_unprepared("INSERT INTO webdock_admin.customers(id,name) VALUES('123','Mail policy fixture')").await.unwrap();seed.commit().await.unwrap();
   let mut manifest:Value=serde_json::from_str(include_str!("../../plugin-protocol/tests/fixtures/project-notes.json")).unwrap();manifest["name"]=json!("mail-policy-fixture");manifest["capabilities"]=json!(["plugin.http.request"]);manifest["actions"]=json!([{"name":"mail.send","intent":"write","audience":"operator","capabilities":["plugin.http.request"]}]);manifest["services"]=json!({"required":[{"name":"http","version":1}],"optional":[]});manifest["jobs"]=json!([]);manifest["httpBindings"]=json!(["relay"]);
   let raw=manifest.to_string();let hash=hex::encode(Sha256::digest(raw.as_bytes()));let image=manifest["image"].as_str().unwrap();
@@ -66,8 +66,8 @@ async fn tenant_mail_policy_is_scoped_current_and_locked_through_handoff() {
   let worker=role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;let business=role("DATABASE_URL",&name,&url).await;
   for purpose in [None,Some("mail-webmail-gateway"),Some("plugin-controller")]{let tx=context(&worker,purpose).await;assert!(policy(&tx,false).await.is_none());tx.rollback().await.unwrap();}
   let file=tempfile::NamedTempFile::new().unwrap();std::fs::set_permissions(file.path(),std::fs::Permissions::from_mode(0o600)).unwrap();let bindings=json!({"runtimes":{"mail-policy-fixture":{"generation":1,"namespace":"fixtures","service":"fixture-mail","credentialSha256":"a".repeat(64),"peers":[{"kind":"unix","uid":rustix::process::geteuid().as_raw()}]}}});std::fs::write(file.path(),bindings.to_string()).unwrap();
-  let host=HostService::new(business.clone(),worker.clone(),KEY.into(),Arc::new(webdock_persistence::IdAllocator::new(business.clone(),webdock_ids::Identity::platform(0,2).unwrap())),Arc::new(FileBindings::new(file.path().into())),ed25519_dalek::SigningKey::from_bytes(&[33;32])).await.unwrap();
-  let tx=context(&worker,Some("mail-send-gateway")).await;let snapshot=policy(&tx,false).await.unwrap();assert!(snapshot["transport"].get("encrypted_credentials").is_none());assert!(snapshot["transport"].get("pending_token").is_none());let typed=host.mail_policy_in(&tx,"123",false).await.unwrap();assert_eq!(typed.customer_id,"123");assert_eq!(typed.grant_revision,1);assert_eq!(typed.binding_sha256.len(),64);assert!(typed.permits_peer(&webdock_plugin_runtime::PeerIdentity::Unix{uid:rustix::process::geteuid().as_raw()}));
+  let host=HostService::new(business.clone(),worker.clone(),KEY.into(),Arc::new(spitzli_persistence::IdAllocator::new(business.clone(),spitzli_ids::Identity::platform(0,2).unwrap())),Arc::new(FileBindings::new(file.path().into())),ed25519_dalek::SigningKey::from_bytes(&[33;32])).await.unwrap();
+  let tx=context(&worker,Some("mail-send-gateway")).await;let snapshot=policy(&tx,false).await.unwrap();assert!(snapshot["transport"].get("encrypted_credentials").is_none());assert!(snapshot["transport"].get("pending_token").is_none());let typed=host.mail_policy_in(&tx,"123",false).await.unwrap();assert_eq!(typed.customer_id,"123");assert_eq!(typed.grant_revision,1);assert_eq!(typed.binding_sha256.len(),64);assert!(typed.permits_peer(&spitzli_plugin_runtime::PeerIdentity::Unix{uid:rustix::process::geteuid().as_raw()}));
   let blocker=owner.clone();let revoke=tokio::spawn(async move{blocker.execute_unprepared("UPDATE webdock_mail.provider_binding SET revision=revision+1,revoked_at=now() WHERE customer_id='123'").await.unwrap();});tokio::time::sleep(std::time::Duration::from_millis(80)).await;assert!(!revoke.is_finished());tx.commit().await.unwrap();tokio::time::timeout(std::time::Duration::from_secs(2),revoke).await.unwrap().unwrap();
   let tx=context(&worker,Some("mail-send-gateway")).await;assert!(host.mail_policy_in(&tx,"123",true).await.is_err());tx.rollback().await.unwrap();owner.execute_unprepared("UPDATE webdock_mail.provider_binding SET revision=revision+1,revoked_at=NULL WHERE customer_id='123'; UPDATE webdock_auth.plugin_installation SET state='draining' WHERE id='mail-policy-fixture'").await.unwrap();
   let tx=context(&worker,Some("mail-send-gateway")).await;assert!(policy(&tx,false).await.is_none());assert!(host.mail_policy_in(&tx,"123",true).await.is_ok());tx.rollback().await.unwrap();

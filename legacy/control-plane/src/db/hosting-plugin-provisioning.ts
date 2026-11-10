@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { PluginError } from "@spitzli/plugin-sdk/contracts";
-import type { ManagedAppsScope } from "@webdock/core/plugin-apps";
-import type { Connection } from "@webdock/module-hosting/server/authorization";
+import type { ManagedAppsScope } from "@spitzli/core/plugin-apps";
+import type { Connection } from "@spitzli/module-hosting/server/authorization";
 import type {
   ProvisioningRecord,
   ProvisioningStore,

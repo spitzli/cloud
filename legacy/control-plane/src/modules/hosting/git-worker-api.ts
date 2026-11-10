@@ -1,5 +1,5 @@
-import { createHostingGitWorkerApi } from "@webdock/module-hosting/server/git-worker-api";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { createHostingGitWorkerApi } from "@spitzli/module-hosting/server/git-worker-api";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { authDatabase } from "../../db/runtime";
 import { transaction } from "./db";
 import { readHostingJSON, requireHostingEnvironment } from "./http";

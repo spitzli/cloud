@@ -23,7 +23,7 @@ capabilities and the `archive` offering/`exports` feature come from the reviewed
 No production activation/signing approval is implied by local fixture evidence.
 
 Recipe: private PostgreSQL metadata (`storage: true`), `sealingKey: false`, private
-configuration containing `backend` and `stagingDirectory: "/tmp/webdock-archives"`.
+configuration containing `backend` and `stagingDirectory: "/tmp/spitzli-archives"`.
 `databaseSources` may be omitted or empty only; nonempty legacy profiles fail startup,
 even with fixture features compiled. Metadata URL/CA, runtime
 mTLS identity, pinned Core channel and issuer key are supplied by the native installer.

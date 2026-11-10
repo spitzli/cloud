@@ -1,4 +1,4 @@
-import { createHostingByok } from "@webdock/module-hosting/server/byok";
+import { createHostingByok } from "@spitzli/module-hosting/server/byok";
 import { executeByokVercel } from "./byok-vercel";
 import { executeByokMail } from "./byok-mail";
 import { authorizeHosting } from "./authorization";

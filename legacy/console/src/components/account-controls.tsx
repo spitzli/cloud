@@ -1,6 +1,6 @@
 "use client";
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { ConsoleIcon } from "./console-icon";
 
 export function AccountControls({ preview = false, operator = false }: { preview?: boolean; operator?: boolean }) {

@@ -1,7 +1,7 @@
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::{Signer, SigningKey};
 use serde_json::{Value, json};
-use webdock_repository_protocol::{
+use spitzli_repository_protocol::{
     Action, LeaseClaims,
     connection::{ConnectionAction, ConnectionClaims, ConnectionScope, verify_connection},
     verify_descriptor, verify_lease,
@@ -107,7 +107,7 @@ fn connection_authority_cannot_be_reused_as_source_or_session_authority() {
     assert!(verify_lease(&token, &key.verifying_key(), &c.scope.plugin_id, 1, NOW).is_err());
     assert!(verify_descriptor(&token, &key.verifying_key()).is_err());
     assert!(
-        webdock_plugin_protocol::verify_invocation(
+        spitzli_plugin_protocol::verify_invocation(
             &token,
             &key.verifying_key(),
             &c.scope.plugin_id,

@@ -1,6 +1,6 @@
 use super::*;
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
-use webdock_oauth::{
+use spitzli_oauth::{
     AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientAuthentication,
     ClientPurpose, ClientRegistration, CodeExchange, OAuthConfig, OAuthService,
 };
@@ -20,7 +20,7 @@ impl McpFixture {
         nonce: &str,
     ) -> Self {
         let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
-        let keys = webdock_identity::SecretKeys::new(
+        let keys = spitzli_identity::SecretKeys::new(
             std::collections::BTreeMap::from([(0, secret.clone()), (1, secret.clone())]),
             1,
             Some(secret),
@@ -29,9 +29,9 @@ impl McpFixture {
         let oauth = Arc::new(OAuthService::new(
             db("AUTH_DATABASE_URL").await,
             identity,
-            Arc::new(webdock_persistence::IdAllocator::new(
+            Arc::new(spitzli_persistence::IdAllocator::new(
                 db("AUTH_DATABASE_URL").await,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )),
             Arc::new(keys),
             OAuthConfig::new(

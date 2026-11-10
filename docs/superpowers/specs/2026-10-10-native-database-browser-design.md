@@ -150,4 +150,4 @@ No production database query, credential change, upstream PR modification, runti
 - [Web request security gate](https://github.com/TabularisDB/tabularis/blob/aeb589e6a3fdd091184a3693bb2f8629bff46f96/src-tauri/src/transport/web/server.rs)
 - [Remote deployment security](https://github.com/TabularisDB/tabularis/blob/aeb589e6a3fdd091184a3693bb2f8629bff46f96/web-ui-project/docs/WEB_REMOTE_SECURITY.md)
 - [Web UI package](https://github.com/TabularisDB/tabularis/blob/aeb589e6a3fdd091184a3693bb2f8629bff46f96/packages/web-ui/package.json)
-- Local: `docs/architecture/customer-tenants.md`, `docs/architecture/studio-product-ui.md`, `docs/architecture/webdock-control-plane.md`, `apps/auth/src/lib/hosting/authorization.ts`.
+- Local: `docs/architecture/customer-tenants.md`, `docs/architecture/studio-product-ui.md`, `docs/architecture/spitzli-control-plane.md`, `apps/auth/src/lib/hosting/authorization.ts`.

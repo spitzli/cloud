@@ -4,14 +4,14 @@ use axum::{
     http::{Request, StatusCode},
 };
 use http_body_util::BodyExt;
-use std::os::unix::fs::PermissionsExt;
-use tower::ServiceExt;
-use webdock_browser_session::StoredAuthority;
-use webdock_plugin_host::{RuntimeDescription, StateProbe};
-use webdock_plugin_protocol::{InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::{
+use spitzli_browser_session::StoredAuthority;
+use spitzli_plugin_host::{RuntimeDescription, StateProbe};
+use spitzli_plugin_protocol::{InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::{
     ActionHandler, CorePeer, HostClient, RemoteAuthority, Runtime, UnixSocket,
 };
+use std::os::unix::fs::PermissionsExt;
+use tower::ServiceExt;
 
 struct Empty;
 #[tonic::async_trait]
@@ -52,7 +52,7 @@ impl Drop for Tasks {
 }
 async fn requested(
     host: &HostService,
-    principal: &webdock_identity::Principal,
+    principal: &spitzli_identity::Principal,
     plugin: &str,
     desired: &str,
     key: &str,
@@ -137,9 +137,9 @@ pub async fn roundtrip(
     let path = directory.path().join("connections.json");
     std::fs::write(&path,json!({"runtimes":{plugin:{"generation":1,"transport":{"kind":"unix","path":plugin_path}}}}).to_string()).unwrap();
     std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
-    let endpoints = Arc::new(webdock_control_plane::plugins::PluginEndpoints::new(
+    let endpoints = Arc::new(spitzli_control_plane::plugins::PluginEndpoints::new(
         host.clone(),
-        webdock_control_plane::plugin_config::RuntimeConnections::new(path),
+        spitzli_control_plane::plugin_config::RuntimeConnections::new(path),
         None,
     ));
     // Old pending state commands without persisted authority cannot be upgraded into native privilege.
@@ -215,10 +215,10 @@ pub async fn roundtrip(
         .unwrap();
     assert_eq!(mismatch.status.as_str(), "failed");
     assert_eq!(mismatch.condition.as_deref(), Some("runtime_mismatch"));
-    let app = webdock_control_plane::http::build_app_with_domains(
-        webdock_core::config::PlatformConfig::from_map(&std::collections::HashMap::new()).unwrap(),
+    let app = spitzli_control_plane::http::build_app_with_domains(
+        spitzli_core::config::PlatformConfig::from_map(&std::collections::HashMap::new()).unwrap(),
         db("AUTH_DATABASE_URL").await,
-        webdock_control_plane::http::Services {
+        spitzli_control_plane::http::Services {
             identity: Some(identity),
             plugins: Some(endpoints.clone()),
             ..Default::default()

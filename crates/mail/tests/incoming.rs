@@ -11,14 +11,14 @@ use sea_orm::{
     ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement, TransactionTrait,
 };
 use serde_json::json;
-use std::sync::Arc;
-use tower::ServiceExt;
-use webdock_browser_session::StoredAuthority;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_mail::{
+use spitzli_browser_session::StoredAuthority;
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_mail::{
     MailDependencies,
     incoming::{IncomingConfig, MailboxCommand, NativeIncoming, ServiceCommand, ServiceState},
 };
+use std::sync::Arc;
+use tower::ServiceExt;
 
 const KEY: &str = "owned-native-incoming-fixture-key-at-least32";
 fn app(
@@ -28,18 +28,18 @@ fn app(
     feature: &str,
 ) -> Router {
     let config =
-        webdock_core::config::PlatformConfig::from_map(&std::collections::HashMap::from([(
+        spitzli_core::config::PlatformConfig::from_map(&std::collections::HashMap::from([(
             "WEBDOCK_FEATURES".into(),
             json!({"mail":feature}).to_string(),
         )]))
         .unwrap();
-    webdock_control_plane::http::build_app_with_domains(
+    spitzli_control_plane::http::build_app_with_domains(
         config,
         db,
-        webdock_control_plane::http::Services {
+        spitzli_control_plane::http::Services {
             identity: Some(identity),
             mail: Some(Arc::new(
-                webdock_control_plane::mail::MailEndpoints::incoming_only(incoming),
+                spitzli_control_plane::mail::MailEndpoints::incoming_only(incoming),
             )),
             ..Default::default()
         },
@@ -140,7 +140,7 @@ async fn incoming_admission_retention_revision_and_live_grant_boundaries() {
     url.set_path(&format!("/{name}"));
     let owner = Database::connect(url.as_str()).await.unwrap();
     let result = std::panic::AssertUnwindSafe(async {
-        webdock_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
+        spitzli_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
         sql(&owner,"INSERT INTO webdock_auth.\"user\"(id,name,email,\"emailVerified\",role,\"twoFactorEnabled\",\"mustChangePassword\") VALUES('1001','Operator','operator@example.invalid',true,'operator',true,false),('1002','Admin','admin@example.invalid',true,'user',false,false),('1003','Member','member@example.invalid',true,'user',false,false)",vec![]).await;
         sql(&owner,"INSERT INTO webdock_auth.session(id,token,\"userId\",\"expiresAt\",\"updatedAt\") VALUES('operator-session','operator-token','1001',now()+interval '1 hour',now()),('admin-session','admin-token','1002',now()+interval '1 hour',now()),('member-session','member-token','1003',now()+interval '1 hour',now())",vec![]).await;
         for (customer, organization) in [("123","124"),("125","126")] {
@@ -164,9 +164,9 @@ async fn incoming_admission_retention_revision_and_live_grant_boundaries() {
         let operator=identity.authenticate_cookie(&operator_cookie).await.unwrap().unwrap();
         let tenant_admin=identity.authenticate_cookie(&admin_cookie).await.unwrap().unwrap();
         let member=identity.authenticate_cookie(&member_cookie).await.unwrap().unwrap();
-        let ids=Arc::new(webdock_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,webdock_ids::Identity::platform(0,2).unwrap()));
+        let ids=Arc::new(spitzli_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,spitzli_ids::Identity::platform(0,2).unwrap()));
         let dependencies=MailDependencies{auth:auth.clone(),business:business.clone(),worker:worker.clone(),identity:identity.clone(),browser:None,ids};
-        let keys=webdock_mail::keys::NativeKeys::new(dependencies.clone(),KEY,true).await.unwrap();
+        let keys=spitzli_mail::keys::NativeKeys::new(dependencies.clone(),KEY,true).await.unwrap();
         let incoming=Arc::new(NativeIncoming::new(dependencies,IncomingConfig{enabled:true,mailboxes_enabled:true,sending_enabled:true,managed_cluster:"200".into(),rls_secret:KEY.into()}).await.unwrap());
         let http=app(incoming.clone(),identity.clone(),auth.clone(),"enabled");
         let authority=StoredAuthority::LocalSession {};
@@ -241,12 +241,12 @@ async fn incoming_admission_retention_revision_and_live_grant_boundaries() {
         sql(&owner,"UPDATE webdock_mail.mailbox_grant SET applied_revision=revision WHERE customer_id='123'",vec![]).await;
         assert!(incoming.directory(&member,&authority,"123").await.unwrap().mailboxes[0].can_open);
         assert!(!incoming.directory(&operator,&authority,"123").await.unwrap().mailboxes[0].can_open);
-        let key=keys.manage(&tenant_admin,&authority,"123",webdock_mail::keys::KeyCommand::Create{label:"Retiring key".into(),domain_id:None}).await.unwrap();
-        let webdock_mail::keys::KeyChange::Created{id:key_id,..}=key else {panic!("created key expected")};
+        let key=keys.manage(&tenant_admin,&authority,"123",spitzli_mail::keys::KeyCommand::Create{label:"Retiring key".into(),domain_id:None}).await.unwrap();
+        let spitzli_mail::keys::KeyChange::Created{id:key_id,..}=key else {panic!("created key expected")};
         sql(&owner,"UPDATE webdock_auth.plugin_installation SET state='draining' WHERE id='mail'",vec![]).await;
-        assert!(keys.manage(&tenant_admin,&authority,"123",webdock_mail::keys::KeyCommand::Create{label:"Denied".into(),domain_id:None}).await.is_err());
-        assert!(keys.manage(&member,&authority,"123",webdock_mail::keys::KeyCommand::Revoke{key_id:key_id.clone()}).await.is_err());
-        keys.manage(&tenant_admin,&authority,"123",webdock_mail::keys::KeyCommand::Revoke{key_id}).await.unwrap();
+        assert!(keys.manage(&tenant_admin,&authority,"123",spitzli_mail::keys::KeyCommand::Create{label:"Denied".into(),domain_id:None}).await.is_err());
+        assert!(keys.manage(&member,&authority,"123",spitzli_mail::keys::KeyCommand::Revoke{key_id:key_id.clone()}).await.is_err());
+        keys.manage(&tenant_admin,&authority,"123",spitzli_mail::keys::KeyCommand::Revoke{key_id}).await.unwrap();
         assert!(incoming.directory(&member,&authority,"123").await.is_ok());
         assert!(incoming.manage_mailboxes(&tenant_admin,&authority,"123",MailboxCommand::Grant{mailbox_id:mailbox_id.clone(),subject:"1003".into()}).await.is_err());
         incoming.manage_mailboxes(&tenant_admin,&authority,"123",MailboxCommand::Revoke{mailbox_id:mailbox_id.clone(),subject:"1003".into()}).await.unwrap();

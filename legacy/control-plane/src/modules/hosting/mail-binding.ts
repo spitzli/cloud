@@ -1,6 +1,6 @@
-import { createHostingMailBinding } from "@webdock/module-hosting/server/mail-binding";
+import { createHostingMailBinding } from "@spitzli/module-hosting/server/mail-binding";
 import { requireMail } from "../../installation";
-import { currentDatabaseScope } from "@webdock/database-runtime";
+import { currentDatabaseScope } from "@spitzli/database-runtime";
 import { assertMailAccess } from "../mail/product/access";
 import { createMailKeyInTransaction } from "../mail/product/api-keys";
 export const {

@@ -1,4 +1,4 @@
-import { createHostingDatabaseMigrationMaintenance } from "@webdock/module-databases/server/database-migration-maintenance";
+import { createHostingDatabaseMigrationMaintenance } from "@spitzli/module-databases/server/database-migration-maintenance";
 import { authorizeHosting } from "./authorization";
 import { databaseAccess } from "./databases";
 import { audit, clusterLock } from "./db";

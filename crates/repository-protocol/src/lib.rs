@@ -3,7 +3,7 @@ use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::{Signature, Signer, SigningKey, VerifyingKey};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-pub use webdock_plugin_protocol::{ErrorCode, PluginError, Result};
+pub use spitzli_plugin_protocol::{ErrorCode, PluginError, Result};
 pub const FRAME_BYTES: usize = 32 * 1024;
 pub const JSON_BYTES: usize = 64 * 1024;
 /// Retained build source ceiling, distinct from artifact output and upload allowances.

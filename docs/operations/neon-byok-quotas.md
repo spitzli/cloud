@@ -31,7 +31,7 @@ limits through the current plan-writing API.
 The integration test creates its own disposable loopback PostgreSQL fixture:
 
 ```sh
-cargo test --locked -p webdock-plugin-host --test neon_databases -- --ignored --test-threads=1
+cargo test --locked -p spitzli-plugin-host --test neon_databases -- --ignored --test-threads=1
 ```
 
 It checks cleanup of both existing plan and override values, new plan writes,

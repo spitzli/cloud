@@ -5,7 +5,7 @@
 #[path = "support/mail_catalog.rs"]
 mod mail_catalog;
 use serde_json::{Value, json};
-use webdock_plugin_host::Catalog;
+use spitzli_plugin_host::Catalog;
 
 #[test]
 fn actual_signed_mail_catalog_binds_private_recipe_and_current_feature_ceiling() {
@@ -15,7 +15,7 @@ fn actual_signed_mail_catalog_binds_private_recipe_and_current_feature_ceiling()
     assert_eq!(public[0]["pluginID"], "mail");
     assert_eq!(public[0]["version"], "0.3.0");
     assert_eq!(public[0]["schemaVersion"], 2);
-    let manifest = webdock_plugin_protocol::Manifest::parse(
+    let manifest = spitzli_plugin_protocol::Manifest::parse(
         raw["releases"][0]["manifestRaw"]
             .as_str()
             .unwrap()

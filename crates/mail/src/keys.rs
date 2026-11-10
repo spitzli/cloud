@@ -9,8 +9,8 @@ use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use sea_orm::{DatabaseTransaction, QueryResult};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use webdock_browser_session::StoredAuthority;
-use webdock_identity::{Principal, RlsSigner};
+use spitzli_browser_session::StoredAuthority;
+use spitzli_identity::{Principal, RlsSigner};
 pub(crate) enum KeyFailure {
     Invalid,
     Denied,

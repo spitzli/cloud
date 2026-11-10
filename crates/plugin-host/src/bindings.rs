@@ -3,11 +3,11 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
+use spitzli_plugin_protocol::Result;
+use spitzli_plugin_runtime::PeerIdentity;
 use std::os::unix::fs::MetadataExt;
 use std::{collections::BTreeMap, path::PathBuf};
 use tokio::io::AsyncReadExt;
-use webdock_plugin_protocol::Result;
-use webdock_plugin_runtime::PeerIdentity;
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
 pub enum PeerEnrollment {
@@ -24,7 +24,7 @@ pub enum PeerEnrollment {
 pub struct RuntimeBinding {
     /// Operator-approved binary origins, project -> alias -> pinned binding.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
-    pub storage: BTreeMap<String, BTreeMap<String, webdock_plugin_http::storage::StorageBinding>>,
+    pub storage: BTreeMap<String, BTreeMap<String, spitzli_plugin_http::storage::StorageBinding>>,
     pub generation: u64,
     pub namespace: String,
     pub service: String,

@@ -1,7 +1,7 @@
 use serde_json::{Value, json};
+use spitzli_plugin_protocol::ErrorCode;
+use spitzli_plugin_runtime::{HostClient, UnixSocket, wire};
 use tonic::{Request, Response, Status};
-use webdock_plugin_protocol::ErrorCode;
-use webdock_plugin_runtime::{HostClient, UnixSocket, wire};
 
 #[derive(Clone)]
 struct Host;

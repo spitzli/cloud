@@ -72,7 +72,7 @@ class Profile(unittest.TestCase):
         self.assertEqual(role['rules'],[{'apiGroups':[''],'resources':['serviceaccounts/token'],'resourceNames':['webdock-build-controller'],'verbs':['create']}])
         bindings=[x for x in items if x['kind']=='RoleBinding']
         self.assertTrue(all(x['subjects']==[{'kind':'ServiceAccount','name':'webdock-build-controller','namespace':'webdock-build-controller'}] for x in bindings))
-        self.assertNotIn('webdock-build-storage-node',str(items))
+        self.assertNotIn('spitzli-build-storage-node',str(items))
         request=json.loads(m.render(self.config())['token-request.review.json'])
         self.assertEqual(request['spec']['expirationSeconds'],3600)
         self.assertEqual(request['spec']['boundObjectRef'],{'kind':'Secret','apiVersion':'v1','name':'webdock-controller-revocation','uid':'revocation-test-uid'})

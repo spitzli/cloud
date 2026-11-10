@@ -176,7 +176,7 @@ fn map_status(status: Status) -> PluginError {
         tonic::Code::DeadlineExceeded => ErrorCode::DeadlineExceeded,
         _ => ErrorCode::Unavailable,
     };
-    let message = webdock_plugin_protocol::public_message(code, status.message())
+    let message = spitzli_plugin_protocol::public_message(code, status.message())
         .unwrap_or_else(|| "Host request could not be completed".into());
     PluginError::new(code, message)
 }

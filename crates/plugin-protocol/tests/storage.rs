@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_plugin_protocol::storage::{StoragePlan, TransferDescriptor, validate_storage_result};
+use spitzli_plugin_protocol::storage::{StoragePlan, TransferDescriptor, validate_storage_result};
 fn plan() -> serde_json::Value {
     json!({"version":1,"binding":"objects","direction":"download","resourceEpoch":"active-1","resourceId":"owned","url":"https://storage.invalid/bucket/key?X-Amz-Signature=private","headers":{},"expiresAt":1300,"exactBytes":3,"expectedSha256":"a".repeat(64),"attachment":{"filename":"report.bin","contentType":"application/octet-stream"}})
 }

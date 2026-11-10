@@ -34,7 +34,7 @@ class Review(Connected):
   self.prepare_connected()
  def registry(self,expected):
   if not self.s.get('registryPrepared'):
-   build=self.run(['cargo','test','--locked','-p','webdock-control-plane','--test','database_backup_transitions','--no-run','--message-format=json'],timeout=600)
+   build=self.run(['cargo','test','--locked','-p','spitzli-control-plane','--test','database_backup_transitions','--no-run','--message-format=json'],timeout=600)
    binary=next(Path(item['executable']) for item in map(json.loads,filter(lambda line:line.startswith('{'),build.splitlines())) if item.get('reason')=='compiler-artifact' and item.get('executable') and item['target']['name']=='database_backup_transitions')
    self.docker('cp',str(binary),self.s['name']+':/connected/registry-test')
    self.s['registryPrepared']=True;self.save()

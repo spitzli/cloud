@@ -39,7 +39,7 @@ def render(node="webdock-build-eu-01",pool_root="/var/lib/webdock-build-storage"
         result.append({"apiVersion":"v1","kind":"Namespace","metadata":{"name":namespace,"labels":{"webdock.dev/build-storage-channel":channel,"pod-security.kubernetes.io/enforce":"restricted"}}})
         if capacity:
             result.append({"apiVersion":"v1","kind":"ResourceQuota","metadata":{"name":"bounded-storage-metadata","namespace":namespace},"spec":{"hard":{"configmaps":str(capacity),"pods":"0","secrets":"0","persistentvolumeclaims":"0","services":"0"}}})
-    result.append({"apiVersion":"v1","kind":"ServiceAccount","metadata":{"name":"webdock-build-storage-node","namespace":system},"automountServiceAccountToken":False})
+    result.append({"apiVersion":"v1","kind":"ServiceAccount","metadata":{"name":"spitzli-build-storage-node","namespace":system},"automountServiceAccountToken":False})
     def rule(resources,verbs,group=""):
         return {"apiGroups":[group],"resources":resources,"verbs":verbs}
     def role(name,namespace,rules,account,account_ns):
@@ -47,15 +47,15 @@ def render(node="webdock-build-eu-01",pool_root="/var/lib/webdock-build-storage"
             {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"Role","metadata":{"name":name,"namespace":namespace},"rules":rules},
             {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"RoleBinding","metadata":{"name":name,"namespace":namespace},"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"Role","name":name},"subjects":[{"kind":"ServiceAccount","name":account,"namespace":account_ns}]},
         ])
-    role("build-volume-node",requests,[rule(["configmaps"],["get","list"])],"webdock-build-storage-node",system)
-    role("build-volume-node",receipts,[rule(["configmaps"],["get","list","create","delete"])],"webdock-build-storage-node",system)
-    role("build-volume-node",execution_namespace,[rule(["persistentvolumeclaims"],["get","create","delete"]),rule(["pods"],["list"]),rule(["jobs"],["get"],"batch")],"webdock-build-storage-node",system)
+    role("build-volume-node",requests,[rule(["configmaps"],["get","list"])],"spitzli-build-storage-node",system)
+    role("build-volume-node",receipts,[rule(["configmaps"],["get","list","create","delete"])],"spitzli-build-storage-node",system)
+    role("build-volume-node",execution_namespace,[rule(["persistentvolumeclaims"],["get","create","delete"]),rule(["pods"],["list"]),rule(["jobs"],["get"],"batch")],"spitzli-build-storage-node",system)
     role("build-volume-producer",requests,[rule(["configmaps"],["get","create","delete"])],"webdock-build-dispatcher",execution_namespace)
     role("build-volume-producer",receipts,[rule(["configmaps"],["get","delete"])],"webdock-build-dispatcher",execution_namespace)
     role("build-volume-observer",execution_namespace,[rule(["persistentvolumeclaims"],["get"]),rule(["jobs"],["patch"],"batch")],"webdock-build-dispatcher",execution_namespace)
     result.extend([
         {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"ClusterRole","metadata":{"name":"webdock-build-volume-node"},"rules":[rule(["persistentvolumes"],["get","create","delete"])]},
-        {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"ClusterRoleBinding","metadata":{"name":"webdock-build-volume-node"},"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"ClusterRole","name":"webdock-build-volume-node"},"subjects":[{"kind":"ServiceAccount","name":"webdock-build-storage-node","namespace":system}]},
+        {"apiVersion":"rbac.authorization.k8s.io/v1","kind":"ClusterRoleBinding","metadata":{"name":"webdock-build-volume-node"},"roleRef":{"apiGroup":"rbac.authorization.k8s.io","kind":"ClusterRole","name":"webdock-build-volume-node"},"subjects":[{"kind":"ServiceAccount","name":"spitzli-build-storage-node","namespace":system}]},
     ])
     def policy(name,spec):
         result.extend([
@@ -74,7 +74,7 @@ def render(node="webdock-build-eu-01",pool_root="/var/lib/webdock-build-storage"
     # json.dumps produces a CEL-compatible escaped literal for the path regex.
     policy("webdock-build-storage-local-volume",{
         "matchConstraints":{"resourceRules":[{"apiGroups":[""],"apiVersions":["v1"],"operations":["CREATE","UPDATE"],"resources":["persistentvolumes"]}]},
-        "matchConditions":[{"name":"dedicated-node-identity","expression":"request.userInfo.username == "+json.dumps("system:serviceaccount:"+system+":webdock-build-storage-node")}],
+        "matchConditions":[{"name":"dedicated-node-identity","expression":"request.userInfo.username == "+json.dumps("system:serviceaccount:"+system+":spitzli-build-storage-node")}],
         "validations":[
             {"expression":"has(object.spec.local) && object.spec.local.path.matches("+json.dumps(path_pattern)+") && object.spec.volumeMode == 'Filesystem' && object.spec.accessModes == ['ReadWriteOnce'] && object.spec.persistentVolumeReclaimPolicy == 'Retain' && (!has(object.spec.storageClassName) || object.spec.storageClassName == '')","message":"Only fixed build-pool filesystem volumes may be created."},
             {"expression":"has(object.spec.claimRef) && object.spec.claimRef.namespace == "+json.dumps(execution_namespace)+" && object.spec.claimRef.name == object.metadata.name && has(object.spec.claimRef.uid) && object.spec.claimRef.uid.matches('^[A-Za-z0-9_-]{1,128}$')","message":"The exact namespaced claim UID must be prebound."},

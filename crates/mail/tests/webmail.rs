@@ -5,14 +5,14 @@ use sea_orm::{
     ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement, TransactionTrait,
 };
 use serde_json::json;
-use std::sync::Arc;
-use webdock_browser_session::StoredAuthority;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_mail::{
+use spitzli_browser_session::StoredAuthority;
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_mail::{
     keys::{KeyChange, KeyCommand},
     secrets::MailCipher,
     webmail::{WebmailConfig, WebmailDependencies, WebmailService},
 };
+use std::sync::Arc;
 const KEY: &str = "local-webmail-fixture-context-key-at-least32";
 async fn sql(db: &impl ConnectionTrait, sql: &str, values: Vec<sea_orm::Value>) {
     db.execute_raw(Statement::from_sql_and_values(
@@ -51,7 +51,7 @@ async fn explicit_mailbox_grant_one_use_launch_revocation_and_secret_boundary() 
     url.set_path(&format!("/{name}"));
     let owner = Database::connect(url.as_str()).await.unwrap();
     let result=std::panic::AssertUnwindSafe(async{
-        webdock_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
+        spitzli_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
         sql(&owner,"INSERT INTO webdock_auth.\"user\"(id,name,email,\"emailVerified\",role,\"twoFactorEnabled\",\"mustChangePassword\") VALUES('alice','Alice','alice@example.invalid',true,'user',false,false),('operator','Operator','operator@example.invalid',true,'operator',true,false)",vec![]).await;
         sql(&owner,"INSERT INTO webdock_auth.session(id,token,\"userId\",\"expiresAt\",\"updatedAt\") VALUES('alice-session','alice-token','alice',now()+interval '1 hour',now()),('operator-session','operator-token','operator',now()+interval '1 hour',now())",vec![]).await;
         let seed=owner.begin().await.unwrap();sql(&seed,"SELECT set_config('webdock.organization_allocation','{\"customer_id\":\"123\",\"organization_id\":\"124\"}',true)",vec![]).await;sql(&seed,"INSERT INTO webdock_admin.customers(id,name) VALUES('123','Webmail fixture')",vec![]).await;seed.commit().await.unwrap();
@@ -68,9 +68,9 @@ async fn explicit_mailbox_grant_one_use_launch_revocation_and_secret_boundary() 
         let auth=role("AUTH_DATABASE_URL",&name,&url).await;let business=role("DATABASE_URL",&name,&url).await;let worker=role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;
         let cookies=CookiePolicy::new(false,"local-webmail-cookie-fixture-key-at-least32").unwrap();let alice_cookie=format!("{}={}",cookies.name(),cookies.sign("alice-token").unwrap());let operator_cookie=format!("{}={}",cookies.name(),cookies.sign("operator-token").unwrap());
         let identity=Arc::new(IdentityService::new(auth.clone(),cookies));let alice=identity.authenticate_cookie(&alice_cookie).await.unwrap().unwrap();let operator=identity.authenticate_cookie(&operator_cookie).await.unwrap().unwrap();
-        let ids=Arc::new(webdock_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,webdock_ids::Identity::platform(0,2).unwrap()));
+        let ids=Arc::new(spitzli_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,spitzli_ids::Identity::platform(0,2).unwrap()));
         let dependencies=WebmailDependencies{auth:auth.clone(),business:business.clone(),worker:worker.clone(),identity:identity.clone(),browser:None,ids};
-        let keys=webdock_mail::keys::NativeKeys::new(dependencies.clone(),KEY,true).await.unwrap();
+        let keys=spitzli_mail::keys::NativeKeys::new(dependencies.clone(),KEY,true).await.unwrap();
         let outgoing=owner.begin().await.unwrap();sql(&outgoing,"SELECT set_config('webdock.organization_allocation','{\"customer_id\":\"125\",\"organization_id\":\"126\"}',true)",vec![]).await;sql(&outgoing,"INSERT INTO webdock_admin.customers(id,name) VALUES('125','Outgoing-only fixture')",vec![]).await;outgoing.commit().await.unwrap();
         sql(&owner,"INSERT INTO webdock_auth.mail_sender_domain(id,customer_id,domain,token,status) VALUES('501','125','outgoing.test','test-only','ownership_verified')",vec![]).await;
         let create = KeyCommand::Create { label: "Sending".into(), domain_id: Some("501".into()) };
@@ -110,7 +110,7 @@ async fn explicit_mailbox_grant_one_use_launch_revocation_and_secret_boundary() 
         assert!(owner.execute_unprepared("UPDATE webdock_mail.webmail_launch SET native_authority='{}' WHERE session_id='alice-session'").await.is_err());
         let exchanged=service.exchange(&launch.code).await.unwrap();assert!(service.exchange(&launch.code).await.is_err());assert!(!serde_json::to_string(&exchanged).unwrap().contains("password"));
         let access=service.inspect(&exchanged.token).await.unwrap();assert_eq!(access.account_id,"account-a");assert_eq!(access.sender_address,"alice@example.test");assert!(access.authorization.starts_with("Basic "));
-        use webdock_mail::webmail::{ReserveWrite,FinishWrite,WriteAction,WriteState,WriteResult};
+        use spitzli_mail::webmail::{ReserveWrite,FinishWrite,WriteAction,WriteState,WriteResult};
         let request=uuid::Uuid::new_v4();
         let reserve=||ReserveWrite{token:exchanged.token.clone(),request_id:request,action:WriteAction::Submit,resource_id:Some("draft1".into()),payload_hash:"a".repeat(64)};
         let first=service.reserve_write(reserve()).await.unwrap();assert!(first.execute);

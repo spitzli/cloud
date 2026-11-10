@@ -1,1 +1,1 @@
-export * from "@webdock/module-hosting/server/service-binding-schema";
+export * from "@spitzli/module-hosting/server/service-binding-schema";

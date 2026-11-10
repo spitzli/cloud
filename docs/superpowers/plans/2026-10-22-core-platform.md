@@ -24,7 +24,7 @@ and 0037 add serialized placement, independent history pruning and stable log cu
 domain checks and removal now share the customer allocation lock.
 
 The owner selected Rust as the sole active platform API, with the retired TypeScript applications
-preserved under `legacy/`. The React Console/account UI is now `apps/console` (`@webdock/console`).
+preserved under `legacy/`. The React Console/account UI is now `apps/console` (`@spitzli/console`).
 The root scripts and native deployment candidates use `crates/control-plane`; the old API,
 Next.js frontends, standalone TypeScript Mail and their release workflow are archived. The old
 plans/billing system is not an active second source of limits; native plans remain price-free.

@@ -1,8 +1,8 @@
 #[path = "support/native_pg.rs"]
 mod fixture;
+use spitzli_persistence::postgres::{Limits, Pool};
 use std::{sync::Arc, time::Duration};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use webdock_persistence::postgres::{Limits, Pool};
 
 #[tokio::test]
 #[ignore = "owned local PostgreSQL18 with an owned TLS proxy"]

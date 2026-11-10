@@ -1,4 +1,4 @@
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 /** Workers verify accepted user authority with their restricted database role, never bootstrap credentials. */
 export function validateClerkWorkerConfiguration(
   domains: readonly string[],

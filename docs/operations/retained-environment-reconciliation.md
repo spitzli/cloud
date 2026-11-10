@@ -37,8 +37,8 @@ any accepted application operation.
 Local qualification:
 
 ```sh
-cargo test --locked -p webdock-agent --lib --all-features -j2
-cargo clippy --locked -p webdock-agent --lib --all-features -j2 -- -D warnings
+cargo test --locked -p spitzli-agent --lib --all-features -j2
+cargo clippy --locked -p spitzli-agent --lib --all-features -j2 -- -D warnings
 ```
 
 Three new selection regressions cover referenced and retired owned maintenance

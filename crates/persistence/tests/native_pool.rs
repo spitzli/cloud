@@ -1,5 +1,5 @@
+use spitzli_persistence::postgres::{Error, Limits, Pool};
 use std::time::Duration;
-use webdock_persistence::postgres::{Error, Limits, Pool};
 #[path = "support/native_pg.rs"]
 mod fixture;
 

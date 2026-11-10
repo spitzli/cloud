@@ -1,4 +1,4 @@
-import { createHostingApps } from "@webdock/module-hosting/server/apps";
+import { createHostingApps } from "@spitzli/module-hosting/server/apps";
 import { applicationCapabilities } from "./setup-capabilities";
 import { revokeBindingMail } from "./mail-binding";
 import { bindingRuntime } from "./binding-runtime";

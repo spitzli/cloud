@@ -1,14 +1,14 @@
-import type { GitOAuthCommand } from "@webdock/hosting-contracts/git-oauth";
-import { gitOAuthCommandSchema } from "@webdock/hosting-contracts/git-oauth";
+import type { GitOAuthCommand } from "@spitzli/hosting-contracts/git-oauth";
+import { gitOAuthCommandSchema } from "@spitzli/hosting-contracts/git-oauth";
 
 import {
   gitFlowCookie,
   readGitFlowCookie,
-} from "@webdock/api-client/flow-cookies";
+} from "@spitzli/api-client/flow-cookies";
 export {
   gitFlowCookie,
   readGitFlowCookie,
-} from "@webdock/api-client/flow-cookies";
+} from "@spitzli/api-client/flow-cookies";
 export async function gitConnectionRoute(
   request: Request,
   step: "connect" | "callback" | "select",

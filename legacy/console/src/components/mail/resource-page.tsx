@@ -1,4 +1,4 @@
-import { createMailResourcePage } from "@webdock/module-mail/ui/resource-page";
+import { createMailResourcePage } from "@spitzli/module-mail/ui/resource-page";
 import { loadMailPage } from "./product-page";
 import { mailRead } from "@/lib/mail-product";
 import { getStudioSession } from "@/lib/studio-client";

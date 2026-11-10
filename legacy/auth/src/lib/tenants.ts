@@ -1,5 +1,5 @@
 
-import { msgid } from '@webdock/i18n';
+import { msgid } from '@spitzli/i18n';
 import "server-only";
 import { cache } from "react";
 import { studioCall } from "./studio-client";

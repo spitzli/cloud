@@ -14,14 +14,14 @@ COPY --from=source-context /src .
 ARG CARGO_BUILD_JOBS=2
 # Quiet progress keeps the same bounded build-log policy used for customer builds.
 RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/target \
-    cargo build --locked --release --quiet --jobs "$CARGO_BUILD_JOBS" -p webdock-control-plane --bins \
- && cargo build --locked --release --quiet --jobs "$CARGO_BUILD_JOBS" -p webdock-build --features worker,kubernetes-job --bin webdock-kubernetes-build-worker \
+    cargo build --locked --release --quiet --jobs "$CARGO_BUILD_JOBS" -p spitzli-control-plane --bins \
+ && cargo build --locked --release --quiet --jobs "$CARGO_BUILD_JOBS" -p spitzli-build --features worker,kubernetes-job --bin spitzli-kubernetes-build-worker \
  && mkdir /binaries \
- && cp target/release/webdock-control-plane target/release/webdock-migrate \
-       target/release/webdock-bootstrap-operator target/release/webdock-agent-control \
-       target/release/webdock-import-clerk-waitlist \
-       target/release/webdock-plugin-control target/release/webdock-plugin-controller \
-       target/release/webdock-kubernetes-build-worker /binaries/
+ && cp target/release/spitzli-control-plane target/release/spitzli-migrate \
+       target/release/spitzli-bootstrap-operator target/release/spitzli-agent-control \
+       target/release/spitzli-import-clerk-waitlist \
+       target/release/spitzli-plugin-control target/release/spitzli-plugin-controller \
+       target/release/spitzli-kubernetes-build-worker /binaries/
 
 FROM docker.io/library/debian:trixie-slim@sha256:f6b08b09a05725f9431502d3b5714f5c4576e82c1a84fa1debe0c24a7e0c3ec4 AS runtime
 # Bootstrap verified HTTPS APT with public CA roots, never disabled certificate checks.
@@ -43,21 +43,21 @@ ENV NODE_ENV=production
 WORKDIR /opt/webdock
 
 FROM runtime AS migrate
-ENTRYPOINT ["/usr/local/bin/webdock-migrate"]
+ENTRYPOINT ["/usr/local/bin/spitzli-migrate"]
 
 FROM runtime AS agent-control
-ENTRYPOINT ["/usr/local/bin/webdock-agent-control"]
+ENTRYPOINT ["/usr/local/bin/spitzli-agent-control"]
 
 FROM runtime AS plugin-control
-ENTRYPOINT ["/usr/local/bin/webdock-plugin-control"]
+ENTRYPOINT ["/usr/local/bin/spitzli-plugin-control"]
 
 FROM runtime AS plugin-controller
-ENTRYPOINT ["/usr/local/bin/webdock-plugin-controller"]
+ENTRYPOINT ["/usr/local/bin/spitzli-plugin-controller"]
 
 FROM runtime AS build-controller
-ENTRYPOINT ["/usr/local/bin/webdock-kubernetes-build-worker"]
+ENTRYPOINT ["/usr/local/bin/spitzli-kubernetes-build-worker"]
 
 FROM runtime AS backend
 ENV WEBDOCK_BIND_ADDRESS=0.0.0.0 PORT=3130
 EXPOSE 3130
-ENTRYPOINT ["/usr/local/bin/webdock-control-plane"]
+ENTRYPOINT ["/usr/local/bin/spitzli-control-plane"]

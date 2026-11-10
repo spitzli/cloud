@@ -5,13 +5,13 @@ import {
 import type {
   ManagedAppsScope,
   ManagedAppsProvisioningRequest,
-} from "@webdock/core/plugin-apps";
+} from "@spitzli/core/plugin-apps";
 import type {
   HostingActor,
   SetupConfiguration,
   SetupView,
-} from "@webdock/hosting-contracts";
-import type { SetupRow } from "@webdock/module-hosting/server/project-setup";
+} from "@spitzli/hosting-contracts";
+import type { SetupRow } from "@spitzli/module-hosting/server/project-setup";
 export type ProvisionedAppBinding = {
   appID: string;
   websiteBindingID: string;

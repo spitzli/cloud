@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useActionState } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import type { NativeMailView } from "@/lib/studio-contracts";
 import { mailServiceAction } from "./service-actions";
 

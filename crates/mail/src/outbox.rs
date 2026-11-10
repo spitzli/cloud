@@ -8,7 +8,7 @@ use serde::Serialize;
 use serde_json::Value;
 use uuid::Uuid;
 
-pub use webdock_mail_protocol::outbox::{PayloadFormat, PayloadLease, Receipt, SendLease};
+pub use spitzli_mail_protocol::outbox::{PayloadFormat, PayloadLease, Receipt, SendLease};
 #[derive(Clone)]
 pub struct Enqueue {
     /// Already allocated and committed by the coordinated native ID allocator.
@@ -85,7 +85,7 @@ fn check_lease(job: &SendLease) -> Result<()> {
     Ok(())
 }
 pub async fn enqueue(tx: &DatabaseTransaction, input: &Enqueue) -> Result<Enqueued> {
-    if webdock_core::id::RecordId::parse(&input.id).is_err()
+    if spitzli_core::id::RecordId::parse(&input.id).is_err()
         || !valid_id(&input.customer_id)
         || !text_token(&input.source_id)
         || !text_token(&input.idempotency_key)

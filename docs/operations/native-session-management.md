@@ -49,10 +49,10 @@ lock, then checks list/revoke/logout responses and surviving foreign sessions.
 No live provider or production data is used.
 
 ```sh
-cargo test --locked -p webdock-identity --test native_session_management -- --include-ignored --test-threads=1
-cargo test --locked -p webdock-identity --test native_sessions -- --include-ignored --test-threads=1
-cargo test --locked -p webdock-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
-cargo clippy --locked -p webdock-persistence -p webdock-identity -p webdock-control-plane --all-targets -- -D warnings
+cargo test --locked -p spitzli-identity --test native_session_management -- --include-ignored --test-threads=1
+cargo test --locked -p spitzli-identity --test native_sessions -- --include-ignored --test-threads=1
+cargo test --locked -p spitzli-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
+cargo clippy --locked -p spitzli-persistence -p spitzli-identity -p spitzli-control-plane --all-targets -- -D warnings
 cargo fmt --all -- --check
 ```
 

@@ -37,7 +37,7 @@ pub enum QueueCommand {
     #[serde(rename = "send.cleanupDone")]
     CleanupDone { items: Vec<CleanupItem> },
 }
-pub use webdock_mail_protocol::outbox::CleanupItem;
+pub use spitzli_mail_protocol::outbox::CleanupItem;
 pub struct Submissions {
     dependencies: MailDependencies,
     secret: String,

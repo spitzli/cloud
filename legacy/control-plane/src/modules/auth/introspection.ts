@@ -1,4 +1,4 @@
-import { requireOAuthCapability } from "@webdock/auth-configuration/protocols";
+import { requireOAuthCapability } from "@spitzli/auth-configuration/protocols";
 import { AsyncLocalStorage } from "node:async_hooks";
 
 type Handler = (request: Request) => Promise<Response>;

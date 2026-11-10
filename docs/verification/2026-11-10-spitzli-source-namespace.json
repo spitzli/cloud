@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-10",
+  "scope": "Source package, crate and executable namespace migration",
+  "baseCommit": "43b56d4666c29cdd4a29b3b47a28b4cbc912b14c",
+  "phase": 1,
+  "fullInternalMigrationComplete": false,
+  "sourceNames": {
+    "javascriptPackages": 47,
+    "rustCrates": 42,
+    "executableNames": 23,
+    "renamedPaths": 41,
+    "cli": "spitzli-cloud; deprecated command alias removed"
+  },
+  "checks": {
+    "frozenBunInstall": "passed",
+    "lockedCargoManifests": 44,
+    "externalCargoDependencies": "same names, versions, sources, hashes and dependency records",
+    "consoleComponentTests": 251,
+    "consoleBrowserSuites": 28,
+    "customerPageChecks": 180,
+    "customerJourneyGroups": 9,
+    "sdkCliTests": 30,
+    "nodeFixtureAndRetainedCryptoTests": 55,
+    "websitePolicyTests": 6,
+    "websiteTypeScript": "passed",
+    "nextProductionIntent": "passed; exact source and installed Next, no CMS/provider/DB config",
+    "rustWorkspace": {
+      "passed": 1051,
+      "ignored": 406,
+      "suitesIncludingDocTests": 317
+    },
+    "agentAllFeatureBoundary": {
+      "passed": 123,
+      "ignored": 7
+    },
+    "rustClippy": "workspace/all-targets/all-features -D warnings passed",
+    "qualityRunner": "unit and architecture tests plus strict Clippy passed",
+    "consoleBuildLintTypes": "passed",
+    "nativeChartsAndCompose": "passed",
+    "renamedChartObjectNamesAndSelectors": "exactly preserved with enabled synthetic values",
+    "exportTests": 17,
+    "nativeReleaseAndCoreQualityTools": "passed",
+    "contracts": "architecture/lints/Serde/frozen migrations passed"
+  },
+  "retainedInvariants": {
+    "immutableMigrationAndCodecFiles": 169,
+    "sqlAndMigrationChecksums": "unchanged",
+    "mailCodec": "existing Rust/Node envelopes and subkey domains unchanged; shared retained vector opens",
+    "kubernetesManagers": "existing SSA managers retained",
+    "persistedHostPaths": "retained for coordinated migration",
+    "liveRuntimeChanges": false
+  },
+  "review": {
+    "kind": "self-review",
+    "independent": false,
+    "importantFinding": {
+      "severity": "important",
+      "trigger": "A bare crate name was also part of retained Mail AAD and private-payload key domain",
+      "reproduced": "retained_node_proof_and_secret_are_compatible failed with Secret",
+      "fix": "Retain exact Rust/Node stored-envelope and private-payload-key domains, matching producer fixture and AAD documentation; retain existing Git external IDs, SSA managers and persisted paths until coordinated migration.",
+      "resolved": true
+    }
+  },
+  "remaining": [
+    "SPITZLI environment names and existing private configuration/CI bindings",
+    "Database schema/role and persistent-record migration",
+    "Versioned crypto-envelope migration, followed by removal of legacy decoding",
+    "OAuth, cookies, passkey handles, headers, protocol fields and all consumers",
+    "Kubernetes/Helm/service identities and retained state directories",
+    "Visible branding, URLs and external service metadata",
+    "Regenerate derived knowledge graph after the final source namespace transition"
+  ],
+  "limitations": [
+    "Source namespace phase, not complete removal of all legacy strings",
+    "Website live CMS HTTP integration tests need a configured owned server; policy/types/controlled Next tests passed",
+    "No production Core/agent/database/credentials/flag changes; no provider/auth/full-platform E2E claim"
+  ]
+}

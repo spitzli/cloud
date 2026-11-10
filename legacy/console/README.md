@@ -4,9 +4,9 @@ Next.js frontend for the Webdock API. Business data and authorization live in
 `apps/api`; Console holds no database credentials. Run from the monorepo root after
 `npm ci`, using Node 24:
 
-- `npm run dev -w @webdock/admin` starts on port 3120.
+- `npm run dev -w @spitzli/admin` starts on port 3120.
 - `npm test` runs the isolated Console unit tests.
-- `npm run check -w @webdock/admin`, `npm run lint -w @webdock/admin` and
+- `npm run check -w @spitzli/admin`, `npm run lint -w @spitzli/admin` and
   `npm run build:admin` check source and production output.
 
 By default, existing deployments retain central Better Auth SSO. Setting

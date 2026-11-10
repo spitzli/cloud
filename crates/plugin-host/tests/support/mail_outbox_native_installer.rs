@@ -2,12 +2,12 @@
 use super::*;
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD as B64};
 use ed25519_dalek::Signer;
-use std::collections::BTreeMap;
-use webdock_agent_protocol::plugin::{MATERIAL_FILES, PluginRuntimeMaterial};
-use webdock_control_plane::{
+use spitzli_agent_protocol::plugin::{MATERIAL_FILES, PluginRuntimeMaterial};
+use spitzli_control_plane::{
     plugin_config::PluginConfig, plugins::installation::worker::InstallationWorker,
 };
-use webdock_plugin_host::Catalog;
+use spitzli_plugin_host::Catalog;
+use std::collections::BTreeMap;
 impl Fixture {
     pub async fn run_installer() -> TestResult {
         let _case = owned::CASE_LOCK.lock().await;
@@ -116,7 +116,7 @@ impl Fixture {
             return Err("generic preparation lost unpromoted candidate state");
         }
         let cipher = checked(
-            webdock_secrets::SecretCipher::new(&self.install_secret),
+            spitzli_secrets::SecretCipher::new(&self.install_secret),
             "installation cipher construction failed",
         )?;
         let mut files = BTreeMap::new();
@@ -172,7 +172,7 @@ impl Fixture {
             .ok_or("generic metadata login absent")?
             .to_owned();
         let connection = checked(
-            webdock_plugin_kit::postgres::connect(
+            spitzli_plugin_kit::postgres::connect(
                 &url,
                 Some(material.files["storage-ca.crt"].as_bytes()),
             )
@@ -192,7 +192,7 @@ impl Fixture {
             .filter(|s| s.len() == 64)
             .ok_or("generic retained sealing key absent")?
             .into();
-        self.runtime_identity = webdock_plugin_host::provisioning::tls::RuntimeIdentity {
+        self.runtime_identity = spitzli_plugin_host::provisioning::tls::RuntimeIdentity {
             certificate_pem: material.files["runtime.crt"].clone(),
             private_key_pem: material.files["runtime.key"].clone(),
             certificate_sha256: pin.clone(),
@@ -232,14 +232,14 @@ impl Fixture {
                 authority: self.pki.ca.as_bytes().to_vec(),
                 server_certificate_sha256: pin.clone(),
             };
-            if let Ok(mut client) = webdock_plugin_runtime::connect_pinned_mtls(
+            if let Ok(mut client) = spitzli_plugin_runtime::connect_pinned_mtls(
                 format!("https://localhost:{port}"),
                 host.clone(),
                 tls,
             )
             .await
                 && let Ok(health) = client
-                    .health(webdock_plugin_runtime::wire::HealthRequest {})
+                    .health(spitzli_plugin_runtime::wire::HealthRequest {})
                     .await
                 && health.into_inner().plugin_id == "mail"
             {
@@ -272,7 +272,7 @@ impl Fixture {
             server_certificate_sha256: self.core_identity.certificate_sha256.clone(),
         };
         let channel = checked(
-            webdock_plugin_runtime::pinned_mtls_channel(
+            spitzli_plugin_runtime::pinned_mtls_channel(
                 self.callback_origin.clone(),
                 "localhost".into(),
                 tls,
@@ -302,7 +302,7 @@ impl Fixture {
         Ok(())
     }
 }
-fn open(cipher: &webdock_secrets::SecretCipher, parts: &Value, name: &str) -> TestResult<String> {
+fn open(cipher: &spitzli_secrets::SecretCipher, parts: &Value, name: &str) -> TestResult<String> {
     let parts = parts[name]
         .as_array()
         .ok_or("persisted generic encrypted component absent")?;

@@ -26,7 +26,7 @@ const stubs: Record<string, string> = {
   "next/link": "export default 'a'",
   "server-only": "export {};",
   "next/headers": 'export async function headers() { return new Headers({cookie: "webdock-sso=fixture"}); }',
-  "@webdock/i18n/next": "export async function getRequestI18n() { return { t: text => text }; }",
+  "@spitzli/i18n/next": "export async function getRequestI18n() { return { t: text => text }; }",
 };
 Bun.plugin({
   name: "console-fixture-modules",

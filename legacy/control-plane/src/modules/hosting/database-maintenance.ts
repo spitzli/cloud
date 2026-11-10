@@ -1,4 +1,4 @@
-import { createHostingDatabaseMaintenance } from "@webdock/module-databases/server/database-maintenance";
+import { createHostingDatabaseMaintenance } from "@spitzli/module-databases/server/database-maintenance";
 import { assertDatabaseMaintenanceAllowed } from "./database-protection";
 import { databaseAccess, databaseView } from "./databases";
 import { clusterLock, audit } from "./db";

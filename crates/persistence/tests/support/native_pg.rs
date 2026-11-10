@@ -81,11 +81,11 @@ impl Fixture {
         };
         let role_password = format!("private-{}", uuid::Uuid::new_v4().simple());
         let passwords = BTreeMap::from_iter(
-            webdock_persistence::roles::LOGIN_ROLES
+            spitzli_persistence::roles::LOGIN_ROLES
                 .iter()
                 .map(|role| (role.to_string(), role_password.clone())),
         );
-        webdock_persistence::roles::provision_roles(
+        spitzli_persistence::roles::provision_roles(
             &fixture.owner,
             "webdock_native_test",
             &passwords,

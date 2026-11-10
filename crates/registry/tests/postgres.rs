@@ -1,12 +1,12 @@
 //! Uses only uniquely owned records in the pre-provisioned local RLS fixture.
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::json;
+use spitzli_identity::{CookiePolicy, IdentityService, RlsSigner};
+use spitzli_registry::{Allocator, RegistryError, RegistryService};
 use std::sync::{
     Arc,
     atomic::{AtomicUsize, Ordering},
 };
-use webdock_identity::{CookiePolicy, IdentityService, RlsSigner};
-use webdock_registry::{Allocator, RegistryError, RegistryService};
 const COOKIE_SECRET: &str = "registry-test-cookie-secret-at-least-32-bytes";
 async fn connect(key: &str) -> DatabaseConnection {
     let value = std::env::var(key).expect("explicit disposable database URL");
@@ -48,11 +48,11 @@ impl Allocator for FailAudit {
     async fn allocate(
         &self,
         tx: &sea_orm::DatabaseTransaction,
-    ) -> webdock_registry::Result<String> {
+    ) -> spitzli_registry::Result<String> {
         if self.count.fetch_add(1, Ordering::SeqCst) > 0 {
             return Err(RegistryError::Conflict("fixture audit failure"));
         }
-        webdock_registry::DatabaseAllocator.allocate(tx).await
+        spitzli_registry::DatabaseAllocator.allocate(tx).await
     }
 }
 struct RevokeOnAudit {
@@ -65,7 +65,7 @@ impl Allocator for RevokeOnAudit {
     async fn allocate(
         &self,
         tx: &sea_orm::DatabaseTransaction,
-    ) -> webdock_registry::Result<String> {
+    ) -> spitzli_registry::Result<String> {
         if self.count.fetch_add(1, Ordering::SeqCst) > 0 {
             sql(
                 &self.owner,
@@ -74,7 +74,7 @@ impl Allocator for RevokeOnAudit {
             )
             .await;
         }
-        webdock_registry::DatabaseAllocator.allocate(tx).await
+        spitzli_registry::DatabaseAllocator.allocate(tx).await
     }
 }
 #[tokio::test]
@@ -125,9 +125,9 @@ async fn operator_crud_atomic_audit_retained_guard_and_revocation() {
         )
         .unwrap()
     };
-    let allocator = webdock_persistence::IdAllocator::new(
+    let allocator = spitzli_persistence::IdAllocator::new(
         connect("WEBDOCK_REGISTRY_DATABASE_URL").await,
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     );
     let service =
         RegistryService::new(runtime.clone(), signer()).with_allocator(Arc::new(allocator));

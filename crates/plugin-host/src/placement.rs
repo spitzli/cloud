@@ -2,7 +2,7 @@
 //! operator offers (or one dedicated to them) while nothing runs in the project yet.
 use super::*;
 
-type Authority<'a> = Option<&'a webdock_browser_session::StoredAuthority>;
+type Authority<'a> = Option<&'a spitzli_browser_session::StoredAuthority>;
 /// The database's refusals of a placement change, in the customer's words.
 fn refusal(error: sea_orm::DbErr) -> PluginError {
     let database = match &error {
@@ -17,7 +17,7 @@ fn refusal(error: sea_orm::DbErr) -> PluginError {
         )
     }) {
         Some((code, message)) if code == "WD404" => {
-            PluginError::new(webdock_plugin_protocol::ErrorCode::NotFound, message)
+            PluginError::new(spitzli_plugin_protocol::ErrorCode::NotFound, message)
         }
         Some((code, message)) if code == "WD409" => conflict(&message),
         Some((code, _)) if code == "42501" => PluginError::denied(),
@@ -106,7 +106,7 @@ impl HostService {
             .map_err(db_error)?;
         if !found {
             return Err(PluginError::new(
-                webdock_plugin_protocol::ErrorCode::NotFound,
+                spitzli_plugin_protocol::ErrorCode::NotFound,
                 "Cluster not found",
             ));
         }

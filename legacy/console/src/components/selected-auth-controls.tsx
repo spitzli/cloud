@@ -1,6 +1,6 @@
 "use client";
 import { useClerk } from "@clerk/nextjs";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 export function SelectedAuthControls() {
   const { signOut } = useClerk();
   const i18n = useI18n();

@@ -2,11 +2,11 @@ use crate::{HostService, InvocationHandle, invalid, unavailable, unsupported};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use spitzli_plugin_protocol::{ErrorCode, PluginError, Result};
 use std::time::Duration;
 use url::Url;
-use webdock_plugin_protocol::{ErrorCode, PluginError, Result};
 const LIMIT: usize = 1024 * 1024;
-pub use webdock_plugin_http::{HttpBinding, HttpRule};
+pub use spitzli_plugin_http::{HttpBinding, HttpRule};
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct HttpResult {
     pub status: u16,
@@ -32,7 +32,7 @@ fn provider_error() -> PluginError {
     error
 }
 pub fn validate_path(path: &str) -> Result<()> {
-    webdock_plugin_http::validate_path(path).map_err(|_| denied())
+    spitzli_plugin_http::validate_path(path).map_err(|_| denied())
 }
 pub fn validate_request(input: &Value) -> Result<()> {
     let raw = input
@@ -77,7 +77,7 @@ pub fn bind_request(input: &Value, binding: HttpBinding) -> Result<BoundRequest>
     let raw = input.as_object().unwrap();
     let method = input["method"].as_str().unwrap();
     let path = input["path"].as_str().unwrap();
-    webdock_plugin_http::bind_target(method, path, binding.clone()).map_err(|_| denied())?;
+    spitzli_plugin_http::bind_target(method, path, binding.clone()).map_err(|_| denied())?;
     let url = Url::parse(&binding.origin)
         .map_err(|_| denied())?
         .join(path)
@@ -103,14 +103,14 @@ impl HttpTransport for PinnedTransport {
             Some(query) => format!("{}?{query}", input.url.path()),
             None => input.url.path().to_owned(),
         };
-        let target = webdock_plugin_http::bind_target(&input.method, &path, input.binding)
+        let target = spitzli_plugin_http::bind_target(&input.method, &path, input.binding)
             .map_err(|_| denied())?;
-        let response = webdock_plugin_http::send_json(target, input.body.map(String::into_bytes))
+        let response = spitzli_plugin_http::send_json(target, input.body.map(String::into_bytes))
             .await
             .map_err(|e| match e {
-                webdock_plugin_http::Error::Denied => denied(),
-                webdock_plugin_http::Error::Limit => invalid("Provider request exceeds limit"),
-                webdock_plugin_http::Error::Transport => provider_error(),
+                spitzli_plugin_http::Error::Denied => denied(),
+                spitzli_plugin_http::Error::Limit => invalid("Provider request exceeds limit"),
+                spitzli_plugin_http::Error::Transport => provider_error(),
             })?;
         let body = if response.body.is_empty() {
             Value::Null
@@ -217,8 +217,8 @@ pub struct HttpAdapterContext<'a> {
     pub(crate) write: bool,
     pub(crate) request_hash: String,
     pub(crate) resource_id: Option<String>,
-    pub(crate) principal: webdock_identity::Principal,
-    pub(crate) authority: webdock_browser_session::StoredAuthority,
+    pub(crate) principal: spitzli_identity::Principal,
+    pub(crate) authority: spitzli_browser_session::StoredAuthority,
 }
 impl HttpAdapterContext<'_> {
     pub async fn revalidate(&self) -> Result<()> {
@@ -245,10 +245,10 @@ impl HttpAdapterContext<'_> {
     pub fn resource_id(&self) -> Option<&str> {
         self.resource_id.as_deref()
     }
-    pub fn principal(&self) -> &webdock_identity::Principal {
+    pub fn principal(&self) -> &spitzli_identity::Principal {
         &self.principal
     }
-    pub fn authority(&self) -> &webdock_browser_session::StoredAuthority {
+    pub fn authority(&self) -> &spitzli_browser_session::StoredAuthority {
         &self.authority
     }
     pub fn matches_input(&self, input: &Value) -> Result<bool> {

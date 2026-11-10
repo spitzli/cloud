@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { z } from "zod";
 import { database } from "../../src/db/runtime";
 import { encryptMailSecret } from "../../src/modules/platform/platform";
-import { databaseCommand, databaseEngine } from "@webdock/database-contracts";
+import { databaseCommand, databaseEngine } from "@spitzli/database-contracts";
 
 const actor = process.env.WEBDOCK_DATABASE_OPERATOR_ID;
 const path = process.argv[2];

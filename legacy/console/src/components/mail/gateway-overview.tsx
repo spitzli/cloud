@@ -1,4 +1,4 @@
-import { createMailGatewayOverview } from "@webdock/module-mail/ui/gateway-overview";
+import { createMailGatewayOverview } from "@spitzli/module-mail/ui/gateway-overview";
 import { loadMailPage } from "./product-page";
 import { mailRead } from "@/lib/mail-product";
 import { getStudioSession } from "@/lib/studio-client";

@@ -1,4 +1,4 @@
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 
 import { currentMCPClaims } from "./mcp";
 import {

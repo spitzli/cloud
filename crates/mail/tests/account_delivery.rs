@@ -8,6 +8,11 @@ use axum::{
     routing::post,
 };
 use serde_json::{Value, json};
+use spitzli_identity::{Delivery, DeliveryKind, DeliveryRequest};
+use spitzli_mail::{
+    account_delivery::{MailConfiguration, MailDelivery},
+    message::Sender,
+};
 use std::{
     os::unix::fs::PermissionsExt,
     path::Path,
@@ -15,11 +20,6 @@ use std::{
         Arc, Mutex,
         atomic::{AtomicU8, Ordering},
     },
-};
-use webdock_identity::{Delivery, DeliveryKind, DeliveryRequest};
-use webdock_mail::{
-    account_delivery::{MailConfiguration, MailDelivery},
-    message::Sender,
 };
 #[derive(Default)]
 struct Mail {

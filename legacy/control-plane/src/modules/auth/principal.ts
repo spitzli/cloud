@@ -1,8 +1,8 @@
 import {
   betterAuthIdentity,
-} from "@webdock/auth-better-auth";
-import { createPlugin as createBetterAuthPlugin } from "@webdock/auth-better-auth/plugin";
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
+} from "@spitzli/auth-better-auth";
+import { createPlugin as createBetterAuthPlugin } from "@spitzli/auth-better-auth/plugin";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 const browserAuthProvider = readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider;
 import { createBrowserPrincipal } from "./browser-principal";
 import { oauthCompatibilityIdentity } from "./oauth-compatibility";
@@ -31,7 +31,7 @@ export const {
 });
 
 import { AsyncLocalStorage } from "node:async_hooks";
-import { currentDatabaseScope, withDatabaseScope } from "@webdock/database-runtime";
+import { currentDatabaseScope, withDatabaseScope } from "@spitzli/database-runtime";
 import { consoleAuthConfiguration } from "./console-configuration";
 import { ConsoleAuthError, type ConsolePrincipal } from "./clerk-identity";
 const principals = new AsyncLocalStorage<ConsolePrincipal>();
@@ -122,7 +122,7 @@ function setupMemberships(subject: string, sessionID?: string) {
     return null;
   return proof;
 }
-function setupIdentity<T extends import("@webdock/core/identity").LocalIdentity>(
+function setupIdentity<T extends import("@spitzli/core/identity").LocalIdentity>(
   local: T | null, proof: NonNullable<ReturnType<typeof setupMemberships>>,
 ) {
   return local && !local.banned ? {
@@ -131,7 +131,7 @@ function setupIdentity<T extends import("@webdock/core/identity").LocalIdentity>
     operatorAuthorized: proof.operator && proof.twoFactorEnabled,
   } : null;
 }
-export const selectedIdentityDirectory: import("@webdock/core/identity").IdentityDirectory =
+export const selectedIdentityDirectory: import("@spitzli/core/identity").IdentityDirectory =
   {
     async subject(db, subject, options) {
       const principal = currentConsolePrincipal();

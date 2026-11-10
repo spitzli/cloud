@@ -1,7 +1,7 @@
 import { AccessError } from "@/lib/studio-errors";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { getStudioSession } from "@/lib/studio-client";
 import { getTenant } from "@/lib/tenants";
 import {
@@ -68,4 +68,4 @@ export {
   MailNoConnection,
   stateLabels,
   MailRows,
-} from "@webdock/module-mail/ui/product-page";
+} from "@spitzli/module-mail/ui/product-page";

@@ -1,1 +1,1 @@
-pub use webdock_mail_runtime::message::*;
+pub use spitzli_mail_runtime::message::*;

@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import ts from "typescript";
-import { translator } from "@webdock/i18n";
+import { translator } from "@spitzli/i18n";
 test("Git deployment errors remain actionable in English and German", () => {
   const directory = "../control-plane/src/modules/hosting";
   const files = readdirSync(directory)

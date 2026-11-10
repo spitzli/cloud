@@ -1,6 +1,6 @@
 import { readProjectOverview } from "./project-overview";
 import { readHostingView } from "./view-cache";
-import { createHostingService } from "@webdock/module-hosting/server/service";
+import { createHostingService } from "@spitzli/module-hosting/server/service";
 import { executeProjectSetup } from "./project-setup";
 import { executeServiceBinding } from "./service-bindings";
 import { relocateProject } from "./relocation";

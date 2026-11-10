@@ -9,9 +9,9 @@ use crate::{
 use async_trait::async_trait;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
 use serde_json::Value;
+use spitzli_plugin_protocol::Result;
+use spitzli_secrets::SecretCipher;
 use std::sync::Arc;
-use webdock_plugin_protocol::Result;
-use webdock_secrets::SecretCipher;
 pub struct ManagedBindings {
     worker: DatabaseConnection,
     scopes: HostScopes,
@@ -24,7 +24,7 @@ impl ManagedBindings {
         rls_secret: String,
         fallback: Arc<dyn RuntimeBindings>,
     ) -> Result<Self> {
-        webdock_persistence::connection::verify_runtime_role(&worker, "webdock_worker_runtime")
+        spitzli_persistence::connection::verify_runtime_role(&worker, "webdock_worker_runtime")
             .await
             .map_err(|_| invalid("Restricted binding pool required"))?;
         Ok(Self {

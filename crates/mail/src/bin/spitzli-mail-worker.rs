@@ -1,6 +1,14 @@
 //! Private payload consumer. Control HTTPS and the authenticated plugin channel are distinct.
 use serde::Deserialize;
 use serde_json::json;
+use spitzli_mail::{
+    dispatch::{Dispatched, dispatch_one},
+    outbox::{PayloadFormat, Receipt},
+    payload::PrivatePayloadStore,
+    provider_transport::{MAX_PROVIDERS, ProviderBinding, ProviderTransport, RoutingTransport},
+    send_control::{HttpSendControl, SendControl},
+};
+use spitzli_plugin_runtime::PinnedMutualTls;
 use std::{
     io::Read,
     os::unix::fs::MetadataExt,
@@ -8,14 +16,6 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use webdock_mail::{
-    dispatch::{Dispatched, dispatch_one},
-    outbox::{PayloadFormat, Receipt},
-    payload::PrivatePayloadStore,
-    provider_transport::{MAX_PROVIDERS, ProviderBinding, ProviderTransport, RoutingTransport},
-    send_control::{HttpSendControl, SendControl},
-};
-use webdock_plugin_runtime::PinnedMutualTls;
 
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
@@ -83,7 +83,7 @@ fn file(path: &Path, private: bool) -> Result<Vec<u8>, Error> {
 }
 async fn channel(config: PluginChannel) -> Result<tonic::transport::Channel, Error> {
     match config {
-        PluginChannel::Unix { path } => webdock_plugin_runtime::unix_channel(path).await,
+        PluginChannel::Unix { path } => spitzli_plugin_runtime::unix_channel(path).await,
         PluginChannel::MutualTls {
             origin,
             domain,
@@ -92,7 +92,7 @@ async fn channel(config: PluginChannel) -> Result<tonic::transport::Channel, Err
             authority,
             certificate_sha256,
         } => {
-            webdock_plugin_runtime::pinned_mtls_channel(
+            spitzli_plugin_runtime::pinned_mtls_channel(
                 origin,
                 domain,
                 PinnedMutualTls {
@@ -116,7 +116,7 @@ async fn file_accepted(
     {
         return;
     }
-    if webdock_mail::webmail_send_api::file_queued(control, store, &dispatched.job)
+    if spitzli_mail::webmail_send_api::file_queued(control, store, &dispatched.job)
         .await
         .is_err()
     {
@@ -205,7 +205,7 @@ async fn main() -> Result<(), Error> {
             return Ok(());
         }
         if cleaned_at.elapsed() >= Duration::from_secs(60) {
-            if webdock_mail::dispatch::cleanup_payloads(&control, store.clone())
+            if spitzli_mail::dispatch::cleanup_payloads(&control, store.clone())
                 .await
                 .is_err()
             {
@@ -227,8 +227,8 @@ async fn main() -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use spitzli_mail::{outbox::SendLease, send_control::ControlError};
     use std::{os::unix::fs::PermissionsExt, sync::Mutex};
-    use webdock_mail::{outbox::SendLease, send_control::ControlError};
     struct Control(Mutex<Vec<serde_json::Value>>);
     #[async_trait::async_trait]
     impl SendControl for Control {

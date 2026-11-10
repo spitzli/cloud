@@ -1,5 +1,5 @@
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
-import { currentDatabaseScope, type DatabaseScope } from "@webdock/database-runtime";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
+import { currentDatabaseScope, type DatabaseScope } from "@spitzli/database-runtime";
 
 /** The trusted signer stamps provider authority even for older/manual session wrappers. */
 export function signedDatabaseScope(): DatabaseScope | undefined {

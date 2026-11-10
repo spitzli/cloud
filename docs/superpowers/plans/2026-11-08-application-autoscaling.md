@@ -49,7 +49,7 @@ Interface: optional signed policy; versioned automatic-scaling capability. Polic
 
 ### Task 3: Owned HPA lifecycle
 
-Files: `deploy/helm/webdock-plugin/values.yaml`, `deploy/helm/webdock-plugin/templates/runtime.yaml`, new `deploy/helm/webdock-plugin/templates/autoscaling.yaml`, `deploy/helm/webdock-agent/templates/agent.yaml`, `crates/agent/src/kubernetes.rs`, `crates/agent/src/kubernetes/lifecycle.rs`, `crates/agent/src/recovery/kubernetes.rs`; focused HPA module if needed.
+Files: `deploy/helm/webdock-plugin/values.yaml`, `deploy/helm/webdock-plugin/templates/runtime.yaml`, new `deploy/helm/webdock-plugin/templates/autoscaling.yaml`, `deploy/helm/spitzli-agent/templates/agent.yaml`, `crates/agent/src/kubernetes.rs`, `crates/agent/src/kubernetes/lifecycle.rs`, `crates/agent/src/recovery/kubernetes.rs`; focused HPA module if needed.
 
 Interface: active auto rendering omits static replicas; exact namespaced HPA controls the approved Deployment. Fixed/stopped specs write replicas. Agent stop and recovery share HPA-removal and zero-Pod confirmation.
 

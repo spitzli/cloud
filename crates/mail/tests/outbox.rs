@@ -6,7 +6,7 @@ use sea_orm::{
 };
 use serde_json::json;
 use sha2::Sha256;
-use webdock_mail::outbox::*;
+use spitzli_mail::outbox::*;
 
 async fn db(key: &str) -> DatabaseConnection {
     let url = std::env::var(key).expect("explicit owned local fixture");

@@ -96,8 +96,8 @@ configuration. Merely setting `WEBDOCK_NATIVE_PLUGIN_CONFIG` does not start the
 private callback listener or installer. Separately supervise:
 
 ```sh
-webdock-plugin-control --config <private-plugin-config>
-webdock-plugin-controller --config <private-plugin-config> \
+spitzli-plugin-control --config <private-plugin-config>
+spitzli-plugin-controller --config <private-plugin-config> \
   --installation-config <private-worker-config>
 ```
 

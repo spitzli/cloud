@@ -3,8 +3,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webdock-core
-  namespace: webdock-core
+  name: spitzli-core
+  namespace: spitzli-core
 spec:
   template:
     spec:

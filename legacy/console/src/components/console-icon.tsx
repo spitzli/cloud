@@ -1,1 +1,1 @@
-export * from "@webdock/console-kit/console-icon";
+export * from "@spitzli/console-kit/console-icon";

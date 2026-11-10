@@ -1,9 +1,9 @@
 import { isDeepStrictEqual } from "node:util";
 import { isIP } from "node:net";
 import { z } from "zod";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import { managedAppOriginSchema } from "@spitzli/plugin-sdk/contracts";
-import type { SetupRow } from "@webdock/module-hosting/server/project-setup";
+import type { SetupRow } from "@spitzli/module-hosting/server/project-setup";
 import {
   createPluginAppProvisioning,
   type ApprovedAppTemplate,

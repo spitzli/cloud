@@ -90,7 +90,7 @@ incomplete uploads have no indefinite retention guarantee. See
 The default and only metadata runtime uses the physically separate private
 PostgreSQL database and retained role supplied by native installation. Startup
 uses plugin-kit storage migrations (`storage`/`storage_tls`); each operation opens
-its own connection through `webdock_plugin_kit::postgres::connect`. Remote
+its own connection through `spitzli_plugin_kit::postgres::connect`. Remote
 connections require `storageCa`, verify the driver's actual hostname and have no
 plaintext fallback. Without a CA every configured host/address must be loopback.
 There is no metadata directory, PVC, SQLite dependency or second retention path.
@@ -524,7 +524,7 @@ installation, actual browser flows, full Core binary transport with these condit
 headers and live Wasabi compatibility remain parent integration work.
 
 Local image verification completed without a registry push:
-`webdock-object-storage:integration-20261025-r1`, Docker image/index identity
+`spitzli-object-storage:integration-20261025-r1`, Docker image/index identity
 `sha256:c48c275a29a0adf98f831df431a8fe9f55b2aa73177c09672adbcf8daecd457c`
 (amd64 manifest `sha256:f23e91bf09d01d985f333dd07b6dbf649b36d524bee76c6b3cfa9055c72276fa`).
 The bounded smoke verified the actual 35-file source context, UID/GID 65532,

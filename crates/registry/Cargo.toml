@@ -1,14 +1,14 @@
 [package]
-name = "webdock-registry"
+name = "spitzli-registry"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 
 [dependencies]
-webdock-oauth = { path = "../oauth" }
-webdock-persistence = { path = "../persistence" }
-webdock-identity = { path = "../identity" }
+spitzli-oauth = { path = "../oauth" }
+spitzli-persistence = { path = "../persistence" }
+spitzli-identity = { path = "../identity" }
 sea-orm.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -18,7 +18,7 @@ thiserror.workspace = true
 async-trait.workspace = true
 
 [dev-dependencies]
-webdock-ids = { path = "../ids" }
+spitzli-ids = { path = "../ids" }
 tokio.workspace = true
 
 [lints]

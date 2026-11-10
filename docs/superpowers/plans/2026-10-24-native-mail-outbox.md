@@ -45,7 +45,7 @@ message helper in `crates/mail-message`; coordinate Cargo locks and quality depe
 
 - Canonical `PayloadFormat`, `SendLease`, `PayloadLease`, `Receipt`, `Preparation` move to
   `webdock_mail_protocol`, retaining serde names, tags, field order and compatibility exports.
-- `webdock_mail_runtime::SendControl::call(&self, Value) -> Result<Value, ControlError>`
+- `spitzli_mail_runtime::SendControl::call(&self, Value) -> Result<Value, ControlError>`
   keeps existing command/reply semantics and safe status codes.
 - Async `PrivatePayloadStore::{put(customer,reference,bytes),get(customer,reference),
   remove(customer,reference)}` returns the existing `SavedPayload {reference,bytes}` shape.

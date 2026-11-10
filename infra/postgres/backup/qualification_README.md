@@ -76,7 +76,7 @@ python3 infra/postgres/backup/qualification_connected.py cleanup --output /tmp/N
 ```
 
 The database-only integration caller is
-`cargo test --locked -p webdock-agent-control --test database_backup_connected`;
+`cargo test --locked -p spitzli-agent-control --test database_backup_connected`;
 the harness runs its ignored test inside its own node, with explicit private
 configuration and restricted Core roles. The Rust fixture implementation lives in
 `crates/databases/tests/support/connected_backup.rs`. It uses first-party password

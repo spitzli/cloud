@@ -4,11 +4,11 @@ import {
 } from "@/components/hosting/databases";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import {
   formatResource,
   type DatabaseCommand,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { DatabaseCredentialPanel } from "@/components/hosting/database-details";
 import { HostingForm } from "@/components/hosting/form";

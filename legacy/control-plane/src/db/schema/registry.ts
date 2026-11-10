@@ -1,2 +1,2 @@
 /** Compatibility export; schema mappings remain unchanged. */
-export * from "@webdock/platform-db/schema/registry";
+export * from "@spitzli/platform-db/schema/registry";

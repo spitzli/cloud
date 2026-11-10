@@ -9,7 +9,7 @@ use sea_orm::{
     Statement,
 };
 use serde_json::{Value as Json, json};
-use webdock_plugin_protocol::Result;
+use spitzli_plugin_protocol::Result;
 
 pub fn validate_key(key: &str) -> Result<()> {
     if key.is_empty()

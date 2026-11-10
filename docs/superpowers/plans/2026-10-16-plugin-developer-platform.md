@@ -6,7 +6,7 @@
 
 **Architecture:** Public SDK contracts are shared with the host and CLI; backend clients call scoped host services and UI hooks use the existing isolated bridge. The host implements persistence, cache, background work and service adapters with the runtime plan's grants, generation fencing and retained lifecycle.
 
-**Tech Stack:** Existing TypeScript/Bun/Node 24, React, PostgreSQL 18, optional existing Redis, configured object storage, Kubernetes/Helm, OCI and Tabularium. Two publishable packages: `@webdock/plugin-sdk` and `@webdock/cli`.
+**Tech Stack:** Existing TypeScript/Bun/Node 24, React, PostgreSQL 18, optional existing Redis, configured object storage, Kubernetes/Helm, OCI and Tabularium. Two publishable packages: `@spitzli/plugin-sdk` and `@spitzli/cli`.
 
 **Spec:** [Developer platform design and Tabularis study](../specs/2026-10-16-plugin-developer-platform-design.md), plus [runtime design](../specs/2026-10-16-runtime-plugins-design.md).
 
@@ -54,7 +54,7 @@ Use the following combined order: Core Tasks 1–6 → DX1–DX3 → Core Tasks 
 - [ ] Run the new package tests and observe relevant failures before implementation.
 - [ ] Implement a versioned method catalog shared by schema validators, public clients and host dispatcher; generate protocol docs from it. Use existing validation/build dependencies where suitable. Publish compiled ESM/types and JSON schemas, with no unresolved private workspace dependency.
 - [ ] Implement authenticated HTTPS invocation handling, `AbortSignal`/deadline propagation, explicit initialize/ready/drain semantics, typed errors and idempotency-aware retries. Host grants remain authoritative; SDK checks improve errors but cannot replace them.
-- [ ] Run `npm run test -w @webdock/plugin-sdk`, `npm run check -w @webdock/plugin-sdk`, `npm pack --workspace @webdock/plugin-sdk --pack-destination <owned-temp-dir>` and install the tarball in an empty test project. Verify `/contracts` and `/ui` bundles contain no private/server credential modules. The helper must create/clean its own temporary directory.
+- [ ] Run `npm run test -w @spitzli/plugin-sdk`, `npm run check -w @spitzli/plugin-sdk`, `npm pack --workspace @spitzli/plugin-sdk --pack-destination <owned-temp-dir>` and install the tarball in an empty test project. Verify `/contracts` and `/ui` bundles contain no private/server credential modules. The helper must create/clean its own temporary directory.
 - [ ] Add `sdk-parity` to CI: method names, versions, schemas, slots and exports must agree with host implementation; adding a type-only fake API must fail. Review and commit only owned changes if appropriate in the execution session.
 
 ## DX2: Implement relational DB, atomic batches and safe migrations

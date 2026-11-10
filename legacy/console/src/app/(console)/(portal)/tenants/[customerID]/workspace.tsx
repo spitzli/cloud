@@ -1,7 +1,7 @@
 import { ConsoleIcon } from "@/components/console-icon";
 import {uiLabel} from "@/lib/ui-labels";
 
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";

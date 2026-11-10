@@ -7,12 +7,12 @@ use axum::{
 };
 use http_body_util::BodyExt;
 use serde_json::{Value, json};
+use spitzli_mail::gateway::{Control, ControlFailure, Gateway, GatewayOptions};
 use std::sync::{
     Arc,
     atomic::{AtomicBool, AtomicUsize, Ordering},
 };
 use tower::ServiceExt;
-use webdock_mail::gateway::{Control, ControlFailure, Gateway, GatewayOptions};
 struct MalformedReceipt(FixtureControl);
 #[async_trait::async_trait]
 impl Control for MalformedReceipt {

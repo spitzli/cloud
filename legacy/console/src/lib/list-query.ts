@@ -1,1 +1,1 @@
-export * from "@webdock/console-kit/list-query";
+export * from "@spitzli/console-kit/list-query";

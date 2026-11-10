@@ -1,10 +1,10 @@
 #![cfg(feature = "journal")]
+use spitzli_core::id::RecordId;
+use spitzli_supervisor::*;
 use std::{
     sync::Arc,
     time::{SystemTime, UNIX_EPOCH},
 };
-use webdock_core::id::RecordId;
-use webdock_supervisor::*;
 fn spec() -> RuntimeSpec {
     RuntimeSpec {
         autoscaling: None,

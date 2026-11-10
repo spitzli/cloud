@@ -1,7 +1,7 @@
 import {getStudioSession} from "@/lib/studio-client";
 import {uiLabel} from "@/lib/ui-labels";
 
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import { TenantPreviewStart } from "@/components/tenant-preview";
 import { customerFields } from "../../../../../lib/customer-fields";
 import Link from "next/link";

@@ -1,1 +1,1 @@
-export * from "@webdock/module-hosting/ui/refresh";
+export * from "@spitzli/module-hosting/ui/refresh";

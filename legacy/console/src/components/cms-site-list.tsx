@@ -1,6 +1,6 @@
 "use client";
-import {useOramaRows} from "@webdock/search/react";
-import { useI18n } from '@webdock/i18n/react';
+import {useOramaRows} from "@spitzli/search/react";
+import { useI18n } from '@spitzli/i18n/react';
 
 import { useState } from "react";
 import Link from "next/link";

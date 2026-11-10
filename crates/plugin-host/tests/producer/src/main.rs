@@ -2,14 +2,14 @@
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::{os::unix::fs::PermissionsExt, sync::Arc};
-use webdock_object_storage_plugin::{
+use spitzli_object_storage_plugin::{
     engine::Engine,
     sdk::{BackendConfig, Control},
     store::Store,
 };
-use webdock_plugin_host::storage::{StorageAuthority, StorageGateway};
-use webdock_plugin_http::storage::StorageBinding;
-use webdock_plugin_protocol::{
+use spitzli_plugin_host::storage::{StorageAuthority, StorageGateway};
+use spitzli_plugin_http::storage::StorageBinding;
+use spitzli_plugin_protocol::{
     PluginError,
     storage::{StorageAuthorization, StoragePlan},
 };
@@ -85,7 +85,7 @@ async fn scenario(
         path_prefix: format!("/{bucket}/"),
     };
     let bytes = vec![163u8; 3 * 1024 * 1024 + 17];
-    let input = json!({"resource_id":id,"key":"gateway-proof","exact_bytes":bytes.len(),"expected_sha256":hex::encode(Sha256::digest(&bytes)),"filename":"proof.bin","content_type":"application/octet-stream","expires_at":webdock_object_storage_plugin::model::now()+240});
+    let input = json!({"resource_id":id,"key":"gateway-proof","exact_bytes":bytes.len(),"expected_sha256":hex::encode(Sha256::digest(&bytes)),"filename":"proof.bin","content_type":"application/octet-stream","expires_at":spitzli_object_storage_plugin::model::now()+240});
     let p: StoragePlan = serde_json::from_value(call(&e, "objects.upload", input.clone()).await?)
         .map_err(|_| "upload plan")?;
     let authority = live(e.clone(), &p);
@@ -164,7 +164,7 @@ async fn run() -> Result<(), &'static str> {
     // Configuration paths/URL arrive privately on stdin; never echo them or provider errors.
     let config: Value =
         serde_json::from_reader(std::io::stdin()).map_err(|_| "private fixture input")?;
-    let bytes = webdock_plugin_kit::read_file(
+    let bytes = spitzli_plugin_kit::read_file(
         std::path::Path::new(config["backend"].as_str().ok_or("backend path")?),
         true,
     )
@@ -192,8 +192,8 @@ async fn run() -> Result<(), &'static str> {
     );
     let engine = Arc::new(Engine::new(
         Store::connect(config["database"].as_str().ok_or("database input")?, None).await?,
-        webdock_plugin_kit::seal::Sealer::new(&hex::encode(
-            webdock_plugin_kit::seal::random::<32>(),
+        spitzli_plugin_kit::seal::Sealer::new(&hex::encode(
+            spitzli_plugin_kit::seal::random::<32>(),
         ))?,
         Arc::new(Control::new(backend).await?),
     ));

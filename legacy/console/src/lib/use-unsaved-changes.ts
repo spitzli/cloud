@@ -1,1 +1,1 @@
-export * from "@webdock/console-kit/use-unsaved-changes";
+export * from "@spitzli/console-kit/use-unsaved-changes";

@@ -1,7 +1,7 @@
 //! Durable availability transitions for already enrolled external runtimes.
 //! Deployment/install/upgrade is a separate operation; disable retains processes and data.
 use super::*;
-use webdock_plugin_protocol::Availability;
+use spitzli_plugin_protocol::Availability;
 
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -18,7 +18,7 @@ struct OperatorProof {
     subject: String,
     #[serde(rename = "sessionID")]
     session_id: String,
-    proof: webdock_browser_session::StoredAuthority,
+    proof: spitzli_browser_session::StoredAuthority,
 }
 pub struct StateLease {
     id: String,
@@ -118,7 +118,7 @@ impl HostService {
     pub async fn operation_with_authority(
         &self,
         actor: &Principal,
-        authority: &webdock_browser_session::StoredAuthority,
+        authority: &spitzli_browser_session::StoredAuthority,
         id: &str,
     ) -> Result<OperationSnapshot> {
         if !crate::data::revision(id) {
@@ -128,7 +128,7 @@ impl HostService {
         let tx = self.operator_tx(actor).await?;
         let row = tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
             "SELECT id,plugin_id,status,phase,generation,checkpoint,payload->>'kind' AS kind FROM webdock_auth.plugin_operation WHERE id=$1",
-            [id.into()])).await.map_err(db_error)?.ok_or_else(|| PluginError::new(webdock_plugin_protocol::ErrorCode::NotFound,"Operation not found"))?;
+            [id.into()])).await.map_err(db_error)?.ok_or_else(|| PluginError::new(spitzli_plugin_protocol::ErrorCode::NotFound,"Operation not found"))?;
         let result = snapshot(&row)?;
         self.admin_commit(tx, actor, Some(authority), auth, false)
             .await?;
@@ -237,7 +237,7 @@ impl HostService {
         match self.advance_state_inner(lease, probe).await {
             Ok(result) => Ok(result),
             Err(error) => {
-                use webdock_plugin_protocol::ErrorCode;
+                use spitzli_plugin_protocol::ErrorCode;
                 if matches!(
                     error.code,
                     ErrorCode::Unavailable | ErrorCode::DeadlineExceeded
@@ -288,7 +288,7 @@ impl HostService {
     ) -> Result<OperationSnapshot> {
         let (request, auth) = match self.operator_proof(lease).await {
             Ok(proof) => proof,
-            Err(error) if error.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => {
+            Err(error) if error.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => {
                 return self.state_failure(lease, "authority_revoked").await;
             }
             Err(error) => return Err(error),
@@ -322,7 +322,7 @@ impl HostService {
         };
         let (_, auth) = match self.operator_proof(lease).await {
             Ok(proof) => proof,
-            Err(error) if error.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => {
+            Err(error) if error.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => {
                 return self.state_failure(lease, "authority_revoked").await;
             }
             Err(error) => return Err(error),

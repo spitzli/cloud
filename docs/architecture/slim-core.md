@@ -12,9 +12,9 @@ The existing product modules can remain optional migration units while their lif
 
 No production rollout or data deletion belongs to this structural change until the new composition passes local checks.
 
-Authentication implementation is packaged in `@webdock/auth-better-auth` and
-`@webdock/auth-clerk`, each with an explicit trusted authentication manifest.
-`@webdock/auth-configuration` validates installation settings outside core;
+Authentication implementation is packaged in `@spitzli/auth-better-auth` and
+`@spitzli/auth-clerk`, each with an explicit trusted authentication manifest.
+`@spitzli/auth-configuration` validates installation settings outside core;
 core defines only identity, authentication plugin, and lazy loading contracts.
 Better Auth remains the absent-setting default for existing installs; the selected
 plugin loader imports only its selected entry. Clerk's SDK verification and local

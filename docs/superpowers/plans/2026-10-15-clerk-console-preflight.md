@@ -109,8 +109,8 @@ tests, four-account inventory or end-to-end migration acceptance is verified.
 
 ## Checks actually run
 
-- `npm run check -w @webdock/admin` with Node 24.21.0: passed.
-- `npm run check -w @webdock/api` with Node 24.21.0: passed.
+- `npm run check -w @spitzli/admin` with Node 24.21.0: passed.
+- `npm run check -w @spitzli/api` with Node 24.21.0: passed.
 - `git diff --check`: passed.
 - Clerk doctor: existing app, valid authentication and development keys passed;
   production instance is not configured.

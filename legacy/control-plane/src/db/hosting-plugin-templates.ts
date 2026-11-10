@@ -6,9 +6,9 @@ import {
   HostingError,
   appDemand,
   setupConfigurationSchema,
-} from "@webdock/hosting-contracts";
-import { allocationTotals } from "@webdock/hosting-contracts/capacity-totals";
-import type { Agent } from "@webdock/module-hosting/server/clusters";
+} from "@spitzli/hosting-contracts";
+import { allocationTotals } from "@spitzli/hosting-contracts/capacity-totals";
+import type { Agent } from "@spitzli/module-hosting/server/clusters";
 import type {
   ApprovedAppTemplate,
   ApprovedAppTemplateHooks,
@@ -667,7 +667,7 @@ export async function resolveApprovedTemplateHTTP(
   scope: BindingScope,
   name: string,
 ): Promise<
-  | (import("@webdock/core/plugin-http").HTTPBinding & {
+  | (import("@spitzli/core/plugin-http").HTTPBinding & {
       websiteBindingID: string;
     })
   | null
@@ -699,7 +699,7 @@ export async function resolveApprovedTemplateHTTP(
 }
 export async function resolveApprovedTemplateApps(
   scope: BindingScope,
-): Promise<import("@webdock/core/plugin-apps").ManagedAppBinding[]> {
+): Promise<import("@spitzli/core/plugin-apps").ManagedAppBinding[]> {
   if (scope.pluginID !== "managed-cms") return [];
   const { resolvePluginAppBinding } =
     await import("./hosting-plugin-provisioning");

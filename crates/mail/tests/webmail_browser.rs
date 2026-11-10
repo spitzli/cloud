@@ -13,17 +13,13 @@ use sea_orm::{
     ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement, TransactionTrait,
 };
 use serde_json::{Value, json};
-use std::{
-    collections::HashMap, os::unix::fs::PermissionsExt, path::Path, sync::Arc, time::Duration,
-};
-use tls::TlsServer;
-use webdock_control_plane::{
+use spitzli_control_plane::{
     http::{Services, build_app_with_domains},
     mail::MailEndpoints,
     ui::UiAssets,
 };
-use webdock_identity::{CookiePolicy, IdentityService, RlsSigner, SecretKeys};
-use webdock_mail::{
+use spitzli_identity::{CookiePolicy, IdentityService, RlsSigner, SecretKeys};
+use spitzli_mail::{
     MailDependencies,
     gateway::{Control, ControlFailure, Gateway, GatewayOptions},
     gateway_control::HttpControl,
@@ -32,6 +28,10 @@ use webdock_mail::{
     secrets::MailCipher,
     webmail::{WebmailConfig, WebmailService},
 };
+use std::{
+    collections::HashMap, os::unix::fs::PermissionsExt, path::Path, sync::Arc, time::Duration,
+};
+use tls::TlsServer;
 const KEY: &str = "webmail-browser-owned-fixture-context-at-least32";
 const GATEWAY_SECRET: &str = "webmail-browser-owned-gateway-secret-at-least32";
 const SEEDED: &str = "Seeded native fixture";
@@ -141,7 +141,7 @@ async fn run(
     };
     mailbox.create_draft(draft(SEEDED), None).await.unwrap();
 
-    webdock_persistence::migrations::bootstrap(owner, name, KEY)
+    spitzli_persistence::migrations::bootstrap(owner, name, KEY)
         .await
         .unwrap();
     sql(owner,"INSERT INTO webdock_auth.\"user\"(id,name,email,\"emailVerified\",role,\"twoFactorEnabled\",\"mustChangePassword\") VALUES('alice','Alice','alice@example.invalid',true,'user',false,false)",vec![]).await;
@@ -182,9 +182,9 @@ async fn run(
         cookies.sign("alice-token").unwrap(),
     );
     let identity = Arc::new(IdentityService::new(auth.clone(), cookies));
-    let ids = Arc::new(webdock_persistence::IdAllocator::new(
+    let ids = Arc::new(spitzli_persistence::IdAllocator::new(
         role("DATABASE_URL", url).await,
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     ));
     let dependencies = MailDependencies {
         auth: auth.clone(),
@@ -226,7 +226,7 @@ async fn run(
     )
     .await
     .unwrap();
-    let access = webdock_access::AccessService::new(
+    let access = spitzli_access::AccessService::new(
         business,
         auth.clone(),
         identity.clone(),
@@ -240,14 +240,14 @@ async fn run(
             )
             .unwrap(),
         ),
-        webdock_access::AccessConfig {
+        spitzli_access::AccessConfig {
             auth_origin: auth_origin.parse().unwrap(),
             console_origins: vec![core_origin.parse().unwrap()],
             allow_local_http: false,
         },
     )
     .unwrap();
-    let config = webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+    let config = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
         ("WEBDOCK_STUDIO_ORIGIN".into(), core_origin.clone()),
         ("WEBDOCK_AUTH_ORIGIN".into(), auth_origin.clone()),
         ("WEBDOCK_FEATURES".into(), r#"{"mail":"enabled"}"#.into()),

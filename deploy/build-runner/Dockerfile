@@ -17,7 +17,7 @@ FROM docker.io/moby/buildkit:v0.34.1-rootless@sha256:f68752a5a94acfcdad2d07867b7
 USER 0
 COPY --from=release-tools /release/railpack /usr/local/bin/railpack
 COPY --from=release-tools /release/mise-2026.9.15 /usr/local/libexec/mise-2026.9.15
-COPY webdock-build-runner /usr/local/bin/webdock-build-runner
+COPY spitzli-build-runner /usr/local/bin/spitzli-build-runner
 COPY entrypoint.sh /usr/local/bin/webdock-build-entrypoint
 COPY mise-wrapper.sh /usr/local/bin/webdock-mise-wrapper
 COPY daemon-logger.sh /usr/local/bin/webdock-build-daemon-logger
@@ -25,8 +25,8 @@ COPY tools.json /etc/webdock-build/tools.json
 COPY --chmod=0444 transfer-policy.json /etc/webdock-build/transfer-policy.json
 ARG RUST_RUNNER_SHA256
 RUN test -n "$RUST_RUNNER_SHA256" \
- && printf '%s  /usr/local/bin/webdock-build-runner\n' "$RUST_RUNNER_SHA256" | sha256sum -c - \
- && chmod 0755 /usr/local/bin/webdock-build-runner /usr/local/bin/webdock-build-entrypoint /usr/local/bin/webdock-mise-wrapper /usr/local/bin/webdock-build-daemon-logger \
+ && printf '%s  /usr/local/bin/spitzli-build-runner\n' "$RUST_RUNNER_SHA256" | sha256sum -c - \
+ && chmod 0755 /usr/local/bin/spitzli-build-runner /usr/local/bin/webdock-build-entrypoint /usr/local/bin/webdock-mise-wrapper /usr/local/bin/webdock-build-daemon-logger \
  && chmod 0644 /etc/webdock-build/tools.json \
  && mkdir -p /handoff \
  && touch /run/.containerenv
@@ -36,6 +36,6 @@ USER 1000:1000
 RUN test -s /etc/webdock-build/transfer-policy.json \
  && head -c 1 /etc/webdock-build/transfer-policy.json >/dev/null \
  && test -r /etc/webdock-build/tools.json \
- && test -x /usr/local/bin/webdock-build-runner \
+ && test -x /usr/local/bin/spitzli-build-runner \
  && test -x /usr/local/bin/webdock-mise-wrapper
 ENTRYPOINT ["/usr/local/bin/webdock-build-entrypoint"]

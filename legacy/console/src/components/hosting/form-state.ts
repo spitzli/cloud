@@ -1,1 +1,1 @@
-export * from "@webdock/module-hosting/ui/form-state";
+export * from "@spitzli/module-hosting/ui/form-state";

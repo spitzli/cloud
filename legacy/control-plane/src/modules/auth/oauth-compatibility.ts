@@ -1,11 +1,11 @@
-import { readAuthProtocolSelection } from "@webdock/auth-configuration/protocols";
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
-import { betterAuthIdentity } from "@webdock/auth-better-auth";
-import { currentDatabaseScope } from "@webdock/database-runtime";
+import { readAuthProtocolSelection } from "@spitzli/auth-configuration/protocols";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
+import { betterAuthIdentity } from "@spitzli/auth-better-auth";
+import { currentDatabaseScope } from "@spitzli/database-runtime";
 import type {
   DatabaseReader,
   IdentityReadOptions,
-} from "@webdock/core/identity";
+} from "@spitzli/core/identity";
 
 /** Only authenticated OAuth composition installs this exact-session, live Clerk proof. */
 export async function oauthCompatibilityIdentity(

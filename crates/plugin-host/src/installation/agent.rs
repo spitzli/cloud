@@ -66,7 +66,7 @@ impl HostService {
                 .ok_or_else(error)?
                 .into(),
         );
-        for file in webdock_agent_protocol::plugin::MATERIAL_FILES {
+        for file in spitzli_agent_protocol::plugin::MATERIAL_FILES {
             if file == "manifest.json" {
                 continue;
             }
@@ -104,7 +104,7 @@ impl HostService {
         tx.commit().await.map_err(db_error)?;
         let auth = match self.install_authorization(&id).await {
             Ok(auth) => auth,
-            Err(e) if e.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => {
+            Err(e) if e.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => {
                 self.block_unclaimed_install(&id).await?;
                 return Ok(None);
             }
@@ -118,7 +118,7 @@ impl HostService {
         }
         let v = match self.locked_install(&tx, &id, generation).await {
             Ok(value) => value,
-            Err(e) if e.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => {
+            Err(e) if e.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => {
                 tx.rollback().await.map_err(db_error)?;
                 self.block_unclaimed_install(&id).await?;
                 return Ok(None);
@@ -248,7 +248,7 @@ impl HostService {
     ) -> Result<bool> {
         let auth = match self.install_authorization(&lease.operation_id).await {
             Ok(auth) => auth,
-            Err(e) if e.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => {
+            Err(e) if e.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => {
                 return Ok(false);
             }
             Err(e) => return Err(e),
@@ -260,7 +260,7 @@ impl HostService {
                 auth.commit().await.map_err(db_error)?;
                 Ok(true)
             }
-            Err(e) if e.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => Ok(false),
+            Err(e) if e.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => Ok(false),
             Err(e) => Err(e),
         }
     }
@@ -364,7 +364,7 @@ impl HostService {
     ) -> Result<bool> {
         let auth = match self.install_authorization(&lease.operation_id).await {
             Ok(auth) => Some(auth),
-            Err(e) if e.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => None,
+            Err(e) if e.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => None,
             Err(e) => return Err(e),
         };
         let tx = self.controller().await?;
@@ -392,7 +392,7 @@ impl HostService {
         };
         let v = match validation {
             Ok(value) => value,
-            Err(e) if e.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => {
+            Err(e) if e.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => {
                 let acknowledged = self
                     .acknowledge_obsolete_install(
                         &tx,

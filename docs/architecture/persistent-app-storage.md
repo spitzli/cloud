@@ -24,7 +24,7 @@ The helper holds a process lock and restores known mounts before systemd readine
 
 The following installation was executed on Contabo on 2026-10-09. The backup is `/root/setup-backup/webdock-storage-20261009/`. This is a reference for future installations, not permission to rerun initialization on the existing pool. Verify live state and preserve existing files before any subsequent rollout.
 
-1. Install `storage.py`, `storage_service.py`, `storage_client.py` and the updated executor/observer/connect modules under `/opt/webdock-hosting-agent`, root-owned. Install `webdock-storage.service`. Existing Python, e2fsprogs, util-linux and coreutils supply mkfs, blkid, mount, losetup, findmnt and sync; verify their availability locally without unverified remote downloads.
+1. Install `storage.py`, `storage_service.py`, `storage_client.py` and the updated executor/observer/connect modules under `/opt/webdock-hosting-agent`, root-owned. Install `spitzli-storage.service`. Existing Python, e2fsprogs, util-linux and coreutils supply mkfs, blkid, mount, losetup, findmnt and sync; verify their availability locally without unverified remote downloads.
 2. Create `/var/lib/webdock-storage` as root:root mode 0700. Write `/etc/webdock-storage.json` mode 0600 with the real node/cluster, a new UUID and finite capacities. A proposed initial pool is 20 GB with a 20 GB host free-space reserve; this is a proposed configuration, not an existing entitlement:
 
    ```json
@@ -32,7 +32,7 @@ The following installation was executed on Contabo on 2026-10-09. The backup is 
    ```
 
 3. Run `python3 /opt/webdock-hosting-agent/storage.py initialize` exactly once for the new empty pool. The command refuses an existing/nonempty pool. Preserve and back up `_pool/state.json` with its images; never initialize over missing production metadata.
-4. Add a hosting-agent unit drop-in with `Requires=webdock-storage.service` and `After=webdock-storage.service`. Enable the helper and reload/restart the normal agent. Verify helper readiness, host/helper mount namespace identity, root-only socket access and fresh heartbeat storageVersion=1. No reboot is needed to install; cold-boot behavior still needs a scheduled real-node check before claiming it verified there.
+4. Add a hosting-agent unit drop-in with `Requires=spitzli-storage.service` and `After=spitzli-storage.service`. Enable the helper and reload/restart the normal agent. Verify helper readiness, host/helper mount namespace identity, root-only socket access and fresh heartbeat storageVersion=1. No reboot is needed to install; cold-boot behavior still needs a scheduled real-node check before claiming it verified there.
 5. Build Studio/Auth locally with Bun, publish only through the already-authorized Frankfurt prebuilt workflow when deployment is requested, and verify rendered pages. Then a platform administrator can activate persistent cluster capacity within the fresh advertised bound. Customer allowances require separate explicit changes; Lunares remains at zero until source data inventory determines its requirement.
 
 Rollback of UI/control-plane changes must keep the helper, images and pool journal intact once any app uses storage. Do not stop a required mount service or remove its files as a deployment rollback.

@@ -1,11 +1,11 @@
 import { applicationState } from "@/lib/workspace-navigation";
 import { ListControls, Pagination } from "@/components/list-controls";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import {
   type HostingAppView,
   type HostingPage,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { HostingTable } from "@/components/hosting/table";
 import { HostingRefresh } from "@/components/hosting/refresh";

@@ -1,5 +1,5 @@
 [package]
-name = "webdock-provider-connections"
+name = "spitzli-provider-connections"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -10,7 +10,7 @@ test-transport = []
 
 [dependencies]
 async-trait.workspace = true
-webdock-plugin-host = { path = "../plugin-host" }
+spitzli-plugin-host = { path = "../plugin-host" }
 serde.workspace = true
 serde_json.workspace = true
 sea-orm.workspace = true
@@ -21,13 +21,13 @@ sha2 = "0.10"
 hex = "0.4"
 uuid = { version = "1", features = ["v4"] }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
-webdock-identity = { path = "../identity" }
-webdock-browser-session = { path = "../browser-session" }
-webdock-secrets = { path = "../secrets" }
+spitzli-identity = { path = "../identity" }
+spitzli-browser-session = { path = "../browser-session" }
+spitzli-secrets = { path = "../secrets" }
 
 [dev-dependencies]
-webdock-persistence = { path = "../persistence" }
-webdock-ids = { path = "../ids" }
+spitzli-persistence = { path = "../persistence" }
+spitzli-ids = { path = "../ids" }
 url.workspace = true
 axum.workspace = true
 

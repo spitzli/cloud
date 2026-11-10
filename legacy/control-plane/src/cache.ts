@@ -1,4 +1,4 @@
-import { currentDatabaseScope } from "@webdock/database-runtime";
+import { currentDatabaseScope } from "@spitzli/database-runtime";
 import { createHash } from "node:crypto";
 export type ViewKind =
   | "branding"

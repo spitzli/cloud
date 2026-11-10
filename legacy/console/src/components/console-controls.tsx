@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 import Link from 'next/link';
-import { useI18n } from '@webdock/i18n/react';
-import { useOramaRows } from '@webdock/search/react';
+import { useI18n } from '@spitzli/i18n/react';
+import { useOramaRows } from '@spitzli/search/react';
 import type { ConsoleSearchResponse, ConsoleResult } from '@/lib/console-search';
 import { ConsoleIcon } from './console-icon';
 

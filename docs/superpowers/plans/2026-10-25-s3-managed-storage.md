@@ -117,7 +117,7 @@ Inventory correction: the live managed native product currently uses `crates/dat
 
 ## Verification record
 
-Initial baseline: `cargo test --locked -p webdock-build --no-default-features --test artifact --test contracts` passed (7 tests). Remote Wasabi compatibility, customer product isolation, backups and production readiness are not established by this baseline.
+Initial baseline: `cargo test --locked -p spitzli-build --no-default-features --test artifact --test contracts` passed (7 tests). Remote Wasabi compatibility, customer product isolation, backups and production readiness are not established by this baseline.
 
 Milestone acceptance (2026-10-25): six offline adapter tests, two artifact recovery tests, the existing seven artifact/contract and two execution tests, live MinIO multipart/fault/isolation tests, and fresh native DB/KVM local plus cross-worker OCI publication/rollback passed. Independent review found publication routing, composed key preflight and fresh-checkout diagnostic setup defects; each was reproduced and fixed with regression coverage. Full quality gate passed: 52 checks, including existing Console browser fixtures. Dated evidence: `docs/verification/2026-10-25-s3-oci-artifacts.json`. This is the private transport/OCI milestone, not completion of all owner scope.
 

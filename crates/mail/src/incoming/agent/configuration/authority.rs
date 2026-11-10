@@ -1,6 +1,6 @@
 use super::*;
 use sea_orm::TransactionTrait;
-use webdock_browser_session::revalidate_stored_authority;
+use spitzli_browser_session::revalidate_stored_authority;
 pub(super) struct Access {
     auth: Option<DatabaseTransaction>,
     pub expires_at: DateTime<Utc>,

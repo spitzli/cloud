@@ -50,14 +50,14 @@ impl HostService {
     pub async fn installed_with_authority(
         &self,
         actor: &Principal,
-        authority: &webdock_browser_session::StoredAuthority,
+        authority: &spitzli_browser_session::StoredAuthority,
     ) -> Result<Value> {
         self.installed_authority(actor, Some(authority)).await
     }
     async fn installed_authority(
         &self,
         actor: &Principal,
-        authority: Option<&webdock_browser_session::StoredAuthority>,
+        authority: Option<&spitzli_browser_session::StoredAuthority>,
     ) -> Result<Value> {
         let auth_guard = self.admin_guard(actor, authority, false).await?;
         let tx = self.operator_tx(actor).await?;
@@ -98,7 +98,7 @@ impl HostService {
     pub async fn request_state_with_authority(
         &self,
         actor: &Principal,
-        authority: &webdock_browser_session::StoredAuthority,
+        authority: &spitzli_browser_session::StoredAuthority,
         id: &str,
         desired: &str,
         expected_revision: &str,
@@ -121,7 +121,7 @@ impl HostService {
         desired: &str,
         expected_revision: &str,
         idempotency_key: &str,
-        authority: Option<&webdock_browser_session::StoredAuthority>,
+        authority: Option<&spitzli_browser_session::StoredAuthority>,
     ) -> Result<Value> {
         if !slug(id)
             || !["enabled", "draining", "disabled"].contains(&desired)
@@ -145,7 +145,7 @@ impl HostService {
             .find(|plugin| plugin["id"] == id)
             .ok_or_else(|| {
                 PluginError::new(
-                    webdock_plugin_protocol::ErrorCode::NotFound,
+                    spitzli_plugin_protocol::ErrorCode::NotFound,
                     "Plugin is not installed",
                 )
             })?;
@@ -197,7 +197,7 @@ impl HostService {
     pub(super) async fn admin_guard(
         &self,
         actor: &Principal,
-        authority: Option<&webdock_browser_session::StoredAuthority>,
+        authority: Option<&spitzli_browser_session::StoredAuthority>,
         write: bool,
     ) -> Result<Option<DatabaseTransaction>> {
         match authority {
@@ -222,7 +222,7 @@ impl HostService {
         &self,
         tx: DatabaseTransaction,
         actor: &Principal,
-        authority: Option<&webdock_browser_session::StoredAuthority>,
+        authority: Option<&spitzli_browser_session::StoredAuthority>,
         auth: Option<DatabaseTransaction>,
         write: bool,
     ) -> Result<()> {

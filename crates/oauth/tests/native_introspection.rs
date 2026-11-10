@@ -7,13 +7,13 @@ use sea_orm::{
     ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement, TransactionTrait,
 };
 use sha2::{Digest, Sha256};
-use std::{collections::BTreeMap, sync::Arc, time::Duration};
-use webdock_identity::{CookiePolicy, IdentityService, SecretKeys};
-use webdock_oauth::*;
-use webdock_persistence::{
+use spitzli_identity::{CookiePolicy, IdentityService, SecretKeys};
+use spitzli_oauth::*;
+use spitzli_persistence::{
     IdAllocator,
     postgres::{Limits, Pool},
 };
+use std::{collections::BTreeMap, sync::Arc, time::Duration};
 const ISSUER: &str = "https://auth.example.test/api/auth";
 const RESOURCE: &str = "https://studio.example.test/api/mcp";
 const REDIRECT: &str = "https://console.example.test/api/sso/callback";
@@ -40,7 +40,7 @@ impl Setup {
         let ids = Arc::new(
             IdAllocator::connect_native(
                 &f.bootstrap_url,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
                 "webdock_auth_bootstrap",
                 false,
             )
@@ -2433,7 +2433,7 @@ async fn native_mcp_authority_rejects_tampering_and_record_changes() {
     ] {
         let mut raw = original.clone();
         raw[field] = value;
-        let a: webdock_oauth::McpAuthority = serde_json::from_value(raw).unwrap();
+        let a: spitzli_oauth::McpAuthority = serde_json::from_value(raw).unwrap();
         let mut connection = s.pool.acquire().await.unwrap();
         let tx = connection.transaction().await.unwrap();
         assert!(

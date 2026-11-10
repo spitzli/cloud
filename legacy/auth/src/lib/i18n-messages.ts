@@ -1,5 +1,5 @@
 // Public feedback registration only. Auth responses and error codes remain unchanged.
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 export const authFeedbackMessages = [
  msgid("This database hosts the Webdock control plane. Use the reviewed offline maintenance procedure."),
  msgid("A mapped tracking domain belonging to this tenant is required."),

@@ -6,7 +6,7 @@ use crate::{
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
-use webdock_mail_protocol::{sha256, valid_digest};
+use spitzli_mail_protocol::{sha256, valid_digest};
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PolicySubmission {

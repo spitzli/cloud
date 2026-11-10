@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_plugin_host::http::{validate_named_request, validate_request};
+use spitzli_plugin_host::http::{validate_named_request, validate_request};
 
 #[test]
 fn structured_query_is_exclusive_to_named_neon_adapter() {

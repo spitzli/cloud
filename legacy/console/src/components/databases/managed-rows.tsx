@@ -1,1 +1,1 @@
-export * from "@webdock/module-databases/ui/managed-rows";
+export * from "@spitzli/module-databases/ui/managed-rows";

@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_mail::{budget::SendPath, outbox::Receipt};
+use spitzli_mail::{budget::SendPath, outbox::Receipt};
 
 #[test]
 fn direct_path_preserves_its_wire_shape_and_rejects_unknown_fields() {

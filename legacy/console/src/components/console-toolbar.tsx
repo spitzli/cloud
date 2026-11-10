@@ -1,7 +1,7 @@
 import { AccountControls } from "./account-controls";
 import { browserAuthConfiguration } from "@/lib/browser-auth-config";
-import { getRequestI18n } from "@webdock/i18n/next";
-import { LanguagePicker } from "@webdock/i18n/picker";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import { LanguagePicker } from "@spitzli/i18n/picker";
 import { getConsoleContext } from "@/lib/console-context";
 import { ConsoleControls } from "./console-controls";
 import { Navigation, Appearance, Logout } from "./navigation";

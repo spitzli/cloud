@@ -1,5 +1,5 @@
 "use client";
-import { useI18n } from '@webdock/i18n/react';
+import { useI18n } from '@spitzli/i18n/react';
 
 import { useActionState, type ReactNode } from "react";
 import { trackingAction } from "./actions";

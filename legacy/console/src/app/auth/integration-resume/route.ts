@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { resumeIntegrationCallback } from "@webdock/api-client/integration-resume";
+import { resumeIntegrationCallback } from "@spitzli/api-client/integration-resume";
 import { browserAuthConfiguration } from "@/lib/browser-auth-config";
 export async function GET(request: Request): Promise<Response> {
   if (browserAuthConfiguration.provider !== "clerk")

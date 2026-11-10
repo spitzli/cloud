@@ -1,4 +1,4 @@
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { is } from "drizzle-orm";
 import { PgTable, getTableConfig } from "drizzle-orm/pg-core";
 import * as authSchema from "./schema/auth";

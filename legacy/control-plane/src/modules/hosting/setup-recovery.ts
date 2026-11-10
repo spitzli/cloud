@@ -1,4 +1,4 @@
-import { createHostingSetupRecovery } from "@webdock/module-hosting/server/setup-recovery";
+import { createHostingSetupRecovery } from "@spitzli/module-hosting/server/setup-recovery";
 import {
   openEnvironment,
   patchEnvironment,

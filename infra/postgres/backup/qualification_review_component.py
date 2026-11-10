@@ -83,10 +83,10 @@ def candidate_pin(directory):
         raise PermissionError('candidate pin identity mismatch')
     if (directory / 'private').exists() or (directory / 'result.json').exists():
         raise PermissionError('use a fresh candidate; never overwrite prior private state/evidence')
-    if set(pin['binaries'])!={'database-primitives','webdock-migrate','host-psql'}:
+    if set(pin['binaries'])!={'database-primitives','spitzli-migrate','host-psql'}:
         raise PermissionError('all three pinned executables required before credentials')
     for name, fact in pin['binaries'].items():
-        if name not in ['database-primitives', 'webdock-migrate', 'host-psql'] or sha(directory / 'candidate' / name) != fact['sha256']:
+        if name not in ['database-primitives', 'spitzli-migrate', 'host-psql'] or sha(directory / 'candidate' / name) != fact['sha256']:
             raise PermissionError('candidate binary mismatch')
     for source, digest in pin['sourceSHA256'].items():
         relative = Path(source)
@@ -340,7 +340,7 @@ def prepare(baseline):
     assert native == prior['schema']['nativeMigrations'], 'copied <=55 migrator requires its exact source set'
     base = ROOT / 'crates/persistence/schema/baseline.sql'
     assert sha(base) == prior['candidate']['sourceSHA256'][str(base.relative_to(ROOT))]
-    migrator = ROOT / prior['candidate']['directory'] / 'candidate/webdock-migrate'
+    migrator = ROOT / prior['candidate']['directory'] / 'candidate/spitzli-migrate'
     assert sha(migrator) == MIGRATOR_SHA
     binary = ROOT / 'target/debug/deps/webdock_databases-452f7e98f980a6af'
     assert binary.is_file()
@@ -352,7 +352,7 @@ def prepare(baseline):
     directory.mkdir(mode=0o700)
     (directory / 'candidate').mkdir(mode=0o700)
     shutil.copy2(binary, directory / 'candidate/database-primitives')
-    shutil.copy2(migrator, directory / 'candidate/webdock-migrate')
+    shutil.copy2(migrator, directory / 'candidate/spitzli-migrate')
     host_psql=Path('/usr/bin/psql')
     assert host_psql.is_file() and not host_psql.is_symlink(), 'installed direct psql required'
     shutil.copy2(host_psql,directory/'candidate/host-psql')
@@ -370,7 +370,7 @@ def prepare(baseline):
         'baselineSHA256': sha(base), 'baselineDraftSHA256': sha(old), 'baselineSyntaxOverlay':overlay,
         'fixedDraftSHA256': sha(directory / 'fixed-0056.draft.sql'),
         'binaries': {name: {'sha256':sha(directory / 'candidate' / name), 'bytes':(directory / 'candidate' / name).stat().st_size}
-                     for name in ['database-primitives','webdock-migrate','host-psql']},
+                     for name in ['database-primitives','spitzli-migrate','host-psql']},
         'budget': {'cpus':1,'memoryBytes':1610612736,'tmpfsBytes':1073741824,'pids':256,
                    'readinessSeconds':30,'migrationSeconds':120,'testSeconds':180,
                    'newNetworks':0,'persistentOrAnonymousVolumes':0,'imagePull':False},
@@ -440,7 +440,7 @@ def execute(directory):
         wait_for_postgres(commands,directory/'candidate/host-psql',pin['port'],password,private)
         owner = f"postgresql://postgres:{password}@127.0.0.1:{pin['port']}/webdock_rls_test"
         migration_env = dict(safe_env, WEBDOCK_MIGRATION_DATABASE_URL=owner, DATABASE_RLS_SECRET=rls)
-        code,_ = command([str(directory / 'candidate/webdock-migrate'),'--target',f"127.0.0.1:{pin['port']}/webdock_rls_test",'--initialize-empty','--provision-roles-from',str(role_file)],'migration',env=migration_env,timeout=120)
+        code,_ = command([str(directory / 'candidate/spitzli-migrate'),'--target',f"127.0.0.1:{pin['port']}/webdock_rls_test",'--initialize-empty','--provision-roles-from',str(role_file)],'migration',env=migration_env,timeout=120)
         assert code == 0, 'copied <=55 bootstrap failed'
         print('owned <=55 bootstrap completed',flush=True)
         code,journal=sql("SELECT jsonb_object_agg(version::text,jsonb_build_object('checksum',encode(checksum,'hex'),'success',success)) FROM webdock_api_migrations.rust_journal;",'journal')

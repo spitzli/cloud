@@ -242,7 +242,7 @@ Bestehende Projektprüfungen, nach Installation und sicherer Testkonfiguration:
 ```bash
 npm run test:auth
 npm test
-npm run check -w @webdock/auth
+npm run check -w @spitzli/auth
 npm run build:auth
 npm run build:admin
 npm run lint --workspaces --if-present

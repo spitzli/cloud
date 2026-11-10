@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
-import type { SetupOptions, SetupView } from "@webdock/hosting-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import type { SetupOptions, SetupView } from "@spitzli/hosting-contracts";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { SetupWizard } from "@/components/hosting/setup-wizard";
 import { SetupHosting } from "@/components/hosting/setup-hosting";

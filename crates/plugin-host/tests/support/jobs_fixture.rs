@@ -60,7 +60,7 @@ impl DatabaseFixture {
             .unwrap();
             (Some(name), url)
         };
-        let passwords = webdock_persistence::roles::LOGIN_ROLES
+        let passwords = spitzli_persistence::roles::LOGIN_ROLES
             .iter()
             .copied()
             .chain(["webdock_offline_migrate"])
@@ -91,10 +91,10 @@ impl DatabaseFixture {
             local.verify(&db).await;
         }
         let database = fixture.url.path().trim_start_matches('/');
-        webdock_persistence::roles::provision_roles(&db, database, &fixture.passwords)
+        spitzli_persistence::roles::provision_roles(&db, database, &fixture.passwords)
             .await
             .unwrap();
-        webdock_persistence::migrations::bootstrap(
+        spitzli_persistence::migrations::bootstrap(
             &db,
             database,
             "owned-plugin-jobs-rls-secret-32bytes",
@@ -127,7 +127,7 @@ pub struct JobFixture {
     pub owner: DatabaseConnection,
     pub auth: DatabaseConnection,
     pub identity: Arc<IdentityService>,
-    pub actor: webdock_identity::Principal,
+    pub actor: spitzli_identity::Principal,
     pub manifest: Value,
     pub directory: tempfile::TempDir,
     pub database: DatabaseFixture,
@@ -226,9 +226,9 @@ impl JobFixture {
                     .await,
                 "owned-plugin-jobs-rls-secret-32bytes".into(),
                 Arc::new(
-                    webdock_persistence::IdAllocator::connect(
+                    spitzli_persistence::IdAllocator::connect(
                         fixture.url.as_str(),
-                        webdock_ids::Identity::platform(0, 2).unwrap(),
+                        spitzli_ids::Identity::platform(0, 2).unwrap(),
                     )
                     .await
                     .unwrap(),
@@ -260,7 +260,7 @@ impl JobFixture {
         action: &str,
         input: Value,
         key: &str,
-    ) -> webdock_plugin_host::AdmittedInvocation {
+    ) -> spitzli_plugin_host::AdmittedInvocation {
         let tx = self.auth.begin().await.unwrap();
         let actor = self
             .identity
@@ -269,9 +269,9 @@ impl JobFixture {
             .unwrap()
             .unwrap();
         tx.commit().await.unwrap();
-        self.host.admit_with_authority(&actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":action,"input":input,"idempotencyKey":key})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(&actor)).await.unwrap()
+        self.host.admit_with_authority(&actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":action,"input":input,"idempotencyKey":key})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(&actor)).await.unwrap()
     }
-    pub async fn admit(&self, action: &str, key: &str) -> webdock_plugin_host::AdmittedInvocation {
+    pub async fn admit(&self, action: &str, key: &str) -> spitzli_plugin_host::AdmittedInvocation {
         let tx = self.auth.begin().await.unwrap();
         let actor = self
             .identity
@@ -280,9 +280,9 @@ impl JobFixture {
             .unwrap()
             .unwrap();
         tx.commit().await.unwrap();
-        self.host.admit_with_authority(&actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":action,"input":{},"idempotencyKey":key})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(&actor)).await.unwrap()
+        self.host.admit_with_authority(&actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":action,"input":{},"idempotencyKey":key})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(&actor)).await.unwrap()
     }
-    pub async fn handle(&self, action: &str, key: &str) -> webdock_plugin_host::InvocationHandle {
+    pub async fn handle(&self, action: &str, key: &str) -> spitzli_plugin_host::InvocationHandle {
         let admitted = self.admit(action, key).await;
         self.host
             .authenticate(peer(), &admitted.token)

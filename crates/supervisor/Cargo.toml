@@ -1,5 +1,5 @@
 [package]
-name = "webdock-supervisor"
+name = "spitzli-supervisor"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.94"
@@ -10,7 +10,7 @@ default = ["journal"]
 journal = ["dep:fs2", "dep:tempfile", "dep:rustix"]
 
 [dependencies]
-webdock-core = { path = "../core" }
+spitzli-core = { path = "../core" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"

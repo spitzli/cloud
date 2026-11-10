@@ -1,7 +1,7 @@
 import { readFileSync, statSync } from "node:fs";
 import { parseEnv } from "node:util";
 import { Pool } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { databaseURL } from "../src/db/client";
 export async function offlineOwner(
   file: string | undefined,

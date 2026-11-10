@@ -1,6 +1,6 @@
 # Selectable browser authentication
 
-The browser provider is an installation choice, parsed by `@webdock/auth-configuration` from `WEBDOCK_AUTH_PROVIDER`. Absence preserves Better Auth. A configured object with issuer, authorized parties and audience defaults to Clerk when provider is omitted; explicit Clerk configuration selects exactly one browser entrypoint and requires an issuer and authorized-party list. Existing configurations require an audience; explicit `tokenMode: "session"` accepts native Clerk session tokens without an audience and rejects a simultaneous audience setting. New installation manifests should select Clerk explicitly. This change does not switch existing deployments or enroll their accounts.
+The browser provider is an installation choice, parsed by `@spitzli/auth-configuration` from `WEBDOCK_AUTH_PROVIDER`. Absence preserves Better Auth. A configured object with issuer, authorized parties and audience defaults to Clerk when provider is omitted; explicit Clerk configuration selects exactly one browser entrypoint and requires an issuer and authorized-party list. Existing configurations require an audience; explicit `tokenMode: "session"` accepts native Clerk session tokens without an audience and rejects a simultaneous audience setting. New installation manifests should select Clerk explicitly. This change does not switch existing deployments or enroll their accounts.
 
 ## Trust boundaries
 

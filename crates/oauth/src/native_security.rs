@@ -2,12 +2,12 @@
 use super::{OAuthService, audiences, authenticate_client, date, native_client_store, scope_vec};
 use crate::{ClientAuthentication, Error, LogoutOutcome, LogoutRequest, Result, legacy_token_hash};
 use serde_json::{Value, json};
+use spitzli_persistence::postgres::Transaction;
 use std::{
     collections::{BTreeMap, BTreeSet},
     time::Duration,
 };
 use tokio_postgres::types::Type;
-use webdock_persistence::postgres::Transaction;
 const BUDGET: Duration = Duration::from_secs(30);
 #[derive(PartialEq, Eq)]
 struct Record {

@@ -50,7 +50,7 @@ The native public API preserves `POST /v1/emails`, `GET /v1/emails/{id}` and
 Native key authentication, sender evidence, scheduling, attachments, CC/BCC, originating-key
 status/cancel partition and shared budget remain authoritative in Core.
 
-The separate `webdock-mail-gateway` authenticates through existing private Core HTTPS
+The separate `spitzli-mail-gateway` authenticates through existing private Core HTTPS
 control before reading a public request body. It forwards a bounded stream once to
 the configured runtime over pinned mTLS. The runtime verifies the actual gateway peer
 and authenticates again. It exposes no internal control routes through that proxy.

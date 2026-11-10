@@ -1,10 +1,10 @@
-import { searchPage } from "@webdock/search";
+import { searchPage } from "@spitzli/search";
 import { uiLabel } from "@/lib/ui-labels";
 
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import type { RegistryWhere as Where } from "@webdock/api-client/registry";
+import type { RegistryWhere as Where } from "@spitzli/api-client/registry";
 import { requireRegistryOperator } from "../../../../lib/registry-page";
 import { date } from "../../../../lib/presentation";
 import {

@@ -7,7 +7,7 @@ import { configureProductOperations } from "./modules/portal/product-operation";
 import { configureStudioProducts } from "./modules/portal/studio-api";
 import { mailOperationShapes } from "./modules/mail/studio-shapes";
 import { PlanError, getPlans, getTenantPlan, managePlans, getOffer, acceptOffer } from "./modules/plans/plans";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import { configureModulePreflight } from "./module-preflight";
 import { verifyModuleShutdown } from "./full-module-preflight";
 import { requireHostingCommand } from "./installation";

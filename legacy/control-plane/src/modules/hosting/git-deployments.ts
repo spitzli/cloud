@@ -1,4 +1,4 @@
-import { createHostingGitDeployments } from "@webdock/module-hosting/server/git-deployments";
+import { createHostingGitDeployments } from "@spitzli/module-hosting/server/git-deployments";
 import { reconcileGitRelease } from "./git-reconciliation";
 import { bindGitTarget } from "./git-targets";
 import {
@@ -10,7 +10,7 @@ import {
 import { authorizeHosting } from "./authorization";
 import { transaction, audit } from "./db";
 import { createGitHubProvider } from "./git-github";
-export type { GitBuildCompletion } from "@webdock/module-hosting/server/git-deployments";
+export type { GitBuildCompletion } from "@spitzli/module-hosting/server/git-deployments";
 export const {
   gitEnvironmentSnapshot,
   registerGitConnection,

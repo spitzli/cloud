@@ -1,13 +1,13 @@
 import { getStudioSession } from "@/lib/studio-client";
 import {uiLabel} from "@/lib/ui-labels";
 
-import { msgid } from '@webdock/i18n';
+import { msgid } from '@spitzli/i18n';
 
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import Link from "next/link";
 import {requireRegistryOperator as requireOperator} from "../lib/registry-page";
 import { projectVercelStatus } from "../lib/vercel-view";
-import type { VercelDeployment } from "@webdock/hosting-contracts/vercel";
+import type { VercelDeployment } from "@spitzli/hosting-contracts/vercel";
 async function Deployment({ deployment }: { deployment: VercelDeployment }) {
   const i18n = await getRequestI18n();
 

@@ -1,8 +1,8 @@
 #![cfg(feature = "test-support")]
 use axum::{Json, Router, routing::post};
 use serde_json::{Value, json};
+use spitzli_mail::jmap::{EmailChange, EmailQuery, JmapClient, MailAddress, MailDraft};
 use std::sync::{Arc, Mutex};
-use webdock_mail::jmap::{EmailChange, EmailQuery, JmapClient, MailAddress, MailDraft};
 async fn client(
     handler: impl Fn(Value) -> Value + Send + Sync + 'static,
 ) -> (JmapClient, tokio::task::JoinHandle<()>) {

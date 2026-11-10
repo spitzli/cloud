@@ -1,5 +1,5 @@
-import type { ModuleView } from "@webdock/module-sdk";
-import { moduleForOperation } from "@webdock/module-sdk/selection";
+import type { ModuleView } from "@spitzli/module-sdk";
+import { moduleForOperation } from "@spitzli/module-sdk/selection";
 import { browserAuthConfiguration } from "./browser-auth-config";
 import { browserRequestCredentials } from "./browser-auth";
 import { getConsoleIdentity, clerkConsoleEnabled } from "./console-identity";
@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import "server-only";
 import { cache } from "react";
-import { requestAPI } from "@webdock/api-client";
+import { requestAPI } from "@spitzli/api-client";
 import { AccessError, StudioError, studioError } from "./studio-errors";
 
 export async function studioCall<T>(

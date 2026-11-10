@@ -1,5 +1,5 @@
 "use client";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 /* eslint-disable @next/next/no-location-assign-relative-destination -- Authentication transitions reload the page to synchronize session cookies and the provider's signed query. */
 
 import { useState, type FormEvent, type ReactNode } from "react";

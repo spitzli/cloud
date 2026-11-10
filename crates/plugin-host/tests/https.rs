@@ -1,9 +1,9 @@
 use serde_json::json;
-use std::{collections::BTreeMap, net::IpAddr, sync::Arc};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use webdock_plugin_host::http::{
+use spitzli_plugin_host::http::{
     HttpBinding, HttpRule, HttpTransport, PinnedTransport, bind_request,
 };
+use std::{collections::BTreeMap, net::IpAddr, sync::Arc};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 async fn endpoint(
     status: u16,
     declared_size: Option<usize>,

@@ -1,8 +1,8 @@
-import { createHostingBindingRuntime } from "@webdock/module-hosting/server/binding-runtime";
+import { createHostingBindingRuntime } from "@spitzli/module-hosting/server/binding-runtime";
 import { bindingMailReady } from "./mail-binding";
-import { currentDatabaseScope } from "@webdock/database-runtime";
+import { currentDatabaseScope } from "@spitzli/database-runtime";
 import { decryptMailSecret } from "../platform/platform";
-export type { BindingMaterial } from "@webdock/module-hosting/server/binding-runtime";
+export type { BindingMaterial } from "@spitzli/module-hosting/server/binding-runtime";
 export const { openBinding, bindingRuntime } = createHostingBindingRuntime({
   get bindingMailReady() {
     return bindingMailReady;

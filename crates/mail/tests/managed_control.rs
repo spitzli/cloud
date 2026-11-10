@@ -18,7 +18,7 @@ async fn external_mail_policy_and_managed_lane_are_authoritative() {
     url.set_path(&format!("/{name}"));
     let owner = Database::connect(url.as_str()).await.unwrap();
     let outcome = std::panic::AssertUnwindSafe(async {
-        webdock_persistence::migrations::bootstrap(&owner, &name, KEY)
+        spitzli_persistence::migrations::bootstrap(&owner, &name, KEY)
             .await
             .unwrap();
         seed(&owner).await;
@@ -43,7 +43,7 @@ async fn external_mail_policy_and_managed_lane_are_authoritative() {
         }
         let raw = manifest.to_string();
         let image = manifest["image"].as_str().unwrap();
-        sql(&owner,"INSERT INTO webdock_auth.plugin_release(plugin_id,version,manifest_bytes,manifest_sha256,image,registry_url,signer_key_id) VALUES('mail','1.0.0',$1,$2,$3,'https://registry.invalid','fixture');",vec![raw.clone().into(),webdock_mail_protocol::sha256(raw.as_bytes()).into(),image.into()]).await;
+        sql(&owner,"INSERT INTO webdock_auth.plugin_release(plugin_id,version,manifest_bytes,manifest_sha256,image,registry_url,signer_key_id) VALUES('mail','1.0.0',$1,$2,$3,'https://registry.invalid','fixture');",vec![raw.clone().into(),spitzli_mail_protocol::sha256(raw.as_bytes()).into(),image.into()]).await;
         sql(&owner,"INSERT INTO webdock_auth.plugin_runtime(plugin_id,generation,version,image,status,configuration_revision,credential_hash,namespace,service_name) VALUES('mail',1,'1.0.0',$1,'ready',0,$2,'fixtures','mail')",vec![image.into(),"a".repeat(64).into()]).await;
         sql(&owner,"INSERT INTO webdock_auth.plugin_configuration(plugin_id,approved_capabilities,configuration) VALUES('mail','[]','{}')",vec![]).await;
         let worker = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", &url).await;
@@ -122,17 +122,17 @@ async fn pool1(key: &str, url: &url::Url) -> sea_orm::DatabaseConnection {
     Database::connect(opts).await.unwrap()
 }
 async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: &str) {
-    use std::{os::unix::fs::PermissionsExt, sync::Arc};
-    use webdock_mail::{
+    use spitzli_mail::{
         MailDependencies,
         managed_control::ManagedControl,
         sending::{Sending, SendingConfig},
         submissions::{QueueCommand, Submissions},
     };
-    use webdock_mail_protocol::{native_control::NativeControlClient, outbox::SendLease};
-    use webdock_plugin_host::{AdmissionInput, FileBindings, HostService};
+    use spitzli_mail_protocol::{native_control::NativeControlClient, outbox::SendLease};
+    use spitzli_plugin_host::{AdmissionInput, FileBindings, HostService};
+    use std::{os::unix::fs::PermissionsExt, sync::Arc};
     let _legacy_binding_shape = support::sending::bindings();
-    webdock_persistence::migrations::bootstrap(owner, name, KEY)
+    spitzli_persistence::migrations::bootstrap(owner, name, KEY)
         .await
         .unwrap();
     seed(owner).await;
@@ -158,7 +158,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
     }
     let raw = manifest.to_string();
     let image = manifest["image"].as_str().unwrap();
-    sql(owner,"INSERT INTO webdock_auth.plugin_release(plugin_id,version,manifest_bytes,manifest_sha256,image,registry_url,signer_key_id) VALUES('mail','1.0.0',$1,$2,$3,'https://registry.invalid','fixture')",vec![raw.clone().into(),webdock_mail_protocol::sha256(raw.as_bytes()).into(),image.into()]).await;
+    sql(owner,"INSERT INTO webdock_auth.plugin_release(plugin_id,version,manifest_bytes,manifest_sha256,image,registry_url,signer_key_id) VALUES('mail','1.0.0',$1,$2,$3,'https://registry.invalid','fixture')",vec![raw.clone().into(),spitzli_mail_protocol::sha256(raw.as_bytes()).into(),image.into()]).await;
     sql(owner,"INSERT INTO webdock_auth.plugin_runtime(plugin_id,generation,version,image,status,configuration_revision,credential_hash,namespace,service_name) VALUES('mail',1,'1.0.0',$1,'ready',0,$2,'fixtures','mail')",vec![image.into(),"a".repeat(64).into()]).await;
     sql(owner,"INSERT INTO webdock_auth.plugin_configuration(plugin_id,approved_capabilities,configuration) VALUES('mail','[]','{}'); INSERT INTO webdock_auth.plugin_grant(plugin_id,customer_id,project_id,capabilities) VALUES('mail','123','234','[]'); INSERT INTO webdock_auth.plugin_resource(plugin_id,resource_id,project_id,customer_id,offering_id,name,created_via,created_by) VALUES('mail','domain-1','234','123','domain','example.test','operator','actor')",vec![]).await;
     let auth = pool1("WEBDOCK_TEST_AUTH_DATABASE_URL", url).await;
@@ -166,14 +166,14 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
     let worker = pool1("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
     let resolver = pool1("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
     let cookies =
-        webdock_identity::CookiePolicy::new(false, "fixture-cookie-signing-material-atleast32")
+        spitzli_identity::CookiePolicy::new(false, "fixture-cookie-signing-material-atleast32")
             .unwrap();
     let cookie = format!(
         "{}={}",
         cookies.name(),
         cookies.sign("fixture-token").unwrap()
     );
-    let identity = Arc::new(webdock_identity::IdentityService::new(
+    let identity = Arc::new(spitzli_identity::IdentityService::new(
         auth.clone(),
         cookies,
     ));
@@ -182,9 +182,9 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
         .await
         .unwrap()
         .unwrap();
-    let ids = Arc::new(webdock_persistence::IdAllocator::new(
+    let ids = Arc::new(spitzli_persistence::IdAllocator::new(
         business.clone(),
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     ));
     let (oauth, mcp_actors) =
         fix1_mcp_setup(owner, auth.clone(), identity.clone(), ids.clone(), &cookie).await;
@@ -201,7 +201,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
             KEY.into(),
             ids.clone(),
             Arc::new(
-                webdock_plugin_host::ManagedBindings::new(
+                spitzli_plugin_host::ManagedBindings::new(
                     resolver.clone(),
                     KEY.into(),
                     Arc::new(FileBindings::new(path.clone())),
@@ -240,7 +240,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
                 worker_credential_sha256: "b".repeat(64),
                 incoming: None,
             },
-            Arc::new(webdock_control_plane::mail::MailProviderPolicy::new(
+            Arc::new(spitzli_control_plane::mail::MailProviderPolicy::new(
                 host.clone(),
             )),
         )
@@ -254,7 +254,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
         host.clone(),
     ));
     let socket_path = dir.path().join("core.sock");
-    let mut socket = webdock_plugin_runtime::UnixSocket::bind(&socket_path).unwrap();
+    let mut socket = spitzli_plugin_runtime::UnixSocket::bind(&socket_path).unwrap();
     let incoming = socket.incoming().unwrap();
     let (stop, stopped) = tokio::sync::oneshot::channel();
     let socket_managed = managed.clone();
@@ -271,7 +271,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
             .unwrap();
         drop(socket);
     });
-    let channel = webdock_plugin_runtime::unix_channel(&socket_path)
+    let channel = spitzli_plugin_runtime::unix_channel(&socket_path)
         .await
         .unwrap();
     let mut control = NativeControlClient::new(channel.clone(), 1).unwrap();
@@ -299,7 +299,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
             &principal,
             admit("mail.send", input.clone(), "stable-send"),
             true,
-            &webdock_browser_session::StoredAuthority::LocalSession {},
+            &spitzli_browser_session::StoredAuthority::LocalSession {},
         ),
     )
     .await
@@ -319,7 +319,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
             &principal,
             admit("mail.send", input.clone(), "stable-send"),
             true,
-            &webdock_browser_session::StoredAuthority::LocalSession {},
+            &spitzli_browser_session::StoredAuthority::LocalSession {},
         )
         .await
         .unwrap();
@@ -332,16 +332,16 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
                 &principal,
                 admit("mail.send", large.clone(), &format!("large-{count}")),
                 true,
-                &webdock_browser_session::StoredAuthority::LocalSession {},
+                &spitzli_browser_session::StoredAuthority::LocalSession {},
             )
             .await
             .unwrap();
-        let mut host_rpc = webdock_plugin_runtime::wire::plugin_host_client::PluginHostClient::new(
+        let mut host_rpc = spitzli_plugin_runtime::wire::plugin_host_client::PluginHostClient::new(
             channel.clone(),
         );
         assert!(
             host_rpc
-                .authorize_request(webdock_plugin_runtime::wire::HostPayloadRequest {
+                .authorize_request(spitzli_plugin_runtime::wire::HostPayloadRequest {
                     claims_json: serde_json::to_vec(&large_admission.claims).unwrap(),
                     input_json: serde_json::to_vec(&large).unwrap(),
                     configuration_json: serde_json::to_vec(&large_admission.configuration).unwrap()
@@ -416,10 +416,10 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
     )
     .await;
     let mut callback =
-        webdock_mail_protocol::wire::mail_authority_client::MailAuthorityClient::new(channel);
+        spitzli_mail_protocol::wire::mail_authority_client::MailAuthorityClient::new(channel);
     let marker: Value = serde_json::from_slice(
         &callback
-            .begin_attempt(webdock_mail_protocol::wire::LeaseProof {
+            .begin_attempt(spitzli_mail_protocol::wire::LeaseProof {
                 lease_token: began["leaseToken"].as_str().unwrap().into(),
             })
             .await
@@ -434,7 +434,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
     assert!(!marker.to_string().contains("Private body"));
     assert!(
         callback
-            .begin_attempt(webdock_mail_protocol::wire::LeaseProof {
+            .begin_attempt(spitzli_mail_protocol::wire::LeaseProof {
                 lease_token: began["leaseToken"].as_str().unwrap().into()
             })
             .await
@@ -488,7 +488,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
                 "domain-delete-unknown",
             ),
             true,
-            &webdock_browser_session::StoredAuthority::LocalSession {},
+            &spitzli_browser_session::StoredAuthority::LocalSession {},
         )
         .await
         .unwrap();
@@ -499,7 +499,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
             &principal,
             admit("mail.cancel", status_input.clone(), "cancel"),
             true,
-            &webdock_browser_session::StoredAuthority::LocalSession {},
+            &spitzli_browser_session::StoredAuthority::LocalSession {},
         )
         .await
         .unwrap();
@@ -511,7 +511,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
             &principal,
             admit("mail.history", history_input.clone(), "history"),
             true,
-            &webdock_browser_session::StoredAuthority::LocalSession {},
+            &spitzli_browser_session::StoredAuthority::LocalSession {},
         )
         .await
         .unwrap();
@@ -541,7 +541,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
                 "domain-delete-settled",
             ),
             true,
-            &webdock_browser_session::StoredAuthority::LocalSession {},
+            &spitzli_browser_session::StoredAuthority::LocalSession {},
         )
         .await
         .unwrap();
@@ -552,7 +552,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
             &principal,
             admit("mail.send", input.clone(), "revoked-actor"),
             true,
-            &webdock_browser_session::StoredAuthority::LocalSession {},
+            &spitzli_browser_session::StoredAuthority::LocalSession {},
         )
         .await
         .unwrap();
@@ -722,7 +722,7 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
     let mut wrong_manifest = manifest.clone();
     wrong_manifest["name"] = json!("wrong-mail");
     let wrong_raw = wrong_manifest.to_string();
-    sql(owner,"UPDATE webdock_auth.plugin_release SET manifest_bytes=$1,manifest_sha256=$2 WHERE plugin_id='mail'",vec![wrong_raw.clone().into(),webdock_mail_protocol::sha256(wrong_raw.as_bytes()).into()]).await;
+    sql(owner,"UPDATE webdock_auth.plugin_release SET manifest_bytes=$1,manifest_sha256=$2 WHERE plugin_id='mail'",vec![wrong_raw.clone().into(),spitzli_mail_protocol::sha256(wrong_raw.as_bytes()).into()]).await;
     assert_eq!(
         control
             .call(json!({"action":"send.claim"}))
@@ -731,9 +731,9 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
             .status,
         403
     );
-    sql(owner,"UPDATE webdock_auth.plugin_release SET manifest_bytes=$1,manifest_sha256=$2 WHERE plugin_id='mail'",vec![raw.clone().into(),webdock_mail_protocol::sha256(raw.as_bytes()).into()]).await;
+    sql(owner,"UPDATE webdock_auth.plugin_release SET manifest_bytes=$1,manifest_sha256=$2 WHERE plugin_id='mail'",vec![raw.clone().into(),spitzli_mail_protocol::sha256(raw.as_bytes()).into()]).await;
     let stale = NativeControlClient::new(
-        webdock_plugin_runtime::unix_channel(&socket_path)
+        spitzli_plugin_runtime::unix_channel(&socket_path)
             .await
             .unwrap(),
         2,
@@ -944,11 +944,11 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
 }
 
 async fn exercise_mtls(
-    managed: std::sync::Arc<webdock_mail::managed_control::ManagedControl>,
+    managed: std::sync::Arc<spitzli_mail::managed_control::ManagedControl>,
     path: &std::path::Path,
     bindings: &Value,
 ) {
-    use webdock_mail_protocol::native_control::NativeControlClient;
+    use spitzli_mail_protocol::native_control::NativeControlClient;
     let mut parameters = rcgen::CertificateParams::new(Vec::<String>::new()).unwrap();
     parameters.is_ca = rcgen::IsCa::Ca(rcgen::BasicConstraints::Unconstrained);
     parameters.key_usages = vec![
@@ -971,7 +971,7 @@ async fn exercise_mtls(
     let (server, server_key) = issue(true);
     let (client, client_key) = issue(false);
     let mut enrollment = bindings.clone();
-    enrollment["runtimes"]["mail"]["peers"].as_array_mut().unwrap().push(json!({"kind":"mutualTls","certificateSha256":webdock_mail_protocol::sha256(client.der())}));
+    enrollment["runtimes"]["mail"]["peers"].as_array_mut().unwrap().push(json!({"kind":"mutualTls","certificateSha256":spitzli_mail_protocol::sha256(client.der())}));
     std::fs::write(path, enrollment.to_string()).unwrap();
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let origin = format!(
@@ -1000,15 +1000,15 @@ async fn exercise_mtls(
             .await
             .unwrap();
     });
-    let config = |pin: String| webdock_plugin_runtime::PinnedMutualTls {
+    let config = |pin: String| spitzli_plugin_runtime::PinnedMutualTls {
         certificate: client.pem().into_bytes(),
         private_key: client_key.serialize_pem().into_bytes(),
         authority: ca_pem.clone().into_bytes(),
         server_certificate_sha256: pin,
     };
-    let pin = webdock_mail_protocol::sha256(server.der());
+    let pin = spitzli_mail_protocol::sha256(server.der());
     assert!(
-        webdock_plugin_runtime::pinned_mtls_channel(
+        spitzli_plugin_runtime::pinned_mtls_channel(
             origin.clone(),
             "localhost".into(),
             config("0".repeat(64))
@@ -1017,7 +1017,7 @@ async fn exercise_mtls(
         .is_err()
     );
     let channel =
-        webdock_plugin_runtime::pinned_mtls_channel(origin, "localhost".into(), config(pin))
+        spitzli_plugin_runtime::pinned_mtls_channel(origin, "localhost".into(), config(pin))
             .await
             .unwrap();
     let control = NativeControlClient::new(channel, 1).unwrap();
@@ -1043,7 +1043,7 @@ async fn exercise_mtls(
 }
 
 async fn source_allowed(
-    host: &webdock_plugin_host::HostService,
+    host: &spitzli_plugin_host::HostService,
     worker: &sea_orm::DatabaseConnection,
     source: &Value,
 ) -> bool {
@@ -1060,21 +1060,21 @@ async fn source_allowed(
 async fn fix1_mcp_setup(
     owner: &sea_orm::DatabaseConnection,
     auth: sea_orm::DatabaseConnection,
-    identity: std::sync::Arc<webdock_identity::IdentityService>,
-    ids: std::sync::Arc<webdock_persistence::IdAllocator>,
+    identity: std::sync::Arc<spitzli_identity::IdentityService>,
+    ids: std::sync::Arc<spitzli_persistence::IdAllocator>,
     cookie: &str,
 ) -> (
-    std::sync::Arc<webdock_oauth::OAuthService>,
-    Vec<webdock_oauth::McpAuthentication>,
+    std::sync::Arc<spitzli_oauth::OAuthService>,
+    Vec<spitzli_oauth::McpAuthentication>,
 ) {
     use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD as B64};
     use sha2::Digest;
-    use webdock_oauth::{
+    use spitzli_oauth::{
         AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientAuthentication,
         ClientPurpose, ClientRegistration, CodeExchange, OAuthConfig, OAuthService,
     };
     let secret = uuid::Uuid::new_v4().to_string();
-    let keys = webdock_identity::SecretKeys::new(
+    let keys = spitzli_identity::SecretKeys::new(
         std::collections::BTreeMap::from([(0, secret.clone()), (1, secret.clone())]),
         1,
         Some(secret),
@@ -1115,7 +1115,7 @@ async fn fix1_mcp_setup(
         .provision_client(owner, register("fix1 caller"))
         .await
         .unwrap();
-    let credentials = |client: &webdock_oauth::RegisteredClient| ClientAuthentication {
+    let credentials = |client: &spitzli_oauth::RegisteredClient| ClientAuthentication {
         client_id: client.client_id.clone(),
         client_secret: client.client_secret.clone(),
         method: ClientAuthMethod::ClientSecretPost,
@@ -1169,19 +1169,19 @@ async fn fix1_mcp_setup(
 
 async fn fix1_mcp_retained_jobs(
     owner: &sea_orm::DatabaseConnection,
-    host: &webdock_plugin_host::HostService,
+    host: &spitzli_plugin_host::HostService,
     worker: &sea_orm::DatabaseConnection,
-    control: &webdock_mail_protocol::native_control::NativeControlClient,
-    actors: &[webdock_oauth::McpAuthentication],
+    control: &spitzli_mail_protocol::native_control::NativeControlClient,
+    actors: &[spitzli_oauth::McpAuthentication],
 ) {
-    use webdock_mail_protocol::outbox::SendLease;
+    use spitzli_mail_protocol::outbox::SendLease;
     for (case, actor, side) in [
         ("same", &actors[0], "caller"),
         ("caller", &actors[1], "caller"),
         ("issuer", &actors[1], "issuer"),
     ] {
         let input = json!({"resource_id":"domain-1","from":"sender","to":"target@example.test","subject":"MCP durable intent","text":"Private fixture body"});
-        let admit = |key: &str| webdock_plugin_host::AdmissionInput {
+        let admit = |key: &str| spitzli_plugin_host::AdmissionInput {
             plugin_id: "mail".into(),
             project_id: "234".into(),
             action: "mail.send".into(),
@@ -1281,20 +1281,20 @@ async fn fix1_mcp_retained_jobs(
 
 async fn fix1_terminal_generation(
     owner: &sea_orm::DatabaseConnection,
-    managed: std::sync::Arc<webdock_mail::managed_control::ManagedControl>,
+    managed: std::sync::Arc<spitzli_mail::managed_control::ManagedControl>,
     path: &std::path::Path,
     bindings: &Value,
     socket: &std::path::Path,
-    old: &webdock_mail_protocol::native_control::NativeControlClient,
+    old: &spitzli_mail_protocol::native_control::NativeControlClient,
     token: &str,
-) -> webdock_mail_protocol::native_control::NativeControlClient {
+) -> spitzli_mail_protocol::native_control::NativeControlClient {
+    use spitzli_mail_protocol::{native_control::NativeControlClient, outbox::SendLease};
     use std::{os::unix::fs::PermissionsExt, sync::Arc};
     use tower::ServiceExt;
-    use webdock_mail_protocol::{native_control::NativeControlClient, outbox::SendLease};
     let private = tempfile::tempdir().unwrap();
     std::fs::set_permissions(private.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let store = Arc::new(
-        webdock_mail_runtime::FilesystemPayloadStore::open(
+        spitzli_mail_runtime::FilesystemPayloadStore::open(
             private.path(),
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
         )
@@ -1363,7 +1363,7 @@ async fn fix1_terminal_generation(
     let (peer1, key1) = issue(false);
     let (peer2, key2) = issue(false);
     let mut enrolled1 = bindings.clone();
-    enrolled1["runtimes"]["mail"]["peers"].as_array_mut().unwrap().push(json!({"kind":"mutualTls","certificateSha256":webdock_mail_protocol::sha256(peer1.der())}));
+    enrolled1["runtimes"]["mail"]["peers"].as_array_mut().unwrap().push(json!({"kind":"mutualTls","certificateSha256":spitzli_mail_protocol::sha256(peer1.der())}));
     std::fs::write(path, enrolled1.to_string()).unwrap();
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let origin = format!(
@@ -1392,13 +1392,13 @@ async fn fix1_terminal_generation(
             .unwrap();
     });
     let config =
-        |cert: &rcgen::Certificate, key: &rcgen::KeyPair| webdock_plugin_runtime::PinnedMutualTls {
+        |cert: &rcgen::Certificate, key: &rcgen::KeyPair| spitzli_plugin_runtime::PinnedMutualTls {
             certificate: cert.pem().into_bytes(),
             private_key: key.serialize_pem().into_bytes(),
             authority: ca.pem().into_bytes(),
-            server_certificate_sha256: webdock_mail_protocol::sha256(server.der()),
+            server_certificate_sha256: spitzli_mail_protocol::sha256(server.der()),
         };
-    let old_channel = webdock_plugin_runtime::pinned_mtls_channel(
+    let old_channel = spitzli_plugin_runtime::pinned_mtls_channel(
         origin.clone(),
         "localhost".into(),
         config(&peer1, &key1),
@@ -1423,15 +1423,15 @@ async fn fix1_terminal_generation(
     let mut enrolled2 = bindings.clone();
     enrolled2["runtimes"]["mail"]["generation"] = json!(2);
     enrolled2["runtimes"]["mail"]["credentialSha256"] = json!("f".repeat(64));
-    enrolled2["runtimes"]["mail"]["peers"].as_array_mut().unwrap().push(json!({"kind":"mutualTls","certificateSha256":webdock_mail_protocol::sha256(peer2.der())}));
+    enrolled2["runtimes"]["mail"]["peers"].as_array_mut().unwrap().push(json!({"kind":"mutualTls","certificateSha256":spitzli_mail_protocol::sha256(peer2.der())}));
     std::fs::write(path, enrolled2.to_string()).unwrap();
     let current = NativeControlClient::new(
-        webdock_plugin_runtime::unix_channel(socket).await.unwrap(),
+        spitzli_plugin_runtime::unix_channel(socket).await.unwrap(),
         2,
     )
     .unwrap();
     let router =
-        webdock_mail_runtime::send_api::SendApi::new(Arc::new(current.clone()), store.clone())
+        spitzli_mail_runtime::send_api::SendApi::new(Arc::new(current.clone()), store.clone())
             .router();
     for (id, reference, state) in &terminal {
         for method in [axum::http::Method::GET, axum::http::Method::DELETE] {
@@ -1486,7 +1486,7 @@ async fn fix1_terminal_generation(
         403,
         "old actual certificate cannot impersonate the current generation"
     );
-    let new_channel = webdock_plugin_runtime::pinned_mtls_channel(
+    let new_channel = spitzli_plugin_runtime::pinned_mtls_channel(
         origin,
         "localhost".into(),
         config(&peer2, &key2),
@@ -1502,7 +1502,7 @@ async fn fix1_terminal_generation(
         "accepted"
     );
     let wrong = format!("wd_mail_{}", "w".repeat(43));
-    sql(owner,"INSERT INTO webdock_mail.api_key(id,customer_id,label,token_hash,key_suffix,created_by) VALUES('457','123','Wrong origin',$1,'wwww','fixture')",vec![webdock_mail_protocol::sha256(wrong.as_bytes()).into()]).await;
+    sql(owner,"INSERT INTO webdock_mail.api_key(id,customer_id,label,token_hash,key_suffix,created_by) VALUES('457','123','Wrong origin',$1,'wwww','fixture')",vec![spitzli_mail_protocol::sha256(wrong.as_bytes()).into()]).await;
     assert_eq!(
         current
             .call(json!({"action":"send.status","token":wrong,"id":terminal[0].0,"cancel":true}))
@@ -1564,14 +1564,14 @@ async fn fix1_terminal_generation(
 
 async fn fix1_unsupported_versions(
     owner: &sea_orm::DatabaseConnection,
-    control: &webdock_mail_protocol::native_control::NativeControlClient,
-    legacy: &webdock_mail::submissions::Submissions,
+    control: &spitzli_mail_protocol::native_control::NativeControlClient,
+    legacy: &spitzli_mail::submissions::Submissions,
 ) {
     use std::{os::unix::fs::PermissionsExt, sync::Arc};
     let private = tempfile::tempdir().unwrap();
     std::fs::set_permissions(private.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let store = Arc::new(
-        webdock_mail_runtime::FilesystemPayloadStore::open(
+        spitzli_mail_runtime::FilesystemPayloadStore::open(
             private.path(),
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
         )
@@ -1612,14 +1612,14 @@ async fn fix1_unsupported_versions(
     let before = unsupported_snapshot(owner).await;
     assert!(
         legacy
-            .execute(webdock_mail::submissions::QueueCommand::Claim {})
+            .execute(spitzli_mail::submissions::QueueCommand::Claim {})
             .await
             .unwrap()
             .is_null()
     );
     assert_eq!(
         legacy
-            .execute(webdock_mail::submissions::QueueCommand::Cleanup {})
+            .execute(spitzli_mail::submissions::QueueCommand::Cleanup {})
             .await
             .unwrap(),
         json!([])
@@ -1641,7 +1641,7 @@ async fn fix1_unsupported_versions(
             .all(|item| !references.iter().any(|(id, _)| item["id"] == *id)),
         "unsupported version must be excluded before listing a private reference"
     );
-    let cleaned = webdock_mail_runtime::dispatch::cleanup_payloads(control, store.clone()).await;
+    let cleaned = spitzli_mail_runtime::dispatch::cleanup_payloads(control, store.clone()).await;
     for (_, reference) in &references {
         assert_eq!(
             store.get("123", reference).unwrap(),

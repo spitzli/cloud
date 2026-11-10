@@ -4,8 +4,8 @@ import {
   runtimeOrigin,
   accessProfile,
   type AccessProfile,
-} from "@webdock/database-contracts";
-import type { DatabaseWorkspaceTarget } from "@webdock/module-databases/providers";
+} from "@spitzli/database-contracts";
+import type { DatabaseWorkspaceTarget } from "@spitzli/module-databases/providers";
 const launchSchema = z
   .object({
     code: z.string().regex(/^[A-Za-z0-9_-]{43}$/),

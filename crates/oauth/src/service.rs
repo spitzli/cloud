@@ -9,7 +9,7 @@ mod native_security;
 #[path = "native_tokens.rs"]
 mod native_tokens;
 struct NativeOAuthStore {
-    pool: webdock_persistence::postgres::Pool,
+    pool: spitzli_persistence::postgres::Pool,
     introspection: bool,
     security: bool,
     grants: bool,
@@ -29,10 +29,10 @@ use sea_orm::{
 };
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_identity::{IdentityService, Principal, SecretKeys};
+use spitzli_persistence::IdAllocator;
 use std::sync::Arc;
 use subtle::ConstantTimeEq;
-use webdock_identity::{IdentityService, Principal, SecretKeys};
-use webdock_persistence::IdAllocator;
 
 struct Issuance<'a> {
     client: &'a Client,
@@ -69,7 +69,7 @@ impl OAuthService {
             config,
         }
     }
-    pub fn with_native_client_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+    pub fn with_native_client_store(mut self, pool: spitzli_persistence::postgres::Pool) -> Self {
         self.native_store = Some(NativeOAuthStore {
             pool,
             introspection: false,
@@ -80,7 +80,7 @@ impl OAuthService {
         });
         self
     }
-    pub fn with_native_introspection(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+    pub fn with_native_introspection(mut self, pool: spitzli_persistence::postgres::Pool) -> Self {
         self.native_store = Some(NativeOAuthStore {
             pool,
             introspection: true,
@@ -91,7 +91,7 @@ impl OAuthService {
         });
         self
     }
-    pub fn with_native_security_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+    pub fn with_native_security_store(mut self, pool: spitzli_persistence::postgres::Pool) -> Self {
         self.native_store = Some(NativeOAuthStore {
             pool,
             introspection: true,
@@ -102,7 +102,7 @@ impl OAuthService {
         });
         self
     }
-    pub fn with_native_grants_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+    pub fn with_native_grants_store(mut self, pool: spitzli_persistence::postgres::Pool) -> Self {
         self.native_store = Some(NativeOAuthStore {
             pool,
             introspection: true,
@@ -113,7 +113,7 @@ impl OAuthService {
         });
         self
     }
-    pub fn with_native_tokens_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+    pub fn with_native_tokens_store(mut self, pool: spitzli_persistence::postgres::Pool) -> Self {
         self.native_store = Some(NativeOAuthStore {
             pool,
             introspection: true,
@@ -125,7 +125,7 @@ impl OAuthService {
         self
     }
     /// Add native MCP references without disabling an existing native lifecycle.
-    pub fn with_native_mcp_authority(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+    pub fn with_native_mcp_authority(mut self, pool: spitzli_persistence::postgres::Pool) -> Self {
         if let Some(store) = &mut self.native_store {
             store.pool = pool;
             store.introspection = true;
@@ -142,31 +142,31 @@ impl OAuthService {
         }
         self
     }
-    pub(crate) fn native_mcp_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+    pub(crate) fn native_mcp_pool(&self) -> Option<&spitzli_persistence::postgres::Pool> {
         self.native_store
             .as_ref()
             .filter(|s| s.mcp)
             .map(|s| &s.pool)
     }
-    pub(crate) fn native_tokens_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+    pub(crate) fn native_tokens_pool(&self) -> Option<&spitzli_persistence::postgres::Pool> {
         self.native_store
             .as_ref()
             .filter(|s| s.tokens)
             .map(|s| &s.pool)
     }
-    pub(crate) fn native_grants_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+    pub(crate) fn native_grants_pool(&self) -> Option<&spitzli_persistence::postgres::Pool> {
         self.native_store
             .as_ref()
             .filter(|s| s.grants)
             .map(|s| &s.pool)
     }
-    pub(crate) fn native_security_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+    pub(crate) fn native_security_pool(&self) -> Option<&spitzli_persistence::postgres::Pool> {
         self.native_store
             .as_ref()
             .filter(|s| s.security)
             .map(|s| &s.pool)
     }
-    pub(crate) fn native_introspection_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+    pub(crate) fn native_introspection_pool(&self) -> Option<&spitzli_persistence::postgres::Pool> {
         self.native_store
             .as_ref()
             .filter(|store| store.introspection)
@@ -175,32 +175,32 @@ impl OAuthService {
     /// Trusted caller-owned introspection. Keep returned fences through domain completion.
     pub async fn introspect_native_in<'a>(
         &self,
-        tx: webdock_persistence::postgres::Transaction<'a>,
+        tx: spitzli_persistence::postgres::Transaction<'a>,
         credentials: &ClientAuthentication,
         token: &str,
-    ) -> Result<(webdock_persistence::postgres::Transaction<'a>, Value)> {
+    ) -> Result<(spitzli_persistence::postgres::Transaction<'a>, Value)> {
         self.native_introspect_in(tx, credentials, token, false, false)
             .await
     }
     pub async fn introspect_portal_native_in<'a>(
         &self,
-        tx: webdock_persistence::postgres::Transaction<'a>,
+        tx: spitzli_persistence::postgres::Transaction<'a>,
         credentials: &ClientAuthentication,
         token: &str,
-    ) -> Result<(webdock_persistence::postgres::Transaction<'a>, Value)> {
+    ) -> Result<(spitzli_persistence::postgres::Transaction<'a>, Value)> {
         self.native_introspect_in(tx, credentials, token, true, false)
             .await
     }
-    pub(crate) fn native_client_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+    pub(crate) fn native_client_pool(&self) -> Option<&spitzli_persistence::postgres::Pool> {
         self.native_store.as_ref().map(|store| &store.pool)
     }
     /// Trusted native transaction boundary retaining the canonical client fence until caller completion.
     pub async fn validate_portal_client_native_in<'a>(
         &self,
-        tx: webdock_persistence::postgres::Transaction<'a>,
+        tx: spitzli_persistence::postgres::Transaction<'a>,
         credentials: &ClientAuthentication,
         redirect: &str,
-    ) -> Result<webdock_persistence::postgres::Transaction<'a>> {
+    ) -> Result<spitzli_persistence::postgres::Transaction<'a>> {
         self.native_validate_portal_in(tx, credentials, redirect)
             .await
     }

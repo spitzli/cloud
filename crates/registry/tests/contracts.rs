@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_registry::contracts::{customer_input, project_input, record_id};
+use spitzli_registry::contracts::{customer_input, project_input, record_id};
 #[test]
 fn ids_are_canonical_positive_signed_63_bit_strings() {
     for good in ["1", "9223372036854775807"] {
@@ -48,7 +48,7 @@ fn project_urls_are_https_without_credentials_and_ownership_is_required() {
 
 #[test]
 fn list_input_defaults_and_numeric_json_match_public_contract() {
-    use webdock_registry::contracts::ListInput;
+    use spitzli_registry::contracts::ListInput;
     let input =
         ListInput::parse(json!({"collection":"customers","page":1.0,"limit":20.0})).unwrap();
     assert_eq!(input.sort, "-updatedAt");

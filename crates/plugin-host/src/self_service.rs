@@ -314,7 +314,7 @@ impl HostService {
     }
 }
 
-type Authority<'a> = Option<&'a webdock_browser_session::StoredAuthority>;
+type Authority<'a> = Option<&'a spitzli_browser_session::StoredAuthority>;
 const MODES: &[&str] = &["everyone", "selected", "assigned"];
 impl HostService {
     /// Operator view of one plugin's self-service features with modes and allow lists.
@@ -405,7 +405,7 @@ impl HostService {
                 .map_err(db_error)?;
             if known.is_none() {
                 return Err(PluginError::new(
-                    webdock_plugin_protocol::ErrorCode::NotFound,
+                    spitzli_plugin_protocol::ErrorCode::NotFound,
                     "Customer not found",
                 ));
             }

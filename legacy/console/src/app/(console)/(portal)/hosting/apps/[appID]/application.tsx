@@ -3,8 +3,8 @@ import { getHostingApplication } from "@/lib/hosting-application";
 import { notFound } from "next/navigation";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
-import { formatResource } from "@webdock/hosting-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import { formatResource } from "@spitzli/hosting-contracts";
 import { HostingForm } from "@/components/hosting/form";
 import { AppSpecFields } from "@/components/hosting/app-spec";
 export default async function Application({

@@ -224,7 +224,7 @@ impl HostService {
     pub async fn guard_installation(&self, claim: &InstallClaim) -> Result<bool> {
         let auth = match self.install_authorization(&claim.id).await {
             Ok(auth) => auth,
-            Err(e) if e.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => {
+            Err(e) if e.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => {
                 return Ok(false);
             }
             Err(e) => return Err(e),
@@ -232,7 +232,7 @@ impl HostService {
         let tx = self.controller().await?;
         match self.worker_install_guard(&tx, claim, &auth).await {
             Ok(_) => {}
-            Err(e) if e.code == webdock_plugin_protocol::ErrorCode::PermissionDenied => {
+            Err(e) if e.code == spitzli_plugin_protocol::ErrorCode::PermissionDenied => {
                 return Ok(false);
             }
             Err(e) => return Err(e),

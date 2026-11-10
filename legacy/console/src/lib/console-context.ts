@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { headers } from "next/headers";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { getStudioSession } from "./studio-client";
 import { listTenants } from "./tenants";
 import { AccessError } from "./studio-errors";

@@ -24,7 +24,7 @@ Owner authorization covers the complete handover. No delegation, commits, produc
 - Root format regression passed165.02s. Browser0.5 and Archives0.2 review-fix qualifications completed and cleaned. Root explicitly released shared compiler/schema changes.
 - Reserved migration: `0052_native_recovery.sql`. Preserve0046–51.0053 is reserved for Root later and must not appear during frozen qualification.
 - First fresh owned0052 bootstrap passed with SHA256 `fdc2587b03574dee0a79dce8d8d17569992d8f548b7c257acdc515eacad05edd`, journal51 entries/max52; unfenced cold-target quarantine denied; exact PostgreSQL/volume/private-dir cleanup completed. This was a smoke, **not the final schema/compiler freeze**. More SQL may be corrected before a new fresh bootstrap and explicit final freeze.
-- Initial `cargo check --locked -p webdock-control-plane -p webdock-agent-control -p webdock-agent` passed; DTO test passed. No end-to-end native recovery qualification is claimed yet.
+- Initial `cargo check --locked -p spitzli-control-plane -p spitzli-agent-control -p spitzli-agent` passed; DTO test passed. No end-to-end native recovery qualification is claimed yet.
 - Earlier private-Mail/ntfy Python evidence is historical and remains storage-only. New full proof goes in a separate evidence record.
 
 ## Draft54 review handoff
@@ -62,8 +62,8 @@ The controlled old-intent provider test records guarded0 versus legacy1 PATCH. I
 ## Current useful commands
 
 ```bash
-cargo check --locked -p webdock-control-plane -p webdock-agent-control -p webdock-agent
-cargo test --locked -p webdock-agent-protocol --test recovery
+cargo check --locked -p spitzli-control-plane -p spitzli-agent-control -p spitzli-agent
+cargo test --locked -p spitzli-agent-protocol --test recovery
 python3 tools/tests/native-recovery-schema.py
 ```
 

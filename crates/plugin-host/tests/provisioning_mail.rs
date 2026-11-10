@@ -3,8 +3,8 @@
 mod fixture;
 use fixture::*;
 use serde_json::{Value, json};
+use spitzli_plugin_runtime::{HostClient, PinnedMutualTls, connect_pinned_mtls, wire};
 use std::{sync::atomic::Ordering, time::Duration};
-use webdock_plugin_runtime::{HostClient, PinnedMutualTls, connect_pinned_mtls, wire};
 
 fn retained_pvc(input: &Value) -> bool {
     input["objects"].as_array().unwrap().iter().any(|object| {
@@ -105,7 +105,7 @@ async fn mail_binary_tls_callbacks_unix_restart_and_private_diagnostics() {
             .await
             .is_err()
     );
-    let other = webdock_plugin_host::provisioning::tls::issue_runtime_identity(
+    let other = spitzli_plugin_host::provisioning::tls::issue_runtime_identity(
         &f.ca,
         &f.ca_key,
         "localhost",
@@ -132,7 +132,7 @@ async fn mail_binary_tls_callbacks_unix_restart_and_private_diagnostics() {
         tonic::Code::PermissionDenied
     );
     // Same CA is not runtime enrollment at the callback either.
-    let callback = webdock_plugin_runtime::pinned_mtls_channel(
+    let callback = spitzli_plugin_runtime::pinned_mtls_channel(
         f.config["coreTls"]["origin"].as_str().unwrap().into(),
         "localhost".into(),
         PinnedMutualTls {
@@ -160,7 +160,7 @@ async fn mail_binary_tls_callbacks_unix_restart_and_private_diagnostics() {
         let mut client = None;
         for _ in 0..100 {
             if let Ok(c) =
-                webdock_plugin_runtime::connect_unix(f.directory.path().join("mail.sock")).await
+                spitzli_plugin_runtime::connect_unix(f.directory.path().join("mail.sock")).await
             {
                 client = Some(c);
                 break;
@@ -316,7 +316,7 @@ async fn candidate_retained_intent_has_zero_effects_until_active_then_resumes_an
                 .code(),
             tonic::Code::PermissionDenied
         );
-        let callback = webdock_plugin_runtime::pinned_mtls_channel(
+        let callback = spitzli_plugin_runtime::pinned_mtls_channel(
             f.config["coreTls"]["origin"].as_str().unwrap().into(),
             "localhost".into(),
             PinnedMutualTls {

@@ -2,8 +2,8 @@ import {studioCall} from "./studio-client";
 import {AccessError,StudioError} from "./studio-errors";
 import { withHostingPageAccess, HostingSessionRequiredError } from "./hosting-page-access";
 import "server-only";
-import { HostingError, type HostingCommand } from "@webdock/hosting-contracts";
-import type { GitOAuthCommand } from "@webdock/hosting-contracts/git-oauth";
+import { HostingError, type HostingCommand } from "@spitzli/hosting-contracts";
+import type { GitOAuthCommand } from "@spitzli/hosting-contracts/git-oauth";
 export async function hostingCall<T = unknown>(
   command:
     HostingCommand | GitOAuthCommand | {action:"databases.credentials.display";databaseID:string} | { action: "enrollment.display"; enrollmentID: string },

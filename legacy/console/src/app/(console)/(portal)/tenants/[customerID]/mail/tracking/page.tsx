@@ -1,7 +1,7 @@
 import {mailRead,type MailConnection} from '@/lib/mail-product';import type {TrackingView} from '@/lib/studio-contracts';
-import {msgid} from '@webdock/i18n';
+import {msgid} from '@spitzli/i18n';
 
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";

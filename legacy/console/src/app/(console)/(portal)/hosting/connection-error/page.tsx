@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 export default async function ConnectionError() {
   const { t } = await getRequestI18n();
   return (

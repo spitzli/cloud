@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
-import type { DatabaseDirectory } from "@webdock/database-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import type { DatabaseDirectory } from "@spitzli/database-contracts";
 import { databaseCall } from "@/lib/database-client";
 import { withHostingPageAccess } from "@/lib/hosting-page-access";
 import { AddDatabase, DatabaseAccess } from "@/components/databases/forms";

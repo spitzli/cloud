@@ -151,7 +151,7 @@ impl MetadataProvisioner {
     }
     /// `None` is reserved for explicit loopback fixtures. Remote administrators always use CA TLS.
     pub async fn connect(admin_url: &str, ca: Option<&[u8]>) -> Result<Self> {
-        let client = webdock_plugin_kit::postgres::connect(admin_url, ca)
+        let client = spitzli_plugin_kit::postgres::connect(admin_url, ca)
             .await
             .map_err(|_| Error::Trust)?;
         client.batch_execute("SET statement_timeout='30s'; SET lock_timeout='5s'; SET idle_in_transaction_session_timeout='30s'; SET standard_conforming_strings=on").await.map_err(|_| Error::Unavailable)?;
@@ -164,7 +164,7 @@ impl MetadataProvisioner {
     pub async fn retained(&self, plan: &StoragePlan) -> Result<ProvisionedStorage> {
         let url = plan.url()?;
         if !self.tls {
-            webdock_plugin_kit::loopback(&url).map_err(|_| Error::Trust)?;
+            spitzli_plugin_kit::loopback(&url).map_err(|_| Error::Trust)?;
         }
         let client = self.client.lock().await;
         let row = client.query_opt(
@@ -188,7 +188,7 @@ impl MetadataProvisioner {
     pub async fn provision(&self, plan: &StoragePlan) -> Result<ProvisionedStorage> {
         let url = plan.url()?;
         if !self.tls {
-            webdock_plugin_kit::loopback(&url).map_err(|_| Error::Trust)?;
+            spitzli_plugin_kit::loopback(&url).map_err(|_| Error::Trust)?;
         }
         let mut client = self.client.lock().await;
         client.execute("SELECT pg_catalog.pg_advisory_lock(pg_catalog.hashtext('webdock-plugin-metadata-provisioning'))", &[]).await.map_err(|_| Error::Unavailable)?;

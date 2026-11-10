@@ -218,7 +218,7 @@ are rejected.
 ## Targeted native Tabularis cutover
 
 The legacy browser cluster (`root@178.104.141.95`) is separate from the managed
-PostgreSQL cluster. Keep `db-webdock-operator` in `webdock-databases`; preserve
+PostgreSQL cluster. Keep `db-webdock-operator` in `spitzli-databases`; preserve
 website binding `102393528113434624`, project `99868136106360832`, saved connection
 `8032eaca-fddf-4c95-8d12-1b29e2b2dc8e`, groups, state PVC, proxy secret and internal
 TLS. Do not deploy the full gateway inventory or modify Spitzli/Lunares runtimes.
@@ -236,7 +236,7 @@ do not print it because the Secret includes credentials):
 ```sh
 umask 077
 set -o noclobber
-ssh -o BatchMode=yes root@178.104.141.95 'kubectl -n webdock-databases get deployment/db-webdock-operator secret/db-webdock-operator networkpolicy/db-webdock-operator -o json' > /private/live-before.json
+ssh -o BatchMode=yes root@178.104.141.95 'kubectl -n spitzli-databases get deployment/db-webdock-operator secret/db-webdock-operator networkpolicy/db-webdock-operator -o json' > /private/live-before.json
 ```
 
 Prepare noncredential patches using the public managed CA:

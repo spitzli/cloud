@@ -1,7 +1,7 @@
 # Disposable container build runner
 
-Build `webdock-build-runner` with `cargo build -p webdock-build
---no-default-features --features kubernetes-job,worker --bin webdock-build-runner`.
+Build `spitzli-build-runner` with `cargo build -p spitzli-build
+--no-default-features --features kubernetes-job,worker --bin spitzli-build-runner`.
 The builder has file inputs and outputs; separate download/upload subcommands
 use only exact attempt-scoped HTTPS capabilities. It does not fetch repositories,
 push to the registry, or contact Webdock. Never provide worker, database,
@@ -124,7 +124,7 @@ GitHub API digests and checksum files; the Dockerfile verifies archive and
 extracted-binary hashes. `tools.json` contains the actual verified amd64 pins.
 
 Copy a separately compiled static `x86_64-unknown-linux-musl` runner into this
-directory as `webdock-build-runner`, then build using its SHA-256:
+directory as `spitzli-build-runner`, then build using its SHA-256:
 
 ```sh
 docker build --platform linux/amd64 --build-arg RUST_RUNNER_SHA256=<actual hash> \
@@ -176,7 +176,7 @@ it. There is no exfiltration-prevention claim for malicious customer code.
 
 ## Checks
 
-Run `cargo test -p webdock-build --no-default-features --features kubernetes-job
+Run `cargo test -p spitzli-build --no-default-features --features kubernetes-job
 --test container_runner`. The ignored container fixture additionally runs trusted
 fixed fake tools, validates OCI export/digests and redacted events, and rejects
 mismatched Railpack metadata. It was run as nonroot in local Docker with network
@@ -240,14 +240,14 @@ build-attempts/<customer>/<project>/<build>/<generation>/source.tar
 build-attempts/<customer>/<project>/<build>/<generation>/result.tar
 ```
 
-An init container runs the fixed command `webdock-build-runner download --config
+An init container runs the fixed command `spitzli-build-runner download --config
 /handoff/attempt.json --policy /etc/webdock-build/transfer-policy.json --input-dir
 /workspace/input`. It issues only the scoped source GET, verifies the exact byte
 count, archive SHA and archive safety, then publishes the private input tree with
 request/source metadata derived from trusted handoff data. It does not execute
 customer code. Configured Job identity environment values must match the handoff.
 
-After the builder finishes, the image entrypoint invokes `webdock-build-runner
+After the builder finishes, the image entrypoint invokes `spitzli-build-runner
 upload` with the same configuration and `/workspace/output`. Upload requires
 `WEBDOCK_JOB_UID` from the exact DownwardAPI field
 `metadata.labels['batch.kubernetes.io/controller-uid']`; no customer-selected field

@@ -1,1 +1,1 @@
-export * from "@webdock/module-hosting/server/setup-schema";
+export * from "@spitzli/module-hosting/server/setup-schema";

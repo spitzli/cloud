@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { ProjectApplications } from "@/components/hosting/project-applications";
 import { VercelProjectPanel } from "@/components/vercel-panel";
 export async function ProjectApplicationsPanel(props: {projectID: string; customerID: string}) {

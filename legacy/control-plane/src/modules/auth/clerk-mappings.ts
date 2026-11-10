@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
-import type { ClerkMappings, ExternalIdentity } from "@webdock/auth-clerk";
-import type { DatabaseReader } from "@webdock/core/identity";
+import type { ClerkMappings, ExternalIdentity } from "@spitzli/auth-clerk";
+import type { DatabaseReader } from "@spitzli/core/identity";
 
 export function createClerkMappings(database: DatabaseReader): ClerkMappings {
   return {

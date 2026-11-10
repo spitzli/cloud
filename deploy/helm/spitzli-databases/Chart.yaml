@@ -1,5 +1,5 @@
 apiVersion: v2
-name: webdock-databases
+name: spitzli-databases
 version: 0.1.0
 appVersion: '0.1.0'
 description: Opt-in native database gateway with an explicitly pinned Tabularis runtime

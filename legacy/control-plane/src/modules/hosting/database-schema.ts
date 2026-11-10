@@ -1,1 +1,1 @@
-export * from "@webdock/module-databases/server/database-schema";
+export * from "@spitzli/module-databases/server/database-schema";

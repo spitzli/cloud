@@ -207,7 +207,7 @@ pub async fn connect_pinned_mtls(
         crate::wire::plugin_runtime_client::PluginRuntimeClient::new(
             pinned_mtls_channel(origin, domain, tls).await?,
         )
-        .max_decoding_message_size(webdock_plugin_protocol::MANIFEST_BYTES + 1024)
+        .max_decoding_message_size(spitzli_plugin_protocol::MANIFEST_BYTES + 1024)
         .max_encoding_message_size(128 * 1024),
     )
 }

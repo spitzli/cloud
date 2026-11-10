@@ -75,7 +75,7 @@ Shapes:
   - `page_action_must_be_read_of_matching_audience`: operator pages need `audience: "operator"`, `intent: "read"`. Self-service pages are resource pages: they need `resource: true` and an action with `audience: "customer"`, `intent: "read"`, `resource: "use"`.
   - `product_names_not_reserved`: `mail` parses as a name, and `core` is still rejected.
   - `ids_unique`: duplicate offering, feature or page ids are rejected.
-- [ ] **Step 2: Run** `cargo test -p webdock-plugin-protocol --test contracts`. Expect FAIL.
+- [ ] **Step 2: Run** `cargo test -p spitzli-plugin-protocol --test contracts`. Expect FAIL.
 - [ ] **Step 3: Implement** in `validate_manifest`:
   - Remove `mail`, `hosting`, `databases`, `cms` and `storage` from `RESERVED`.
   - Delete the `SLOTS` and `UI_PATH` validation paths.
@@ -85,7 +85,7 @@ Shapes:
   - lumaserv-compute, github-repository and mail-relay: all actions `audience: "operator"`, `offerings: []`, `selfService: {features: []}`, `areas: {operator: {pages: []}}`. Keep their existing settings slot's action as an operator page if it is a read action.
 
   Then run each plugin's own `cargo test` (they are standalone workspaces).
-- [ ] **Step 5: Run** `cargo test -p webdock-plugin-protocol` and the four plugin test suites. Expect PASS.
+- [ ] **Step 5: Run** `cargo test -p spitzli-plugin-protocol` and the four plugin test suites. Expect PASS.
 - [ ] **Step 6: Commit** "Plugin manifest protocol 2 with offerings, self-service features and areas".
 
 ### Task 2: Self-service tables
@@ -110,7 +110,7 @@ Shapes:
   - A customer session cannot insert into `plugin_feature_policy`.
   - It can read only its own `plugin_feature_customer` rows.
   - An operator session can insert into both.
-- [ ] **Step 2: Run** it with the fixture env: `set -a; . .runtime-test/identity-restricted.env; . .runtime-test/identity.env; set +a; cargo test -p webdock-plugin-host --test postgres self_service -- --ignored`. Expect FAIL (relation missing).
+- [ ] **Step 2: Run** it with the fixture env: `set -a; . .runtime-test/identity-restricted.env; . .runtime-test/identity.env; set +a; cargo test -p spitzli-plugin-host --test postgres self_service -- --ignored`. Expect FAIL (relation missing).
 - [ ] **Step 3: Write the migration** following `0002_mail_policy.sql`/`0003_continuations.sql` style. Grants and policies are explicit per role.
 - [ ] **Step 4: Run** the test again, plus `bun run quality:contracts`, which checks migration symlinks. Expect PASS.
 - [ ] **Step 5: Apply** to the dev DB through Tilt (it migrates on start). Check with `docker exec webdock-dev-postgres-1 psql -U postgres -d webdock -c '\d webdock_auth.plugin_resource'`.
@@ -158,7 +158,7 @@ Shapes:
   - `create_output_requires_valid_resource`
   - `member_cannot_create`
   - `operator_assigns_resource`: an operator create on a customer project records `created_via='operator'`, and the customer can then use it.
-- [ ] **Step 2: Run** `cargo test -p webdock-plugin-host --test postgres -- --ignored` with the fixture env. Expect FAIL.
+- [ ] **Step 2: Run** `cargo test -p spitzli-plugin-host --test postgres -- --ignored` with the fixture env. Expect FAIL.
 - [ ] **Step 3: Implement.**
   - `admit_authority` calls `ensure_grant` before `metadata` re-reads the grant. The order is: controller tx, `ensure_grant`, `metadata`, `action`, `gate`.
   - `action()` keeps the capability ceiling check.
@@ -169,7 +169,7 @@ Shapes:
   - `resources`: `[{id, offering, name, createdVia}]` for the project.
 
   Non-operators only see a plugin when `features` or `resources` is non-empty.
-- [ ] **Step 5: Run the tests.** Expect PASS. Also run `cargo test -p webdock-control-plane` and `cargo test -p webdock-build` (repository flow).
+- [ ] **Step 5: Run the tests.** Expect PASS. Also run `cargo test -p spitzli-control-plane` and `cargo test -p spitzli-build` (repository flow).
 - [ ] **Step 6: Commit** "Gate plugin actions by audience, self-service mode and resource ownership".
 
 ### Task 4: Operator policy API
@@ -248,7 +248,7 @@ Customers cannot list or open their projects today: the registry is operator-onl
   - `context merges into action input`
   - `rejects version 1`
   - `refreshSeconds bounds`
-- [ ] **Step 2: Run** `bun run --filter @webdock/console-ui test`. Expect FAIL. **Step 3: Implement with `ui.ts` recipes.** **Step 4: Run it.** Expect PASS.
+- [ ] **Step 2: Run** `bun run --filter @spitzli/console-ui test`. Expect FAIL. **Step 3: Implement with `ui.ts` recipes.** **Step 4: Run it.** Expect PASS.
 - [ ] **Step 5: Commit** "Declarative plugin panel v2".
 
 ### Task 7: echo-demo as reference product plugin
@@ -312,7 +312,7 @@ Copy, written from the user's perspective in sentence case:
   3. As operator: switch to Operator assigns.
   4. As Demo owner: "Add" is gone, and the note is still listed and opens.
   5. As Demo member: no "Add".
-- [ ] **Step 2: Run** `bun run --filter @webdock/console-ui test:browser`. Expect FAIL. **Step 3: Implement.** **Step 4: Run** lint, typecheck, test and test:browser. Expect PASS.
+- [ ] **Step 2: Run** `bun run --filter @spitzli/console-ui test:browser`. Expect FAIL. **Step 3: Implement.** **Step 4: Run** lint, typecheck, test and test:browser. Expect PASS.
 - [ ] **Step 5: Commit** "Console project pages with plugin resources and operator self-service controls".
 
 ### Task 9: End-to-end check and push

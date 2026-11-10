@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { getRequestI18n } from '@webdock/i18n/next';
-import type { HostingOverview } from '@webdock/hosting-contracts';
+import { getRequestI18n } from '@spitzli/i18n/next';
+import type { HostingOverview } from '@spitzli/hosting-contracts';
 import { hostingCall } from '@/lib/hosting-client';
 import { applicationState } from '@/lib/workspace-navigation';
 import { uiLabel } from '@/lib/ui-labels';

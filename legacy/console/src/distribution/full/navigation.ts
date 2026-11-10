@@ -1,3 +1,3 @@
-import { mailManifest } from "@webdock/module-mail/manifest";
+import { mailManifest } from "@spitzli/module-mail/manifest";
 export const productManifests = [mailManifest];
-export { mailSendingPaths } from "@webdock/module-mail/navigation";
+export { mailSendingPaths } from "@spitzli/module-mail/navigation";

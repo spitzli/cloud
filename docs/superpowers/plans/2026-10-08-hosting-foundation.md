@@ -219,10 +219,10 @@ These test adapters invoke real handlers/MCP client transport with fixed fixture
 - [ ] Translate source messages through existing gettext workflow:
 
 ```sh
-npm run extract -w @webdock/i18n
-npm run compile -w @webdock/i18n
-npm run catalog:check -w @webdock/i18n
-npm test -w @webdock/i18n
+npm run extract -w @spitzli/i18n
+npm run compile -w @spitzli/i18n
+npm run catalog:check -w @spitzli/i18n
+npm test -w @spitzli/i18n
 ```
 
 After extraction, author German entries before compilation. Update only owning catalogs, preserving unrelated translations.
@@ -234,9 +234,9 @@ After extraction, author German entries before compilation. Update only owning c
 - [ ] Run new pure tests, focused local DB tests and affected existing plans/MCP/Registry/preview tests. Then run:
 
 ```sh
-npm run check -w @webdock/admin
-npm run check -w @webdock/auth
-npm run catalog:check -w @webdock/i18n
+npm run check -w @spitzli/admin
+npm run check -w @spitzli/auth
+npm run catalog:check -w @spitzli/i18n
 git diff --check
 ```
 

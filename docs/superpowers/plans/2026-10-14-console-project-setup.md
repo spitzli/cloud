@@ -44,7 +44,7 @@ Dependencies are installed. The login shell defaults to Node 22, while the proje
 ```bash
 export PATH=/home/newt/.nvm/versions/node/v24.21.0/bin:$PATH
 node --version
-npm run test -w @webdock/hosting-contracts
+npm run test -w @spitzli/hosting-contracts
 npm test
 ```
 
@@ -459,15 +459,15 @@ Add service binding/disconnect controls to the app detail page, showing resultin
 
 ```bash
 npm test
-npm run test -w @webdock/hosting-contracts
-npm run test -w @webdock/i18n
-npm run catalog:check -w @webdock/i18n
-npm run check -w @webdock/admin
-npm run check -w @webdock/api
-npm run lint -w @webdock/admin
+npm run test -w @spitzli/hosting-contracts
+npm run test -w @spitzli/i18n
+npm run catalog:check -w @spitzli/i18n
+npm run check -w @spitzli/admin
+npm run check -w @spitzli/api
+npm run lint -w @spitzli/admin
 npm run build:admin
 npm run test:api
-npm run test:rls -w @webdock/api
+npm run test:rls -w @spitzli/api
 python3 -m unittest discover -s apps/hosting-agent -p 'test_*.py'
 python3 -m unittest discover -s apps/build-worker -p 'test_*.py'
 git diff --check

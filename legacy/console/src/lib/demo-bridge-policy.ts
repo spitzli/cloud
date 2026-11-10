@@ -1,2 +1,2 @@
-export type {DemoBridge} from '@webdock/api-client/cms';
+export type {DemoBridge} from '@spitzli/api-client/cms';
 export {demoBridges} from './demo-bridges';

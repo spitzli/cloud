@@ -1,5 +1,5 @@
 import { consoleAuthConfiguration } from "./console-configuration";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import { workerDatabase } from "../../db/runtime";
 import type { ConsoleIdentityDependencies } from "../auth/clerk-identity";
 import { isClerkOrganizationRole, normalizeOrganizationPermissions } from "../auth/organization-permissions";
@@ -9,9 +9,9 @@ import {
   revalidateStoredConsoleIdentity,
 } from "../auth/clerk-provider";
 import { withStoredConsolePrincipal } from "../auth/principal";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { executeSetupStep } from "../hosting/setup-execution";
-import type { SetupRow } from "@webdock/module-hosting/server/project-setup";
+import type { SetupRow } from "@spitzli/module-hosting/server/project-setup";
 export async function executeAuthorizedSetup(row: SetupRow) {
   const reference = row.actor?.consoleIdentity;
   const principal = reference

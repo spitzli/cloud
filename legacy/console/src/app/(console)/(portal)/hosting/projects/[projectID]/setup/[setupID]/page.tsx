@@ -1,12 +1,12 @@
 import { setupStage } from "@/lib/project-setup-view";
 import { randomUUID } from "node:crypto";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import {
   hostingError,
   type SetupOptions,
   type SetupView,
   type SetupInspection,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { SetupWizard } from "@/components/hosting/setup-wizard";
 import { SetupProgress } from "@/components/hosting/setup-progress";

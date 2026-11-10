@@ -36,7 +36,7 @@
             "kube-system",
             "kube-public",
             "kube-node-lease",
-            "webdock-agent"
+            "spitzli-agent"
           ]
         }
       }

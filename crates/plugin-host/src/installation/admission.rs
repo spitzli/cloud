@@ -359,7 +359,7 @@ impl HostService {
                 "Approved capabilities must match the reviewed release",
             ));
         }
-        webdock_plugin_protocol::validate_value(
+        spitzli_plugin_protocol::validate_value(
             Some(&entry.manifest.as_json()["configuration"]),
             &input.configuration,
         )?;
@@ -431,7 +431,7 @@ impl HostService {
         tx: &DatabaseTransaction,
         id: &str,
     ) -> Result<InstallSnapshot> {
-        let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT id,plugin_id,status,phase,generation,checkpoint,payload->>'kind' AS kind FROM webdock_auth.plugin_operation WHERE id=$1 AND payload->>'kind' IN ('install','installRetry','update','updateRetry','rollback','rollbackRetry')",[id.into()])).await.map_err(db_error)?.ok_or_else(||PluginError::new(webdock_plugin_protocol::ErrorCode::NotFound,"Installation operation not found"))?;
+        let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT id,plugin_id,status,phase,generation,checkpoint,payload->>'kind' AS kind FROM webdock_auth.plugin_operation WHERE id=$1 AND payload->>'kind' IN ('install','installRetry','update','updateRetry','rollback','rollbackRetry')",[id.into()])).await.map_err(db_error)?.ok_or_else(||PluginError::new(spitzli_plugin_protocol::ErrorCode::NotFound,"Installation operation not found"))?;
         snapshot(&row)
     }
     pub async fn install_operation_with_authority(

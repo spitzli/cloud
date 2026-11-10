@@ -2,7 +2,7 @@ use sea_orm::{
     ConnectOptions, ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement,
     TransactionTrait,
 };
-use webdock_ids::{Id, Identity, Layout};
+use spitzli_ids::{Id, Identity, Layout};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -11,7 +11,7 @@ pub enum Error {
     #[error("database allocation failed")]
     Database(#[from] sea_orm::DbErr),
     #[error("invalid allocation state")]
-    Id(#[from] webdock_ids::Error),
+    Id(#[from] spitzli_ids::Error),
     #[error("Native ID allocation is unavailable")]
     Native(#[from] postgres::Error),
 }

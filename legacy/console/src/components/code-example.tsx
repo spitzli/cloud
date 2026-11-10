@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { useI18n } from '@webdock/i18n/react';
+import { useI18n } from '@spitzli/i18n/react';
 
 export function CodeExample({ label, code }: { label: string; code: string }) {
   const { t } = useI18n();

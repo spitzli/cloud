@@ -113,7 +113,7 @@ spec:
         - name: worker
           image: {{ $image | quote }}
           imagePullPolicy: IfNotPresent
-          command: [/usr/local/bin/webdock-kubernetes-build-worker]
+          command: [/usr/local/bin/spitzli-kubernetes-build-worker]
           args: [--config, /var/lib/webdock-build-controller/credentials/worker.json]
           securityContext:
             readOnlyRootFilesystem: true
@@ -340,7 +340,7 @@ spec:
         size(object.spec.containers) == {{ ternary 2 1 $c.tlsUpload.enabled }} &&
         object.spec.containers[0].name == 'worker' &&
         object.spec.containers[0].image == {{ $image | toJson }} &&
-        object.spec.containers[0].command == ['/usr/local/bin/webdock-kubernetes-build-worker'] &&
+        object.spec.containers[0].command == ['/usr/local/bin/spitzli-kubernetes-build-worker'] &&
         object.spec.containers[0].args == ['--config', '/var/lib/webdock-build-controller/credentials/worker.json'] &&
         (!has(object.spec.containers[0].env) || size(object.spec.containers[0].env) == 0) &&
         (!has(object.spec.containers[0].envFrom) || size(object.spec.containers[0].envFrom) == 0) &&

@@ -1,5 +1,5 @@
 #![cfg(feature = "local-test")]
-use webdock_object_storage::{Credentials, ObjectReceipt, S3Config, Store};
+use spitzli_object_storage::{Credentials, ObjectReceipt, S3Config, Store};
 #[path = "support/faults.rs"]
 mod faults;
 

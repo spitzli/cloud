@@ -40,7 +40,7 @@ The native allocator cutover must also cover the retained `sync_customer_tenant`
 
 ## Verification
 
-`cargo test -p webdock-oauth` checks configuration and a Node-generated legacy token-hash vector. Ignored `retained` and `tenancy` tests require the parent's explicitly owned local `webdock_rls_test` fixture and guarded environment configuration; they never reset its schemas. They create isolated test identities/clients and exercise real MFA, PKCE, consent, signed ID tokens, legacy JWT verification/revocation, token/code expiry, scope denial, refresh replay, logout, NULL-session denial, public clients, cross-tenant denial, explicit-grant precedence and customer archival. The runtime connection is the restricted bootstrap role.
+`cargo test -p spitzli-oauth` checks configuration and a Node-generated legacy token-hash vector. Ignored `retained` and `tenancy` tests require the parent's explicitly owned local `webdock_rls_test` fixture and guarded environment configuration; they never reset its schemas. They create isolated test identities/clients and exercise real MFA, PKCE, consent, signed ID tokens, legacy JWT verification/revocation, token/code expiry, scope denial, refresh replay, logout, NULL-session denial, public clients, cross-tenant denial, explicit-grant precedence and customer archival. The runtime connection is the restricted bootstrap role.
 
 This is not an OpenID conformance certification or a completed browser/Console bridge. Native mail, physical authenticator/browser acceptance, external identity activation and the remaining account/tenant administration remain separate gates.
 

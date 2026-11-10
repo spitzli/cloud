@@ -1,5 +1,5 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { workerDatabase } from "../../../db/runtime";
 import { vercelSettings } from "../vercel-settings";
 import { decodeVercelCredential } from "./vercel-store";

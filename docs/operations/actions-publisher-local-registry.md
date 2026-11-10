@@ -38,13 +38,13 @@ Node 18 candidate, and operator-installed Vercel CLI **63.1.2** at
 `/usr/local/bin/vercel`. Installing these trusted tools is separate from customer
 build execution. Verify `skopeo --version`, `node --version`, `vercel --version`.
 
-Prepare dedicated unprivileged users `webdock-registry`, `webdock-registry-proxy`,
+Prepare dedicated unprivileged users `spitzli-registry`, `webdock-registry-proxy`,
 and `webdock-publisher`. A `webdock-registry-socket` group grants only the first two
 users access to the backend socket. Create private directories:
 
 ```
 /etc/webdock-registry/                         root, group webdock-registry-socket, 0750
-/var/lib/webdock-registry/                     webdock-registry, 0700
+/var/lib/webdock-registry/                     spitzli-registry, 0700
 /var/lib/webdock-registry-proxy/               webdock-registry-proxy, 0700
 /etc/webdock-artifact-publisher/               root, group webdock-publisher, 0750
 /var/lib/webdock-artifact-publisher/artifacts/  webdock-publisher, 0700
@@ -118,12 +118,12 @@ Description=Webdock private OCI registry backend
 After=local-fs.target
 RequiresMountsFor=/var/lib/webdock-registry
 [Service]
-User=webdock-registry
+User=spitzli-registry
 Group=webdock-registry-socket
 ExecStart=/usr/bin/docker-registry serve /etc/webdock-registry/config.yml
 Restart=on-failure
 UMask=0007
-RuntimeDirectory=webdock-registry
+RuntimeDirectory=spitzli-registry
 RuntimeDirectoryMode=0750
 NoNewPrivileges=yes
 PrivateTmp=yes

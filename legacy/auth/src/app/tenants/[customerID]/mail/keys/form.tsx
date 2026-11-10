@@ -1,5 +1,5 @@
 "use client";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { useActionState, useState } from "react";
 import { keyAction } from "./actions";
 export function KeyForm({ customer, operator = false, consumerKey }: { customer: string; operator?: boolean; consumerKey?: string }) {

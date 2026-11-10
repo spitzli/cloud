@@ -1,4 +1,4 @@
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 // Public service errors are translated at the Console boundary.
 export const setupMessages = [
   msgid("Select an application for this Git operation."),

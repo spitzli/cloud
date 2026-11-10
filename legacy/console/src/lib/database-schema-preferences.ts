@@ -1,1 +1,1 @@
-export * from "@webdock/module-databases/ui/schema-preferences";
+export * from "@spitzli/module-databases/ui/schema-preferences";

@@ -51,7 +51,7 @@ class Fake:
         elif args[:2]==['docker','exec']:
             sql=kwargs.get('input',b'').decode()
             if 'rust_journal' in sql:out=json.dumps({'1':{'checksum':'fixture-checksum','success':True}}).encode()
-        elif Path(args[0]).name=='webdock-migrate':
+        elif Path(args[0]).name=='spitzli-migrate':
             self.migration=True;self.migration_host_attempts=self.host_attempts
             if self.mode=='interrupted':raise KeyboardInterrupt('fake controlled interruption')
             if self.mode in ['migration_fail','cleanup_timeout']:return subprocess.CompletedProcess(args,9,b'',b'primary migration failure')
@@ -74,7 +74,7 @@ class RunnerTests(unittest.TestCase):
         candidate=self.directory/'candidate';candidate.mkdir(mode=0o700)
         sources=self.directory/'sources';sources.mkdir(mode=0o700)
         binaries={}
-        for name in ['database-primitives','webdock-migrate','host-psql']:
+        for name in ['database-primitives','spitzli-migrate','host-psql']:
             path=candidate/name;path.write_text('fake '+name);path.chmod(0o700);binaries[name]={'sha256':runner.sha(path),'bytes':path.stat().st_size}
         for name in ['baseline-0056.draft.sql','fixed-0056.draft.sql']:
             path=self.directory/name;path.write_text('SELECT '+runner.BILLING_CASE+';\n');path.chmod(0o600)
@@ -205,7 +205,7 @@ class RunnerTests(unittest.TestCase):
         fake=Fake(self.directory.name,'tcp_timeout');clock=[0.0]
         with patch.object(runner.subprocess,'run',fake),patch.object(runner,'check_port',lambda port:None,create=True),patch.object(runner.time,'monotonic',lambda:clock[0]),patch.object(runner.time,'sleep',lambda seconds:clock.__setitem__(0,clock[0]+15)):
             with self.assertRaises(TimeoutError):runner.execute(self.directory)
-        self.assertFalse(any(Path(args[0]).name=='webdock-migrate' for args in fake.calls))
+        self.assertFalse(any(Path(args[0]).name=='spitzli-migrate' for args in fake.calls))
         logs=next(n for n,args in enumerate(fake.calls) if args[:2]==['docker','logs'])
         removal=next(n for n,args in enumerate(fake.calls) if args[:2]==['docker','rm'])
         self.assertLess(logs,removal);self.assertEqual(fake.calls[removal][-1],CID)

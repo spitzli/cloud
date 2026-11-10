@@ -1,1 +1,1 @@
-pub use webdock_mail_runtime::provider_transport::*;
+pub use spitzli_mail_runtime::provider_transport::*;

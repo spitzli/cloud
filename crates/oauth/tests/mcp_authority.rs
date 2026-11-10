@@ -1,5 +1,5 @@
 use serde_json::{Value, json};
-use webdock_oauth::McpAuthority;
+use spitzli_oauth::McpAuthority;
 
 // A parser fixture is not authenticated authority; production must revalidate it.
 fn stored_reference() -> Value {

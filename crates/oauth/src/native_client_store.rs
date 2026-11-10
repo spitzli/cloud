@@ -4,9 +4,9 @@ use crate::{
     ClientAuthentication, Error, Result,
     types::{Client, ClientRecord},
 };
+use spitzli_persistence::postgres::Transaction;
 use std::time::Duration;
 use tokio_postgres::types::Type;
-use webdock_persistence::postgres::Transaction;
 const BUDGET: Duration = Duration::from_secs(30);
 pub(super) async fn load_client(tx: &Transaction<'_>, id: &str) -> Result<Client> {
     if tx

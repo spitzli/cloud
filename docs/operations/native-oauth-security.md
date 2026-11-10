@@ -49,11 +49,11 @@ Use Docker for exclusively owned loopback PostgreSQL18 fixtures. No live provide
 production database or interactive credential is needed.
 
 ```sh
-CARGO_BUILD_JOBS=2 cargo test --locked -p webdock-oauth --test native_introspection --test native_clients -- --include-ignored --test-threads=1
-CARGO_BUILD_JOBS=2 cargo test --locked -p webdock-browser-session --test native_store -- --include-ignored --test-threads=1
-CARGO_BUILD_JOBS=2 cargo test --locked -p webdock-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
-CARGO_BUILD_JOBS=2 cargo test --locked -p webdock-oauth -p webdock-browser-session -p webdock-identity -p webdock-control-plane --lib --tests -- --test-threads=2
-CARGO_BUILD_JOBS=2 cargo clippy --locked -p webdock-oauth -p webdock-browser-session -p webdock-identity -p webdock-control-plane --all-targets -- -D warnings
+CARGO_BUILD_JOBS=2 cargo test --locked -p spitzli-oauth --test native_introspection --test native_clients -- --include-ignored --test-threads=1
+CARGO_BUILD_JOBS=2 cargo test --locked -p spitzli-browser-session --test native_store -- --include-ignored --test-threads=1
+CARGO_BUILD_JOBS=2 cargo test --locked -p spitzli-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
+CARGO_BUILD_JOBS=2 cargo test --locked -p spitzli-oauth -p spitzli-browser-session -p spitzli-identity -p spitzli-control-plane --lib --tests -- --test-threads=2
+CARGO_BUILD_JOBS=2 cargo clippy --locked -p spitzli-oauth -p spitzli-browser-session -p spitzli-identity -p spitzli-control-plane --all-targets -- -D warnings
 cargo fmt --all -- --check
 cargo run --locked --manifest-path tools/quality/Cargo.toml -- contracts "$PWD"
 ```

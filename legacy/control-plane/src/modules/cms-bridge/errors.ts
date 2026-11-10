@@ -1,1 +1,1 @@
-export * from "@webdock/module-cms/server/errors";
+export * from "@spitzli/module-cms/server/errors";

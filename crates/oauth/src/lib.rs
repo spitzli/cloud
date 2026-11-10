@@ -40,7 +40,7 @@ pub enum Error {
     #[error("OAuth persistence operation unavailable")]
     Database(#[from] sea_orm::DbErr),
     #[error("identity operation unavailable")]
-    Identity(#[from] webdock_identity::IdentityError),
+    Identity(#[from] spitzli_identity::IdentityError),
     #[error("ID allocation unavailable")]
     Allocation,
 }

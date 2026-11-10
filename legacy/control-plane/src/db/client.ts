@@ -1,2 +1,2 @@
 /** Compatibility path for existing runtime and migration callers. */
-export * from "@webdock/adapter-database-postgres";
+export * from "@spitzli/adapter-database-postgres";

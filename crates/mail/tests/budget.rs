@@ -7,7 +7,7 @@ use sea_orm::{
 };
 use serde_json::json;
 use sha2::Sha256;
-use webdock_mail::budget::*;
+use spitzli_mail::budget::*;
 const KEY: &str = "local-mail-budget-fixture-context-key-32bytes";
 async fn sql(db: &impl ConnectionTrait, sql: &str, values: Vec<sea_orm::Value>) {
     db.execute_raw(Statement::from_sql_and_values(
@@ -47,7 +47,7 @@ async fn concurrent_quota_reservation_suspension_and_month_transfer() {
     owner_url.set_path(&format!("/{name}"));
     let owner = Database::connect(owner_url.as_str()).await.unwrap();
     let result=std::panic::AssertUnwindSafe(async{
-        webdock_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
+        spitzli_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
         let mut worker_url=url::Url::parse(&std::env::var("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").unwrap()).unwrap();
         assert_eq!(worker_url.host_str(),owner_url.host_str());assert_eq!(worker_url.port(),owner_url.port());worker_url.set_path(&format!("/{name}"));
         let worker=Database::connect(worker_url.as_str()).await.unwrap();

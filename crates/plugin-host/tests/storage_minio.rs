@@ -2,13 +2,13 @@
 use async_trait::async_trait;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
-use std::{os::unix::fs::PermissionsExt, path::PathBuf, process::Command, sync::Arc};
-use webdock_plugin_host::storage::{StorageAuthority, StorageGateway};
-use webdock_plugin_http::storage::StorageBinding;
-use webdock_plugin_protocol::{
+use spitzli_plugin_host::storage::{StorageAuthority, StorageGateway};
+use spitzli_plugin_http::storage::StorageBinding;
+use spitzli_plugin_protocol::{
     Result,
     storage::{Attachment, StorageDirection, StoragePlan},
 };
+use std::{os::unix::fs::PermissionsExt, path::PathBuf, process::Command, sync::Arc};
 struct Live;
 #[async_trait]
 impl StorageAuthority for Live {

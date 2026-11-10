@@ -2,6 +2,7 @@
 use crate::*;
 use async_trait::async_trait;
 use serde_json::Value;
+pub use spitzli_plugin_runtime::{MutualTls, PeerIdentity, UnixSocket};
 use std::{
     future::Future,
     pin::Pin,
@@ -11,7 +12,6 @@ use std::{
 use tokio::sync::Semaphore;
 use tonic::transport::server::{TcpConnectInfo, TlsConnectInfo, UdsConnectInfo};
 use tonic::{Request, Response, Status};
-pub use webdock_plugin_runtime::{MutualTls, PeerIdentity, UnixSocket};
 use wire::repository_runtime_server::{RepositoryRuntime, RepositoryRuntimeServer};
 #[async_trait]
 pub trait Authority: Send + Sync + 'static {

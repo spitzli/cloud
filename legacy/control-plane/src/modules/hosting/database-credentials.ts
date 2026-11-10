@@ -1,4 +1,4 @@
-import { createHostingDatabaseCredentials } from "@webdock/module-databases/server/database-credentials";
+import { createHostingDatabaseCredentials } from "@spitzli/module-databases/server/database-credentials";
 import { withHostingDatabase } from "../../db/database-context";
 import { transaction, audit } from "./db";
 import { authorizeHosting } from "./authorization";

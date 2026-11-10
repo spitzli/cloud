@@ -1,5 +1,5 @@
+use spitzli_plugin_host::{FileBindings, RuntimeBindings};
 use std::os::unix::fs::PermissionsExt;
-use webdock_plugin_host::{FileBindings, RuntimeBindings};
 #[tokio::test]
 async fn transport_enrollment_file_must_be_private_and_not_a_symlink() {
     let directory = tempfile::tempdir().unwrap();

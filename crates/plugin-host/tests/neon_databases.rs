@@ -4,13 +4,13 @@
 mod fixture;
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{AdmissionInput, FileBindings, HostService};
+use spitzli_plugin_runtime::PeerIdentity;
 use std::sync::{
     Arc,
     atomic::{AtomicBool, AtomicUsize, Ordering},
 };
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{AdmissionInput, FileBindings, HostService};
-use webdock_plugin_runtime::PeerIdentity;
 const SECRET: &str = "owned-plugin-jobs-rls-secret-32bytes";
 async fn sql(db: &impl ConnectionTrait, text: &str, values: Vec<sea_orm::Value>) {
     db.execute_raw(Statement::from_sql_and_values(
@@ -40,13 +40,13 @@ async fn handle(
     action: &str,
     body: Value,
     key: &str,
-) -> webdock_plugin_host::InvocationHandle {
+) -> spitzli_plugin_host::InvocationHandle {
     let admitted = host
         .admit_with_authority(
             &f.actor,
             input(action, body, key),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&f.actor),
+            &spitzli_browser_session::StoredAuthority::local_session(&f.actor),
         )
         .await
         .unwrap();
@@ -175,7 +175,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
         .database
         .role_with_connections("webdock_auth_runtime", 4)
         .await;
-    let service = webdock_provider_connections::Connections::new(
+    let service = spitzli_provider_connections::Connections::new(
         business.clone(),
         f.auth.clone(),
         f.identity.clone(),
@@ -186,7 +186,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     .unwrap()
     .with_test_provider(origin);
     let connection = uuid::Uuid::new_v4().to_string();
-    let cipher = webdock_secrets::SecretCipher::new(SECRET).unwrap();
+    let cipher = spitzli_secrets::SecretCipher::new(SECRET).unwrap();
     let encrypted = cipher
         .seal(
             &"fixture-key",
@@ -196,10 +196,10 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     sql(&f.owner,"INSERT INTO webdock_auth.neon_connection(customer_id,id,revision,status,encrypted_key) VALUES('123',$1::uuid,1,'connected',$2)",vec![connection.clone().into(),encrypted.into()]).await;
     let retained = retained_metadata(&f).await;
     let database_name = f.database.url.path().trim_start_matches('/');
-    webdock_persistence::migrations::upgrade(&f.owner, database_name)
+    spitzli_persistence::migrations::upgrade(&f.owner, database_name)
         .await
         .unwrap();
-    assert!(webdock_persistence::migrations::native_schema_ready(&f.owner).await);
+    assert!(spitzli_persistence::migrations::native_schema_ready(&f.owner).await);
     assert_eq!(
         retained_metadata(&f).await,
         retained,
@@ -214,9 +214,9 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
                 .await,
             SECRET.into(),
             Arc::new(
-                webdock_persistence::IdAllocator::connect(
+                spitzli_persistence::IdAllocator::connect(
                     f.database.url.as_str(),
-                    webdock_ids::Identity::platform(0, 3).unwrap(),
+                    spitzli_ids::Identity::platform(0, 3).unwrap(),
                 )
                 .await
                 .unwrap(),
@@ -231,12 +231,12 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
         .unwrap()
         .with_named_http(service.clone()),
     );
-    let authority = webdock_browser_session::StoredAuthority::local_session(&f.actor);
+    let authority = spitzli_browser_session::StoredAuthority::local_session(&f.actor);
     host.save_plan(
         &f.actor,
         Some(&authority),
         Some("9999"),
-        webdock_plugin_host::PlanInput {
+        spitzli_plugin_host::PlanInput {
             name: "BYOK test".into(),
             description: "".into(),
             is_default: true,
@@ -249,7 +249,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
         &f.actor,
         Some(&authority),
         "123",
-        webdock_plugin_host::CustomerPlanInput {
+        spitzli_plugin_host::CustomerPlanInput {
             plan_id: Some("9999".into()),
             overrides: json!({"neon.database":0,"postgres.shared":1}),
         },
@@ -277,7 +277,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     let plans = host
         .plans(
             &f.actor,
-            Some(&webdock_browser_session::StoredAuthority::local_session(
+            Some(&spitzli_browser_session::StoredAuthority::local_session(
                 &f.actor,
             )),
         )
@@ -298,9 +298,9 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
         .await
         .is_err()
     );
-    let endpoints = webdock_control_plane::plugins::PluginEndpoints::new(
+    let endpoints = spitzli_control_plane::plugins::PluginEndpoints::new(
         host.clone(),
-        webdock_control_plane::plugin_config::RuntimeConnections::new(
+        spitzli_control_plane::plugin_config::RuntimeConnections::new(
             f.directory.path().join("no-route-needed.json"),
         ),
         None,
@@ -313,9 +313,9 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
         .unwrap()
         .unwrap();
     actor_tx.commit().await.unwrap();
-    let actor = webdock_control_plane::auth::AuthenticatedActor {
+    let actor = spitzli_control_plane::auth::AuthenticatedActor {
         principal: current_actor,
-        authority: webdock_browser_session::StoredAuthority::local_session(&f.actor),
+        authority: spitzli_browser_session::StoredAuthority::local_session(&f.actor),
     };
     assert!(
         endpoints
@@ -334,7 +334,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
             &f.actor,
             input("databases.attach", tuple.clone(), "attach-once"),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&f.actor),
+            &spitzli_browser_session::StoredAuthority::local_session(&f.actor),
         )
         .await
         .unwrap();
@@ -359,7 +359,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
             &f.actor,
             input("databases.attach", tuple.clone(), "attach-once"),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&f.actor)
+            &spitzli_browser_session::StoredAuthority::local_session(&f.actor)
         )
         .await
         .is_err(),
@@ -372,7 +372,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
             &f.actor,
             input("databases.attach", tuple.clone(), "attach-once"),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&f.actor),
+            &spitzli_browser_session::StoredAuthority::local_session(&f.actor),
         )
         .await
         .unwrap();
@@ -404,7 +404,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
             &f.actor,
             input("databases.attach", tuple.clone(), "attach-once"),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&f.actor),
+            &spitzli_browser_session::StoredAuthority::local_session(&f.actor),
         )
         .await
         .unwrap();
@@ -488,7 +488,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
             &f.actor,
             input("databases.detach", detach_body.clone(), "detach-once"),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&f.actor),
+            &spitzli_browser_session::StoredAuthority::local_session(&f.actor),
         )
         .await
         .unwrap();
@@ -502,7 +502,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
                 "detach-once"
             ),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&f.actor)
+            &spitzli_browser_session::StoredAuthority::local_session(&f.actor)
         )
         .await
         .is_err()
@@ -601,7 +601,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     sql(&f.owner,"INSERT INTO webdock_auth.neon_database_attachment(resource_id,attach_invocation_id,customer_id,project_id,connection_id,connection_revision,name,neon_project_id,branch_id,database_name,role_name,endpoint_id) VALUES('foreign-neon-resource',$1::uuid,'223','224',$2::uuid,1,'Other database','p-one','b-one','dbname','app','ep-one')",vec![uuid::Uuid::new_v4().to_string().into(),foreign_connection.into()]).await;
     sql(&f.owner,"INSERT INTO webdock_auth.plugin_resource(plugin_id,resource_id,offering_id,customer_id,project_id,name,created_via,created_by) VALUES('neon','foreign-neon-resource','database','223','224','Other database','operator','operator')",vec![]).await;
     sql(&f.owner,"INSERT INTO webdock_auth.neon_database_receipt(customer_id,project_id,actor_id,operation_id,action,request_hash,resource_id,result) VALUES('223','224','member',repeat('c',64),'databases.attach',repeat('d',64),'foreign-neon-resource','{}')",vec![]).await;
-    let scoped = webdock_identity::RlsSigner::new(SECRET, "webdock_auth_runtime")
+    let scoped = spitzli_identity::RlsSigner::new(SECRET, "webdock_auth_runtime")
         .unwrap()
         .begin(&business, &member)
         .await
@@ -627,15 +627,15 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
                 &member,
                 forged,
                 true,
-                &webdock_browser_session::StoredAuthority::local_session(&member),
+                &spitzli_browser_session::StoredAuthority::local_session(&member),
             )
             .await
             .err()
             .expect("foreign tenant resource must not produce an invocation");
         assert!(matches!(
             denied.code,
-            webdock_plugin_host::ErrorCode::PermissionDenied
-                | webdock_plugin_host::ErrorCode::NotFound
+            spitzli_plugin_host::ErrorCode::PermissionDenied
+                | spitzli_plugin_host::ErrorCode::NotFound
         ));
     }
     let admitted = host
@@ -643,7 +643,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
             &member,
             input("databases.discover", json!({}), "membership-race"),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&member),
+            &spitzli_browser_session::StoredAuthority::local_session(&member),
         )
         .await
         .unwrap();
@@ -675,7 +675,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
             &member,
             input("databases.discover", json!({}), "member-discovery-denied"),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&member)
+            &spitzli_browser_session::StoredAuthority::local_session(&member)
         )
         .await
         .is_err()
@@ -683,8 +683,8 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     let metadata = service
         .execute(
             &member,
-            &webdock_browser_session::StoredAuthority::local_session(&member),
-            webdock_provider_connections::Command::Get {
+            &spitzli_browser_session::StoredAuthority::local_session(&member),
+            spitzli_provider_connections::Command::Get {
                 customer: "123".into(),
             },
         )
@@ -692,7 +692,7 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     assert!(
         matches!(
             metadata,
-            Err(webdock_provider_connections::Error::Forbidden)
+            Err(spitzli_provider_connections::Error::Forbidden)
         ),
         "ordinary membership must not broaden the existing provider-connection permission"
     );
@@ -716,10 +716,10 @@ async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     gate.release.notify_one();
     assert!(pending.await.unwrap().is_err());
     let retained = retained_metadata(&f).await;
-    webdock_persistence::migrations::upgrade(&f.owner, database_name)
+    spitzli_persistence::migrations::upgrade(&f.owner, database_name)
         .await
         .unwrap();
-    assert!(webdock_persistence::migrations::native_schema_ready(&f.owner).await);
+    assert!(spitzli_persistence::migrations::native_schema_ready(&f.owner).await);
     assert_eq!(
         retained_metadata(&f).await,
         retained,

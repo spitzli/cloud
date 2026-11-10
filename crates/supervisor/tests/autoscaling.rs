@@ -1,5 +1,5 @@
 use serde_json::{Value, json};
-use webdock_supervisor::RuntimeSpec;
+use spitzli_supervisor::RuntimeSpec;
 
 fn spec() -> Value {
     json!({"version":1,"installation":"test","projectId":"123","resourceId":"456","revision":1,"image":format!("registry.example/app@sha256:{}","a".repeat(64)),"arguments":[],"cpuMillicores":100,"memoryBytes":67108864,"ephemeralBytes":67108864,"replicas":2,"port":8080,"healthPath":"/","volume":null,"autoscaling":{"minReplicas":2,"maxReplicas":5,"targetCPUUtilizationPercent":70}})
@@ -53,12 +53,12 @@ fn signed_runtime_carries_strict_optional_scaling_policy() {
 
 #[test]
 fn changing_scaling_policy_changes_the_signed_command_fingerprint() {
-    use webdock_supervisor::{Action, Command};
+    use spitzli_supervisor::{Action, Command};
     let spec: RuntimeSpec = serde_json::from_value(spec()).unwrap();
     let mut command = Command {
         operation_id: "owned-policy".into(),
         generation: 1,
-        lease_until: webdock_supervisor::timestamp().unwrap() + 60,
+        lease_until: spitzli_supervisor::timestamp().unwrap() + 60,
         authorization: "fixture".into(),
         action: Action::Apply,
         spec,

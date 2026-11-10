@@ -1,5 +1,9 @@
 use ed25519_dalek::SigningKey;
 use serde_json::{Value, json};
+use spitzli_repository_protocol::{
+    runtime::{Authority, Handler, PeerIdentity, Runtime, UnixSocket},
+    *,
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -7,10 +11,6 @@ use std::{
         atomic::{AtomicBool, Ordering},
     },
     time::{SystemTime, UNIX_EPOCH},
-};
-use webdock_repository_protocol::{
-    runtime::{Authority, Handler, PeerIdentity, Runtime, UnixSocket},
-    *,
 };
 struct Live(AtomicBool);
 #[async_trait::async_trait]

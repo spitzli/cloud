@@ -1,6 +1,6 @@
 use serde_json::json;
-use webdock_core::id::RecordId;
-use webdock_supervisor::{HostingBinding, PublicRoute};
+use spitzli_core::id::RecordId;
+use spitzli_supervisor::{HostingBinding, PublicRoute};
 
 #[test]
 fn retained_binding_without_public_route_preserves_old_wire_bytes() {

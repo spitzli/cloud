@@ -6,6 +6,11 @@ use base64::{
 use ed25519_dalek::{Signer, SigningKey};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_plugin_host::provisioning::{
+    storage::{MetadataProvisioner, StoragePlan},
+    tls::{RuntimeIdentity, issue_runtime_identity},
+};
+use spitzli_plugin_runtime::{PinnedMutualTls, authenticated_peer, wire};
 use std::{
     path::{Path, PathBuf},
     sync::{
@@ -15,11 +20,6 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 use tonic::{Request, Response, Status};
-use webdock_plugin_host::provisioning::{
-    storage::{MetadataProvisioner, StoragePlan},
-    tls::{RuntimeIdentity, issue_runtime_identity},
-};
-use webdock_plugin_runtime::{PinnedMutualTls, authenticated_peer, wire};
 
 #[allow(
     dead_code,
@@ -63,10 +63,10 @@ pub struct Host {
 impl Host {
     fn peer<T>(&self, request: &Request<T>) -> Result<(), Status> {
         let valid = match authenticated_peer(request)? {
-            webdock_plugin_runtime::PeerIdentity::Unix { uid } => {
+            spitzli_plugin_runtime::PeerIdentity::Unix { uid } => {
                 self.unix && uid == rustix::process::geteuid().as_raw()
             }
-            webdock_plugin_runtime::PeerIdentity::MutualTls { certificates } => {
+            spitzli_plugin_runtime::PeerIdentity::MutualTls { certificates } => {
                 !self.unix
                     && certificates
                         .first()
@@ -204,7 +204,7 @@ impl Fixture {
         )
         .unwrap();
         let storage = provisioner.provision(&plan).await.unwrap();
-        let sql = webdock_plugin_kit::postgres::connect(&storage.url, Some(pg.ca.as_bytes()))
+        let sql = spitzli_plugin_kit::postgres::connect(&storage.url, Some(pg.ca.as_bytes()))
             .await
             .unwrap();
         let key = rcgen::KeyPair::generate().unwrap();
@@ -308,7 +308,7 @@ impl Fixture {
                 child.0.try_wait().unwrap().is_none(),
                 "Mail exited before listener readiness; diagnostics withheld"
             );
-            if let Ok(mut c) = webdock_plugin_runtime::connect_pinned_mtls(
+            if let Ok(mut c) = spitzli_plugin_runtime::connect_pinned_mtls(
                 format!("https://localhost:{}", self.port),
                 "localhost".into(),
                 self.tls(),
@@ -324,7 +324,7 @@ impl Fixture {
     }
     pub async fn unix(&mut self) -> Value {
         let mut socket =
-            webdock_plugin_runtime::UnixSocket::bind(self.directory.path().join("core.sock"))
+            spitzli_plugin_runtime::UnixSocket::bind(self.directory.path().join("core.sock"))
                 .unwrap();
         let incoming = socket.incoming().unwrap();
         let host = Host {
@@ -474,7 +474,7 @@ pub fn mailboxes(origin: &str) -> Value {
 }
 
 pub async fn seed(sql: &tokio_postgres::Client) {
-    let sealer = webdock_plugin_kit::seal::Sealer::new(&"7a".repeat(32)).unwrap();
+    let sealer = spitzli_plugin_kit::seal::Sealer::new(&"7a".repeat(32)).unwrap();
     for (customer, state, enabled, mailbox_state) in [
         ("101", "ready", true, "failed"),
         ("102", "failed", true, "creating"),

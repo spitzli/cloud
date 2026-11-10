@@ -1,7 +1,7 @@
 import { hostingCall } from "@/lib/hosting-client";
-import { filterRows } from "@webdock/search";
+import { filterRows } from "@spitzli/search";
 import type { ConsoleSearchSources } from "@/lib/console-search";
-import type { HostingAppView, HostingProjectContext, HostingPage, DatabaseView } from "@webdock/hosting-contracts";
+import type { HostingAppView, HostingProjectContext, HostingPage, DatabaseView } from "@spitzli/hosting-contracts";
 export const productSearch: Partial<Pick<ConsoleSearchSources, "apps" | "databases" | "project" | "projects">> = {
   project: projectID => hostingCall<HostingProjectContext>({action:'projects.get',projectID}),
   apps: (projectID, search) => hostingCall<HostingPage<HostingAppView>>({action:'apps.list',projectID,search,page:1,limit:20,sort:'name'}),

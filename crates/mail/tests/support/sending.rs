@@ -2,7 +2,7 @@ use sea_orm::{
     ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement, TransactionTrait,
 };
 use serde_json::{Value, json};
-use webdock_mail_protocol::sha256;
+use spitzli_mail_protocol::sha256;
 pub const KEY: &str = "mail-sending-owned-fixture-context-at-least32";
 pub const PLUGIN: &str = "mail-policy-fixture";
 

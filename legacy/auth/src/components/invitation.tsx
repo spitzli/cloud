@@ -1,6 +1,6 @@
 "use client";
 import { authLabel } from "@/lib/i18n-labels";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 
 import { useEffect, useState } from "react";
 import { accountClient } from "./auth-client";

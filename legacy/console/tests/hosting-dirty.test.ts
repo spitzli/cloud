@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { Window, type HTMLButtonElement as HappyButton, type HTMLInputElement as HappyInput } from 'happy-dom';
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import { I18nProvider } from '@webdock/i18n/react';
+import { I18nProvider } from '@spitzli/i18n/react';
 import { HostingDirtyContext } from '../src/components/hosting/form-state';
 import { ApplicationEnvironment } from '../src/components/hosting/environment';
 import { ContainerArguments } from '../src/components/hosting/arguments';

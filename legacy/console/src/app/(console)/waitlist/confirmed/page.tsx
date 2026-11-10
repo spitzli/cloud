@@ -1,5 +1,5 @@
 import { ConsoleAuthShell } from "@/components/console-auth-shell";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 export default async function WaitlistConfirmed() {
   const { t } = await getRequestI18n();
   return <ConsoleAuthShell title="You’re on the waitlist" description="Thanks for your interest in Webdock. We will email you when we can invite you.">

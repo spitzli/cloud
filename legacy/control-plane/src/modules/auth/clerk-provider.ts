@@ -5,7 +5,7 @@ import {
   type OrgPermission,
 } from "./organization-permissions";
 import { currentConsolePrincipal } from "./principal";
-import { currentDatabaseScope } from "@webdock/database-runtime";
+import { currentDatabaseScope } from "@spitzli/database-runtime";
 import { createClerkClient } from "@clerk/backend";
 import { authDatabase } from "../../db/runtime";
 import {

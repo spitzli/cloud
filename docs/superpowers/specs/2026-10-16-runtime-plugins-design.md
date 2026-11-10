@@ -10,7 +10,7 @@ The delivery contains the runtime milestones below plus the required [developer 
 
 1. All six currently bundled modules can be controlled live through persisted installation state, with safe admission and shutdown across API and worker replicas.
 2. A separately built Project Notes plugin can be installed from Tabularium and used through its own UI, API and scheduled job without being included in Webdock's application build.
-3. A developer can create that plugin through `@webdock/cli` and use the public `@webdock/plugin-sdk` for real DB, Cache, jobs/events, configuration/secrets, storage/HTTP, logs/audit and typed UI slots. The companion specification owns the exact service contracts and limits; SDK/CLI delivery is required before declaring the combined plan complete.
+3. A developer can create that plugin through `@spitzli/cli` and use the public `@spitzli/plugin-sdk` for real DB, Cache, jobs/events, configuration/secrets, storage/HTTP, logs/audit and typed UI slots. The companion specification owns the exact service contracts and limits; SDK/CLI delivery is required before declaring the combined plan complete.
 
 This is not a claim that the existing six products have all been removed from the monolith. Their later extraction is a separate migration program. In milestone 1, disabling a bundled product changes availability but does not remove its code from the image. In milestone 2, new external plugins really are absent from the host build. Do not call this a physically minimal core-only distribution until the remaining built-in dependencies have been extracted.
 
@@ -28,7 +28,7 @@ Read the current source as well as these records:
 - `agents/kubernetes/{daemon,connect,permissions,executor,databases,mail_executor}.py`: existing agent authentication, generation, lease, checkpoint and reconciliation patterns.
 - Tabularium inspected at commit `5d1818352f7e4a018f6ace31a7f185d5a6b6f292`: <https://github.com/TabularisDB/tabularium/tree/5d1818352f7e4a018f6ace31a7f185d5a6b6f292>.
 
-The working tree already contains substantial uncommitted modularization. Preserve it. Do not reset, clean, stage all files, rename the npm workspaces, or build this work from HEAD while ignoring the current files. Package names are still `@webdock/api` and `@webdock/admin` despite their new directory names.
+The working tree already contains substantial uncommitted modularization. Preserve it. Do not reset, clean, stage all files, rename the npm workspaces, or build this work from HEAD while ignoring the current files. Package names are still `@spitzli/api` and `@spitzli/admin` despite their new directory names.
 
 ## Architecture and ownership
 
