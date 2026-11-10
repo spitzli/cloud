@@ -5,7 +5,7 @@ import {
   type IdentityDirectory,
   type LocalIdentity,
   type DatabaseReader as Connection,
-} from "@webdock/core/identity";
+} from "@spitzli/core/identity";
 export type MailActor = { subject: string; sessionID: string };
 export function mailUnavailable(): never {
   throw new MailServiceError("Mail access is unavailable.");

@@ -5,5 +5,5 @@ export type {
   Project,
   AuditEvent,
   RegistryWhere,
-} from "@webdock/core/registry/types";
-export type { CmsInstance } from "@webdock/module-cms/server/registry-types";
+} from "@spitzli/core/registry/types";
+export type { CmsInstance } from "@spitzli/module-cms/server/registry-types";

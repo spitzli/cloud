@@ -1,17 +1,17 @@
 import type { MailProductStore } from "./provider-ports";
 import { randomUUID } from "node:crypto";
-import type { DatabaseReader } from "@webdock/core/identity";
+import type { DatabaseReader } from "@spitzli/core/identity";
 import type {
   ApiResult,
   DispatchOutcome,
   EmailRequest,
   MailActor,
   EventType,
-} from "@webdock/mail-contracts";
+} from "@spitzli/mail-contracts";
 import {
   MailValidationError,
   parseEmail,
-} from "@webdock/mail-contracts/validation";
+} from "@spitzli/mail-contracts/validation";
 import { MailError } from "./product-access";
 type Dependencies = {
   database: MailProductStore["database"];

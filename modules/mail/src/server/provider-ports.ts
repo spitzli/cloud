@@ -1,1 +1,1 @@
-export type * from "@webdock/mail-contracts/provider-ports";
+export type * from "@spitzli/mail-contracts/provider-ports";

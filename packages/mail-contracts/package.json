@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/mail-contracts",
+  "name": "@spitzli/mail-contracts",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,7 @@
     "./domain": "./src/domain.ts"
   },
   "dependencies": {
-    "@webdock/core": "*"
+    "@spitzli/core": "*"
   },
   "license": "Apache-2.0"
 }

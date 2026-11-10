@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { useState, useContext } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { HostingDirtyContext } from "./form-state";
 export function ContainerArguments({ values }: { values: string[] }) {
   const { t } = useI18n(),

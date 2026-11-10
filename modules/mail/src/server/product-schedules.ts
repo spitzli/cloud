@@ -1,6 +1,6 @@
 import type { MailProductStore } from "./provider-ports";
-import type { MailActor } from "@webdock/mail-contracts";
-import { parseID, parseScheduleTime } from "@webdock/mail-contracts/validation";
+import type { MailActor } from "@spitzli/mail-contracts";
+import { parseID, parseScheduleTime } from "@spitzli/mail-contracts/validation";
 import { MailError, mailUnavailable } from "./product-access";
 import type { createMailEvents } from "./product-events";
 export function createMailSchedules(

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import type { DatabaseReader } from "@webdock/core/identity";
-import type { MailActor } from "@webdock/mail-contracts";
+import type { DatabaseReader } from "@spitzli/core/identity";
+import type { MailActor } from "@spitzli/mail-contracts";
 import { createMailCredentials } from "../src/server/provider-credentials.ts";
 import {
   createTenantMail,

@@ -1,4 +1,4 @@
-import type { TrustedAuthPlugin } from "@webdock/core/auth-plugin";
+import type { TrustedAuthPlugin } from "@spitzli/core/auth-plugin";
 import { createClerkAdapter } from "./index";
 export const manifest = { id: "auth-clerk", kind: "authentication" } as const;
 /** Host supplies durable local mappings and provider-neutral local identity reads. */

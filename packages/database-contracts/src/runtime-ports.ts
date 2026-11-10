@@ -3,11 +3,11 @@ import type {
   DatabaseCommand as ManagedCommand,
   DatabasePlan,
   DatabaseView,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type {
   Agent,
   DatabaseReader,
-} from "@webdock/hosting-contracts/runtime-ports";
+} from "@spitzli/hosting-contracts/runtime-ports";
 export type ManagedDatabaseOffer = {
   id: string;
   name: string;

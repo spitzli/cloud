@@ -3,7 +3,7 @@ import type {
   EmailRequest,
   EventType,
   Permission,
-} from "@webdock/mail-contracts";
+} from "@spitzli/mail-contracts";
 import { MailError } from "./product-access";
 import { mailOperations, type MailOperation } from "./product-api-contract";
 type Dependencies = {

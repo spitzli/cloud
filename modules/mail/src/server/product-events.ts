@@ -1,7 +1,7 @@
 import type { MailProductStore } from "./provider-ports";
-import type { DatabaseReader } from "@webdock/core/identity";
-import { isMailEvent, type MailEventInput } from "@webdock/mail-contracts";
-import { parseAddress, parseID } from "@webdock/mail-contracts/validation";
+import type { DatabaseReader } from "@spitzli/core/identity";
+import { isMailEvent, type MailEventInput } from "@spitzli/mail-contracts";
+import { parseAddress, parseID } from "@spitzli/mail-contracts/validation";
 import { MailError, mailUnavailable } from "./product-access";
 import { emptyRecipientState, projectRecipient } from "./product-projections";
 /** Internal event ingestion; callback sources are authenticated before this boundary. */

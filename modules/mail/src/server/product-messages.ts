@@ -1,7 +1,7 @@
 import type { MailProductStore } from "./provider-ports";
 import { createHash } from "node:crypto";
-import type { MailActor } from "@webdock/mail-contracts";
-import { parseID, parsePageQuery } from "@webdock/mail-contracts/validation";
+import type { MailActor } from "@spitzli/mail-contracts";
+import { parseID, parsePageQuery } from "@spitzli/mail-contracts/validation";
 import { MailError, mailUnavailable } from "./product-access";
 type Dependencies = {
   database: MailProductStore["database"];

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 export function useUnsavedChanges(dirty: boolean) {
   const { t } = useI18n();
   useEffect(() => {

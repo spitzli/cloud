@@ -1,11 +1,11 @@
 "use client";
 import * as React from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import {
   formatResource,
   type SetupView,
   type SetupOptions,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export function SetupReview({
   view,
   options,

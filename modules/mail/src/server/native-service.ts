@@ -1,4 +1,4 @@
-import type { IdentityDirectory } from "@webdock/core/identity";
+import type { IdentityDirectory } from "@spitzli/core/identity";
 import {
   getMailService,
   requestMailService,

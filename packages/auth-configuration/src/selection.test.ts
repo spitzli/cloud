@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { selectAuthPlugin } from "./selection";
-import { lazyAuthPlugin } from "@webdock/core/auth-plugin";
+import { lazyAuthPlugin } from "@spitzli/core/auth-plugin";
 test("legacy default and explicit providers select separate trusted entries", async () => {
   const legacy = selectAuthPlugin(undefined);
   assert.equal(legacy.configuration.provider, "better-auth");

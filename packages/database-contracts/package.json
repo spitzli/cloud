@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/database-contracts",
+  "name": "@spitzli/database-contracts",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "zod": "4.6.5",
-    "@webdock/hosting-contracts": "*"
+    "@spitzli/hosting-contracts": "*"
   },
   "scripts": {
     "test": "bun test ./src"

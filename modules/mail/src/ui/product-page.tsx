@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 import type { MailPageContext, MailRow } from "./types";
 export type { MailPageContext } from "./types";
 export function mailHref(

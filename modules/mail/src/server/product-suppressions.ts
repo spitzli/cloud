@@ -1,6 +1,6 @@
 import type { MailProductStore } from "./provider-ports";
-import type { MailActor } from "@webdock/mail-contracts";
-import { parseAddress } from "@webdock/mail-contracts/validation";
+import type { MailActor } from "@spitzli/mail-contracts";
+import { parseAddress } from "@spitzli/mail-contracts/validation";
 import { MailError } from "./product-access";
 export function createMailSuppressions(
   dependencies: Pick<

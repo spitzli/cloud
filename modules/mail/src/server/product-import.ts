@@ -1,4 +1,4 @@
-import type { DatabaseReader } from "@webdock/core/identity";
+import type { DatabaseReader } from "@spitzli/core/identity";
 import type { MailProductStore } from "./provider-ports";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import { z } from "zod";
@@ -6,8 +6,8 @@ import {
   isMailEvent,
   type EventType,
   type MailActor,
-} from "@webdock/mail-contracts";
-import { parseEmail, parseAddress } from "@webdock/mail-contracts/validation";
+} from "@spitzli/mail-contracts";
+import { parseEmail, parseAddress } from "@spitzli/mail-contracts/validation";
 import { normalizeMailDomain } from "./tenant-mail";
 import { MailError } from "./product-access";
 import { redactMailLog } from "./product-request-logs";

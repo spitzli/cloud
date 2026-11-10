@@ -1,6 +1,6 @@
 "use client";
 import React, { useId, useState } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { parseResourceInput, resourceInput, resourceInUnit } from "./units";
 export function ResourceField({
   name,

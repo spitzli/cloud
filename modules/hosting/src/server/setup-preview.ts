@@ -1,4 +1,4 @@
-import type { DatabaseServices } from "@webdock/database-contracts/runtime-ports";
+import type { DatabaseServices } from "@spitzli/database-contracts/runtime-ports";
 import { assertSetupProducts } from "./setup-admission";
 import { assertSetupConfirmation } from "./setup-confirmation";
 export { assertSetupConfirmation } from "./setup-confirmation";
@@ -12,9 +12,9 @@ import {
   type HostingActor,
   type SetupConfiguration,
   type SetupPreview,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { limits } from "./allowances";
-import { appDemand } from "@webdock/hosting-contracts";
+import { appDemand } from "@spitzli/hosting-contracts";
 export type Dependencies = {
   authorizeSetupConfiguration: ReturnType<
     typeof import("./permissions").createHostingPermissions

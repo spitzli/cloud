@@ -5,12 +5,12 @@ import type {
   EmailRequest,
   MailActor,
   BatchResult,
-} from "@webdock/mail-contracts";
+} from "@spitzli/mail-contracts";
 import {
   parseEmail,
   parseID,
   MailValidationError,
-} from "@webdock/mail-contracts/validation";
+} from "@spitzli/mail-contracts/validation";
 import { MailError, mailUnavailable } from "./product-access";
 type Dependencies = {
   database: MailProductStore["database"];

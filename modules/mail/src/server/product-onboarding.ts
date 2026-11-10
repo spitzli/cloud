@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { DatabaseReader, SessionReference } from "@webdock/core/identity";
+import type { DatabaseReader, SessionReference } from "@spitzli/core/identity";
 import { MailError } from "./product-access";
 import type { createMailAuthorization } from "./product-access";
 import type { createMailCredentials } from "./provider-credentials";

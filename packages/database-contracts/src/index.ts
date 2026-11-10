@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { resourceID } from "@webdock/hosting-contracts";
+import { resourceID } from "@spitzli/hosting-contracts";
 
 export const databaseEngine = z.enum(["postgresql", "sqlite"]);
 export const accessProfile = z.enum(["read", "write", "schema"]);

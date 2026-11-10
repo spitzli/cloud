@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/auth-clerk",
+  "name": "@spitzli/auth-clerk",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@clerk/backend": "3.24.0",
-    "@webdock/core": "*",
-    "@webdock/auth-configuration": "*"
+    "@spitzli/core": "*",
+    "@spitzli/auth-configuration": "*"
   },
   "license": "Apache-2.0"
 }

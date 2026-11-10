@@ -75,7 +75,7 @@ export type MailHealth = {
     unknownLate: boolean;
   };
 };
-import type { I18n } from "@webdock/i18n";
+import type { I18n } from "@spitzli/i18n";
 export type MailPageProps = {
   params: Promise<{ customerID: string; id?: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;

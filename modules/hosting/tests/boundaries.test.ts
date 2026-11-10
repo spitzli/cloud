@@ -30,7 +30,7 @@ test("Hosting provider adapters depend on public contracts, never the Hosting ru
       readFileSync(resolve(root, "adapters", adapter, "package.json"), "utf8"),
     );
     assert(
-      !Object.hasOwn(manifest.dependencies ?? {}, "@webdock/module-hosting"),
+      !Object.hasOwn(manifest.dependencies ?? {}, "@spitzli/module-hosting"),
     );
     for (const file of files(resolve(root, "adapters", adapter, "src")))
       assert.doesNotMatch(

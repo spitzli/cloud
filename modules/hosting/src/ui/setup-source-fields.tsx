@@ -1,10 +1,10 @@
 "use client";
 import * as React from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import type {
   SetupConfiguration,
   SetupOptions,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export function SetupSourceFields({
   configuration,
   options,

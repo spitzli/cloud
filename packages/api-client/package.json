@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/api-client",
+  "name": "@spitzli/api-client",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -20,12 +20,12 @@
     "test": "bun test ./src"
   },
   "dependencies": {
-    "@webdock/mail-core": "*",
-    "@webdock/hosting-contracts": "*",
-    "@webdock/database-contracts": "*",
-    "@webdock/mail-contracts": "*",
-    "@webdock/core": "*",
-    "@webdock/module-cms": "*"
+    "@spitzli/mail-core": "*",
+    "@spitzli/hosting-contracts": "*",
+    "@spitzli/database-contracts": "*",
+    "@spitzli/mail-contracts": "*",
+    "@spitzli/core": "*",
+    "@spitzli/module-cms": "*"
   },
   "license": "Apache-2.0"
 }

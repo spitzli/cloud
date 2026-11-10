@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { Queue } from "bullmq";
-import { startCoreJobWorkers } from "@webdock/core/jobs";
+import { startCoreJobWorkers } from "@spitzli/core/jobs";
 const port = Number(process.env.WEBDOCK_TEST_REDIS_PORT);
 test(
   "Core BullMQ workers register durable schedulers and keep domain ownership",

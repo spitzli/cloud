@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { useLinkStatus } from "next/link";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 
 export function NavigationPending() {
   const { pending } = useLinkStatus();

@@ -32,11 +32,11 @@ export type VercelView = {
 export type VercelProjectView =
   | {
       state: "ready";
-      snapshot: import("@webdock/hosting-contracts/vercel").VercelProjectSnapshot;
+      snapshot: import("@spitzli/hosting-contracts/vercel").VercelProjectSnapshot;
     }
   | {
       state:
         | "setup"
         | "unlinked"
-        | import("@webdock/hosting-contracts/vercel").VercelAPIErrorCode;
+        | import("@spitzli/hosting-contracts/vercel").VercelAPIErrorCode;
     };

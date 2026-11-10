@@ -1,4 +1,4 @@
-import type { DatabaseReader } from "@webdock/core/identity";
+import type { DatabaseReader } from "@spitzli/core/identity";
 import type { MailActor, MailCapability } from "./index";
 
 /** Existing provider identities are opaque durable bindings, never email-derived IDs. */
@@ -80,11 +80,11 @@ export interface MailDomainProvider {
 }
 export type MailSend = (
   credential: MailSendingCredential,
-  body: import("@webdock/mail-contracts").EmailRequest,
+  body: import("@spitzli/mail-contracts").EmailRequest,
   reference: string,
   signal: AbortSignal,
   fetcher?: MailFetch,
-) => Promise<import("@webdock/mail-contracts").DispatchOutcome>;
+) => Promise<import("@spitzli/mail-contracts").DispatchOutcome>;
 export type MailAccountVerification = (
   pair: MailSendingCredential,
   fetcher?: MailFetch,

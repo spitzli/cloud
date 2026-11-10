@@ -4,8 +4,8 @@ import type {
   EventType,
   MailActor,
   Permission,
-} from "@webdock/mail-contracts";
-import { parseID } from "@webdock/mail-contracts/validation";
+} from "@spitzli/mail-contracts";
+import { parseID } from "@spitzli/mail-contracts/validation";
 import { MailError } from "./product-access";
 type Dependencies = {
   withAuthenticatedDatabase: import("./tenant-mail").TenantMailDependencies["withAuthenticatedDatabase"];
@@ -30,8 +30,8 @@ type Dependencies = {
     headers: Headers,
     customerID: string,
     connectionID: string,
-    capability: import("@webdock/mail-contracts").MailCapability,
-  ) => Promise<import("@webdock/mail-contracts").MailActor>;
+    capability: import("@spitzli/mail-contracts").MailCapability,
+  ) => Promise<import("@spitzli/mail-contracts").MailActor>;
   assertMailAccess: MailProductStore["assertMailAccess"];
   listTenantMailConnections: ReturnType<
     typeof import("./product-onboarding").createMailOnboarding

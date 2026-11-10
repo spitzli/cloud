@@ -15,7 +15,7 @@ import {
   type SQL,
   getTableColumns,
 } from "drizzle-orm";
-import * as schema from "@webdock/platform-db/schema/registry";
+import * as schema from "@spitzli/platform-db/schema/registry";
 import { customerInput, projectInput, recordID, listInput } from "./contracts";
 const querySources = {
   customers: ["webdock_admin.customers"],

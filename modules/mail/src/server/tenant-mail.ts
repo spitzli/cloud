@@ -3,12 +3,12 @@ import { randomBytes } from "node:crypto";
 import {
   TenantMailError,
   normalizeMailDomain,
-} from "@webdock/mail-contracts/domain";
+} from "@spitzli/mail-contracts/domain";
 export {
   TenantMailError,
   normalizeMailDomain,
-} from "@webdock/mail-contracts/domain";
-import type { DatabaseReader, SessionReference } from "@webdock/core/identity";
+} from "@spitzli/mail-contracts/domain";
+import type { DatabaseReader, SessionReference } from "@spitzli/core/identity";
 import type {
   MailAccountProvider,
   MailProviderAccount,

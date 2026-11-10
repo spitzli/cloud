@@ -4,7 +4,7 @@ import {
   HostingError,
   type SetupConfiguration,
   type EnvironmentPatch,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { SetupRow } from "./project-setup";
 import type { Connection } from "./authorization";
 export type Dependencies = {

@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { DatabaseReader } from "@webdock/core/identity";
+import type { DatabaseReader } from "@spitzli/core/identity";
 import {
   setupConfigurationSchema,
   type HostingActor,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import {
   createHostingProjectSetup,
   type SetupRow,

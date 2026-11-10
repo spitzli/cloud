@@ -1,7 +1,7 @@
 import type {
   SetupConfiguration,
   SetupState,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export function setupStage(state: SetupState) {
   return state === "draft"
     ? "edit"

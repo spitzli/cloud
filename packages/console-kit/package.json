@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/console-kit",
+  "name": "@spitzli/console-kit",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
     "./resource-scope": "./src/resource-scope.ts"
   },
   "dependencies": {
-    "@webdock/i18n": "*",
-    "@webdock/search": "*"
+    "@spitzli/i18n": "*",
+    "@spitzli/search": "*"
   },
   "peerDependencies": {
     "next": ">=16",

@@ -1,6 +1,6 @@
 type JSONValue =
   null | boolean | number | string | JSONValue[] | { [key: string]: JSONValue };
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 export type ReadCachedView = <T>(
   options: {
     kind:

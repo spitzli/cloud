@@ -40,7 +40,7 @@ test("unit switching preserves the exact resource allocation", () => {
 });
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { I18nProvider } from "@webdock/i18n/react";
+import { I18nProvider } from "@spitzli/i18n/react";
 import { ResourceField } from "./resource-field";
 test("German resource fields submit exact values while showing a separate unit selector", () => {
   const html = renderToStaticMarkup(

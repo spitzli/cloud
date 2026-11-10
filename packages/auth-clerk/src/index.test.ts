@@ -7,8 +7,8 @@ import {
   type ClerkClaims,
   type ClerkMappings,
 } from "./index";
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
-import type { DatabaseReader, IdentityDirectory } from "@webdock/core/identity";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
+import type { DatabaseReader, IdentityDirectory } from "@spitzli/core/identity";
 const now = 2_000_000;
 const config = {
   provider: "clerk" as const,

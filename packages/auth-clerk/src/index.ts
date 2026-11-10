@@ -1,4 +1,4 @@
-import type { AuthProviderConfiguration } from "@webdock/auth-configuration";
+import type { AuthProviderConfiguration } from "@spitzli/auth-configuration";
 import type {
   DatabaseReader,
   IdentityDirectory,
@@ -6,7 +6,7 @@ import type {
   LocalIdentity,
   SessionAuthenticator,
   SessionReference,
-} from "@webdock/core/identity";
+} from "@spitzli/core/identity";
 export type ClerkConfiguration = Extract<
   AuthProviderConfiguration,
   { provider: "clerk" }

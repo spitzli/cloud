@@ -1,5 +1,5 @@
 import type { Pool } from "pg";
-import type { IdentityDirectory, SessionReference } from "@webdock/core/identity";
+import type { IdentityDirectory, SessionReference } from "@spitzli/core/identity";
 export type StorageInventoryOptions = {
   token: string;
   prefix: string;

@@ -1,1 +1,1 @@
-export * from "@webdock/module-mail/server/outbox";
+export * from "@spitzli/module-mail/server/outbox";

@@ -1,4 +1,4 @@
-import type { EventType } from "@webdock/mail-contracts";
+import type { EventType } from "@spitzli/mail-contracts";
 export type RecipientState = {
   delivery:
     "pending" | "deferred" | "delivered" | "bounced" | "failed" | "suppressed";

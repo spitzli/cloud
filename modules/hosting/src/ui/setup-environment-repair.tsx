@@ -3,9 +3,9 @@ import * as React from "react";
 import type { ComponentProps } from "react";
 import { hostingUIScope } from "./scope";
 import { useActionState, useMemo, useState } from "react";
-import { useI18n } from "@webdock/i18n/react";
-import type { SetupView } from "@webdock/hosting-contracts";
-import { useUnsavedChanges } from "@webdock/console-kit/use-unsaved-changes";
+import { useI18n } from "@spitzli/i18n/react";
+import type { SetupView } from "@spitzli/hosting-contracts";
+import { useUnsavedChanges } from "@spitzli/console-kit/use-unsaved-changes";
 import { ApplicationEnvironment } from "./environment";
 import {
   HostingDirtyContext,

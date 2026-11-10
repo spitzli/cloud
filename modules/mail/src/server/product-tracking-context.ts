@@ -9,8 +9,8 @@ type Dependencies = {
     headers: Headers,
     customerID: string,
     connectionID: string,
-    capability: import("@webdock/mail-contracts").MailCapability,
-  ) => Promise<import("@webdock/mail-contracts").MailActor>;
+    capability: import("@spitzli/mail-contracts").MailCapability,
+  ) => Promise<import("@spitzli/mail-contracts").MailActor>;
   assertMailAccess: MailProductStore["assertMailAccess"];
   mailManagementHeaders: ReturnType<
     typeof import("./provider-credentials").createMailCredentials

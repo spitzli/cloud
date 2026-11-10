@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/auth-configuration",
+  "name": "@spitzli/auth-configuration",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,9 +9,9 @@
     "./protocols": "./src/protocols.ts"
   },
   "dependencies": {
-    "@webdock/core": "*",
-    "@webdock/auth-clerk": "*",
-    "@webdock/auth-better-auth": "*"
+    "@spitzli/core": "*",
+    "@spitzli/auth-clerk": "*",
+    "@spitzli/auth-better-auth": "*"
   },
   "license": "Apache-2.0"
 }

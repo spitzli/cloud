@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { DatabaseReader } from "@webdock/core/identity";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { DatabaseReader } from "@spitzli/core/identity";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 import { createHostingSetupSource } from "../src/server/setup-source.ts";
 const actor: HostingActor = {
   subject: "123",

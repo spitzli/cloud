@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
-import type { DatabaseReader, SessionReference } from "@webdock/core/identity";
-import type { ClusterObservation } from "@webdock/hosting-contracts";
+import type { DatabaseReader, SessionReference } from "@spitzli/core/identity";
+import type { ClusterObservation } from "@spitzli/hosting-contracts";
 import type { MailCredentialMaster, MailSecrets } from "./provider-ports";
 export type Connection = DatabaseReader;
 export type Agent = {

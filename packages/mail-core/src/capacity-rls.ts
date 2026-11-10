@@ -1,1 +1,1 @@
-export * from "@webdock/module-mail/server/capacity-rls";
+export * from "@spitzli/module-mail/server/capacity-rls";

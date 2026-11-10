@@ -2,9 +2,9 @@ import * as React from "react";
 import { SetupEnvironmentRepair } from "./setup-environment-repair";
 import Link from "next/link";
 import { randomUUID } from "node:crypto";
-import { getRequestI18n } from "@webdock/i18n/next";
-import { msgid } from "@webdock/i18n";
-import type { SetupView } from "@webdock/hosting-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import { msgid } from "@spitzli/i18n";
+import type { SetupView } from "@spitzli/hosting-contracts";
 import { HostingRefresh } from "./refresh";
 import { HostingForm } from "./form";
 const labels = {

@@ -8,8 +8,8 @@ import React, {
   useCallback,
   type ComponentType,
 } from "react";
-import { msgid } from "@webdock/i18n";
-import { I18nProvider, useI18n } from "@webdock/i18n/react";
+import { msgid } from "@spitzli/i18n";
+import { I18nProvider, useI18n } from "@spitzli/i18n/react";
 import { defaultData, editorData } from "./schema";
 import type {
   CMSAppProps,

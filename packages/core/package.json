@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/core",
+  "name": "@spitzli/core",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -19,7 +19,7 @@
     "@types/pg": "^8"
   },
   "dependencies": {
-    "@webdock/platform-db": "*",
+    "@spitzli/platform-db": "*",
     "drizzle-orm": "1.0.0-rc.4",
     "zod": "4.6.5",
     "bullmq": "6.3.16",

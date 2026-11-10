@@ -1,1 +1,1 @@
-export { assertMailCanDisable } from "@webdock/database-runtime";
+export { assertMailCanDisable } from "@spitzli/database-runtime";

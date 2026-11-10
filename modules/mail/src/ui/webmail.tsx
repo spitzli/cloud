@@ -6,7 +6,7 @@ import {
   useState,
   type FormEvent,
 } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import type { WebmailLaunchAction } from "./types";
 import { MessageHTML } from "./message-html";
 

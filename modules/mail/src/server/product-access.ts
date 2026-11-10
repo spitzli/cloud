@@ -1,13 +1,13 @@
-import type { MailActor, MailCapability } from "@webdock/mail-contracts";
-import { parseID } from "@webdock/mail-contracts/validation";
-import { MailError } from "@webdock/mail-contracts/errors";
+import type { MailActor, MailCapability } from "@spitzli/mail-contracts";
+import { parseID } from "@spitzli/mail-contracts/validation";
+import { MailError } from "@spitzli/mail-contracts/errors";
 import {
   activeIdentity,
   type IdentityDirectory,
   type DatabaseReader,
   type SessionReference,
-} from "@webdock/core/identity";
-export { MailError } from "@webdock/mail-contracts/errors";
+} from "@spitzli/core/identity";
+export { MailError } from "@spitzli/mail-contracts/errors";
 export function mailUnavailable(): never {
   throw new MailError(404, "not_found", "Mail resource unavailable");
 }

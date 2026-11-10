@@ -1,5 +1,5 @@
 "use client";
-import { useModule } from "@webdock/module-sdk/react";
+import { useModule } from "@spitzli/module-sdk/react";
 import { mailNavigation } from "./navigation";
 /** Derived per render: changing tenant or integration cannot retain another tenant's links. */
 export function useMailNavigation(

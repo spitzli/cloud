@@ -2,8 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { ModuleProvider } from "@webdock/module-sdk/react";
-import { I18nProvider } from "@webdock/i18n/react";
+import { ModuleProvider } from "@spitzli/module-sdk/react";
+import { I18nProvider } from "@spitzli/i18n/react";
 import { StorageConnections } from "../src/ui/connections";
 test("disabled storage renders no controls; draining retains refresh/removal without collecting credentials", () => {
   for (const state of ["disabled", "draining", "enabled"] as const) {

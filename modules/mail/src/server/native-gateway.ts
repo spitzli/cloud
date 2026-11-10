@@ -1,8 +1,8 @@
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { MailServiceError } from "./instances";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import { reserveWriteSchema, finishWriteSchema } from "./native-writes";
 import { nativeKeyToken } from "./native-keys";
 import {

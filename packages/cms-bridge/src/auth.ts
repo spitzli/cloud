@@ -1,5 +1,5 @@
 import { createHash, timingSafeEqual } from "node:crypto";
-import { intersectRoles } from "@webdock/payload-sso";
+import { intersectRoles } from "@spitzli/payload-sso";
 import type { Payload } from "payload";
 import type { BridgeScope, BridgeRole } from "./types.ts";
 export class BridgeError extends Error {

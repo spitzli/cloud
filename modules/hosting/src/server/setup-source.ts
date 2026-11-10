@@ -1,11 +1,11 @@
-import type { DatabaseServices } from "@webdock/database-contracts/runtime-ports";
+import type { DatabaseServices } from "@spitzli/database-contracts/runtime-ports";
 import type { HostingPorts } from "./ports";
 import { inspectRepositoryFiles } from "./setup-inspection";
 import {
   HostingError,
   setupCommandSchema,
   type HostingActor,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { limits } from "./allowances";
 export type Dependencies = {
   setupProductAvailable: HostingPorts["setupProductAvailable"];

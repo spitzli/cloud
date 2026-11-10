@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { betterAuthIdentity, createBetterAuthAuthenticator } from "./index.ts";
-import type { DatabaseReader } from "@webdock/core/identity";
+import type { DatabaseReader } from "@spitzli/core/identity";
 function reader(rows: unknown[][]) {
   const calls: { sql: string; values: unknown }[] = [];
   const db = {

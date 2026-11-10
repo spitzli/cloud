@@ -1,6 +1,6 @@
 import * as React from "react";
-import { getRequestI18n } from "@webdock/i18n/next";
-import { WorkspaceContext } from "@webdock/console-kit/workspace-context";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import { WorkspaceContext } from "@spitzli/console-kit/workspace-context";
 import type { HostingUIServices } from "./services";
 export function createProjectContextView(
   services: Pick<HostingUIServices, "getHostingProject" | "AreaNavigation">,

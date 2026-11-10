@@ -1,7 +1,7 @@
 import type { MailFetch } from "./provider-ports";
 import { randomBytes, randomUUID } from "node:crypto";
-import type { MailActor } from "@webdock/mail-contracts";
-import { parseID } from "@webdock/mail-contracts/validation";
+import type { MailActor } from "@spitzli/mail-contracts";
+import { parseID } from "@spitzli/mail-contracts/validation";
 import { normalizeMailDomain } from "./tenant-mail";
 import { lookupMailTxt, planMailRecords } from "./mail-dns";
 import { mailUnavailable, MailError } from "./product-access";

@@ -1,8 +1,8 @@
 import * as React from "react";
-import { filterRows } from "@webdock/search";
-import { LiveSearchForm } from "@webdock/search/form";
+import { filterRows } from "@spitzli/search";
+import { LiveSearchForm } from "@spitzli/search/form";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { HostingForm } from "./form";
 import { HostingTable } from "./table";
 import type { HostingUIServices } from "./services";

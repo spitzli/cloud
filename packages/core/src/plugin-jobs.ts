@@ -385,4 +385,4 @@ export function createPluginJobs(options: {
   };
 }
 
-export { readJobQueueConfiguration } from "@webdock/core/jobs";
+export { readJobQueueConfiguration } from "@spitzli/core/jobs";

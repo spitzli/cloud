@@ -5,7 +5,7 @@ import type {
   IdentityDirectory,
   SessionIdentity,
   TenantMembership,
-} from "@webdock/core/identity";
+} from "@spitzli/core/identity";
 import { createNativeMailAuthorization } from "../src/server/native-access.ts";
 import { createMailAuthorization } from "../src/server/product-access.ts";
 function fixture() {
