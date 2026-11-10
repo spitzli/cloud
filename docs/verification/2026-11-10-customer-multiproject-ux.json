@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-10",
+  "scope": "Customer multi-project Console navigation and responsive resource lists",
+  "baseCommit": "5c9f198d9c9b3bc113714da8bd544203736bec46",
+  "checks": {
+    "customerRoutes": 18,
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewportWidths": [
+      320,
+      375,
+      414,
+      768,
+      1280
+    ],
+    "routeThemeViewportChecks": 180,
+    "customerJourneyGroups": 9,
+    "existingBrowserSuites": 28,
+    "componentTests": 251,
+    "componentTestFiles": 41,
+    "typescript": "passed",
+    "eslint": "passed",
+    "compiledGermanCatalog": "passed",
+    "build": "passed"
+  },
+  "behaviour": [
+    "Customers can search projects within their current workspace and switch workspaces",
+    "The header identifies the actual project and links back from resource views",
+    "Resource lists filter by name and project; creation starts with the selected eligible project",
+    "Narrow screens stack resource rows and preserve independent project links",
+    "Resource-inventory failures affect only the corresponding project card",
+    "Reopening the project form clears the prior mutation failure"
+  ],
+  "fixtures": {
+    "transport": "loopback HTTP server",
+    "syntheticWorkspaces": 2,
+    "initialProjects": 4,
+    "roles": [
+      "owner",
+      "member"
+    ],
+    "externalRequests": 0,
+    "pageErrors": 0,
+    "productionBundleContainsFixture": false
+  },
+  "review": {
+    "kind": "self-review",
+    "independent": false
+  },
+  "limitations": [
+    "Synthetic UI acceptance, not live auth/provider or full-platform E2E acceptance",
+    "No database, credential, runtime flag or Core deployment changes"
+  ],
+  "protectedMainCheckout": "HEAD, index, status, tracked diff and 66 protected file hashes unchanged"
+}

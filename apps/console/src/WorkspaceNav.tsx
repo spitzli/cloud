@@ -9,7 +9,7 @@ import { GaugeIcon } from "@phosphor-icons/react/dist/csr/Gauge";
 import { GlobeIcon } from "@phosphor-icons/react/dist/csr/Globe";
 import { KeyIcon } from "@phosphor-icons/react/dist/csr/Key";
 import { useApi, useSession } from "./context";
-import { databasePlugin, pluginNav, useWorkspacePlugins } from "./plugins/workspace";
+import { databasePlugin, pluginNav, useWorkspacePlugins, useWorkspaceProjects } from "./plugins/workspace";
 
 
 export function useTenants() {
@@ -38,10 +38,15 @@ export function useWorkspaceHeader(pathname: string) {
   const { t } = useI18n();
   const tenants = useTenants();
   const customer = workspaceOf(pathname) ?? /^\/tenants\/([1-9][0-9]{0,18})$/.exec(pathname)?.[1];
+  const projects = useWorkspaceProjects(customer);
   if (!customer) return null;
   const tenant = tenants.data?.find((t) => t.id === customer);
   const name = tenant?.name ?? "Workspace";
-  return { customer, icon: tenant?.icon, label: name, detail: tenant?.role ?? "Customer workspace", crumbs: [name, pathname.endsWith("/connections") ? t("Connections") : section(pathname) === "Databases" ? t("Databases") : section(pathname)] };
+  const projectID = /^\/workspaces\/[^/]+\/projects\/([^/]+)/.exec(pathname)?.[1];
+  const project = projects.data?.find(project => project.id === projectID);
+  const currentSection = pathname.endsWith("/connections") ? t("Connections") : section(pathname) === "Databases" ? t("Databases") : section(pathname);
+  const crumbs = project ? [name, project.name, ...(pathname.includes("/resources/") ? [currentSection] : [])] : [name, currentSection];
+  return { customer, project, icon: tenant?.icon, label: name, detail: tenant?.role ?? "Customer workspace", crumbs };
 }
 
 /** Sidebar of one workspace: overview, one entry per product the viewer can see, members. */

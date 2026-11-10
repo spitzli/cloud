@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Spitzli Cloud\n"
+"PO-Revision-Date: 2026-11-10 00:00+0000\n"
+"Last-Translator: Spitzli Development\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Find a workspace or project"
+msgstr "Workspace oder Projekt finden"
+
+msgid "Search workspaces and projects"
+msgstr "Workspaces und Projekte suchen"
+
+msgid "Search workspaces and projects…"
+msgstr "Workspaces und Projekte suchen…"
+
+msgid "No matching workspaces or projects"
+msgstr "Keine passenden Workspaces oder Projekte"
+
+msgid "Try another name or open all workspaces."
+msgstr "Versuche einen anderen Namen oder öffne alle Workspaces."
+
+msgid "Search resources"
+msgstr "Ressourcen suchen"
+
+msgid "Search resources…"
+msgstr "Ressourcen suchen…"
+
+msgid "Filter by project"
+msgstr "Nach Projekt filtern"
+
+msgid "All projects"
+msgstr "Alle Projekte"
+
+msgid "No matching resources"
+msgstr "Keine passenden Ressourcen"
+
+msgid "Try another name or project."
+msgstr "Versuche einen anderen Namen oder ein anderes Projekt."
+
+msgid "Clear filters"
+msgstr "Filter zurücksetzen"

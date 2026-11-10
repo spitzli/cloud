@@ -32,6 +32,7 @@ import { isReadOnlyPreview, listSchema, recordSchema, type Session } from "./api
 import { useMailWorkspace } from "./mail-client";
 import { useHostingContext } from "./hosting-context";
 import * as ui from "./ui";
+import { useWorkspaceProjects } from "./plugins/workspace";
 import { WorkspaceNav, useTenants, useWorkspaceHeader } from "./WorkspaceNav";
 const crumbSeparator = "select-none px-1.5 text-[22px] font-light text-outline-strong";
 const paletteItem =
@@ -67,7 +68,7 @@ export function Shell() {
   const session = useSession();
   const navigationCopy = session.user.role === "operator"
     ? { section: "Workspace", switch: "Switch customer or project", search: "Find a project or customer" }
-    : { section: "Switch", switch: "Switch workspace", search: "Find a workspace" };
+    : { section: "Switch", switch: "Switch workspace", search: t("Find a workspace or project") };
   const api = useApi();
   const queryClient = useQueryClient();
   const pathname = useRouterState({
@@ -341,9 +342,7 @@ export function Shell() {
                 <span className={`${crumbSeparator} max-md:hidden`} aria-hidden>
                   /
                 </span>
-                <span className="min-w-0 truncate max-md:hidden" title={label}>
-                  {label}
-                </span>
+                <BreadcrumbLabel header={header} index={index} pathname={pathname} label={label} />
               </Fragment>
             ))}
         </nav>
@@ -432,7 +431,7 @@ export function Shell() {
         </Modal>
       ) : null}
       {palette ? (
-        <CommandPalette
+        <CommandPalette customer={workspaceNav}
           close={() => {
             setPalette(false);
           }}
@@ -441,7 +440,17 @@ export function Shell() {
     </div>
   );
 }
-function CommandPalette({ close }: { close: () => void }) {
+function BreadcrumbLabel({ header, index, pathname, label }: { header: ReturnType<typeof useWorkspaceHeader>; index: number; pathname: string; label: string }) {
+  const style = "min-w-0 truncate max-md:hidden";
+  if (header?.project && index === 0 && pathname.includes("/resources/")) return <Link
+    to="/workspaces/$customer/projects/$id" params={{ customer: header.customer, id: header.project.id }}
+    className={style} title={label}
+  >{label}</Link>;
+  return <span className={style} title={label}>{label}</span>;
+}
+
+function CommandPalette({ close, customer }: { close: () => void; customer: string | undefined }) {
+  const { t } = useI18n();
   const api = useApi();
   const session = useSession();
   const navigate = useNavigate();
@@ -485,8 +494,8 @@ function CommandPalette({ close }: { close: () => void }) {
         <input
           className={ui.cx(`${ui.input} pl-9`)}
           ref={searchInput}
-          aria-label={session.user.role === "operator" ? "Search projects and customers" : "Search your workspaces"}
-          placeholder={session.user.role === "operator" ? "Search by name…" : "Search your workspaces…"}
+          aria-label={session.user.role === "operator" ? "Search projects and customers" : t("Search workspaces and projects")}
+          placeholder={session.user.role === "operator" ? "Search by name…" : t("Search workspaces and projects…")}
           value={text}
           maxLength={160}
           onChange={(event) => {
@@ -496,7 +505,7 @@ function CommandPalette({ close }: { close: () => void }) {
       </label>
       <div className="mt-3 max-h-[55dvh] overflow-y-auto">
         {session.user.role !== "operator" ? (
-          <WorkspaceChoices search={text} close={close} />
+          <WorkspaceChoices customer={customer} search={text} close={close} />
         ) : search.length >= 2 ? (
           results.isPending ? (
             <Loading>Searching…</Loading>
@@ -573,14 +582,29 @@ function CommandPalette({ close }: { close: () => void }) {
   );
 }
 
-function WorkspaceChoices({ search, close }: { search: string; close: () => void }) {
+function WorkspaceChoices({ search, close, customer }: { search: string; close: () => void; customer: string | undefined }) {
+  const { t } = useI18n();
+  const projects = useWorkspaceProjects(customer);
   const tenants = useTenants();
   const navigate = useNavigate();
   if (tenants.isPending) return <Loading>Loading workspaces…</Loading>;
   if (tenants.isError) return <Failure error={tenants.error} retry={() => void tenants.refetch()} />;
-  const matches = tenants.data.filter((tenant) => tenant.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()));
+  const term = search.trim().toLocaleLowerCase();
+  const matches = tenants.data.filter(tenant => tenant.name.toLocaleLowerCase().includes(term));
+  const matchingProjects = (projects.data ?? []).filter(project => project.name.toLocaleLowerCase().includes(term));
+  const workspace = tenants.data.find(tenant => tenant.id === customer);
   return <>
-    {matches.length ? matches.map((tenant) => (
+    {matchingProjects.length ? <div role="group" aria-label={t("Projects")}>
+      <p className="px-3 py-2 text-xs text-muted">{t("Projects")} · {workspace?.name}</p>
+      {matchingProjects.map(project => <button key={project.id} className={paletteItem} onClick={() => {
+        void navigate({ to: "/workspaces/$customer/projects/$id", params: { customer: customer ?? "", id: project.id } });
+        close();
+      }}><FolderSimpleIcon size={20} className="shrink-0" aria-hidden /><span className="min-w-0 [overflow-wrap:anywhere]">{project.name}</span></button>)}
+    </div> : null}
+    {customer && projects.isPending ? <Loading>{t("Loading projects…")}</Loading> : null}
+    {projects.isError ? <Failure error={projects.error} retry={() => void projects.refetch()} /> : null}
+    {matches.length ? <p className="px-3 py-2 text-xs text-muted">{t("Workspaces")}</p> : null}
+    {matches.map((tenant) => (
       <button key={tenant.id} className={paletteItem} onClick={() => {
         void navigate({ to: "/workspaces/$id", params: { id: tenant.id } });
         close();
@@ -588,7 +612,8 @@ function WorkspaceChoices({ search, close }: { search: string; close: () => void
         <WorkspaceAvatar name={tenant.name} icon={tenant.icon} size="size-6 text-xs" />
         <span className="min-w-0 [overflow-wrap:anywhere]">{tenant.name}</span>
       </button>
-    )) : <Empty title="No workspaces found">Try another name or open all workspaces.</Empty>}
+    ))}
+    {!matches.length && !matchingProjects.length && !projects.isError && !projects.isFetching ? <Empty title={t("No matching workspaces or projects")}>{t("Try another name or open all workspaces.")}</Empty> : null}
     <button className={paletteItem} onClick={() => {
       void navigate({ to: "/$collection", params: { collection: "tenants" } });
       close();
