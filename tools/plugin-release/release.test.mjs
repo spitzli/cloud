@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { generateKeyPairSync, sign } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { finalizeManifest, verifyIntegrity, publishRequest, strictJSON, validateTrust, validatePreflight } from './release.mjs';
 
 process.env.PLUGIN_VALIDATOR_MANIFEST = new URL('../plugin-registry/manifest-validator/Cargo.toml', import.meta.url).pathname;
@@ -92,6 +93,15 @@ test('CLI finalizes exact assets and refuses zero digest without publishing or l
     await writeFile(join(root, 'src/main.rs'), 'fn main() {}\n');
     await writeFile(join(root, 'Cargo.toml'), '[package]\nname="release-fixture"\nversion="' + fixture.version + '"\nedition="2024"\n[workspace]\n');
     await writeFile(join(root, 'Dockerfile'), 'FROM oven/bun:1.4.3@sha256:' + digest + '\n');
+    // Cargo selects its compiler from cwd, including in each real CLI child.
+    await writeFile(join(root, 'rust-toolchain.toml'), await readFile(new URL('../../rust-toolchain.toml', import.meta.url)));
+    const compiler = cwd => spawnSync('rustc', ['--version'], { cwd, encoding: 'utf8', timeout: 10000 });
+    const expectedCompiler = compiler(fileURLToPath(new URL('../../', import.meta.url)));
+    const fixtureCompiler = compiler(root);
+    assert.equal(expectedCompiler.status, 0);
+    assert.equal(fixtureCompiler.status, 0);
+    assert.equal(fixtureCompiler.stdout, expectedCompiler.stdout);
+
     assert.equal(spawnSync('cargo', ['generate-lockfile', '--offline'], { cwd: root, timeout: 10000 }).status, 0);
     const authoring = run(['validate']);
     assert.equal(authoring.status, 0, authoring.stderr);

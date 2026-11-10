@@ -184,5 +184,22 @@
       "profile": "same zero-debug/incremental-disabled/shared-target settings as CI",
       "bunNodeTimeoutAndSubprocessApiChecksPassed": 2
     }
+  },
+  "ciToolchainContextFollowup": {
+    "failedHead": "0ad1c3d50dc598735fc08a5e0512a0c5f1b2dcc6",
+    "job": "https://github.com/spitzli/cloud/actions/runs/42896265373/job/130110075565",
+    "runner": "blacksmith-4vcpu-ubuntu-2404-btwkq2s2kdsdmb2p",
+    "failure": "The first validate CLI subprocess timed out, despite a successful validator prebuild",
+    "controlledReproduction": {
+      "isolatedHostDefault": "1.99.0",
+      "repositoryPin": "1.98.1",
+      "beforeFix": "Same authoring subprocess timeout reproduced at ten seconds",
+      "afterFixReleaseTestsPassed": 11,
+      "isolatedRustupHome": true,
+      "globalDefaultsChanged": false
+    },
+    "fix": "Copy the repository rust-toolchain.toml into the independent CLI fixture before Cargo runs; assert actual fixture/repository compiler versions match",
+    "runtimeCodeChanged": false,
+    "budgetNote": "The previous time-budget fix bounded the failure; matching the compiler context addresses the reproduced rebuild condition"
   }
 }
