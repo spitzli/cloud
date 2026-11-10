@@ -11,7 +11,7 @@ pub fn database_url(database: &str) -> String {
                 .all(|b| b.is_ascii_alphanumeric() || b == b'_')
     );
     let path = std::path::PathBuf::from(
-        std::env::var_os("WEBDOCK_OBJECT_STORAGE_POSTGRES_CONFIG")
+        std::env::var_os("SPITZLI_OBJECT_STORAGE_POSTGRES_CONFIG")
             .expect("run fixtures/postgres.py"),
     );
     let config: Value = serde_json::from_slice(

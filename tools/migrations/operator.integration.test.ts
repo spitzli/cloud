@@ -17,7 +17,7 @@ import { startOperatorSetup } from "./operator-setup";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 test(
   "initial operator bootstrap plus real MFA/PKCE and composed core API with all products disabled",
-  { skip: process.env.WEBDOCK_TEST_OPERATOR !== "true", timeout: process.env.WEBDOCK_OPERATOR_BROWSER_HANDOFF ? 600000 : 180000 },
+  { skip: process.env.SPITZLI_TEST_OPERATOR !== "true", timeout: process.env.SPITZLI_OPERATOR_BROWSER_HANDOFF ? 600000 : 180000 },
   async () => {
     const endpoint = execFileSync(
       "docker",
@@ -78,8 +78,8 @@ test(
         DATABASE_URL_UNPOOLED: url.href,
         DATABASE_CONTEXT_SECRET: randomBytes(48).toString("hex"),
         BETTER_AUTH_URL: "https://auth.example.test",
-        WEBDOCK_STUDIO_ORIGIN: "https://studio.example.test",
-        WEBDOCK_CONSOLE_ORIGIN: "https://console.example.test",
+        SPITZLI_STUDIO_ORIGIN: "https://studio.example.test",
+        SPITZLI_CONSOLE_ORIGIN: "https://console.example.test",
       };
       const target = `127.0.0.1:${port}/webdock_operator_test`;
       const run = (
@@ -98,7 +98,7 @@ test(
         );
       const install = run("install.ts", [], {
         ...base,
-        WEBDOCK_BOOTSTRAP_EMPTY_DATABASE: "true",
+        SPITZLI_BOOTSTRAP_EMPTY_DATABASE: "true",
         MIGRATION_ROLE_PASSWORDS: JSON.stringify(passwords),
       });
       assert.equal(install.status, 0, install.stdout + install.stderr);
@@ -115,8 +115,8 @@ test(
           name: "Fixture operator",
           password: operatorPassword,
           authOrigin: base.BETTER_AUTH_URL,
-          studioOrigin: base.WEBDOCK_STUDIO_ORIGIN,
-          consoleOrigin: base.WEBDOCK_CONSOLE_ORIGIN,
+          studioOrigin: base.SPITZLI_STUDIO_ORIGIN,
+          consoleOrigin: base.SPITZLI_CONSOLE_ORIGIN,
         }),
         { mode: 0o600 },
       );
@@ -142,7 +142,7 @@ test(
       const setup = await startOperatorSetup({ env, target, destination: output });
       let browserResult = "";
       try {
-        const handoff = process.env.WEBDOCK_OPERATOR_BROWSER_HANDOFF;
+        const handoff = process.env.SPITZLI_OPERATOR_BROWSER_HANDOFF;
         if (handoff) {
           // Opt-in local browser proof. Capabilities and the disposable password stay in a private file.
           await writeFile(handoff, JSON.stringify({ url: setup.url + "/#" + setup.capability, email: "operator@example.test", name: "Fixture operator", password: operatorPassword }), { mode: 0o600, flag: "wx" });
@@ -169,7 +169,7 @@ test(
           !result.stderr.includes(operatorPassword),
       );
       assert.ok(
-        !result.stdout.includes(secrets.environment.WEBDOCK_SSO_CLIENT_SECRET),
+        !result.stdout.includes(secrets.environment.SPITZLI_SSO_CLIENT_SECRET),
       );
       const user = (
         await owner.query(
@@ -215,7 +215,7 @@ test(
       ).rows[0];
       assert.equal(
         client.clientSecret,
-        oauthSecretHash(secrets.environment.WEBDOCK_SSO_CLIENT_SECRET),
+        oauthSecretHash(secrets.environment.SPITZLI_SSO_CLIENT_SECRET),
       );
       assert.equal(client.requirePKCE, true);
       assert.deepEqual(client.redirectUris, [
@@ -259,7 +259,7 @@ test(
           env: {
             ...env,
             ...secrets.environment,
-            WEBDOCK_TEST_OPERATOR: "true",
+            SPITZLI_TEST_OPERATOR: "true",
             NODE_ENV: "development",
             AUTH_TEST_MAIL: "true",
             BETTER_AUTH_SECRET: randomBytes(48).toString("hex"),
@@ -267,9 +267,9 @@ test(
             AUTH_DATABASE_URL: roleURL("webdock_auth_bootstrap"),
             DATABASE_WORKER_URL: roleURL("webdock_worker_runtime"),
             REGISTRY_DATABASE_URL: roleURL("webdock_registry_runtime"),
-            WEBDOCK_API_ORIGIN: "https://api.example.test",
-            WEBDOCK_API_DOMAINS: "auth,portal,registry",
-            WEBDOCK_MODULES: JSON.stringify({ configVersion: 1, modules: {} }),
+            SPITZLI_API_ORIGIN: "https://api.example.test",
+            SPITZLI_API_DOMAINS: "auth,portal,registry",
+            SPITZLI_MODULES: JSON.stringify({ configVersion: 1, modules: {} }),
             DATABASE_RLS_SECRET: base.DATABASE_CONTEXT_SECRET,
             OPERATOR_TEST_PASSWORD: operatorPassword,
             OPERATOR_TEST_SUBJECT: secrets.operatorID,
@@ -288,12 +288,12 @@ test(
       inventoryOwner.password = password;
       const inventory = spawnSync(process.execPath, ["--no-env-file", "tools/migrations/core-inventory-fixture.ts"], {
         cwd: root, encoding: "utf8", env: {
-          ...env, ...secrets.environment, WEBDOCK_TEST_OPERATOR: "true", NODE_ENV: "development",
+          ...env, ...secrets.environment, SPITZLI_TEST_OPERATOR: "true", NODE_ENV: "development",
           BETTER_AUTH_SECRET: randomBytes(48).toString("hex"),
           CORE_INVENTORY_OWNER_URL: inventoryOwner.href,
           DATABASE_URL: roleURL("webdock_auth_runtime"), AUTH_DATABASE_URL: roleURL("webdock_auth_bootstrap"),
           DATABASE_WORKER_URL: roleURL("webdock_worker_runtime"), DATABASE_RLS_SECRET: base.DATABASE_CONTEXT_SECRET,
-          WEBDOCK_MODULES: JSON.stringify({configVersion:1,modules:{}}),
+          SPITZLI_MODULES: JSON.stringify({configVersion:1,modules:{}}),
         },
       });
       assert.equal(inventory.status, 0, inventory.stdout + inventory.stderr);
@@ -322,26 +322,26 @@ test(
           DATABASE_POOL_MAX: "2",
           REGISTRY_POOL_MAX: "2",
           DATABASE_RLS_SECRET: base.DATABASE_CONTEXT_SECRET,
-          WEBDOCK_API_ORIGIN: "https://api.example.test",
-          WEBDOCK_API_DOMAINS: "auth,portal,registry",
-          WEBDOCK_MODULES: JSON.stringify({ configVersion: 1, modules: {} }),
-          WEBDOCK_INGRESS_SECRET: ingressSecret,
-          WEBDOCK_TRUSTED_PROXIES: "127.0.0.1/32",
+          SPITZLI_API_ORIGIN: "https://api.example.test",
+          SPITZLI_API_DOMAINS: "auth,portal,registry",
+          SPITZLI_MODULES: JSON.stringify({ configVersion: 1, modules: {} }),
+          SPITZLI_INGRESS_SECRET: ingressSecret,
+          SPITZLI_TRUSTED_PROXIES: "127.0.0.1/32",
         };
         if (provider === "better-auth")
           runtimeEnv.BETTER_AUTH_SECRET = randomBytes(48).toString("hex");
         else {
           delete runtimeEnv.BETTER_AUTH_SECRET;
-          runtimeEnv.WEBDOCK_AUTH_PROVIDER = JSON.stringify({
+          runtimeEnv.SPITZLI_AUTH_PROVIDER = JSON.stringify({
             provider: "clerk",
             issuer: "https://clerk.example.test",
-            authorizedParties: [base.WEBDOCK_CONSOLE_ORIGIN],
+            authorizedParties: [base.SPITZLI_CONSOLE_ORIGIN],
             audience: "webdock-console",
           });
-          runtimeEnv.WEBDOCK_OAUTH_PROVIDER = "disabled";
+          runtimeEnv.SPITZLI_OAUTH_PROVIDER = "disabled";
           runtimeEnv.CLERK_SECRET_KEY =
             "sk_test_" + randomBytes(24).toString("hex");
-          runtimeEnv.WEBDOCK_CONSOLE_SERVICE_KEY =
+          runtimeEnv.SPITZLI_CONSOLE_SERVICE_KEY =
             randomBytes(48).toString("hex");
         }
         const child = spawn(

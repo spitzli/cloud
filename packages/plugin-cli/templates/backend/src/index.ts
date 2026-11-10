@@ -15,11 +15,11 @@ export function processJob(payload: unknown) {
     sha256: createHash("sha256").update(payload.message).digest("hex"),
   };
 }
-const runtimeToken = process.env.WEBDOCK_PLUGIN_RUNTIME_TOKEN;
+const runtimeToken = process.env.SPITZLI_PLUGIN_RUNTIME_TOKEN;
 if (!runtimeToken || runtimeToken.length < 32)
-  throw Error("Set WEBDOCK_PLUGIN_RUNTIME_TOKEN (32+ characters)");
-const hostURL = process.env.WEBDOCK_PLUGIN_HOST_URL;
-if (!hostURL) throw Error("Set WEBDOCK_PLUGIN_HOST_URL");
+  throw Error("Set SPITZLI_PLUGIN_RUNTIME_TOKEN (32+ characters)");
+const hostURL = process.env.SPITZLI_PLUGIN_HOST_URL;
+if (!hostURL) throw Error("Set SPITZLI_PLUGIN_HOST_URL");
 const server = createServer(async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   if (

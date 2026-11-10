@@ -18,17 +18,17 @@ concurrency:
   cancel-in-progress: false
 jobs:
   check:
-    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != '' && vars.WEBDOCK_BLACKSMITH_BUILDER_READY == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != '' && vars.SPITZLI_BLACKSMITH_BUILDER_READY == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 20
     env:
-      WEBDOCK_OCI_BACKEND: blacksmith-buildx
-      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+      SPITZLI_OCI_BACKEND: blacksmith-buildx
+      SPITZLI_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
     steps:
       - name: Require reviewed Blacksmith execution
         shell: bash
         env:
-          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
         run: |
           set -euo pipefail
           case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac
@@ -63,7 +63,7 @@ jobs:
           python3 scripts/plugin-release/build_oci.py --check < /dev/null
   image:
     needs: check
-    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != '' && vars.WEBDOCK_BLACKSMITH_BUILDER_READY == 'true' && (github.event_name == 'workflow_dispatch' && inputs.publish_image)
+    if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != '' && vars.SPITZLI_BLACKSMITH_BUILDER_READY == 'true' && (github.event_name == 'workflow_dispatch' && inputs.publish_image)
     environment: plugin-image-candidate
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 30
@@ -71,13 +71,13 @@ jobs:
       contents: read
       packages: write
     env:
-      WEBDOCK_OCI_BACKEND: blacksmith-buildx
-      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+      SPITZLI_OCI_BACKEND: blacksmith-buildx
+      SPITZLI_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
     steps:
       - name: Require reviewed Blacksmith execution
         shell: bash
         env:
-          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
         run: |
           set -euo pipefail
           case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac

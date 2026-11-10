@@ -119,7 +119,7 @@ class Fixture:
         return self.docker('exec', '-i', container, 'psql', '-X', '-q', '-A', '-t', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', database, data=sql.encode()).stdout
 
     def rust(self, name, url, pki, extra=None):
-        env={'WEBDOCK_MAIL_RECOVERY_TEST_URL':url, 'WEBDOCK_MAIL_RECOVERY_TEST_CA':str(pki/'ca.crt'), **(extra or {})}
+        env={'SPITZLI_MAIL_RECOVERY_TEST_URL':url, 'SPITZLI_MAIL_RECOVERY_TEST_CA':str(pki/'ca.crt'), **(extra or {})}
         self.command(['cargo','test','--manifest-path','plugins/mail/Cargo.toml','--locked','--test','recovery', name,'--','--ignored','--exact'], env=env, timeout=180)
 
     def encrypt(self, source, target, recipient):
@@ -194,7 +194,7 @@ def exercise(config_path, mc, uploader, executable):
             f.rust('cancelled_effect_cannot_be_mistaken_for_a_drained_transport',url(port,'mail_uncertain'),pki)
             f.report['checks'].append('private_gate_drain_stale_resume_restart_quarantine')
             key_material=p/'mail.key';key_material.write_text(secrets.token_hex(32));key_material.chmod(0o600)
-            reference=str(uuid.uuid4());extra={'WEBDOCK_MAIL_RECOVERY_KEY_FILE':str(key_material),'WEBDOCK_MAIL_RECOVERY_REFERENCE':reference}
+            reference=str(uuid.uuid4());extra={'SPITZLI_MAIL_RECOVERY_KEY_FILE':str(key_material),'SPITZLI_MAIL_RECOVERY_REFERENCE':reference}
             f.rust('private_snapshot_prepare',url(port,'mail_data'),pki,extra)
             f.report['mailSnapshotAt']=time.time()
             dump=p/'mail.dump';dump.write_bytes(f.docker('exec',source,'pg_dump','-U','postgres','-d','mail_data','--format=custom','--no-owner').stdout);dump.chmod(0o600)

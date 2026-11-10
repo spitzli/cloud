@@ -593,10 +593,10 @@ async fn paginated_inventory_and_mutations(
     Ok(())
 }
 #[tokio::test]
-#[ignore = "requires WEBDOCK_OBJECT_STORAGE_MINIO_CONFIG private file; only fresh owned fixture resources"]
+#[ignore = "requires SPITZLI_OBJECT_STORAGE_MINIO_CONFIG private file; only fresh owned fixture resources"]
 async fn real_minio_lifecycle_isolation_versions_multipart_retention_and_exact_cleanup() {
     let path = PathBuf::from(
-        std::env::var_os("WEBDOCK_OBJECT_STORAGE_MINIO_CONFIG")
+        std::env::var_os("SPITZLI_OBJECT_STORAGE_MINIO_CONFIG")
             .expect("private local config path required"),
     );
     let bytes = spitzli_plugin_kit::read_file(&path, true).expect("private config");
@@ -685,12 +685,12 @@ async fn real_minio_lifecycle_isolation_versions_multipart_retention_and_exact_c
 #[tokio::test]
 #[ignore = "explicit recovery of one exact private acceptance directory only"]
 async fn recover_exact_owned_fixture() {
-    let Some(path) = std::env::var_os("WEBDOCK_OBJECT_STORAGE_RECOVERY") else {
+    let Some(path) = std::env::var_os("SPITZLI_OBJECT_STORAGE_RECOVERY") else {
         return;
     };
     let path = PathBuf::from(path);
     let config = PathBuf::from(
-        std::env::var_os("WEBDOCK_OBJECT_STORAGE_MINIO_CONFIG").expect("private config"),
+        std::env::var_os("SPITZLI_OBJECT_STORAGE_MINIO_CONFIG").expect("private config"),
     );
     assert_eq!(path.parent(), config.parent());
     let bytes = spitzli_plugin_kit::read_file(&config, true).unwrap();

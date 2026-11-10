@@ -7,7 +7,7 @@ import { createServer } from "node:net";
 import { fileURLToPath } from "node:url";
 import { withDatabaseScope } from "@spitzli/database-runtime";
 const target = new URL(process.env.CORE_INVENTORY_OWNER_URL || "");
-if (process.env.WEBDOCK_TEST_OPERATOR !== "true" || target.hostname !== "127.0.0.1" || target.pathname !== "/webdock_operator_test") throw Error("Disposable operator inventory fixture required");
+if (process.env.SPITZLI_TEST_OPERATOR !== "true" || target.hostname !== "127.0.0.1" || target.pathname !== "/webdock_operator_test") throw Error("Disposable operator inventory fixture required");
 const { verifyModuleShutdown, assertCoreInventoryEmpty } = await import("../../legacy/control-plane/src/module-preflight");
 const { databasePools } = await import("../../legacy/control-plane/src/db/runtime");
 const owner = new Pool({connectionString:target.href,max:1});
@@ -29,7 +29,7 @@ try {
   await new Promise<void>(resolve=>reservation.close(()=>resolve()));
   const startup=spawnSync(process.execPath,["--no-env-file","legacy/control-plane/src/core.ts"],{
     cwd:fileURLToPath(new URL("../../",import.meta.url)),encoding:"utf8",timeout:10000,
-    env:{...process.env,PORT:String(startupPort),WEBDOCK_API_DOMAINS:"auth,portal,registry",WEBDOCK_API_ORIGIN:"https://api.example.test"},
+    env:{...process.env,PORT:String(startupPort),SPITZLI_API_DOMAINS:"auth,portal,registry",SPITZLI_API_ORIGIN:"https://api.example.test"},
   });
   assert.notEqual(startup.status,0);
   assert.match(startup.stderr,/Module storage retains resources/);

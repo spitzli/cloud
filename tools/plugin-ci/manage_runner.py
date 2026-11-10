@@ -14,7 +14,7 @@ REPOSITORIES=['cloud-plugin-'+name for name in ['archives','echo-demo','github-r
 SSH=['ssh','-i',str(Path.home()/'.ssh/id_ed25519'),'-o','IdentityAgent=none','-o','IdentitiesOnly=yes','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',HOST]
 CMS='cloud-plugin-managed-cms'
 GATE="github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository"
-RUNS_ON='${{ fromJSON(vars.WEBDOCK_PLUGIN_CI_RUNNER) }}'
+RUNS_ON='${{ fromJSON(vars.SPITZLI_PLUGIN_CI_RUNNER) }}'
 
 
 def api(path,method='GET',body=None):

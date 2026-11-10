@@ -57,7 +57,7 @@ def main(command=None, callback=None, registry=False):
     assert stat.S_ISREG(meta.st_mode) and meta.st_uid == os.getuid()
     assert meta.st_nlink == 1 and meta.st_mode & 0o077 == 0
     values = dict(line.split("=", 1) for line in credential_file.read_text().splitlines() if "=" in line)
-    endpoint = f"http://127.0.0.1:{int(os.environ.get('WEBDOCK_DEV_S3_PORT', '55900'))}"
+    endpoint = f"http://127.0.0.1:{int(os.environ.get('SPITZLI_DEV_S3_PORT', '55900'))}"
     parsed = urllib.parse.urlsplit(endpoint)
     user = urllib.parse.quote(values["MINIO_ROOT_USER"], safe="")
     password = urllib.parse.quote(values["MINIO_ROOT_PASSWORD"], safe="")
@@ -101,7 +101,7 @@ def main(command=None, callback=None, registry=False):
                 "credentials": {"accessKeyId": access, "secretAccessKey": secret}, "deniedBucket": denied_bucket,
             }))
             config.chmod(0o600)
-            run_environment = {**os.environ, "WEBDOCK_S3_TEST_CONFIG": str(config)}
+            run_environment = {**os.environ, "SPITZLI_S3_TEST_CONFIG": str(config)}
             if callback:
                 callback(config, mc, access)
             else:

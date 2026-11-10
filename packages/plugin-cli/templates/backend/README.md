@@ -25,7 +25,7 @@ The override also resolves the CLI's exact SDK dependency during local tarball t
 Remove this local-only override when switching to the published version. For a
 packed local CLI, invoke its `node_modules/.bin/spitzli-cloud` executable.
 
-Run with `WEBDOCK_PLUGIN_HOST_URL`, a 32+ character `WEBDOCK_PLUGIN_RUNTIME_TOKEN`, and optionally `PORT` (8080). Default bind address is loopback. The Dockerfile explicitly sets `HOST=0.0.0.0` for container networking. The runtime token is a local fixture transport secret; production invocations must use the host's short-lived invocation transport.
+Run with `SPITZLI_PLUGIN_HOST_URL`, a 32+ character `SPITZLI_PLUGIN_RUNTIME_TOKEN`, and optionally `PORT` (8080). Default bind address is loopback. The Dockerfile explicitly sets `HOST=0.0.0.0` for container networking. The runtime token is a local fixture transport secret; production invocations must use the host's short-lived invocation transport.
 
 `POST /webdock/actions` with `name: demo.enqueue`, `payload: {message: "hello"}` and an idempotency key schedules `demo.process`. It requires the runtime Bearer token plus `x-plugin-invocation` from the trusted host. The host dispatches the declared job via `/webdock/jobs`; the handler returns an uppercase message and SHA-256 without side effects. Repeated execution is safe.
 

@@ -52,7 +52,7 @@ def probe_script():
 
 def dockerfile():
     # Heredoc preserves command and quoted HTTP-request newlines within one RUN.
-    return f"FROM {IMAGE}\nUSER 1000:1000\nRUN <<'WEBDOCK_NETWORK_PROBE'\n" + probe_script() + 'WEBDOCK_NETWORK_PROBE\n'
+    return f"FROM {IMAGE}\nUSER 1000:1000\nRUN <<'SPITZLI_NETWORK_PROBE'\n" + probe_script() + 'SPITZLI_NETWORK_PROBE\n'
 
 
 

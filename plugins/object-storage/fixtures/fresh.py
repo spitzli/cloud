@@ -57,7 +57,7 @@ def run():
                         "--endpoint", endpoint, "--directory", str(directory)], cwd=ROOT, check=True)
         env.unlink()
         child_env = os.environ.copy()
-        child_env["WEBDOCK_OBJECT_STORAGE_MINIO_CONFIG"] = str(directory / "backend.json")
+        child_env["SPITZLI_OBJECT_STORAGE_MINIO_CONFIG"] = str(directory / "backend.json")
         subprocess.run(["python3", str(Path(__file__).with_name("postgres.py")), "--minio"], cwd=ROOT, env=child_env, check=True)
         label = docker("inspect", name, "--format", '{{index .Config.Labels "webdock.object-storage-fixture"}}')
         if label != name:

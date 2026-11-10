@@ -26,7 +26,7 @@ try {
   assert.ok(server);
   const port=await new Promise(resolvePort=>{const socket=createServer();socket.listen(0,'127.0.0.1',()=>{const port=socket.address().port;socket.close(()=>resolvePort(port));});});
   let logs='';
-  child=spawn(process.execPath,[server],{cwd:fixture,env:{...process.env,PORT:String(port),HOSTNAME:'127.0.0.1',NEXT_TELEMETRY_DISABLED:'1',WEBDOCK_AUTH_PROVIDER:JSON.stringify({provider:'better-auth'}),WEBDOCK_API_ORIGIN:'http://127.0.0.1:1'},stdio:['ignore','pipe','pipe']});
+  child=spawn(process.execPath,[server],{cwd:fixture,env:{...process.env,PORT:String(port),HOSTNAME:'127.0.0.1',NEXT_TELEMETRY_DISABLED:'1',SPITZLI_AUTH_PROVIDER:JSON.stringify({provider:'better-auth'}),SPITZLI_API_ORIGIN:'http://127.0.0.1:1'},stdio:['ignore','pipe','pipe']});
   child.stdout.on('data',data=>logs+=data);child.stderr.on('data',data=>logs+=data);
   const origin=`http://127.0.0.1:${port}`;
   let response;

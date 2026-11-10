@@ -18,12 +18,12 @@ import {
   verifyInvocation,
 } from "@spitzli/plugin-sdk/server";
 const env = parseEnv(
-  readFileSync(process.env.WEBDOCK_PLUGIN_TEST_ENV ?? "legacy/control-plane/.env.rls.test.local", "utf8"),
+  readFileSync(process.env.SPITZLI_PLUGIN_TEST_ENV ?? "legacy/control-plane/.env.rls.test.local", "utf8"),
 );
 const u = new URL(env.API_TEST_OWNER_URL!);
 if (u.hostname !== "127.0.0.1" || u.pathname !== "/webdock_rls_test")
   throw Error("Isolated fixture required");
-const fixture = JSON.parse(readFileSync(env.WEBDOCK_RLS_FIXTURE_FILE!, "utf8"));
+const fixture = JSON.parse(readFileSync(env.SPITZLI_RLS_FIXTURE_FILE!, "utf8"));
 Object.assign(process.env, {
   NODE_ENV: "development",
   DATABASE_URL: fixture.roles.webdock_auth_runtime,
@@ -98,7 +98,7 @@ const configuration = {
 writeFileSync(join(dir, "runtime.json"), JSON.stringify(configuration), {
   mode: 0o600,
 });
-process.env.WEBDOCK_PLUGIN_RUNTIME_FILE = join(dir, "runtime.json");
+process.env.SPITZLI_PLUGIN_RUNTIME_FILE = join(dir, "runtime.json");
 const runtime =
   await import("../../legacy/control-plane/src/modules/plugins/runtime");
 const manifest = JSON.parse(

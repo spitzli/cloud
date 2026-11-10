@@ -336,9 +336,9 @@ async function prepare(f) {
   const dbURL = (role, remote = false) => { const url = new URL(platform.url); url.username = role; url.password = role === 'postgres' ? new URL(platform.url).password : passwords[role]; url.hostname = remote ? platform.ip : '127.0.0.1'; url.port = String(remote ? 5432 : platform.port); url.searchParams.set('sslmode', 'verify-full'); url.searchParams.set('sslrootcert', join(platform.tls, 'ca.crt')); return url.href; };
   const ports = f.input.ports, platformID = 'mail-' + f.input.runID;
   const origins = fixtureOrigins(ports);
-  const env = { NODE_ENV: 'development', PORT: String(ports.core), WEBDOCK_BIND_ADDRESS: '127.0.0.1', WEBDOCK_API_ORIGIN: origins.core, WEBDOCK_AUTH_ORIGIN: origins.account, WEBDOCK_STUDIO_ORIGIN: origins.studio, WEBDOCK_CONSOLE_ORIGIN: origins.console, WEBDOCK_AUTH_SECRET: random(), DATABASE_RLS_SECRET: random(), DATABASE_CA_CERT: platform.ca, WEBDOCK_FEATURES: JSON.stringify({ hosting: 'disabled', databases: 'disabled', mail: 'disabled' }), WEBDOCK_WORKLOADS_ENABLED: 'true' };
+  const env = { NODE_ENV: 'development', PORT: String(ports.core), SPITZLI_BIND_ADDRESS: '127.0.0.1', SPITZLI_API_ORIGIN: origins.core, SPITZLI_AUTH_ORIGIN: origins.account, SPITZLI_STUDIO_ORIGIN: origins.studio, SPITZLI_CONSOLE_ORIGIN: origins.console, SPITZLI_AUTH_SECRET: random(), DATABASE_RLS_SECRET: random(), DATABASE_CA_CERT: platform.ca, SPITZLI_FEATURES: JSON.stringify({ hosting: 'disabled', databases: 'disabled', mail: 'disabled' }), SPITZLI_WORKLOADS_ENABLED: 'true' };
   const target = `127.0.0.1:${platform.port}/webdock_mail_fixture`;
-  await f.command(f.binary('spitzli-migrate'), ['--target', target, '--initialize-empty', '--provision-roles-from', f.path('roles.json')], { env: { ...env, WEBDOCK_MIGRATION_DATABASE_URL: dbURL('postgres') } });
+  await f.command(f.binary('spitzli-migrate'), ['--target', target, '--initialize-empty', '--provision-roles-from', f.path('roles.json')], { env: { ...env, SPITZLI_MIGRATION_DATABASE_URL: dbURL('postgres') } });
   const offline = { ...env, DATABASE_URL_UNPOOLED: dbURL('webdock_offline_migrate') };
   const operator = await f.write('operator-input.json', { email: `mail-${f.input.runID}@example.test`, name: 'Owned Mail operator', password: 'Owned-' + random() + '!', authOrigin: origins.account, studioOrigin: origins.studio, consoleOrigin: origins.console });
   await f.command(f.binary('spitzli-bootstrap-operator'), ['--target', target, '--config', operator, '--output', f.path('operator-output.json')], { env: offline });
@@ -350,9 +350,9 @@ async function prepare(f) {
   await f.write('kernel-input.json', { platformID, installationCatalog: catalog, callbackOrigin: `https://${callbackHost}:${ports.callback}`, listenAddress: `0.0.0.0:${ports.callback}` });
   await f.command(f.binary('spitzli-bootstrap-plugins'), ['--target', target, '--config', f.path('kernel-input.json'), '--output', f.path('kernel')], { env: offline });
   const kernel = f.path('kernel'), callbackName = 'wd-mail-callback-' + f.input.runID;
-  const callbackEnv = { ...env, ...((await f.json(f.path('operator-output.json'))).environment), WEBDOCK_NATIVE_PLUGIN_CONFIG: join(kernel, 'plugin-config.json') };
+  const callbackEnv = { ...env, ...((await f.json(f.path('operator-output.json'))).environment), SPITZLI_NATIVE_PLUGIN_CONFIG: join(kernel, 'plugin-config.json') };
   const ownEnv = { ...callbackEnv };
-  for (const [key, role] of [['WEBDOCK_DATABASE_URL', 'webdock_auth_bootstrap'], ['WEBDOCK_SESSION_DATABASE_URL', 'webdock_auth_runtime'], ['WEBDOCK_WORKER_DATABASE_URL', 'webdock_worker_runtime'], ['WEBDOCK_REGISTRY_DATABASE_URL', 'webdock_registry_runtime']]) { ownEnv[key] = dbURL(role); callbackEnv[key] = dbURL(role, true); }
+  for (const [key, role] of [['SPITZLI_DATABASE_URL', 'webdock_auth_bootstrap'], ['SPITZLI_SESSION_DATABASE_URL', 'webdock_auth_runtime'], ['SPITZLI_WORKER_DATABASE_URL', 'webdock_worker_runtime'], ['SPITZLI_REGISTRY_DATABASE_URL', 'webdock_registry_runtime']]) { ownEnv[key] = dbURL(role); callbackEnv[key] = dbURL(role, true); }
   const files = ['plugin-config.json', 'host-bindings.json', 'connections.json', 'invocation.key', 'core.crt', 'core.key', 'ca.crt'].map(name => join(kernel, name)); files.push(catalog, join(platform.tls, 'ca.crt'));
   const executable = f.binary('spitzli-plugin-control');
   const callback = await f.ownContainer(callbackName, ['--network', NETWORK, '--network-alias', callbackHost, '--user', `${process.getuid()}:${process.getgid()}`, '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', ...files.flatMap(path => ['--mount', `type=bind,source=${path},target=${path},readonly`]), '--mount', `type=bind,source=${executable},target=/reviewed-callback,readonly`, '--entrypoint', 'sh', artifact.baseImage, '-ec', 'exec sleep infinity']);
@@ -504,13 +504,13 @@ async function start(f) {
   await f.startProcess('controller', f.binary('spitzli-plugin-controller'), ['--config', join(kernel, 'plugin-config.json'), '--installation-config', f.report.paths.worker], env);
   await f.startProcess('agent', f.binary('spitzli-agent'), ['--config', f.report.paths.agent, 'run'], {});
   // Programmatic Vite with envDir:false prevents application .env discovery as well as Bun's loader.
-  await f.startProcess('console', f.binary('bun'), ['--no-env-file', fileURLToPath(import.meta.url), 'serve-ui', '--input', f.report.paths.input], { WEBDOCK_DEV_API_ORIGIN: env.WEBDOCK_API_ORIGIN, WEBDOCK_FIXTURE_UI_PARENT: String(process.pid) });
+  await f.startProcess('console', f.binary('bun'), ['--no-env-file', fileURLToPath(import.meta.url), 'serve-ui', '--input', f.report.paths.input], { SPITZLI_DEV_API_ORIGIN: env.SPITZLI_API_ORIGIN, SPITZLI_FIXTURE_UI_PARENT: String(process.pid) });
   await f.wait(async () => { try { return (await fetch(f.report.origins.core + '/healthz', { signal: AbortSignal.timeout(2000), redirect: 'error' })).ok; } catch { return false; } });
   for (const origin of [f.report.origins.console, f.report.origins.account]) await f.wait(async () => { try { return (await fetch(origin, { signal: AbortSignal.timeout(2000), redirect: 'error' })).ok; } catch { return false; } });
   for (const item of f.custody.entries.filter(e => e.kind === 'process' && e.status === 'owned')) assert.deepEqual(processIdentity(item.pid), { startTime: item.startTime, commandSha256: item.commandSha256 }, 'fixture_process_exited_during_start');
 }
 async function serveUI(inputPath) {
-  assert(Number(process.env.WEBDOCK_FIXTURE_UI_PARENT) === process.ppid, 'ui_requires_owned_stage_parent');
+  assert(Number(process.env.SPITZLI_FIXTURE_UI_PARENT) === process.ppid, 'ui_requires_owned_stage_parent');
   const input = validateInput(JSON.parse(await readPrivate(inputPath))); stageAllowed(input, 'start');
   const report = JSON.parse(await readPrivate(join(input.directory, 'report.json')));
   assert(report.completedStages.includes('import') && report.runID === input.runID, 'ui_requires_prepared_fixture');

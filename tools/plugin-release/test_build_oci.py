@@ -58,7 +58,7 @@ class BuildOCI(unittest.TestCase):
                         return module.subprocess.CompletedProcess(args,1,'','')
                     meta=Path(args[args.index('--metadata-file')+1]);meta.write_text(json.dumps({'containerimage.digest':'sha256:'+'1234567890abcdef'*4}))
                     return module.subprocess.CompletedProcess(args,0,'','')
-                config={'HOME':str(root),'IMAGE_REPOSITORY':'ghcr.io/spitzli/cloud-plugin-fixture','GITHUB_REPOSITORY':'spitzli/cloud-plugin-fixture-source','GITHUB_SHA':'b'*40,'GITHUB_ACTOR':'fixture','WEBDOCK_BUILDKIT_ADDR':'unix:///run/user/1000/buildkit.sock','WEBDOCK_BUILDCTL_SHA256':'c'*64}
+                config={'HOME':str(root),'IMAGE_REPOSITORY':'ghcr.io/spitzli/cloud-plugin-fixture','GITHUB_REPOSITORY':'spitzli/cloud-plugin-fixture-source','GITHUB_SHA':'b'*40,'GITHUB_ACTOR':'fixture','SPITZLI_BUILDKIT_ADDR':'unix:///run/user/1000/buildkit.sock','SPITZLI_BUILDCTL_SHA256':'c'*64}
                 with patch.object(module,'qualified_buildctl',return_value='/qualified/buildctl'),patch.object(module,'validate_socket',return_value='/run/user/1000/buildkit.sock'),patch.object(module.subprocess,'run',side_effect=fake_run):
                     if fail:
                         with self.assertRaises(module.BuildFailed) as caught:module.build_image(context,root,config,'ghs_testcredential')
@@ -81,7 +81,7 @@ class CheckTarget(unittest.TestCase):
     def test_check_target_cannot_push_or_report_image_digest(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td);context=root/'context';context.mkdir();(context/'Dockerfile').write_text('FROM scratch AS check\n')
-            config={'IMAGE_REPOSITORY':'ghcr.io/spitzli/cloud-plugin-fixture','GITHUB_SHA':'b'*40,'GITHUB_ACTOR':'fixture','WEBDOCK_BUILDKIT_ADDR':'unix:///run/user/1000/buildkit.sock'}
+            config={'IMAGE_REPOSITORY':'ghcr.io/spitzli/cloud-plugin-fixture','GITHUB_SHA':'b'*40,'GITHUB_ACTOR':'fixture','SPITZLI_BUILDKIT_ADDR':'unix:///run/user/1000/buildkit.sock'}
             def run(args,**kwargs):
                 self.assertIn('target=check',args)
                 self.assertNotIn('--output',args)
@@ -100,10 +100,10 @@ class BinaryPin(unittest.TestCase):
         import hashlib
         with tempfile.TemporaryDirectory() as td:
             path=Path(td)/'buildctl';path.write_bytes(b'qualified-binary-fixture');path.chmod(0o700)
-            config={'WEBDOCK_BUILDCTL_SHA256':hashlib.sha256(path.read_bytes()).hexdigest()}
+            config={'SPITZLI_BUILDCTL_SHA256':hashlib.sha256(path.read_bytes()).hexdigest()}
             with patch.object(module.shutil,'which',return_value=str(path)),patch.object(module.subprocess,'run',return_value=module.subprocess.CompletedProcess([],0,'buildctl github.com/moby/buildkit v0.34.1 fixture','')):
                 self.assertEqual(module.qualified_buildctl(config),str(path))
-                with self.assertRaises(ValueError):module.qualified_buildctl({'WEBDOCK_BUILDCTL_SHA256':'0'*64})
+                with self.assertRaises(ValueError):module.qualified_buildctl({'SPITZLI_BUILDCTL_SHA256':'0'*64})
             with patch.object(module.shutil,'which',return_value=str(path)),patch.object(module.subprocess,'run',return_value=module.subprocess.CompletedProcess([],0,'buildctl github.com/moby/buildkit v0.30.0 fixture','')):
                 with self.assertRaises(ValueError):module.qualified_buildctl(config)
 
@@ -114,7 +114,7 @@ class BootstrapArchive(unittest.TestCase):
             root=Path(td);context=root/'context';context.mkdir()
             dockerfile=context/'deploy/docker';dockerfile.mkdir(parents=True)
             (dockerfile/'backend.Dockerfile').write_text('FROM scratch AS backend\n')
-            config={'HOME':str(root),'IMAGE_REPOSITORY':'ghcr.io/spitzli/webdock','GITHUB_SHA':'b'*40,'GITHUB_ACTOR':'fixture','WEBDOCK_BUILDKIT_ADDR':'unix:///run/user/1000/buildkit.sock'}
+            config={'HOME':str(root),'IMAGE_REPOSITORY':'ghcr.io/spitzli/webdock','GITHUB_SHA':'b'*40,'GITHUB_ACTOR':'fixture','SPITZLI_BUILDKIT_ADDR':'unix:///run/user/1000/buildkit.sock'}
             def run(args,**kwargs):
                 self.assertIn('filename=deploy/docker/backend.Dockerfile',args)
                 self.assertIn('target=backend',args)
@@ -155,7 +155,7 @@ class BlacksmithBuildx(unittest.TestCase):
     def config(self, root):
         docker_root=root/'provider-docker';(docker_root/'buildx').mkdir(parents=True)
         return {'HOME':str(root),'PATH':'/usr/bin','DOCKER_CONFIG':str(docker_root),'GITHUB_ACTIONS':'true',
-                'BLACKSMITH_REGION':'us-west','WEBDOCK_BLACKSMITH_REGION':'us-west','WEBDOCK_OCI_BACKEND':'blacksmith-buildx',
+                'BLACKSMITH_REGION':'us-west','SPITZLI_BLACKSMITH_REGION':'us-west','SPITZLI_OCI_BACKEND':'blacksmith-buildx',
                 'IMAGE_REPOSITORY':'ghcr.io/spitzli/cloud-plugin-fixture','GITHUB_REPOSITORY':'spitzli/cloud-plugin-fixture',
                 'GITHUB_SHA':'b'*40,'GITHUB_ACTOR':'fixture'}
 
@@ -177,7 +177,7 @@ class BlacksmithBuildx(unittest.TestCase):
                     if allowed:module.require_fresh_blacksmith_builder(config)
                     else:
                         with self.assertRaises(ValueError):module.require_fresh_blacksmith_builder(config)
-            for field,value in [('GITHUB_ACTIONS','false'),('BLACKSMITH_REGION',''),('WEBDOCK_BLACKSMITH_REGION','eu-central')]:
+            for field,value in [('GITHUB_ACTIONS','false'),('BLACKSMITH_REGION',''),('SPITZLI_BLACKSMITH_REGION','eu-central')]:
                 with self.subTest(field=field),self.assertRaises(ValueError):module.require_fresh_blacksmith_builder({**config,field:value})
 
     def test_inspection_keeps_provider_config_and_does_not_forward_job_credentials(self):

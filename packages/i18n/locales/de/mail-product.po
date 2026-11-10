@@ -581,8 +581,8 @@ msgstr "Füge die Domain hinter dem @ deiner Absenderadresse hinzu. Trage die an
 msgid "Create a sending API key"
 msgstr "API-Key für den Versand erstellen"
 
-msgid "Choose Sending only for your application. Save the key as WEBDOCK_MAIL_API_KEY on your server; it is shown once. Never put it in browser code."
-msgstr "Wähle „Nur Versand“ für deine Anwendung. Speichere den einmalig angezeigten Key als WEBDOCK_MAIL_API_KEY auf deinem Server. Er gehört niemals in Browser-Code."
+msgid "Choose Sending only for your application. Save the key as SPITZLI_MAIL_API_KEY on your server; it is shown once. Never put it in browser code."
+msgstr "Wähle „Nur Versand“ für deine Anwendung. Speichere den einmalig angezeigten Key als SPITZLI_MAIL_API_KEY auf deinem Server. Er gehört niemals in Browser-Code."
 
 msgid "Run the simulator example"
 msgstr "Simulator-Beispiel ausführen"
@@ -596,8 +596,8 @@ msgstr "Nachrichten und Zustellergebnisse prüfen"
 msgid "Ask an owner or admin to set up sending for this tenant."
 msgstr "Bitte einen Owner oder Admin, den Versand für diesen Mandanten einzurichten."
 
-msgid "Replace mail@example.com with an address on your verified domain and set WEBDOCK_MAIL_API_KEY in your server environment. Keep the simulator recipient for this first request."
-msgstr "Ersetze mail@example.com durch eine Adresse deiner verifizierten Domain und setze WEBDOCK_MAIL_API_KEY in deiner Serverumgebung. Behalte für den ersten Aufruf den Simulator-Empfänger bei."
+msgid "Replace mail@example.com with an address on your verified domain and set SPITZLI_MAIL_API_KEY in your server environment. Keep the simulator recipient for this first request."
+msgstr "Ersetze mail@example.com durch eine Adresse deiner verifizierten Domain und setze SPITZLI_MAIL_API_KEY in deiner Serverumgebung. Behalte für den ersten Aufruf den Simulator-Empfänger bei."
 
 msgid "Understand the response"
 msgstr "Die Antwort verstehen"

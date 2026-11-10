@@ -361,7 +361,7 @@ impl MailActionBoundary {
         value == Some(std::ffi::OsStr::new("1"))
     }
     fn emit(self, action: &str, code: Option<ErrorCode>) {
-        if Self::enabled(std::env::var_os("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref())
+        if Self::enabled(std::env::var_os("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref())
             && let Some(line) = self.line(action, code)
         {
             use std::io::Write;
@@ -585,11 +585,11 @@ mod system_dns_probe {
     #[ignore = "owned constructor-only probe; no DNS lookup"]
     async fn constructor_only() {
         assert_eq!(
-            std::env::var("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref(),
+            std::env::var("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref(),
             Ok("1")
         );
-        let metadata = std::env::var("WEBDOCK_DNS_OS_METADATA").as_deref() == Ok("1");
-        let expected = match std::env::var("WEBDOCK_DNS_CONSTRUCTOR_EXPECT").as_deref() {
+        let metadata = std::env::var("SPITZLI_DNS_OS_METADATA").as_deref() == Ok("1");
+        let expected = match std::env::var("SPITZLI_DNS_CONSTRUCTOR_EXPECT").as_deref() {
             Ok("ok") => Some(true),
             Ok("deny") => Some(false),
             Ok("observe") if metadata => None,

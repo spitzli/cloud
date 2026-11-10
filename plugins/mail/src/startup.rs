@@ -33,7 +33,7 @@ impl LifetimeEvent {
     pub(super) fn emit(self) {
         use std::io::Write;
         if let Some(line) =
-            self.line(std::env::var_os("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref())
+            self.line(std::env::var_os("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref())
         {
             let _ = std::io::stderr().write_all(line.as_bytes());
         }

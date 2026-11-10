@@ -33,5 +33,5 @@ export function browserProxies(ingressSecret){
 if(process.argv[1]?.endsWith('core-browser-proxy.mjs')){
  const fixture=JSON.parse(readFileSync(process.argv[2],'utf8'));
  if(!/^webdock-browser-[a-f0-9]+$/.test(fixture.container))throw Error('Owned fixture required');
- browserProxies(fixture.env.WEBDOCK_INGRESS_SECRET);console.log('Owned raw HTTP/WebSocket proxy ready');
+ browserProxies(fixture.env.SPITZLI_INGRESS_SECRET);console.log('Owned raw HTTP/WebSocket proxy ready');
 }

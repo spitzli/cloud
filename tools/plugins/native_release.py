@@ -31,7 +31,7 @@ def check(root: Path):
             yield from dependencies(platform)
     for name, options in dependencies(manifest):
         package = options.get("package", name) if isinstance(options, dict) else name
-        if package.startswith("webdock-"):
+        if package.startswith(("spitzli-", "webdock-")):
             require(isinstance(options, dict) and options.get("git") == metadata["sdkGit"] and options.get("rev") == metadata["sdkRevision"] and "path" not in options and not options.get("workspace"), "Every SDK dependency must match the reviewed repository and revision")
     toolchain = tomllib.loads((root / "rust-toolchain.toml").read_text())["toolchain"]["channel"]
     require(re.fullmatch(r"\d+\.\d+\.\d+", toolchain), "Pinned Rust toolchain required")

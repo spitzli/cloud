@@ -1,5 +1,5 @@
 //! The plugin against a stand-in for Core's `plugin.workloads` calls, with real plugin storage on a
-//! disposable local PostgreSQL (`WEBDOCK_HOSTING_PLUGIN_TEST_ADMIN_URL`, loopback). The objects
+//! disposable local PostgreSQL (`SPITZLI_HOSTING_PLUGIN_TEST_ADMIN_URL`, loopback). The objects
 //! themselves run on the local k3s in the live dev stack.
 use serde_json::{Value, json};
 use spitzli_hosting::{Handler, Plugin, Settings, placement, seal::Sealer, store::Store};
@@ -74,7 +74,7 @@ fn config() -> placement::PlacementConfig {
 
 fn admin_url() -> url::Url {
     let url = url::Url::parse(
-        &std::env::var("WEBDOCK_HOSTING_PLUGIN_TEST_ADMIN_URL").expect("disposable local server"),
+        &std::env::var("SPITZLI_HOSTING_PLUGIN_TEST_ADMIN_URL").expect("disposable local server"),
     )
     .unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));

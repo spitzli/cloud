@@ -19,7 +19,7 @@ The zero image digest in the source manifest is a scaffold placeholder. The inst
 
 ## Runtime contract
 
-The installer supplies `WEBDOCK_PLUGIN_ID`, `WEBDOCK_PLUGIN_VERSION`, `WEBDOCK_PLUGIN_GENERATION`, `WEBDOCK_PLUGIN_HOST_URL`, `WEBDOCK_PLUGIN_RUNTIME_TOKEN`, `WEBDOCK_PLUGIN_PUBLIC_KEY`, `WEBDOCK_PLUGIN_CONFIGURATION`, `WEBDOCK_PLUGIN_TLS_CERT` and `WEBDOCK_PLUGIN_TLS_KEY`. Never put runtime tokens or TLS keys in source control. The certificate and key files are mounted read-only under `/runtime-tls`.
+The installer supplies `SPITZLI_PLUGIN_ID`, `SPITZLI_PLUGIN_VERSION`, `SPITZLI_PLUGIN_GENERATION`, `SPITZLI_PLUGIN_HOST_URL`, `SPITZLI_PLUGIN_RUNTIME_TOKEN`, `SPITZLI_PLUGIN_PUBLIC_KEY`, `SPITZLI_PLUGIN_CONFIGURATION`, `SPITZLI_PLUGIN_TLS_CERT` and `SPITZLI_PLUGIN_TLS_KEY`. Never put runtime tokens or TLS keys in source control. The certificate and key files are mounted read-only under `/runtime-tls`.
 
 The process runs as the unprivileged `bun` user. It serves HTTPS on port 3443. Every request requires the runtime bearer credential. `GET /healthz` returns the exact plugin ID, version, generation and protocol version 1. `POST /actions/demo.echo` additionally verifies the signed `x-plugin-invocation` token, plugin and generation identity, expiry and exact action name before processing `{ "input": { "message": "hello" } }`. An SDK context is created per invocation with the configured host origin and runtime credential. The demo makes no host service calls.
 

@@ -171,8 +171,8 @@ def case(binary, ingress, publication):
             raise RuntimeError('owned_registry_not_ready')
         proxy = RegistryProxy(backend)
         maximum.private_write(work / 'config.json', {'registryAddress': '127.0.0.1:' + str(proxy.server.server_port)})
-        script = 'mount --make-rprivate / && mount -t tmpfs -o size=671088640,mode=0700,nosuid,nodev,noexec owned-worker-maximum "$WEBDOCK_WORKER_MAX_WORK/gateway-tmpfs" && exec "$1" --exact maximum_worker_overlap_service --ignored --nocapture --test-threads=1'
-        command = ['systemd-run', '--user', '--quiet', '--unit=' + unit, '--property=MemoryMax=' + str(BUDGET), '--property=MemorySwapMax=0', '--property=TasksMax=32', '--property=CPUQuota=200%', '--property=RuntimeMaxSec=300', '--property=TimeoutStopSec=5', '--property=OOMPolicy=stop', '--property=StandardOutput=null', '--property=StandardError=null', '--setenv=WEBDOCK_WORKER_MAX_WORK=' + str(work)]
+        script = 'mount --make-rprivate / && mount -t tmpfs -o size=671088640,mode=0700,nosuid,nodev,noexec owned-worker-maximum "$SPITZLI_WORKER_MAX_WORK/gateway-tmpfs" && exec "$1" --exact maximum_worker_overlap_service --ignored --nocapture --test-threads=1'
+        command = ['systemd-run', '--user', '--quiet', '--unit=' + unit, '--property=MemoryMax=' + str(BUDGET), '--property=MemorySwapMax=0', '--property=TasksMax=32', '--property=CPUQuota=200%', '--property=RuntimeMaxSec=300', '--property=TimeoutStopSec=5', '--property=OOMPolicy=stop', '--property=StandardOutput=null', '--property=StandardError=null', '--setenv=SPITZLI_WORKER_MAX_WORK=' + str(work)]
         command += ['--setenv=' + name + '=' for name in ['HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'http_proxy', 'https_proxy', 'all_proxy']]
         command += ['--setenv=NO_PROXY=*', '--setenv=no_proxy=*', 'unshare', '--user', '--map-root-user', '--map-auto', '--mount', '--propagation', 'private', '/bin/bash', '-c', script, 'owned-worker-memory-fixture', str(binary)]
         subprocess.run(command, check=True, capture_output=True, timeout=20)

@@ -201,14 +201,14 @@ export async function provisionInitialOperator(
     checksum,
     environment: {
       BETTER_AUTH_URL: input.authOrigin,
-      WEBDOCK_AUTH_ISSUER: input.authOrigin + "/api/auth",
-      WEBDOCK_STUDIO_ORIGIN: input.studioOrigin,
-      WEBDOCK_CONSOLE_ORIGIN: input.consoleOrigin,
-      WEBDOCK_SSO_APP_ORIGIN: input.studioOrigin,
-      WEBDOCK_SSO_CLIENT_ID: ids.client,
-      WEBDOCK_STUDIO_CLIENT_ID: ids.client,
-      WEBDOCK_SSO_CLIENT_SECRET: secret,
-      WEBDOCK_SSO_COOKIE_SECRET: randomBytes(48).toString("base64url"),
+      SPITZLI_AUTH_ISSUER: input.authOrigin + "/api/auth",
+      SPITZLI_STUDIO_ORIGIN: input.studioOrigin,
+      SPITZLI_CONSOLE_ORIGIN: input.consoleOrigin,
+      SPITZLI_SSO_APP_ORIGIN: input.studioOrigin,
+      SPITZLI_SSO_CLIENT_ID: ids.client,
+      SPITZLI_STUDIO_CLIENT_ID: ids.client,
+      SPITZLI_SSO_CLIENT_SECRET: secret,
+      SPITZLI_SSO_COOKIE_SECRET: randomBytes(48).toString("base64url"),
     },
   };
 }

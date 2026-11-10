@@ -1,7 +1,7 @@
 /** Runs only against the explicitly disposable local native fixture, inside a rolled-back transaction. */
 import {Pool} from 'pg';
 import assert from 'node:assert/strict';
-const url=new URL(process.env.WEBDOCK_TEST_MIGRATION_DATABASE_URL??'');
+const url=new URL(process.env.SPITZLI_TEST_MIGRATION_DATABASE_URL??'');
 assert.equal(url.hostname,'127.0.0.1');assert.equal(url.pathname,'/webdock_rls_test');
 const db=new Pool({connectionString:url.href,max:1});
 try{

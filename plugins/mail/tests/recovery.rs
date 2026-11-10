@@ -8,7 +8,7 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 async fn connect(url: &str) -> Store {
-    match std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_CA") {
+    match std::env::var("SPITZLI_MAIL_RECOVERY_TEST_CA") {
         Ok(path) => Store::connect_tls(url, &std::fs::read(path).unwrap())
             .await
             .unwrap(),
@@ -19,7 +19,7 @@ async fn connect(url: &str) -> Store {
 #[tokio::test]
 #[ignore = "fresh owned private DB; cancelled external effects require real reconciliation"]
 async fn cancelled_effect_cannot_be_mistaken_for_a_drained_transport() {
-    let url = std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_URL").unwrap();
+    let url = std::env::var("SPITZLI_MAIL_RECOVERY_TEST_URL").unwrap();
     let store = connect(&url).await;
     let effect = store.recovery_effect().await.unwrap();
     drop(effect); // A crashed/cancelled sender has no definitive completion witness.
@@ -37,7 +37,7 @@ async fn cancelled_effect_cannot_be_mistaken_for_a_drained_transport() {
 #[tokio::test]
 #[ignore = "requires fresh owned PostgreSQL; tools/tests/mail-application-recovery.py"]
 async fn durable_gate_drains_rejects_stale_resume_and_quarantines_restore() {
-    let url = std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_URL").unwrap();
+    let url = std::env::var("SPITZLI_MAIL_RECOVERY_TEST_URL").unwrap();
     let store = Arc::new(connect(&url).await);
     let first = store.recovery_state().await.unwrap();
     let payload = PgPrivatePayloadStore::new(store.clone(), &"24".repeat(32))
@@ -131,11 +131,11 @@ async fn durable_gate_drains_rejects_stale_resume_and_quarantines_restore() {
 #[tokio::test]
 #[ignore = "owned private snapshot fixture only"]
 async fn private_snapshot_prepare() {
-    let url = std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_URL").unwrap();
+    let url = std::env::var("SPITZLI_MAIL_RECOVERY_TEST_URL").unwrap();
     let key =
-        std::fs::read_to_string(std::env::var("WEBDOCK_MAIL_RECOVERY_KEY_FILE").unwrap()).unwrap();
+        std::fs::read_to_string(std::env::var("SPITZLI_MAIL_RECOVERY_KEY_FILE").unwrap()).unwrap();
     let store = Arc::new(connect(&url).await);
-    let reference = std::env::var("WEBDOCK_MAIL_RECOVERY_REFERENCE").unwrap();
+    let reference = std::env::var("SPITZLI_MAIL_RECOVERY_REFERENCE").unwrap();
     let payload = PgPrivatePayloadStore::new(store.clone(), &key)
         .await
         .unwrap();
@@ -155,12 +155,12 @@ async fn private_snapshot_prepare() {
 #[tokio::test]
 #[ignore = "owned fresh private restore fixture only"]
 async fn private_snapshot_verify() {
-    let url = std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_URL").unwrap();
-    let key_path = std::env::var("WEBDOCK_MAIL_RECOVERY_KEY_FILE").unwrap();
+    let url = std::env::var("SPITZLI_MAIL_RECOVERY_TEST_URL").unwrap();
+    let key_path = std::env::var("SPITZLI_MAIL_RECOVERY_KEY_FILE").unwrap();
     assert!(std::fs::read_to_string(format!("{key_path}.missing")).is_err());
     let key = std::fs::read_to_string(key_path).unwrap();
     let store = Arc::new(connect(&url).await);
-    let ca = std::fs::read(std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_CA").unwrap()).unwrap();
+    let ca = std::fs::read(std::env::var("SPITZLI_MAIL_RECOVERY_TEST_CA").unwrap()).unwrap();
     let connection = spitzli_plugin_kit::postgres::connect(&url, Some(&ca))
         .await
         .unwrap();
@@ -178,7 +178,7 @@ async fn private_snapshot_verify() {
     let payload = PgPrivatePayloadStore::new(store.clone(), &key)
         .await
         .unwrap();
-    let reference = std::env::var("WEBDOCK_MAIL_RECOVERY_REFERENCE").unwrap();
+    let reference = std::env::var("SPITZLI_MAIL_RECOVERY_REFERENCE").unwrap();
     assert_eq!(
         payload.get("101", &reference).await.unwrap(),
         b"owned recovery payload sentinel"

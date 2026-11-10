@@ -11,8 +11,8 @@ with tempfile.TemporaryDirectory() as directory:
     path = Path(directory)
     shutil.copy('deploy/compose/compose.yaml', path / 'compose.yaml')
     (path / 'core.env').touch()
-    env = {k: v for k, v in os.environ.items() if not k.startswith('WEBDOCK_')}
-    env['WEBDOCK_CORE_IMAGE'] = 'example.invalid/webdock@sha256:' + 'a' * 64
+    env = {k: v for k, v in os.environ.items() if not k.startswith('SPITZLI_')}
+    env['SPITZLI_CORE_IMAGE'] = 'example.invalid/webdock@sha256:' + 'a' * 64
     command = ['docker', 'compose', '-f', str(path / 'compose.yaml')]
     services = json.loads(subprocess.check_output(command + ['config', '--format', 'json'], env=env, text=True))['services']
     assert set(services) == {'core'}
@@ -26,8 +26,8 @@ with tempfile.TemporaryDirectory() as directory:
 
     shutil.copy('deploy/compose/compose.migration.yaml', path / 'migration.yaml')
     (path / 'migrator.env').touch()
-    env['WEBDOCK_MIGRATE_IMAGE'] = 'example.invalid/migrate@sha256:' + 'b' * 64
-    env['WEBDOCK_MIGRATION_TARGET'] = 'fixture.invalid:5432/webdock'
+    env['SPITZLI_MIGRATE_IMAGE'] = 'example.invalid/migrate@sha256:' + 'b' * 64
+    env['SPITZLI_MIGRATION_TARGET'] = 'fixture.invalid:5432/webdock'
     services = json.loads(subprocess.check_output(['docker', 'compose', '-f', str(path / 'migration.yaml'), 'config', '--format', 'json'], env=env, text=True))['services']
     assert set(services) == {'migrate'}
     migrate = services['migrate']

@@ -37,7 +37,7 @@ do not establish that all published source checks have migrated.
 
 **The isolated probe passed; full source checks remain pending.** The installed
 `blacksmith-sh` app (ID 177526508) is restricted to the exact sixteen platform,
-plugin and SDK repositories. `WEBDOCK_BLACKSMITH_REGION=us-west` is written and
+plugin and SDK repositories. `SPITZLI_BLACKSMITH_REGION=us-west` is written and
 read back for that same selected set. Dashboard configuration and the actual
 runner both report `us-west`.
 
@@ -68,8 +68,8 @@ the owner's normal authorization flow. Personal tokens or authenticated local
 raised the count to ten apps. See [the evidence record](blacksmith-readiness-2026-11-01.json)
 for the configured/observed region, real probe and remaining source-check gates. The account setup proof is retained by the parent.
 
-Normal source/release jobs require `WEBDOCK_BLACKSMITH_READY == 'true'` and a nonempty
-`WEBDOCK_BLACKSMITH_REGION` before allocation. The region variable must record
+Normal source/release jobs require `SPITZLI_BLACKSMITH_READY == 'true'` and a nonempty
+`SPITZLI_BLACKSMITH_REGION` before allocation. The region variable must record
 the actual configured/observed provider region. The first step checks that the
 provider's `BLACKSMITH_REGION` is one of the four documented regions and exactly
 matches that record, before checkout. The provider action's reviewed source
@@ -77,8 +77,8 @@ consumes this environment variable; missing or mismatched values fail. This is a
 runtime consistency check, not independent geographic evidence. No region is
 filled in from a presumed default.
 
-Normal container jobs also require `WEBDOCK_BLACKSMITH_BUILDER_READY == 'true'`.
-The prepared workflows explicitly select `WEBDOCK_OCI_BACKEND=blacksmith-buildx`.
+Normal container jobs also require `SPITZLI_BLACKSMITH_BUILDER_READY == 'true'`.
+The prepared workflows explicitly select `SPITZLI_OCI_BACKEND=blacksmith-buildx`.
 Manual commands retain the default `rootless-buildctl` backend, including its
 existing non-root Unix socket and exact client checksum requirements. An unknown
 backend is rejected. This does not transplant customer K3s sandbox requirements

@@ -51,9 +51,9 @@ Configure these before pushing a tag:
 
 - Blacksmith-only runner `blacksmith-4vcpu-ubuntu-2404`. Read
   [the migration prerequisites and current blockers](../plugin-ci/BLACKSMITH.md).
-  `WEBDOCK_BLACKSMITH_READY=true` and a recorded `WEBDOCK_BLACKSMITH_REGION`
+  `SPITZLI_BLACKSMITH_READY=true` and a recorded `SPITZLI_BLACKSMITH_REGION`
   require actual provider qualification before allocation. The owner waived
-  EU-only placement for this own-CI scope; documented US regions are allowed. Container jobs also require `WEBDOCK_BLACKSMITH_BUILDER_READY=true`.
+  EU-only placement for this own-CI scope; documented US regions are allowed. Container jobs also require `SPITZLI_BLACKSMITH_BUILDER_READY=true`.
   The READY flags are absent; the recorded region variable is configured, but
   real execution remains unqualified. Labels, variables,
   skipped jobs and historical Contabo runs do not prove successful Blacksmith CI.
@@ -72,11 +72,11 @@ Configure these before pushing a tag:
   `publish:*`, after which replace it with a slug-scoped token. Registry
   `extension` kind/schema must match the exported SDK native contract.
 - For the retained manual `rootless-buildctl` backend, repository/operator inputs
-  `WEBDOCK_BUILDKIT_ADDR` and `WEBDOCK_BUILDCTL_SHA256` identify the operator-qualified rootless BuildKit v0.34.1 service and exact
+  `SPITZLI_BUILDKIT_ADDR` and `SPITZLI_BUILDCTL_SHA256` identify the operator-qualified rootless BuildKit v0.34.1 service and exact
   client binary. The helper requires its Unix socket below `/run/user/<uid>/`,
   owned by that non-root runner UID. No daemon startup, Docker socket, privileged
   container or Docker-in-Docker is used.
-- The Blacksmith workflows explicitly select `WEBDOCK_OCI_BACKEND=blacksmith-buildx`
+- The Blacksmith workflows explicitly select `SPITZLI_OCI_BACKEND=blacksmith-buildx`
   and pin the official managed setup action with `nofallback: true`. They install
   pinned Bun 1.4.3 and native parser prerequisites where needed. Python, Docker,
   GitHub CLI and the repository-pinned Rust toolchain support the remaining steps.

@@ -496,7 +496,7 @@ async fn actual_mail_process_shared_endpoint_candidate_gateway_pin_receipts_and_
     let runtime_pem = write(dir.path(), "runtime.crt", runtime_cert.pem());
     let runtime_key_path = write(dir.path(), "runtime.key", runtime_key.serialize_pem());
     let ca_path = write(dir.path(), "ca.crt", root.pem());
-    let config = json!({"manifest":manifest,"issuerPublicKeyHex":hex::encode(state.issuer.verifying_key().as_bytes()),"generation":2,"listenTls":{"address":format!("127.0.0.1:{port}"),"certificate":runtime_pem,"privateKey":runtime_key_path,"authority":ca_path},"coreTls":{"origin":format!("https://localhost:{core_port}"),"domain":"localhost","certificate":runtime_pem,"privateKey":runtime_key_path,"authority":ca_path,"serverCertificateSha256":spitzli_mail_protocol::sha256(core_cert.der())},"corePeers":[{"kind":"mutualTls","certificateSha256":spitzli_mail_protocol::sha256(core_cert.der())}],"storageUrl":std::env::var("WEBDOCK_MAIL_TASK3_TEST_URL").unwrap(),"storageCa":std::env::var("WEBDOCK_MAIL_TASK3_TEST_CA").unwrap(),"secretKeyHex":"24".repeat(32),"trustUnverifiedDomains":true,"platformTransport":{"kind":"smtp","host":"127.0.0.1","port":smtp_port},"delivery":{"nativeLeaseIssuerPublicKeyHex":hex::encode(state.issuer.verifying_key().as_bytes()),"providerBinding":{"pluginID":"mail","generation":2,"descriptorSha256":descriptor,"workerID":"mail","workerGeneration":2,"workerCredentialSha256":state.credential},"gatewayPeers":[{"kind":"mutualTls","certificateSha256":spitzli_mail_protocol::sha256(gateway_cert.der())}],"nativeAccounts":[{"customerID":"7101","accountID":null,"mode":"managed","transportRevision":1,"bindingRevision":1,"byokRevision":null,"transport":{"kind":"smtp","host":"127.0.0.1","port":smtp_port}}]}});
+    let config = json!({"manifest":manifest,"issuerPublicKeyHex":hex::encode(state.issuer.verifying_key().as_bytes()),"generation":2,"listenTls":{"address":format!("127.0.0.1:{port}"),"certificate":runtime_pem,"privateKey":runtime_key_path,"authority":ca_path},"coreTls":{"origin":format!("https://localhost:{core_port}"),"domain":"localhost","certificate":runtime_pem,"privateKey":runtime_key_path,"authority":ca_path,"serverCertificateSha256":spitzli_mail_protocol::sha256(core_cert.der())},"corePeers":[{"kind":"mutualTls","certificateSha256":spitzli_mail_protocol::sha256(core_cert.der())}],"storageUrl":std::env::var("SPITZLI_MAIL_TASK3_TEST_URL").unwrap(),"storageCa":std::env::var("SPITZLI_MAIL_TASK3_TEST_CA").unwrap(),"secretKeyHex":"24".repeat(32),"trustUnverifiedDomains":true,"platformTransport":{"kind":"smtp","host":"127.0.0.1","port":smtp_port},"delivery":{"nativeLeaseIssuerPublicKeyHex":hex::encode(state.issuer.verifying_key().as_bytes()),"providerBinding":{"pluginID":"mail","generation":2,"descriptorSha256":descriptor,"workerID":"mail","workerGeneration":2,"workerCredentialSha256":state.credential},"gatewayPeers":[{"kind":"mutualTls","certificateSha256":spitzli_mail_protocol::sha256(gateway_cert.der())}],"nativeAccounts":[{"customerID":"7101","accountID":null,"mode":"managed","transportRevision":1,"bindingRevision":1,"byokRevision":null,"transport":{"kind":"smtp","host":"127.0.0.1","port":smtp_port}}]}});
     // Normal installer profile must bootstrap without a post-admission credential override.
     let mut config = config;
     config["delivery"]
@@ -606,8 +606,8 @@ async fn actual_mail_process_shared_endpoint_candidate_gateway_pin_receipts_and_
         .clone();
     let store = Arc::new(
         spitzli_mail::store::Store::connect_tls(
-            &std::env::var("WEBDOCK_MAIL_TASK3_TEST_URL").unwrap(),
-            &std::fs::read(std::env::var("WEBDOCK_MAIL_TASK3_TEST_CA").unwrap()).unwrap(),
+            &std::env::var("SPITZLI_MAIL_TASK3_TEST_URL").unwrap(),
+            &std::fs::read(std::env::var("SPITZLI_MAIL_TASK3_TEST_CA").unwrap()).unwrap(),
         )
         .await
         .unwrap(),

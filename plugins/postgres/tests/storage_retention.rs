@@ -27,7 +27,7 @@ impl Drop for Fixture {
 impl Fixture {
     async fn start() -> Self {
         assert_eq!(
-            std::env::var("WEBDOCK_POSTGRES_STORAGE_DOCKER_TEST").as_deref(),
+            std::env::var("SPITZLI_POSTGRES_STORAGE_DOCKER_TEST").as_deref(),
             Ok("1")
         );
         let container = format!("webdock-postgres-storage-{}", Uuid::new_v4().simple());
@@ -97,7 +97,7 @@ impl Fixture {
 }
 
 #[tokio::test]
-#[ignore = "requires WEBDOCK_POSTGRES_STORAGE_DOCKER_TEST=1; creates only an owned disposable PostgreSQL"]
+#[ignore = "requires SPITZLI_POSTGRES_STORAGE_DOCKER_TEST=1; creates only an owned disposable PostgreSQL"]
 async fn physical_three_migrations_and_sealed_resource_survive_repeated_store_startup() {
     let fixture = Fixture::start().await;
     let admin = fixture.connect().await.unwrap();

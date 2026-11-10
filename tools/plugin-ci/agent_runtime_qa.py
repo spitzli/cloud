@@ -123,7 +123,7 @@ def run(test_binary,expected):
     before=inventory()
     diagnostic=stage/'owned-pod-diagnostics.jsonl';stop=threading.Event()
     collector=threading.Thread(target=collect_owned_pods,args=(diagnostic,stop,before),daemon=True);collector.start()
-    env.update({'WEBDOCK_OWNED_K3S_RETAINED_TEST':'1','WEBDOCK_RETAINED_QUALIFICATION_PROFILE':'trusted-runtime-wd-eu-02','WEBDOCK_TRUSTED_RUNTIME_RETAINED_TEST':'1','WEBDOCK_OWNED_K3S_CONFIG':str(CONFIG),'WEBDOCK_OWNED_K3S_CONTEXT':'default','WEBDOCK_OWNED_K3S_ROOT':str(fixture_root),'WEBDOCK_OWNED_K3S_NODE':NODE,'WEBDOCK_OWNED_K3S_IMAGE':IMAGE})
+    env.update({'SPITZLI_OWNED_K3S_RETAINED_TEST':'1','SPITZLI_RETAINED_QUALIFICATION_PROFILE':'trusted-runtime-wd-eu-02','SPITZLI_TRUSTED_RUNTIME_RETAINED_TEST':'1','SPITZLI_OWNED_K3S_CONFIG':str(CONFIG),'SPITZLI_OWNED_K3S_CONTEXT':'default','SPITZLI_OWNED_K3S_ROOT':str(fixture_root),'SPITZLI_OWNED_K3S_NODE':NODE,'SPITZLI_OWNED_K3S_IMAGE':IMAGE})
     log=stage/'fixture.log'
     with log.open('xb') as output:
         log.chmod(0o600)

@@ -92,9 +92,9 @@ export async function startOperatorSetup(options: SetupOptions) {
     throw new OperatorSetupError(
       "An explicit new private output destination is required",
     );
-  if (env.WEBDOCK_INITIAL_OPERATOR_PASSWORD !== undefined)
+  if (env.SPITZLI_INITIAL_OPERATOR_PASSWORD !== undefined)
     throw new OperatorSetupError(
-      "Unset WEBDOCK_INITIAL_OPERATOR_PASSWORD before using browser setup",
+      "Unset SPITZLI_INITIAL_OPERATOR_PASSWORD before using browser setup",
     );
   // Validate immutable canonical origins before opening any listening socket.
   const configured = operatorInput(
@@ -103,8 +103,8 @@ export async function startOperatorSetup(options: SetupOptions) {
       email: "setup@example.test",
       password: "origin-validation-only",
       authOrigin: env.BETTER_AUTH_URL,
-      studioOrigin: env.WEBDOCK_STUDIO_ORIGIN,
-      consoleOrigin: env.WEBDOCK_CONSOLE_ORIGIN,
+      studioOrigin: env.SPITZLI_STUDIO_ORIGIN,
+      consoleOrigin: env.SPITZLI_CONSOLE_ORIGIN,
     },
     env,
     config.local,

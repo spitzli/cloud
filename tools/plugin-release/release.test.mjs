@@ -128,3 +128,14 @@ test('standalone dependencies reject parent paths, mutable Git branches and mixe
     assert.throws(() => validateSDKDependencies([{ ...sdk, source }]));
   assert.throws(() => validateSDKDependencies([sdk, { ...sdk, name: 'spitzli-plugin-runtime', source: sdk.source.replace('b'.repeat(40), 'c'.repeat(40)) }]));
 });
+
+
+test('canonical and legacy SDK namespaces cannot bypass revision validation', async () => {
+  const { validateSDKDependencies } = await import('./release.mjs');
+  const source = 'git+https://github.com/spitzli/cloud-plugin-sdk?rev=' + 'b'.repeat(40);
+  for (const name of ['spitzli-plugin-runtime', 'webdock-plugin-runtime']) {
+    assert.doesNotThrow(() => validateSDKDependencies([{ name, source }]));
+    assert.throws(() => validateSDKDependencies([{ name, source: null }]));
+  }
+  assert.throws(() => validateSDKDependencies([{ name: 'spitzli-plugin-runtime', source }, { name: 'webdock-plugin-protocol', source: source.replace('b'.repeat(40), 'c'.repeat(40)) }]));
+});

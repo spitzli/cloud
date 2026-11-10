@@ -110,10 +110,10 @@ export function operatorInput(
     fail("A valid operator email is required");
   if (
     data.password !== undefined &&
-    env.WEBDOCK_INITIAL_OPERATOR_PASSWORD !== undefined
+    env.SPITZLI_INITIAL_OPERATOR_PASSWORD !== undefined
   )
     fail("Supply the password in the private file or environment, never both");
-  const password = data.password ?? env.WEBDOCK_INITIAL_OPERATOR_PASSWORD;
+  const password = data.password ?? env.SPITZLI_INITIAL_OPERATOR_PASSWORD;
   if (
     typeof password !== "string" ||
     password.length < 16 ||
@@ -130,12 +130,12 @@ export function operatorInput(
     fail("Auth, Studio protocol and Console origins must be distinct");
   for (const [key, expected] of [
     ["BETTER_AUTH_URL", authOrigin],
-    ["WEBDOCK_STUDIO_ORIGIN", studioOrigin],
-    ["WEBDOCK_CONSOLE_ORIGIN", consoleOrigin],
+    ["SPITZLI_STUDIO_ORIGIN", studioOrigin],
+    ["SPITZLI_CONSOLE_ORIGIN", consoleOrigin],
   ])
     if (env[key] !== expected)
       fail(
-        "Input origins must exactly match BETTER_AUTH_URL, WEBDOCK_STUDIO_ORIGIN and WEBDOCK_CONSOLE_ORIGIN",
+        "Input origins must exactly match BETTER_AUTH_URL, SPITZLI_STUDIO_ORIGIN and SPITZLI_CONSOLE_ORIGIN",
       );
   return {
     email: (data.email as string).toLowerCase(),

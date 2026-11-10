@@ -47,7 +47,7 @@ def acceptance_plan(args):
 
 def main():
     args = parse_args()
-    assert args.schema_only or os.environ.get("WEBDOCK_S3_TEST_CONFIG"), "run inside the owned object-storage.py fixture"
+    assert args.schema_only or os.environ.get("SPITZLI_S3_TEST_CONFIG"), "run inside the owned object-storage.py fixture"
     nonce = secrets.token_hex(12)
     name = f"webdock-build-s3-{nonce}"
     administrator = secrets.token_hex(32)
@@ -83,13 +83,13 @@ def main():
         def url(role, password):
             return f"postgresql://{role}:{urllib.parse.quote(password, safe='')}@{address}/webdock_rls_test"
 
-        env = {**os.environ, "WEBDOCK_MIGRATION_DATABASE_URL": url("postgres", administrator),
-               "WEBDOCK_TEST_MIGRATION_DATABASE_URL": url("postgres", administrator),
+        env = {**os.environ, "SPITZLI_MIGRATION_DATABASE_URL": url("postgres", administrator),
+               "SPITZLI_TEST_MIGRATION_DATABASE_URL": url("postgres", administrator),
                "DATABASE_URL": url("webdock_auth_runtime", passwords["webdock_auth_runtime"]),
                "AUTH_DATABASE_URL": url("webdock_auth_bootstrap", passwords["webdock_auth_bootstrap"]),
-               "WEBDOCK_PLUGIN_WORKER_DATABASE_URL": url("webdock_worker_runtime", passwords["webdock_worker_runtime"]),
+               "SPITZLI_PLUGIN_WORKER_DATABASE_URL": url("webdock_worker_runtime", passwords["webdock_worker_runtime"]),
                "DATABASE_RLS_SECRET": secrets.token_hex(32), "BETTER_AUTH_SECRET": secrets.token_hex(32),
-               "WEBDOCK_BUILD_VM_TEST": "1", "WEBDOCK_BUILD_REGISTRY_TEST": "1"}
+               "SPITZLI_BUILD_VM_TEST": "1", "SPITZLI_BUILD_REGISTRY_TEST": "1"}
         password_file = directory / "passwords.json"
         password_file.write_text(json.dumps(passwords))
         password_file.chmod(0o600)

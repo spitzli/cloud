@@ -36,7 +36,7 @@ The retained implementation notes below include platform integration procedures.
 Commands referring to Core, `tools/` or `apps/console` require the [platform source
 checkout](https://github.com/spitzli/webdock); they are not standalone setup steps.
 
-This release maintains existing retained PostgreSQL resources only. New shared and self-hosted database orders are disabled; Neon BYOK is the default for new database connections. Publishing this artifact does not install it, create customers or databases, enable orders, or delete existing data. Core keeps `WEBDOCK_DATABASE_NEW_ORDERS_ENABLED=false`.
+This release maintains existing retained PostgreSQL resources only. New shared and self-hosted database orders are disabled; Neon BYOK is the default for new database connections. Publishing this artifact does not install it, create customers or databases, enable orders, or delete existing data. Core keeps `SPITZLI_DATABASE_NEW_ORDERS_ENABLED=false`.
 
 The retained maintenance protocol supports the existing resource types:
 
@@ -50,6 +50,6 @@ The React UI in `ui/` is bundled by the Console and shown on the resource page.
 ```sh
 cargo test --locked                    # manifest contract
 # Real PostgreSQL (disposable, loopback); Core and the cluster are stood in for:
-WEBDOCK_POSTGRES_PLUGIN_TEST_ADMIN_URL=postgres://… \
+SPITZLI_POSTGRES_PLUGIN_TEST_ADMIN_URL=postgres://… \
   cargo test --locked -- --include-ignored
 ```

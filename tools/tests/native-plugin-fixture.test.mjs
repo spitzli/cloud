@@ -130,7 +130,12 @@ test('fixture gateway uses three readonly mounts and one private egress destinat
     const result = await prepareMailGateway(f, '172.18.0.8', 'owned-base', 'mail-admin-abcdef123456.localhost');
     assert.equal(result.origin, 'http://172.18.0.5:8080'); assert.deepEqual(result.egress, [{ cidr: '172.18.0.5/32', port: 8080 }]);
     assert.equal(creation.args.filter(v => v === '--mount').length, 3); assert.equal(creation.args.includes('--publish'), false); assert(creation.args.includes('--read-only'));
-    assert.equal(creation.args.some(v => /ca\.key|kubeconfig|environment|storage-/.test(v)), false);
+    const mounts = creation.args.flatMap((value, index) => value === '--mount' ? [creation.args[index + 1]] : []);
+    assert.deepEqual(mounts, [
+      `type=bind,source=${bun},target=/reviewed-bun,readonly`,
+      `type=bind,source=${join(ROOT, source)},target=/gateway.mjs,readonly`,
+      `type=bind,source=${result.configuration},target=/gateway.json,readonly`,
+    ]);
     assert.equal(JSON.parse(await readPrivate(result.configuration)).upstream, 'http://172.18.0.8:80');
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
@@ -464,12 +469,12 @@ test('private assertion errors contain only the fixed category, never actual or 
   assert.equal(error.stack.includes('PRIVATE_SENTINEL'), false);
 });
 test('subprocess environment does not inherit database, provider or loader variables', () => {
-  process.env.WEBDOCK_FIXTURE_SECRET_TEST = 'ambient';
+  process.env.SPITZLI_FIXTURE_SECRET_TEST = 'ambient';
   const env = ownEnvironment('/private/run', { NODE_ENV: 'development' });
-  assert.equal(env.WEBDOCK_FIXTURE_SECRET_TEST, undefined);
+  assert.equal(env.SPITZLI_FIXTURE_SECRET_TEST, undefined);
   assert.equal(env.HOME, '/private/run/home');
   assert.equal(env.NODE_OPTIONS, undefined);
-  delete process.env.WEBDOCK_FIXTURE_SECRET_TEST;
+  delete process.env.SPITZLI_FIXTURE_SECRET_TEST;
 });
 test('command arguments survive shell metacharacters and children receive only owned env', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'mail-command-'));

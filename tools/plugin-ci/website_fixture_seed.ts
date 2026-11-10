@@ -1,6 +1,6 @@
 // Manual owned-fixture helper. It does not alter website modules or accept a remote DB.
 import assert from 'node:assert/strict';
-assert.equal(process.env.WEBDOCK_OWNED_WEBSITE_FIXTURE, '1');
+assert.equal(process.env.SPITZLI_OWNED_WEBSITE_FIXTURE, '1');
 const target = new URL(process.env.DATABASE_URL || '');
 assert.equal(target.hostname, '127.0.0.1');
 assert.equal(target.username, 'quality');

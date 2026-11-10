@@ -9,7 +9,7 @@ import { readFile } from "node:fs/promises";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 test(
   "empty installation, retained-data upgrade and signing-key refusal use restricted roles",
-  { skip: process.env.WEBDOCK_TEST_INSTALL !== "true", timeout: 120000 },
+  { skip: process.env.SPITZLI_TEST_INSTALL !== "true", timeout: 120000 },
   async () => {
     const endpoint = execFileSync(
       "docker",
@@ -75,7 +75,7 @@ test(
         );
       const fresh = run({
         ...base,
-        WEBDOCK_BOOTSTRAP_EMPTY_DATABASE: "true",
+        SPITZLI_BOOTSTRAP_EMPTY_DATABASE: "true",
         MIGRATION_ROLE_PASSWORDS: JSON.stringify(passwords),
       });
       assert.equal(fresh.status, 0, fresh.stdout + fresh.stderr);
@@ -103,7 +103,7 @@ test(
             AUTH_DATABASE_URL: roleURL("webdock_auth_bootstrap"),
             DATABASE_WORKER_URL: roleURL("webdock_worker_runtime"),
             DATABASE_RLS_SECRET: base.DATABASE_CONTEXT_SECRET,
-            WEBDOCK_MODULES: JSON.stringify({ configVersion: 1, modules: {} }),
+            SPITZLI_MODULES: JSON.stringify({ configVersion: 1, modules: {} }),
           },
         },
       );
@@ -160,7 +160,7 @@ test(
       const initializePlugins = (modules: Record<string, unknown>) => spawnSync(
         process.execPath,
         ["--no-env-file", "tools/plugins/bootstrap.ts", target, "fresh"],
-        {cwd:root,encoding:"utf8",env:{...base,DATABASE_URL_UNPOOLED:url.href,WEBDOCK_MODULES:JSON.stringify({configVersion:1,modules})}},
+        {cwd:root,encoding:"utf8",env:{...base,DATABASE_URL_UNPOOLED:url.href,SPITZLI_MODULES:JSON.stringify({configVersion:1,modules})}},
       );
       const initialized = initializePlugins({storage:{enabled:true}});
       assert.equal(initialized.status,0,initialized.stdout+initialized.stderr);

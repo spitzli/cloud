@@ -45,7 +45,7 @@ try {
     if (i === 29) throw Error("Redis startup failed");
     await new Promise((r) => setTimeout(r, 100));
   }
-  const env = { ...process.env, WEBDOCK_TEST_REDIS_PORT: port };
+  const env = { ...process.env, SPITZLI_TEST_REDIS_PORT: port };
   console.log(
     run(
       process.execPath,

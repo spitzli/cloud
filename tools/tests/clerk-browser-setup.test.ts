@@ -33,10 +33,10 @@ test("native Clerk fixture maps explicit owned subject and removes legacy auth w
   );
   const env: Record<string, string | undefined> = {
     NODE_ENV: "development",
-    WEBDOCK_CONSOLE_ORIGIN: "http://localhost:3460",
+    SPITZLI_CONSOLE_ORIGIN: "http://localhost:3460",
     DATABASE_URL: "postgresql://localhost@127.0.0.1:1234/webdock_operator_test",
     BETTER_AUTH_SECRET: "remove",
-    WEBDOCK_API_DOMAINS: "auth,portal,registry,mcp",
+    SPITZLI_API_DOMAINS: "auth,portal,registry,mcp",
   };
   const calls: unknown[][] = [];
   const owner = {
@@ -61,10 +61,10 @@ test("native Clerk fixture maps explicit owned subject and removes legacy auth w
     });
     assert.equal(result.email, "synthetic+clerk_test@example.com");
     assert.equal(env.BETTER_AUTH_SECRET, undefined);
-    assert.equal(env.WEBDOCK_OAUTH_PROVIDER, "disabled");
-    assert.equal(env.WEBDOCK_API_DOMAINS, "auth,portal,registry");
-    assert.ok(env.WEBDOCK_CONSOLE_SERVICE_KEY!.length >= 64);
-    assert.deepEqual(JSON.parse(env.WEBDOCK_AUTH_PROVIDER!), {
+    assert.equal(env.SPITZLI_OAUTH_PROVIDER, "disabled");
+    assert.equal(env.SPITZLI_API_DOMAINS, "auth,portal,registry");
+    assert.ok(env.SPITZLI_CONSOLE_SERVICE_KEY!.length >= 64);
+    assert.deepEqual(JSON.parse(env.SPITZLI_AUTH_PROVIDER!), {
       provider: "clerk",
       issuer,
       authorizedParties: ["http://localhost:3460"],

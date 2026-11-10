@@ -8,9 +8,9 @@ const mode = process.argv[3];
 if (mode !== "fresh" && mode !== "legacy")
   throw Error("Usage: bootstrap.ts exact-host:port/database fresh|legacy");
 const selection =
-  process.env.WEBDOCK_MODULES === undefined
+  process.env.SPITZLI_MODULES === undefined
     ? undefined
-    : JSON.parse(process.env.WEBDOCK_MODULES);
+    : JSON.parse(process.env.SPITZLI_MODULES);
 const pool = new Pool({
   ...(config.local
     ? { connectionString: config.url.href }

@@ -24,7 +24,7 @@ for enabled in [False, True]:
     deployment = next(item for item in objects if item["kind"] == "Deployment")
     pod = deployment["spec"]["template"]["spec"]
     agent = next(container for container in pod["containers"] if container["name"] == "agent")
-    assert {entry["name"]: entry["value"] for entry in agent.get("env", [])}["WEBDOCK_AGENT_AUTOSCALING_ENABLED"] == str(enabled).lower()
+    assert {entry["name"]: entry["value"] for entry in agent.get("env", [])}["SPITZLI_AGENT_AUTOSCALING_ENABLED"] == str(enabled).lower()
     role = next(item for item in objects if item["kind"] == "Role")
     assert role["metadata"]["namespace"] == "owned-apps"
     rules = next(rule for rule in role["rules"] if rule["apiGroups"] == ["autoscaling"])

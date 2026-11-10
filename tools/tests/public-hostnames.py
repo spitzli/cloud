@@ -78,13 +78,13 @@ def main():
         with (directory / 'bootstrap.private.log').open('wb') as log:
             subprocess.run([str(migrator), '--target', '127.0.0.1:' + port + '/webdock_rls_test',
                             '--initialize-empty', '--provision-roles-from', str(role_file)],
-                           cwd=ROOT, env={**environment, 'WEBDOCK_MIGRATION_DATABASE_URL': owner,
+                           cwd=ROOT, env={**environment, 'SPITZLI_MIGRATION_DATABASE_URL': owner,
                                           'DATABASE_RLS_SECRET': context},
                            stdout=log, stderr=subprocess.STDOUT, check=True, timeout=180)
         urls = {role: 'postgresql://' + role + ':' + value + base for role, value in passwords.items()}
         fixture_file.write_text(json.dumps({'ownerUrl': owner, 'roles': urls,
                                            'contextSecret': context, 'authSecret': auth_secret}))
-        env = {**environment, 'NODE_ENV': 'test', 'WEBDOCK_PUBLIC_HOST_FIXTURE': str(fixture_file),
+        env = {**environment, 'NODE_ENV': 'test', 'SPITZLI_PUBLIC_HOST_FIXTURE': str(fixture_file),
                'DATABASE_URL': urls['webdock_auth_runtime'], 'AUTH_DATABASE_URL': urls['webdock_auth_bootstrap'],
                'DATABASE_WORKER_URL': urls['webdock_worker_runtime'], 'DATABASE_RLS_SECRET': context,
                'DATABASE_CONTEXT_SECRET': context, 'BETTER_AUTH_SECRET': auth_secret}

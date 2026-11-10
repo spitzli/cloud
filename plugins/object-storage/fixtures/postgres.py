@@ -60,9 +60,9 @@ def run():
             json.dump({"url": f"postgresql://fixture:{password}@127.0.0.1:{port}/postgres", "container": name}, output)
         env.unlink()
         child_env = os.environ.copy()
-        child_env["WEBDOCK_OBJECT_STORAGE_POSTGRES_CONFIG"] = str(config)
+        child_env["SPITZLI_OBJECT_STORAGE_POSTGRES_CONFIG"] = str(config)
         if args.minio:
-            child_env.setdefault("WEBDOCK_OBJECT_STORAGE_MINIO_CONFIG", str(directory.parent / "backend.json"))
+            child_env.setdefault("SPITZLI_OBJECT_STORAGE_MINIO_CONFIG", str(directory.parent / "backend.json"))
         command = ["cargo", "test", "--manifest-path", "plugins/object-storage/Cargo.toml", "--locked", "-j", "2",
                    "--", "--include-ignored", "--skip", "fence_child", "--skip", "recover_exact_owned_fixture", "--skip", "postgres_server_restart"]
         if not args.minio:

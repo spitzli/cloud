@@ -87,7 +87,7 @@ def qualified_buildctl(config):
     require(executable, 'Preinstalled qualified buildctl required')
     path = Path(executable).resolve()
     info = path.stat()
-    expected = config.get('WEBDOCK_BUILDCTL_SHA256', '')
+    expected = config.get('SPITZLI_BUILDCTL_SHA256', '')
     require(re.fullmatch(r'[a-f0-9]{64}', expected) and stat.S_ISREG(info.st_mode)
             and info.st_uid in {0, os.getuid()} and info.st_mode & 0o022 == 0,
             'Pinned operator-qualified buildctl binary required')
@@ -108,7 +108,7 @@ def selected_dockerfile(context, value='Dockerfile'):
 def require_blacksmith_region(config):
     region = config.get('BLACKSMITH_REGION', '')
     require(config.get('GITHUB_ACTIONS') == 'true' and region in {'us-east', 'us-west', 'eu-central', 'eu-west'}
-            and region == config.get('WEBDOCK_BLACKSMITH_REGION'), 'Actual Blacksmith job and matching recorded region required')
+            and region == config.get('SPITZLI_BLACKSMITH_REGION'), 'Actual Blacksmith job and matching recorded region required')
 
 
 def require_fresh_blacksmith_builder(config):
@@ -148,7 +148,7 @@ def build_image(context, temporary_root, config, token, check=False, bootstrap=F
     temporary_root = Path(temporary_root).resolve()
     require(not temporary_root.is_relative_to(context), 'Private runner temporary files must remain outside the build context')
     require(not (check and bootstrap), 'Select one build target')
-    dockerfile = selected_dockerfile(context, 'deploy/docker/backend.Dockerfile' if bootstrap else config.get('WEBDOCK_PLUGIN_DOCKERFILE', 'Dockerfile'))
+    dockerfile = selected_dockerfile(context, 'deploy/docker/backend.Dockerfile' if bootstrap else config.get('SPITZLI_PLUGIN_DOCKERFILE', 'Dockerfile'))
     archive = temporary_root / 'webdock-backend.oci.tar'
     if bootstrap:
         require(not archive.exists() and not archive.is_symlink(), 'Bootstrap archive must not already exist')
@@ -160,13 +160,13 @@ def build_image(context, temporary_root, config, token, check=False, bootstrap=F
     require(re.fullmatch(r'[a-f0-9]{40}', revision), 'Exact source revision required')
     require(re.fullmatch(r'[A-Za-z0-9_-]+(?:\[bot\])?', actor), 'GitHub actor required')
     require(isinstance(token, str) and (token == '' if check or bootstrap else re.fullmatch(r'[A-Za-z0-9_.-]{10,2048}', token)), 'Publishing token required only for the production image push')
-    backend = config.get('WEBDOCK_OCI_BACKEND', 'rootless-buildctl')
+    backend = config.get('SPITZLI_OCI_BACKEND', 'rootless-buildctl')
     require(backend in {'rootless-buildctl', 'blacksmith-buildx'}, 'Explicit supported OCI backend required')
     if backend == 'blacksmith-buildx':
         docker, builder, provider_config = qualified_blacksmith_builder(config)
         require(not Path(provider_config).is_relative_to(context), 'Provider builder state must stay outside the source context')
     else:
-        address = config.get('WEBDOCK_BUILDKIT_ADDR', '')
+        address = config.get('SPITZLI_BUILDKIT_ADDR', '')
         validate_socket(address)
         buildctl = qualified_buildctl(config)
     with tempfile.TemporaryDirectory(prefix='plugin-build-', dir=temporary_root) as temporary:

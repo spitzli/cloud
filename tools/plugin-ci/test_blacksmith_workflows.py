@@ -40,10 +40,10 @@ class BlacksmithWorkflows(unittest.TestCase):
                         self.assertIn("github.repository == 'spitzli/cloud'", condition)
                         self.assertIn("github.ref == 'refs/heads/ci/blacksmith-qualification'", condition)
                         self.assertNotIn('secrets.', path.read_text())
-                        self.assertNotIn('WEBDOCK_BLACKSMITH_READY', condition)
+                        self.assertNotIn('SPITZLI_BLACKSMITH_READY', condition)
                     else:
-                        self.assertIn("vars.WEBDOCK_BLACKSMITH_READY == 'true'", condition)
-                    self.assertIn("vars.WEBDOCK_BLACKSMITH_REGION != ''", condition)
+                        self.assertIn("vars.SPITZLI_BLACKSMITH_READY == 'true'", condition)
+                    self.assertIn("vars.SPITZLI_BLACKSMITH_REGION != ''", condition)
                     if 'pull_request' in workflow['on']:
                         self.assertTrue("(github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)" in condition
                             or "github.event_name == 'push'" in condition
@@ -54,10 +54,10 @@ class BlacksmithWorkflows(unittest.TestCase):
                             if step['uses'].startswith('actions/checkout@'):
                                 self.assertEqual(step['with']['persist-credentials'], 'false')
                         if 'build_oci.py' in step.get('run', '') and not probe:
-                            self.assertIn("vars.WEBDOCK_BLACKSMITH_BUILDER_READY == 'true'", condition)
+                            self.assertIn("vars.SPITZLI_BLACKSMITH_BUILDER_READY == 'true'", condition)
                 self.assertNotIn('docker/setup-buildx-action', path.read_text())
-                self.assertNotIn('WEBDOCK_PLUGIN_CI_RUNNER', path.read_text())
-                self.assertNotIn('WEBDOCK_CI_RUNNER', path.read_text())
+                self.assertNotIn('SPITZLI_PLUGIN_CI_RUNNER', path.read_text())
+                self.assertNotIn('SPITZLI_CI_RUNNER', path.read_text())
 
     def test_runtime_guard_accepts_documented_matching_regions_and_rejects_missing_or_mismatched(self):
         for path, workflow in workflows():
@@ -86,7 +86,7 @@ class BlacksmithWorkflows(unittest.TestCase):
     def test_managed_builder_setup_has_no_fallback_and_is_guarded_before_and_after(self):
         for path, workflow in workflows():
             for job in workflow['jobs'].values():
-                if job.get('env', {}).get('WEBDOCK_OCI_BACKEND') != 'blacksmith-buildx':
+                if job.get('env', {}).get('SPITZLI_OCI_BACKEND') != 'blacksmith-buildx':
                     continue
                 with self.subTest(path=path):
                     steps=job['steps']

@@ -4,7 +4,7 @@ import {CanvasError,canvasID,canvasRevision,canvasActor,type CanvasCommand,type 
 export const CANVAS_BODY_LIMIT=512*1024+2048;
 export type CanvasRole='reader'|'editor'|'admin'|'operator';
 const object=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
-export function authorizeCanvas(request:Request,write=false,secret=process.env.WEBDOCK_STUDIO_BRIDGE_SECRET){
+export function authorizeCanvas(request:Request,write=false,secret=process.env.SPITZLI_STUDIO_BRIDGE_SECRET){
  const supplied=request.headers.get('authorization')||'',expected='Bearer '+(secret||'');
  if(!secret||secret.length<32||Buffer.byteLength(supplied)!==Buffer.byteLength(expected)||!timingSafeEqual(Buffer.from(supplied),Buffer.from(expected)))throw new CanvasError('Unauthorized',401);
  const role=request.headers.get('x-webdock-role');if(!role||!['reader','editor','admin','operator'].includes(role)||(write&&role==='reader'))throw new CanvasError('Keine Berechtigung für diese Seitenaktion.',403);

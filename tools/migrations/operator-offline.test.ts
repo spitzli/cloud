@@ -19,7 +19,7 @@ const secrets = {
   bindingID: "789",
   clientID: "321",
   checksum: "metadata",
-  environment: { WEBDOCK_SSO_CLIENT_SECRET: "private-client-secret" },
+  environment: { SPITZLI_SSO_CLIENT_SECRET: "private-client-secret" },
 };
 function database(commitFails = false) {
   const statements: string[] = [];
@@ -61,7 +61,7 @@ test("offline runner durably writes private credentials before commit and expose
     assert.equal((await stat(output)).mode & 0o777, 0o600);
     assert.equal(
       JSON.parse(await readFile(output, "utf8")).environment
-        .WEBDOCK_SSO_CLIENT_SECRET,
+        .SPITZLI_SSO_CLIENT_SECRET,
       "private-client-secret",
     );
     assert.equal(db.statements.at(-1), "COMMIT");

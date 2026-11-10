@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createHash, createHmac, randomBytes } from "node:crypto";
 const target = new URL(process.env.DATABASE_URL || "");
 if (
-  process.env.WEBDOCK_TEST_OPERATOR !== "true" ||
+  process.env.SPITZLI_TEST_OPERATOR !== "true" ||
   target.hostname !== "127.0.0.1" ||
   target.pathname !== "/webdock_operator_test"
 )
@@ -13,8 +13,8 @@ const { databasePools } = await import("../../legacy/control-plane/src/db/runtim
 const { currentClaims } =
   await import("../../legacy/control-plane/src/modules/auth/authorization");
 const origin = process.env.BETTER_AUTH_URL!,
-  clientID = process.env.WEBDOCK_STUDIO_CLIENT_ID!,
-  clientSecret = process.env.WEBDOCK_SSO_CLIENT_SECRET!,
+  clientID = process.env.SPITZLI_STUDIO_CLIENT_ID!,
+  clientSecret = process.env.SPITZLI_SSO_CLIENT_SECRET!,
   binding = process.env.OPERATOR_TEST_BINDING!,
   subject = process.env.OPERATOR_TEST_SUBJECT!;
 const originalFetch = globalThis.fetch;
@@ -138,7 +138,7 @@ try {
     "operator",
   );
   const verifier = randomBytes(32).toString("base64url"),
-    redirect = process.env.WEBDOCK_STUDIO_ORIGIN! + "/api/sso/callback";
+    redirect = process.env.SPITZLI_STUDIO_ORIGIN! + "/api/sso/callback";
   const query = new URLSearchParams({
     client_id: clientID,
     redirect_uri: redirect,
@@ -152,7 +152,7 @@ try {
   const authorize = await call("/oauth2/authorize?" + query);
   assert.equal(authorize.status, 302);
   const destination = new URL(authorize.headers.get("location")!);
-  assert.equal(destination.origin, process.env.WEBDOCK_STUDIO_ORIGIN);
+  assert.equal(destination.origin, process.env.SPITZLI_STUDIO_ORIGIN);
   const code = destination.searchParams.get("code");
   assert.ok(code);
   const tokens = await auth.handler(
@@ -294,8 +294,8 @@ try {
   const { configureFullProducts } = await import("../../legacy/control-plane/src/full-products");
   configureFullProducts();
   // Managed DB commands keep their legacy wire name without owning Hosting routes.
-  process.env.WEBDOCK_MODULES = JSON.stringify({ configVersion: 1, modules: { databases: { enabled: true } } });
-  process.env.WEBDOCK_API_DOMAINS = "auth,databases,registry";
+  process.env.SPITZLI_MODULES = JSON.stringify({ configVersion: 1, modules: { databases: { enabled: true } } });
+  process.env.SPITZLI_API_DOMAINS = "auth,databases,registry";
   const databasesConfig = readConfig(process.env);
   const databasesApp = await createApp(databasesConfig, { mounts: portalProtocols(databasesConfig) });
   const plans = await databasesApp.handle(new Request(databasesConfig.apiOrigin + "/v1/studio", {

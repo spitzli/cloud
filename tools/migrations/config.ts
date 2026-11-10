@@ -33,11 +33,11 @@ export function migrationConfig(
   )
     throw Error("Context signing secret must contain at least 32 bytes");
   if (
-    env.WEBDOCK_BOOTSTRAP_EMPTY_DATABASE !== undefined &&
-    !["true", "false"].includes(env.WEBDOCK_BOOTSTRAP_EMPTY_DATABASE)
+    env.SPITZLI_BOOTSTRAP_EMPTY_DATABASE !== undefined &&
+    !["true", "false"].includes(env.SPITZLI_BOOTSTRAP_EMPTY_DATABASE)
   )
     throw Error("Invalid bootstrap mode");
-  const bootstrap = env.WEBDOCK_BOOTSTRAP_EMPTY_DATABASE === "true";
+  const bootstrap = env.SPITZLI_BOOTSTRAP_EMPTY_DATABASE === "true";
   if (
     !bootstrap &&
     decodeURIComponent(url.username) !== "webdock_offline_migrate"

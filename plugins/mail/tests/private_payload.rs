@@ -18,8 +18,8 @@ fn retained_hex_key_is_purpose_bound_and_strict() {
 #[tokio::test]
 #[ignore = "requires fresh task3-owned PostgreSQL"]
 async fn postgres_immutable_tenant_key_and_retention() {
-    let url = std::env::var("WEBDOCK_MAIL_TASK3_TEST_URL").unwrap();
-    let ca = std::fs::read(std::env::var("WEBDOCK_MAIL_TASK3_TEST_CA").unwrap()).unwrap();
+    let url = std::env::var("SPITZLI_MAIL_TASK3_TEST_URL").unwrap();
+    let ca = std::fs::read(std::env::var("SPITZLI_MAIL_TASK3_TEST_CA").unwrap()).unwrap();
     let store = Arc::new(Store::connect_tls(&url, &ca).await.unwrap());
     let payload = PgPrivatePayloadStore::new(store.clone(), &"24".repeat(32))
         .await
@@ -98,7 +98,7 @@ async fn postgres_immutable_tenant_key_and_retention() {
             .await
             .is_err()
     );
-    let ca = std::fs::read(std::env::var("WEBDOCK_MAIL_TASK3_TEST_CA").unwrap()).unwrap();
+    let ca = std::fs::read(std::env::var("SPITZLI_MAIL_TASK3_TEST_CA").unwrap()).unwrap();
     let client = spitzli_plugin_kit::postgres::connect(&url, Some(&ca))
         .await
         .unwrap();

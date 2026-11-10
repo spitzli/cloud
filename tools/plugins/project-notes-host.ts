@@ -28,7 +28,7 @@ const env = parseEnv(
   ),
 );
 const fixture = JSON.parse(
-  await readFile(env.WEBDOCK_RLS_FIXTURE_FILE!, "utf8"),
+  await readFile(env.SPITZLI_RLS_FIXTURE_FILE!, "utf8"),
 );
 const target = new URL(env.API_TEST_OWNER_URL!);
 if (target.hostname !== "127.0.0.1" || target.pathname !== "/webdock_rls_test")
@@ -213,7 +213,7 @@ const runtimeToken = randomBytes(32).toString("hex");
 const jobs = createPluginJobs({
   connection: {
     host: "127.0.0.1",
-    port: Number(process.env.WEBDOCK_TEST_REDIS_PORT),
+    port: Number(process.env.SPITZLI_TEST_REDIS_PORT),
   },
   prefix: "notes-" + randomUUID(),
   authority: {
@@ -391,8 +391,8 @@ async function startPlugin() {
       ...process.env,
       PORT: "0",
       HOST: "127.0.0.1",
-      WEBDOCK_PLUGIN_HOST_URL: origin,
-      WEBDOCK_PLUGIN_RUNTIME_TOKEN: runtimeToken,
+      SPITZLI_PLUGIN_HOST_URL: origin,
+      SPITZLI_PLUGIN_RUNTIME_TOKEN: runtimeToken,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

@@ -60,14 +60,14 @@ def acceptance(config, mc, access):
             fixture = directory / "fixture.json"
             fixture.write_text(json.dumps({"database": f"postgresql://postgres:{password}@127.0.0.1:{port}/archive_metadata", "source": f"postgresql://archive_reader:{source_password}@127.0.0.1:{port}/archive_source", "backend": {"config": binding["config"], "credentials": binding["credentials"]}}))
             fixture.chmod(0o600)
-            env = {**os.environ, "CARGO_TARGET_DIR": str(ROOT / "target"), "WEBDOCK_ARCHIVES_FIXTURE": str(fixture), "WEBDOCK_ARCHIVES_RESTORE": f"postgresql://postgres:{password}@127.0.0.1:{port}/archive_restore"}
+            env = {**os.environ, "CARGO_TARGET_DIR": str(ROOT / "target"), "SPITZLI_ARCHIVES_FIXTURE": str(fixture), "SPITZLI_ARCHIVES_RESTORE": f"postgresql://postgres:{password}@127.0.0.1:{port}/archive_restore"}
             r = subprocess.run(["cargo", "test", "--manifest-path", "plugins/archives/Cargo.toml", "--locked", "--features", "local-test", "--test", "owned", "-j", "2", "--", "--include-ignored"], cwd=ROOT, env=env, timeout=900)
             if r.returncode:
                 raise RuntimeError("owned archive acceptance failed")
             readonly = subprocess.run(["cargo", "test", "--manifest-path", "plugins/archives/Cargo.toml", "--locked", "--features", "local-test", "--test", "readonly", "-j", "2", "--", "--include-ignored"], cwd=ROOT, env=env, timeout=900)
             if readonly.returncode:
                 raise RuntimeError("owned readonly source privilege acceptance failed")
-            if os.environ.get("WEBDOCK_ARCHIVES_SKIP_CORE") != "1":
+            if os.environ.get("SPITZLI_ARCHIVES_SKIP_CORE") != "1":
                 core = subprocess.run(["cargo", "test", "--manifest-path", "plugins/archives/Cargo.toml", "--locked", "--features", "local-test", "--test", "core", "-j", "2", "--", "--include-ignored"], cwd=ROOT, env=env, timeout=900)
                 if core.returncode:
                     raise RuntimeError("owned Core archive authority acceptance failed")

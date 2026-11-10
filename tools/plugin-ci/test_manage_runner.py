@@ -7,14 +7,14 @@ module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
 
 class SourceGates(unittest.TestCase):
     def workflow(self,condition,event='pull_request'):
-        return 'on:\n  '+event+':\njobs:\n  check:\n    runs-on: ${{ fromJSON(vars.WEBDOCK_PLUGIN_CI_RUNNER) }}\n    if: '+condition+'\n    steps: []\n'
+        return 'on:\n  '+event+':\njobs:\n  check:\n    runs-on: ${{ fromJSON(vars.SPITZLI_PLUGIN_CI_RUNNER) }}\n    if: '+condition+'\n    steps: []\n'
     def test_trusted_same_repo_guard_and_exact_push_guard_accepted(self):
         self.assertTrue(module.workflow_gate(self.workflow(module.GATE)))
         self.assertTrue(module.workflow_gate(self.workflow("github.event_name == 'push'",'push')))
     def test_fork_bypass_and_untrusted_events_rejected(self):
         for condition in ['always()',"always() || github.event_name == 'push'",'true']:
             with self.assertRaises(ValueError):module.workflow_gate(self.workflow(condition))
-        fallback=self.workflow(module.GATE).replace(module.RUNS_ON, "${{ fromJSON(vars.WEBDOCK_PLUGIN_CI_RUNNER || '[\"ubuntu-24.04\"]') }}")
+        fallback=self.workflow(module.GATE).replace(module.RUNS_ON, "${{ fromJSON(vars.SPITZLI_PLUGIN_CI_RUNNER || '[\"ubuntu-24.04\"]') }}")
         with self.assertRaises(ValueError):module.workflow_gate(fallback)
         for event in ['pull_request_target','issue_comment','repository_dispatch']:
             with self.assertRaises(ValueError):module.workflow_gate(self.workflow(module.GATE,event))

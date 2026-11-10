@@ -43,6 +43,6 @@ Placement goes through `plugin.workloads`: each app is one unit of a Secret (its
 ```sh
 cargo test --manifest-path Cargo.toml
 # Disposable loopback PostgreSQL for plugin storage; Core and the cluster are stood in for:
-WEBDOCK_HOSTING_PLUGIN_TEST_ADMIN_URL=postgres://… \
+SPITZLI_HOSTING_PLUGIN_TEST_ADMIN_URL=postgres://… \
   cargo test --manifest-path Cargo.toml -- --include-ignored
 ```

@@ -24,7 +24,7 @@ jobs:
           SOURCE_ID: ${{ inputs.id }}
           SOURCE_NONCE: ${{ inputs.nonce }}
           SOURCE_CONTROL_URL: ${{ inputs.control_url }}
-          EXPECTED_CONTROL_URL: ${{ vars.WEBDOCK_PLUGIN_CONTROL_URL }}
+          EXPECTED_CONTROL_URL: ${{ vars.SPITZLI_PLUGIN_CONTROL_URL }}
           EXPECTED_WORKFLOW_SHA: ${{ inputs.expected_sha }}
         run: python3 trusted/plugin_build.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

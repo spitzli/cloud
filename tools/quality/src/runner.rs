@@ -376,6 +376,7 @@ pub fn plan(scope: Scope, standalone_manifests: &[PathBuf]) -> Vec<Check> {
                 "test",
                 "tools/tests/native-plugin-fixture.test.mjs",
                 "modules/mail/tests/retained-secrets.test.mjs",
+                "modules/hosting/tests/environment-namespace.test.mjs",
             ],
         ));
         for script in ["lint", "typecheck", "test", "build", "test:browser"] {
@@ -387,6 +388,17 @@ pub fn plan(scope: Scope, standalone_manifests: &[PathBuf]) -> Vec<Check> {
     }
     checks
 }
+fn command(root: &Path, check: &Check) -> Command {
+    let mut command = Command::new(&check.program);
+    command.args(&check.args).current_dir(root);
+    if check.program == "bun"
+        && check.args == ["run", "--filter", "@spitzli/console", "test:browser"]
+    {
+        command.env("SPITZLI_BROWSER_DIST", root.join("apps/console/dist"));
+    }
+    command
+}
+
 pub fn execute(root: &Path, checks: &[Check]) -> Result<(), String> {
     if checks.iter().any(|check| check.program == "bun") {
         // Bun is the only JavaScript runtime and package manager; Node is not used by this gate.
@@ -400,9 +412,7 @@ pub fn execute(root: &Path, checks: &[Check]) -> Result<(), String> {
     }
     for check in checks {
         println!("Checking: {} {}", check.program, check.args.join(" "));
-        let status = Command::new(&check.program)
-            .args(&check.args)
-            .current_dir(root)
+        let status = command(root, check)
             .status()
             .map_err(|error| format!("Cannot start {}: {error}", check.program))?;
         if !status.success() {
@@ -419,6 +429,37 @@ pub fn execute(root: &Path, checks: &[Check]) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn console_browser_checks_use_the_exact_built_artifact_without_changing_other_commands() {
+        let root = Path::new("/owned/source");
+        let browser = command(
+            root,
+            &Check::new(
+                "bun",
+                &["run", "--filter", "@spitzli/console", "test:browser"],
+            ),
+        );
+        assert_eq!(browser.get_current_dir(), Some(root));
+        assert_eq!(
+            browser
+                .get_envs()
+                .find(|(key, _)| *key == "SPITZLI_BROWSER_DIST")
+                .and_then(|(_, value)| value),
+            Some(root.join("apps/console/dist").as_os_str())
+        );
+        for args in [
+            ["run", "--filter", "@spitzli/console", "build"],
+            ["run", "--filter", "@spitzli/web", "test:browser"],
+        ] {
+            assert!(
+                command(root, &Check::new("bun", &args))
+                    .get_envs()
+                    .next()
+                    .is_none()
+            );
+        }
+    }
+
     #[test]
     fn command_plan_enforces_features_standalone_plugins_and_all_console_checks() {
         let manifests = [
@@ -448,6 +489,7 @@ mod tests {
                         "test",
                         "tools/tests/native-plugin-fixture.test.mjs",
                         "modules/mail/tests/retained-secrets.test.mjs",
+                        "modules/hosting/tests/environment-namespace.test.mjs",
                     ]
         }));
         let isolated = checks
