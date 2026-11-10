@@ -9,7 +9,7 @@ import {
   inspectSession,
 } from "../../../src/modules/databases/service";
 import { encryptMailSecret } from "../../../src/modules/platform/platform";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 
 const url = process.env.WEBDOCK_DATABASE_TEST_URL;
 test(

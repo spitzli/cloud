@@ -7,7 +7,7 @@ description: "Install the alpha core with external PostgreSQL, offline initializ
 
 The core installation runs three services: the bundled core API, the core Console and the Auth frontend. API and Console core images exclude product runtime packages. The separate offline migrator retains the source, dependencies and complete historical database baseline, including product schemas and restricted roles. Installing that baseline creates no customer product service and enables no product. The small JavaScript API bundle is not the total container size: the image also contains Bun and its base operating system.
 
-The default browser provider is local Better Auth. CMS and Billing are unavailable in the active core. Mail, Hosting, Databases and Storage require a separately configured full distribution or compatible plugins. No npm publication of a public `@webdock/core` package is implied by this container release.
+The default browser provider is local Better Auth. CMS and Billing are unavailable in the active core. Mail, Hosting, Databases and Storage require a separately configured full distribution or compatible plugins. No npm publication of a public `@spitzli/core` package is implied by this container release.
 
 ## License and alternative terms
 
@@ -67,7 +67,7 @@ For a local evaluation build from the pinned source revision:
 docker build -f deploy/docker/Dockerfile --target api-core -t webdock-api-core:local .
 docker build -f deploy/docker/Dockerfile --target console-core -t webdock-console-core:local .
 docker build -f deploy/docker/Dockerfile --target auth -t webdock-auth:local .
-docker build -f deploy/docker/Dockerfile --target migrate -t webdock-migrate:local .
+docker build -f deploy/docker/Dockerfile --target migrate -t spitzli-migrate:local .
 ```
 
 Build from the repository root. Bun 1.4.3 and the root `bun.lock` define the toolchain. Do not supply deployment secrets or provider credentials during builds. The migration image is an offline tool, not a fourth long-running core service.
@@ -228,7 +228,7 @@ helm upgrade --install webdock deploy/helm/webdock -n webdock \
 
 ## Hosting and incoming Mail
 
-The separate `webdock-agent` chart is disabled by default. Enabling it requires a pre-enrolled BYOK identity, a persistent state claim and an explicit allowlist of existing application namespaces. It grants read-only cluster inventory and bounded application operations matching the existing BYOK agent. The agent stores its sequence on the persistent claim, uses one replica with a recreate strategy and never receives API database credentials. Re-enrollment requires an explicit private state replacement while stopped.
+The separate `spitzli-agent` chart is disabled by default. Enabling it requires a pre-enrolled BYOK identity, a persistent state claim and an explicit allowlist of existing application namespaces. It grants read-only cluster inventory and bounded application operations matching the existing BYOK agent. The agent stores its sequence on the persistent claim, uses one replica with a recreate strategy and never receives API database credentials. Re-enrollment requires an explicit private state replacement while stopped.
 
 Managed hosting continues to use the node-local agent installation under `agents/kubernetes`. The BYOK chart does not replace node-local storage services or grant managed provisioning capabilities.
 
@@ -243,10 +243,10 @@ For a local build, first obtain and verify the runtime image matching the vendor
 ```sh
 docker build -f deploy/docker/database-gateway.Dockerfile \
   --build-arg "TABULARIS_IMAGE=$TABULARIS_IMAGE" \
-  -t webdock-database-gateway:local .
+  -t spitzli-database-gateway:local .
 ```
 
-For a release candidate, supply an immutable runtime image digest matching that vendor record. Set `WEBDOCK_RELEASE_DATABASES=true` and `TABULARIS_IMAGE` before running the release builder. It includes `database-gateway.oci.tar`, `tabularis-runtime.oci.tar` and the `webdock-databases` chart only after the packaged gateway passes the native PostgreSQL/TLS test. The default nine-image candidate does not contain these optional artifacts.
+For a release candidate, supply an immutable runtime image digest matching that vendor record. Set `WEBDOCK_RELEASE_DATABASES=true` and `TABULARIS_IMAGE` before running the release builder. It includes `database-gateway.oci.tar`, `tabularis-runtime.oci.tar` and the `spitzli-databases` chart only after the packaged gateway passes the native PostgreSQL/TLS test. The default nine-image candidate does not contain these optional artifacts.
 
 The optional Compose file uses a separate private `database-gateway.env` and the `databases` profile:
 
@@ -256,7 +256,7 @@ docker compose -f deploy/compose/compose.databases.yaml --profile databases up -
 
 Set `WEBDOCK_DATABASE_GATEWAY_IMAGE` to the verified gateway digest and `TABULARIS_EXPECTED_COMMIT` to the recorded full source commit. The private environment includes the canonical `WEBDOCK_AUTH_ORIGIN`, `WEBDOCK_DATABASE_GATEWAY_ORIGIN`, allowed `WEBDOCK_DATABASE_BROWSER_ORIGINS`, and the server-only `WEBDOCK_DATABASE_GATEWAY_SECRET` shared with the API. The Auth origin must route the existing `/api/databases/gateway` control endpoint to the API. Keep browser and gateway origins same-site for the strict session cookie.
 
-For Kubernetes, render the separate `deploy/helm/webdock-databases` chart. It is disabled by default and requires an existing Secret, immutable image and explicit ingress/egress rules. `managedRuntimes: true` enables the existing per-session process manager; choose a tested `runtimeCapacity`. Registered databases continue using individually provisioned, allowlisted runtime origins. Use `runtimeCAConfigMap` for an existing registered-runtime trust bundle when needed; never disable TLS verification.
+For Kubernetes, render the separate `deploy/helm/spitzli-databases` chart. It is disabled by default and requires an existing Secret, immutable image and explicit ingress/egress rules. `managedRuntimes: true` enables the existing per-session process manager; choose a tested `runtimeCapacity`. Registered databases continue using individually provisioned, allowlisted runtime origins. Use `runtimeCAConfigMap` for an existing registered-runtime trust bundle when needed; never disable TLS verification.
 
 Neither deployment creates database servers, roles or grants. Managed processes share a container and UID; their private directories isolate application state, not a compromised process. Existing per-user/per-profile runtime deployments remain available where a stronger process boundary is required. Database credentials stay in the gateway/runtime and never enter public launch data.
 

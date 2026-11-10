@@ -1,4 +1,4 @@
-import type { ModuleManifest } from "@webdock/module-sdk";
+import type { ModuleManifest } from "@spitzli/module-sdk";
 export const databasesManifest = {
   id: "databases",
   version: "0.1.0",

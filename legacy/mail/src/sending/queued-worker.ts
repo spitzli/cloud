@@ -1,6 +1,6 @@
 import {fileQueuedWebmail,type WebmailClientFactory} from '../api/webmail-sending.ts';
 import {createHash} from 'node:crypto';
-import type {SendLease} from '@webdock/mail-core/outbox';
+import type {SendLease} from '@spitzli/mail-core/outbox';
 import type {MailControl} from '../api/server.ts';
 import type {PrivatePayloadStore} from './payload-store.ts';
 import {parseStoredRequest,compileSendRequest} from './request.ts';

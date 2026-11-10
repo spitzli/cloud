@@ -1,14 +1,14 @@
-import type { MailAgentPorts } from "@webdock/mail-contracts/agent-ports";
+import type { MailAgentPorts } from "@spitzli/mail-contracts/agent-ports";
 import type { Pool } from "pg";
-import type { IdentityDirectory } from "@webdock/core/identity";
-import type { HostingActor } from "@webdock/hosting-contracts";
-import type { DatabaseScope } from "@webdock/database-runtime";
+import type { IdentityDirectory } from "@spitzli/core/identity";
+import type { HostingActor } from "@spitzli/hosting-contracts";
+import type { DatabaseScope } from "@spitzli/database-runtime";
 import type {
   MailSecrets,
   MailFetch,
   MailDomainProvider,
   MailProviderAuth,
-} from "@webdock/mail-contracts/provider-ports";
+} from "@spitzli/mail-contracts/provider-ports";
 export type Fetch = MailFetch;
 /** Runtime resources are supplied by the host; the module creates no pools or global provider sessions. */
 export interface HostingPorts extends MailSecrets, MailAgentPorts {
@@ -55,32 +55,32 @@ export interface HostingPorts extends MailSecrets, MailAgentPorts {
   ) => import("../providers").VercelJSONTransport;
   domainProvider(auth: MailProviderAuth, fetcher?: Fetch): MailDomainProvider;
   fetch: Fetch;
-  assertMailAccess: import("@webdock/mail-contracts/provider-ports").MailProductStore["assertMailAccess"];
+  assertMailAccess: import("@spitzli/mail-contracts/provider-ports").MailProductStore["assertMailAccess"];
   createMailKeyInTransaction(
-    db: import("@webdock/core/identity").DatabaseReader,
-    actor: import("@webdock/mail-contracts").MailActor,
+    db: import("@spitzli/core/identity").DatabaseReader,
+    actor: import("@spitzli/mail-contracts").MailActor,
     input: {
       name: string;
-      permission: import("@webdock/mail-contracts").Permission;
+      permission: import("@spitzli/mail-contracts").Permission;
       domainID?: string;
     },
   ): Promise<{ id: string; key: string; prefix: string }>;
   nativeClusterDemand(
-    db: import("@webdock/core/identity").DatabaseReader,
+    db: import("@spitzli/core/identity").DatabaseReader,
     clusterID: string,
   ): Promise<{
-    [K in keyof import("@webdock/hosting-contracts").HostingAllowances]: number;
+    [K in keyof import("@spitzli/hosting-contracts").HostingAllowances]: number;
   }>;
   clusterCapacityDemand(
-    db: import("@webdock/core/identity").DatabaseReader,
+    db: import("@spitzli/core/identity").DatabaseReader,
     clusterID: string,
     kind: "apps" | "native" | "all",
     excludedCustomer?: string,
   ): Promise<{
-    [K in keyof import("@webdock/hosting-contracts").HostingAllowances]: number;
+    [K in keyof import("@spitzli/hosting-contracts").HostingAllowances]: number;
   }>;
   databasePoolCapacity(
-    db: import("@webdock/core/identity").DatabaseReader,
+    db: import("@spitzli/core/identity").DatabaseReader,
     clusterID: string,
   ): Promise<
     {
@@ -101,7 +101,7 @@ export interface HostingPorts extends MailSecrets, MailAgentPorts {
     projectID: string;
     fetcher?: Fetch;
   }): Promise<
-    import("@webdock/hosting-provider-contracts").VercelProjectSnapshot
+    import("@spitzli/hosting-provider-contracts").VercelProjectSnapshot
   >;
   listVercelProjects(input: {
     token: string;

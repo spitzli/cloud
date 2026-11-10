@@ -4,7 +4,7 @@ import {
   type CanvasPage,
   type CanvasList,
   type CanvasPageSummary,
-} from "@webdock/page-builder/model";
+} from "@spitzli/page-builder/model";
 import type { createCMSDemoBridges } from "./demo-bridges";
 import type { CMSPorts } from "./ports";
 export type CanvasCommand =

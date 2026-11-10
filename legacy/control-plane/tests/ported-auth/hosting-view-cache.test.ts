@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { configureViewCache, ViewCache } from "../../src/cache";
 import { database, authDatabase, closeDatabases } from "../../src/db/runtime";
 import { executeHosting } from "../../src/modules/hosting/service";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 afterEach(restoreMocks);
 
 const actor: HostingActor = {

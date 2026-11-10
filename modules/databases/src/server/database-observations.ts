@@ -1,7 +1,7 @@
 import type { DatabaseRuntimePorts } from "./ports";
 import { z } from "zod";
-import { resourceID, HostingError } from "@webdock/hosting-contracts";
-import type { Agent } from "@webdock/hosting-contracts/runtime-ports";
+import { resourceID, HostingError } from "@spitzli/hosting-contracts";
+import type { Agent } from "@spitzli/hosting-contracts/runtime-ports";
 export type Dependencies = {
   verifyAgent: DatabaseRuntimePorts["verifyAgent"];
   transaction: DatabaseRuntimePorts["transaction"];

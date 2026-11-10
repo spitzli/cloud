@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { recordID } from "@webdock/core/registry/contracts";
+import { recordID } from "@spitzli/core/registry/contracts";
 const text = z.string().trim().max(160);
 const notes = z.string().trim().max(3000).nullable().optional();
 const url = z

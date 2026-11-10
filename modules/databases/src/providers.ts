@@ -1,4 +1,4 @@
-export type { DatabaseConfig } from "@webdock/database-runtime";
+export type { DatabaseConfig } from "@spitzli/database-runtime";
 
 export type DatabaseWorkspaceTarget =
   | {

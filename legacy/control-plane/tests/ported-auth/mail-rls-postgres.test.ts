@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { randomBytes, createHash } from "node:crypto";
 import pg from "pg";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
 test(
   "Mail server paths work as constrained session/key/worker roles without external sends",
@@ -43,7 +43,7 @@ test(
     const { acceptProviderEvents } =
       await import("../../src/modules/mail/product/callback-inbox");
     const { getMailService, requestMailService } =
-      await import("@webdock/mail-core");
+      await import("@spitzli/mail-core");
     const owner = new pg.Pool({ connectionString: ownerURL, max: 1 });
     const base = BigInt(
         "93" + BigInt("0x" + randomBytes(5).toString("hex")).toString(),

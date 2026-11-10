@@ -4,7 +4,7 @@ import argparse
 import json
 import re
 
-NAMESPACE = 'webdock-mail-gateway'
+NAMESPACE = 'spitzli-mail-gateway'
 
 
 def render(api_image, gateway_image):

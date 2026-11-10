@@ -1,5 +1,5 @@
-import {messageDigest} from '@webdock/mail-core/submission-proof';
-import type {SendLease} from '@webdock/mail-core/outbox';
+import {messageDigest} from '@spitzli/mail-core/submission-proof';
+import type {SendLease} from '@spitzli/mail-core/outbox';
 import {submitRelayAPI,RelayAPIFailure} from './relay-api.ts';
 import {submitSMTP,SMTPFailure} from './smtp.ts';
 import {prepareMessage,stampMessage} from './message.ts';

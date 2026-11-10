@@ -1,4 +1,4 @@
-import type { DatabaseServices } from "@webdock/database-contracts/runtime-ports";
+import type { DatabaseServices } from "@spitzli/database-contracts/runtime-ports";
 import type { HostingPorts } from "./ports";
 import { gitActionPermission } from "./permissions";
 import {
@@ -7,7 +7,7 @@ import {
   commandSchema,
   type SetupProgress,
   type HostingCommand,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { SetupRow } from "./project-setup";
 export type Dependencies = {
   authorizeProvisioning?(row: SetupRow): Promise<void>;

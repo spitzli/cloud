@@ -1,5 +1,5 @@
 import type { DatabaseRuntimePorts } from "./ports";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 export type Dependencies = {
   env: DatabaseRuntimePorts["env"];
 };

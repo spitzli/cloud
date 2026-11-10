@@ -1,10 +1,10 @@
 import type { HostingPorts } from "./ports";
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 import {
   HostingError,
   environmentPatchSchema,
   type EnvironmentPatch,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export type Dependencies = {
   encryptMailSecret: HostingPorts["encryptMailSecret"];
   decryptMailSecret: HostingPorts["decryptMailSecret"];

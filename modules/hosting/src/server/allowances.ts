@@ -1,9 +1,9 @@
-import { allocationTotals as totals } from "@webdock/hosting-contracts/capacity-totals";
-export { allocationTotals as totals } from "@webdock/hosting-contracts/capacity-totals";
+import { allocationTotals as totals } from "@spitzli/hosting-contracts/capacity-totals";
+export { allocationTotals as totals } from "@spitzli/hosting-contracts/capacity-totals";
 import {
   effectiveHostingAllowances,
   hostingDimensions,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 export async function limits(
   db: Connection,

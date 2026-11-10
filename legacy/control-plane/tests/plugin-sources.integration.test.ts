@@ -7,7 +7,7 @@ import {
   withDatabaseScope,
   currentDatabaseScope,
   type DatabaseScope,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import { createPluginSourceService } from "../src/modules/plugins/sources-store";
 import { sourceHash } from "../src/modules/plugins/sources-policy";
 import { createPluginInstallerDispatch } from "../src/modules/plugins/sources-dispatch";

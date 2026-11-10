@@ -1,6 +1,6 @@
 import type { HostingPorts } from "./ports";
 import type { Connection } from "./authorization";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 export type Dependencies = {
   database: HostingPorts["database"];
 };

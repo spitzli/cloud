@@ -8,7 +8,7 @@ import {
   resolveAppSpec,
   type HostingActor,
   type HostingOperationStatus,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 import type { Agent } from "./clusters";
 export type Dependencies = {

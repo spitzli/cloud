@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomBytes, randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import { ScopedPool, withDatabaseScope } from "@webdock/database-runtime";
+import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
 const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "plugin invocation RLS binds documents to live grant, actor, project and runtime",

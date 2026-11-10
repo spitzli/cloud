@@ -1,4 +1,4 @@
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 // Public presentation metadata only. Bridge credentials must stay on the server.
 export type CmsKind = "demo" | "shop";
 export type CmsComponentID =

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Pool} from 'pg';
-import {outboxSchemaSQL,enqueueMail,claimSend,beginHandoff,finishHandoff,cancelSend} from '@webdock/mail-core/outbox';
+import {outboxSchemaSQL,enqueueMail,claimSend,beginHandoff,finishHandoff,cancelSend} from '@spitzli/mail-core/outbox';
 const url=new URL(process.env.DATABASE_URL!);
 if(url.hostname!=='127.0.0.1' || url.pathname!=='/webdock_admin_test' || process.env.AUTH_TEST_MAIL!=='true')throw Error('Disposable local database required');
 const pool=new Pool({connectionString:url.toString()});

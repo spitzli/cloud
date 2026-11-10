@@ -2,7 +2,7 @@ import { configureFullInstallation } from "../../src/full-installation";
 import { requireHostingCommand } from "../../src/installation";
 configureFullInstallation();
 import { createManagedAppsHandler } from "../../src/modules/hosting/plugin-apps";
-import { createPluginApps } from "@webdock/core/plugin-apps";
+import { createPluginApps } from "@spitzli/core/plugin-apps";
 import {
   saveInventory,
   claimByokOperation,
@@ -38,7 +38,7 @@ import {
 import {
   normalizeHostingAllowances,
   type HostingActor,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 const url = new URL(process.env.DATABASE_URL!);
 if (
   !["localhost", "127.0.0.1"].includes(url.hostname) ||
@@ -813,7 +813,7 @@ test("hosting persists real authorization, quotas, enrollment and fenced operati
           limit: 10,
           search: "Managed fixture",
           sort: "name",
-        })) as import("@webdock/hosting-contracts").HostingOverview;
+        })) as import("@spitzli/hosting-contracts").HostingOverview;
         assert.equal(
           overview.docs.find((item) => item.id === made.appID)?.customerName,
           "Hosting test A",

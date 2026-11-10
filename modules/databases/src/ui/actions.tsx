@@ -2,7 +2,7 @@
 import * as React from "react";
 import { createContext, useContext } from "react";
 import type { DatabaseOrderState, DatabaseCredentials } from "../ui-types";
-import type { DatabaseLaunch } from "@webdock/database-contracts";
+import type { DatabaseLaunch } from "@spitzli/database-contracts";
 type FormState = { error?: string; message?: string };
 export interface DatabaseUIActions {
   prepareDatabaseOffer(

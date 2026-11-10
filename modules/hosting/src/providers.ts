@@ -1,1 +1,1 @@
-export * from "@webdock/hosting-provider-contracts";
+export * from "@spitzli/hosting-provider-contracts";

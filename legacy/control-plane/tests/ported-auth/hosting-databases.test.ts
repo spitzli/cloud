@@ -9,7 +9,7 @@ import {
   completeDatabaseOperation,
 } from "../../src/modules/hosting/database-agent";
 import { claimOperation } from "../../src/modules/hosting/operations";
-import { nativeClusterDemand } from "@webdock/mail-core/capacity";
+import { nativeClusterDemand } from "@spitzli/mail-core/capacity";
 import test from "node:test";
 import { subtest } from "../helpers/node-test";
 import assert from "node:assert/strict";
@@ -22,7 +22,7 @@ import {
   databaseRuntimeGrants,
   databaseSchemaSQL,
 } from "../../src/modules/hosting/database-schema";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 const url = new URL(process.env.DATABASE_URL!);
 if (
   url.hostname !== "127.0.0.1" ||

@@ -132,7 +132,7 @@ test("simulator follows persistent messages/events without provider calls, real 
 
 test("incoming Mail cannot silently bypass the required Stalwart submission path", async () => {
   await withMailProductFixture(async (f) => {
-    const { nativeMailSchemaSQL } = await import("@webdock/mail-core/schema");
+    const { nativeMailSchemaSQL } = await import("@spitzli/mail-core/schema");
     await f.db.query(nativeMailSchemaSQL);
     await f.db.query(
       "INSERT INTO webdock_mail.service(customer_id,instance_key,host_id,desired_enabled,state,revision,applied_revision) VALUES($1,$2,'local-test',true,'ready',1,1)",

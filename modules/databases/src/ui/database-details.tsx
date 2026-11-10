@@ -1,8 +1,8 @@
 "use client";
 import * as React from "react";
-import { resourceScope as hostingUIScope } from "@webdock/console-kit/resource-scope";
+import { resourceScope as hostingUIScope } from "@spitzli/console-kit/resource-scope";
 import { useState, useTransition } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import type { DatabaseCredentials } from "../ui-types";
 import { useDatabaseActions } from "./actions";
 export function DatabaseCredentialPanelWithActions({ databaseID, revealDatabaseCredentials }: { databaseID: string; revealDatabaseCredentials: ReturnType<typeof useDatabaseActions>["revealDatabaseCredentials"] }): React.JSX.Element {

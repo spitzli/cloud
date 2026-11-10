@@ -1,4 +1,4 @@
-import type { Project } from "@webdock/core/registry/types";
+import type { Project } from "@spitzli/core/registry/types";
 export interface CmsInstance {
   id: string;
   label: string;

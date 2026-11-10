@@ -66,7 +66,7 @@ async function fixture(dir, { nested = false, multipleRoots = false } = {}) {
       "index.json",
       "blobs",
     ]);
-  for (const name of ["webdock", "webdock-agent"])
+  for (const name of ["webdock", "spitzli-agent"])
     await writeFile(join(dir, `${name}-0.1.0.tgz`), name);
   const catalogueDigest = "sha256:" + createHash("sha256")
     .update(await readFile(join(root, "index.json"))).digest("hex");
@@ -205,7 +205,7 @@ test("optional database artifacts require pinned source, gateway execution proof
     );
     await assert.rejects(
       createManifest(dir, "0.1.0", revision),
-      /Missing webdock-databases chart/,
+      /Missing spitzli-databases chart/,
     );
     await writeFile(join(dir, "webdock-databases-0.1.0.tgz"), "chart fixture");
     const manifest = await createManifest(dir, "0.1.0", revision);

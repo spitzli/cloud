@@ -2,8 +2,8 @@
 import * as React from "react";
 
 import { useActionState, type ReactNode } from "react";
-import { useI18n } from "@webdock/i18n/react";
-import type { DatabaseDirectory } from "@webdock/database-contracts";
+import { useI18n } from "@spitzli/i18n/react";
+import type { DatabaseDirectory } from "@spitzli/database-contracts";
 import { useDatabaseActions } from "./actions";
 
 function DatabaseForm({

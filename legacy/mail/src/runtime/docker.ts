@@ -1,4 +1,4 @@
-import type { MailOperation } from "@webdock/mail-core";
+import type { MailOperation } from "@spitzli/mail-core";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { isIP } from "node:net";

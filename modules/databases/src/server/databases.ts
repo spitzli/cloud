@@ -1,11 +1,11 @@
 import type {
   DatabaseCommand as ManagedCommand,
   DatabaseView,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type {
   ManagedDatabaseOffer,
   ManagedDatabasePlanEntry,
-} from "@webdock/database-contracts/runtime-ports";
+} from "@spitzli/database-contracts/runtime-ports";
 import type { DatabaseRuntimePorts } from "./ports";
 import {
   resourceID,
@@ -15,8 +15,8 @@ import {
   databaseViewSchema,
   HostingError,
   type HostingActor,
-} from "@webdock/hosting-contracts";
-import type { Connection } from "@webdock/hosting-contracts/runtime-ports";
+} from "@spitzli/hosting-contracts";
+import type { Connection } from "@spitzli/hosting-contracts/runtime-ports";
 export type Dependencies = {
   withDatabaseScope: DatabaseRuntimePorts["withDatabaseScope"];
   assertDatabaseMaintenanceAllowed: ReturnType<

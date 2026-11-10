@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import test from "node:test";
-import { sealSecret, openSecret } from "@webdock/mail-core/secrets";
+import { sealSecret, openSecret } from "@spitzli/mail-core/secrets";
 
 test("Mail secrets are encrypted, purpose-bound and reject tampering or a wrong key", () => {
   const key = randomBytes(32).toString("base64");

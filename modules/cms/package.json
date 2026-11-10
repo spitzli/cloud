@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/module-cms",
+  "name": "@spitzli/module-cms",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,11 +9,11 @@
     "./server/*": "./src/server/*.ts"
   },
   "dependencies": {
-    "@webdock/module-sdk": "*",
-    "@webdock/i18n": "*",
-    "@webdock/page-builder": "*",
-    "@webdock/core": "*",
-    "@webdock/platform-db": "*",
+    "@spitzli/module-sdk": "*",
+    "@spitzli/i18n": "*",
+    "@spitzli/page-builder": "*",
+    "@spitzli/core": "*",
+    "@spitzli/platform-db": "*",
     "drizzle-orm": "1.0.0-rc.4",
     "zod": "4.6.5"
   },

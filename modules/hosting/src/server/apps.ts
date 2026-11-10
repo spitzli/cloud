@@ -1,5 +1,5 @@
 import type { HostingPorts } from "./ports";
-import { searchPage } from "@webdock/search";
+import { searchPage } from "@spitzli/search";
 import { createHash } from "node:crypto";
 import {
   HostingError,
@@ -11,7 +11,7 @@ import {
   type HostingCommand,
   type AppSpec,
   type HostingDemand,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 import { totals, limits } from "./allowances";
 export type Dependencies = {

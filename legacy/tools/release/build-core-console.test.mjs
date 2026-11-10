@@ -5,8 +5,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { assembleCoreConsole, coreConsolePath, coreRuntimeProductPath } from './build-core-console.mjs';
 test('Core runtime boundary rejects Webdock products while allowing framework adapters', () => {
-  for (const path of ['/app/modules/mail/index.js', '/app/adapters/hosting/vercel/index.js', '/app/packages/hosting-contracts/index.js', '/app/node_modules/@webdock/module-billing/index.js']) assert.equal(coreRuntimeProductPath(path), true, path);
-  for (const path of ['/app/node_modules/next/dist/server/web/spec-extension/adapters/headers.js', '/app/node_modules/@webdock/module-sdk/index.js', '/app/node_modules/@webdock/auth-clerk/index.js']) assert.equal(coreRuntimeProductPath(path), false, path);
+  for (const path of ['/app/modules/mail/index.js', '/app/adapters/hosting/vercel/index.js', '/app/packages/hosting-contracts/index.js', '/app/node_modules/@spitzli/module-billing/index.js']) assert.equal(coreRuntimeProductPath(path), true, path);
+  for (const path of ['/app/node_modules/next/dist/server/web/spec-extension/adapters/headers.js', '/app/node_modules/@spitzli/module-sdk/index.js', '/app/node_modules/@spitzli/auth-clerk/index.js']) assert.equal(coreRuntimeProductPath(path), false, path);
 });
 test('core assembly retains actual identity, registry, workspace and plugin routes only', async () => {
   const fixture=await mkdtemp(join(tmpdir(),'webdock-core-console-routes-'));

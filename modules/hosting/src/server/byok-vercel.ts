@@ -1,11 +1,11 @@
 import type { HostingPorts } from "./ports";
-import { HostingProviderError } from "@webdock/module-hosting/providers";
+import { HostingProviderError } from "@spitzli/module-hosting/providers";
 import { createHash, randomBytes } from "node:crypto";
 import {
   HostingError,
   type HostingActor,
   type HostingCommand,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export type Dependencies = {
   fetchVercelProject: HostingPorts["fetchVercelProject"];
   listVercelProjects: HostingPorts["listVercelProjects"];

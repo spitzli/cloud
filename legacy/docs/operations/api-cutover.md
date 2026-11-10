@@ -8,16 +8,16 @@ Use Bun 1.4.3, the version pinned in `package.json`. From the repository root:
 
 ```sh
 bun install --frozen-lockfile
-bun run --filter @webdock/api test:setup
-bun run --filter @webdock/api test:setup:rls
-bun test -w @webdock/api
-bun run --filter @webdock/api test:rls
-bun test -w @webdock/admin
-bun test -w @webdock/auth
-bun test -w @webdock/api-client
-bun run --filter @webdock/api build
-bun run --filter @webdock/admin build
-bun run --filter @webdock/auth build
+bun run --filter @spitzli/api test:setup
+bun run --filter @spitzli/api test:setup:rls
+bun test -w @spitzli/api
+bun run --filter @spitzli/api test:rls
+bun test -w @spitzli/admin
+bun test -w @spitzli/auth
+bun test -w @spitzli/api-client
+bun run --filter @spitzli/api build
+bun run --filter @spitzli/admin build
+bun run --filter @spitzli/auth build
 bun --no-env-file apps/api/scripts/rehearse-cache.ts
 ```
 
@@ -41,7 +41,7 @@ Run offline migrations with a dedicated direct migrator URL, verified CA and exa
 
 ```sh
 # DATABASE_URL_UNPOOLED / DATABASE_CA_CERT come from the private migrator environment.
-bun run --filter @webdock/api migrate -- exact-host:5432/exact-database
+bun run --filter @spitzli/api migrate -- exact-host:5432/exact-database
 # Explicit private target file; never the API runtime environment:
 bun --no-env-file apps/api/scripts/install-platform-rls.ts /private/rls-target.env
 ```

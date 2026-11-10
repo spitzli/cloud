@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { retainedRegistryInventory } from "../src/modules/registry/extensions";
-import type { RegistryTransaction } from "@webdock/core/registry/ports";
+import type { RegistryTransaction } from "@spitzli/core/registry/ports";
 
 test("fresh core without historical CMS table needs no product runtime", async () => {
   let queries = 0;

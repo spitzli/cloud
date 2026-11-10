@@ -1,5 +1,5 @@
 import type { HostingPorts } from "./ports";
-import { HostingError, type HostingActor } from "@webdock/hosting-contracts";
+import { HostingError, type HostingActor } from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 import { limits } from "./allowances";
 export type Dependencies = {

@@ -19,7 +19,7 @@ services:
     stop_grace_period: 30s
     ports: ['127.0.0.1:3137:3137']
     healthcheck:
-      test: [CMD, /usr/local/bin/webdock-database-gateway, --healthcheck]
+      test: [CMD, /usr/local/bin/spitzli-database-gateway, --healthcheck]
       interval: 15s
       timeout: 5s
       retries: 3

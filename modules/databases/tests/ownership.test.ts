@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { readdir, readFile } from "node:fs/promises";
 import { createHostingDatabaseBinding } from "../src/server/database-binding";
 import { createHostingDatabaseProtection } from "../src/server/database-protection";
-import type { DatabaseReader } from "@webdock/hosting-contracts/runtime-ports";
-import { allocationTotals } from "@webdock/hosting-contracts/capacity-totals";
+import type { DatabaseReader } from "@spitzli/hosting-contracts/runtime-ports";
+import { allocationTotals } from "@spitzli/hosting-contracts/capacity-totals";
 test("managed database implementation owns its controllers without foreign Hosting server imports", async () => {
   for (const file of await readdir(
     new URL("../src/server/", import.meta.url),

@@ -4,13 +4,13 @@ import { readdir, readFile } from "node:fs/promises";
 import { createElement as h, act } from "react";
 import { createRoot } from "react-dom/client";
 import { Window } from "happy-dom";
-import { I18nProvider } from "@webdock/i18n/react";
+import { I18nProvider } from "@spitzli/i18n/react";
 import {
   DatabaseActionsProvider,
   type DatabaseUIActions,
 } from "../src/ui/actions";
 import { DatabaseCredentialPanel } from "../src/ui/database-details";
-import { resourceScope as hostingUIScope } from "@webdock/console-kit/resource-scope";
+import { resourceScope as hostingUIScope } from "@spitzli/console-kit/resource-scope";
 test("Database UI resource keys isolate customer/project/database state without encoding secrets or request revisions", () => {
   const scope = {
     command: {

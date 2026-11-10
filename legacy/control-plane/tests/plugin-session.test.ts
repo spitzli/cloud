@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import {
   currentDatabaseScope,
   withDatabaseScope,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import * as sessions from "../src/modules/plugins/invocation-session";
 const principal: any = {
   userID: "100",

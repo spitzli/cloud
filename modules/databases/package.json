@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/module-databases",
+  "name": "@spitzli/module-databases",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,15 +14,15 @@
     "./ui-types": "./src/ui-types.ts"
   },
   "dependencies": {
-    "@webdock/module-sdk": "*",
-    "@webdock/core": "*",
-    "@webdock/database-contracts": "*",
-    "@webdock/hosting-contracts": "*",
+    "@spitzli/module-sdk": "*",
+    "@spitzli/core": "*",
+    "@spitzli/database-contracts": "*",
+    "@spitzli/hosting-contracts": "*",
     "zod": "4.6.5",
-    "@webdock/console-kit": "*",
-    "@webdock/i18n": "*",
+    "@spitzli/console-kit": "*",
+    "@spitzli/i18n": "*",
     "@tabularis/web-ui": "file:../../vendor/tabularis-web-ui-fdd6c0a6-startup.tgz",
-    "@webdock/database-runtime": "*"
+    "@spitzli/database-runtime": "*"
   },
   "peerDependencies": {
     "react": "^19",

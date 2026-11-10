@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { ScopedPool, withDatabaseScope } from "@webdock/database-runtime";
+import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
 import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomBytes } from "node:crypto";
@@ -618,7 +618,7 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
     const script=`
       import {mock} from "bun:test";
       import assert from "node:assert/strict";
-      import {currentDatabaseScope} from "@webdock/database-runtime";
+      import {currentDatabaseScope} from "@spitzli/database-runtime";
       const actor=${JSON.stringify({subject,sessionID:session})};
       let operator=true, reads=0;
       mock.module("./src/modules/auth/clerk-provider",()=>({legacyClerkMemberships:async subject=>{reads++;assert.equal(subject,actor.subject);return {operator,twoFactorEnabled:true,subject,issuer:${JSON.stringify(issuer)},userID:${JSON.stringify(providerUser)},verifiedAt:Date.now(),expiresAt:Date.now()+59000,roles:[]};}}));

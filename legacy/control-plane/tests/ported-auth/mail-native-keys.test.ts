@@ -11,8 +11,8 @@ import { createHash, randomBytes } from "node:crypto";
 import { database } from "../../src/db/runtime";
 import { transaction } from "../../src/modules/hosting/db";
 import { mailSendSchemaSQL } from "../../src/modules/mail/mail-send-schema";
-import { outboxSchemaSQL, claimSend } from "@webdock/mail-core/outbox";
-import { sealSecret } from "@webdock/mail-core/secrets";
+import { outboxSchemaSQL, claimSend } from "@spitzli/mail-core/outbox";
+import { sealSecret } from "@spitzli/mail-core/secrets";
 import { mailBudgetSchemaSQL } from "../../src/modules/mail/mail-budget";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -22,7 +22,7 @@ import { createMailAPI } from "../../../mail/src/api/server";
 import { PrivatePayloadStore } from "../../../mail/src/sending/payload-store";
 import { submitRelayAPI } from "../../../mail/src/sending/relay-api";
 import { processQueuedSend } from "../../../mail/src/sending/queued-worker";
-import type { SendLease } from "@webdock/mail-core/outbox";
+import type { SendLease } from "@spitzli/mail-core/outbox";
 import {
   authorizeSubmissionPolicy,
   preflightSubmission,

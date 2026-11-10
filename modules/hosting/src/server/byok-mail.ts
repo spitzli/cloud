@@ -4,9 +4,9 @@ import {
   HostingError,
   type HostingActor,
   type HostingCommand,
-} from "@webdock/hosting-contracts";
-import type { SenderDomain } from "@webdock/mail-contracts/provider-ports";
-import { normalizeMailDomain } from "@webdock/mail-contracts/domain";
+} from "@spitzli/hosting-contracts";
+import type { SenderDomain } from "@spitzli/mail-contracts/provider-ports";
+import { normalizeMailDomain } from "@spitzli/mail-contracts/domain";
 import type { Connection } from "./authorization";
 export type Dependencies = {
   requireMail: HostingPorts["requireMail"];

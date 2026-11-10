@@ -2,8 +2,8 @@
 import * as React from "react";
 
 import Link from "next/link";
-import { useI18n } from "@webdock/i18n/react";
-import type { ManagedDatabaseEntry } from "@webdock/database-contracts";
+import { useI18n } from "@spitzli/i18n/react";
+import type { ManagedDatabaseEntry } from "@spitzli/database-contracts";
 
 export function ManagedDatabaseRows({
   databases,

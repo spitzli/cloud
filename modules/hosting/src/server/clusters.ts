@@ -5,7 +5,7 @@ import {
   observationSchema,
   resourceID,
   type HostingActor,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 export type Dependencies = {
   authDatabase: HostingPorts["authDatabase"];

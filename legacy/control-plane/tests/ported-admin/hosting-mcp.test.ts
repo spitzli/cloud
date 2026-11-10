@@ -8,7 +8,7 @@ import {
   validateHostingMCPToken,
 } from "../../src/modules/mcp/hosting-mcp";
 import { validateMCPToken } from "../../src/modules/mcp/mcp-auth";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 test("hosting claims never authenticate as operator Registry claims", () => {
   const token = {
     active: true,

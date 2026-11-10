@@ -261,7 +261,7 @@ test("write transactions bypass all cache reads and invalid empty revisions fail
 });
 
 test("Clerk and linked legacy views bypass cached SQL revisions across organization and role changes", async () => {
-  const { withDatabaseScope } = await import("@webdock/database-runtime");
+  const { withDatabaseScope } = await import("@spitzli/database-runtime");
   const { writes } = fixture();
   let loads = 0;
   const load = async () => ({ value: ++loads });

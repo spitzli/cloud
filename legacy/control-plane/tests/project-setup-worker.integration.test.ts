@@ -2,7 +2,7 @@ import { initializePluginState } from "../src/modules/plugins/bootstrap";
 import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomUUID } from "node:crypto";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { createSetupFixture } from "./helpers/setup-fixture";
 import { executeHosting } from "../src/modules/hosting/service";
 import { executeSetupStep } from "../src/modules/hosting/setup-execution";

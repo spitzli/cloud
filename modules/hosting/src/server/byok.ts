@@ -1,5 +1,5 @@
 import type { HostingPorts } from "./ports";
-import { filterRows } from "@webdock/search";
+import { filterRows } from "@spitzli/search";
 import type { VercelRuntime } from "./byok-vercel";
 import {
   HostingError,
@@ -8,7 +8,7 @@ import {
   type HostingActor,
   type HostingCommand,
   type Inventory,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 import type { Agent } from "./clusters";
 export type Dependencies = {

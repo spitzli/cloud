@@ -1,5 +1,5 @@
 type StoredConsoleIdentity = NonNullable<
-  import("@webdock/hosting-contracts").HostingActor["consoleIdentity"]
+  import("@spitzli/hosting-contracts").HostingActor["consoleIdentity"]
 >;
 import { createHash, randomBytes } from "node:crypto";
 import {
@@ -7,9 +7,9 @@ import {
   publicBinding,
   runtimeOrigin,
   type GatewayAccess,
-} from "@webdock/database-contracts";
-import { HostingError, type HostingActor } from "@webdock/hosting-contracts";
-import type { DatabaseReader as Connection } from "@webdock/core/identity";
+} from "@spitzli/database-contracts";
+import { HostingError, type HostingActor } from "@spitzli/hosting-contracts";
+import type { DatabaseReader as Connection } from "@spitzli/core/identity";
 
 export interface DatabaseServiceDependencies {
   /** Provider authority validates grants; the local user row supplies only identity and bans. */

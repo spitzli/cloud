@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { nativeMailGrants } from '@webdock/mail-core/schema';
+import { nativeMailGrants } from '@spitzli/mail-core/schema';
 
 test('managed Mail grants work without provisioning an unused Docker worker role', () => {
   const sql = nativeMailGrants('webdock_auth_runtime');

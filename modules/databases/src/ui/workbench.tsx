@@ -1,11 +1,11 @@
 "use client";
 import * as React from "react";
-import { resourceScope } from "@webdock/console-kit/resource-scope";
+import { resourceScope } from "@spitzli/console-kit/resource-scope";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { HttpTransport, TabularisClient, TabularisWorkspace as Workspace, preloadTabularisWorkspace } from "@tabularis/web-ui";
 import "@tabularis/web-ui/workspace.css";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { useDatabaseActions, type DatabaseUIActions } from "./actions";
 import { rememberDatabaseSchemas } from "./schema-preferences";
 

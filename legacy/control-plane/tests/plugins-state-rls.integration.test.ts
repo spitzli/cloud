@@ -3,7 +3,7 @@ import { test, expect } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { Pool } from "pg";
-import { ScopedPool, withDatabaseScope } from "@webdock/database-runtime";
+import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
 import { initializePluginState } from "../src/modules/plugins/bootstrap";
 import {
   requestPluginState,

@@ -6,7 +6,7 @@ import { database } from "../../src/db/runtime";
 import { createSetupFixture } from "../helpers/setup-fixture";
 import { executeHosting } from "../../src/modules/hosting/service";
 import { executeSetupStep } from "../../src/modules/hosting/setup-execution";
-import { healthcheckImage, setupSteps } from "@webdock/hosting-contracts";
+import { healthcheckImage, setupSteps } from "@spitzli/hosting-contracts";
 const url = new URL(process.env.DATABASE_URL!);
 if (url.hostname !== "127.0.0.1" || url.pathname !== "/webdock_api_test")
   throw Error("Disposable fixture required");

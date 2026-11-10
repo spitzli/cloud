@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {once} from 'node:events';
 import {createMailAPI} from '../src/api/server.ts';
-import {hookMessageDigest} from '@webdock/mail-core/submission-proof';
+import {hookMessageDigest} from '@spitzli/mail-core/submission-proof';
 import type {PrivatePayloadStore} from '../src/sending/payload-store.ts';
 test('private SMTP hook forwards only metadata, strips accepted proof and fails closed',async()=>{
  const token='wd_hook_123_'+'t'.repeat(43),proof='456.'+'p'.repeat(43);

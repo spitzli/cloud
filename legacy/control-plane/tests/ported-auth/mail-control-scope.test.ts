@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { database } from "../../src/db/runtime";
 import { mailGateway } from "../../src/modules/mail/mail-gateway";
-import { outboxSchemaSQL } from "@webdock/mail-core/outbox";
+import { outboxSchemaSQL } from "@spitzli/mail-core/outbox";
 const url = new URL(process.env.DATABASE_URL!);
 if (
   url.hostname !== "127.0.0.1" ||
