@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err("Unsupported Mail gateway option".into());
     }
     let mut trust = Vec::new();
-    if let Ok(path) = std::env::var("WEBDOCK_MAIL_CONTROL_CA_FILE") {
+    if let Ok(path) = std::env::var("SPITZLI_MAIL_CONTROL_CA_FILE") {
         let mut bytes = Vec::new();
         std::fs::File::open(path)?
             .take(1_048_577)
@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     let control = Arc::new(HttpControl::new(
-        &required("WEBDOCK_AUTH_ORIGIN")?,
+        &required("SPITZLI_AUTH_ORIGIN")?,
         &std::env::var("MAIL_SEND_INTERNAL_ORIGIN")
             .unwrap_or_else(|_| "http://127.0.0.1:3139".into()),
         &required("MAIL_GATEWAY_SECRET")?,

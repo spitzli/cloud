@@ -97,7 +97,7 @@ async fn scenario(f: Arc<Fixture>, domain: Domain, revocation: Revocation) -> Op
             .all(|b| b.is_ascii_alphanumeric() || b == b'-')
     );
     f.owner.execute_unprepared(&format!("CREATE SCHEMA {schema}; CREATE FUNCTION {schema}.pause_commit() RETURNS trigger LANGUAGE plpgsql SET search_path=pg_catalog AS $$ BEGIN PERFORM pg_advisory_xact_lock({lock_key}::bigint); RETURN NEW; END $$; CREATE CONSTRAINT TRIGGER {trigger} AFTER INSERT ON {table} DEFERRABLE INITIALLY DEFERRED FOR EACH ROW WHEN (NEW.{column}='{actor}') EXECUTE FUNCTION {schema}.pause_commit()")).await.unwrap();
-    let barrier_connection = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let barrier_connection = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     let barrier = barrier_connection.begin().await.unwrap();
     barrier
         .execute_raw(Statement::from_sql_and_values(
@@ -134,7 +134,7 @@ async fn scenario(f: Arc<Fixture>, domain: Domain, revocation: Revocation) -> Op
         .await
     });
     let entered = wait_for_commit(&f.owner, lock_key, &mutation).await;
-    let revoker = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let revoker = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     let pid: i32 = revoker
         .query_one_raw(Statement::from_string(
             DbBackend::Postgres,

@@ -9,7 +9,7 @@ use support::sending::{KEY, role, seed, sql};
 #[ignore = "fresh exclusively owned local PostgreSQL fixture"]
 async fn external_mail_policy_and_managed_lane_are_authoritative() {
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
     assert_eq!(url.path(), "/webdock_rls_test");
     let admin = Database::connect(url.as_str()).await.unwrap();
@@ -46,7 +46,7 @@ async fn external_mail_policy_and_managed_lane_are_authoritative() {
         sql(&owner,"INSERT INTO webdock_auth.plugin_release(plugin_id,version,manifest_bytes,manifest_sha256,image,registry_url,signer_key_id) VALUES('mail','1.0.0',$1,$2,$3,'https://registry.invalid','fixture');",vec![raw.clone().into(),spitzli_mail_protocol::sha256(raw.as_bytes()).into(),image.into()]).await;
         sql(&owner,"INSERT INTO webdock_auth.plugin_runtime(plugin_id,generation,version,image,status,configuration_revision,credential_hash,namespace,service_name) VALUES('mail',1,'1.0.0',$1,'ready',0,$2,'fixtures','mail')",vec![image.into(),"a".repeat(64).into()]).await;
         sql(&owner,"INSERT INTO webdock_auth.plugin_configuration(plugin_id,approved_capabilities,configuration) VALUES('mail','[]','{}')",vec![]).await;
-        let worker = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", &url).await;
+        let worker = role("SPITZLI_PLUGIN_WORKER_DATABASE_URL", &url).await;
         let tx = worker.begin().await.unwrap();
         let raw=json!({"v":1,"aud":"webdock_worker_runtime","exp":chrono::Utc::now().timestamp()+60,"scope":{"kind":"system","purpose":"mail-send-gateway"}}).to_string();
         let mut mac = Hmac::<Sha256>::new_from_slice(KEY.as_bytes()).unwrap();
@@ -87,7 +87,7 @@ async fn external_mail_policy_and_managed_lane_are_authoritative() {
 #[ignore = "fresh exclusively owned local PostgreSQL fixture"]
 async fn actual_native_control_action_replay_pool1_lane_and_receipt() {
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
     let admin = Database::connect(url.as_str()).await.unwrap();
     let name = format!("webdock_task2_{}", uuid::Uuid::new_v4().simple());
@@ -161,10 +161,10 @@ async fn run_control(owner: &sea_orm::DatabaseConnection, url: &url::Url, name: 
     sql(owner,"INSERT INTO webdock_auth.plugin_release(plugin_id,version,manifest_bytes,manifest_sha256,image,registry_url,signer_key_id) VALUES('mail','1.0.0',$1,$2,$3,'https://registry.invalid','fixture')",vec![raw.clone().into(),spitzli_mail_protocol::sha256(raw.as_bytes()).into(),image.into()]).await;
     sql(owner,"INSERT INTO webdock_auth.plugin_runtime(plugin_id,generation,version,image,status,configuration_revision,credential_hash,namespace,service_name) VALUES('mail',1,'1.0.0',$1,'ready',0,$2,'fixtures','mail')",vec![image.into(),"a".repeat(64).into()]).await;
     sql(owner,"INSERT INTO webdock_auth.plugin_configuration(plugin_id,approved_capabilities,configuration) VALUES('mail','[]','{}'); INSERT INTO webdock_auth.plugin_grant(plugin_id,customer_id,project_id,capabilities) VALUES('mail','123','234','[]'); INSERT INTO webdock_auth.plugin_resource(plugin_id,resource_id,project_id,customer_id,offering_id,name,created_via,created_by) VALUES('mail','domain-1','234','123','domain','example.test','operator','actor')",vec![]).await;
-    let auth = pool1("WEBDOCK_TEST_AUTH_DATABASE_URL", url).await;
+    let auth = pool1("SPITZLI_TEST_AUTH_DATABASE_URL", url).await;
     let business = pool1("DATABASE_URL", url).await;
-    let worker = pool1("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
-    let resolver = pool1("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
+    let worker = pool1("SPITZLI_PLUGIN_WORKER_DATABASE_URL", url).await;
+    let resolver = pool1("SPITZLI_PLUGIN_WORKER_DATABASE_URL", url).await;
     let cookies =
         spitzli_identity::CookiePolicy::new(false, "fixture-cookie-signing-material-atleast32")
             .unwrap();

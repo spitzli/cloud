@@ -329,7 +329,7 @@ async fn storage_failure(
 }
 async fn fixture(case: Case) {
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
     assert_eq!(url.path(), "/webdock_rls_test");
     assert!(url.query().is_none());
@@ -353,7 +353,7 @@ async fn fixture(case: Case) {
         sql(&owner,"INSERT INTO webdock_auth.hosting_cluster(id,name,provider,region,location_evidence,verified,capacity) VALUES('200','Owned Mail fixture','managed','eu','fixture',true,$1)",vec![json!({"apps":2,"cpuMillicores":1000,"memoryBytes":2147483648u64,"volumeBytes":21474836480u64,"ephemeralBytes":536870912,"replicasPerApp":1,"concurrentDeployments":2}).into()]).await;
         let credential="a".repeat(43);
         sql(&owner,"INSERT INTO webdock_auth.hosting_agent(cluster_id,credential_hash,generation,last_seen,observation) VALUES('200',$1,1,now(),$2)",vec![hex::encode(Sha256::digest(credential.as_bytes())).into(),json!({"version":"v1.36.5+k3s1","runtimeKind":"kubernetes","capabilities":{"nativeMail":{"version":1,"image":IMAGE},"storageVersion":1}}).into()]).await;
-        let auth=role("AUTH_DATABASE_URL",&name,&url).await;let business=role("DATABASE_URL",&name,&url).await;let worker=role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;
+        let auth=role("AUTH_DATABASE_URL",&name,&url).await;let business=role("DATABASE_URL",&name,&url).await;let worker=role("SPITZLI_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;
         let cookies=CookiePolicy::new(false,"incoming-agent-cookie-key-atleast32").unwrap();
         let cookie=format!("{}={}",cookies.name(),cookies.sign("operator-token").unwrap());
         let identity=Arc::new(IdentityService::new(auth.clone(),cookies));

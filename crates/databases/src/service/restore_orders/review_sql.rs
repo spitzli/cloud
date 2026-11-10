@@ -13,7 +13,7 @@ struct Input {
     baseline: bool,
 }
 fn input() -> Input {
-    let path = std::env::var("WEBDOCK_PG_REVIEW_COMPONENT_INPUT")
+    let path = std::env::var("SPITZLI_PG_REVIEW_COMPONENT_INPUT")
         .expect("owned SQL component input required");
     assert!(path.contains("/.runtime-test/pg-restore-review1-"));
     #[cfg(unix)]

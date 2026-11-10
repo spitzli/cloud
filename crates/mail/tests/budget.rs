@@ -30,7 +30,7 @@ async fn tx(db: &DatabaseConnection) -> DatabaseTransaction {
 #[ignore = "creates and removes an owned local Mail database"]
 async fn concurrent_quota_reservation_suspension_and_month_transfer() {
     let mut owner_url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(owner_url.host_str(), Some("127.0.0.1"));
     assert_eq!(owner_url.path(), "/webdock_rls_test");
     assert!(owner_url.query().is_none());
@@ -48,7 +48,7 @@ async fn concurrent_quota_reservation_suspension_and_month_transfer() {
     let owner = Database::connect(owner_url.as_str()).await.unwrap();
     let result=std::panic::AssertUnwindSafe(async{
         spitzli_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
-        let mut worker_url=url::Url::parse(&std::env::var("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").unwrap()).unwrap();
+        let mut worker_url=url::Url::parse(&std::env::var("SPITZLI_PLUGIN_WORKER_DATABASE_URL").unwrap()).unwrap();
         assert_eq!(worker_url.host_str(),owner_url.host_str());assert_eq!(worker_url.port(),owner_url.port());worker_url.set_path(&format!("/{name}"));
         let worker=Database::connect(worker_url.as_str()).await.unwrap();
         let seed=owner.begin().await.unwrap();

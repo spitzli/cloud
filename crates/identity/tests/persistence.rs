@@ -5,10 +5,10 @@ use spitzli_identity::{
 };
 
 #[tokio::test]
-#[ignore = "requires WEBDOCK_IDENTITY_TEST_DATABASE_URL pointing at a disposable fixture"]
+#[ignore = "requires SPITZLI_IDENTITY_TEST_DATABASE_URL pointing at a disposable fixture"]
 async fn persists_revokes_and_denies_security_setup_and_mfa_bypass() {
     let url =
-        std::env::var("WEBDOCK_IDENTITY_TEST_DATABASE_URL").expect("explicit test fixture URL");
+        std::env::var("SPITZLI_IDENTITY_TEST_DATABASE_URL").expect("explicit test fixture URL");
     assert!(
         safe_fixture_url(&url),
         "fixture URL must be an explicit loopback _test database without query overrides"

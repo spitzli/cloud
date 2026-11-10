@@ -32,16 +32,16 @@ impl Fixture {
     }
     async fn setup(grant: bool) -> Self {
         assert_eq!(
-            std::env::var("WEBDOCK_BACKUP_TRANSITION_TEST").as_deref(),
+            std::env::var("SPITZLI_BACKUP_TRANSITION_TEST").as_deref(),
             Ok("yes")
         );
         let connect = |key| Database::connect(std::env::var(key).unwrap());
-        let owner = connect("WEBDOCK_TEST_MIGRATION_DATABASE_URL")
+        let owner = connect("SPITZLI_TEST_MIGRATION_DATABASE_URL")
             .await
             .unwrap();
         let auth = connect("AUTH_DATABASE_URL").await.unwrap();
         let business = connect("DATABASE_URL").await.unwrap();
-        let worker = connect("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await.unwrap();
+        let worker = connect("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await.unwrap();
         let ids = Arc::new(
             spitzli_persistence::IdAllocator::connect(
                 &std::env::var("AUTH_DATABASE_URL").unwrap(),
@@ -106,7 +106,7 @@ impl Fixture {
             lease_secret: Some(secret.clone()),
         })
         .unwrap();
-        let registry_db = connect("WEBDOCK_REGISTRY_DATABASE_URL").await.unwrap();
+        let registry_db = connect("SPITZLI_REGISTRY_DATABASE_URL").await.unwrap();
         let registry = RegistryService::new(
             registry_db.clone(),
             RlsSigner::new(rls, "webdock_registry_runtime").unwrap(),
@@ -375,12 +375,12 @@ async fn grant_cannot_commit_after_registry_archival_wins_the_scope_lock() {
 #[ignore = "real owned connected fixture only"]
 async fn live_registry_archive_obeys_actual_native_backup_observation() {
     assert_eq!(
-        std::env::var("WEBDOCK_BACKUP_LIVE_REGISTRY").as_deref(),
+        std::env::var("SPITZLI_BACKUP_LIVE_REGISTRY").as_deref(),
         Ok("yes")
     );
     let source: Value =
         serde_json::from_slice(&std::fs::read("/connected/review-source.json").unwrap()).unwrap();
-    let owner = Database::connect(std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap())
+    let owner = Database::connect(std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap())
         .await
         .unwrap();
     let auth = Database::connect(std::env::var("AUTH_DATABASE_URL").unwrap())
@@ -396,7 +396,7 @@ async fn live_registry_archive_obeys_actual_native_backup_observation() {
     );
     let (_, actor) = identity(auth, ids.clone()).await;
     exec(&owner,"INSERT INTO webdock_admin.users(id,name,email,role,auth_subject) VALUES($1,'Live review operator',$2,'operator',$3)",vec![ids.allocate().await.unwrap().to_string().into(),actor.email.clone().into(),actor.user_id.clone().into()]).await;
-    let db = Database::connect(std::env::var("WEBDOCK_REGISTRY_DATABASE_URL").unwrap())
+    let db = Database::connect(std::env::var("SPITZLI_REGISTRY_DATABASE_URL").unwrap())
         .await
         .unwrap();
     let service = RegistryService::new(
@@ -410,7 +410,7 @@ async fn live_registry_archive_obeys_actual_native_backup_observation() {
     .with_allocator(ids);
     let project = source["project"].as_str().unwrap();
     let customer = source["customer"].as_str().unwrap();
-    let expected = std::env::var("WEBDOCK_BACKUP_ARCHIVE_EXPECT").unwrap();
+    let expected = std::env::var("SPITZLI_BACKUP_ARCHIVE_EXPECT").unwrap();
     let result = service.archive(&actor, "projects", project, true).await;
     if expected == "blocked" {
         assert_eq!(

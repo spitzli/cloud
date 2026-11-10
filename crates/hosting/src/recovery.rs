@@ -1174,7 +1174,7 @@ impl HostingService {
 }
 
 fn recovery_bind_db_error(cause: sea_orm::DbErr) -> crate::HostingError {
-    if std::env::var("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1") {
+    if std::env::var("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1") {
         let (class, state) = recovery_db_observation(&cause);
         eprintln!(
             "recovery_component database_failure boundary=recovery_bind_transport class={class} sqlstate={}",
@@ -1224,7 +1224,7 @@ async fn recovery_history_one(
     boundary: RecoveryHistoryBoundary,
 ) -> Result<Option<sea_orm::QueryResult>> {
     db.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,sql,values)).await.map_err(|cause| {
-        if std::env::var("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref()==Ok("1") {
+        if std::env::var("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref()==Ok("1") {
             let (class,state)=recovery_db_observation(&cause);
             let pg=match &cause {
                 sea_orm::DbErr::Query(sea_orm::RuntimeErr::SqlxError(error))|sea_orm::DbErr::Exec(sea_orm::RuntimeErr::SqlxError(error))=>error.as_database_error().and_then(|error|error.try_downcast_ref::<sea_orm::sqlx::postgres::PgDatabaseError>()),
@@ -1257,7 +1257,7 @@ mod review_sql_tests {
     #[tokio::test]
     #[ignore = "requires the exclusively owned recovery schema fixture and real runtime-role TLS login"]
     async fn inventory_actual_sql_binding_reaches_the_authority_gate_with_four_values() {
-        let raw = std::env::var("WEBDOCK_RECOVERY_SQL_TEST_URL").unwrap();
+        let raw = std::env::var("SPITZLI_RECOVERY_SQL_TEST_URL").unwrap();
         let url = url::Url::parse(&raw).unwrap();
         assert_eq!(url.host_str(), Some("127.0.0.1"));
         assert_eq!(url.path(), "/webdock_recovery_fixture");

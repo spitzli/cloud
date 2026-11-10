@@ -355,7 +355,7 @@ mod compatibility {
     }
     async fn assert_recipe_query(query: &str, boundary: &str) {
         let url =
-            std::env::var("WEBDOCK_GIT_RECIPE_DATABASE_URL").expect("explicit owned query fixture");
+            std::env::var("SPITZLI_GIT_RECIPE_DATABASE_URL").expect("explicit owned query fixture");
         let db = sea_orm::Database::connect(url).await.unwrap();
         let tx = db.begin().await.unwrap();
         for (id, recipe) in [

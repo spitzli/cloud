@@ -19,7 +19,7 @@ async fn app(fixture: &Fixture, enabled: bool) -> (Router, String) {
     );
     let identity = Arc::new(IdentityService::new(db("AUTH_DATABASE_URL").await, cookies));
     let config = PlatformConfig::from_map(&HashMap::from([(
-        "WEBDOCK_FEATURES".into(),
+        "SPITZLI_FEATURES".into(),
         json!({"hosting": if enabled {"enabled"} else {"disabled"}}).to_string(),
     )]))
     .unwrap();

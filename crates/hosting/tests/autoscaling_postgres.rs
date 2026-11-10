@@ -27,12 +27,12 @@ async fn sql(db: &impl ConnectionTrait, text: &str, values: Vec<sea_orm::Value>)
 }
 
 #[tokio::test]
-#[ignore = "owned local PostgreSQL with WEBDOCK_HOSTING_AUTOSCALING_ENABLED=true"]
+#[ignore = "owned local PostgreSQL with SPITZLI_HOSTING_AUTOSCALING_ENABLED=true"]
 async fn concurrent_autoscaling_admissions_reserve_max_and_preserve_tenant_scope() {
     use sha2::{Digest, Sha256};
     use spitzli_hosting::HostingService;
     assert_eq!(
-        std::env::var("WEBDOCK_HOSTING_AUTOSCALING_ENABLED").unwrap(),
+        std::env::var("SPITZLI_HOSTING_AUTOSCALING_ENABLED").unwrap(),
         "true"
     );
     let f = fixture::JobFixture::start().await;

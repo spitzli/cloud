@@ -26,7 +26,7 @@ fn cookie(value: &str) -> &str {
 #[tokio::test]
 #[ignore = "owned child-only synthetic factor custody for immutable image qualification"]
 async fn prepare_owned_member_image_fixture() {
-    let path = std::env::var("WEBDOCK_NEON_ALL_USERS_FIXTURE").unwrap();
+    let path = std::env::var("SPITZLI_NEON_ALL_USERS_FIXTURE").unwrap();
     let f: Fixture = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
     assert_eq!(f.branch_id, "br-ancient-leaf-b9izc4dw");
     assert!(
@@ -85,7 +85,7 @@ async fn prepare_owned_member_image_fixture() {
 #[ignore = "owned child-only scoped automation exception and explicit revocation"]
 async fn scoped_automation_remains_independent_of_interactive_enforcement() {
     let f: Fixture = serde_json::from_slice(
-        &std::fs::read(std::env::var("WEBDOCK_NEON_ALL_USERS_FIXTURE").unwrap()).unwrap(),
+        &std::fs::read(std::env::var("SPITZLI_NEON_ALL_USERS_FIXTURE").unwrap()).unwrap(),
     )
     .unwrap();
     assert_eq!(f.branch_id, "br-ancient-leaf-b9izc4dw");
@@ -174,7 +174,7 @@ async fn scoped_automation_remains_independent_of_interactive_enforcement() {
 #[tokio::test]
 #[ignore = "owned all-user Neon child only; creates synthetic member, never production"]
 async fn retained_customer_mfa_is_a_session_and_rls_boundary() {
-    let path = std::env::var("WEBDOCK_NEON_ALL_USERS_FIXTURE").unwrap();
+    let path = std::env::var("SPITZLI_NEON_ALL_USERS_FIXTURE").unwrap();
     let f: Fixture = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
     assert_eq!(f.branch_id, "br-ancient-leaf-b9izc4dw");
     let url = url::Url::parse(&f.owner_url).unwrap();

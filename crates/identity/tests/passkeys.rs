@@ -7,7 +7,7 @@ fn cookie(v: &str) -> &str {
 #[tokio::test]
 #[ignore = "requires isolated owned identity database"]
 async fn retained_cose_passkey_verifies_real_signed_ceremonies() {
-    let raw = std::env::var("WEBDOCK_IDENTITY_TEST_DATABASE_URL").unwrap();
+    let raw = std::env::var("SPITZLI_IDENTITY_TEST_DATABASE_URL").unwrap();
     let url = url::Url::parse(&raw).unwrap();
     assert!([Some("localhost"), Some("127.0.0.1"), Some("[::1]")].contains(&url.host_str()));
     assert_eq!(url.path(), "/webdock_identity_test");

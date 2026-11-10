@@ -131,7 +131,7 @@ impl Fixture {
         Self::create(true).await
     }
     async fn create(owned_resource: bool) -> Self {
-        let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+        let owner = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
         let nonce = format!("rust-resources-{}", uuid::Uuid::new_v4());
         let resource = if owned_resource {
             format!("http://localhost:3120/api/mcp/{nonce}")
@@ -205,7 +205,7 @@ impl Fixture {
             .unwrap();
         let registry = Arc::new(
             RegistryService::new(
-                db("WEBDOCK_REGISTRY_DATABASE_URL").await,
+                db("SPITZLI_REGISTRY_DATABASE_URL").await,
                 RlsSigner::new(
                     std::env::var("DATABASE_RLS_SECRET").unwrap(),
                     "webdock_registry_runtime",
@@ -218,7 +218,7 @@ impl Fixture {
             spitzli_hosting::HostingService::new(
                 db("DATABASE_URL").await,
                 db("AUTH_DATABASE_URL").await,
-                db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+                db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
                 std::env::var("DATABASE_RLS_SECRET").unwrap(),
                 secret,
                 ids,
@@ -257,7 +257,7 @@ impl Fixture {
     ) -> Router {
         build_app_with_domains(
             spitzli_core::config::PlatformConfig::from_map(&HashMap::from([(
-                "WEBDOCK_FEATURES".into(),
+                "SPITZLI_FEATURES".into(),
                 r#"{"hosting":"enabled"}"#.into(),
             )]))
             .unwrap(),

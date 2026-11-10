@@ -41,7 +41,7 @@ async fn mutation_completion_rechecks_deadline_after_application_lock_wait() {
             .runtime_command(&f.agent, &initial.operation_id, initial.generation)
             .await
             .unwrap();
-        let blocker = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+        let blocker = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
         let tx = blocker.begin().await.unwrap();
         let pid: i32 = tx
             .query_one_raw(Statement::from_string(
@@ -300,7 +300,7 @@ async fn deadline_scenario(f: Arc<Fixture>, case: CompletionCase) {
         deadline=f.owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT extract(epoch FROM \"expiresAt\")::bigint AS until FROM webdock_auth.session WHERE id=$1",[f.sid.clone().into()])).await.unwrap().unwrap().try_get::<i64>("","until").unwrap().try_into().unwrap();
     }
     let before = deadline_state(&f, &operation).await;
-    let blocker = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let blocker = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     let tx = blocker.begin().await.unwrap();
     let pid: i32 = tx
         .query_one_raw(Statement::from_string(
@@ -565,7 +565,7 @@ async fn core_deadline_scenario(f: Arc<Fixture>) {
         )),
     };
     let before = deadline_state(&f, operation).await;
-    let blocker = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let blocker = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     let tx = blocker.begin().await.unwrap();
     let pid: i32 = tx
         .query_one_raw(Statement::from_string(

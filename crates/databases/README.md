@@ -2,11 +2,11 @@
 
 ## Retired new orders
 
-Core now defaults `WEBDOCK_DATABASE_NEW_ORDERS_ENABLED` to `false` (also when absent).
+Core now defaults `SPITZLI_DATABASE_NEW_ORDERS_ENABLED` to `false` (also when absent).
 Only the exact lowercase `true` re-enables the retained shared/self-hosted PostgreSQL
 new-order flow for migration or owned legacy fixtures; any other configured value
-except `false` fails startup. This setting is independent of `WEBDOCK_FEATURES` and
-`WEBDOCK_DATABASE_PUBLIC_ENABLED`. Keep the `databases` feature enabled to retain
+except `false` fails startup. This setting is independent of `SPITZLI_FEATURES` and
+`SPITZLI_DATABASE_PUBLIC_ENABLED`. Keep the `databases` feature enabled to retain
 viewer, credentials, bindings, exports/backups and maintenance access. The public
 ordering flag alone cannot override retirement.
 
@@ -53,9 +53,9 @@ The additive migration `migrations/0001_native_authority.sql` is frozen as nativ
 
 Grant secrets and confirmed managed credentials use `spitzli-secrets`' exact retained `v1` AES-GCM envelopes, with purposes `database:<binding>:<subject>` and `database:<database>:<confirmed_revision>`. Changing privileges requires a different isolated runtime origin; a retired origin cannot be reassigned to a different binding/user/profile. PostgreSQL roles and the isolated runtime enforce SQL privileges; this service does not classify SQL text.
 
-Core mounts browser commands at `/api/console/databases` (Console/Studio) and `/v1/databases` (API), with the canonical Auth `/api/databases/gateway` machine endpoint. Gateway bearer-secret comparisons are constant-time. Origin/host checks, bounded strict JSON, module admission and server-side actors apply before execution. Configure `WEBDOCK_DATABASE_GATEWAY_ORIGIN`, `WEBDOCK_DATABASE_GATEWAY_SECRET`, and the separate restricted session/worker URLs. `WEBDOCK_HOSTING_ENCRYPTION_KEY` retains the existing application cipher secret, falling back to the retained authentication secret when no separate key was configured.
+Core mounts browser commands at `/api/console/databases` (Console/Studio) and `/v1/databases` (API), with the canonical Auth `/api/databases/gateway` machine endpoint. Gateway bearer-secret comparisons are constant-time. Origin/host checks, bounded strict JSON, module admission and server-side actors apply before execution. Configure `SPITZLI_DATABASE_GATEWAY_ORIGIN`, `SPITZLI_DATABASE_GATEWAY_SECRET`, and the separate restricted session/worker URLs. `SPITZLI_HOSTING_ENCRYPTION_KEY` retains the existing application cipher secret, falling back to the retained authentication secret when no separate key was configured.
 
-Console reuses the retained `@tabularis/web-ui` workbench through its explicit launch-only React boundary. The geometry dependency loads the standard `buffer` browser shim only with the workbench. Locale preferences use the existing i18n catalog and a host-only preference cookie. Resource IDs in query strings remain strings, including signed 63-bit values. The UI CSP permits bundled data fonts and same-origin/blob editor workers; gateway HTTP origins and their exact WS/WSS equivalents must be explicitly listed in `WEBDOCK_UI_CONNECT_ORIGINS`.
+Console reuses the retained `@tabularis/web-ui` workbench through its explicit launch-only React boundary. The geometry dependency loads the standard `buffer` browser shim only with the workbench. Locale preferences use the existing i18n catalog and a host-only preference cookie. Resource IDs in query strings remain strings, including signed 63-bit values. The UI CSP permits bundled data fonts and same-origin/blob editor workers; gateway HTTP origins and their exact WS/WSS equivalents must be explicitly listed in `SPITZLI_UI_CONNECT_ORIGINS`.
 
 Verification: contract tests and the ignored `persistence` test against the owned literal-loopback `webdock_rls_test` fixture cover real MFA operators, explicit grants, isolation changes, retired-origin ownership, preview denial, code replay, malformed persisted proof rejection, grant revisions, membership loss, logout, canonical session loss, managed confirmation/revision and endpoint readiness. `apps/console/tests/database-browser.mjs` exercises the Rust-served Console, native first-party SSO, real gateway, TLS-protected isolated SQLite runtime and retained editor. The fixture TLS proxy is test infrastructure only.
 
@@ -63,7 +63,7 @@ Native runtime execution and full migration/reconciliation end-to-end proofs rem
 
 ## Managed control and execution
 
-`with_management(ManagementConfig)` enables the retained catalog/order policies. Core reads `WEBDOCK_DATABASE_CLUSTER_ID`, `WEBDOCK_DATABASE_DOMAIN`, `WEBDOCK_DATABASE_PUBLIC_ENABLED`, `WEBDOCK_CONTROL_DATABASE_ID`, and the retained lease signing secret. Public ordering remains disabled unless explicitly enabled; pilot plans require an operator and sponsorship is bound to its customer.
+`with_management(ManagementConfig)` enables the retained catalog/order policies. Core reads `SPITZLI_DATABASE_CLUSTER_ID`, `SPITZLI_DATABASE_DOMAIN`, `SPITZLI_DATABASE_PUBLIC_ENABLED`, `SPITZLI_CONTROL_DATABASE_ID`, and the retained lease signing secret. Public ordering remains disabled unless explicitly enabled; pilot plans require an operator and sponsorship is bound to its customer.
 
 `execute_managed(&Principal, &StoredAuthority, Value)` validates the retained managed command schema and handles project permissions/listing, immutable plan versions, availability, offers/acceptance, shared installations, pool registration, database views, upgrades and maintenance. Accepted orders use a separately signed, customer-bound `database-order` transaction after current browser/session authorization. Capacity admission includes observed unknown allocations, held physical reservations, application/native demand, node headroom, and current qualified pool observations. Same-filesystem CPU/memory increases queue a resize. Changing volume size or moving shared to dedicated allocates a new backend and a credential-bound migration, retaining the source. Fixed ext4 volume growth is never represented as an in-place quota change. Billing starts only after a confirmed ready completion.
 

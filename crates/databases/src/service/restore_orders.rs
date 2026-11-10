@@ -1016,7 +1016,7 @@ mod tests {
             assert!(u.query().is_none() && u.fragment().is_none());
             raw
         }
-        let path = std::env::var("WEBDOCK_PG_RESTORE_INTERNAL_FIXTURE")
+        let path = std::env::var("SPITZLI_PG_RESTORE_INTERNAL_FIXTURE")
             .expect("owned Native factory input path required");
         assert!(path.starts_with("/tmp/webdock-pg-restore-internal-"));
         #[cfg(unix)]

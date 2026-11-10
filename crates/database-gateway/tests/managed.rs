@@ -9,8 +9,8 @@ fn access() -> ManagedAccess {
 #[tokio::test]
 #[ignore = "requires explicit existing local database-browser binary and public web root"]
 async fn actual_runtime_is_shared_only_with_same_identity_and_reaped_on_release() {
-    let executable = PathBuf::from(std::env::var("WEBDOCK_MANAGED_RUNTIME_TEST_BINARY").unwrap());
-    let web_root = PathBuf::from(std::env::var("WEBDOCK_MANAGED_RUNTIME_TEST_WEB_ROOT").unwrap());
+    let executable = PathBuf::from(std::env::var("SPITZLI_MANAGED_RUNTIME_TEST_BINARY").unwrap());
+    let web_root = PathBuf::from(std::env::var("SPITZLI_MANAGED_RUNTIME_TEST_WEB_ROOT").unwrap());
     assert!(executable.is_absolute() && web_root.is_absolute());
     let temporary = tempfile::tempdir().unwrap();
     let manager = ProcessManager::new(ProcessConfig {

@@ -108,7 +108,7 @@ fn recovery_db_observation(error: &sea_orm::DbErr) -> (&'static str, Option<Stri
     (class, recovery_sqlstate(code))
 }
 fn db_error(cause: sea_orm::DbErr) -> crate::HostingError {
-    if std::env::var("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1") {
+    if std::env::var("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1") {
         let (class, state) = recovery_db_observation(&cause);
         eprintln!(
             "recovery_component database_failure class={class} sqlstate={}",
@@ -224,7 +224,7 @@ impl HostingService {
             browser_authority: None,
             recovery_signer: None,
             public_site_origins: Vec::new(),
-            autoscaling_enabled: std::env::var("WEBDOCK_HOSTING_AUTOSCALING_ENABLED").as_deref()
+            autoscaling_enabled: std::env::var("SPITZLI_HOSTING_AUTOSCALING_ENABLED").as_deref()
                 == Ok("true"),
         })
     }

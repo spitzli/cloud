@@ -4,7 +4,7 @@ use super::*;
 use std::path::PathBuf;
 
 pub(super) fn enabled() -> bool {
-    std::env::var("WEBDOCK_RECOVERY_BYTES_COMPONENT").as_deref() == Ok("1")
+    std::env::var("SPITZLI_RECOVERY_BYTES_COMPONENT").as_deref() == Ok("1")
 }
 pub(super) fn run_private(
     program: &str,
@@ -1208,7 +1208,7 @@ pub(super) async fn check(mut c: Context<'_>, core_container: &str) {
                     == if file.starts_with("/owned") {
                         0
                     } else {
-                        std::env::var("WEBDOCK_RECOVERY_OPERATOR_SOURCE_UID")
+                        std::env::var("SPITZLI_RECOVERY_OPERATOR_SOURCE_UID")
                             .unwrap()
                             .parse::<u32>()
                             .unwrap()

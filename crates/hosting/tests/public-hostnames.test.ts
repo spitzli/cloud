@@ -7,7 +7,7 @@ import {Pool} from 'pg';
 import {withDatabaseScope} from '@spitzli/database-runtime';
 import {createDatabases} from '@spitzli/adapter-database-postgres';
 
-const input=process.env.WEBDOCK_PUBLIC_HOST_FIXTURE;
+const input=process.env.SPITZLI_PUBLIC_HOST_FIXTURE;
 test('platform hostname authority survives races and deletion without crossing tenants',{skip:!input,timeout:60000},async()=>{
  const f=JSON.parse(await readFile(input!,'utf8'));
  for(const raw of [f.ownerUrl,...Object.values(f.roles) as string[]]){

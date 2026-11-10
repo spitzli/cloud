@@ -31,16 +31,16 @@ impl PlatformConfig {
                 production,
             )
         };
-        let api_origin = read_origin("WEBDOCK_API_ORIGIN", "http://localhost:3130")?;
-        let auth_key = if env.contains_key("WEBDOCK_AUTH_ORIGIN") {
-            "WEBDOCK_AUTH_ORIGIN"
+        let api_origin = read_origin("SPITZLI_API_ORIGIN", "http://localhost:3130")?;
+        let auth_key = if env.contains_key("SPITZLI_AUTH_ORIGIN") {
+            "SPITZLI_AUTH_ORIGIN"
         } else {
             "BETTER_AUTH_URL"
         };
         let auth_origin = read_origin(auth_key, "http://localhost:3125")?;
-        let studio_origin = read_origin("WEBDOCK_STUDIO_ORIGIN", "http://localhost:3120")?;
+        let studio_origin = read_origin("SPITZLI_STUDIO_ORIGIN", "http://localhost:3120")?;
         let console_origin = env
-            .get("WEBDOCK_CONSOLE_ORIGIN")
+            .get("SPITZLI_CONSOLE_ORIGIN")
             .map(|value| canonical_origin(value, production))
             .transpose()?;
         let mut origins = vec![&api_origin, &auth_origin, &studio_origin];
@@ -61,19 +61,19 @@ impl PlatformConfig {
             .filter(|_| raw_port.bytes().all(|byte| byte.is_ascii_digit()))
             .ok_or_else(|| ContractError("Invalid port".into()))?;
         let features = FeatureSet::from_json(
-            env.get("WEBDOCK_FEATURES")
+            env.get("SPITZLI_FEATURES")
                 .map(String::as_str)
                 .unwrap_or("{}"),
         )?;
         let database_new_orders_enabled = match env
-            .get("WEBDOCK_DATABASE_NEW_ORDERS_ENABLED")
+            .get("SPITZLI_DATABASE_NEW_ORDERS_ENABLED")
             .map(String::as_str)
         {
             None | Some("false") => false,
             Some("true") => true,
             Some(_) => {
                 return Err(ContractError(
-                    "Invalid WEBDOCK_DATABASE_NEW_ORDERS_ENABLED".into(),
+                    "Invalid SPITZLI_DATABASE_NEW_ORDERS_ENABLED".into(),
                 ));
             }
         };

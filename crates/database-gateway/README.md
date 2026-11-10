@@ -14,7 +14,7 @@ Run with the environment described in `apps/database-gateway/.env.example`:
 cargo run -p spitzli-database-gateway
 ```
 
-The executable does not load environment files implicitly. `TABULARIS_EXPECTED_COMMIT` must match the retained stamped runtime. Optional `WEBDOCK_DATABASE_RUNTIME_CA_FILE` supplies an operator-owned public CA bundle for private HTTPS/WSS runtime and Auth endpoints; the old `NODE_EXTRA_CA_CERTS` name is a bounded configuration alias. Hostname verification stays enabled. Managed PostgreSQL uses its separately authorized database CA, not this gateway trust bundle.
+The executable does not load environment files implicitly. `TABULARIS_EXPECTED_COMMIT` must match the retained stamped runtime. Optional `SPITZLI_DATABASE_RUNTIME_CA_FILE` supplies an operator-owned public CA bundle for private HTTPS/WSS runtime and Auth endpoints; the old `NODE_EXTRA_CA_CERTS` name is a bounded configuration alias. Hostname verification stays enabled. Managed PostgreSQL uses its separately authorized database CA, not this gateway trust bundle.
 
 Build from the repository root with `deploy/docker/database-gateway.Dockerfile`. The image's entrypoint is Rust; no first-party Node process is installed or started. Compose health checks use the native `--healthcheck` option. Kubernetes runs the gateway without a service-account token and with a read-only root filesystem, dropped capabilities and private temporary storage.
 
