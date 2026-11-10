@@ -75,14 +75,15 @@ test('Docker preflight requires immutable external base images and allows local 
   for (const text of ['FROM node:latest', 'FROM oven/bun:1.4.3', 'FROM $BASE', 'FROM alpine@sha256:' + 'a'.repeat(64), 'RUN echo no-base'])
     assert.throws(() => validateDockerfile(text));
 });
-test('CLI finalizes exact assets and refuses zero digest without publishing or leaking secrets', async () => {
+// Several real CLI/Cargo invocations share this bounded integration budget.
+test('CLI finalizes exact assets and refuses zero digest without publishing or leaking secrets', { timeout: 30000 }, async () => {
   const { mkdtemp, mkdir, writeFile, rm } = await import('node:fs/promises');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
   const { spawnSync } = await import('node:child_process');
   const root = await mkdtemp(join(tmpdir(), 'native-release-test-'));
   const cli = new URL('./release.mjs', import.meta.url).pathname;
-  const run = (args, extra = {}) => spawnSync(process.execPath, [cli, ...args], { cwd: root, encoding: 'utf8', env: { ...process.env,
+  const run = (args, extra = {}) => spawnSync(process.execPath, [cli, ...args], { cwd: root, encoding: 'utf8', timeout: 10000, env: { ...process.env,
     IMAGE_REPOSITORY: image.split('@')[0], IMAGE_DIGEST: 'sha256:' + digest,
     GITHUB_REF_NAME: 'v' + fixture.version, GITHUB_SHA: 'b'.repeat(40), ...extra } });
   try {
@@ -91,7 +92,7 @@ test('CLI finalizes exact assets and refuses zero digest without publishing or l
     await writeFile(join(root, 'src/main.rs'), 'fn main() {}\n');
     await writeFile(join(root, 'Cargo.toml'), '[package]\nname="release-fixture"\nversion="' + fixture.version + '"\nedition="2024"\n[workspace]\n');
     await writeFile(join(root, 'Dockerfile'), 'FROM oven/bun:1.4.3@sha256:' + digest + '\n');
-    assert.equal(spawnSync('cargo', ['generate-lockfile', '--offline'], { cwd: root }).status, 0);
+    assert.equal(spawnSync('cargo', ['generate-lockfile', '--offline'], { cwd: root, timeout: 10000 }).status, 0);
     const authoring = run(['validate']);
     assert.equal(authoring.status, 0, authoring.stderr);
     const preflight = run(['preflight'], { PLUGIN_REGISTRY_URL: trust.registry,

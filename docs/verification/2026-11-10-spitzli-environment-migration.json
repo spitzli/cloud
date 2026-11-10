@@ -165,5 +165,24 @@
   "limitations": [
     "Owned/synthetic source qualification, not genuine customer/provider or full-platform E2E",
     "Earlier local browser development-mode timeout is preserved in the log; the corrected canonical compiled-artifact gate passed"
-  ]
+  ],
+  "ciCliIntegrationFollowup": {
+    "failedHead": "5934094da9e874897a2dba4ca78144cbcfc007df",
+    "job": "https://github.com/spitzli/cloud/actions/runs/42894330541/job/130103349892",
+    "runner": "blacksmith-4vcpu-ubuntu-2404-fvn5hycgvcaitrtf",
+    "cause": "Seven actual CLI calls and their Cargo validators shared the default five-second test budget; the validator prebuild itself succeeded",
+    "fix": {
+      "integrationBudgetSeconds": 30,
+      "perCliAndLockfileSubprocessTimeoutSeconds": 10,
+      "assertionsRemoved": false,
+      "runtimeLogicChanged": false
+    },
+    "validation": {
+      "releaseTestsPassed": 11,
+      "cpuAffinityCount": 1,
+      "actualValidatorPrebuilt": true,
+      "profile": "same zero-debug/incremental-disabled/shared-target settings as CI",
+      "bunNodeTimeoutAndSubprocessApiChecksPassed": 2
+    }
+  }
 }
