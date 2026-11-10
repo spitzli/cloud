@@ -19,7 +19,7 @@ adapters/
     └── vercel/
 ```
 
-Use package imports such as `@webdock/adapter-hosting-vercel/projects`, not relative imports across adapters. Package names are stable identifiers; directory grouping does not change them. Vercel hosting and Vercel storage remain separate because they implement different product contracts.
+Use package imports such as `@spitzli/adapter-hosting-vercel/projects`, not relative imports across adapters. Package names are stable identifiers; directory grouping does not change them. Vercel hosting and Vercel storage remain separate because they implement different product contracts.
 
 Product behavior belongs in `modules/<product>`. Shared contracts belong in `packages/`. The Control Plane composes services and adapters and supplies bound server-side credentials. An adapter must not import application internals or bypass module admission, tenant authorization or durable operation fences.
 

@@ -4,12 +4,12 @@ use axum::{
 };
 use futures_util::stream;
 use serde_json::{Value, json};
+use spitzli_mail_runtime::{ControlError, SendControl, gateway::Gateway};
 use std::sync::{
     Arc,
     atomic::{AtomicBool, AtomicUsize, Ordering},
 };
 use tower::ServiceExt;
-use webdock_mail_runtime::{ControlError, SendControl, gateway::Gateway};
 struct Deny(AtomicUsize);
 #[async_trait::async_trait]
 impl SendControl for Deny {

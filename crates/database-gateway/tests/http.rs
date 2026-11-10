@@ -2,13 +2,13 @@ use axum::{
     body::Body,
     http::{Request, StatusCode},
 };
-use std::sync::Arc;
-use tower::ServiceExt;
-use webdock_database_gateway::{
+use spitzli_database_gateway::{
     Error, Result,
     control::{Access, Control, Launch},
     server::{Gateway, Options},
 };
+use std::sync::Arc;
+use tower::ServiceExt;
 struct DeniedControl;
 #[async_trait::async_trait]
 impl Control for DeniedControl {

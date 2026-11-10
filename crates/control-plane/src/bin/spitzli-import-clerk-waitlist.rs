@@ -2,7 +2,7 @@
 use clap::Parser;
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
 use serde::Deserialize;
-use webdock_persistence::connection::ConnectionUrl;
+use spitzli_persistence::connection::ConnectionUrl;
 #[derive(Parser)]
 struct Args {
     #[arg(long)]
@@ -31,7 +31,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if args.source_instance != "ins_3Klz8x6R4XYa8w6QfjPQl95EKZf" || args.expected_records > 1000 {
         return Err("Explicit reviewed Webdock production waitlist source required".into());
     }
-    let bytes = webdock_control_plane::config::read_private_file(&args.input)?;
+    let bytes = spitzli_control_plane::config::read_private_file(&args.input)?;
     let export: Export = serde_json::from_slice(&bytes)?;
     if export.total_count != args.expected_records || export.data.len() != args.expected_records {
         return Err("Incomplete or changed source inventory; inspect before importing".into());
@@ -43,9 +43,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let bootstrap = ConnectionUrl::parse(&raw, true)?;
     bootstrap.require_target(&args.target)?;
     let db = Database::connect(target.as_str()).await?;
-    let allocator = webdock_persistence::IdAllocator::connect(
+    let allocator = spitzli_persistence::IdAllocator::connect(
         bootstrap.as_str(),
-        webdock_ids::Identity::platform(0, 2)?,
+        spitzli_ids::Identity::platform(0, 2)?,
     )
     .await?;
     let tx = db.begin().await?;

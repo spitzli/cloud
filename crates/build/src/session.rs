@@ -1,9 +1,9 @@
 //! Holds real session/client authority across browser mutations and manual publication commits.
 use super::*;
-use webdock_browser_session::{BrowserSessions, StoredAuthority, revalidate_stored_authority};
+use spitzli_browser_session::{BrowserSessions, StoredAuthority, revalidate_stored_authority};
 pub(super) struct SessionVerifier {
     auth: DatabaseConnection,
-    identity: Arc<webdock_identity::IdentityService>,
+    identity: Arc<spitzli_identity::IdentityService>,
     browser: Option<Arc<BrowserSessions>>,
 }
 pub(super) struct SessionGuard {
@@ -17,10 +17,10 @@ pub(super) struct SessionGuard {
 impl SessionVerifier {
     pub async fn new(
         auth: DatabaseConnection,
-        identity: Arc<webdock_identity::IdentityService>,
+        identity: Arc<spitzli_identity::IdentityService>,
         browser: Option<Arc<BrowserSessions>>,
     ) -> Result<Self> {
-        webdock_persistence::connection::verify_runtime_role(&auth, "webdock_auth_bootstrap")
+        spitzli_persistence::connection::verify_runtime_role(&auth, "webdock_auth_bootstrap")
             .await
             .map_err(|_| error("invalid_database_role"))?;
         Ok(Self {
@@ -79,7 +79,7 @@ impl BuildService {
     pub async fn with_session_authority(
         mut self,
         auth: DatabaseConnection,
-        identity: Arc<webdock_identity::IdentityService>,
+        identity: Arc<spitzli_identity::IdentityService>,
         browser: Option<Arc<BrowserSessions>>,
     ) -> Result<Self> {
         self.authority = Some(Arc::new(

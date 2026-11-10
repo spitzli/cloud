@@ -1,7 +1,7 @@
 use super::*;
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
+use spitzli_supervisor::{Action, Command, ObservedState, Phase, RuntimeSpec};
 use subtle::ConstantTimeEq;
-use webdock_supervisor::{Action, Command, ObservedState, Phase, RuntimeSpec};
 impl HostingService {
     /// Select and derive a native command atomically. Unsupported rows never acquire a lease.
     /// Retained Kubernetes commands continue through the separate legacy execution path.
@@ -142,9 +142,9 @@ impl HostingService {
                 .map_err(|_| error(503, "Invalid persisted scaling policy."))?,
             version: 1,
             installation: field(&cluster, "runtime_installation")?.into(),
-            project_id: webdock_core::id::RecordId::parse(field(op, "project_id")?)
+            project_id: spitzli_core::id::RecordId::parse(field(op, "project_id")?)
                 .map_err(|_| error(400, "Invalid project ID."))?,
-            resource_id: webdock_core::id::RecordId::parse(field(op, "app_id")?)
+            resource_id: spitzli_core::id::RecordId::parse(field(op, "app_id")?)
                 .map_err(|_| error(400, "Invalid application ID."))?,
             revision: numeric(op, "target_revision")? as u64,
             image: field(spec, "image")?.into(),
@@ -157,12 +157,12 @@ impl HostingService {
             port: amount(&spec["port"])? as u16,
             health_path: Some(field(spec, "healthPath")?.into()),
             health_host: spec["healthHost"].as_str().map(str::to_owned),
-            volume: (volume_bytes > 0).then_some(webdock_supervisor::RetainedVolume {
+            volume: (volume_bytes > 0).then_some(spitzli_supervisor::RetainedVolume {
                 mount_path: "/data".into(),
                 size_bytes: Some(volume_bytes),
             }),
             hosting_binding: if legacy {
-                Some(webdock_supervisor::HostingBinding {
+                Some(spitzli_supervisor::HostingBinding {
                     public_route: desired
                         .get("publicRoute")
                         .map(|route| {
@@ -170,7 +170,7 @@ impl HostingService {
                                 .map_err(|_| error(503, "Invalid persisted public route."))
                         })
                         .transpose()?,
-                    cluster_id: webdock_core::id::RecordId::parse(&agent.cluster)
+                    cluster_id: spitzli_core::id::RecordId::parse(&agent.cluster)
                         .map_err(|_| error(400, "Invalid cluster."))?,
                     quota: serde_json::from_value(desired["quota"].clone())
                         .map_err(|_| error(503, "Persisted namespace quota unavailable."))?,
@@ -181,9 +181,9 @@ impl HostingService {
                 None
             },
             hosted_access: if desired["environmentVersion"] == 1 {
-                Some(webdock_supervisor::HostedAccess {
+                Some(spitzli_supervisor::HostedAccess {
                     service_bindings: None,
-                    environment: Some(webdock_supervisor::EnvironmentReference {
+                    environment: Some(spitzli_supervisor::EnvironmentReference {
                         revision: numeric(op, "target_revision")? as u64,
                         source_sha256: hex::encode(Sha256::digest(
                             field(desired, "environmentEncrypted")?.as_bytes(),
@@ -573,7 +573,7 @@ impl HostingService {
         &self,
         agent: &AgentIdentity,
         command: &Command,
-    ) -> Result<Option<webdock_supervisor::RuntimeMaterial>> {
+    ) -> Result<Option<spitzli_supervisor::RuntimeMaterial>> {
         let tx = self.agent_tx(agent).await?;
         let op = Self::operation(&tx, agent, &command.operation_id, false).await?;
         let browser_guard = self.operation_browser_guard(&op).await?;
@@ -606,14 +606,14 @@ impl HostingService {
             None
         } else {
             let sealed = field(&op["desired"], "environmentEncrypted")?;
-            let environment = webdock_supervisor::EnvironmentMaterial {
+            let environment = spitzli_supervisor::EnvironmentMaterial {
                 source_sha256: hex::encode(Sha256::digest(sealed.as_bytes())),
                 values: self.environment.open(field(&op, "app_id")?, Some(sealed))?,
             };
             environment
                 .validate()
                 .map_err(|_| error(503, "Stored environment exceeds runtime contract."))?;
-            Some(webdock_supervisor::RuntimeMaterial {
+            Some(spitzli_supervisor::RuntimeMaterial {
                 service_bindings: None,
                 operation_id: command.operation_id.clone(),
                 request_sha256: command

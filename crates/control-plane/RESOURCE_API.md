@@ -65,7 +65,7 @@ domain under its installation fence.
 
 The 31 implemented native command/tool mappings are declared once in
 `resource_hosting::TOOLS`. Tool input schemas come directly from
-`webdock_hosting::contracts::command_document()`, including the native Docker
+`spitzli_hosting::contracts::command_document()`, including the native Docker
 extension, and remove only the server-owned `action` discriminant. Discovery
 exposes only current read/write scope and enabled feature capabilities.
 
@@ -88,7 +88,7 @@ shown only to Registry principals; Hosting customer tokens cannot discover them.
 
 ## Local verification
 
-`cargo test -p webdock-control-plane --test resource_api --locked` checks the
+`cargo test -p spitzli-control-plane --test resource_api --locked` checks the
 unauthenticated HTTP boundary. With the explicitly owned local restricted-role
 fixture environment, add `-- --include-ignored --test-threads=1` for actual
 OAuth PKCE/consent, bearer API and MCP tests. They cover disjoint scope/tool

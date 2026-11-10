@@ -4,10 +4,10 @@ use axum::{
     http::{Request, StatusCode},
 };
 use sea_orm::DatabaseConnection;
+use spitzli_control_plane::http::{Services, build_app_with_domains};
+use spitzli_core::config::PlatformConfig;
 use std::collections::HashMap;
 use tower::ServiceExt;
-use webdock_control_plane::http::{Services, build_app_with_domains};
-use webdock_core::config::PlatformConfig;
 fn router() -> axum::Router {
     let config = PlatformConfig::from_map(&HashMap::from([
         (
@@ -32,12 +32,12 @@ fn router() -> axum::Router {
         ),
     ]))
     .unwrap();
-    let cookies = webdock_identity::CookiePolicy::new(
+    let cookies = spitzli_identity::CookiePolicy::new(
         false,
         "owned-build-boundaries-cookie-key-at-least-32-bytes",
     )
     .unwrap();
-    let identity = std::sync::Arc::new(webdock_identity::IdentityService::new(
+    let identity = std::sync::Arc::new(spitzli_identity::IdentityService::new(
         DatabaseConnection::default(),
         cookies,
     ));

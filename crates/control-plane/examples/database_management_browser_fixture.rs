@@ -25,9 +25,9 @@ async fn main() {
         .unwrap();
     let valid=owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT p.id FROM webdock_admin.projects p JOIN webdock_admin.customers c ON c.id=p.customer_id WHERE p.id=$1 AND c.id=$2 AND p.name='Database browser fixture' AND c.name='Database browser fixture'",[fixture["projectID"].as_str().unwrap().into(),fixture["customerID"].as_str().unwrap().into()])).await.unwrap();
     assert!(valid.is_some());
-    let ids = webdock_persistence::IdAllocator::connect(
+    let ids = spitzli_persistence::IdAllocator::connect(
         &guarded("AUTH_DATABASE_URL"),
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     )
     .await
     .unwrap();

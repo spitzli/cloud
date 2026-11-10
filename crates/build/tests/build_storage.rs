@@ -4,13 +4,13 @@ use http::{Request, Response};
 use http_body_util::{BodyExt, Full};
 use kube::{Client, client::Body};
 use serde_json::{Value, json};
-use std::sync::{Arc, Mutex};
-use tower::service_fn;
-use webdock_agent_protocol::build_storage::{
+use spitzli_agent_protocol::build_storage::{
     BuildStorageAction, BuildStorageReservation, BuildStorageTarget, BuildVolumeFailure,
     BuildVolumeReply,
 };
-use webdock_build::build_storage::KubernetesBuildStorage;
+use spitzli_build::build_storage::KubernetesBuildStorage;
+use std::sync::{Arc, Mutex};
+use tower::service_fn;
 
 #[tokio::test]
 async fn request_is_idempotent_reply_binds_original_uid_and_cleanup_cannot_delete_replacement() {

@@ -4,8 +4,8 @@ use super::resources::*;
 use axum::http::StatusCode;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
+use spitzli_control_plane::resource_auth::ResourceClientConfig;
 use std::{io::Write, sync::Arc, time::Duration};
-use webdock_control_plane::resource_auth::ResourceClientConfig;
 
 #[derive(Clone, Copy, Debug)]
 enum Domain {

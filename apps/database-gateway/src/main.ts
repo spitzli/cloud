@@ -1,4 +1,4 @@
-import { runtimeOrigin } from "@webdock/database-contracts";
+import { runtimeOrigin } from "@spitzli/database-contracts";
 import { createManagedRuntimeManager } from "./managed-runtimes";
 import { createGateway } from "./server";
 

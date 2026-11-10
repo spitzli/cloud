@@ -1,6 +1,6 @@
 #![cfg(feature = "kubernetes")]
-use webdock_agent::plugin_runtime::{STAGE_SCRIPT, plugin_objects};
-use webdock_agent_protocol::plugin::*;
+use spitzli_agent::plugin_runtime::{STAGE_SCRIPT, plugin_objects};
+use spitzli_agent_protocol::plugin::*;
 #[path = "support/plugin_runtime.rs"]
 mod fixture;
 use fixture::claim;
@@ -81,22 +81,22 @@ fn tampered_material_never_generates_kubernetes_secrets() {
 
 #[path = "support/plugin_kube.rs"]
 mod api_fixture;
-use std::sync::{Arc, Mutex, atomic::Ordering};
-use webdock_agent::plugin_runtime::{
+use spitzli_agent::plugin_runtime::{
     KubernetesPluginRuntime, PluginRuntimeAuthority, PluginRuntimeExecutor,
 };
+use std::sync::{Arc, Mutex, atomic::Ordering};
 struct Authority {
     state: Arc<api_fixture::State>,
     checkpoint: Mutex<Option<PluginRuntimeCheckpoint>>,
 }
 #[async_trait::async_trait]
 impl PluginRuntimeAuthority for Authority {
-    async fn guard(&self, claim: &PluginRuntimeClaim) -> webdock_supervisor::Result<()> {
+    async fn guard(&self, claim: &PluginRuntimeClaim) -> spitzli_supervisor::Result<()> {
         claim
-            .validate(webdock_supervisor::timestamp()?)
-            .map_err(|_| webdock_supervisor::ExecutionError::Denied)?;
+            .validate(spitzli_supervisor::timestamp()?)
+            .map_err(|_| spitzli_supervisor::ExecutionError::Denied)?;
         if self.state.revoked.load(Ordering::SeqCst) {
-            return Err(webdock_supervisor::ExecutionError::Denied);
+            return Err(spitzli_supervisor::ExecutionError::Denied);
         }
         Ok(())
     }
@@ -104,7 +104,7 @@ impl PluginRuntimeAuthority for Authority {
         &self,
         claim: &PluginRuntimeClaim,
         checkpoint: PluginRuntimeCheckpoint,
-    ) -> webdock_supervisor::Result<()> {
+    ) -> spitzli_supervisor::Result<()> {
         self.guard(claim).await?;
         *self.checkpoint.lock().unwrap() = Some(checkpoint);
         Ok(())
@@ -288,7 +288,7 @@ async fn owned_cluster_executes_real_digest_artifact_and_keeps_uids_on_restart()
     }
 
     let client = kube::Client::try_from(config).unwrap();
-    let bytes = webdock_agent::config::read_private(
+    let bytes = spitzli_agent::config::read_private(
         &std::path::PathBuf::from(std::env::var("WEBDOCK_PLUGIN_RUNTIME_TEST_CLAIM").unwrap()),
         512 * 1024,
     )
@@ -296,7 +296,7 @@ async fn owned_cluster_executes_real_digest_artifact_and_keeps_uids_on_restart()
     let mut claim: PluginRuntimeClaim = serde_json::from_slice(&bytes).unwrap();
     assert!(claim.spec.platform_id.starts_with("test-"));
     claim
-        .validate(webdock_supervisor::timestamp().unwrap())
+        .validate(spitzli_supervisor::timestamp().unwrap())
         .unwrap();
     let namespaces: kube::Api<k8s_openapi::api::core::v1::Namespace> =
         kube::Api::all(client.clone());
@@ -345,14 +345,14 @@ async fn changed_route_during_rollout_cannot_be_reported_as_converged() {
     }
     #[async_trait::async_trait]
     impl PluginRuntimeAuthority for ChangedRoute {
-        async fn guard(&self, _: &PluginRuntimeClaim) -> webdock_supervisor::Result<()> {
+        async fn guard(&self, _: &PluginRuntimeClaim) -> spitzli_supervisor::Result<()> {
             Ok(())
         }
         async fn checkpoint(
             &self,
             _: &PluginRuntimeClaim,
             checkpoint: PluginRuntimeCheckpoint,
-        ) -> webdock_supervisor::Result<()> {
+        ) -> spitzli_supervisor::Result<()> {
             if checkpoint.route_uid.is_some() {
                 let mut objects = self.state.objects.lock().unwrap();
                 let route = objects
@@ -386,14 +386,14 @@ async fn network_isolation_exists_before_runtime_can_start() {
     struct Isolated;
     #[async_trait::async_trait]
     impl PluginRuntimeAuthority for Isolated {
-        async fn guard(&self, _: &PluginRuntimeClaim) -> webdock_supervisor::Result<()> {
+        async fn guard(&self, _: &PluginRuntimeClaim) -> spitzli_supervisor::Result<()> {
             Ok(())
         }
         async fn checkpoint(
             &self,
             _: &PluginRuntimeClaim,
             checkpoint: PluginRuntimeCheckpoint,
-        ) -> webdock_supervisor::Result<()> {
+        ) -> spitzli_supervisor::Result<()> {
             assert!(
                 checkpoint.deployment_uid.is_none() || checkpoint.network_policy_uid.is_some(),
                 "Deployment must never precede its isolation policy"

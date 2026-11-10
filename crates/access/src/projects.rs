@@ -6,7 +6,7 @@ use crate::{
 };
 use sea_orm::{ConnectionTrait, DbBackend, Statement};
 use serde_json::{Value, json};
-use webdock_identity::Principal;
+use spitzli_identity::Principal;
 
 impl AccessService {
     pub async fn list_projects_as(&self, actor: &Principal, customer: &str) -> Result<Vec<Value>> {

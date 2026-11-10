@@ -4,13 +4,13 @@ use wire::mail::MailLease;
 use wire::mail_configuration::{
     ConfigurationCheckpoint, ConfigurationCompletion, ConfigurationSpec,
 };
-fn error(error: webdock_mail::incoming::Error) -> Status {
+fn error(error: spitzli_mail::incoming::Error) -> Status {
     match error {
-        webdock_mail::incoming::Error::Invalid => invalid(),
-        webdock_mail::incoming::Error::Conflict => {
+        spitzli_mail::incoming::Error::Invalid => invalid(),
+        spitzli_mail::incoming::Error::Conflict => {
             Status::failed_precondition("Mail configuration authority changed")
         }
-        webdock_mail::incoming::Error::Unavailable => {
+        spitzli_mail::incoming::Error::Unavailable => {
             Status::unavailable("Mail configuration unavailable")
         }
     }
@@ -88,7 +88,7 @@ impl wire::mail_configuration_control_server::MailConfigurationControl for Contr
             .map_err(hosting_error)?;
         let allowed = match service.guard_configuration(tx, &agent, &spec, &lease).await {
             Ok(()) => true,
-            Err(webdock_mail::incoming::Error::Conflict) => false,
+            Err(spitzli_mail::incoming::Error::Conflict) => false,
             Err(failure) => return Err(error(failure)),
         };
         self.authorize(&request, input.identity.as_ref()).await?;

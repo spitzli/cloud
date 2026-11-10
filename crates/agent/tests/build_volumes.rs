@@ -1,11 +1,11 @@
 #![cfg(feature = "kubernetes")]
 use chrono::{Duration, Utc};
 use serde_json::json;
-use webdock_agent::storage::build::BuildFilesystem;
-use webdock_agent::storage::build_kubernetes::{
+use spitzli_agent::storage::build::BuildFilesystem;
+use spitzli_agent::storage::build_kubernetes::{
     client_config, consumers_absent, verify_volume_objects, volume_manifests,
 };
-use webdock_agent_protocol::build_storage::{
+use spitzli_agent_protocol::build_storage::{
     BuildStorageAction, BuildStorageReservation, BuildStorageTarget, BuildVolumeHandle,
 };
 
@@ -165,8 +165,8 @@ fn storage_identity_metadata_fits_kubernetes_label_limits() {
 
 #[test]
 fn storage_queue_accepts_only_immutable_exact_scope_requests_and_bounded_data() {
-    use webdock_agent::storage::build_queue::parse_request;
-    use webdock_agent_protocol::build_storage::SignedBuildStorageReservation;
+    use spitzli_agent::storage::build_queue::parse_request;
+    use spitzli_agent_protocol::build_storage::SignedBuildStorageReservation;
     let request = reservation();
     let signed = SignedBuildStorageReservation::sign(
         request.clone(),

@@ -1,4 +1,4 @@
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { WorkspaceAvatar } from "./WorkspaceAvatar";
 import { CustomerScopeBanner } from "./CustomerScope";
 import { Fragment, useEffect, useRef, useState } from "react";

@@ -163,15 +163,15 @@ async fn repair_and_resize(h: &Harness) {
     let quota = object("resourcequota", "database-budget", ns);
     let hard = &quota["spec"]["hard"];
     assert_eq!(
-        webdock_agent::kubernetes::parse_quantity(text(hard, "requests.cpu"), true).unwrap(),
+        spitzli_agent::kubernetes::parse_quantity(text(hard, "requests.cpu"), true).unwrap(),
         1800
     );
     assert_eq!(
-        webdock_agent::kubernetes::parse_quantity(text(hard, "requests.memory"), false).unwrap(),
+        spitzli_agent::kubernetes::parse_quantity(text(hard, "requests.memory"), false).unwrap(),
         2415919104
     );
     assert_eq!(
-        webdock_agent::kubernetes::parse_quantity(text(hard, "requests.ephemeral-storage"), false)
+        spitzli_agent::kubernetes::parse_quantity(text(hard, "requests.ephemeral-storage"), false)
             .unwrap(),
         1342177280
     );

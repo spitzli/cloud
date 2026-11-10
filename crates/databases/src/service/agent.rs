@@ -1,6 +1,6 @@
 use super::*;
+use spitzli_hosting::AgentIdentity;
 use subtle::ConstantTimeEq;
-use webdock_hosting::AgentIdentity;
 mod completion;
 mod delivery;
 mod observations;
@@ -33,7 +33,7 @@ fn checkpoint_digest(data: &DatabaseCheckpoint) -> Result<String> {
         .ok_or_else(invalid)?
         .remove("leaseToken");
     Ok(digest(
-        &webdock_hosting::canonical_command(&value).map_err(|_| invalid())?,
+        &spitzli_hosting::canonical_command(&value).map_err(|_| invalid())?,
     ))
 }
 fn completion_digest(data: &DatabaseCompletion) -> Result<String> {
@@ -43,7 +43,7 @@ fn completion_digest(data: &DatabaseCompletion) -> Result<String> {
         .ok_or_else(invalid)?
         .remove("leaseToken");
     Ok(digest(
-        &webdock_hosting::canonical_command(&value).map_err(|_| invalid())?,
+        &spitzli_hosting::canonical_command(&value).map_err(|_| invalid())?,
     ))
 }
 impl DatabaseService {

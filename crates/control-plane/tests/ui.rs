@@ -4,13 +4,13 @@ use axum::{
 };
 use http_body_util::BodyExt;
 use sea_orm::DatabaseConnection;
-use std::{collections::HashMap, sync::Arc};
-use tower::ServiceExt;
-use webdock_control_plane::{
+use spitzli_control_plane::{
     http::{Services, build_app_with_domains},
     ui::UiAssets,
 };
-use webdock_core::config::PlatformConfig;
+use spitzli_core::config::PlatformConfig;
+use std::{collections::HashMap, sync::Arc};
+use tower::ServiceExt;
 #[tokio::test]
 async fn built_ui_reserves_apis_hosts_and_filesystem_boundaries() {
     let root = std::env::temp_dir().join(format!("webdock-ui-{}", uuid::Uuid::new_v4()));

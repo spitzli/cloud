@@ -84,7 +84,7 @@ pub struct KubernetesBuildRequest {
     pub commit_sha: String,
     pub limits: KubernetesBuildLimits,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub volume: Option<webdock_agent_protocol::build_storage::BuildVolumeHandle>,
+    pub volume: Option<spitzli_agent_protocol::build_storage::BuildVolumeHandle>,
 }
 
 /// Persist this after create/adoption. Every operation revalidates it and the live Job.
@@ -461,7 +461,7 @@ impl KubernetesJobBuildExecutor {
                     "securityContext":{"runAsNonRoot":true,"runAsUser":10001,"runAsGroup":10001,
                         "fsGroup":10001,"seccompProfile":{"type":"RuntimeDefault"}},
                     "containers":[{"name":"runner","image":self.config.runner_image,"imagePullPolicy":"IfNotPresent",
-                        "command":["/usr/local/bin/webdock-build-runner"],
+                        "command":["/usr/local/bin/spitzli-build-runner"],
                         "env":[{"name":"TMPDIR","value":"/workspace"},
                             {"name":"WEBDOCK_BUILD_ID","value":request.build_id},
                             {"name":"WEBDOCK_CUSTOMER_ID","value":request.customer_id},
@@ -498,7 +498,7 @@ impl KubernetesJobBuildExecutor {
             pod["containers"][0]["env"].as_array_mut().ok_or(KubernetesBuildError::InvalidConfig)?.push(json!({"name":"WEBDOCK_JOB_UID","valueFrom":{"fieldRef":{"apiVersion":"v1","fieldPath":"metadata.labels['batch.kubernetes.io/controller-uid']"}}}));
             pod["volumes"].as_array_mut().ok_or(KubernetesBuildError::InvalidConfig)?.push(json!({"name":"handoff","secret":{"secretName":self.handoff_name(request)?,"defaultMode":288,"items":[{"key":"attempt.json","path":"attempt.json"}]}}));
             pod["initContainers"] = json!([{"name":"download","image":self.config.runner_image,"imagePullPolicy":"IfNotPresent",
-                "command":["/usr/local/bin/webdock-build-runner"],"args":["download","--config","/handoff/attempt.json","--policy","/etc/webdock-build/transfer-policy.json","--input-dir","/workspace/input"],
+                "command":["/usr/local/bin/spitzli-build-runner"],"args":["download","--config","/handoff/attempt.json","--policy","/etc/webdock-build/transfer-policy.json","--input-dir","/workspace/input"],
                 "env":[{"name":"TMPDIR","value":"/workspace"}],"resources":{"requests":resources,"limits":resources},
                 "securityContext":{"privileged":false,"allowPrivilegeEscalation":false,"readOnlyRootFilesystem":true,"capabilities":{"drop":["ALL"]}},
                 "volumeMounts":[{"name":"workspace","mountPath":"/workspace"},{"name":"tmp","mountPath":"/tmp"},handoff]}]);

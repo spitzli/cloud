@@ -277,7 +277,7 @@ def apply(obj,p,guard):
     existing=get(obj['kind'],obj['metadata']['name'],obj['metadata'].get('namespace'))
     if existing:owned(existing,p)
     guard()
-    kubectl('apply','--server-side','--field-manager=webdock-postgres','-f','-',source=json.dumps(obj))
+    kubectl('apply','--server-side','--field-manager=spitzli-postgres','-f','-',source=json.dumps(obj))
 
 
 def sql(p,statement,database='postgres'):

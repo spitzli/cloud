@@ -2,12 +2,12 @@
 mod support;
 use bollard::{Docker, models::*, query_parameters::*};
 use futures_util::TryStreamExt;
-use std::{collections::HashMap, io::Write, os::unix::fs::PermissionsExt, sync::Arc};
-use webdock_agent::{
+use spitzli_agent::{
     docker::DockerAdapter,
     policy::{RuntimePolicy, RuntimePolicyConfig},
 };
-use webdock_supervisor::*;
+use spitzli_supervisor::*;
+use std::{collections::HashMap, io::Write, os::unix::fs::PermissionsExt, sync::Arc};
 const BUSYBOX: &str = "docker.io/library/busybox@sha256:bdf57e528e45e4433820e045b29b4597825a1c9e38353532d90a01445013f82e";
 const REGISTRY: &str = "docker.io/library/registry@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8";
 const NGINX: &str = "docker.io/library/nginx@sha256:970364228b1e4f932abc22d321932816782cca8a20b85a77552a7cfe9acfb3b5";
@@ -289,8 +289,8 @@ async fn scoped_registry_requires_tls_and_readonly_credentials_even_for_cached_i
     private(&policy_file,&serde_json::to_vec(&serde_json::json!({"version":1,"euStorageEvidence":"owned local fixture; geography not asserted","projects":{project.clone():{"repository":format!("{authority}/{repository}"),"credentialFile":credential_file,"readOnly":true,"credentialScopeEvidence":"TLS proxy permits only GET/HEAD"}}})).unwrap());
     let mut spec = support::spec();
     spec.installation = installation.clone();
-    spec.project_id = webdock_core::id::RecordId::parse(&project).unwrap();
-    spec.resource_id = webdock_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
+    spec.project_id = spitzli_core::id::RecordId::parse(&project).unwrap();
+    spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
     spec.arguments = vec!["sleep".into(), "300".into()];
     spec.health_path = None;
     let name = spec.name();
@@ -313,7 +313,7 @@ async fn scoped_registry_requires_tls_and_readonly_credentials_even_for_cached_i
         tokio::time::sleep(std::time::Duration::from_secs(6)).await;
         assert!(adapter.reconcile(&command,&LeaseGuard::new(command.clone(),Arc::new(Authority))).await.is_err(),"private CA must be explicitly trusted by nested Engine");
         private(&test_ca_directory.join("ca.crt"),test_ca.as_bytes());let observed=adapter.reconcile(&command,&LeaseGuard::new(command.clone(),Arc::new(Authority))).await.unwrap();assert_eq!(observed.phase,Phase::Running);assert_eq!(adapter.target_observation().await.unwrap().unwrap().registry_version,Some(1));
-        let mut foreign=command.clone();foreign.spec.project_id=webdock_core::id::RecordId::parse(&(numeric+2).to_string()).unwrap();assert!(adapter.reconcile(&foreign,&LeaseGuard::new(foreign.clone(),Arc::new(Authority))).await.is_err(),"cached private image still requires its project grant");
+        let mut foreign=command.clone();foreign.spec.project_id=spitzli_core::id::RecordId::parse(&(numeric+2).to_string()).unwrap();assert!(adapter.reconcile(&foreign,&LeaseGuard::new(foreign.clone(),Arc::new(Authority))).await.is_err(),"cached private image still requires its project grant");
         let client=reqwest::Client::builder().no_proxy().add_root_certificate(reqwest::Certificate::from_pem(test_ca.as_bytes()).unwrap()).resolve(&test_hostname,std::net::SocketAddr::new(test_address.parse().unwrap(),5000)).build().unwrap();assert_eq!(client.post(format!("https://{test_authority}/v2/{test_repository}/blobs/uploads/")).basic_auth("reader",Some(password)).send().await.unwrap().status().as_u16(),403);
         let state=serde_json::json!({"authority":test_authority,"image":spec.image,"projectID":test_project,"ca":test_ca,"dockerConfig":test_credentials,"base":test_base});private(std::path::Path::new("/tmp/webdock-registry-fixture.json"),&serde_json::to_vec(&state).unwrap());
     }).await;
@@ -401,7 +401,7 @@ async fn owned_kind_uses_project_pull_secret_and_private_registry_ca() {
         api::{DeleteParams, PostParams},
         config::{KubeConfigOptions, Kubeconfig},
     };
-    use webdock_agent::kubernetes::{ApprovedChart, KubernetesAdapter};
+    use spitzli_agent::kubernetes::{ApprovedChart, KubernetesAdapter};
     assert_eq!(
         std::env::var("WEBDOCK_DISPOSABLE_NODE_TEST").as_deref(),
         Ok("yes")
@@ -410,7 +410,7 @@ async fn owned_kind_uses_project_pull_secret_and_private_registry_ca() {
     assert!(std::path::Path::new("/.dockerenv").is_file());
     let fixture = std::path::PathBuf::from(std::env::var("WEBDOCK_REGISTRY_FIXTURE_DIR").unwrap());
     let state: serde_json::Value = serde_json::from_slice(
-        &webdock_agent::config::read_private(&fixture.join("registry-state.json"), 65536).unwrap(),
+        &spitzli_agent::config::read_private(&fixture.join("registry-state.json"), 65536).unwrap(),
     )
     .unwrap();
     let authority = state["authority"].as_str().unwrap().to_owned();
@@ -457,8 +457,8 @@ async fn owned_kind_uses_project_pull_secret_and_private_registry_ca() {
     let project = state["projectID"].as_str().unwrap();
     let numeric = project.parse::<u64>().unwrap();
     let mut spec = support::spec();
-    spec.project_id = webdock_core::id::RecordId::parse(project).unwrap();
-    spec.resource_id = webdock_core::id::RecordId::parse(&(numeric + 100).to_string()).unwrap();
+    spec.project_id = spitzli_core::id::RecordId::parse(project).unwrap();
+    spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 100).to_string()).unwrap();
     spec.image = state["image"].as_str().unwrap().into();
     spec.arguments = vec![
         "sh".into(),
@@ -476,13 +476,13 @@ async fn owned_kind_uses_project_pull_secret_and_private_registry_ca() {
     };
     spec.hosting_binding = Some(HostingBinding {
         public_route: None,
-        cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
+        cluster_id: spitzli_core::id::RecordId::parse("789").unwrap(),
         quota: quota.clone(),
         final_quota: quota,
     });
     let namespaces: Api<Namespace> = Api::all(client.clone());
     let owned_names = [format!("wd-{project}"), format!("wdv-{project}")];
-    let labels = webdock_agent::legacy::owner_labels(&spec, false).unwrap();
+    let labels = spitzli_agent::legacy::owner_labels(&spec, false).unwrap();
     for namespace in &owned_names {
         let mut ns_labels = labels.clone();
         ns_labels.insert(
@@ -576,7 +576,7 @@ async fn owned_kind_uses_project_pull_secret_and_private_registry_ca() {
             .await
             .unwrap();
         assert!(observed.ready);
-        let pods: Api<Pod> = Api::namespaced(task_client, &webdock_agent::legacy::namespace(&spec));
+        let pods: Api<Pod> = Api::namespaced(task_client, &spitzli_agent::legacy::namespace(&spec));
         let pods = pods
             .list(
                 &kube::api::ListParams::default()
@@ -598,7 +598,7 @@ async fn owned_kind_uses_project_pull_secret_and_private_registry_ca() {
         );
         let mut denied = command.clone();
         denied.spec.project_id =
-            webdock_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
+            spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
         assert!(
             adapter
                 .reconcile(

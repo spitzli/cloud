@@ -1,6 +1,6 @@
 # Runtime execution adapters
 
-This crate contains the privileged execution boundary. It uses Bollard for Docker Engine operations and kube for Kubernetes observations/resource ownership checks. Core's public HTTP process and plugin workloads must not receive the Docker socket or kubeconfig. The runnable `webdock-agent` daemon composes these adapters with `webdock-supervisor::Executor` and a live Core `Authorizer`; no permissive local authorization mode exists.
+This crate contains the privileged execution boundary. It uses Bollard for Docker Engine operations and kube for Kubernetes observations/resource ownership checks. Core's public HTTP process and plugin workloads must not receive the Docker socket or kubeconfig. The runnable `spitzli-agent` daemon composes these adapters with `spitzli-supervisor::Executor` and a live Core `Authorizer`; no permissive local authorization mode exists.
 
 ## Kubernetes and Helm
 
@@ -25,7 +25,7 @@ Docker exposes bounded logs, actual CPU-time/memory snapshots and optional HTTP 
 A Docker-only installation can build without Kubernetes libraries:
 
 ```sh
-cargo check -p webdock-agent --no-default-features --features docker
+cargo check -p spitzli-agent --no-default-features --features docker
 ```
 
 ## Verification and remaining integration
@@ -34,7 +34,7 @@ Normal tests validate journal recovery/fencing, default denial, revocation, cons
 
 ```sh
 WEBDOCK_DOCKER_TEST_IMAGE=docker.io/library/busybox@sha256:<reviewed-digest> \
-  cargo test -p webdock-agent --test docker_lifecycle -- --ignored
+  cargo test -p spitzli-agent --test docker_lifecycle -- --ignored
 ```
 
 It only creates randomly named test-owned resources and removes those exact resources after testing. It verifies idempotent reconciliation, health, stop/resume, retained data, resource-limit upgrades, ownership denial, logs and metrics. No default Kubernetes context is used by tests. A separate explicit Kind lifecycle test has verified rollout, suspend/resume, revision/resource changes, approved Secret retention and bounded logs. NetworkPolicy enforcement has not been demonstrated by those lifecycle tests.
@@ -47,9 +47,9 @@ The dedicated management protocol and daemon are implemented below. Core enrollm
 Build and run:
 
 ```sh
-cargo build -p webdock-agent --no-default-features --features docker
-webdock-agent --config /var/lib/webdock/agent/agent.json validate
-webdock-agent --config /var/lib/webdock/agent/agent.json run
+cargo build -p spitzli-agent --no-default-features --features docker
+spitzli-agent --config /var/lib/webdock/agent/agent.json validate
+spitzli-agent --config /var/lib/webdock/agent/agent.json run
 ```
 
 The configuration, TLS certificate/key/CA files and state files must be owned by the agent UID and mode 0600. State/socket directories must be canonical absolute private directories, mode 0700, with trusted ancestors. The state directory holds the exclusive journal lock, execution receipts and atomically persisted identity/generation/sequence. An example local configuration is:
@@ -68,7 +68,7 @@ The configuration, TLS certificate/key/CA files and state files must be owned by
 
 A remote control endpoint uses `{"kind":"mtls","origin":"https://core.example:7443","domain":"core.example","ca":"/var/lib/webdock/agent/ca.pem","certificate":"/var/lib/webdock/agent/client.pem","key":"/var/lib/webdock/agent/client.key"}`. Both client and server identities are verified by Tonic/Rustls. No plaintext remote fallback exists. Core must enroll the operator-issued client certificate before startup; automated issuance is not implemented here.
 
-The daemon uses the independent `webdock-agent-protocol` contract. It registers, sends durable monotonic heartbeats, polls typed work, rechecks Core's live Guard before/during execution, and delivers committed receipts. Connection loss drops pending work, retains resources and receipts, and reconnects with bounded 1–30 second backoff. An exact receipt is atomically persisted to a private pending outbox before Complete. A lost completion acknowledgment is recovered after authenticated registration. While Hosting receipt delivery remains unavailable, the daemon retains exact custody and holds new Hosting polling, while heartbeats and other domain dispatch continue. Database and Mail callbacks have independent private outboxes and the same separation. Live enrollment revocation remains fatal. Delivery replay does not execute work or relax terminal operation guards. The outbox is cleared only after acknowledgment; changed receipts cannot overwrite it. Unacknowledged log/result bytes remain in that mode-0600 file until delivery. Expected prior container IDs prevent unapproved replacement; an interrupted replacement can resume only when the resulting owned container binds the exact operation/spec and an allowed generation.
+The daemon uses the independent `spitzli-agent-protocol` contract. It registers, sends durable monotonic heartbeats, polls typed work, rechecks Core's live Guard before/during execution, and delivers committed receipts. Connection loss drops pending work, retains resources and receipts, and reconnects with bounded 1–30 second backoff. An exact receipt is atomically persisted to a private pending outbox before Complete. A lost completion acknowledgment is recovered after authenticated registration. While Hosting receipt delivery remains unavailable, the daemon retains exact custody and holds new Hosting polling, while heartbeats and other domain dispatch continue. Database and Mail callbacks have independent private outboxes and the same separation. Live enrollment revocation remains fatal. Delivery replay does not execute work or relax terminal operation guards. The outbox is cleared only after acknowledgment; changed receipts cannot overwrite it. Unacknowledged log/result bytes remain in that mode-0600 file until delivery. Expected prior container IDs prevent unapproved replacement; an interrupted replacement can resume only when the resulting owned container binds the exact operation/spec and an allowed generation.
 
 Atomically replace approved certificate/key files to rotate credentials. Changes invalidate the current session and trigger an authenticated re-registration without resetting sequence. Invalid or expired client certificates prevent execution even on an existing channel. A live enrollment revocation persists locally and exits without deleting workloads. Re-enrollment requires an explicitly approved new certificate or higher enrollment generation; changing a lower generation is rejected. Core must also recheck peer certificate validity/revocation on established connections.
 
@@ -117,10 +117,10 @@ The real adapter acceptance is opt-in:
 ```sh
 WEBDOCK_MAIL_RUNTIME_DOCKER_TEST=1 \
 WEBDOCK_MAIL_RUNTIME_IMAGE=<reviewed-restricted-repository@sha256:digest> \
-cargo test -p webdock-agent --test mail_runtime --locked -- --ignored
+cargo test -p spitzli-agent --test mail_runtime --locked -- --ignored
 ```
 
-The separate `webdock-agent-control` test `native_mail` exercises the real restricted database,
+The separate `spitzli-agent-control` test `native_mail` exercises the real restricted database,
 enrolled daemon and engine together, including lost checkpoint/completion acknowledgements,
 retained suspend/resume and enrollment revocation/re-enrollment. It requires the verified local
 database fixture, `WEBDOCK_MAIL_NATIVE_DOCKER_TEST=1` and the same explicit image variable.
@@ -141,7 +141,7 @@ Heartbeat observations come from actual Engine host information or Ready Kuberne
 
 ## Fixed app storage helper
 
-`webdock-storage --config /absolute/private.json initialize|restore|serve --socket /absolute/private/storage.sock` ports the existing app-storage pool format and root-only Unix RPC (`ensure`, `retained`, `purge`, `capability`); `info` is a bounded configuration discovery extension. Config fields remain `root`, `node`, `clusterID`, `poolID` (UUID), `capacityBytes`, and `reserveBytes`. Create an empty root-owned mode-0700 pool directory and mode-0600 config before the explicit one-time `initialize`. Never initialize an existing pool. `serve` restores recorded ready mounts and holds an exclusive pool lock. The example unit in `deploy/webdock-app-storage.service` uses a separate service/socket; it does not replace the existing combined app/database helper.
+`spitzli-storage --config /absolute/private.json initialize|restore|serve --socket /absolute/private/storage.sock` ports the existing app-storage pool format and root-only Unix RPC (`ensure`, `retained`, `purge`, `capability`); `info` is a bounded configuration discovery extension. Config fields remain `root`, `node`, `clusterID`, `poolID` (UUID), `capacityBytes`, and `reserveBytes`. Create an empty root-owned mode-0700 pool directory and mode-0600 config before the explicit one-time `initialize`. Never initialize an existing pool. `serve` restores recorded ready mounts and holds an exclusive pool lock. The example unit in `deploy/webdock-app-storage.service` uses a separate service/socket; it does not replace the existing combined app/database helper.
 
 Allocation reserves metadata before allocating an ext4 image with an immutable filesystem UUID and fixed byte size. The helper verifies image size/UUID, mount type, exact loop backing file and pool ownership, mounts `nodev,nosuid,noexec`, and creates `/data` with UID/GID 65532. A missing retained image is an error, never an empty replacement. Stop retains storage. Explicit helper purge commits a tombstone and checks that no loop device remains associated before unlinking. Online resizing is intentionally denied, as in the original app-storage contract. Interrupted initialization/purge requires reconciliation; unverified or failed mounts never establish storage readiness.
 
@@ -163,7 +163,7 @@ Verification includes an ignored root-only fixture test that fills an actual 64 
 
 ## Database filesystem helper
 
-`webdock-storage --database --config /absolute/private-database-pool.json initialize|restore|serve --socket /absolute/private/database.sock` uses a separately configured pool and private socket. The example `deploy/webdock-database-storage.service` never shares the app pool. A durable `_pool/service-kind.json` marker prevents opening the same pool in the other mode; the existing `_pool/state.json` and volume records remain unchanged. On first opening a retained pool, ready filesystems must already have the correct data owner. The helper never repairs a foreign UID or replaces missing retained data.
+`spitzli-storage --database --config /absolute/private-database-pool.json initialize|restore|serve --socket /absolute/private/database.sock` uses a separately configured pool and private socket. The example `deploy/webdock-database-storage.service` never shares the app pool. A durable `_pool/service-kind.json` marker prevents opening the same pool in the other mode; the existing `_pool/state.json` and volume records remain unchanged. On first opening a retained pool, ready filesystems must already have the correct data owner. The helper never repairs a foreign UID or replaces missing retained data.
 
 The retained version-1 `database.ensure`, `database.state`, `database.retained`, `database.purge` and `database.capability` RPCs are implemented. Each mutation packet binds installation ID, cluster, node, pool UUID, revision, fixed bytes and an unexpired lease no longer than 300 seconds. The physical installation ID owns the volume; a logical customer database never receives its own PV. New data directories receive UID/GID 26 before the ready record commits. PVs retain `wd-db-<installationID>`, namespace `wd-db-<installationID>`, claim `postgres-1`, `Retain`, exact verified local path and node affinity. Capability reports actual allocations, free space after reserve and verified mount/owner readiness. The original 4 KiB request/8 KiB response bounds remain; an oversized inventory fails closed rather than silently dropping allocations.
 

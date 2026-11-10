@@ -56,7 +56,7 @@ fn volume_plan(target: &Value, set: &Value) -> Result<(Value, Value, u64)> {
             return Err(failure());
         }
         let image = volume["image"].as_str().ok_or_else(failure)?;
-        if !webdock_supervisor::image_digest(image) {
+        if !spitzli_supervisor::image_digest(image) {
             return Err(failure());
         }
         match volume["role"]["role"].as_str() {
@@ -369,7 +369,7 @@ impl HostingService {
         let application = if c.spec.profile == RecoveryProfile::NtfySqliteOfflineV1
             && c.spec.action == RecoveryAction::Restore
         {
-            let runtime: webdock_supervisor::RuntimeSpec =
+            let runtime: spitzli_supervisor::RuntimeSpec =
                 serde_json::from_value(target["runtime"].clone()).map_err(|_| failure())?;
             json!({"appID":runtime.resource_id,"projectID":runtime.project_id,"clusterID":agent.cluster,"revision":runtime.revision,"volumeBytes":runtime.volume.and_then(|v|v.size_bytes).ok_or_else(failure)?})
         } else {

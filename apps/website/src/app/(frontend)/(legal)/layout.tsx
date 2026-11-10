@@ -1,5 +1,5 @@
-import {LanguagePicker} from '@webdock/i18n/picker';
-import {getRequestI18n} from '@webdock/i18n/next';
+import {LanguagePicker} from '@spitzli/i18n/picker';
+import {getRequestI18n} from '@spitzli/i18n/next';
 import { IntentLink } from '@/components/intent-link';
 import { ThemePicker } from '@/components/theme-picker';
 

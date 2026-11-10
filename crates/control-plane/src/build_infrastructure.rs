@@ -23,7 +23,7 @@ async fn command(
         state
             .config
             .features
-            .require("hosting", webdock_core::features::OperationKind::Read)
+            .require("hosting", spitzli_core::features::OperationKind::Read)
             .map_err(|_| {
                 reject(
                     StatusCode::SERVICE_UNAVAILABLE,

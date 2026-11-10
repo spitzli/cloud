@@ -17,12 +17,12 @@ use sha2::{Digest, Sha256};
 use std::sync::Arc;
 use subtle::ConstantTimeEq;
 pub struct DatabaseEndpoints {
-    pub service: Arc<webdock_databases::DatabaseService>,
+    pub service: Arc<spitzli_databases::DatabaseService>,
     secret_hash: [u8; 32],
 }
 impl DatabaseEndpoints {
     pub fn new(
-        service: Arc<webdock_databases::DatabaseService>,
+        service: Arc<spitzli_databases::DatabaseService>,
         secret: &str,
     ) -> Result<Self, &'static str> {
         if !(32..=512).contains(&secret.len()) || secret.bytes().any(|b| b.is_ascii_whitespace()) {
@@ -60,7 +60,7 @@ fn unavailable() -> ApiFailure {
         "Database service is unavailable.",
     )
 }
-fn failure(e: webdock_databases::Error) -> ApiFailure {
+fn failure(e: spitzli_databases::Error) -> ApiFailure {
     reject(
         StatusCode::from_u16(e.status).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
         "database_error",
@@ -98,8 +98,8 @@ fn input(headers: &HeaderMap, body: &Bytes, max: usize) -> Result<Value, ApiFail
     })
 }
 enum BrowserCommand {
-    Registered(webdock_databases::Command),
-    Managed(webdock_databases::ManagedCommand),
+    Registered(spitzli_databases::Command),
+    Managed(spitzli_databases::ManagedCommand),
     Credentials(String),
     Capacity,
 }
@@ -144,11 +144,11 @@ impl BrowserCommand {
             .as_str()
             .is_some_and(|s| s.starts_with("databases."))
         {
-            return webdock_databases::ManagedCommand::parse(value)
+            return spitzli_databases::ManagedCommand::parse(value)
                 .map(Self::Managed)
                 .map_err(failure);
         }
-        webdock_databases::Command::parse(value)
+        spitzli_databases::Command::parse(value)
             .map(Self::Registered)
             .map_err(failure)
     }
@@ -175,9 +175,9 @@ async fn command(
             .require(
                 "databases",
                 if command.mutates() {
-                    webdock_core::features::OperationKind::Provision
+                    spitzli_core::features::OperationKind::Provision
                 } else {
-                    webdock_core::features::OperationKind::Read
+                    spitzli_core::features::OperationKind::Read
                 },
             )
             .map_err(|_| unavailable())?;
@@ -254,7 +254,7 @@ async fn gateway(
                 .features
                 .require(
                     "databases",
-                    webdock_core::features::OperationKind::ContinueAccepted,
+                    spitzli_core::features::OperationKind::ContinueAccepted,
                 )
                 .map_err(|_| unavailable())?;
         }

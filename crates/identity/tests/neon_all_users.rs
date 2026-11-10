@@ -1,10 +1,10 @@
 //! Actual Managed provider; only the pinned disposable all-user qualification branch.
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement};
 use serde::Deserialize;
-use std::{collections::BTreeMap, sync::Arc};
-use webdock_identity::{
+use spitzli_identity::{
     CookiePolicy, IdentityService, NeonAuthClient, PasswordAuthentication, RlsSigner, SecretKeys,
 };
+use std::{collections::BTreeMap, sync::Arc};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -98,9 +98,9 @@ async fn scoped_automation_remains_independent_of_interactive_enforcement() {
     let owner = Database::connect(&f.owner_url).await.unwrap();
     let auth = Database::connect(&f.bootstrap_url).await.unwrap();
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &f.bootstrap_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -195,9 +195,9 @@ async fn retained_customer_mfa_is_a_session_and_rls_boundary() {
     let auth = Database::connect(&f.bootstrap_url).await.unwrap();
     let runtime = Database::connect(&f.runtime_url).await.unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &f.bootstrap_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),

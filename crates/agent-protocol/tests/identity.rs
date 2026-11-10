@@ -1,4 +1,4 @@
-use webdock_agent_protocol::{certificate_identity, transport_identity};
+use spitzli_agent_protocol::{certificate_identity, transport_identity};
 #[test]
 fn absent_transport_identity_and_expired_certificates_are_denied() {
     assert!(transport_identity(&tonic::Request::new(()), 1000).is_err());

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { ManagedRuntimeAccess } from "@webdock/database-contracts";
+import type { ManagedRuntimeAccess } from "@spitzli/database-contracts";
 import { createManagedRuntimeManager } from "../src/managed-runtimes";
 
 const access = (changes: Partial<ManagedRuntimeAccess> = {}): ManagedRuntimeAccess => ({

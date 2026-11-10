@@ -1,9 +1,9 @@
 #![cfg(feature = "kubernetes")]
 mod support;
 use serde_json::Value;
+use spitzli_agent::kubernetes::{ApprovedChart, helm_values};
+use spitzli_supervisor::RetainedVolume;
 use std::{io::Write, path::PathBuf};
-use webdock_agent::kubernetes::{ApprovedChart, helm_values};
-use webdock_supervisor::RetainedVolume;
 fn chart() -> PathBuf {
     std::fs::canonicalize(
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../deploy/helm/webdock-plugin"),
@@ -17,7 +17,7 @@ fn real_helm_probe_host_is_a_literal_header_only_when_requested() {
         if let Some(host) = host {
             value["healthHost"] = serde_json::json!(host);
         }
-        let spec: webdock_supervisor::RuntimeSpec = serde_json::from_value(value).unwrap();
+        let spec: spitzli_supervisor::RuntimeSpec = serde_json::from_value(value).unwrap();
         let values = helm_values(&spec, 1, false).unwrap();
         let mut file = tempfile::NamedTempFile::new().unwrap();
         file.write_all(&serde_json::to_vec(&values).unwrap())
@@ -169,7 +169,7 @@ fn real_helm_render_produces_restricted_native_objects_and_retained_claim() {
 
 #[tokio::test]
 async fn explicit_cluster_configuration_rejects_plaintext_or_unverified_tls() {
-    use webdock_agent::kubernetes::KubernetesAdapter;
+    use spitzli_agent::kubernetes::KubernetesAdapter;
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("kubeconfig.yaml");
     for (server, insecure) in [("http://127.0.0.1:1", false), ("https://127.0.0.1:1", true)] {
@@ -203,22 +203,22 @@ fn retirement_manifest_only_accepts_exact_owned_chart_resources() {
         objects.push(serde_json::json!({"apiVersion":version,"kind":kind,"metadata":{"name":spec.name(),"labels":spec.labels()}}).to_string());
     }
     let manifest = objects.join("\n---\n");
-    webdock_agent::kubernetes::verify_retirement_manifest(&spec, manifest.as_bytes()).unwrap();
+    spitzli_agent::kubernetes::verify_retirement_manifest(&spec, manifest.as_bytes()).unwrap();
     let foreign = manifest.replace(&spec.name(), "foreign-workload");
     assert!(
-        webdock_agent::kubernetes::verify_retirement_manifest(&spec, foreign.as_bytes()).is_err()
+        spitzli_agent::kubernetes::verify_retirement_manifest(&spec, foreign.as_bytes()).is_err()
     );
     let extra = format!(
         "{manifest}\n---\n{{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{{\"name\":\"outside\"}}}}"
     );
     assert!(
-        webdock_agent::kubernetes::verify_retirement_manifest(&spec, extra.as_bytes()).is_err()
+        spitzli_agent::kubernetes::verify_retirement_manifest(&spec, extra.as_bytes()).is_err()
     );
 }
 
 #[test]
 fn kubernetes_quantity_accepts_exact_exponents_from_helm_without_float_rounding() {
-    use webdock_agent::kubernetes::parse_quantity;
+    use spitzli_agent::kubernetes::parse_quantity;
     assert_eq!(parse_quantity("6.7108864e+07", false).unwrap(), 67108864);
     assert_eq!(parse_quantity("67108864e0", false).unwrap(), 67108864);
     assert_eq!(parse_quantity("1e-3", true).unwrap(), 1);

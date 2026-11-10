@@ -20,6 +20,11 @@ use kube::{
 };
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_agent::{
+    legacy::{name, namespace, new_workload, owner_labels},
+    storage::{StorageClient, StorageConfig},
+};
+use spitzli_supervisor::*;
 use std::{
     collections::BTreeMap,
     io::Cursor,
@@ -32,13 +37,8 @@ use std::{
     time::Duration,
 };
 use tokio::io::AsyncReadExt;
-use webdock_agent::{
-    legacy::{name, namespace, new_workload, owner_labels},
-    storage::{StorageClient, StorageConfig},
-};
-use webdock_supervisor::*;
 
-const BASE: &str = "/opt/spitzli-plugin-ci/legacy-attachment-fixture";
+const BASE: &str = "/opt/webdock-plugin-ci/legacy-attachment-fixture";
 const BUILD_SYSTEM: &str = "e6d9884c-e6bd-4699-8a0c-99f2358ae8a1";
 const BUILD_API: &str = "https://10.83.0.1:6443";
 const BUILD_CA_SHA: &str = "a1fa015c59dca9c67aeb8934430f7f90c5f9bafa41faac2f7079c7bad55ef292";
@@ -429,7 +429,7 @@ async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_bindin
     );
     // Only the retained adapter's sanitized API status diagnostics are enabled.
     tracing_subscriber::fmt()
-        .with_env_filter("off,webdock_agent::legacy=debug")
+        .with_env_filter("off,spitzli_agent::legacy=debug")
         .with_ansi(false)
         .with_writer(std::io::stderr)
         .try_init()
@@ -529,11 +529,11 @@ async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_bindin
         % 1_000_000_000_000
         + 1000;
     let mut spec = support::spec();
-    spec.project_id = webdock_core::id::RecordId::parse(&numeric.to_string()).unwrap();
-    spec.resource_id = webdock_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
+    spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
+    spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
     spec.revision = 4;
     spec.image = std::env::var("WEBDOCK_OWNED_K3S_IMAGE").unwrap();
-    assert!(webdock_supervisor::image_digest(&spec.image));
+    assert!(spitzli_supervisor::image_digest(&spec.image));
     if profile == QualificationProfile::TrustedRuntimeWdEu02 {
         assert_eq!(spec.image, TRUSTED_IMAGE);
     }
@@ -555,7 +555,7 @@ async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_bindin
         concurrent_deployments: 1,
     };
     spec.hosting_binding = Some(HostingBinding {
-        cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
+        cluster_id: spitzli_core::id::RecordId::parse("789").unwrap(),
         quota: quota.clone(),
         final_quota: quota,
         public_route: None,
@@ -636,7 +636,7 @@ async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_bindin
         let created=deployments.create(&PostParams::default(),&deployment).await.unwrap();let uid=created.metadata.uid.unwrap();
         services.create(&PostParams::default(),&service).await.unwrap();
         let deadline=tokio::time::Instant::now()+Duration::from_secs(120);
-        while !webdock_agent::legacy::inspect(client.clone(),&spec).await.unwrap().ready {assert!(tokio::time::Instant::now()<deadline);tokio::time::sleep(Duration::from_millis(250)).await;}
+        while !spitzli_agent::legacy::inspect(client.clone(),&spec).await.unwrap().ready {assert!(tokio::time::Instant::now()<deadline);tokio::time::sleep(Duration::from_millis(250)).await;}
         let old=deployments.get(&app).await.unwrap();let old_secret=secrets.get(&old_env).await.unwrap();
         assert_eq!(response(client.clone(),&ns,spec.resource_id.as_str(),profile).await,"retained-content:retained-env-value");
         spec.revision=5;
@@ -650,21 +650,21 @@ async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_bindin
         let quotas:Api<ResourceQuota>=Api::namespaced(client.clone(),&ns);
         let namespace_before=namespaces.get(&ns).await.unwrap();
         assert!(quotas.get_opt("webdock-allocation").await.unwrap().is_none());
-        let mut routed=update.clone();routed.spec.hosting_binding.as_mut().unwrap().public_route=Some(PublicRoute{allocation_id:webdock_core::id::RecordId::parse("55").unwrap(),hostname:"fixture.apps.example".into(),revision:5});
+        let mut routed=update.clone();routed.spec.hosting_binding.as_mut().unwrap().public_route=Some(PublicRoute{allocation_id:spitzli_core::id::RecordId::parse("55").unwrap(),hostname:"fixture.apps.example".into(),revision:5});
         let hash=routed.fingerprint().unwrap();routed.material.as_mut().unwrap().request_sha256=hash;
-        assert!(webdock_agent::legacy::reconcile_with_storage(client.clone(),&routed,&LeaseGuard::new(routed.clone(),authority.clone()),Some(&storage)).await.is_err());
+        assert!(spitzli_agent::legacy::reconcile_with_storage(client.clone(),&routed,&LeaseGuard::new(routed.clone(),authority.clone()),Some(&storage)).await.is_err());
         assert_eq!(namespaces.get(&ns).await.unwrap(),namespace_before);
         assert!(quotas.get_opt("webdock-allocation").await.unwrap().is_none());
         assert!(policies.get_opt("webdock-acme-solver").await.unwrap().is_none());
         assert!(secrets.get_opt(&new_env).await.unwrap().is_none());
-        assert!(webdock_agent::legacy::reconcile_with_storage(client.clone(),&update,&LeaseGuard::new(update.clone(),authority.clone()),Some(&storage)).await.is_err());
+        assert!(spitzli_agent::legacy::reconcile_with_storage(client.clone(),&update,&LeaseGuard::new(update.clone(),authority.clone()),Some(&storage)).await.is_err());
         assert!(authority.raced.load(Ordering::SeqCst));
         let unchanged=deployments.get(&app).await.unwrap();
         assert_eq!(unchanged.spec,old.spec);assert_eq!(unchanged.metadata.uid,old.metadata.uid);
         assert_eq!(secrets.get(&old_env).await.unwrap().data,old_secret.data);
         authority.race.store(false,Ordering::SeqCst);
         let before_pv=volumes.get(&pv_name).await.unwrap();let before_pvc=claims.get(&claim).await.unwrap();
-        let observed=webdock_agent::legacy::reconcile_with_storage(client.clone(),&update,&LeaseGuard::new(update.clone(),authority),Some(&storage)).await.unwrap();
+        let observed=spitzli_agent::legacy::reconcile_with_storage(client.clone(),&update,&LeaseGuard::new(update.clone(),authority),Some(&storage)).await.unwrap();
         assert!(observed.ready);assert_eq!(observed.runtime_id,Some(uid));
         assert!(observed.conditions.iter().any(|v|v.reason=="ExistingVerifiedAttachment"));
         let after=deployments.get(&app).await.unwrap();
@@ -675,10 +675,10 @@ async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_bindin
         assert_eq!(secrets.get(&new_env).await.unwrap().data,old_secret.data);
         let mut stop=update.clone();stop.operation_id="fixture-stop".into();stop.action=Action::Stop;stop.spec.revision=6;stop.spec.hosted_access=None;stop.material=None;
         let stop_authority=Arc::new(Authority{client:client.clone(),namespace:ns.clone(),environment:new_env.clone(),pv:pv_name.clone(),race:AtomicBool::new(false),raced:AtomicBool::new(false)});
-        let stopped=webdock_agent::legacy::reconcile_with_storage(client.clone(),&stop,&LeaseGuard::new(stop.clone(),stop_authority.clone()),Some(&storage)).await.unwrap();
+        let stopped=spitzli_agent::legacy::reconcile_with_storage(client.clone(),&stop,&LeaseGuard::new(stop.clone(),stop_authority.clone()),Some(&storage)).await.unwrap();
         assert_eq!(stopped.phase,Phase::Stopped);
         let mut resume=stop;resume.operation_id="fixture-resume".into();resume.action=Action::Apply;resume.spec.revision=7;
-        let resumed=webdock_agent::legacy::reconcile_with_storage(client.clone(),&resume,&LeaseGuard::new(resume.clone(),stop_authority),Some(&storage)).await.unwrap();
+        let resumed=spitzli_agent::legacy::reconcile_with_storage(client.clone(),&resume,&LeaseGuard::new(resume.clone(),stop_authority),Some(&storage)).await.unwrap();
         assert!(resumed.ready);assert_eq!(resumed.runtime_id,after.metadata.uid);
         assert_eq!(response(client.clone(),&ns,spec.resource_id.as_str(),profile).await,"retained-content:retained-env-value");
         assert_eq!(volumes.get(&pv_name).await.unwrap(),before_pv);assert_eq!(claims.get(&claim).await.unwrap(),before_pvc);

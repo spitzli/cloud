@@ -1,7 +1,7 @@
 //! Custody of an issued stale receipt is not authorization to apply its claimed outcome.
 use super::*;
+use spitzli_supervisor::{Command, ReadCommand, RuntimeSpec};
 use subtle::ConstantTimeEq;
-use webdock_supervisor::{Command, ReadCommand, RuntimeSpec};
 
 /// Trusted transport integration: Core first loads this exact persisted dispatch for the
 /// current enrollment and structurally validates the matching receipt, before calling here.

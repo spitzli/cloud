@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { useApi } from "./context";
 import { AuthHeader, authFrame, authPanel, describeFailure } from "./AuthFrame";
 import { waitlistSubmission, waitlistAccepted, waitlistDecision, waitlistEntry, waitlistPage, type WaitlistEntry } from "./waitlist-contracts";

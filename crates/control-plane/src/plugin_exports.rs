@@ -1,9 +1,9 @@
 //! Composition of the fixed archive source lane with existing native product readers.
 use sea_orm::{ConnectionTrait, DatabaseTransaction, DbBackend, Statement};
 use serde_json::{Value, json};
+use spitzli_export_protocol::{SourceKind, SourceRef, wire::DatabaseMaterial};
+use spitzli_plugin_host::{ExportJob, ExportSources, InvocationScope, PluginError};
 use std::sync::Arc;
-use webdock_export_protocol::{SourceKind, SourceRef, wire::DatabaseMaterial};
-use webdock_plugin_host::{ExportJob, ExportSources, InvocationScope, PluginError};
 type Result<T> = std::result::Result<T, PluginError>;
 fn denied() -> PluginError {
     PluginError::denied()
@@ -25,12 +25,12 @@ async fn rows(
     .collect()
 }
 pub struct Sources {
-    pub databases: Arc<webdock_databases::DatabaseService>,
-    pub repository: Option<Arc<webdock_build::RepositoryAdmission>>,
+    pub databases: Arc<spitzli_databases::DatabaseService>,
+    pub repository: Option<Arc<spitzli_build::RepositoryAdmission>>,
 }
 impl Sources {
-    fn actor<'a>(scope: &'a InvocationScope) -> webdock_databases::DatabaseExportSubject<'a> {
-        webdock_databases::DatabaseExportSubject {
+    fn actor<'a>(scope: &'a InvocationScope) -> spitzli_databases::DatabaseExportSubject<'a> {
+        spitzli_databases::DatabaseExportSubject {
             customer: &scope.customer_id,
             project: &scope.project_id,
             subject: &scope.subject,
@@ -46,7 +46,7 @@ impl Sources {
             version: 1,
             kind: SourceKind::Report,
             id: scope.project_id.clone(),
-            binding: webdock_export_protocol::fingerprint(&r[0]).map_err(|_| denied())?,
+            binding: spitzli_export_protocol::fingerprint(&r[0]).map_err(|_| denied())?,
             commit: None,
         })
     }
@@ -60,7 +60,7 @@ impl ExportSources for Sources {
         let mut choices = vec![json!({"id":scope.project_id,"kind":"report","state":"ready"})];
         choices.extend(pg);
         choices.extend(
-            webdock_build::BuildService::export_log_choices(scope, tx)
+            spitzli_build::BuildService::export_log_choices(scope, tx)
                 .await
                 .map_err(|_| denied())?,
         );
@@ -68,7 +68,7 @@ impl ExportSources for Sources {
             choices.extend(git);
         }
         Ok(
-            json!({"sources":choices,"maxBytes":webdock_export_protocol::MAX_BYTES,"maxRetentionSeconds":86400,"pgSourceRequiresReadonlyRole":true}),
+            json!({"sources":choices,"maxBytes":spitzli_export_protocol::MAX_BYTES,"maxRetentionSeconds":86400,"pgSourceRequiresReadonlyRole":true}),
         )
     }
     async fn bind(
@@ -78,7 +78,7 @@ impl ExportSources for Sources {
         kind: SourceKind,
         id: &str,
     ) -> Result<SourceRef> {
-        if !webdock_export_protocol::decimal(id) {
+        if !spitzli_export_protocol::decimal(id) {
             return Err(denied());
         }
         match kind {
@@ -95,7 +95,7 @@ impl ExportSources for Sources {
                 .await
                 .map_err(|_| denied()),
             SourceKind::BuildLog => {
-                webdock_build::BuildService::export_log_reference(scope, tx, id)
+                spitzli_build::BuildService::export_log_reference(scope, tx, id)
                     .await
                     .map_err(|_| denied())
             }
@@ -150,7 +150,7 @@ impl ExportSources for Sources {
         let resources=rows(tx,"SELECT jsonb_build_object('plugin',plugin_id,'offering',offering_id,'count',count(*)) AS value FROM webdock_auth.plugin_resource WHERE project_id=$1 AND customer_id=$2 GROUP BY plugin_id,offering_id ORDER BY plugin_id,offering_id LIMIT 101",vec![scope.project_id.clone().into(),scope.customer_id.clone().into()]).await?;
         if resources.len() > 100 {
             return Err(PluginError::new(
-                webdock_plugin_protocol::ErrorCode::InvalidInput,
+                spitzli_plugin_protocol::ErrorCode::InvalidInput,
                 "Project report exceeds supported group limit",
             ));
         }
@@ -196,7 +196,7 @@ impl ExportSources for Sources {
         tx: &DatabaseTransaction,
         source: &SourceRef,
     ) -> Result<Vec<u8>> {
-        webdock_build::BuildService::export_log_bytes(scope, tx, source)
+        spitzli_build::BuildService::export_log_bytes(scope, tx, source)
             .await
             .map_err(|_| denied())
     }

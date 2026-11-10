@@ -1,6 +1,6 @@
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
+use spitzli_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
 use std::sync::Arc;
-use webdock_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
 pub async fn exec(db: &DatabaseConnection, sql: &str, values: Vec<sea_orm::Value>) {
     db.execute_raw(Statement::from_sql_and_values(
         DbBackend::Postgres,
@@ -39,8 +39,8 @@ pub fn url(key: &str, name: &str) -> String {
 }
 pub async fn identity(
     auth: DatabaseConnection,
-    ids: Arc<webdock_persistence::IdAllocator>,
-) -> (Arc<IdentityService>, webdock_identity::Principal) {
+    ids: Arc<spitzli_persistence::IdAllocator>,
+) -> (Arc<IdentityService>, spitzli_identity::Principal) {
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let identity = Arc::new(
         IdentityService::new(

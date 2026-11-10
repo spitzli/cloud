@@ -1,6 +1,6 @@
 //! Installation recovery custody is separate from legacy application/project volume records.
 use super::*;
-use webdock_agent_protocol::recovery::{RecoveryAction, RecoveryProfile};
+use spitzli_agent_protocol::recovery::{RecoveryAction, RecoveryProfile};
 // Fixture diagnostics disclose only fixed variants, never error payloads.
 #[cfg(any(feature = "docker", test))]
 pub(crate) fn reservation_result_variant<T>(result: &Result<T>) -> &'static str {
@@ -134,7 +134,7 @@ impl RecoveryPeak {
     }
     pub fn validate(&self, ceiling: u64) -> Result<()> {
         if self.encrypted_bytes == 0
-            || self.encrypted_bytes > webdock_object_storage::MAX_TRANSFER
+            || self.encrypted_bytes > spitzli_object_storage::MAX_TRANSFER
             || self.plaintext_bytes < self.encrypted_bytes
             || self.extracted_bytes > ceiling
             || self.material_and_scratch_bytes < MIN
@@ -154,10 +154,10 @@ impl RecoveryPeak {
 )]
 pub enum RecoveryReservationAuthority {
     Core {
-        document: webdock_agent_protocol::recovery::custody::SignedDocument,
+        document: spitzli_agent_protocol::recovery::custody::SignedDocument,
     },
     OperatorCapsule {
-        document: webdock_agent_protocol::recovery::custody::SignedDocument,
+        document: spitzli_agent_protocol::recovery::custody::SignedDocument,
     },
 }
 #[derive(Clone, Serialize, Deserialize)]
@@ -325,15 +325,15 @@ impl RecoveryStorageTrust {
                 || (target.action == RecoveryAction::Restore && target.nonce.is_none())
                 || (target.action == RecoveryAction::Backup
                     && (target.nonce.is_some() || !target.volumes.is_empty()))
-                || !(MIN..=webdock_object_storage::MAX_TRANSFER).contains(&target.capacity_bytes)
+                || !(MIN..=spitzli_object_storage::MAX_TRANSFER).contains(&target.capacity_bytes)
                 || target.volumes.len() > 102
             {
                 return Err(ExecutionError::Ownership);
             }
             for (name, volume) in &target.volumes {
                 if !slug(name)
-                    || !(MIN..=webdock_object_storage::MAX_TRANSFER).contains(&volume.bytes)
-                    || !webdock_supervisor::image_digest(&volume.image)
+                    || !(MIN..=spitzli_object_storage::MAX_TRANSFER).contains(&volume.bytes)
+                    || !spitzli_supervisor::image_digest(&volume.image)
                     || volume.uid == 0
                     || volume.gid == 0
                     || volume.uid > 65535
@@ -1206,7 +1206,7 @@ impl StoragePool {
                 {
                     return Err(ExecutionError::Ownership);
                 }
-                let object: webdock_object_storage::ObjectReceipt = serde_json::from_value(
+                let object: spitzli_object_storage::ObjectReceipt = serde_json::from_value(
                     verified.set.proof["objects"]
                         .as_array()
                         .and_then(|objects| objects.first())

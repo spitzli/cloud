@@ -85,7 +85,7 @@ impl Fixture {
             url::Url::parse("postgresql://postgres@127.0.0.1/webdock_plugin_setup_test").unwrap();
         url.set_port(Some(port)).unwrap();
         url.set_password(Some(&password)).unwrap();
-        let passwords = webdock_persistence::roles::LOGIN_ROLES
+        let passwords = spitzli_persistence::roles::LOGIN_ROLES
             .iter()
             .copied()
             .chain(["webdock_offline_migrate"])
@@ -115,14 +115,14 @@ impl Fixture {
         })
         .await
         .unwrap();
-        webdock_persistence::roles::provision_roles(
+        spitzli_persistence::roles::provision_roles(
             &owner,
             "webdock_plugin_setup_test",
             &fixture.passwords,
         )
         .await
         .unwrap();
-        webdock_persistence::migrations::bootstrap(&owner, "webdock_plugin_setup_test", SECRET)
+        spitzli_persistence::migrations::bootstrap(&owner, "webdock_plugin_setup_test", SECRET)
             .await
             .unwrap();
         owner.close().await.unwrap();

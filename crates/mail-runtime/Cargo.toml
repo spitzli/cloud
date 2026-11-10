@@ -1,5 +1,5 @@
 [package]
-name = "webdock-mail-runtime"
+name = "spitzli-mail-runtime"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -28,9 +28,9 @@ hmac = "0.12"
 ed25519-dalek = "2"
 tonic = { version = "0.14.6", default-features = false, features = ["codegen", "transport", "tls-ring"] }
 tokio-stream = "0.1"
-webdock-mail-protocol = { path = "../mail-protocol" }
-webdock-plugin-runtime = { path = "../plugin-runtime" }
-webdock-mail-message = { path = "../mail-message" }
+spitzli-mail-protocol = { path = "../mail-protocol" }
+spitzli-plugin-runtime = { path = "../plugin-runtime" }
+spitzli-mail-message = { path = "../mail-message" }
 mail-send = { version = "0.6.2", default-features = false, features = ["ring", "tls12"] }
 smtp-proto = "0.2"
 rustls = { version = "0.23", default-features = false, features = ["std", "ring", "tls12"] }

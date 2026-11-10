@@ -8,22 +8,22 @@ use http_body_util::BodyExt;
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
+use spitzli_control_plane::{
+    http::{Services, build_app_with_domains},
+    resource_auth::ResourceClientConfig,
+};
+use spitzli_identity::{CookiePolicy, IdentityService, RlsSigner, SecretKeys};
+use spitzli_oauth::{
+    AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientAuthentication,
+    ClientPurpose, ClientRegistration, CodeExchange, OAuthConfig, OAuthService,
+};
+use spitzli_persistence::IdAllocator;
+use spitzli_registry::RegistryService;
 use std::{
     collections::{BTreeMap, HashMap},
     sync::Arc,
 };
 use tower::ServiceExt;
-use webdock_control_plane::{
-    http::{Services, build_app_with_domains},
-    resource_auth::ResourceClientConfig,
-};
-use webdock_identity::{CookiePolicy, IdentityService, RlsSigner, SecretKeys};
-use webdock_oauth::{
-    AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientAuthentication,
-    ClientPurpose, ClientRegistration, CodeExchange, OAuthConfig, OAuthService,
-};
-use webdock_persistence::IdAllocator;
-use webdock_registry::RegistryService;
 
 pub async fn db(key: &str) -> DatabaseConnection {
     let raw = std::env::var(key).expect("explicit local fixture environment");
@@ -109,7 +109,7 @@ pub struct Fixture {
     pub oauth: Arc<OAuthService>,
     pub identity: Arc<IdentityService>,
     pub registry: Arc<RegistryService>,
-    pub hosting: Arc<webdock_hosting::HostingService>,
+    pub hosting: Arc<spitzli_hosting::HostingService>,
     pub resource: String,
     owned_resource: bool,
     pub nonce: String,
@@ -144,7 +144,7 @@ impl Fixture {
         let email = format!("{nonce}@example.invalid");
         let ids = Arc::new(IdAllocator::new(
             db("AUTH_DATABASE_URL").await,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         ));
         let mapped = ids.allocate().await.unwrap().to_string();
         sql(&owner,"INSERT INTO webdock_auth.\"user\"(id,name,email,\"emailVerified\",role,\"twoFactorEnabled\",\"mustChangePassword\") VALUES($1,$1,$2,true,'operator',true,false)",vec![uid.clone().into(),email.clone().into()]).await;
@@ -215,7 +215,7 @@ impl Fixture {
             .with_allocator(ids.clone()),
         );
         let hosting = Arc::new(
-            webdock_hosting::HostingService::new(
+            spitzli_hosting::HostingService::new(
                 db("DATABASE_URL").await,
                 db("AUTH_DATABASE_URL").await,
                 db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
@@ -256,7 +256,7 @@ impl Fixture {
         client: Option<ResourceClientConfig>,
     ) -> Router {
         build_app_with_domains(
-            webdock_core::config::PlatformConfig::from_map(&HashMap::from([(
+            spitzli_core::config::PlatformConfig::from_map(&HashMap::from([(
                 "WEBDOCK_FEATURES".into(),
                 r#"{"hosting":"enabled"}"#.into(),
             )]))

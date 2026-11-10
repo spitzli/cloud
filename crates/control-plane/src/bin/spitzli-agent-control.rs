@@ -1,10 +1,10 @@
 //! Core's separately supervised agent RPC listener; local sockets by default, explicit mTLS remotely.
 use clap::Parser;
 use serde::Deserialize;
+use spitzli_agent_control::{ControlPlane, LocalBinding};
+use spitzli_core::{config::PlatformConfig, features::OperationKind};
+use spitzli_plugin_runtime::{MutualTls, UnixSocket};
 use std::{path::PathBuf, sync::Arc};
-use webdock_agent_control::{ControlPlane, LocalBinding};
-use webdock_core::{config::PlatformConfig, features::OperationKind};
-use webdock_plugin_runtime::{MutualTls, UnixSocket};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 #[derive(Parser)]
 struct Args {
@@ -34,16 +34,16 @@ fn required(key: &str) -> Result<String, Error> {
 async fn main() -> Result<(), Error> {
     let args = Args::parse();
     let listener: ListenerConfig = serde_json::from_slice(
-        &webdock_control_plane::config::read_private_file(&args.config)?,
+        &spitzli_control_plane::config::read_private_file(&args.config)?,
     )?;
     let environment = std::env::vars().collect();
     let configuration_enabled =
-        webdock_control_plane::mail::incoming_configuration_enabled(&environment)?;
+        spitzli_control_plane::mail::incoming_configuration_enabled(&environment)?;
     let config = PlatformConfig::from_map(&environment)?;
     let plugin_config = std::env::var("WEBDOCK_NATIVE_PLUGIN_CONFIG")
         .ok()
         .map(|path| {
-            webdock_control_plane::plugin_config::PluginConfig::load(std::path::Path::new(&path))
+            spitzli_control_plane::plugin_config::PluginConfig::load(std::path::Path::new(&path))
         })
         .transpose()?;
     let plugin_installations_enabled = plugin_config
@@ -82,28 +82,28 @@ async fn main() -> Result<(), Error> {
         );
     }
     let auth_url = required("WEBDOCK_DATABASE_URL")?;
-    let auth = webdock_control_plane::db::connect_runtime(
+    let auth = spitzli_control_plane::db::connect_runtime(
         &auth_url,
         "webdock_auth_bootstrap",
         config.production,
     )
     .await?;
-    let session = webdock_control_plane::db::connect_runtime(
+    let session = spitzli_control_plane::db::connect_runtime(
         &required("WEBDOCK_SESSION_DATABASE_URL")?,
         "webdock_auth_runtime",
         config.production,
     )
     .await?;
-    let worker = webdock_control_plane::db::connect_runtime(
+    let worker = spitzli_control_plane::db::connect_runtime(
         &required("WEBDOCK_WORKER_DATABASE_URL")?,
         "webdock_worker_runtime",
         config.production,
     )
     .await?;
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2)?,
+            spitzli_ids::Identity::platform(0, 2)?,
         )
         .await?,
     );
@@ -111,7 +111,7 @@ async fn main() -> Result<(), Error> {
         .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
         .or_else(|_| std::env::var("WEBDOCK_AUTH_SECRET"))
         .map_err(|_| "Missing retained hosting encryption key")?;
-    let authority = webdock_control_plane::plugin_config::authority_services(
+    let authority = spitzli_control_plane::plugin_config::authority_services(
         auth.clone(),
         ids.clone(),
         &config,
@@ -119,8 +119,8 @@ async fn main() -> Result<(), Error> {
     .await?;
     let mail = if mail_enabled {
         Some(
-            webdock_control_plane::mail::initialize_incoming_agent(
-                webdock_mail::MailDependencies {
+            spitzli_control_plane::mail::initialize_incoming_agent(
+                spitzli_mail::MailDependencies {
                     auth: auth.clone(),
                     business: session.clone(),
                     worker: worker.clone(),
@@ -152,7 +152,7 @@ async fn main() -> Result<(), Error> {
         None
     };
     let hosting = Arc::new(
-        webdock_hosting::HostingService::new(
+        spitzli_hosting::HostingService::new(
             session.clone(),
             auth.clone(),
             worker.clone(),
@@ -164,8 +164,8 @@ async fn main() -> Result<(), Error> {
         .with_session_authority(authority.identity.clone(), authority.browser.clone()),
     );
     let plugin_backend = if plugin_installations_enabled {
-        let endpoints = webdock_control_plane::plugins::PluginEndpoints::initialize(
-            webdock_control_plane::plugins::PluginDependencies {
+        let endpoints = spitzli_control_plane::plugins::PluginEndpoints::initialize(
+            spitzli_control_plane::plugins::PluginDependencies {
                 business: session,
                 worker,
                 auth: auth.clone(),
@@ -183,7 +183,7 @@ async fn main() -> Result<(), Error> {
         )
         .await?;
         Some(Arc::new(
-            webdock_control_plane::plugins::installation::AgentBackend {
+            spitzli_control_plane::plugins::installation::AgentBackend {
                 host: endpoints.host,
             },
         ))
@@ -238,11 +238,11 @@ async fn main() -> Result<(), Error> {
         } => {
             let tls = MutualTls {
                 identity: tonic::transport::Identity::from_pem(
-                    webdock_control_plane::config::read_private_file(&certificate)?,
-                    webdock_control_plane::config::read_private_file(&key)?,
+                    spitzli_control_plane::config::read_private_file(&certificate)?,
+                    spitzli_control_plane::config::read_private_file(&key)?,
                 ),
                 peer_ca: tonic::transport::Certificate::from_pem(
-                    webdock_control_plane::config::read_private_file(&peer_ca)?,
+                    spitzli_control_plane::config::read_private_file(&peer_ca)?,
                 ),
             };
             let mut service = ControlPlane::new(auth, hosting, None)
@@ -269,16 +269,16 @@ async fn database_domain(
     auth: sea_orm::DatabaseConnection,
     business: sea_orm::DatabaseConnection,
     worker: sea_orm::DatabaseConnection,
-    ids: Arc<webdock_persistence::IdAllocator>,
+    ids: Arc<spitzli_persistence::IdAllocator>,
     encryption_key: &str,
-    authority: &webdock_control_plane::plugin_config::AuthorityServices,
+    authority: &spitzli_control_plane::plugin_config::AuthorityServices,
     new_orders_enabled: bool,
-) -> Result<Arc<webdock_databases::DatabaseService>, Error> {
+) -> Result<Arc<spitzli_databases::DatabaseService>, Error> {
     let lease_secret = std::env::var("BETTER_AUTH_SECRET")
         .or_else(|_| std::env::var("WEBDOCK_AUTH_SECRET"))
         .map_err(|_| "Missing retained database lease secret")?;
     Ok(Arc::new(
-        webdock_databases::DatabaseService::new(
+        spitzli_databases::DatabaseService::new(
             business,
             auth,
             worker,
@@ -291,7 +291,7 @@ async fn database_domain(
         )
         .await?
         .with_new_orders_enabled(new_orders_enabled)
-        .with_management(webdock_databases::ManagementConfig {
+        .with_management(spitzli_databases::ManagementConfig {
             cluster_id: std::env::var("WEBDOCK_DATABASE_CLUSTER_ID").ok(),
             endpoint_domain: std::env::var("WEBDOCK_DATABASE_DOMAIN").ok(),
             public_ordering: std::env::var("WEBDOCK_DATABASE_PUBLIC_ENABLED").as_deref()

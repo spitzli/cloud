@@ -1,5 +1,5 @@
+use spitzli_identity::{CookiePolicy, SecretKeys, hash_password, verify_password};
 use std::collections::BTreeMap;
-use webdock_identity::{CookiePolicy, SecretKeys, hash_password, verify_password};
 const SECRET: &str = "fixture-secret-with-at-least-32-bytes";
 const HASH: &str = "000102030405060708090a0b0c0d0e0f:c7877280641a617ec087f9365d3ad7facccc9681e2af94d0a148b29a67b413ab0e08c7f08f9bd6232c369f5bbd3eec03acc2a170c24fd179aecc67c282756d12";
 

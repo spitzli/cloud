@@ -4,12 +4,12 @@ use axum::{
     body::Body,
     http::{Request, StatusCode},
 };
+use spitzli_build::{BuildService, RepositoryProvider, RepositoryRef, VerifiedCommit};
 use tower::ServiceExt;
-use webdock_build::{BuildService, RepositoryProvider, RepositoryRef, VerifiedCommit};
 
 pub(super) fn oci_envelope() -> Vec<u8> {
+    use spitzli_build::artifact::Archive;
     use std::collections::BTreeMap;
-    use webdock_build::artifact::Archive;
     let config = b"{}".to_vec();
     let config_hash = hex::encode(Sha256::digest(&config));
     let manifest=serde_json::to_vec(&json!({"schemaVersion":2,"mediaType":"application/vnd.oci.image.manifest.v1+json","config":{"mediaType":"application/vnd.oci.image.config.v1+json","size":config.len(),"digest":format!("sha256:{config_hash}")},"layers":[]})).unwrap();
@@ -40,10 +40,10 @@ impl RepositoryProvider for Repository {
         &self,
         _: &RepositoryRef<'_>,
         _: &str,
-    ) -> webdock_build::Result<VerifiedCommit> {
+    ) -> spitzli_build::Result<VerifiedCommit> {
         VerifiedCommit::new("a".repeat(40))
     }
-    async fn archive(&self, _: &RepositoryRef<'_>, _: &str) -> webdock_build::Result<Vec<u8>> {
+    async fn archive(&self, _: &RepositoryRef<'_>, _: &str) -> spitzli_build::Result<Vec<u8>> {
         unreachable!("admission fixture never exports repository bytes")
     }
 }
@@ -62,9 +62,9 @@ async fn kubernetes_admission_reserves_uncertain_jobs_and_fences_revoked_generat
                 db("DATABASE_URL").await,
                 db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
                 std::env::var("DATABASE_RLS_SECRET").unwrap(),
-                Arc::new(webdock_persistence::IdAllocator::new(
+                Arc::new(spitzli_persistence::IdAllocator::new(
                     db("DATABASE_URL").await,
-                    webdock_ids::Identity::platform(0, 2).unwrap(),
+                    spitzli_ids::Identity::platform(0, 2).unwrap(),
                 )),
                 f.service.clone(),
                 "registry.invalid".into(),
@@ -184,7 +184,7 @@ async fn kubernetes_admission_reserves_uncertain_jobs_and_fences_revoked_generat
             service.claim_build(&worker).await.unwrap_err().code,
             "build_isolation_unavailable"
         );
-        let router = webdock_build::http::worker_router(service.clone());
+        let router = spitzli_build::http::worker_router(service.clone());
         let post = |path: &str, credential: Option<&str>, body: Value| {
             let mut request = Request::builder()
                 .method("POST")
@@ -696,9 +696,9 @@ async fn kubernetes_admission_reserves_uncertain_jobs_and_fences_revoked_generat
         use std::os::unix::fs::PermissionsExt;
         let directory = tempfile::tempdir().unwrap();
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-        let store = webdock_build::artifact::ArtifactStore::open(
+        let store = spitzli_build::artifact::ArtifactStore::open(
             directory.path().into(),
-            webdock_build::artifact::MAX_OUTPUT * 2,
+            spitzli_build::artifact::MAX_OUTPUT * 2,
         )
         .unwrap();
         let artifact = store

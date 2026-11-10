@@ -15,9 +15,9 @@ use axum::{
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_plugin_host::{AdmissionInput, HostService};
+use spitzli_plugin_protocol::{ErrorCode, Manifest, PluginError};
 use std::sync::Arc;
-use webdock_plugin_host::{AdmissionInput, HostService};
-use webdock_plugin_protocol::{ErrorCode, Manifest, PluginError};
 #[path = "plugin_builtins.rs"]
 mod builtins;
 #[path = "plugin_jobs.rs"]
@@ -181,17 +181,17 @@ impl InvokeTrace {
     }
 }
 pub struct PluginEndpoints {
-    pub exports: Option<Arc<dyn webdock_plugin_host::ExportSources>>,
+    pub exports: Option<Arc<dyn spitzli_plugin_host::ExportSources>>,
     pub host: Arc<HostService>,
     pub connections: RuntimeConnections,
-    pub repository: Option<Arc<webdock_build::RepositoryAdmission>>,
+    pub repository: Option<Arc<spitzli_build::RepositoryAdmission>>,
     pub mcp_client: Option<crate::plugin_config::McpClientConfig>,
 }
 impl PluginEndpoints {
     pub fn new(
         host: Arc<HostService>,
         connections: RuntimeConnections,
-        repository: Option<Arc<webdock_build::RepositoryAdmission>>,
+        repository: Option<Arc<spitzli_build::RepositoryAdmission>>,
     ) -> Self {
         Self {
             exports: None,
@@ -283,7 +283,7 @@ impl PluginEndpoints {
     }
     pub async fn invoke_mcp(
         &self,
-        actor: &webdock_oauth::McpAuthentication,
+        actor: &spitzli_oauth::McpAuthentication,
         input: AdmissionInput,
     ) -> Result<Value, PluginError> {
         let view = self
@@ -324,9 +324,9 @@ impl PluginEndpoints {
     async fn invoke_admitted(
         &self,
         plugin: String,
-        view: webdock_plugin_host::PluginView,
+        view: spitzli_plugin_host::PluginView,
         connection: crate::plugin_config::RuntimeConnection,
-        admitted: webdock_plugin_host::AdmittedInvocation,
+        admitted: spitzli_plugin_host::AdmittedInvocation,
         storage_path: &str,
         source_api_hash: Option<String>,
     ) -> Result<Value, PluginError> {
@@ -350,7 +350,7 @@ impl PluginEndpoints {
                 .inspect_err(|e| trace.host(InvokeBoundary::Authenticate, e))?;
             trace.enter(InvokeBoundary::Health);
             let health = client
-                .health(webdock_plugin_runtime::wire::HealthRequest {})
+                .health(spitzli_plugin_runtime::wire::HealthRequest {})
                 .await
                 .map_err(|e| {
                     trace.rpc(InvokeBoundary::Health, &e);
@@ -366,7 +366,7 @@ impl PluginEndpoints {
             }
             trace.enter(InvokeBoundary::Describe);
             let described = client
-                .describe(webdock_plugin_runtime::wire::DescribeRequest {})
+                .describe(spitzli_plugin_runtime::wire::DescribeRequest {})
                 .await
                 .map_err(|e| {
                     trace.rpc(InvokeBoundary::Describe, &e);
@@ -386,7 +386,7 @@ impl PluginEndpoints {
             }
             trace.enter(InvokeBoundary::Invoke);
             let reply = client
-                .invoke(webdock_plugin_runtime::wire::InvokeRequest {
+                .invoke(spitzli_plugin_runtime::wire::InvokeRequest {
                     invocation_token: admitted.token.clone(),
                     action: admitted.claims.action.clone(),
                     input_json: payload,
@@ -409,7 +409,7 @@ impl PluginEndpoints {
                 .action(&admitted.claims.action)
                 .is_some_and(|a| a.get("storage").is_some())
             {
-                let plan: webdock_plugin_protocol::storage::StoragePlan =
+                let plan: spitzli_plugin_protocol::storage::StoragePlan =
                     serde_json::from_value(result).map_err(|_| PluginError::denied())?;
                 let mut descriptor = self
                     .host
@@ -425,7 +425,7 @@ impl PluginEndpoints {
             } else {
                 result
             };
-            webdock_plugin_protocol::validate_value(
+            spitzli_plugin_protocol::validate_value(
                 manifest
                     .action(&admitted.claims.action)
                     .and_then(|a| a.get("output")),
@@ -477,12 +477,12 @@ fn invocation_failure(status: tonic::Status) -> PluginError {
         tonic::Code::PermissionDenied | tonic::Code::Unauthenticated => PluginError::denied(),
         tonic::Code::InvalidArgument => PluginError::new(
             ErrorCode::InvalidInput,
-            webdock_plugin_protocol::public_message(ErrorCode::InvalidInput, status.message())
+            spitzli_plugin_protocol::public_message(ErrorCode::InvalidInput, status.message())
                 .unwrap_or_else(|| "Plugin request is invalid".into()),
         ),
         tonic::Code::Aborted => PluginError::new(
             ErrorCode::Conflict,
-            webdock_plugin_protocol::public_message(ErrorCode::Conflict, status.message())
+            spitzli_plugin_protocol::public_message(ErrorCode::Conflict, status.message())
                 .unwrap_or_else(|| "Plugin operation conflict".into()),
         ),
         tonic::Code::Unimplemented => PluginError::new(
@@ -586,7 +586,7 @@ fn invoke_input(body: &[u8], headers: &HeaderMap) -> Result<AdmissionInput, ApiF
                     )
                 })?
                 .len()
-                > webdock_plugin_host::MAIL_ACTION_INPUT_BYTES
+                > spitzli_plugin_host::MAIL_ACTION_INPUT_BYTES
     {
         return Err(reject(
             StatusCode::PAYLOAD_TOO_LARGE,
@@ -940,25 +940,25 @@ pub struct PluginDependencies {
     pub business: sea_orm::DatabaseConnection,
     pub worker: sea_orm::DatabaseConnection,
     pub auth: sea_orm::DatabaseConnection,
-    pub identity: Arc<webdock_identity::IdentityService>,
-    pub browser: Option<Arc<webdock_browser_session::BrowserSessions>>,
-    pub oauth: Arc<webdock_oauth::OAuthService>,
-    pub ids: Arc<webdock_persistence::IdAllocator>,
+    pub identity: Arc<spitzli_identity::IdentityService>,
+    pub browser: Option<Arc<spitzli_browser_session::BrowserSessions>>,
+    pub oauth: Arc<spitzli_oauth::OAuthService>,
+    pub ids: Arc<spitzli_persistence::IdAllocator>,
     pub rls_secret: String,
     pub database_new_orders_enabled: bool,
-    pub neon_connections: Option<Arc<webdock_provider_connections::Connections>>,
+    pub neon_connections: Option<Arc<spitzli_provider_connections::Connections>>,
 }
 impl PluginEndpoints {
     pub async fn initialize(
         dependencies: PluginDependencies,
         config: &crate::plugin_config::PluginConfig,
     ) -> Result<Self, crate::plugin_config::ConfigurationError> {
-        let fallback: Arc<dyn webdock_plugin_host::RuntimeBindings> = Arc::new(
-            webdock_plugin_host::FileBindings::new(config.host_bindings.clone()),
+        let fallback: Arc<dyn spitzli_plugin_host::RuntimeBindings> = Arc::new(
+            spitzli_plugin_host::FileBindings::new(config.host_bindings.clone()),
         );
         let managed = match &config.installation_catalog {
             Some(_) => Some(Arc::new(
-                webdock_plugin_host::ManagedBindings::new(
+                spitzli_plugin_host::ManagedBindings::new(
                     crate::db::independent_pool(&dependencies.worker, "webdock_worker_runtime")
                         .await?,
                     dependencies.rls_secret.clone(),
@@ -969,7 +969,7 @@ impl PluginEndpoints {
             )),
             None => None,
         };
-        let bindings: Arc<dyn webdock_plugin_host::RuntimeBindings> = match &managed {
+        let bindings: Arc<dyn spitzli_plugin_host::RuntimeBindings> = match &managed {
             Some(value) => value.clone(),
             None => fallback,
         };
@@ -979,7 +979,7 @@ impl PluginEndpoints {
                 .or_else(|_| std::env::var("WEBDOCK_AUTH_SECRET"))?;
             let gateway = std::env::var("WEBDOCK_DATABASE_GATEWAY_ORIGIN")?;
             Some(Arc::new(
-                webdock_databases::DatabaseService::new(
+                spitzli_databases::DatabaseService::new(
                     dependencies.business.clone(),
                     dependencies.auth.clone(),
                     dependencies.worker.clone(),
@@ -1021,26 +1021,26 @@ impl PluginEndpoints {
         }
         if let Some(storage) = &config.storage {
             host = host.with_storage_gateway(Arc::new(
-                webdock_plugin_host::storage::StorageGateway::new(
+                spitzli_plugin_host::storage::StorageGateway::new(
                     storage.staging_directory.clone(),
                 )?,
             ));
         }
         if let Some(catalog) = &config.installation_catalog {
             host = host.with_installation(
-                Arc::new(webdock_plugin_host::Catalog::load(catalog)?),
+                Arc::new(spitzli_plugin_host::Catalog::load(catalog)?),
                 &crate::plugin_config::installation_secret()?,
             )?;
         }
         let host = Arc::new(host);
         let repository = match &config.repository {
             Some(repository) => Some(Arc::new(
-                webdock_build::RepositoryAdmission::new(
+                spitzli_build::RepositoryAdmission::new(
                     dependencies.worker,
                     dependencies.rls_secret,
                     host.clone(),
                     crate::plugin_config::signing_key(&repository.signing_key)?,
-                    Arc::new(webdock_build::FileRepositoryBindings::new(
+                    Arc::new(spitzli_build::FileRepositoryBindings::new(
                         repository.bindings.clone(),
                     )),
                 )
@@ -1062,7 +1062,7 @@ impl PluginEndpoints {
             Arc::new(crate::plugin_exports::Sources {
                 databases,
                 repository: repository.clone(),
-            }) as Arc<dyn webdock_plugin_host::ExportSources>
+            }) as Arc<dyn spitzli_plugin_host::ExportSources>
         });
         Ok(Self {
             host,
@@ -1109,7 +1109,7 @@ async fn write_plan(
 ) -> Result<Response, ApiFailure> {
     let actor = actor(state, headers).await?;
     writer(&actor)?;
-    let input: webdock_plugin_host::PlanInput = command(body, headers)?;
+    let input: spitzli_plugin_host::PlanInput = command(body, headers)?;
     let host = &endpoints(state)?.host;
     let value = host
         .save_plan(&actor.principal, Some(&actor.authority), id, input)
@@ -1163,7 +1163,7 @@ async fn customer_plan(
     let result: Result<Response, ApiFailure> = async {
         let actor = actor(&state, &headers).await?;
         writer(&actor)?;
-        let input: webdock_plugin_host::CustomerPlanInput = command(&body, &headers)?;
+        let input: spitzli_plugin_host::CustomerPlanInput = command(&body, &headers)?;
         let host = &endpoints(&state)?.host;
         let value = host
             .set_customer_plan(&actor.principal, Some(&actor.authority), &id, input)

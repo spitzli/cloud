@@ -1,10 +1,10 @@
 //! Owned, disposable PostgreSQL only. No production connection or provider access.
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{AdmissionInput, FileBindings, HostService};
+use spitzli_plugin_runtime::PeerIdentity;
 use std::sync::Arc;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{AdmissionInput, FileBindings, HostService};
-use webdock_plugin_runtime::PeerIdentity;
 #[allow(
     dead_code,
     reason = "Reuse the existing owned PostgreSQL and identity fixture"
@@ -30,7 +30,7 @@ async fn sql(db: &impl ConnectionTrait, text: &str, values: Vec<sea_orm::Value>)
 #[ignore = "owned local PostgreSQL with WEBDOCK_HOSTING_AUTOSCALING_ENABLED=true"]
 async fn concurrent_autoscaling_admissions_reserve_max_and_preserve_tenant_scope() {
     use sha2::{Digest, Sha256};
-    use webdock_hosting::HostingService;
+    use spitzli_hosting::HostingService;
     assert_eq!(
         std::env::var("WEBDOCK_HOSTING_AUTOSCALING_ENABLED").unwrap(),
         "true"
@@ -57,9 +57,9 @@ async fn concurrent_autoscaling_admissions_reserve_max_and_preserve_tenant_scope
             "owned-plugin-jobs-rls-secret-32bytes".into(),
             "owned-hosting-secret-at-least-32bytes".into(),
             Arc::new(
-                webdock_persistence::IdAllocator::connect(
+                spitzli_persistence::IdAllocator::connect(
                     f.database.url.as_str(),
-                    webdock_ids::Identity::platform(0, 2).unwrap(),
+                    spitzli_ids::Identity::platform(0, 2).unwrap(),
                 )
                 .await
                 .unwrap(),
@@ -113,9 +113,9 @@ async fn concurrent_autoscaling_admissions_reserve_max_and_preserve_tenant_scope
         "capability loss invalidates execution authority"
     );
     sql(&f.owner,"UPDATE webdock_auth.hosting_agent SET observation=jsonb_set(observation,'{capabilities,autoscalingVersion}','1') WHERE cluster_id='200'",vec![]).await;
-    let mut observed: webdock_supervisor::ObservedState = serde_json::from_value(json!({
+    let mut observed: spitzli_supervisor::ObservedState = serde_json::from_value(json!({
         "resourceId":command.spec.resource_id.to_string(),"revision":command.spec.revision,"phase":"running","ready":true,
-        "observedAt":webdock_supervisor::timestamp().unwrap(),"runtimeId":"owned-uid","conditions":[],
+        "observedAt":spitzli_supervisor::timestamp().unwrap(),"runtimeId":"owned-uid","conditions":[],
         "autoscaling":{"minReplicas":1,"maxReplicas":3,"currentReplicas":4,"readyReplicas":4,"desiredReplicas":4,"metricsAvailable":true,"reason":"MetricsAvailable"}
     })).unwrap();
     assert!(

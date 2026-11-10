@@ -3,13 +3,13 @@ use super::config::{RecoveryTarget, TargetConfiguration};
 use crate::storage::{StorageClient, StorageConfig, StoragePacket};
 use bollard::{Docker, models::*, query_parameters::*};
 use serde::{Deserialize, Serialize};
+use spitzli_supervisor::{ExecutionError, Result, RuntimeSpec};
 use std::collections::{BTreeMap, HashMap};
 use std::{
     io::Write,
     os::unix::fs::{OpenOptionsExt, PermissionsExt},
     path::Path,
 };
-use webdock_supervisor::{ExecutionError, Result, RuntimeSpec};
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StoppedApplication {
@@ -375,7 +375,7 @@ pub async fn start_restored_ce(
     if !["/data", "/var/lib/stalwart"].contains(&data_mount)
         || customer.is_empty()
         || !customer.bytes().all(|c| c.is_ascii_digit())
-        || !webdock_supervisor::image_digest(image)
+        || !spitzli_supervisor::image_digest(image)
         || path
             != pool
                 .root
@@ -574,7 +574,7 @@ pub async fn start_gateway(
     );
     let config = ContainerCreateBody {
         image: Some(target.gateway_image.clone()),
-        entrypoint: Some(vec!["/usr/local/bin/webdock-recovery-gateway".into()]),
+        entrypoint: Some(vec!["/usr/local/bin/spitzli-recovery-gateway".into()]),
         cmd: Some(vec!["/recovery/gateway.json".into()]),
         user: Some("65532:65532".into()),
         labels: Some(HashMap::from([(

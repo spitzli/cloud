@@ -13,7 +13,7 @@ COPY vendor ./vendor
 RUN bun install --frozen-lockfile --ignore-scripts
 # The npm "bun" package (pinned by the control plane) needs its skipped postinstall; this image already ships that Bun.
 RUN rm -f node_modules/.bin/bun node_modules/.bin/bunx
-RUN bun run --filter @webdock/cms-instance build
+RUN bun run --filter @spitzli/cms-instance build
 # Runtime only applies reviewed SQL; migration generation and TS loaders are excluded.
 RUN rm -rf /app/apps/cms-instance/.next/standalone/node_modules/drizzle-kit /app/apps/cms-instance/.next/standalone/node_modules/esbuild /app/apps/cms-instance/.next/standalone/node_modules/@esbuild /app/apps/cms-instance/.next/standalone/node_modules/payload/node_modules/esbuild /app/apps/cms-instance/.next/standalone/node_modules/payload/node_modules/@esbuild /app/apps/cms-instance/.next/standalone/node_modules/payload/node_modules/tsx
 

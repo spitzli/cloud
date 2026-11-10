@@ -1,9 +1,9 @@
 #![cfg(feature = "kubernetes")]
-use webdock_agent::{
+use spitzli_agent::{
     mail::kubernetes::{KubernetesMailConfig, MailPhase, mail_objects},
     storage::StorageConfig,
 };
-use webdock_agent_protocol::mail::*;
+use spitzli_agent_protocol::mail::*;
 fn claim() -> MailClaim {
     let material = MailMaterial::Credentials {
         bootstrap_password: Some("fixture-bootstrap".into()),
@@ -168,7 +168,7 @@ fn mail_manifest_replay_does_not_change_pod_template_for_operation_or_revision()
     assert_eq!(denied["spec"]["ingress"], serde_json::json!([]));
 }
 fn objects_policy(
-    objects: &webdock_agent::mail::kubernetes::MailObjects,
+    objects: &spitzli_agent::mail::kubernetes::MailObjects,
     name: &str,
 ) -> serde_json::Value {
     serde_json::to_value(
@@ -191,9 +191,9 @@ fn mail_private_configuration_rejects_legacy_labels_without_explicit_uids() {
 
 #[tokio::test]
 async fn mail_live_denial_precedes_any_kubernetes_or_storage_access() {
+    use spitzli_agent::mail::{MailAuthority, MailRuntime, kubernetes::KubernetesMailRuntime};
+    use spitzli_supervisor::{ExecutionError, Result};
     use std::os::unix::fs::PermissionsExt;
-    use webdock_agent::mail::{MailAuthority, MailRuntime, kubernetes::KubernetesMailRuntime};
-    use webdock_supervisor::{ExecutionError, Result};
     struct Denied;
     #[async_trait::async_trait]
     impl MailAuthority for Denied {
@@ -211,7 +211,7 @@ async fn mail_live_denial_precedes_any_kubernetes_or_storage_access() {
     let runtime = KubernetesMailRuntime::open(
         client,
         (
-            webdock_agent::storage::StorageClient::new(directory.path().join("unreachable.sock")),
+            spitzli_agent::storage::StorageClient::new(directory.path().join("unreachable.sock")),
             storage(),
         ),
         path,

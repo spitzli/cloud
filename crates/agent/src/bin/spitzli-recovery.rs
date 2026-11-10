@@ -60,7 +60,7 @@ fn write(
 #[cfg(feature = "docker")]
 #[tokio::main]
 async fn main() -> std::process::ExitCode {
-    use webdock_agent::recovery::{
+    use spitzli_agent::recovery::{
         NativeRecoveryExecutor,
         capsule::{ColdRecoveryCapsule, SignedDocument, seal_operator_capsule},
         config::RecoveryRuntimeConfig,
@@ -85,7 +85,7 @@ async fn main() -> std::process::ExitCode {
                     return Err("bounded cold deadline required".into());
                 }
                 let admitted_set: SignedDocument = serde_json::from_slice(
-                    &webdock_agent::config::read_private(&admitted_set, 262144)?,
+                    &spitzli_agent::config::read_private(&admitted_set, 262144)?,
                 )?;
                 let descriptor = config
                     .targets
@@ -115,7 +115,7 @@ async fn main() -> std::process::ExitCode {
                 receipt,
             } => {
                 let capsule: SignedDocument = serde_json::from_slice(
-                    &webdock_agent::config::read_private(&capsule, 262144)?,
+                    &spitzli_agent::config::read_private(&capsule, 262144)?,
                 )?;
                 let result = runtime.execute_cold(&capsule, &target).await?;
                 write(&receipt, &result)?;

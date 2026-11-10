@@ -11,7 +11,7 @@ pub struct KubernetesStoragePolicy {
 }
 impl KubernetesStoragePolicy {
     pub fn validate(&self, cluster_id: &str) -> Result<()> {
-        webdock_agent_protocol::build_storage::BuildStorageTarget {
+        spitzli_agent_protocol::build_storage::BuildStorageTarget {
             cluster_id: cluster_id.into(),
             node: self.node.clone(),
             pool_id: self.pool_id.clone(),

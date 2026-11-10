@@ -1,13 +1,13 @@
 //! Operator-installed concrete recovery profiles. Keys/recipients/URLs are never API input.
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use spitzli_agent_protocol::recovery::RecoveryProfile;
+use spitzli_object_storage::{Credentials, S3Config, Store};
+use spitzli_supervisor::{ExecutionError, Result, RuntimeSpec};
 use std::{
     collections::BTreeMap,
     path::{Path, PathBuf},
 };
-use webdock_agent_protocol::recovery::RecoveryProfile;
-use webdock_object_storage::{Credentials, S3Config, Store};
-use webdock_supervisor::{ExecutionError, Result, RuntimeSpec};
 
 #[derive(Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -172,7 +172,7 @@ impl RecoveryRuntimeConfig {
             if !cfg!(feature = "kubernetes")
                 || source.context.is_empty()
                 || !slug(&source.platform_id)
-                || !webdock_supervisor::image_digest(&source.helper_image)
+                || !spitzli_supervisor::image_digest(&source.helper_image)
             {
                 return Err(ExecutionError::Invalid(
                     "qualified Kubernetes recovery source",
@@ -287,7 +287,7 @@ impl RecoveryRuntimeConfig {
                 || !(67108864..=64 * 1024 * 1024 * 1024).contains(&target.capacity_bytes)
                 || !uuid::Uuid::parse_str(&target.nonce)
                     .is_ok_and(|n| n.to_string() == target.nonce && !n.is_nil())
-                || !webdock_supervisor::image_digest(&target.gateway_image)
+                || !spitzli_supervisor::image_digest(&target.gateway_image)
             {
                 return Err(ExecutionError::Invalid("fresh recovery target"));
             }
@@ -303,7 +303,7 @@ impl RecoveryRuntimeConfig {
                 } => {
                     core.validate()?;
                     metadata.validate()?;
-                    if !webdock_supervisor::image_digest(ce_image) {
+                    if !spitzli_supervisor::image_digest(ce_image) {
                         return Err(ExecutionError::Invalid("CE recovery image"));
                     }
                 }

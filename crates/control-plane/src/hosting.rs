@@ -11,8 +11,8 @@ use axum::{
     routing::{get, post},
 };
 use serde_json::Value;
+use spitzli_core::features::OperationKind;
 use std::sync::Arc;
-use webdock_core::features::OperationKind;
 
 pub fn routes() -> Router<Arc<ServiceState>> {
     Router::new()
@@ -30,7 +30,7 @@ fn unavailable() -> ApiFailure {
         "Hosting is unavailable.",
     )
 }
-fn failure(error: webdock_hosting::HostingError) -> ApiFailure {
+fn failure(error: spitzli_hosting::HostingError) -> ApiFailure {
     reject(
         StatusCode::from_u16(error.status).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
         "hosting_error",
@@ -182,7 +182,7 @@ async fn command(
             .execute_with_ceiling(
                 &actor.principal,
                 input,
-                webdock_hosting::HostingCeiling {
+                spitzli_hosting::HostingCeiling {
                     read: true,
                     write: !actor.read_only(),
                 },

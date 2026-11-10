@@ -1,8 +1,8 @@
 mod support;
 use sha2::{Digest, Sha256};
+use spitzli_agent::policy::{GrantKind, MountGrant, RuntimePolicy, RuntimePolicyConfig};
+use spitzli_supervisor::{MountReference, PluginBinding};
 use std::{os::unix::fs::PermissionsExt, path::Path};
-use webdock_agent::policy::{GrantKind, MountGrant, RuntimePolicy, RuntimePolicyConfig};
-use webdock_supervisor::{MountReference, PluginBinding};
 
 #[test]
 fn socket_directory_grants_preserve_the_wire_shape_and_reject_secret_fields() {
@@ -95,7 +95,7 @@ fn secret_mount_requires_reviewed_descriptor_scope_revision_and_immutable_file()
     assert!(mounts[0].read_only);
     assert_eq!(mounts[0].source, source);
     let mut wrong = spec.clone();
-    wrong.project_id = webdock_core::id::RecordId::parse("999").unwrap();
+    wrong.project_id = spitzli_core::id::RecordId::parse("999").unwrap();
     assert!(policy.local_mounts(&wrong).is_err());
     let mut wrong = spec.clone();
     wrong.mounts[0].revision = 2;

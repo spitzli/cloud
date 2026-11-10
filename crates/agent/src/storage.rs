@@ -2,6 +2,8 @@
 use chrono::{DateTime, Utc};
 use fs2::FileExt;
 use serde::{Deserialize, Serialize};
+use spitzli_core::id::RecordId;
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{
     collections::BTreeMap,
     fs::{File, OpenOptions},
@@ -15,8 +17,6 @@ use std::{
     },
     time::{Duration, Instant},
 };
-use webdock_core::id::RecordId;
-use webdock_supervisor::{ExecutionError, Result};
 pub mod build;
 #[cfg(feature = "kubernetes")]
 pub mod build_kubernetes;
@@ -1685,7 +1685,7 @@ mod initializing_build_retirement_tests {
     fn journal_before_mkdir_cancellation_survives_restart_and_retires_only_builds() {
         let (_base, path, mut pool, packet) = owned_pool(StorageKind::Builds);
         let key = ed25519_dalek::SigningKey::from_bytes(&[71; 32]);
-        let reservation = webdock_agent_protocol::build_storage::BuildStorageReservation {
+        let reservation = spitzli_agent_protocol::build_storage::BuildStorageReservation {
             version: 1,
             audience: "webdock-build-storage-v1".into(),
             volume_id: "1".into(),
@@ -1693,17 +1693,17 @@ mod initializing_build_retirement_tests {
             project_id: "2".into(),
             build_id: "9".into(),
             generation: 1,
-            target: webdock_agent_protocol::build_storage::BuildStorageTarget {
+            target: spitzli_agent_protocol::build_storage::BuildStorageTarget {
                 cluster_id: "3".into(),
                 node: pool.config.node.clone(),
                 pool_id: pool.config.pool_id.clone(),
             },
             volume_bytes: MIN,
-            action: webdock_agent_protocol::build_storage::BuildStorageAction::Reserve,
+            action: spitzli_agent_protocol::build_storage::BuildStorageAction::Reserve,
             epoch: 1,
             expires_at: Utc::now() + chrono::Duration::minutes(5),
         };
-        let signed = webdock_agent_protocol::build_storage::SignedBuildStorageReservation::sign(
+        let signed = spitzli_agent_protocol::build_storage::SignedBuildStorageReservation::sign(
             reservation.clone(),
             &key,
         )
@@ -1740,7 +1740,7 @@ mod initializing_build_retirement_tests {
         let guard = StorageGuard::maintenance();
         assert!(restarted.ensure_reserved(&packet, &guard, 0).is_err());
         let mut retirement = reservation.clone();
-        retirement.action = webdock_agent_protocol::build_storage::BuildStorageAction::Retire;
+        retirement.action = spitzli_agent_protocol::build_storage::BuildStorageAction::Retire;
         retirement.epoch = 2;
         let trust = build::BuildStorageTrust {
             version: 1,
@@ -1754,7 +1754,7 @@ mod initializing_build_retirement_tests {
         };
         let retired = restarted
             .apply_build_storage(
-                &webdock_agent_protocol::build_storage::SignedBuildStorageReservation::sign(
+                &spitzli_agent_protocol::build_storage::SignedBuildStorageReservation::sign(
                     retirement, &key,
                 )
                 .unwrap(),

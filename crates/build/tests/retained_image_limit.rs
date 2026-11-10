@@ -1,9 +1,9 @@
+use spitzli_build::artifact::{
+    Archive, MAX_OUTPUT, MAX_RETAINED_IMAGE, validate_retained_image_size,
+};
 use std::{
     collections::BTreeMap,
     io::{Read, Write},
-};
-use webdock_build::artifact::{
-    Archive, MAX_OUTPUT, MAX_RETAINED_IMAGE, validate_retained_image_size,
 };
 
 #[derive(Default)]
@@ -50,7 +50,7 @@ fn oversized_sparse_runner_output_reports_actionable_artifact_limit_before_readi
     file.set_len(MAX_RETAINED_IMAGE + 1).unwrap();
     drop(file);
     assert_eq!(
-        webdock_build::container_runner::read_input_file(&path, MAX_RETAINED_IMAGE)
+        spitzli_build::container_runner::read_input_file(&path, MAX_RETAINED_IMAGE)
             .unwrap_err()
             .code,
         "artifact_limit"

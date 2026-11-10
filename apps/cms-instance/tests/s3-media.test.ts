@@ -11,7 +11,7 @@ test(
   },
   async () => {
     const { getCMS, handleNativeCMS } = await import("../src/lib/cms.ts");
-    const { projectBridgeUser } = await import("@webdock/cms-bridge/auth");
+    const { projectBridgeUser } = await import("@spitzli/cms-bridge/auth");
     const config = (await import("../src/lib/config.ts")).loadCMSConfig();
     const payload = await getCMS();
     const route = (

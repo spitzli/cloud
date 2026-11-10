@@ -10,12 +10,12 @@ use crate::{
 use ed25519_dalek::VerifyingKey;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{collections::HashMap, time::Duration};
-use tonic::transport::Channel;
-use webdock_mail_protocol::{
+use spitzli_mail_protocol::{
     FRAME_BYTES, MAX_METADATA_BYTES, MAX_MIME_BYTES, sha256, valid_digest, verify_lease,
     wire::{SendFrame, SendHeader, mail_runtime_client::MailRuntimeClient, send_receipt::State},
 };
+use std::{collections::HashMap, time::Duration};
+use tonic::transport::Channel;
 
 #[derive(Serialize, Deserialize)]
 #[serde(
@@ -406,6 +406,11 @@ mod tests {
     use crate::outbox::PayloadFormat;
     use ed25519_dalek::SigningKey;
     use serde_json::json;
+    use spitzli_mail_protocol::{
+        Denied, LeaseClaims,
+        runtime::{Authority, Handler, PeerIdentity, Runtime, UnixSocket},
+        wire::SendReceipt,
+    };
     use std::{
         collections::HashSet,
         os::unix::fs::PermissionsExt,
@@ -413,11 +418,6 @@ mod tests {
             Arc, Mutex,
             atomic::{AtomicUsize, Ordering},
         },
-    };
-    use webdock_mail_protocol::{
-        Denied, LeaseClaims,
-        runtime::{Authority, Handler, PeerIdentity, Runtime, UnixSocket},
-        wire::SendReceipt,
     };
     fn fixture() -> (
         SigningKey,
@@ -572,7 +572,7 @@ mod tests {
             peer: &PeerIdentity,
             _claims: &LeaseClaims,
             _token: &str,
-        ) -> webdock_mail_protocol::Result<()> {
+        ) -> spitzli_mail_protocol::Result<()> {
             if matches!(peer, PeerIdentity::Unix { .. }) {
                 Ok(())
             } else {
@@ -584,7 +584,7 @@ mod tests {
             _peer: &PeerIdentity,
             claims: &LeaseClaims,
             _token: &str,
-        ) -> webdock_mail_protocol::Result<Value> {
+        ) -> spitzli_mail_protocol::Result<Value> {
             if self.attempts.lock().unwrap().insert(claims.id.clone()) {
                 Ok(json!({"secret":"provider-only"}))
             } else {
@@ -637,7 +637,7 @@ mod tests {
         let server = tokio::spawn(runtime.serve_unix(socket, async {
             let _ = stopped.await;
         }));
-        let channel = webdock_plugin_runtime::unix_channel(&path).await.unwrap();
+        let channel = spitzli_plugin_runtime::unix_channel(&path).await.unwrap();
         let grant = claims(&binding, &job, &message, &prepared);
         let transport = ProviderTransport::new(channel, binding, key.verifying_key()).unwrap();
         let value = serde_json::to_value(authorization(&key, &grant)).unwrap();
@@ -691,7 +691,7 @@ mod tests {
             let server = tokio::spawn(runtime.serve_unix(socket, async {
                 let _ = stopped.await;
             }));
-            let channel = webdock_plugin_runtime::unix_channel(&path).await.unwrap();
+            let channel = spitzli_plugin_runtime::unix_channel(&path).await.unwrap();
             providers.push(ProviderTransport::new(channel, binding, key.verifying_key()).unwrap());
             jobs.push((
                 job,

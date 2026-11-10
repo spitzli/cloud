@@ -9,8 +9,8 @@ use k8s_openapi::api::{
     },
     networking::v1::NetworkPolicy,
 };
-use webdock_agent_protocol::mail::MailClaim;
-use webdock_supervisor::{ExecutionError, Result};
+use spitzli_agent_protocol::mail::MailClaim;
+use spitzli_supervisor::{ExecutionError, Result};
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum MailPhase {
     Recovery,
@@ -116,7 +116,7 @@ impl KubernetesMailRuntime {
         storage.1.validate()?;
         if storage.1.node != config.node
             || storage.1.capacity_bytes
-                < webdock_agent_protocol::mail::MailResources::FIXED.volume_bytes
+                < spitzli_agent_protocol::mail::MailResources::FIXED.volume_bytes
         {
             return Err(ExecutionError::Ownership);
         }
@@ -139,7 +139,7 @@ impl MailRuntime for KubernetesMailRuntime {
         &self,
         claim: &MailClaim,
         authority: &dyn MailAuthority,
-    ) -> Result<webdock_agent_protocol::mail::MailProof> {
+    ) -> Result<spitzli_agent_protocol::mail::MailProof> {
         let execution = operations::Execution::new(self, claim, authority);
         execution.guard().await?;
         if execution.guarded(self.capabilities()).await?.is_none() {

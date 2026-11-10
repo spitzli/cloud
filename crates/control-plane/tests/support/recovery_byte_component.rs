@@ -17,7 +17,7 @@ pub(super) fn run_private(
         .arg(program)
         .args(args);
     let stage = match program {
-        "/usr/local/bin/webdock-recovery" => args
+        "/usr/local/bin/spitzli-recovery" => args
             .get(2)
             .and_then(|s| s.to_str())
             .filter(|s| ["validate", "issue", "restore", "target-identity"].contains(s))
@@ -29,7 +29,7 @@ pub(super) fn run_private(
         "/usr/bin/sqlite3" => "sqlite-integrity",
         "/usr/bin/openssl" => "target-tls-keygen",
         "/usr/bin/age-keygen" => "wrong-key-keygen",
-        "/usr/local/bin/webdock-storage" => "cold-storage-init",
+        "/usr/local/bin/spitzli-storage" => "cold-storage-init",
         "/usr/bin/docker" => "owned-engine",
         "python3" => "private-python",
         _ => "unrecognized-fixture-command",
@@ -343,7 +343,7 @@ async fn completed_set(c: &Context<'_>, operation: &str) -> Value {
 fn cli(config: &Path, args: &[&std::ffi::OsStr]) -> Vec<u8> {
     let mut argv = vec![std::ffi::OsStr::new("--config"), config.as_os_str()];
     argv.extend_from_slice(args);
-    run_private("/usr/local/bin/webdock-recovery", &argv, None)
+    run_private("/usr/local/bin/spitzli-recovery", &argv, None)
 }
 pub(super) fn failed_cli(config: &Path, args: &[&std::ffi::OsStr]) {
     let status = Command::new("/usr/bin/timeout")
@@ -351,7 +351,7 @@ pub(super) fn failed_cli(config: &Path, args: &[&std::ffi::OsStr]) {
             "--signal=TERM",
             "--kill-after=1",
             "300",
-            "/usr/local/bin/webdock-recovery",
+            "/usr/local/bin/spitzli-recovery",
         ])
         .arg("--config")
         .arg(config)
@@ -568,8 +568,8 @@ fn tls_probe_python_definitions_load_without_network() {
     assert_eq!(value["pythonImportsLoaded"], true);
     assert_eq!(value["version"][0], 3);
     // Invoke the actual RuntimeSpec validator (and its image_digest) through its existing typed field.
-    let target:webdock_agent::recovery::config::TargetConfiguration=serde_json::from_value(json!({"kind":"ntfy","runtime":{"version":1,"installation":"owned-recovery","projectId":"123","resourceId":"124","revision":1,"image":format!("localhost/owned/recovery-component@sha256:{}","a".repeat(64)),"arguments":[],"cpuMillicores":100,"memoryBytes":134217728,"ephemeralBytes":67108864,"replicas":0,"port":8080,"healthPath":null,"volume":null}})).unwrap();
-    let webdock_agent::recovery::config::TargetConfiguration::Ntfy { runtime } = target else {
+    let target:spitzli_agent::recovery::config::TargetConfiguration=serde_json::from_value(json!({"kind":"ntfy","runtime":{"version":1,"installation":"owned-recovery","projectId":"123","resourceId":"124","revision":1,"image":format!("localhost/owned/recovery-component@sha256:{}","a".repeat(64)),"arguments":[],"cpuMillicores":100,"memoryBytes":134217728,"ephemeralBytes":67108864,"replicas":0,"port":8080,"healthPath":null,"volume":null}})).unwrap();
+    let spitzli_agent::recovery::config::TargetConfiguration::Ntfy { runtime } = target else {
         unreachable!()
     };
     assert!(runtime.validate().is_ok());
@@ -715,12 +715,12 @@ fn reservation_for_operation(
     operation: &str,
 ) -> Option<(
     String,
-    webdock_agent::storage::recovery_pool::RecoveryReservationReceipt,
+    spitzli_agent::storage::recovery_pool::RecoveryReservationReceipt,
 )> {
-    let operation = webdock_core::id::RecordId::parse(operation).expect("actual Core operation ID");
+    let operation = spitzli_core::id::RecordId::parse(operation).expect("actual Core operation ID");
     let reservations: std::collections::BTreeMap<
         String,
-        webdock_agent::storage::recovery_pool::RecoveryReservationReceipt,
+        spitzli_agent::storage::recovery_pool::RecoveryReservationReceipt,
     > = serde_json::from_value(custody["reservations"].clone())
         .expect("actual typed recovery custody receipts");
     reservations.into_iter().find(|(id, receipt)| {
@@ -733,9 +733,9 @@ fn reservation_for_operation(
 }
 #[test]
 fn actual_reservation_receipt_serde_operation_lookup() {
-    use webdock_agent::storage::{StorageConfig, recovery_pool::*};
-    use webdock_agent_protocol::recovery::{RecoveryAction, RecoveryProfile};
-    use webdock_core::id::RecordId;
+    use spitzli_agent::storage::{StorageConfig, recovery_pool::*};
+    use spitzli_agent_protocol::recovery::{RecoveryAction, RecoveryProfile};
+    use spitzli_core::id::RecordId;
     let receipt = RecoveryReservationReceipt {
         origin: "core-policy".into(),
         reservation_id: "123".into(),
@@ -1087,7 +1087,7 @@ pub(super) async fn check(mut c: Context<'_>, core_container: &str) {
         format!("{:x}", Sha256::digest(&envelope)),
         set["proof"]["keyMaterial"]["sha256"].as_str().unwrap()
     );
-    let source_pool = webdock_agent::storage::StorageConfig::load(c.storage_config).unwrap();
+    let source_pool = spitzli_agent::storage::StorageConfig::load(c.storage_config).unwrap();
     let custody: Value = serde_json::from_slice(&private_input(
         &source_pool.root.join("_pool/recovery-custody.json"),
         1048576,
@@ -1236,10 +1236,10 @@ pub(super) async fn check(mut c: Context<'_>, core_container: &str) {
     let storage = cold.join("storage.json");
     private(
         &storage,
-        &json!({"root":pool,"node":webdock_agent::storage::StorageConfig::load(c.storage_config).unwrap().node,"clusterID":c.cluster,"poolID":uuid::Uuid::new_v4(),"capacityBytes":cold_quota,"reserveBytes":retained_reserve}),
+        &json!({"root":pool,"node":spitzli_agent::storage::StorageConfig::load(c.storage_config).unwrap().node,"clusterID":c.cluster,"poolID":uuid::Uuid::new_v4(),"capacityBytes":cold_quota,"reserveBytes":retained_reserve}),
     );
     run_private(
-        "/usr/local/bin/webdock-storage",
+        "/usr/local/bin/spitzli-storage",
         &[
             "--config".as_ref(),
             storage.as_os_str(),
@@ -1249,7 +1249,7 @@ pub(super) async fn check(mut c: Context<'_>, core_container: &str) {
     );
     let bootstrap_socket = cold.join("bootstrap.sock");
     let mut bootstrap = spawn(
-        "/usr/local/bin/webdock-storage",
+        "/usr/local/bin/spitzli-storage",
         &[
             "--config".as_ref(),
             storage.as_os_str(),
@@ -1261,7 +1261,7 @@ pub(super) async fn check(mut c: Context<'_>, core_container: &str) {
         "storage-cold-bootstrap",
     );
     let cold_identity = tokio::time::timeout(Duration::from_secs(40), async {
-        let client = webdock_agent::storage::StorageClient::new(bootstrap_socket.clone());
+        let client = spitzli_agent::storage::StorageClient::new(bootstrap_socket.clone());
         loop {
             assert!(
                 bootstrap.try_wait().unwrap().is_none(),
@@ -1341,8 +1341,8 @@ pub(super) async fn check(mut c: Context<'_>, core_container: &str) {
     let verify = cold.join("verify");
     directory(&verify);
     let approved=targets.iter().map(|target| {
-        let descriptor:webdock_agent::recovery::config::RecoveryTarget=serde_json::from_value(target.clone()).unwrap();
-        let sha=webdock_agent::recovery::config::fingerprint(&(descriptor,cold_identity.clone())).unwrap();
+        let descriptor:spitzli_agent::recovery::config::RecoveryTarget=serde_json::from_value(target.clone()).unwrap();
+        let sha=spitzli_agent::recovery::config::fingerprint(&(descriptor,cold_identity.clone())).unwrap();
         json!({"id":target["id"],"sha256":sha,"nonce":target["nonce"],"action":"restore","profile":"ntfy-sqlite-offline-v1","capacityBytes":67108864,"volumes":{},"applicationTarget":{"appID":target["configuration"]["runtime"]["resourceId"],"projectID":c.source_row["project_id"],"clusterID":c.cluster,"revision":1,"volumeBytes":67108864}})
     }).collect::<Vec<_>>();
     private(
@@ -1350,7 +1350,7 @@ pub(super) async fn check(mut c: Context<'_>, core_container: &str) {
         &json!({"version":1,"installationID":"owned-recovery","coreSigners":config["coreSigners"],"operatorSigners":config["operatorSigners"],"postgresTlsCertificate":null,"postgresTlsKey":null,"verificationDirectory":verify,"agentStagingDirectory":stage,"socketDirectory":peer,"targets":approved}),
     );
     let mut helper = spawn(
-        "/usr/local/bin/webdock-storage",
+        "/usr/local/bin/spitzli-storage",
         &[
             "--config".as_ref(),
             storage.as_os_str(),
@@ -1590,12 +1590,12 @@ pub(super) async fn check(mut c: Context<'_>, core_container: &str) {
 pub(super) async fn wait_cold_helper(
     config: &Path,
     helper: &mut tokio::process::Child,
-    expected: &webdock_agent::storage::recovery_pool::RecoveryPoolIdentity,
+    expected: &spitzli_agent::storage::recovery_pool::RecoveryPoolIdentity,
     private_logs: &Path,
 ) {
     let value: Value = serde_json::from_slice(&private_input(config, 1048576)).unwrap();
     let socket = PathBuf::from(value["storageSocket"].as_str().unwrap());
-    let client = webdock_agent::storage::StorageClient::new(socket);
+    let client = spitzli_agent::storage::StorageClient::new(socket);
     tokio::time::timeout(Duration::from_secs(40), async {
         loop {
             if let Some(status) = helper.try_wait().unwrap() {

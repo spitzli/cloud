@@ -1,4 +1,4 @@
-use webdock_databases::database_connection_url;
+use spitzli_databases::database_connection_url;
 #[test]
 fn application_binding_uses_fixed_ca_mount_and_verified_tls() {
     let url = database_connection_url(

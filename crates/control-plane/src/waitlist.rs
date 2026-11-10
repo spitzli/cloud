@@ -11,8 +11,8 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::json;
+use spitzli_access::{AccessService, WaitlistDecision, WaitlistSubmission};
 use std::sync::Arc;
-use webdock_access::{AccessService, WaitlistDecision, WaitlistSubmission};
 fn access(state: &ServiceState) -> Result<&AccessService, ApiFailure> {
     state.access.as_deref().ok_or_else(|| {
         reject(
@@ -25,7 +25,7 @@ fn access(state: &ServiceState) -> Result<&AccessService, ApiFailure> {
 async fn operator(
     state: &ServiceState,
     headers: &HeaderMap,
-) -> Result<webdock_identity::Principal, ApiFailure> {
+) -> Result<spitzli_identity::Principal, ApiFailure> {
     let actor = auth::resolve_actor(state, headers).await?.ok_or_else(|| {
         reject(
             StatusCode::UNAUTHORIZED,
@@ -120,9 +120,9 @@ async fn review(
 mod tests {
     use axum::{body::Body, http::Request};
     use sea_orm::DatabaseConnection;
+    use spitzli_core::config::PlatformConfig;
     use std::collections::HashMap;
     use tower::ServiceExt;
-    use webdock_core::config::PlatformConfig;
 
     use super::*;
 

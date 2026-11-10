@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/web",
+  "name": "@spitzli/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -26,12 +26,12 @@
     "nodemailer": "10.0.13",
     "graphql": "16.14.2",
     "sharp": "0.35.5",
-    "@webdock/instance-kit": "*",
-    "@webdock/payload-sso": "*",
-    "@webdock/cms-ui": "*",
-    "@webdock/i18n": "*",
-    "@webdock/database-runtime": "*",
-    "@webdock/cms-bridge": "*"
+    "@spitzli/instance-kit": "*",
+    "@spitzli/payload-sso": "*",
+    "@spitzli/cms-ui": "*",
+    "@spitzli/i18n": "*",
+    "@spitzli/database-runtime": "*",
+    "@spitzli/cms-bridge": "*"
   },
   "devDependencies": {
     "@types/bun": "1.4.3",

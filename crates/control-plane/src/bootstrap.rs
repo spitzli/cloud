@@ -6,6 +6,7 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use spitzli_persistence::{IdAllocator, connection::ConnectionUrl};
 use std::{
     collections::{BTreeMap, HashMap},
     fs::File,
@@ -14,7 +15,6 @@ use std::{
     path::Path,
     time::Duration,
 };
-use webdock_persistence::{IdAllocator, connection::ConnectionUrl};
 #[derive(Debug, thiserror::Error)]
 pub enum BootstrapError {
     #[error("Invalid private bootstrap input or canonical configuration")]
@@ -75,7 +75,7 @@ struct ReviewedInput {
 }
 fn canonical(value: &str, local: bool) -> Result<String> {
     let origin =
-        webdock_core::config::canonical_origin(value, !local).map_err(|_| BootstrapError::Input)?;
+        spitzli_core::config::canonical_origin(value, !local).map_err(|_| BootstrapError::Input)?;
     if value != origin {
         return Err(BootstrapError::Input);
     }
@@ -428,7 +428,7 @@ async fn provision(
     let metadata =
         serde_json::json!({"webdock_binding":ids.binding,"webdock_initial_setup":metadata});
     let password = input.password;
-    let hash = tokio::task::spawn_blocking(move || webdock_identity::hash_password(&password))
+    let hash = tokio::task::spawn_blocking(move || spitzli_identity::hash_password(&password))
         .await
         .map_err(|_| BootstrapError::Database)?
         .map_err(|_| BootstrapError::Input)?;
@@ -445,7 +445,7 @@ async fn provision(
         format!("{}/login", input.studio_origin),
         format!("{}/login", input.console_origin)
     ]);
-    execute(tx,"INSERT INTO webdock_auth.\"oauthClient\"(id,\"clientId\",\"clientSecret\",disabled,\"skipConsent\",\"enableEndSession\",scopes,\"clientCredentialsScopes\",\"userId\",\"createdAt\",\"updatedAt\",name,\"redirectUris\",\"postLogoutRedirectUris\",\"tokenEndpointAuthMethod\",\"applicationType\",\"grantTypes\",\"responseTypes\",\"requirePKCE\",\"subjectType\",metadata) VALUES($1,$2,$3,false,true,true,'[\"openid\",\"profile\",\"email\"]'::jsonb,'[]'::jsonb,$4,now(),now(),'Spitzli Cloud Console',$5,$6,'client_secret_post',$7,'[\"authorization_code\"]'::jsonb,'[\"code\"]'::jsonb,true,'public',$8)",vec![ids.client_row.into(),ids.client.clone().into(),webdock_oauth::legacy_token_hash(&client_secret).into(),ids.user.clone().into(),redirects.into(),logouts.into(),if input.studio_origin.starts_with("http:"){"native"}else{"web"}.into(),metadata.into()]).await?;
+    execute(tx,"INSERT INTO webdock_auth.\"oauthClient\"(id,\"clientId\",\"clientSecret\",disabled,\"skipConsent\",\"enableEndSession\",scopes,\"clientCredentialsScopes\",\"userId\",\"createdAt\",\"updatedAt\",name,\"redirectUris\",\"postLogoutRedirectUris\",\"tokenEndpointAuthMethod\",\"applicationType\",\"grantTypes\",\"responseTypes\",\"requirePKCE\",\"subjectType\",metadata) VALUES($1,$2,$3,false,true,true,'[\"openid\",\"profile\",\"email\"]'::jsonb,'[]'::jsonb,$4,now(),now(),'Spitzli Cloud Console',$5,$6,'client_secret_post',$7,'[\"authorization_code\"]'::jsonb,'[\"code\"]'::jsonb,true,'public',$8)",vec![ids.client_row.into(),ids.client.clone().into(),spitzli_oauth::legacy_token_hash(&client_secret).into(),ids.user.clone().into(),redirects.into(),logouts.into(),if input.studio_origin.starts_with("http:"){"native"}else{"web"}.into(),metadata.into()]).await?;
     execute(tx,"INSERT INTO webdock_auth.app_binding(id,client_id,label,organization_id,enabled) VALUES($1,$2,'Spitzli Cloud Console',NULL,true)",vec![ids.binding.clone().into(),ids.client.clone().into()]).await?;
     let mut defaults = serde_json::json!({"supportEmail":input.email,"cmsEnabled":false});
     if let Some(enabled) = input.initial_mail_enabled {
@@ -453,13 +453,13 @@ async fn provision(
     }
     execute(tx,"INSERT INTO webdock_auth.platform_settings(id,settings) VALUES(true,$1) ON CONFLICT(id) DO UPDATE SET settings=EXCLUDED.settings || webdock_auth.platform_settings.settings",vec![defaults.into()]).await?;
     execute(tx,"INSERT INTO webdock_auth.access_event(id,actor_id,action,target_id,outcome) VALUES($1,$3,'operator.bootstrap',$3,'succeeded'),($2,$3,'console.bootstrap',$4,'succeeded')",vec![ids.operator_audit.into(),ids.client_audit.into(),ids.user.clone().into(),ids.client.clone().into()]).await?;
-    let keys = webdock_identity::SecretKeys::new(
+    let keys = spitzli_identity::SecretKeys::new(
         BTreeMap::from([(1, secret.into())]),
         1,
         Some(secret.into()),
     )
     .map_err(|_| BootstrapError::Input)?;
-    webdock_oauth::stage_signing_key(tx, &ids.key, &keys)
+    spitzli_oauth::stage_signing_key(tx, &ids.key, &keys)
         .await
         .map_err(|_| BootstrapError::Database)?;
     let environment = BTreeMap::from([
@@ -538,7 +538,7 @@ pub async fn bootstrap_operator(
         .map_err(|_| BootstrapError::Role)?;
     let ids = IdAllocator::new(
         allocation.clone(),
-        webdock_ids::Identity::platform(0, 2).map_err(|_| BootstrapError::Input)?,
+        spitzli_ids::Identity::platform(0, 2).map_err(|_| BootstrapError::Input)?,
     );
     let tx = db.begin().await.map_err(|_| BootstrapError::Database)?;
     execute(
@@ -568,10 +568,10 @@ pub async fn bootstrap_operator(
     if url.path().strip_prefix('/') != Some(&database) {
         return Err(BootstrapError::Target);
     }
-    webdock_persistence::migrations::verify_bootstrap_baseline(&tx)
+    spitzli_persistence::migrations::verify_bootstrap_baseline(&tx)
         .await
         .map_err(|_| BootstrapError::History)?;
-    if !webdock_persistence::migrations::native_schema_ready(&tx).await {
+    if !spitzli_persistence::migrations::native_schema_ready(&tx).await {
         return Err(BootstrapError::History);
     }
     let secrets = provision(&tx, input, &ids, secret).await?;

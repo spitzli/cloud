@@ -1,6 +1,6 @@
 //! Trusted control-plane daemon. This executable never launches a VM or customer commands locally.
+use spitzli_build::{Error, Result, kubernetes_worker::KubernetesWorkerConfig};
 use std::process::ExitCode;
-use webdock_build::{Error, Result, kubernetes_worker::KubernetesWorkerConfig};
 fn fail(code: &'static str) -> Error {
     Error {
         code,

@@ -1,10 +1,10 @@
 import { getPayload, type Payload } from "payload";
 import config from "../payload.config.ts";
-import { handleCMSRequest } from "@webdock/cms-ui/server";
+import { handleCMSRequest } from "@spitzli/cms-ui/server";
 import { modules } from "./content.ts";
 import { loadCMSConfig } from "./config.ts";
 import { validateRaster } from "./media.ts";
-import { MEDIA_BYTES, METADATA_BYTES } from "@webdock/cms-bridge/types";
+import { MEDIA_BYTES, METADATA_BYTES } from "@spitzli/cms-bridge/types";
 import { verifyMediaBinding } from "./media-storage.ts";
 export const getCMS = async (): Promise<Payload> => {
   // Payload skips onInit on cached retries, including after failed initialization.
@@ -24,7 +24,7 @@ export const cmsOptions = () => {
 export const handleNativeCMS = (
   request: Request,
   trustedUser?: NonNullable<
-    Awaited<ReturnType<typeof import("@webdock/cms-ui/server").cmsUser>>
+    Awaited<ReturnType<typeof import("@spitzli/cms-ui/server").cmsUser>>
   >,
 ) =>
   handleCMSRequest(request, cmsOptions(), getCMS, {

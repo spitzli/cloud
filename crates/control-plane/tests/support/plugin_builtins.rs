@@ -6,13 +6,13 @@ use axum::{
     http::{HeaderMap, Request, StatusCode, header},
 };
 use http_body_util::BodyExt;
-use std::collections::HashMap;
-use tower::ServiceExt;
-use webdock_control_plane::{
+use spitzli_control_plane::{
     http::{Services, build_app_with_domains},
     plugin_config::RuntimeConnections,
     plugins::PluginEndpoints,
 };
+use std::collections::HashMap;
+use tower::ServiceExt;
 
 const HOSTING: &str = "/api/console/plugins/builtins/hosting/activate";
 const DATABASES: &str = "/api/console/plugins/builtins/databases/activate";
@@ -246,7 +246,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
             .await;
         }
         assert!(
-            webdock_control_plane::bootstrap::bootstrap_operator(
+            spitzli_control_plane::bootstrap::bootstrap_operator(
                 &environment,
                 &target(&offline),
                 &config_file,
@@ -314,15 +314,15 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
     let business = runtime(&role("webdock_auth_runtime")).await;
     let worker = runtime(&role("webdock_worker_runtime")).await;
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             role("webdock_auth_runtime").as_str(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
     );
     let keys = || {
-        webdock_identity::SecretKeys::new(
+        spitzli_identity::SecretKeys::new(
             BTreeMap::from([(1, SECRET.into())]),
             1,
             Some(SECRET.into()),
@@ -330,19 +330,19 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
         .unwrap()
     };
     let identity = Arc::new(
-        webdock_identity::IdentityService::new(
+        spitzli_identity::IdentityService::new(
             auth.clone(),
-            webdock_identity::CookiePolicy::new(true, SECRET).unwrap(),
+            spitzli_identity::CookiePolicy::new(true, SECRET).unwrap(),
         )
         .with_secret_keys(keys())
         .with_allocator(ids.clone()),
     );
-    let oauth = Arc::new(webdock_oauth::OAuthService::new(
+    let oauth = Arc::new(spitzli_oauth::OAuthService::new(
         auth.clone(),
         identity.clone(),
         ids.clone(),
         Arc::new(keys()),
-        webdock_oauth::OAuthConfig::new(
+        spitzli_oauth::OAuthConfig::new(
             &format!("{AUTH}/api/auth"),
             &format!("{STUDIO}/api/mcp"),
             Some(secrets["clientID"].as_str().unwrap().to_owned()),
@@ -350,7 +350,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
         .unwrap(),
     ));
     let browser = Arc::new(
-        webdock_browser_session::BrowserSessions::new(
+        spitzli_browser_session::BrowserSessions::new(
             auth.clone(),
             identity.clone(),
             oauth.clone(),
@@ -358,7 +358,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
             secrets["environment"]["WEBDOCK_SSO_COOKIE_SECRET"]
                 .as_str()
                 .unwrap(),
-            webdock_browser_session::BrowserConfig::new(
+            spitzli_browser_session::BrowserConfig::new(
                 CONSOLE,
                 &format!("{AUTH}/api/auth"),
                 secrets["clientID"].as_str().unwrap().to_owned(),
@@ -375,12 +375,12 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
     std::fs::write(&bindings, b"{\"runtimes\":{}}").unwrap();
     std::fs::set_permissions(&bindings, std::fs::Permissions::from_mode(0o600)).unwrap();
     let host = Arc::new(
-        webdock_plugin_host::HostService::new(
+        spitzli_plugin_host::HostService::new(
             business.clone(),
             worker.clone(),
             SECRET.into(),
             ids.clone(),
-            Arc::new(webdock_plugin_host::FileBindings::new(bindings.clone())),
+            Arc::new(spitzli_plugin_host::FileBindings::new(bindings.clone())),
             ed25519_dalek::SigningKey::from_bytes(&[13; 32]),
         )
         .await
@@ -395,7 +395,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
         None,
     ));
     let hosting = Arc::new(
-        webdock_hosting::HostingService::new(
+        spitzli_hosting::HostingService::new(
             business.clone(),
             auth.clone(),
             worker.clone(),
@@ -408,9 +408,9 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
     );
     let hosting = recovery_admission::with_signer(hosting, directory.path(), &identity, &browser);
     let databases = Arc::new(
-        webdock_control_plane::databases::DatabaseEndpoints::new(
+        spitzli_control_plane::databases::DatabaseEndpoints::new(
             Arc::new(
-                webdock_databases::DatabaseService::new(
+                spitzli_databases::DatabaseService::new(
                     business.clone(),
                     auth.clone(),
                     worker.clone(),
@@ -432,21 +432,21 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
         .await
         .unwrap();
     let registry = Arc::new(
-        webdock_registry::RegistryService::new(
+        spitzli_registry::RegistryService::new(
             registry_db,
-            webdock_identity::RlsSigner::new(SECRET, "webdock_registry_runtime").unwrap(),
+            spitzli_identity::RlsSigner::new(SECRET, "webdock_registry_runtime").unwrap(),
         )
         .with_allocator(ids.clone()),
     );
     let access = Arc::new(
-        webdock_access::AccessService::new(
+        spitzli_access::AccessService::new(
             business.clone(),
             auth.clone(),
             identity.clone(),
             ids.clone(),
-            webdock_identity::RlsSigner::new(SECRET, "webdock_auth_runtime").unwrap(),
+            spitzli_identity::RlsSigner::new(SECRET, "webdock_auth_runtime").unwrap(),
             Arc::new(keys()),
-            webdock_access::AccessConfig {
+            spitzli_access::AccessConfig {
                 auth_origin: AUTH.parse().unwrap(),
                 console_origins: vec![CONSOLE.parse().unwrap()],
                 allow_local_http: false,
@@ -456,7 +456,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
     );
     let app = |features: &str, load_hosting: bool, load_databases: bool| {
         build_app_with_domains(
-            webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+            spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
                 ("WEBDOCK_AUTH_ORIGIN".into(), AUTH.into()),
                 ("WEBDOCK_STUDIO_ORIGIN".into(), STUDIO.into()),
                 ("WEBDOCK_CONSOLE_ORIGIN".into(), CONSOLE.into()),
@@ -606,7 +606,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
             &recovery_directory,
             recovery_admission::mail_component::enabled().then(|| {
                 recovery_admission::mail_component::FoundationDependencies {
-                    mail: webdock_mail::MailDependencies {
+                    mail: spitzli_mail::MailDependencies {
                         auth: auth.clone(),
                         business: business.clone(),
                         worker: worker.clone(),

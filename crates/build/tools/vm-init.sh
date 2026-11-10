@@ -18,5 +18,5 @@ while [ ! -S /run/buildkit/buildkitd.sock ] && [ "$build_guest_attempt" -lt 100 
   sleep .1
   build_guest_attempt=$((build_guest_attempt+1))
 done
-/usr/bin/webdock-build-guest
+/usr/bin/spitzli-build-guest
 poweroff -f

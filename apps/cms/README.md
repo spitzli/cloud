@@ -30,6 +30,6 @@ Use Node 24 and `npm ci`. `npm run dev`, `npm run build` and `npm run start` ser
 
 ## Future management panel
 
-See [the control-plane design](docs/architecture/webdock-control-plane.md) and [migration plan](docs/superpowers/plans/2026-10-03-isolated-instances.md). Customers/projects may exist without Payload; activation defaults off. A customer panel, dynamic collection designer and platform-wide page builder are intentionally not built in this phase. Platform-owned IDs are awaiting the ULID/Snowflake choice. Per-site Plausible tracking remains on the TODO list.
+See [the control-plane design](docs/architecture/spitzli-control-plane.md) and [migration plan](docs/superpowers/plans/2026-10-03-isolated-instances.md). Customers/projects may exist without Payload; activation defaults off. A customer panel, dynamic collection designer and platform-wide page builder are intentionally not built in this phase. Platform-owned IDs are awaiting the ULID/Snowflake choice. Per-site Plausible tracking remains on the TODO list.
 
 The [retired architecture](docs/architecture/retired-unified-cms.md) is historical reference only.

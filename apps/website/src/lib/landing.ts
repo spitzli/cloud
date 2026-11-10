@@ -1,4 +1,4 @@
-import {getRequestI18n} from '@webdock/i18n/next';
+import {getRequestI18n} from '@spitzli/i18n/next';
 import {localizeLanding} from './landing-copy';
 import { cache } from 'react';
 import { getPayload } from 'payload';

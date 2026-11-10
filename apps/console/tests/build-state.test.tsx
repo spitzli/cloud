@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 import { createMemoryHistory, createRootRoute, createRoute, createRouter, Outlet, RouterProvider } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider, notifyManager, defaultScheduler } from "@tanstack/react-query";
 import { Window } from "happy-dom";
-import { I18nProvider } from "@webdock/i18n/react";
+import { I18nProvider } from "@spitzli/i18n/react";
 import { ApiClient, type Session } from "../src/api";
 import { ApiContext, SessionContext } from "../src/context";
 import { HostingBuilds } from "../src/HostingBuilds";

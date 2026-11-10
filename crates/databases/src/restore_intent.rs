@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
-use webdock_agent_protocol::database::DatabaseBackupPolicySpec;
+use spitzli_agent_protocol::database::DatabaseBackupPolicySpec;
 type Result<T> = std::result::Result<T, &'static str>;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -158,7 +158,7 @@ impl RestoreIntent {
     }
     pub fn hash(&self) -> Result<String> {
         let value = serde_json::to_value(self).map_err(|_| "Invalid restore intent")?;
-        let canonical = webdock_hosting::canonical_command(&value)
+        let canonical = spitzli_hosting::canonical_command(&value)
             .map_err(|_| "Invalid canonical restore intent")?;
         Ok(hex::encode(Sha256::digest(canonical.as_bytes())))
     }

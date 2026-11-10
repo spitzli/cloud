@@ -10,10 +10,10 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::sync::Arc;
-use webdock_identity::{
+use spitzli_identity::{
     IdentityError, IdentityService, IssuedSession, MfaProof, PasswordAuthentication, Principal,
 };
+use std::sync::Arc;
 
 pub fn routes() -> Router<Arc<ServiceState>> {
     Router::new()
@@ -93,7 +93,7 @@ pub fn failure(failure: IdentityError) -> ApiFailure {
     }
 }
 /// Server-owned proof reference. Domain jobs must revalidate it rather than trust cached roles.
-pub use webdock_browser_session::StoredAuthority as ActorAuthority;
+pub use spitzli_browser_session::StoredAuthority as ActorAuthority;
 pub struct AuthenticatedActor {
     pub principal: Principal,
     pub authority: ActorAuthority,
@@ -351,13 +351,13 @@ struct TargetSession {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct PasskeyRegistration {
-    response: webdock_identity::RegisterPublicKeyCredential,
+    response: spitzli_identity::RegisterPublicKeyCredential,
     name: Option<String>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct PasskeyAuthentication {
-    response: webdock_identity::PublicKeyCredential,
+    response: spitzli_identity::PublicKeyCredential,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]

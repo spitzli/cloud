@@ -1,5 +1,5 @@
 [package]
-name = "webdock-access"
+name = "spitzli-access"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,9 +7,9 @@ license.workspace = true
 publish = false
 
 [dependencies]
-webdock-identity = { path = "../identity" }
-webdock-persistence = { path = "../persistence" }
-webdock-core = { path = "../core" }
+spitzli-identity = { path = "../identity" }
+spitzli-persistence = { path = "../persistence" }
+spitzli-core = { path = "../core" }
 sea-orm.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -28,10 +28,10 @@ base64 = "0.22"
 png = "=0.18.0"
 
 [dev-dependencies]
-webdock-ids = { path = "../ids" }
+spitzli-ids = { path = "../ids" }
 async-trait.workspace = true
 totp-rs = { version = "=6.0.0", features = ["otpauth"] }
-webdock-oauth = { path = "../oauth" }
+spitzli-oauth = { path = "../oauth" }
 
 [lints]
 workspace = true

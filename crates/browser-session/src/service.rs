@@ -16,10 +16,10 @@ use sea_orm::{
 };
 use serde_json::Value;
 use sha2::{Digest, Sha256};
+use spitzli_identity::{IdentityService, Principal, SecretKeys};
+use spitzli_oauth::{CodeExchange, OAuthService};
 use std::{str::FromStr, sync::Arc};
 use subtle::ConstantTimeEq;
-use webdock_identity::{IdentityService, Principal, SecretKeys};
-use webdock_oauth::{CodeExchange, OAuthService};
 
 struct ReferenceRecord {
     reference: String,
@@ -46,7 +46,7 @@ pub struct BrowserSessions {
     cookie_key: Key,
     pub config: BrowserConfig,
     legacy: Option<LegacyCookies>,
-    native_store: Option<webdock_persistence::postgres::Pool>,
+    native_store: Option<spitzli_persistence::postgres::Pool>,
     native_authority: bool,
 }
 pub struct BrowserRedirect {
@@ -77,14 +77,14 @@ impl BrowserSessions {
             native_authority: false,
         })
     }
-    pub fn with_native_flow_store(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+    pub fn with_native_flow_store(mut self, pool: spitzli_persistence::postgres::Pool) -> Self {
         self.native_store = Some(pool);
         self
     }
     /// Includes native encrypted sidecar storage, with the same bounded pool.
     pub fn with_native_authority_store(
         mut self,
-        pool: webdock_persistence::postgres::Pool,
+        pool: spitzli_persistence::postgres::Pool,
     ) -> Self {
         self.native_store = Some(pool);
         self.native_authority = true;

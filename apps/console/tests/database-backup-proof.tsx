@@ -2,8 +2,8 @@
 import { useLayoutEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { I18nProvider } from "@webdock/i18n/react";
-import type { Locale } from "@webdock/i18n";
+import { I18nProvider } from "@spitzli/i18n/react";
+import type { Locale } from "@spitzli/i18n";
 import { ApiClient } from "../src/api";
 import { ApiContext, useSession } from "../src/context";
 import { ManagedDatabases } from "../src/ManagedDatabases";

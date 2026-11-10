@@ -3,15 +3,15 @@ use super::*;
 use crate::io;
 use ed25519_dalek::{SigningKey, VerifyingKey};
 use serde::{Deserialize, Serialize};
+use spitzli_plugin_host::{HostService, RepositoryPolicySnapshot};
+use spitzli_plugin_runtime::{InvocationAuthority, PeerIdentity};
+use spitzli_repository_protocol::{self as protocol, Action, LeaseClaims, runtime, wire};
 use std::{
     collections::BTreeMap,
     io::Read,
     os::unix::fs::{MetadataExt, OpenOptionsExt},
     path::{Path, PathBuf},
 };
-use webdock_plugin_host::{HostService, RepositoryPolicySnapshot};
-use webdock_plugin_runtime::{InvocationAuthority, PeerIdentity};
-use webdock_repository_protocol::{self as protocol, Action, LeaseClaims, runtime, wire};
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(
     tag = "kind",
@@ -150,10 +150,10 @@ impl RepositoryBinding {
                 private_key,
                 authority,
                 server_certificate_sha256,
-            } => webdock_plugin_runtime::pinned_mtls_channel(
+            } => spitzli_plugin_runtime::pinned_mtls_channel(
                 origin.clone(),
                 domain.clone(),
-                webdock_plugin_runtime::PinnedMutualTls {
+                spitzli_plugin_runtime::PinnedMutualTls {
                     certificate: owned_file(certificate, 65536, false)?,
                     private_key: owned_file(private_key, 65536, true)?,
                     authority: owned_file(authority, 65536, false)?,
@@ -205,7 +205,7 @@ impl RepositoryAdmission {
         if secret.len() < 32 {
             return Err(error("invalid_signer"));
         }
-        webdock_persistence::connection::verify_runtime_role(&worker, "webdock_worker_runtime")
+        spitzli_persistence::connection::verify_runtime_role(&worker, "webdock_worker_runtime")
             .await
             .map_err(|_| error("invalid_database_role"))?;
         Ok(Self {
@@ -220,8 +220,8 @@ impl RepositoryAdmission {
     pub async fn with_session_authority(
         mut self,
         auth: DatabaseConnection,
-        identity: Arc<webdock_identity::IdentityService>,
-        browser: Option<Arc<webdock_browser_session::BrowserSessions>>,
+        identity: Arc<spitzli_identity::IdentityService>,
+        browser: Option<Arc<spitzli_browser_session::BrowserSessions>>,
     ) -> Result<Self> {
         self.authority = Some(Arc::new(
             super::session::SessionVerifier::new(auth, identity, browser).await?,
@@ -569,7 +569,7 @@ impl RepositoryAdmission {
         let authority_guard = if let Some(value) =
             row.get("actor_authority").filter(|v| !v.is_null())
         {
-            let stored: webdock_browser_session::StoredAuthority =
+            let stored: spitzli_browser_session::StoredAuthority =
                 serde_json::from_value(value.clone())
                     .map_err(|_| error("repository_authority_revoked"))?;
             if row["authority_kind"] == "release" {

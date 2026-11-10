@@ -1,4 +1,4 @@
-import {getRequestI18n} from '@webdock/i18n/next';
+import {getRequestI18n} from '@spitzli/i18n/next';
 export async function SSOLogin() {
   const {t}=await getRequestI18n();
   if (!process.env.WEBDOCK_SSO_CLIENT_ID) return null;

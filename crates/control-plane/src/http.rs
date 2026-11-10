@@ -8,26 +8,26 @@ use axum::{
 };
 use sea_orm::DatabaseConnection;
 use serde_json::json;
+use spitzli_core::config::PlatformConfig;
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
-use webdock_core::config::PlatformConfig;
 
 pub struct ServiceState {
     pub realtime: Option<crate::realtime::Realtime>,
     pub resource_client: Option<crate::resource_auth::ResourceClientConfig>,
     pub config: PlatformConfig,
     pub db: DatabaseConnection,
-    pub identity: Option<Arc<webdock_identity::IdentityService>>,
-    pub registry: Option<Arc<webdock_registry::RegistryService>>,
-    pub oauth: Option<Arc<webdock_oauth::OAuthService>>,
-    pub hosting: Option<Arc<webdock_hosting::HostingService>>,
-    pub build: Option<Arc<webdock_build::BuildService>>,
+    pub identity: Option<Arc<spitzli_identity::IdentityService>>,
+    pub registry: Option<Arc<spitzli_registry::RegistryService>>,
+    pub oauth: Option<Arc<spitzli_oauth::OAuthService>>,
+    pub hosting: Option<Arc<spitzli_hosting::HostingService>>,
+    pub build: Option<Arc<spitzli_build::BuildService>>,
     pub plugins: Option<Arc<crate::plugins::PluginEndpoints>>,
     pub databases: Option<Arc<crate::databases::DatabaseEndpoints>>,
     pub mail: Option<Arc<crate::mail::MailEndpoints>>,
     pub neon_connections: Option<Arc<crate::neon_connections::NeonConnections>>,
-    pub browser: Option<Arc<webdock_browser_session::BrowserSessions>>,
-    pub access: Option<Arc<webdock_access::AccessService>>,
+    pub browser: Option<Arc<spitzli_browser_session::BrowserSessions>>,
+    pub access: Option<Arc<spitzli_access::AccessService>>,
     pub ui: Option<Arc<crate::ui::UiAssets>>,
     pub auth_limiter: governor::DefaultDirectRateLimiter,
 }
@@ -36,17 +36,17 @@ pub struct ServiceState {
 pub struct Services {
     pub realtime: Option<crate::realtime::Realtime>,
     pub resource_client: Option<crate::resource_auth::ResourceClientConfig>,
-    pub identity: Option<Arc<webdock_identity::IdentityService>>,
-    pub registry: Option<Arc<webdock_registry::RegistryService>>,
-    pub oauth: Option<Arc<webdock_oauth::OAuthService>>,
-    pub hosting: Option<Arc<webdock_hosting::HostingService>>,
-    pub build: Option<Arc<webdock_build::BuildService>>,
+    pub identity: Option<Arc<spitzli_identity::IdentityService>>,
+    pub registry: Option<Arc<spitzli_registry::RegistryService>>,
+    pub oauth: Option<Arc<spitzli_oauth::OAuthService>>,
+    pub hosting: Option<Arc<spitzli_hosting::HostingService>>,
+    pub build: Option<Arc<spitzli_build::BuildService>>,
     pub plugins: Option<Arc<crate::plugins::PluginEndpoints>>,
     pub databases: Option<Arc<crate::databases::DatabaseEndpoints>>,
     pub mail: Option<Arc<crate::mail::MailEndpoints>>,
     pub neon_connections: Option<Arc<crate::neon_connections::NeonConnections>>,
-    pub browser: Option<Arc<webdock_browser_session::BrowserSessions>>,
-    pub access: Option<Arc<webdock_access::AccessService>>,
+    pub browser: Option<Arc<spitzli_browser_session::BrowserSessions>>,
+    pub access: Option<Arc<spitzli_access::AccessService>>,
     pub ui: Option<Arc<crate::ui::UiAssets>>,
 }
 
@@ -57,7 +57,7 @@ pub fn build_app(config: PlatformConfig, db: DatabaseConnection) -> Router {
 pub fn build_app_with_identity(
     config: PlatformConfig,
     db: DatabaseConnection,
-    identity: Option<Arc<webdock_identity::IdentityService>>,
+    identity: Option<Arc<spitzli_identity::IdentityService>>,
 ) -> Router {
     build_app_with_services(config, db, identity, None)
 }
@@ -65,8 +65,8 @@ pub fn build_app_with_identity(
 pub fn build_app_with_services(
     config: PlatformConfig,
     db: DatabaseConnection,
-    identity: Option<Arc<webdock_identity::IdentityService>>,
-    registry: Option<Arc<webdock_registry::RegistryService>>,
+    identity: Option<Arc<spitzli_identity::IdentityService>>,
+    registry: Option<Arc<spitzli_registry::RegistryService>>,
 ) -> Router {
     build_app_with_oauth(config, db, identity, registry, None)
 }
@@ -74,9 +74,9 @@ pub fn build_app_with_services(
 pub fn build_app_with_oauth(
     config: PlatformConfig,
     db: DatabaseConnection,
-    identity: Option<Arc<webdock_identity::IdentityService>>,
-    registry: Option<Arc<webdock_registry::RegistryService>>,
-    oauth: Option<Arc<webdock_oauth::OAuthService>>,
+    identity: Option<Arc<spitzli_identity::IdentityService>>,
+    registry: Option<Arc<spitzli_registry::RegistryService>>,
+    oauth: Option<Arc<spitzli_oauth::OAuthService>>,
 ) -> Router {
     build_app_with_domains(
         config,
@@ -192,10 +192,10 @@ async fn fallback(State(state): State<Arc<ServiceState>>, request: Request) -> R
 }
 async fn ready(State(state): State<Arc<ServiceState>>) -> Response {
     // A reachable database is insufficient: verify the authenticated role and exact schema.
-    if webdock_persistence::connection::verify_runtime_role(&state.db, "webdock_auth_bootstrap")
+    if spitzli_persistence::connection::verify_runtime_role(&state.db, "webdock_auth_bootstrap")
         .await
         .is_ok()
-        && webdock_persistence::migrations::native_schema_ready(&state.db).await
+        && spitzli_persistence::migrations::native_schema_ready(&state.db).await
     {
         return Json(json!({"status":"ready"})).into_response();
     }
@@ -269,7 +269,7 @@ fn public_console_configuration(
     }
     if config
         .features
-        .require("mail", webdock_core::features::OperationKind::Read)
+        .require("mail", spitzli_core::features::OperationKind::Read)
         .is_ok()
     {
         result.mail_gateway_origin = mail_gateway.map(str::to_owned);
@@ -546,8 +546,8 @@ mod tests {
         assert!(value.get("mailGatewayOrigin").is_none());
     }
     use super::route_host_allowed;
+    use spitzli_core::config::PlatformConfig;
     use std::collections::HashMap;
-    use webdock_core::config::PlatformConfig;
 
     #[test]
     fn route_authorities_preserve_protocol_precedence_and_path_boundaries() {

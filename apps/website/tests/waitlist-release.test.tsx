@@ -4,9 +4,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { landingDefaults } from '../src/cms/landing';
 
 const t = (message: string, values?: Record<string, string>) => message.replace(/\{(\w+)\}/g, (_, key: string) => values?.[key] ?? `{${key}}`);
-mock.module('@webdock/i18n/next', () => ({ getRequestI18n: async () => ({ t, locale: 'en', preference: 'en', date: (value: string) => value }) }));
-mock.module('@webdock/i18n/react', () => ({ I18nProvider: ({ children }: { children: React.ReactNode }) => createElement(Fragment, null, children) }));
-mock.module('@webdock/i18n/picker', () => ({ LanguagePicker: () => createElement('span', null, 'Language') }));
+mock.module('@spitzli/i18n/next', () => ({ getRequestI18n: async () => ({ t, locale: 'en', preference: 'en', date: (value: string) => value }) }));
+mock.module('@spitzli/i18n/react', () => ({ I18nProvider: ({ children }: { children: React.ReactNode }) => createElement(Fragment, null, children) }));
+mock.module('@spitzli/i18n/picker', () => ({ LanguagePicker: () => createElement('span', null, 'Language') }));
 mock.module('@/lib/landing', () => ({ getLanding: async () => ({ ...landingDefaults, heroButton: 'Email our team', useCases: landingDefaults.useCases.map((item, index) => ({ ...item, id: `fixture-${index}` })) }) }));
 mock.module('@/components/dock', () => ({ Dock: () => createElement('div', null, 'Workspace preview') }));
 mock.module('@/components/theme-picker', () => ({ ThemePicker: () => createElement('span', null, 'Theme') }));

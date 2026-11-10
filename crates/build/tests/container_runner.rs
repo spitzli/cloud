@@ -1,8 +1,7 @@
 #![cfg(feature = "kubernetes-job")]
 
 use sha2::{Digest, Sha256};
-use std::{collections::BTreeMap, path::Path};
-use webdock_build::{
+use spitzli_build::{
     artifact::Archive,
     container_runner::{
         BuildSecrets, ContainerBuildRequest, PinnedTool, PreparedBuild, RailpackTool,
@@ -10,6 +9,7 @@ use webdock_build::{
     },
     execution::Limits,
 };
+use std::{collections::BTreeMap, path::Path};
 
 fn request() -> ContainerBuildRequest {
     ContainerBuildRequest {
@@ -329,8 +329,8 @@ fn archive_symlink_is_rejected_before_source_strategy() {
 #[ignore = "Run only in a nonroot disposable container; invokes trusted fixture scripts, never source code"]
 fn container_fake_tools_export_valid_oci_and_redact_customer_secrets() {
     use serde_json::json;
+    use spitzli_build::container_runner::{Phase, run};
     use std::os::unix::fs::PermissionsExt;
-    use webdock_build::container_runner::{Phase, run};
     let fixture = tempfile::tempdir().unwrap();
     let config = b"{}";
     let config_hash = hex::encode(Sha256::digest(config));
@@ -424,7 +424,7 @@ fn container_fake_tools_export_valid_oci_and_redact_customer_secrets() {
     .unwrap();
     let output = fixture.path().join("output");
     let binary = std::env::var_os("WEBDOCK_TEST_RUNNER_BINARY")
-        .unwrap_or_else(|| "/usr/local/bin/webdock-build-runner".into());
+        .unwrap_or_else(|| "/usr/local/bin/spitzli-build-runner".into());
     let invoke = |output: &Path| {
         std::process::Command::new(&binary)
             .arg("--request")
@@ -495,7 +495,7 @@ fn container_fake_tools_export_valid_oci_and_redact_customer_secrets() {
 
 #[test]
 fn live_log_observer_failure_kills_command_group_before_delayed_side_effect() {
-    use webdock_build::{Error, execution::run_bounded_observed};
+    use spitzli_build::{Error, execution::run_bounded_observed};
     let work = tempfile::tempdir().unwrap();
     let marker = work.path().join("must-not-exist");
     let mut command = std::process::Command::new("/bin/sh");
@@ -532,7 +532,7 @@ fn live_log_observer_never_receives_bytes_beyond_existing_log_cap() {
     let mut command = std::process::Command::new("/usr/bin/head");
     command.args(["-c", "25000", "/dev/zero"]);
     let mut observed = 0usize;
-    let error = webdock_build::execution::run_bounded_observed(
+    let error = spitzli_build::execution::run_bounded_observed(
         &mut command,
         std::time::Duration::from_secs(2),
         1024,
@@ -546,7 +546,7 @@ fn live_log_observer_never_receives_bytes_beyond_existing_log_cap() {
     .unwrap();
     assert_eq!(error.code, "log_limit");
     assert!(observed > 0);
-    assert!(observed <= webdock_build::execution::MAX_LOG);
+    assert!(observed <= spitzli_build::execution::MAX_LOG);
 }
 
 #[test]

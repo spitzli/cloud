@@ -6,8 +6,8 @@ ConditionPathExists=/dev/disk/by-id/virtio-webdock-input
 
 [Service]
 Type=oneshot
-WorkingDirectory=/opt/webdock-build-worker
-ExecStart=/usr/bin/python3 /opt/webdock-build-worker/guest.py
+WorkingDirectory=/opt/spitzli-build-worker
+ExecStart=/usr/bin/python3 /opt/spitzli-build-worker/guest.py
 ExecStopPost=/sbin/poweroff -f
 StandardOutput=null
 StandardError=null

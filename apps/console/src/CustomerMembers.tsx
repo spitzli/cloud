@@ -1,5 +1,5 @@
-import { msgid } from "@webdock/i18n";
-import { useI18n } from "@webdock/i18n/react";
+import { msgid } from "@spitzli/i18n";
+import { useI18n } from "@spitzli/i18n/react";
 import { WorkspaceIcon } from "./WorkspaceIcon";
 import { useRef, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

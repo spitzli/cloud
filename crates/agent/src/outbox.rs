@@ -6,12 +6,12 @@ use crate::{
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use prost::Message;
 use serde::{Deserialize, Serialize};
+use spitzli_agent_protocol::Receipt;
 use std::{
     fs::File,
     io::Write,
     path::{Path, PathBuf},
 };
-use webdock_agent_protocol::Receipt;
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct State {
@@ -26,12 +26,12 @@ pub struct MessageOutbox<T: Message + Default, const LIMIT: usize> {
 }
 pub type ReceiptOutbox = MessageOutbox<Receipt, { 128 * 1024 }>;
 pub type MailConfigurationOutbox =
-    MessageOutbox<webdock_agent_protocol::MailConfigurationDelivery, { 1024 * 1024 }>;
-pub type MailOutbox = MessageOutbox<webdock_agent_protocol::MailDelivery, { 64 * 1024 }>;
-pub type RecoveryOutbox = MessageOutbox<webdock_agent_protocol::RecoveryDelivery, { 512 * 1024 }>;
+    MessageOutbox<spitzli_agent_protocol::MailConfigurationDelivery, { 1024 * 1024 }>;
+pub type MailOutbox = MessageOutbox<spitzli_agent_protocol::MailDelivery, { 64 * 1024 }>;
+pub type RecoveryOutbox = MessageOutbox<spitzli_agent_protocol::RecoveryDelivery, { 512 * 1024 }>;
 pub type DatabaseOutbox = MessageOutbox<
-    webdock_agent_protocol::DatabaseDelivery,
-    { webdock_agent_protocol::MAX_MESSAGE_BYTES },
+    spitzli_agent_protocol::DatabaseDelivery,
+    { spitzli_agent_protocol::MAX_MESSAGE_BYTES },
 >;
 impl<T: Message + Default, const LIMIT: usize> MessageOutbox<T, LIMIT> {
     /// The daemon holds the executor's exclusive process lock for this directory.
@@ -123,4 +123,4 @@ impl<T: Message + Default, const LIMIT: usize> MessageOutbox<T, LIMIT> {
 }
 
 pub type PluginRuntimeOutbox =
-    MessageOutbox<webdock_agent_protocol::PluginRuntimeDelivery, { 64 * 1024 }>;
+    MessageOutbox<spitzli_agent_protocol::PluginRuntimeDelivery, { 64 * 1024 }>;

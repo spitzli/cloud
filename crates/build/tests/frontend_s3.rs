@@ -1,24 +1,24 @@
 #![cfg(feature = "local-registry-test")]
 //! Private consumer/OCI reuse, without bootstrapping Core or changing shared SQL.
-use std::{
-    os::unix::fs::PermissionsExt,
-    sync::atomic::{AtomicBool, Ordering},
-};
-use webdock_build::{
+use spitzli_build::{
     artifact::{Archive, ArtifactStore, MAX_OUTPUT},
     publisher::{PublicationGuard, RegistryPublisher},
     remote::RemoteArtifacts,
+};
+use std::{
+    os::unix::fs::PermissionsExt,
+    sync::atomic::{AtomicBool, Ordering},
 };
 #[path = "support/registry.rs"]
 mod registry;
 struct Guard(AtomicBool);
 #[async_trait::async_trait]
 impl PublicationGuard for Guard {
-    async fn check(&self) -> webdock_build::Result<()> {
+    async fn check(&self) -> spitzli_build::Result<()> {
         if self.0.load(Ordering::SeqCst) {
             Ok(())
         } else {
-            Err(webdock_build::Error {
+            Err(spitzli_build::Error {
                 code: "lease_revoked",
                 logs: String::new(),
             })
@@ -36,8 +36,8 @@ fn local() -> (tempfile::TempDir, ArtifactStore) {
 async fn retained_frontend_survives_original_worker_loss_and_reuses_original_oci() {
     #[derive(serde::Deserialize)]
     struct Fixture {
-        config: webdock_object_storage::S3Config,
-        credentials: webdock_object_storage::Credentials,
+        config: spitzli_object_storage::S3Config,
+        credentials: spitzli_object_storage::Credentials,
     }
     let config_path = std::path::PathBuf::from(
         std::env::var_os("WEBDOCK_S3_TEST_CONFIG").expect("owned private S3 config"),
@@ -46,14 +46,14 @@ async fn retained_frontend_survives_original_worker_loss_and_reuses_original_oci
     assert!(metadata.is_file() && metadata.permissions().mode() & 0o077 == 0);
     let config: Fixture = serde_json::from_slice(&std::fs::read(config_path).unwrap()).unwrap();
     let remote = RemoteArtifacts::new(
-        webdock_object_storage::Store::loopback_test(config.config, config.credentials).unwrap(),
+        spitzli_object_storage::Store::loopback_test(config.config, config.credentials).unwrap(),
     );
     let vm = std::path::PathBuf::from(
         std::env::var_os("WEBDOCK_FRONTEND_VM_ROOT").expect("owned VM output"),
     );
     let bytes = std::fs::read(vm.join("verified-frontend-e2.tar")).unwrap();
     let envelope = Archive::read(&bytes, MAX_OUTPUT).unwrap();
-    let evidence = webdock_build::evidence::validate(&envelope, "100", "200", 1, None)
+    let evidence = spitzli_build::evidence::validate(&envelope, "100", "200", 1, None)
         .unwrap()
         .unwrap();
     assert_eq!(evidence.version, 2);
@@ -71,12 +71,12 @@ async fn retained_frontend_survives_original_worker_loss_and_reuses_original_oci
     let restored = remote.restore(&consumer, &saved).await.unwrap();
     assert_eq!(consumer.read(&restored).unwrap(), bytes);
     let output =
-        webdock_build::frontend::retained(&consumer, &restored, &evidence.build, None).unwrap();
+        spitzli_build::frontend::retained(&consumer, &restored, &evidence.build, None).unwrap();
     assert_eq!(output.files()["index.html"], b"<p>owned frontend</p>");
     assert_eq!(output.files()["assets/main.js"], b"console.log(42)");
     let mut wrong = evidence.build.clone();
     wrong.project_id = "301".into();
-    assert!(webdock_build::frontend::retained(&consumer, &restored, &wrong, None).is_err());
+    assert!(spitzli_build::frontend::retained(&consumer, &restored, &wrong, None).is_err());
     let mut corrupted = envelope.files().clone();
     corrupted.get_mut("frontend.tar").unwrap()[512] ^= 1;
     let corrupted = Archive::from_files(corrupted).unwrap().encode().unwrap();

@@ -8,8 +8,8 @@ use sea_orm::{ConnectionTrait, DatabaseTransaction, DbBackend, Statement, Transa
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_identity::Principal;
 use std::future::Future;
-use webdock_identity::Principal;
 
 const MAX_SAFE: u64 = 9_007_199_254_740_991;
 const DIMENSIONS: [&str; 7] = [

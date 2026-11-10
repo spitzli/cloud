@@ -1,6 +1,6 @@
 # Native access service
 
-`webdock-access` preserves the retained organization/member/invitation/project-grant model and uses the existing canonical IDs. All new row IDs use the injected dedicated PostgreSQL allocator. It does not create customers: use the registry service so the customer/organization allocator bridge is applied.
+`spitzli-access` preserves the retained organization/member/invitation/project-grant model and uses the existing canonical IDs. All new row IDs use the injected dedicated PostgreSQL allocator. It does not create customers: use the registry service so the customer/organization allocator bridge is applied.
 
 ## Runtime integration
 
@@ -62,6 +62,6 @@ Inviting an address without a local account sends a single activation mail whose
 
 ## Verification and remaining integration
 
-`cargo test -p webdock-access`, strict Clippy, and the retained-role integration test cover tenant separation, invitation recipient/acceptance, last-owner and role protections, real operator MFA, website ownership-transfer rejection, grants/revocation, preview expiry/exit, bans/session revocation, stale review rejection, encrypted authority transitions, and native OAuth/RLS denial before explicit organization activation. Test URLs are checked before connection and must name literal loopback `webdock_rls_test`; only created fixture rows are deleted. `tests/policy-generator.test.ts` checks policy reinstall classification and external-proof overlap.
+`cargo test -p spitzli-access`, strict Clippy, and the retained-role integration test cover tenant separation, invitation recipient/acceptance, last-owner and role protections, real operator MFA, website ownership-transfer rejection, grants/revocation, preview expiry/exit, bans/session revocation, stale review rejection, encrypted authority transitions, and native OAuth/RLS denial before explicit organization activation. Test URLs are checked before connection and must name literal loopback `webdock_rls_test`; only created fixture rows are deleted. `tests/policy-generator.test.ts` checks policy reinstall classification and external-proof overlap.
 
-The service is implemented; host HTTP routes, browser tenant/admin UI and offline review CLI remain parent integration work. Real Mail delivery is not enabled here. SSO client registration/signing stays in `webdock-oauth`'s offline APIs; this crate does not implement client registration UI, MCP connected-app management, external provider ownership verification, organization deletion/ownership transfer, or automatic archive rollback. Workers resuming retained externally projected jobs still need their domain-specific lease/proof rules; this service does not rewrite worker actors.
+The service is implemented; host HTTP routes, browser tenant/admin UI and offline review CLI remain parent integration work. Real Mail delivery is not enabled here. SSO client registration/signing stays in `spitzli-oauth`'s offline APIs; this crate does not implement client registration UI, MCP connected-app management, external provider ownership verification, organization deletion/ownership transfer, or automatic archive rollback. Workers resuming retained externally projected jobs still need their domain-specific lease/proof rules; this service does not rewrite worker actors.

@@ -1,5 +1,13 @@
 //! Actual built Console → native HTTP/RLS → persisted agent RPC → isolated Docker.
 use super::*;
+use spitzli_agent::config::{AgentConfig, ControlEndpoint, RuntimeConfiguration};
+use spitzli_agent_control::{ControlPlane, LocalBinding};
+use spitzli_agent_protocol::agent_control_server::AgentControlServer;
+use spitzli_control_plane::{
+    http::{Services, build_app_with_domains},
+    ui::UiAssets,
+};
+use spitzli_identity::{RlsSigner, SecretKeys};
 use std::{
     collections::{BTreeMap, HashMap},
     io::Write,
@@ -7,14 +15,6 @@ use std::{
     path::Path,
     time::Duration,
 };
-use webdock_agent::config::{AgentConfig, ControlEndpoint, RuntimeConfiguration};
-use webdock_agent_control::{ControlPlane, LocalBinding};
-use webdock_agent_protocol::agent_control_server::AgentControlServer;
-use webdock_control_plane::{
-    http::{Services, build_app_with_domains},
-    ui::UiAssets,
-};
-use webdock_identity::{RlsSigner, SecretKeys};
 
 const AGENT: &str = "browser-fixture";
 
@@ -29,30 +29,30 @@ async fn http(f: &Fixture, origin: &str, dist: &Path) -> (axum::Router, Value) {
     let identity = Arc::new(IdentityService::new(auth.clone(), cookies));
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let rls = std::env::var("DATABASE_RLS_SECRET").unwrap();
-    let ids = Arc::new(webdock_persistence::IdAllocator::new(
+    let ids = Arc::new(spitzli_persistence::IdAllocator::new(
         business.clone(),
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     ));
-    let access = webdock_access::AccessService::new(
+    let access = spitzli_access::AccessService::new(
         business,
         auth.clone(),
         identity.clone(),
         ids.clone(),
         RlsSigner::new(&rls, "webdock_auth_runtime").unwrap(),
         Arc::new(SecretKeys::new(BTreeMap::from([(1, secret.clone())]), 1, Some(secret)).unwrap()),
-        webdock_access::AccessConfig {
+        spitzli_access::AccessConfig {
             auth_origin: "http://localhost:3125".parse().unwrap(),
             console_origins: vec![origin.parse().unwrap()],
             allow_local_http: true,
         },
     )
     .unwrap();
-    let registry = webdock_registry::RegistryService::new(
+    let registry = spitzli_registry::RegistryService::new(
         db("WEBDOCK_REGISTRY_DATABASE_URL").await,
         RlsSigner::new(&rls, "webdock_registry_runtime").unwrap(),
     )
     .with_allocator(ids);
-    let config = webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+    let config = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
         ("WEBDOCK_STUDIO_ORIGIN".into(), origin.into()),
         ("WEBDOCK_FEATURES".into(), r#"{"hosting":"enabled"}"#.into()),
     ]))
@@ -235,7 +235,7 @@ async fn console_drives_real_native_hosting_and_docker() {
     let f = fixture.clone();
     let probe = (engine.clone(), installation.clone());
     let outcome = tokio::spawn(async move {
-        let mut daemon = webdock_agent::management::Daemon::open(config)
+        let mut daemon = spitzli_agent::management::Daemon::open(config)
             .await
             .unwrap();
         daemon.connect().await.unwrap();
@@ -324,7 +324,7 @@ async fn console_drives_real_native_hosting_and_docker() {
 
 async fn run_browser(
     f: &Fixture,
-    daemon: webdock_agent::management::Daemon,
+    daemon: spitzli_agent::management::Daemon,
     app: &str,
     root: &Path,
     dist: &Path,

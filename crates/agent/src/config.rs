@@ -150,7 +150,7 @@ impl AgentConfig {
                 certificate,
                 key,
             } => {
-                let url = webdock_core::config::canonical_origin(origin, true)
+                let url = spitzli_core::config::canonical_origin(origin, true)
                     .map_err(|_| AgentError::Configuration("Invalid control origin"))?;
                 if !url.starts_with("https://") || domain.is_empty() || domain.len() > 253 {
                     return Err(AgentError::Configuration("Verified network TLS required"));

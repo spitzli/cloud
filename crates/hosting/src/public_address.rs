@@ -1,7 +1,7 @@
 //! Exact public app names; PostgreSQL owns allocation, retained uniqueness and tenant budgets.
 use super::*;
-use webdock_core::id::RecordId;
-use webdock_supervisor::PublicRoute;
+use spitzli_core::id::RecordId;
+use spitzli_supervisor::PublicRoute;
 
 fn allocation_error(cause: sea_orm::DbErr) -> crate::HostingError {
     use sea_orm::{DbErr, RuntimeErr};

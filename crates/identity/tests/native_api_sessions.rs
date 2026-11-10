@@ -3,12 +3,12 @@
 mod fixture;
 use fixture::AUTH_SECRET;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement};
-use std::sync::Arc;
-use webdock_identity::{CookiePolicy, IdentityError, IdentityService};
-use webdock_persistence::{
+use spitzli_identity::{CookiePolicy, IdentityError, IdentityService};
+use spitzli_persistence::{
     IdAllocator,
     postgres::{Limits, Pool},
 };
+use std::sync::Arc;
 async fn sql(f: &fixture::Fixture, text: &str) {
     f.owner.execute_unprepared(text).await.unwrap();
 }
@@ -33,7 +33,7 @@ async fn service(f: &fixture::Fixture) -> IdentityService {
     .with_allocator(Arc::new(
         IdAllocator::connect_native(
             &f.bootstrap_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
             "webdock_auth_bootstrap",
             false,
         )

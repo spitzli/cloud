@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {landingDefaults} from '../cms/landing';
 import {localizeLanding} from './landing-copy';
-import {translator} from '@webdock/i18n';
+import {translator} from '@spitzli/i18n';
 import legacy from './legacy-landing.json';
 test('known Webdock marketing copy is translated without mutating stored or authored content',()=>{
  const source={...landingDefaults,id:17,heroTitle:'A customer-authored headline',contactEmail:'custom@example.test',faqs:[{id:'custom',question:'My own question',answer:'My own answer'},{id:'default',...landingDefaults.faqs[0]}],useCases:[{id:'case',...landingDefaults.useCases[1]}]};

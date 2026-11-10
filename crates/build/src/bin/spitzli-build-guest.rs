@@ -1,4 +1,8 @@
 //! This binary belongs ONLY in an administrator-prepared disposable VM image.
+use spitzli_build::{
+    artifact::{Archive, MAX_OUTPUT, MAX_SOURCE},
+    execution::{GuestRequest, run_bounded},
+};
 use std::{
     collections::BTreeMap,
     io::{Read, Write},
@@ -6,11 +10,7 @@ use std::{
     process::Command,
     time::Duration,
 };
-use webdock_build::{
-    artifact::{Archive, MAX_OUTPUT, MAX_SOURCE},
-    execution::{GuestRequest, run_bounded},
-};
-fn build() -> webdock_build::Result<Vec<u8>> {
+fn build() -> spitzli_build::Result<Vec<u8>> {
     let mut input = Vec::new();
     std::fs::File::open("/dev/vdb")
         .unwrap()
@@ -25,9 +25,9 @@ fn build() -> webdock_build::Result<Vec<u8>> {
     let job: GuestRequest = serde_json::from_slice(&archive.files()["job.json"]).unwrap();
     job.validate()?;
     let root = work.path().join("source").join(&job.root_directory);
-    let frontend = if job.recipe == webdock_build::frontend::RECIPE {
+    let frontend = if job.recipe == spitzli_build::frontend::RECIPE {
         Some(
-            webdock_build::frontend::FrontendConfig::from_source(
+            spitzli_build::frontend::FrontendConfig::from_source(
                 &archive,
                 &format!(
                     "source{}",
@@ -51,7 +51,7 @@ fn build() -> webdock_build::Result<Vec<u8>> {
         .arg(format!("context={}", root.display()))
         .arg("--local")
         .arg(format!("dockerfile={}", root.display()));
-    webdock_build::frontend::configure_exporters(&mut command, &job.recipe, &output, &rootfs)?;
+    spitzli_build::frontend::configure_exporters(&mut command, &job.recipe, &output, &rootfs)?;
     for (k, v) in &job.build_environment {
         command.arg("--opt").arg(format!("build-arg:{k}={v}"));
     }
@@ -80,20 +80,20 @@ fn build() -> webdock_build::Result<Vec<u8>> {
     ]);
     if success {
         if std::fs::metadata(&output)
-            .map_err(|_| webdock_build::Error {
+            .map_err(|_| spitzli_build::Error {
                 code: "artifact_missing",
                 logs: String::new(),
             })?
             .len()
             > MAX_OUTPUT
         {
-            return Err(webdock_build::Error {
+            return Err(spitzli_build::Error {
                 code: "artifact_limit",
                 logs: String::new(),
             });
         }
         let bytes = std::fs::read(output).unwrap();
-        webdock_build::artifact::validate_oci(&bytes)?;
+        spitzli_build::artifact::validate_oci(&bytes)?;
         if let Some(config) = frontend {
             files.insert(
                 "artifact/frontend.tar".into(),
@@ -104,7 +104,7 @@ fn build() -> webdock_build::Result<Vec<u8>> {
     }
     let result = Archive::from_files(files)?.encode()?;
     if result.len() as u64 > MAX_OUTPUT {
-        return Err(webdock_build::Error {
+        return Err(spitzli_build::Error {
             code: "artifact_limit",
             logs: String::new(),
         });

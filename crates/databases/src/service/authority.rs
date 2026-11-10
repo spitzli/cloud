@@ -3,7 +3,7 @@
 use super::*;
 use crate::database_authority::DatabaseAuthority;
 use chrono::{DateTime, Utc};
-use webdock_oauth::{McpAuthority, McpGuard, OAuthService};
+use spitzli_oauth::{McpAuthority, McpGuard, OAuthService};
 
 enum Authentication {
     Browser {
@@ -37,7 +37,7 @@ impl RetainedAuthority {
                     principal,
                 },
             ) => {
-                let current = webdock_browser_session::revalidate_stored_authority(
+                let current = spitzli_browser_session::revalidate_stored_authority(
                     &service.identity,
                     transaction,
                     service.browser.as_deref(),
@@ -109,7 +109,7 @@ impl DatabaseService {
     ) -> Result<(DatabaseTransaction, RetainedAuthority)> {
         let business = self.session_context(&principal.session_id).await?;
         let authentication = self.auth.begin().await?;
-        let current = webdock_browser_session::revalidate_stored_authority(
+        let current = spitzli_browser_session::revalidate_stored_authority(
             &self.identity,
             &authentication,
             self.browser.as_deref(),
@@ -183,15 +183,15 @@ fn cap_verified_lifetime(
     }
     Ok(limit)
 }
-pub(super) fn oauth_failure(error: webdock_oauth::Error) -> Error {
+pub(super) fn oauth_failure(error: spitzli_oauth::Error) -> Error {
     if error.status() >= 500 {
         unavailable()
     } else {
         denied()
     }
 }
-pub(super) fn browser_failure(error: webdock_browser_session::Error) -> Error {
-    use webdock_browser_session::Error as BrowserError;
+pub(super) fn browser_failure(error: spitzli_browser_session::Error) -> Error {
+    use spitzli_browser_session::Error as BrowserError;
     match error {
         BrowserError::Unauthorized | BrowserError::InvalidInput => denied(),
         BrowserError::OAuth(error) => oauth_failure(error),
@@ -203,8 +203,8 @@ pub(super) fn browser_failure(error: webdock_browser_session::Error) -> Error {
 #[cfg(test)]
 mod staged;
 
-fn identity_failure(error: webdock_identity::IdentityError) -> Error {
-    use webdock_identity::IdentityError;
+fn identity_failure(error: spitzli_identity::IdentityError) -> Error {
+    use spitzli_identity::IdentityError;
     match error {
         IdentityError::Unauthorized
         | IdentityError::InvalidEncoding
@@ -225,16 +225,16 @@ mod scope_error_tests {
     use super::*;
     #[test]
     fn business_scope_database_failure_is_transient_not_authority_loss() {
-        let error = identity_failure(webdock_identity::IdentityError::Database(
+        let error = identity_failure(spitzli_identity::IdentityError::Database(
             sea_orm::DbErr::Custom("isolated scope failure".into()),
         ));
         assert_eq!(error.status, 503);
         assert_eq!(
-            identity_failure(webdock_identity::IdentityError::Persistence).status,
+            identity_failure(spitzli_identity::IdentityError::Persistence).status,
             503
         );
         assert_eq!(
-            identity_failure(webdock_identity::IdentityError::Unauthorized).status,
+            identity_failure(spitzli_identity::IdentityError::Unauthorized).status,
             404
         );
     }

@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/cms-instance",
+  "name": "@spitzli/cms-instance",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -24,12 +24,12 @@
     "@payloadcms/storage-s3": "4.0.0-canary.37",
     "sharp": "0.35.5",
     "graphql": "16.14.2",
-    "@webdock/cms-ui": "*",
-    "@webdock/cms-bridge": "*",
-    "@webdock/payload-sso": "*",
-    "@webdock/instance-kit": "*",
-    "@webdock/i18n": "*",
-    "@webdock/database-runtime": "*",
+    "@spitzli/cms-ui": "*",
+    "@spitzli/cms-bridge": "*",
+    "@spitzli/payload-sso": "*",
+    "@spitzli/instance-kit": "*",
+    "@spitzli/i18n": "*",
+    "@spitzli/database-runtime": "*",
     "pg": "8.16.3"
   },
   "devDependencies": {

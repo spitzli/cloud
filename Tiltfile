@@ -41,7 +41,7 @@ local_resource(
 
 local_resource(
     'core-build',
-    cmd='cargo build -p webdock-control-plane --bins',
+    cmd='cargo build -p spitzli-control-plane --bins',
     deps=['crates', 'Cargo.toml', 'Cargo.lock', 'proto'],
     ignore=['**/target', 'crates/**/tests'],
     labels=['core'],
@@ -59,10 +59,10 @@ local_resource(
 # Plugins: each image is pushed to the local registry once and recorded as an installed release;
 # the binary runs natively from the plugin's own workspace over private Unix sockets.
 plugins = {
-    'echo-demo': {'binary': 'webdock-echo-demo', 'deps': []},
-    'postgres': {'binary': 'webdock-postgres', 'deps': ['shared-postgres']},
-    'mail': {'binary': 'webdock-mail', 'deps': ['mailpit']},
-    'hosting': {'binary': 'webdock-hosting', 'deps': []},
+    'echo-demo': {'binary': 'spitzli-echo-demo', 'deps': []},
+    'postgres': {'binary': 'spitzli-postgres', 'deps': ['shared-postgres']},
+    'mail': {'binary': 'spitzli-mail', 'deps': ['mailpit']},
+    'hosting': {'binary': 'spitzli-hosting', 'deps': []},
 }
 for name in plugins:
     local_resource(
@@ -82,8 +82,8 @@ local_resource(
 
 local_resource(
     'plugin-control',
-    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && rm -f .dev-local/plugins/control.sock && exec target/debug/webdock-plugin-control --config \"$PWD/.dev-local/plugins/plugin-config.json\"'",
-    deps=['target/debug/webdock-plugin-control', '.dev-local/runtime.env'],
+    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && rm -f .dev-local/plugins/control.sock && exec target/debug/spitzli-plugin-control --config \"$PWD/.dev-local/plugins/plugin-config.json\"'",
+    deps=['target/debug/spitzli-plugin-control', '.dev-local/runtime.env'],
     resource_deps=['seed', 'core-build'],
     readiness_probe=probe(exec=exec_action(['test', '-S', '.dev-local/plugins/control.sock']), period_secs=1),
     labels=['plugins'],
@@ -91,8 +91,8 @@ local_resource(
 
 local_resource(
     'plugin-controller',
-    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && exec target/debug/webdock-plugin-controller --config \"$PWD/.dev-local/plugins/plugin-config.json\"'",
-    deps=['target/debug/webdock-plugin-controller', '.dev-local/runtime.env'],
+    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && exec target/debug/spitzli-plugin-controller --config \"$PWD/.dev-local/plugins/plugin-config.json\"'",
+    deps=['target/debug/spitzli-plugin-controller', '.dev-local/runtime.env'],
     resource_deps=['seed', 'core-build'],
     labels=['plugins'],
 )
@@ -100,22 +100,22 @@ local_resource(
 # Plugin workloads: Core's agent listener and one enrolled agent for the local k3s.
 local_resource(
     'agent-control',
-    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && export WEBDOCK_WORKLOADS_ENABLED=true && rm -f .dev-local/agent/run/control.sock && exec target/debug/webdock-agent-control --config \"$PWD/.dev-local/agent/agent-control.json\"'",
-    deps=['target/debug/webdock-agent-control', '.dev-local/runtime.env'],
+    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && export WEBDOCK_WORKLOADS_ENABLED=true && rm -f .dev-local/agent/run/control.sock && exec target/debug/spitzli-agent-control --config \"$PWD/.dev-local/agent/agent-control.json\"'",
+    deps=['target/debug/spitzli-agent-control', '.dev-local/runtime.env'],
     resource_deps=['seed', 'core-build'],
     readiness_probe=probe(exec=exec_action(['test', '-S', '.dev-local/agent/run/control.sock']), period_secs=1),
     labels=['plugins'],
 )
 local_resource(
     'agent-build',
-    cmd='cargo build -p webdock-agent --bin webdock-agent',
+    cmd='cargo build -p spitzli-agent --bin spitzli-agent',
     deps=['crates/agent/src', 'crates/agent/Cargo.toml', 'crates/agent-protocol', 'proto/webdock/agent'],
     labels=['plugins'],
 )
 local_resource(
     'agent',
-    serve_cmd="sh -c 'for i in $(seq 30); do target/debug/webdock-agent --config \"$PWD/.dev-local/agent/agent.json\" run && break; sleep 2; done'",
-    deps=['target/debug/webdock-agent', '.dev-local/agent/agent.json'],
+    serve_cmd="sh -c 'for i in $(seq 30); do target/debug/spitzli-agent --config \"$PWD/.dev-local/agent/agent.json\" run && break; sleep 2; done'",
+    deps=['target/debug/spitzli-agent', '.dev-local/agent/agent.json'],
     resource_deps=['agent-control', 'agent-build', 'kubeconfig'],
     labels=['plugins'],
 )
@@ -140,9 +140,9 @@ for name, plugin in plugins.items():
 
 local_resource(
     'core',
-    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && exec target/debug/webdock-control-plane'",
+    serve_cmd="sh -c 'set -a && . .dev-local/runtime.env && set +a && exec target/debug/spitzli-control-plane'",
     # Restarts after every successful rebuild of the binary.
-    deps=['target/debug/webdock-control-plane', '.dev-local/runtime.env'],
+    deps=['target/debug/spitzli-control-plane', '.dev-local/runtime.env'],
     resource_deps=['seed'],
     readiness_probe=probe(http_get=http_get_action(port=3130, host='127.0.0.1', path='/readyz'), period_secs=2),
     links=[link('http://127.0.0.1:3130/healthz', 'healthz')],

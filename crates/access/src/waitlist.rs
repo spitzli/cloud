@@ -7,7 +7,7 @@ use crate::{
 use sea_orm::{ConnectionTrait, DbBackend, Statement};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use webdock_identity::Principal;
+use spitzli_identity::Principal;
 
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

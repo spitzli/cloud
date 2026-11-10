@@ -1,10 +1,10 @@
 //! Reconciles persisted plugin lifecycle commands and durable job attempts.
 use clap::Parser;
-use std::{path::PathBuf, process::ExitCode, sync::Arc, time::Duration};
-use webdock_control_plane::{
+use spitzli_control_plane::{
     plugin_config::{PluginConfig, authority_services},
     plugins::{PluginDependencies, PluginEndpoints},
 };
+use std::{path::PathBuf, process::ExitCode, sync::Arc, time::Duration};
 #[derive(Parser)]
 struct Args {
     #[arg(long)]
@@ -28,30 +28,30 @@ fn next_idle_poll(previous: Duration, worked: bool) -> Duration {
 async fn run() -> Result<(), Error> {
     let args = Args::parse();
     let config = PluginConfig::load(&args.config)?;
-    let platform = webdock_core::config::PlatformConfig::from_map(&std::env::vars().collect())?;
+    let platform = spitzli_core::config::PlatformConfig::from_map(&std::env::vars().collect())?;
     let auth_url = required("WEBDOCK_DATABASE_URL")?;
-    let auth = webdock_control_plane::db::connect_runtime(
+    let auth = spitzli_control_plane::db::connect_runtime(
         &auth_url,
         "webdock_auth_bootstrap",
         platform.production,
     )
     .await?;
-    let business = webdock_control_plane::db::connect_runtime(
+    let business = spitzli_control_plane::db::connect_runtime(
         &required("WEBDOCK_SESSION_DATABASE_URL")?,
         "webdock_auth_runtime",
         platform.production,
     )
     .await?;
-    let worker = webdock_control_plane::db::connect_runtime(
+    let worker = spitzli_control_plane::db::connect_runtime(
         &required("WEBDOCK_WORKER_DATABASE_URL")?,
         "webdock_worker_runtime",
         platform.production,
     )
     .await?;
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2)?,
+            spitzli_ids::Identity::platform(0, 2)?,
         )
         .await?,
     );
@@ -76,7 +76,7 @@ async fn run() -> Result<(), Error> {
     );
     let installer = match args.installation_config {
         Some(path) => Some(
-            webdock_control_plane::plugins::installation::worker::InstallationWorker::load(
+            spitzli_control_plane::plugins::installation::worker::InstallationWorker::load(
                 &path, &business, &config,
             )
             .await?,

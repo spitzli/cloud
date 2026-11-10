@@ -1,4 +1,4 @@
-use webdock_export_protocol::{SourceKind, SourceRef};
+use spitzli_export_protocol::{SourceKind, SourceRef};
 #[test]
 fn source_references_cannot_select_urls_sql_files_or_mutable_repository_heads() {
     let base = SourceRef {
@@ -39,15 +39,15 @@ fn source_references_cannot_select_urls_sql_files_or_mutable_repository_heads() 
 fn readonly_credentials_are_domain_separated_and_database_bound() {
     let original = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8";
     assert_eq!(
-        webdock_export_protocol::readonly_password("123", original).unwrap(),
+        spitzli_export_protocol::readonly_password("123", original).unwrap(),
         "xu3QJWlQItYM8d2EQKym15VPXVxXhI9ildzh21E0faI"
     );
     assert_ne!(
-        webdock_export_protocol::readonly_password("124", original).unwrap(),
-        webdock_export_protocol::readonly_password("123", original).unwrap()
+        spitzli_export_protocol::readonly_password("124", original).unwrap(),
+        spitzli_export_protocol::readonly_password("123", original).unwrap()
     );
-    assert!(webdock_export_protocol::readonly_password("123", "imported-password").is_err());
-    assert!(webdock_export_protocol::readonly_password("123';DROP ROLE", original).is_err());
+    assert!(spitzli_export_protocol::readonly_password("123", "imported-password").is_err());
+    assert!(spitzli_export_protocol::readonly_password("123';DROP ROLE", original).is_err());
 }
 
 #[test]

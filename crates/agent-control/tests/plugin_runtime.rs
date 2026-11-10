@@ -1,9 +1,9 @@
 //! The transport fixture uses a new enrollment only; installation never needs a customer/project.
+use spitzli_agent_control::PluginRuntimeBackend;
+use spitzli_agent_protocol::plugin::*;
+use spitzli_hosting::AgentIdentity;
 use std::sync::Arc;
 use tonic::Status;
-use webdock_agent_control::PluginRuntimeBackend;
-use webdock_agent_protocol::plugin::*;
-use webdock_hosting::AgentIdentity;
 struct EmptyBackend;
 #[tonic::async_trait]
 impl PluginRuntimeBackend for EmptyBackend {

@@ -4,9 +4,9 @@ use kube::{
     api::{DeleteParams, Patch, PatchParams, PostParams, Preconditions},
 };
 use serde_json::json;
-use webdock_agent::mail::{MailAuthority, MailRuntime};
-use webdock_agent_protocol::mail::{MailCheckpoint, MailClaim};
-use webdock_supervisor::ExecutionError;
+use spitzli_agent::mail::{MailAuthority, MailRuntime};
+use spitzli_agent_protocol::mail::{MailCheckpoint, MailClaim};
+use spitzli_supervisor::ExecutionError;
 pub async fn verify(
     client: Client,
     runtime: &dyn MailRuntime,

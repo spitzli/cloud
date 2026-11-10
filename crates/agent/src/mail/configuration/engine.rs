@@ -2,8 +2,8 @@ use super::*;
 use crate::mail::client::Rows;
 use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
+use spitzli_agent_protocol::mail_configuration::*;
 use std::collections::BTreeMap;
-use webdock_agent_protocol::mail_configuration::*;
 #[path = "types.rs"]
 mod types;
 use types::*;

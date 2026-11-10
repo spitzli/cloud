@@ -3,8 +3,8 @@ use base64::{Engine, engine::general_purpose::STANDARD};
 use serde::{Serialize, de::DeserializeOwned};
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_agent_protocol::mail::{MailAction, MailMaterial};
 use std::collections::BTreeMap;
-use webdock_agent_protocol::mail::{MailAction, MailMaterial};
 pub(super) fn hash(value: &impl Serialize) -> Result<String> {
     Ok(format!(
         "{:x}",

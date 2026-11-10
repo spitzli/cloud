@@ -1,6 +1,6 @@
 # Agent management protocol
 
-This crate exports the generated `webdock.agent.v1.AgentControl` client/server contract from `proto/webdock/agent/v1/agent.proto`. It has no Docker, Kubernetes, CLI or execution dependencies. Core should depend on this crate and, when needed, `webdock-supervisor` with `default-features = false` for command/specification DTOs and fingerprints.
+This crate exports the generated `webdock.agent.v1.AgentControl` client/server contract from `proto/webdock/agent/v1/agent.proto`. It has no Docker, Kubernetes, CLI or execution dependencies. Core should depend on this crate and, when needed, `spitzli-supervisor` with `default-features = false` for command/specification DTOs and fingerprints.
 
 Core hosts Register, Heartbeat, Poll, Guard and Complete. The agent initiates every RPC over a reused authenticated HTTP/2 connection, locally through Unix sockets or remotely through required mTLS. There is no inbound agent management listener.
 

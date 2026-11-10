@@ -11,9 +11,9 @@ use sea_orm::{
 };
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_identity::{Principal, RlsSigner};
+use spitzli_persistence::IdAllocator;
 use std::sync::Arc;
-use webdock_identity::{Principal, RlsSigner};
-use webdock_persistence::IdAllocator;
 #[derive(Clone, Copy)]
 pub struct HostingCeiling {
     pub read: bool,
@@ -207,7 +207,7 @@ impl HostingService {
             (&auth, "webdock_auth_bootstrap"),
             (&worker, "webdock_worker_runtime"),
         ] {
-            webdock_persistence::connection::verify_runtime_role(connection, role)
+            spitzli_persistence::connection::verify_runtime_role(connection, role)
                 .await
                 .map_err(|_| error(503, "Restricted hosting database roles are required."))?;
         }
@@ -398,8 +398,8 @@ impl HostingService {
     /// Preserve the token ceiling and live access record through the domain commit.
     pub async fn execute_with_mcp(
         &self,
-        oauth: &Arc<webdock_oauth::OAuthService>,
-        actor: &webdock_oauth::McpAuthentication,
+        oauth: &Arc<spitzli_oauth::OAuthService>,
+        actor: &spitzli_oauth::McpAuthentication,
         input: Value,
     ) -> Result<Value> {
         if actor.authority.registry_scope() {
@@ -425,7 +425,7 @@ impl HostingService {
         actor: &Principal,
         input: Value,
         ceiling: HostingCeiling,
-        guard: Option<&webdock_oauth::McpGuard>,
+        guard: Option<&spitzli_oauth::McpGuard>,
     ) -> Result<Value> {
         let cmd = contracts::parse_command(input)?;
         let action = field(&cmd, "action")?;

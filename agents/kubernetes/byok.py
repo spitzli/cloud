@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from observer import quantity
 KINDS={'Node':'nodes','Namespace':'namespaces','Deployment':'deployments.apps','StatefulSet':'statefulsets.apps','DaemonSet':'daemonsets.apps','Pod':'pods','Job':'jobs.batch','CronJob':'cronjobs.batch','Service':'services','Ingress':'ingresses.networking.k8s.io','PersistentVolumeClaim':'persistentvolumeclaims','StorageClass':'storageclasses.storage.k8s.io'}
-SYSTEM={'kube-system','kube-public','kube-node-lease','webdock-agent'}
+SYSTEM={'kube-system','kube-public','kube-node-lease','spitzli-agent'}
 def allowed_namespace(namespace,allowed):
  return namespace in allowed and namespace not in SYSTEM and bool(re.fullmatch(r'[a-z0-9]([-a-z0-9]*[a-z0-9])?',namespace))
 def kubectl(*args,timeout=20):

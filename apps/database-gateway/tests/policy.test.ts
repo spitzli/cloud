@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { authorizeRpc, publicResult } from "../src/policy";
-import type { RuntimeAccess } from "@webdock/database-contracts";
+import type { RuntimeAccess } from "@spitzli/database-contracts";
 
 const access: RuntimeAccess = { scopeID: "123", subject: "alice", connectionID: "internal", profile: "read", runtimeOrigin: "https://private", proxySecret: "secret", expiresAt: new Date(Date.now()+60000).toISOString() };
 test("RPC policy denies arbitrary connection targets, configuration, uploads and unknown commands", () => {

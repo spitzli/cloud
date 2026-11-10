@@ -1,9 +1,9 @@
 //! Configuration acts only on a verified existing normal instance; lifecycle allocation is separate.
 use async_trait::async_trait;
-use webdock_agent_protocol::mail_configuration::{
+use spitzli_agent_protocol::mail_configuration::{
     ConfigurationCheckpoint, ConfigurationClaim, ConfigurationProof,
 };
-use webdock_supervisor::{ExecutionError, Result};
+use spitzli_supervisor::{ExecutionError, Result};
 
 #[async_trait]
 pub trait ConfigurationAuthority: Send + Sync {

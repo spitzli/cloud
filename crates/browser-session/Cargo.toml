@@ -1,5 +1,5 @@
 [package]
-name = "webdock-browser-session"
+name = "spitzli-browser-session"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,9 +7,9 @@ license.workspace = true
 publish = false
 
 [dependencies]
-webdock-identity = { path = "../identity" }
-webdock-oauth = { path = "../oauth" }
-webdock-persistence = { path = "../persistence" }
+spitzli-identity = { path = "../identity" }
+spitzli-oauth = { path = "../oauth" }
+spitzli-persistence = { path = "../persistence" }
 sea-orm.workspace = true
 tokio-postgres = { version = "0.7", features = ["with-chrono-0_4"] }
 serde.workspace = true
@@ -29,8 +29,8 @@ percent-encoding = "2"
 
 [dev-dependencies]
 uuid = { version = "1", features = ["v4"] }
-webdock-ids = { path = "../ids" }
-webdock-access = { path = "../access" }
+spitzli-ids = { path = "../ids" }
+spitzli-access = { path = "../access" }
 totp-rs = { version = "=6.0.0", features = ["otpauth"] }
 
 [lints]

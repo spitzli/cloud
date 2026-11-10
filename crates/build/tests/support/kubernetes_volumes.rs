@@ -1,7 +1,7 @@
 //! Owned DB authority proofs; actual ext4/Kubernetes behavior is qualified separately.
 use super::*;
-use webdock_agent_protocol::build_storage::{BuildStorageAction, BuildVolumeHandle};
-use webdock_build::{BuildService, KubernetesStoragePolicy};
+use spitzli_agent_protocol::build_storage::{BuildStorageAction, BuildVolumeHandle};
+use spitzli_build::{BuildService, KubernetesStoragePolicy};
 
 #[tokio::test]
 #[ignore = "owned fresh database via tools/tests/kubernetes-builds.py"]
@@ -11,7 +11,7 @@ async fn kubernetes_volume_authority_is_immutable_fenced_and_required_before_ret
     let result=tokio::spawn(async move {
         f.configure("k3s").await;
         let service=BuildService::new(db("DATABASE_URL").await,db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),
-            Arc::new(webdock_persistence::IdAllocator::new(db("DATABASE_URL").await,webdock_ids::Identity::platform(0,2).unwrap())),f.service.clone(),"registry.invalid".into()).await.unwrap()
+            Arc::new(spitzli_persistence::IdAllocator::new(db("DATABASE_URL").await,spitzli_ids::Identity::platform(0,2).unwrap())),f.service.clone(),"registry.invalid".into()).await.unwrap()
             .with_repository_provider(Arc::new(super::build_kubernetes_admission::Repository));
         let mut draft=spec();draft.as_object_mut().unwrap().remove("image");draft.as_object_mut().unwrap().remove("template");
         let app=f.service.execute(&f.principal,json!({"action":"apps.prepare","projectID":f.pid,"name":"volume-authority","spec":draft,"subscriptionRevision":1,"idempotencyKey":"volume-authority-target"})).await.unwrap();
@@ -41,7 +41,7 @@ async fn kubernetes_volume_authority_is_immutable_fenced_and_required_before_ret
         assert_eq!(service.kubernetes_build_environment(&worker,build,generation).await.unwrap()["FIXTURE_BUILD_SECRET"],"volume-fixture-private-sentinel","async preparation uses a fresh scoped execution handoff");
         assert!(resumed[0]["execution_request"]["buildEnvironment"].is_null(),"secrets must not enter immutable durable execution requests");
 
-        let original: webdock_agent_protocol::build_storage::BuildStorageReservation=serde_json::from_value(claim["storageRequest"].clone()).unwrap();
+        let original: spitzli_agent_protocol::build_storage::BuildStorageReservation=serde_json::from_value(claim["storageRequest"].clone()).unwrap();
         assert_eq!(original.customer_id,f.cid);assert_ne!(original.volume_id,claim["attemptID"].as_str().unwrap());
         assert!(service.record_kubernetes_job_intent(&worker,build,generation,&"4".repeat(64)).await.is_err(),"job intent requires a pinned volume handle");
         let reservation=service.issue_kubernetes_storage(&worker,build,generation,BuildStorageAction::Reserve).await.unwrap();

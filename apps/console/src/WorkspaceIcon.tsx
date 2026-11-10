@@ -1,5 +1,5 @@
-import { msgid } from "@webdock/i18n";
-import { useI18n } from "@webdock/i18n/react";
+import { msgid } from "@spitzli/i18n";
+import { useI18n } from "@spitzli/i18n/react";
 import { useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";

@@ -1,5 +1,5 @@
 [package]
-name = "webdock-database-gateway"
+name = "spitzli-database-gateway"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,7 +7,7 @@ license.workspace = true
 publish = false
 
 [dependencies]
-webdock-core = { path = "../core" }
+spitzli-core = { path = "../core" }
 axum = { workspace = true, features = ["ws"] }
 serde.workspace = true
 serde_json.workspace = true

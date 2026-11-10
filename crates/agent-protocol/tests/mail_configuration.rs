@@ -1,6 +1,6 @@
 use chrono::{Duration, Utc};
 use serde_json::json;
-use webdock_agent_protocol::mail_configuration::*;
+use spitzli_agent_protocol::mail_configuration::*;
 
 fn claim() -> ConfigurationClaim {
     let material:ConfigurationMaterial=serde_json::from_value(json!({
@@ -25,7 +25,7 @@ fn claim() -> ConfigurationClaim {
     ConfigurationClaim {
         spec,
         material,
-        lease: webdock_agent_protocol::mail::MailLease {
+        lease: spitzli_agent_protocol::mail::MailLease {
             lease_token: "11111111-1111-4111-8111-111111111111".into(),
         },
         lease_until: Utc::now() + Duration::seconds(60),
@@ -82,7 +82,7 @@ fn callbacks_cannot_carry_credentials_or_unbound_success() {
     assert!(serde_json::from_value::<ConfigurationCheckpoint>(input).is_err());
     let value = ConfigurationCompletion {
         lease: claim().lease,
-        outcome: webdock_agent_protocol::mail::MailOutcome::Succeeded,
+        outcome: spitzli_agent_protocol::mail::MailOutcome::Succeeded,
         proof: None,
     };
     assert!(value.validate().is_err());

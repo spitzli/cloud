@@ -9,16 +9,16 @@ use axum::{
     routing::{get, post},
 };
 use serde_json::{Value, json};
+use spitzli_database_gateway::{
+    Error, Result,
+    control::{Access, Control, Launch, RuntimeAccess},
+    server::{Gateway, Options},
+};
 use std::sync::{
     Arc,
     atomic::{AtomicBool, AtomicUsize, Ordering},
 };
 use tokio::sync::Notify;
-use webdock_database_gateway::{
-    Error, Result,
-    control::{Access, Control, Launch, RuntimeAccess},
-    server::{Gateway, Options},
-};
 struct Authority {
     active: AtomicBool,
     used: AtomicBool,
@@ -121,7 +121,7 @@ async fn proxy_flow(private_tls: bool) {
     let state = Arc::new(Upstream::default());
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let port = listener.local_addr().unwrap().port();
-    let mut trust = webdock_database_gateway::trust::Trust::from_pem(None).unwrap();
+    let mut trust = spitzli_database_gateway::trust::Trust::from_pem(None).unwrap();
     let (upstream, tls) = if private_tls {
         let mut params = rcgen::CertificateParams::new(Vec::<String>::new()).unwrap();
         params.is_ca = rcgen::IsCa::Ca(rcgen::BasicConstraints::Unconstrained);
@@ -132,7 +132,7 @@ async fn proxy_flow(private_tls: bool) {
         let key = rcgen::KeyPair::generate().unwrap();
         let leaf = params.signed_by(&key, &issuer).unwrap();
         trust =
-            webdock_database_gateway::trust::Trust::from_pem(Some(ca.pem().as_bytes())).unwrap();
+            spitzli_database_gateway::trust::Trust::from_pem(Some(ca.pem().as_bytes())).unwrap();
         let key = rustls::pki_types::PrivatePkcs8KeyDer::from(key.serialize_der());
         let config = rustls::ServerConfig::builder_with_provider(Arc::new(
             rustls::crypto::ring::default_provider(),
@@ -193,10 +193,10 @@ async fn proxy_flow(private_tls: bool) {
         active: AtomicBool::new(true),
         used: AtomicBool::new(false),
         access: RuntimeAccess {
-            scope_id: webdock_core::id::RecordId::parse("123").unwrap(),
+            scope_id: spitzli_core::id::RecordId::parse("123").unwrap(),
             subject: "fixture".into(),
             connection_id: "internal".into(),
-            profile: webdock_database_gateway::policy::Profile::Read,
+            profile: spitzli_database_gateway::policy::Profile::Read,
             runtime_origin: upstream.clone(),
             proxy_secret: "synthetic-private-proxy-credential".into(),
             expires_at: chrono::Utc::now() + chrono::Duration::minutes(1),

@@ -1,5 +1,5 @@
 [package]
-name = "webdock-agent-control"
+name = "spitzli-agent-control"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,13 +7,13 @@ license.workspace = true
 publish = false
 
 [dependencies]
-webdock-persistence = { path = "../persistence" }
-webdock-agent-protocol = { path = "../agent-protocol" }
-webdock-hosting = { path = "../hosting" }
-webdock-databases = { path = "../databases" }
-webdock-mail = { path = "../mail" }
-webdock-plugin-runtime = { path = "../plugin-runtime" }
-webdock-supervisor = { path = "../supervisor", default-features = false }
+spitzli-persistence = { path = "../persistence" }
+spitzli-agent-protocol = { path = "../agent-protocol" }
+spitzli-hosting = { path = "../hosting" }
+spitzli-databases = { path = "../databases" }
+spitzli-mail = { path = "../mail" }
+spitzli-plugin-runtime = { path = "../plugin-runtime" }
+spitzli-supervisor = { path = "../supervisor", default-features = false }
 sea-orm.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -27,23 +27,23 @@ subtle = "2"
 tokio-stream = { version = "0.1", features = ["net"] }
 
 [dev-dependencies]
-webdock-control-plane = { path = "../control-plane" }
-webdock-access = { path = "../access" }
-webdock-core = { path = "../core" }
+spitzli-control-plane = { path = "../control-plane" }
+spitzli-access = { path = "../access" }
+spitzli-core = { path = "../core" }
 axum.workspace = true
 async-trait.workspace = true
 rcgen = "0.14"
-webdock-ids = { path = "../ids" }
+spitzli-ids = { path = "../ids" }
 tempfile = "3"
 rustix = { version = "1", features = ["process"] }
 url.workspace = true
-webdock-agent = { path = "../agent", default-features = false, features = ["kubernetes", "docker"] }
-webdock-mail = { path = "../mail", features = ["test-support"] }
-webdock-browser-session = { path = "../browser-session" }
+spitzli-agent = { path = "../agent", default-features = false, features = ["kubernetes", "docker"] }
+spitzli-mail = { path = "../mail", features = ["test-support"] }
+spitzli-browser-session = { path = "../browser-session" }
 futures-util = "0.3"
 bollard = "0.21"
 base64 = "0.22"
-webdock-identity = { path = "../identity" }
+spitzli-identity = { path = "../identity" }
 totp-rs = { version = "=6.0.0", features = ["otpauth"] }
 uuid = { version = "1", features = ["v4"] }
 kube = { version = "4.2.0", default-features = false, features = ["client", "config", "rustls-tls", "ring"] }

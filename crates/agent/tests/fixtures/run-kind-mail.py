@@ -91,7 +91,7 @@ try:
                 execute('ctr', '--namespace', 'k8s.io', 'images', 'tag', sources[0], image)
             cached = execute('crictl', 'inspecti', image)
         assert image in json.loads(cached.stdout)['status']['repoDigests']
-    built = subprocess.run(['cargo', 'test', '-p', 'webdock-agent', '--test', 'mail_kubernetes_owned', '--no-run', '--locked', '--message-format=json'], check=True, capture_output=True, text=True)
+    built = subprocess.run(['cargo', 'test', '-p', 'spitzli-agent', '--test', 'mail_kubernetes_owned', '--no-run', '--locked', '--message-format=json'], check=True, capture_output=True, text=True)
     executables = [row['executable'] for line in built.stdout.splitlines() if (row := json.loads(line)).get('reason') == 'compiler-artifact' and row.get('target', {}).get('name') == 'mail_kubernetes_owned' and row.get('executable')]
     assert len(executables) == 1
     selected = {'apiVersion': 'v1', 'kind': 'Config', 'clusters': [{'name': context['cluster'], 'cluster': {**cluster, 'server': 'https://127.0.0.1:6443'}}], 'users': [{'name': context['user'], 'user': identity}], 'contexts': [{'name': args.context, 'context': context}], 'current-context': args.context}

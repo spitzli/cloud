@@ -3,8 +3,8 @@
 mod fixture;
 use fixture::{AUTH_SECRET, RLS_SECRET};
 use sea_orm::{ConnectionTrait, Database};
-use webdock_identity::{CookiePolicy, IdentityService, RlsSigner};
-use webdock_persistence::postgres::{Limits, Pool};
+use spitzli_identity::{CookiePolicy, IdentityService, RlsSigner};
+use spitzli_persistence::postgres::{Limits, Pool};
 async fn sql(db: &impl ConnectionTrait, text: &str) {
     db.execute_unprepared(text).await.unwrap();
 }
@@ -53,7 +53,7 @@ async fn parity(
     legacy: &IdentityService,
     native: &IdentityService,
     token: &str,
-) -> Option<webdock_identity::Principal> {
+) -> Option<spitzli_identity::Principal> {
     let a = legacy.authenticate_cookie(&cookie(token)).await.unwrap();
     let b = native.authenticate_cookie(&cookie(token)).await.unwrap();
     assert_eq!(
@@ -464,8 +464,8 @@ async fn native_management_interoperates_with_operator_mfa_and_passkeys() {
     operator_security_flow(true).await;
 }
 async fn operator_security_flow(management: bool) {
+    use spitzli_identity::{MfaProof, PasswordAuthentication, SecretKeys};
     use webauthn_authenticator_rs::{WebauthnAuthenticator, softpasskey::SoftPasskey};
-    use webdock_identity::{MfaProof, PasswordAuthentication, SecretKeys};
     let f = fixture::Fixture::start().await;
     let origin = url::Url::parse("https://auth.example.test").unwrap();
     let service = service(&f, true).await;
@@ -477,9 +477,9 @@ async fn operator_security_flow(management: bool) {
     };
     let service = service
         .with_allocator(std::sync::Arc::new(
-            webdock_persistence::IdAllocator::connect_native(
+            spitzli_persistence::IdAllocator::connect_native(
                 &f.bootstrap_url,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
                 "webdock_auth_bootstrap",
                 false,
             )

@@ -9,9 +9,9 @@ pub(super) struct Context<'a> {
     pub business: &'a DatabaseConnection,
     pub native: &'a str,
     pub secrets: &'a Value,
-    pub keys: &'a webdock_identity::SecretKeys,
-    pub browser: &'a webdock_browser_session::BrowserSessions,
-    pub oauth: &'a webdock_oauth::OAuthService,
+    pub keys: &'a spitzli_identity::SecretKeys,
+    pub browser: &'a spitzli_browser_session::BrowserSessions,
+    pub oauth: &'a spitzli_oauth::OAuthService,
 }
 
 async fn console_session(app: &Router, native: &str) -> String {
@@ -52,8 +52,8 @@ async fn console_session(app: &Router, native: &str) -> String {
 async fn access_token(
     owner: &DatabaseConnection,
     session: &str,
-    keys: &webdock_identity::SecretKeys,
-    browser: &webdock_browser_session::BrowserSessions,
+    keys: &spitzli_identity::SecretKeys,
+    browser: &spitzli_browser_session::BrowserSessions,
 ) -> String {
     // Resolve only this genuinely issued cookie; never fabricate a session or expose token bytes.
     let issued = browser
@@ -127,7 +127,7 @@ async fn revoked(owner: &DatabaseConnection, hash: &str) -> bool {
 
 async fn identity_before_token(
     c: &Context<'_>,
-    credentials: &webdock_oauth::ClientAuthentication,
+    credentials: &spitzli_oauth::ClientAuthentication,
     token: &str,
     hash: &str,
 ) {
@@ -196,7 +196,7 @@ async fn identity_before_token(
 }
 
 pub(super) async fn check(c: Context<'_>) {
-    let credentials = webdock_oauth::ClientAuthentication {
+    let credentials = spitzli_oauth::ClientAuthentication {
         client_id: c.secrets["clientID"].as_str().unwrap().to_owned(),
         client_secret: Some(
             c.secrets["environment"]["WEBDOCK_SSO_CLIENT_SECRET"]
@@ -204,11 +204,11 @@ pub(super) async fn check(c: Context<'_>) {
                 .unwrap()
                 .to_owned(),
         ),
-        method: webdock_oauth::ClientAuthMethod::ClientSecretPost,
+        method: spitzli_oauth::ClientAuthMethod::ClientSecretPost,
     };
     let session = console_session(c.app, c.native).await;
     let token = access_token(c.owner, &session, c.keys, c.browser).await;
-    let hash = webdock_oauth::legacy_token_hash(&token);
+    let hash = spitzli_oauth::legacy_token_hash(&token);
     assert!(!revoked(c.owner, &hash).await);
     identity_before_token(&c, &credentials, &token, &hash).await;
     let guard = c.auth.begin().await.unwrap();
@@ -317,13 +317,13 @@ pub(super) async fn refresh_regression(
     app: &Router,
     owner: &DatabaseConnection,
     native: &str,
-    oauth: &webdock_oauth::OAuthService,
+    oauth: &spitzli_oauth::OAuthService,
 ) {
     tokio::time::timeout(Duration::from_secs(10), async {
-        let client = oauth.provision_client(owner, webdock_oauth::ClientRegistration {
+        let client = oauth.provision_client(owner, spitzli_oauth::ClientRegistration {
             name:"Owned refresh regression".into(), redirect_uris:vec!["https://refresh.example.test/callback".into()],
             post_logout_redirect_uris:vec![], scopes:vec!["openid".into(),"profile".into(),"email".into(),"offline_access".into()],
-            auth_method:webdock_oauth::ClientAuthMethod::ClientSecretPost, allow_refresh:true, skip_consent:true, purpose:webdock_oauth::ClientPurpose::Portal,
+            auth_method:spitzli_oauth::ClientAuthMethod::ClientSecretPost, allow_refresh:true, skip_consent:true, purpose:spitzli_oauth::ClientPurpose::Portal,
         }).await.unwrap();
         let secret=client.client_secret.as_deref().unwrap();
         let mut authorize=url::Url::parse(&format!("{AUTH}/api/auth/oauth2/authorize")).unwrap();

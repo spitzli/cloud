@@ -1,9 +1,9 @@
-use std::collections::HashMap;
-use webdock_core::{
+use spitzli_core::{
     config::PlatformConfig,
     features::{FeatureSet, OperationKind},
     id::RecordId,
 };
+use std::collections::HashMap;
 
 #[test]
 fn identifiers_preserve_full_signed_bigint_range_as_json_strings() {

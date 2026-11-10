@@ -14,7 +14,7 @@ struct Args {
 #[tokio::main]
 async fn main() -> ExitCode {
     let args = Args::parse();
-    match webdock_control_plane::bootstrap::bootstrap_operator(
+    match spitzli_control_plane::bootstrap::bootstrap_operator(
         &std::env::vars().collect(),
         &args.target,
         &args.config,
@@ -32,7 +32,7 @@ async fn main() -> ExitCode {
             }
             ExitCode::SUCCESS
         }
-        Err(webdock_control_plane::bootstrap::BootstrapError::CommitUncertain) => {
+        Err(spitzli_control_plane::bootstrap::BootstrapError::CommitUncertain) => {
             eprintln!(
                 "operator_bootstrap_commit_uncertain: retain private output and inspect recorded IDs before retrying"
             );

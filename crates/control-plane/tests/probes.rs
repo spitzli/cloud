@@ -4,10 +4,10 @@ use axum::{
     http::{Request, StatusCode},
 };
 use sea_orm::DatabaseConnection;
+use spitzli_control_plane::http::{Services, build_app_with_domains};
+use spitzli_core::config::PlatformConfig;
 use std::{collections::HashMap, process::Command};
 use tower::ServiceExt;
-use webdock_control_plane::http::{Services, build_app_with_domains};
-use webdock_core::config::PlatformConfig;
 
 #[tokio::test]
 async fn rendered_native_probes_pass_the_canonical_host_boundary() {

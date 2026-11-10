@@ -3,10 +3,10 @@ use super::*;
 use crate::mail::{client::Client as MailClient, engine, tls};
 use kube::api::DynamicObject;
 use serde_json::{Value, json};
-use std::{net::Ipv4Addr, time::Duration};
-use webdock_agent_protocol::mail::{
+use spitzli_agent_protocol::mail::{
     MailAction, MailCheckpoint, MailEdition, MailMaterial, MailProof,
 };
+use std::{net::Ipv4Addr, time::Duration};
 pub(super) fn recovery_env(pod: &Value) -> bool {
     pod["containers"][0]["env"].as_array().is_some_and(|rows| {
         rows.iter()

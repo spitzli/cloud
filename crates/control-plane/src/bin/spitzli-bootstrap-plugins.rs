@@ -13,7 +13,7 @@ struct Args {
 #[tokio::main]
 async fn main() -> ExitCode {
     let args = Args::parse();
-    match webdock_control_plane::plugin_bootstrap::bootstrap_plugins(
+    match spitzli_control_plane::plugin_bootstrap::bootstrap_plugins(
         &std::env::vars().collect(),
         &args.target,
         &args.config,

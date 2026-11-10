@@ -1,6 +1,7 @@
 //! Independent operator-installed admitted-set issuer. No signing key is an API field.
 use crate::{Result, error};
 use base64::{Engine, engine::general_purpose::STANDARD};
+use spitzli_agent_protocol::recovery::custody::{AdmittedRecoverySet, SignedDocument};
 use std::{
     io::Write,
     os::unix::fs::{MetadataExt, OpenOptionsExt, PermissionsExt},
@@ -8,7 +9,6 @@ use std::{
     process::{Command, Stdio},
     time::{Duration, Instant},
 };
-use webdock_agent_protocol::recovery::custody::{AdmittedRecoverySet, SignedDocument};
 pub struct RecoverySigner {
     key: PathBuf,
     directory: PathBuf,

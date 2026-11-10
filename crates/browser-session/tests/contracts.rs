@@ -1,8 +1,8 @@
-use webdock_browser_session::{BrowserConfig, safe_return_to};
+use spitzli_browser_session::{BrowserConfig, safe_return_to};
 
 #[test]
 fn local_session_authority_preserves_wire_shape_and_rejects_browser_fields() {
-    use webdock_browser_session::StoredAuthority;
+    use spitzli_browser_session::StoredAuthority;
     let wire = serde_json::json!({"kind": "local-session"});
     let authority: StoredAuthority = serde_json::from_value(wire.clone()).unwrap();
     assert_eq!(serde_json::to_value(authority).unwrap(), wire);

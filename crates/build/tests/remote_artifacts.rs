@@ -1,10 +1,10 @@
 #![cfg(feature = "worker")]
-use std::{collections::BTreeMap, os::unix::fs::PermissionsExt};
-use webdock_build::{
+use spitzli_build::{
     artifact::{Archive, ArtifactStore, MAX_OUTPUT},
     remote::RemoteArtifacts,
 };
-use webdock_object_storage::Store;
+use spitzli_object_storage::Store;
+use std::{collections::BTreeMap, os::unix::fs::PermissionsExt};
 
 fn store() -> (tempfile::TempDir, ArtifactStore) {
     let directory = tempfile::tempdir().unwrap();

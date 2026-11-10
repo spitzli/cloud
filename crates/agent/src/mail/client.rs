@@ -2,8 +2,8 @@
 use base64::{Engine, engine::general_purpose::STANDARD};
 use serde::{Deserialize, de::DeserializeOwned};
 use serde_json::{Value, json};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{net::Ipv4Addr, time::Duration};
-use webdock_supervisor::{ExecutionError, Result};
 
 pub(super) struct Client {
     http: reqwest::Client,

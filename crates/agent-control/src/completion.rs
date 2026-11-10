@@ -1,6 +1,6 @@
 //! Decode before classifying stale custody; stale does not excuse malformed receipts.
 use super::*;
-use webdock_hosting::{DeliveryCommand, DeliveryDisposition};
+use spitzli_hosting::{DeliveryCommand, DeliveryDisposition};
 pub(super) enum Completion {
     Mutation(ObservedState),
     Read(Value),

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import sharp from "sharp";
-import { createBridgeTransport } from "@webdock/cms-bridge/client";
+import { createBridgeTransport } from "@spitzli/cms-bridge/client";
 const phase = process.env.CMS_IMAGE_ACCEPTANCE_PHASE;
 const expectedPath = "/data/acceptance-image.json";
 test(

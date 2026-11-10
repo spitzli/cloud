@@ -1,13 +1,5 @@
 use clap::Parser;
-use std::{
-    path::PathBuf,
-    sync::{
-        Arc,
-        atomic::{AtomicBool, Ordering},
-    },
-    time::Duration,
-};
-use webdock_agent::{
+use spitzli_agent::{
     config::read_private,
     storage::{
         StorageGuard, StorageKind, StoragePool,
@@ -16,8 +8,16 @@ use webdock_agent::{
         build_queue::BuildVolumeQueue,
     },
 };
-use webdock_agent_protocol::build_storage::SignedBuildStorageReservation;
-use webdock_supervisor::{ExecutionError, Result};
+use spitzli_agent_protocol::build_storage::SignedBuildStorageReservation;
+use spitzli_supervisor::{ExecutionError, Result};
+use std::{
+    path::PathBuf,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+    time::Duration,
+};
 
 #[derive(Parser)]
 #[command(about = "Node-only signed fixed build-volume reconciler; no ambient cluster credentials")]

@@ -1,10 +1,10 @@
 import { clusterLabel } from "./cluster-label";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { HostingCreate } from "./HostingCreate";
 import { useQuery } from "@tanstack/react-query";
-import { formatResource } from "@webdock/hosting-contracts";
+import { formatResource } from "@spitzli/hosting-contracts";
 import { useApi, useSession } from "./context";
 import { useHostingCommand } from "./hosting-client";
 import {

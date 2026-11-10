@@ -1,4 +1,4 @@
-use webdock_identity::NeonAuthClient;
+use spitzli_identity::NeonAuthClient;
 #[test]
 fn managed_auth_has_one_fixed_tls_endpoint_and_trusted_application_origin() {
     assert!(

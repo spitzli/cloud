@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/adapter-hosting-vercel",
+  "name": "@spitzli/adapter-hosting-vercel",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,7 +8,7 @@
     "./transport": "./src/transport.ts"
   },
   "dependencies": {
-    "@webdock/hosting-provider-contracts": "*"
+    "@spitzli/hosting-provider-contracts": "*"
   },
   "license": "Apache-2.0"
 }

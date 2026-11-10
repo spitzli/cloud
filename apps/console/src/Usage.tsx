@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useI18n } from "@webdock/i18n/react";
-import { allowanceSchema, formatResource, hostingDimensions, hostingLabels } from "@webdock/hosting-contracts";
+import { useI18n } from "@spitzli/i18n/react";
+import { allowanceSchema, formatResource, hostingDimensions, hostingLabels } from "@spitzli/hosting-contracts";
 import { z } from "zod";
 import { useApi } from "./context";
 import { Empty, Failure, Loading } from "./common";

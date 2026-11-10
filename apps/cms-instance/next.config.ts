@@ -5,11 +5,11 @@ const config: NextConfig = {
   output: "standalone",
   outputFileTracingRoot: path.resolve(process.cwd(), "../.."),
   transpilePackages: [
-    "@webdock/cms-ui",
-    "@webdock/cms-bridge",
-    "@webdock/payload-sso",
-    "@webdock/instance-kit",
-    "@webdock/i18n",
+    "@spitzli/cms-ui",
+    "@spitzli/cms-bridge",
+    "@spitzli/payload-sso",
+    "@spitzli/instance-kit",
+    "@spitzli/i18n",
   ],
   turbopack: { root: path.resolve(process.cwd(), "../..") },
 };

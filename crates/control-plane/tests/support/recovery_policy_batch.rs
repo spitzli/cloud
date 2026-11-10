@@ -2,7 +2,7 @@
 //! Link only once the real daemon has advertised an operator-installed recovery profile,
 //! then stop that owned daemon before this driver claims work (no competing executor).
 use super::*;
-use webdock_agent_protocol::{self as wire, recovery::RecoveryClaim};
+use spitzli_agent_protocol::{self as wire, recovery::RecoveryClaim};
 use wire::recovery_control_client::RecoveryControlClient;
 
 pub(super) struct PolicyBatch<'a> {
@@ -178,7 +178,7 @@ pub(super) async fn admission_and_replay(c: PolicyBatch<'_>) {
     assert_eq!(reservation["state"], "reserved");
     eprintln!("recovery_component policy_admission_replay_capacity=true");
 
-    let channel = webdock_plugin_runtime::unix_channel(c.control_path)
+    let channel = spitzli_plugin_runtime::unix_channel(c.control_path)
         .await
         .unwrap();
     let mut client = RecoveryControlClient::new(channel);
@@ -251,7 +251,7 @@ pub(super) async fn admission_and_replay(c: PolicyBatch<'_>) {
     // Drop a committed result and reconnect; replay must ACK identical stored bytes.
     drop(committed);
     drop(client);
-    let channel = webdock_plugin_runtime::unix_channel(c.control_path)
+    let channel = spitzli_plugin_runtime::unix_channel(c.control_path)
         .await
         .unwrap();
     let mut client = RecoveryControlClient::new(channel);

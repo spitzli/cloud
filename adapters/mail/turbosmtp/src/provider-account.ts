@@ -1,5 +1,5 @@
 import type { Fetch } from "./http";
-import { MailError } from "@webdock/mail-contracts/errors";
+import { MailError } from "@spitzli/mail-contracts/errors";
 export type TurboSendingCredential = {
   consumerKey: string;
   consumerSecret: string;

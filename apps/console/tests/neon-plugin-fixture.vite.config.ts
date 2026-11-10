@@ -9,7 +9,7 @@ export default defineConfig({
   cacheDir: fileURLToPath(new URL("../../../.runtime-test/vite-cache/neon-plugin-fixture", import.meta.url)),
   plugins: [react(), tailwind()],
   resolve: {
-    alias: { "@webdock/plugin-ui": fileURLToPath(new URL("../src/plugins/sdk.ts", import.meta.url)) },
+    alias: { "@spitzli/plugin-ui": fileURLToPath(new URL("../src/plugins/sdk.ts", import.meta.url)) },
     dedupe: ["react", "react-dom", "@tanstack/react-query", "zod"],
   },
   build: {

@@ -13,7 +13,7 @@ impl ExportRole {
         if kind != "dedicated" {
             return Ok(None);
         }
-        if !webdock_export_protocol::decimal(id) || database != format!("db_{id}") {
+        if !spitzli_export_protocol::decimal(id) || database != format!("db_{id}") {
             return Err("Invalid dedicated export database");
         }
         let name = format!("wd_export_{id}");
@@ -47,6 +47,6 @@ impl ExportRole {
         }))
     }
     pub fn password(id: &str, application_password: &str) -> Result<String, &'static str> {
-        webdock_export_protocol::readonly_password(id, application_password)
+        spitzli_export_protocol::readonly_password(id, application_password)
     }
 }

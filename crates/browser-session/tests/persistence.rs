@@ -1,8 +1,8 @@
 use sea_orm::{ConnectOptions, ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
+use spitzli_browser_session::*;
+use spitzli_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
+use spitzli_oauth::*;
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_browser_session::*;
-use webdock_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
-use webdock_oauth::*;
 fn guarded(key: &str) -> String {
     let raw = std::env::var(key).unwrap();
     let u = url::Url::parse(&raw).unwrap();
@@ -50,9 +50,9 @@ async fn confidential_browser_handoff_is_one_use_origin_bound_and_live() {
         .acquire_timeout(std::time::Duration::from_millis(750));
     let db = Database::connect(options).await.unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -490,18 +490,18 @@ async fn confidential_browser_handoff_is_one_use_origin_bound_and_live() {
         .await
         .unwrap();
     let business = Database::connect(guarded("DATABASE_URL")).await.unwrap();
-    let access = webdock_access::AccessService::new(
+    let access = spitzli_access::AccessService::new(
         business,
         db.clone(),
         identity.clone(),
         allocator.clone(),
-        webdock_identity::RlsSigner::new(
+        spitzli_identity::RlsSigner::new(
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             "webdock_auth_runtime",
         )
         .unwrap(),
         keys.clone(),
-        webdock_access::AccessConfig {
+        spitzli_access::AccessConfig {
             auth_origin: url::Url::parse("https://auth.example.invalid").unwrap(),
             console_origins: vec![],
             allow_local_http: false,
@@ -615,7 +615,7 @@ async fn confidential_browser_handoff_is_one_use_origin_bound_and_live() {
         access
             .manage_access_as(
                 &preview,
-                webdock_access::AccessCommand::CreateOrganization {
+                spitzli_access::AccessCommand::CreateOrganization {
                     name: "Denied".into()
                 }
             )
@@ -639,7 +639,7 @@ async fn confidential_browser_handoff_is_one_use_origin_bound_and_live() {
         .start_customer_scope_as(
             &op_session.principal,
             &customer,
-            webdock_access::PreviewMode::Owner,
+            spitzli_access::PreviewMode::Owner,
         )
         .await
         .unwrap();

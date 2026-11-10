@@ -18,8 +18,8 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 import { Window } from "happy-dom";
-import { I18nProvider } from "@webdock/i18n/react";
-import { commandSchema } from "@webdock/hosting-contracts";
+import { I18nProvider } from "@spitzli/i18n/react";
+import { commandSchema } from "@spitzli/hosting-contracts";
 import { ApiClient, type Session } from "../src/api";
 import { ApiContext, SessionContext } from "../src/context";
 import { appSchema } from "../src/hosting-contracts";

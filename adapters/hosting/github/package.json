@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/adapter-hosting-github",
+  "name": "@spitzli/adapter-hosting-github",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,8 +7,8 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@webdock/hosting-contracts": "*",
-    "@webdock/hosting-provider-contracts": "*"
+    "@spitzli/hosting-contracts": "*",
+    "@spitzli/hosting-provider-contracts": "*"
   },
   "license": "Apache-2.0"
 }

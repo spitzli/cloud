@@ -3,7 +3,7 @@ use super::executor::*;
 use super::*;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use serde_json::{Value, json};
-use webdock_agent_protocol::database::{
+use spitzli_agent_protocol::database::{
     DatabaseBackupControls, DatabaseBackupProof, DatabaseBackupResources, DatabaseCheckpointPhase,
     DatabaseClaim, DatabaseCompletionProof, DatabaseExecutionPhase, DatabaseObjectStoreMaterial,
     DatabaseProofState,

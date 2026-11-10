@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_mail_protocol::native_control::{NativeControlClient, decode_command};
+use spitzli_mail_protocol::native_control::{NativeControlClient, decode_command};
 #[test]
 fn strict_control_json_and_identity_limits() {
     assert!(decode_command(br#"{"action":"send.claim"}"#).is_ok());
@@ -31,16 +31,16 @@ struct Slow {
     calls: std::sync::atomic::AtomicUsize,
 }
 #[async_trait::async_trait]
-impl webdock_mail_protocol::native_control::Control for Slow {
+impl spitzli_mail_protocol::native_control::Control for Slow {
     async fn call(
         &self,
-        peer: &webdock_plugin_runtime::PeerIdentity,
+        peer: &spitzli_plugin_runtime::PeerIdentity,
         _generation: u64,
         _command: serde_json::Value,
-    ) -> Result<serde_json::Value, webdock_mail_protocol::native_control::ControlError> {
+    ) -> Result<serde_json::Value, spitzli_mail_protocol::native_control::ControlError> {
         assert!(matches!(
             peer,
-            webdock_plugin_runtime::PeerIdentity::Unix { .. }
+            spitzli_plugin_runtime::PeerIdentity::Unix { .. }
         ));
         self.calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         tokio::time::sleep(std::time::Duration::from_secs(20)).await;
@@ -59,9 +59,9 @@ async fn actual_unix_client_deadline_is_bounded_and_never_retries() {
         std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     }
     let path = dir.path().join("control.sock");
-    let mut socket = webdock_plugin_runtime::UnixSocket::bind(&path).unwrap();
+    let mut socket = spitzli_plugin_runtime::UnixSocket::bind(&path).unwrap();
     let incoming = socket.incoming().unwrap();
-    let service = webdock_mail_protocol::native_control::ControlServer::service(control.clone());
+    let service = spitzli_mail_protocol::native_control::ControlServer::service(control.clone());
     let (stop, stopped) = tokio::sync::oneshot::channel();
     let task = tokio::spawn(async move {
         tonic::transport::Server::builder()
@@ -74,7 +74,7 @@ async fn actual_unix_client_deadline_is_bounded_and_never_retries() {
         drop(socket);
     });
     let client = NativeControlClient::new(
-        webdock_plugin_runtime::unix_channel(&path).await.unwrap(),
+        spitzli_plugin_runtime::unix_channel(&path).await.unwrap(),
         1,
     )
     .unwrap();

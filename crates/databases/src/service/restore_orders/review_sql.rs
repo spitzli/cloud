@@ -340,10 +340,10 @@ async fn component_fence_owner_savepoints_and_role_privileges() {
     let owner = connect(&i.owner_url).await;
     let worker = connect(&i.worker_url).await;
     let business = connect(&i.business_url).await;
-    webdock_persistence::connection::verify_runtime_role(&worker, "webdock_worker_runtime")
+    spitzli_persistence::connection::verify_runtime_role(&worker, "webdock_worker_runtime")
         .await
         .unwrap();
-    webdock_persistence::connection::verify_runtime_role(&business, "webdock_auth_runtime")
+    spitzli_persistence::connection::verify_runtime_role(&business, "webdock_auth_runtime")
         .await
         .unwrap();
     assert_eq!(value(&owner,"SELECT to_jsonb(has_database_privilege('webdock_platform_owner',current_database(),'TEMP')) AS value",vec![]).await,true,"no silent TEMP grant");

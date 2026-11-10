@@ -1,6 +1,6 @@
 //! Native operator installation HTTP boundary and enrolled-agent adapter.
 use super::*;
-use webdock_agent_protocol::plugin::{
+use spitzli_agent_protocol::plugin::{
     PluginRuntimeCheckpoint, PluginRuntimeClaim, PluginRuntimeCompletion, PluginRuntimeLease,
     PluginRuntimeSpec,
 };
@@ -44,7 +44,7 @@ async fn update(
 ) -> Response {
     let result: Result<Response, ApiFailure> = async {
         let actor = actor(&state, &headers).await?;
-        let input: webdock_plugin_host::UpdateRequest =
+        let input: spitzli_plugin_host::UpdateRequest =
             serde_json::from_value(json_body(&body, &headers)?).map_err(|_| {
                 reject(
                     StatusCode::BAD_REQUEST,
@@ -70,7 +70,7 @@ async fn recover_callback(
 ) -> Response {
     let result: Result<Response, ApiFailure> = async {
         let actor = actor(&state, &headers).await?;
-        let input: webdock_plugin_host::UpdateRequest =
+        let input: spitzli_plugin_host::UpdateRequest =
             serde_json::from_value(json_body(&body, &headers)?).map_err(|_| {
                 reject(
                     StatusCode::BAD_REQUEST,
@@ -101,7 +101,7 @@ async fn rollback(
 ) -> Response {
     let result: Result<Response, ApiFailure> = async {
         let actor = actor(&state, &headers).await?;
-        let input: webdock_plugin_host::RollbackRequest =
+        let input: spitzli_plugin_host::RollbackRequest =
             serde_json::from_value(json_body(&body, &headers)?).map_err(|_| {
                 reject(
                     StatusCode::BAD_REQUEST,
@@ -139,7 +139,7 @@ async fn install(
 ) -> Response {
     let result: Result<Response, ApiFailure> = async {
         let actor = actor(&state, &headers).await?;
-        let request: webdock_plugin_host::InstallRequest =
+        let request: spitzli_plugin_host::InstallRequest =
             serde_json::from_value(json_body(&body, &headers)?).map_err(|_| {
                 reject(
                     StatusCode::BAD_REQUEST,
@@ -211,13 +211,13 @@ fn status(error: PluginError) -> tonic::Status {
     }
 }
 #[tonic::async_trait]
-impl webdock_agent_control::PluginRuntimeBackend for AgentBackend {
+impl spitzli_agent_control::PluginRuntimeBackend for AgentBackend {
     fn supported_spec_version(&self) -> u32 {
         2
     }
     async fn poll(
         &self,
-        agent: &webdock_hosting::AgentIdentity,
+        agent: &spitzli_hosting::AgentIdentity,
         max_spec_version: u32,
     ) -> Result<Option<PluginRuntimeClaim>, tonic::Status> {
         self.host
@@ -227,7 +227,7 @@ impl webdock_agent_control::PluginRuntimeBackend for AgentBackend {
     }
     async fn guard(
         &self,
-        agent: &webdock_hosting::AgentIdentity,
+        agent: &spitzli_hosting::AgentIdentity,
         spec: &PluginRuntimeSpec,
         lease: &PluginRuntimeLease,
     ) -> Result<bool, tonic::Status> {
@@ -238,7 +238,7 @@ impl webdock_agent_control::PluginRuntimeBackend for AgentBackend {
     }
     async fn checkpoint(
         &self,
-        agent: &webdock_hosting::AgentIdentity,
+        agent: &spitzli_hosting::AgentIdentity,
         spec: &PluginRuntimeSpec,
         lease: &PluginRuntimeLease,
         checkpoint: &PluginRuntimeCheckpoint,
@@ -250,7 +250,7 @@ impl webdock_agent_control::PluginRuntimeBackend for AgentBackend {
     }
     async fn complete(
         &self,
-        agent: &webdock_hosting::AgentIdentity,
+        agent: &spitzli_hosting::AgentIdentity,
         spec: &PluginRuntimeSpec,
         lease: &PluginRuntimeLease,
         completion: &PluginRuntimeCompletion,

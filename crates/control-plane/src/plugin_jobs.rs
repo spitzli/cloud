@@ -1,9 +1,9 @@
 //! Native durable job dispatch. Database custody ends before contacting a plugin runtime.
 use super::PluginEndpoints;
+use spitzli_plugin_host::JobLease;
+use spitzli_plugin_protocol::{ErrorCode, PluginError, Result};
+use spitzli_plugin_runtime::wire::{DescribeRequest, HealthRequest, RunJobRequest};
 use std::time::Duration;
-use webdock_plugin_host::JobLease;
-use webdock_plugin_protocol::{ErrorCode, PluginError, Result};
-use webdock_plugin_runtime::wire::{DescribeRequest, HealthRequest, RunJobRequest};
 
 fn unavailable() -> PluginError {
     PluginError::new(ErrorCode::Unavailable, "Plugin job runtime unavailable")

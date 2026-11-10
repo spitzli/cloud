@@ -10,7 +10,7 @@ use axum::http::StatusCode;
 use rmcp::model::Tool;
 use serde::Deserialize;
 use serde_json::{Value, json};
-use webdock_oauth::McpAuthentication;
+use spitzli_oauth::McpAuthentication;
 
 pub(crate) fn tools(
     state: &ServiceState,
@@ -22,16 +22,16 @@ pub(crate) fn tools(
         Resource::Registry => registry_tools(write),
         Resource::Hosting => {
             let mut definitions = if state.config.features.state("hosting")
-                != webdock_core::features::FeatureState::Disabled
+                != spitzli_core::features::FeatureState::Disabled
             {
                 hosting_tools(write)
             } else {
                 vec![]
             };
             if state.config.features.state("databases")
-                != webdock_core::features::FeatureState::Disabled
+                != spitzli_core::features::FeatureState::Disabled
             {
-                definitions.extend(webdock_databases::database_read_tools());
+                definitions.extend(spitzli_databases::database_read_tools());
             }
             definitions
         }
@@ -66,7 +66,7 @@ fn registry_tools(write: bool) -> Vec<Value> {
     tools
 }
 fn hosting_tools(write: bool) -> Vec<Value> {
-    let document = webdock_hosting::contracts::command_document();
+    let document = spitzli_hosting::contracts::command_document();
     resource_hosting::TOOLS.iter().filter(|(action,_)|write||resource_hosting::is_read(action)).filter_map(|(action,name)|{
         let mut schema=document["oneOf"].as_array()?.iter().find(|s|s["properties"]["action"]["const"]==*action)?.clone();
         schema["properties"].as_object_mut()?.remove("action");
@@ -165,7 +165,7 @@ mod database_discovery_tests {
         ServiceState {
             neon_connections: None,
             realtime: None,
-            config: webdock_core::config::PlatformConfig::from_map(
+            config: spitzli_core::config::PlatformConfig::from_map(
                 &std::collections::HashMap::from([("WEBDOCK_FEATURES".into(), features.into())]),
             )
             .unwrap(),
@@ -198,7 +198,7 @@ mod database_discovery_tests {
                     .map(|t| t.name.as_ref())
                     .collect::<Vec<_>>();
                 assert_eq!(names.len(), 7);
-                for (_, name) in webdock_databases::DATABASE_READ_TOOLS {
+                for (_, name) in spitzli_databases::DATABASE_READ_TOOLS {
                     assert!(names.contains(name));
                 }
             }

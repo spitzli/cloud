@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { type DatabaseView, type DatabaseBackupPolicyView } from "@webdock/hosting-contracts";
-import { msgid } from "@webdock/i18n";
-import { useI18n } from "@webdock/i18n/react";
+import { type DatabaseView, type DatabaseBackupPolicyView } from "@spitzli/hosting-contracts";
+import { msgid } from "@spitzli/i18n";
+import { useI18n } from "@spitzli/i18n/react";
 import { useApi, useSession } from "./context";
 import { sessionCacheScope } from "./session-cache";
 import * as ui from "./ui";

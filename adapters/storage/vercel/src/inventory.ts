@@ -1,7 +1,7 @@
 import { list } from "@vercel/blob";
-import { StorageUsageError } from "@webdock/module-storage/server/errors";
-import { normalizeStoragePrefix } from "@webdock/module-storage/server/validation";
-import type { StorageDependencies } from "@webdock/module-storage/server/ports";
+import { StorageUsageError } from "@spitzli/module-storage/server/errors";
+import { normalizeStoragePrefix } from "@spitzli/module-storage/server/validation";
+import type { StorageDependencies } from "@spitzli/module-storage/server/ports";
 const fail = (message: string): never => {
   throw new StorageUsageError(message);
 };

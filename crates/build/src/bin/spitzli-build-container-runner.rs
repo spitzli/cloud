@@ -1,19 +1,19 @@
 //! Disposable nonroot container entrypoint; all transfers happen through explicit files.
 use serde::Deserialize;
 use serde_json::json;
-use std::{
-    collections::BTreeMap,
-    io::Write,
-    os::unix::fs::{OpenOptionsExt, PermissionsExt},
-    path::{Path, PathBuf},
-};
-use webdock_build::{
+use spitzli_build::{
     Error, Result,
     container_runner::{
         BuildSecrets, ContainerBuildRequest, SourceArchive, TrustedTools, read_input_file,
         require_container, run,
     },
     execution::MAX_LOG,
+};
+use std::{
+    collections::BTreeMap,
+    io::Write,
+    os::unix::fs::{OpenOptionsExt, PermissionsExt},
+    path::{Path, PathBuf},
 };
 fn fail(code: &'static str) -> Error {
     Error {
@@ -39,7 +39,7 @@ impl Paths {
             request: "/workspace/input/request.json".into(),
             metadata: "/workspace/input/source.json".into(),
             source: "/workspace/input/source.tar".into(),
-            tools: "/etc/webdock-build/tools.json".into(),
+            tools: "/etc/spitzli-build/tools.json".into(),
             secrets: "/workspace/input/secrets.json".into(),
             output: "/workspace/output".into(),
             cancel: "/workspace/cancel".into(),
@@ -153,11 +153,11 @@ fn execute(paths: &Paths) -> Result<()> {
 }
 #[cfg(feature = "worker")]
 fn transfer(mode: &str, mut args: impl Iterator<Item = String>) -> Result<()> {
-    use webdock_build::kubernetes_transfer::{
+    use spitzli_build::kubernetes_transfer::{
         AttemptTransfer, MAX_HANDOFF_BYTES, TransferClient, TransferPolicy,
     };
     let mut config = PathBuf::from("/handoff/attempt.json");
-    let mut policy = PathBuf::from("/etc/webdock-build/transfer-policy.json");
+    let mut policy = PathBuf::from("/etc/spitzli-build/transfer-policy.json");
     let mut directory = PathBuf::from(if mode == "download" {
         "/workspace/input"
     } else {
@@ -225,7 +225,7 @@ fn main() -> std::process::ExitCode {
         let first = arguments.next();
         if first.as_deref() == Some("proxy-url") {
             let path = match arguments.next().as_deref() {
-                None => PathBuf::from("/etc/webdock-build/tools.json"),
+                None => PathBuf::from("/etc/spitzli-build/tools.json"),
                 Some("--tools") => PathBuf::from(
                     arguments
                         .next()

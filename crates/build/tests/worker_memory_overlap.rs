@@ -2,6 +2,14 @@
 #![cfg(all(feature = "local-registry-test", feature = "kubernetes-job"))]
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_build::{
+    artifact::{Archive, ArtifactStore, MAX_OUTPUT},
+    container_runner::{ContainerBuildRequest, Strategy},
+    execution::Limits,
+    kubernetes_transfer::{AttemptTransfer, MAX_TRANSFER_RESULT, ResultIdentity, verify_result},
+    kubernetes_upload::{AttemptUploadGateway, router},
+    publisher::{PublicationGuard, RegistryPublisher},
+};
 use std::{
     collections::BTreeMap,
     fs::File,
@@ -12,14 +20,6 @@ use std::{
         atomic::{AtomicUsize, Ordering},
     },
     time::{Duration, Instant},
-};
-use webdock_build::{
-    artifact::{Archive, ArtifactStore, MAX_OUTPUT},
-    container_runner::{ContainerBuildRequest, Strategy},
-    execution::Limits,
-    kubernetes_transfer::{AttemptTransfer, MAX_TRANSFER_RESULT, ResultIdentity, verify_result},
-    kubernetes_upload::{AttemptUploadGateway, router},
-    publisher::{PublicationGuard, RegistryPublisher},
 };
 const FILESYSTEM_BYTES: u64 = 640 * 1024 * 1024;
 fn write(root: &Path, name: &str, value: &Value) {
@@ -100,7 +100,7 @@ struct Guard {
 }
 #[async_trait::async_trait]
 impl PublicationGuard for Guard {
-    async fn check(&self) -> webdock_build::Result<()> {
+    async fn check(&self) -> spitzli_build::Result<()> {
         let checks = self.checks.fetch_add(1, Ordering::SeqCst) + 1;
         if checks == 1 {
             // The real publisher holds parsed maximum OCI buffers here; no dummy allocation.

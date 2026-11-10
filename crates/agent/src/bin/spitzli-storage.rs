@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
+use spitzli_agent::storage::{StorageKind, StoragePool, serve_kind_with_recovery};
 use std::path::PathBuf;
-use webdock_agent::storage::{StorageKind, StoragePool, serve_kind_with_recovery};
 #[derive(Parser)]
 #[command(about = "Separately privileged Webdock fixed filesystem helper")]
 struct Arguments {
@@ -56,10 +56,10 @@ async fn main() -> std::process::ExitCode {
         }
         Action::BuildApply { request, trust } => {
             if kind != StorageKind::Builds {
-                Err(webdock_supervisor::ExecutionError::Denied)
+                Err(spitzli_supervisor::ExecutionError::Denied)
             } else {
                 StoragePool::open_kind(&arguments.config, kind).and_then(|mut pool| {
-                    let guard = webdock_agent::storage::StorageGuard::new(
+                    let guard = spitzli_agent::storage::StorageGuard::new(
                         chrono::Utc::now() + chrono::Duration::seconds(120),
                         std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),
                     );
@@ -67,7 +67,7 @@ async fn main() -> std::process::ExitCode {
                     println!(
                         "{}",
                         serde_json::to_string(&result)
-                            .map_err(|_| webdock_supervisor::ExecutionError::Runtime)?
+                            .map_err(|_| spitzli_supervisor::ExecutionError::Runtime)?
                     );
                     Ok(())
                 })

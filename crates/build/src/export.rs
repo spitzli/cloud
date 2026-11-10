@@ -3,8 +3,8 @@ use super::repository::{PluginRepositoryProvider, RepositoryAdmission};
 use super::*;
 use sea_orm::DatabaseTransaction;
 use serde_json::{Value, json};
-use webdock_export_protocol::{SourceKind, SourceRef, fingerprint};
-use webdock_plugin_host::{ExportJob, InvocationScope};
+use spitzli_export_protocol::{SourceKind, SourceRef, fingerprint};
+use spitzli_plugin_host::{ExportJob, InvocationScope};
 impl RepositoryAdmission {
     async fn export_reference(
         &self,
@@ -27,7 +27,7 @@ impl RepositoryAdmission {
             .policy(
                 plugin,
                 &scope.project_id,
-                webdock_repository_protocol::Action::Resolve,
+                spitzli_repository_protocol::Action::Resolve,
                 &input,
                 true,
             )
@@ -36,7 +36,7 @@ impl RepositoryAdmission {
             return Err(error("repository_scope_changed"));
         }
         if let Some(sha) = &commit {
-            self.policy(plugin,&scope.project_id,webdock_repository_protocol::Action::Archive,&json!({"installationID":source["installation_id"],"repositoryID":source["repository_id"],"commit":sha}),true).await?;
+            self.policy(plugin,&scope.project_id,spitzli_repository_protocol::Action::Archive,&json!({"installationID":source["installation_id"],"repositoryID":source["repository_id"],"commit":sha}),true).await?;
         }
         let hash = fingerprint(&json!([
             scope.customer_id,
@@ -138,7 +138,7 @@ impl RepositoryAdmission {
         };
         observed.commit = Some(commit.clone());
         let bytes = provider.archive(&repository, &commit).await?;
-        if bytes.len() as u64 > webdock_export_protocol::MAX_BYTES {
+        if bytes.len() as u64 > spitzli_export_protocol::MAX_BYTES {
             return Err(error("repository_archive_limit"));
         }
         observed.finished().map_err(|_| error("invalid_source"))?;

@@ -8,10 +8,10 @@ async fn main() -> std::process::ExitCode {
         if args.next().is_some() {
             return Err("unexpected gateway argument");
         }
-        let bytes = webdock_agent::config::read_private(&path, 65536)
+        let bytes = spitzli_agent::config::read_private(&path, 65536)
             .map_err(|_| "private gateway config unavailable")?;
         let config = serde_json::from_slice(&bytes).map_err(|_| "invalid gateway config")?;
-        webdock_agent::recovery::gateway::serve(config)
+        spitzli_agent::recovery::gateway::serve(config)
             .await
             .map_err(|_| "quarantine gateway stopped")
     }

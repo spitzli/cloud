@@ -1,17 +1,17 @@
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement};
-use std::{collections::BTreeMap, sync::Arc};
-use webdock_access::*;
-use webdock_identity::{
+use spitzli_access::*;
+use spitzli_identity::{
     CookiePolicy, IdentityService, PasswordAuthentication, RlsSigner, SecretKeys,
 };
+use std::{collections::BTreeMap, sync::Arc};
 #[derive(Default)]
 struct CaptureDelivery(std::sync::Mutex<Vec<String>>);
 #[async_trait::async_trait]
-impl webdock_identity::Delivery for CaptureDelivery {
+impl spitzli_identity::Delivery for CaptureDelivery {
     async fn deliver(
         &self,
-        request: &webdock_identity::DeliveryRequest,
-    ) -> std::result::Result<(), webdock_identity::DeliveryError> {
+        request: &spitzli_identity::DeliveryRequest,
+    ) -> std::result::Result<(), spitzli_identity::DeliveryError> {
         self.0.lock().unwrap().push(request.url.clone());
         Ok(())
     }
@@ -42,9 +42,9 @@ async fn tenant_invites_roles_and_revocation_preserve_restricted_boundaries() {
     let auth = Database::connect(auth_url.clone()).await.unwrap();
     let business = Database::connect(guarded("DATABASE_URL")).await.unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -700,12 +700,12 @@ async fn tenant_invites_roles_and_revocation_preserve_restricted_boundaries() {
         .id
         .unwrap();
 
-    let oauth = webdock_oauth::OAuthService::new(
+    let oauth = spitzli_oauth::OAuthService::new(
         auth.clone(),
         identity.clone(),
         allocator.clone(),
         Arc::new(keys()),
-        webdock_oauth::OAuthConfig::new(
+        spitzli_oauth::OAuthConfig::new(
             "https://auth.example.invalid/api/auth",
             "https://studio.example.invalid/api/mcp",
             None,
@@ -715,15 +715,15 @@ async fn tenant_invites_roles_and_revocation_preserve_restricted_boundaries() {
     let client_record = oauth
         .provision_client(
             &offline,
-            webdock_oauth::ClientRegistration {
+            spitzli_oauth::ClientRegistration {
                 name: "Access fixture".into(),
                 redirect_uris: vec!["https://site.example.invalid/api/sso/callback".into()],
                 post_logout_redirect_uris: vec![],
                 scopes: vec!["openid".into()],
-                auth_method: webdock_oauth::ClientAuthMethod::None,
+                auth_method: spitzli_oauth::ClientAuthMethod::None,
                 allow_refresh: false,
                 skip_consent: true,
-                purpose: webdock_oauth::ClientPurpose::Organization {
+                purpose: spitzli_oauth::ClientPurpose::Organization {
                     organization_id: created.clone(),
                 },
             },
@@ -733,7 +733,7 @@ async fn tenant_invites_roles_and_revocation_preserve_restricted_boundaries() {
     let client = client_record.client_id;
     let binding = client_record.binding_id.unwrap();
     let oauth_request = || {
-        webdock_oauth::AuthorizationRequest::code(
+        spitzli_oauth::AuthorizationRequest::code(
             client.clone(),
             "https://site.example.invalid/api/sso/callback".into(),
             "openid".into(),
@@ -1254,9 +1254,9 @@ async fn workspace_icons_use_live_tenant_authority() {
     let auth = Database::connect(auth_url.clone()).await.unwrap();
     let business = Database::connect(guarded("DATABASE_URL")).await.unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),

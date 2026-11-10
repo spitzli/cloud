@@ -1,7 +1,7 @@
 import { loadCMSConfig } from "./lib/config.ts";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
-import { projectBridgeUser } from "@webdock/cms-bridge/auth";
-import type { BridgeRole } from "@webdock/cms-bridge/types";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
+import { projectBridgeUser } from "@spitzli/cms-bridge/auth";
+import type { BridgeRole } from "@spitzli/cms-bridge/types";
 import pg from "pg";
 import { verifyMediaBinding } from "./lib/media-storage.ts";
 if (process.env.CMS_MIGRATING !== "true")

@@ -2,6 +2,7 @@ use super::lifecycle::validate_workload;
 use super::*;
 use kube::api::DynamicObject;
 use serde_json::{Value, json};
+use spitzli_agent_protocol::mail::*;
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -10,7 +11,6 @@ use std::{
     },
 };
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use webdock_agent_protocol::mail::*;
 fn fixture() -> (
     MailClaim,
     KubernetesMailConfig,

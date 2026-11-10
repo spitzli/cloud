@@ -1,18 +1,18 @@
 use serde_json::{Value, json};
-use std::{
-    os::unix::fs::PermissionsExt,
-    sync::{
-        Arc, Mutex,
-        atomic::{AtomicBool, AtomicUsize, Ordering},
-    },
-};
-use webdock_mail_runtime::{
+use spitzli_mail_runtime::{
     dispatch::{DispatchTransport, dispatch_one},
     message::{DispatchMessage, PreparedMessage, SendRequest},
     outbox::{PayloadFormat, Receipt, SendLease},
     payload::PrivatePayloadStore,
     provider_transport::{ProviderBinding, ProviderTransport, RoutingTransport},
     send_control::{ControlError, SendControl},
+};
+use std::{
+    os::unix::fs::PermissionsExt,
+    sync::{
+        Arc, Mutex,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
+    },
 };
 
 struct Control {
@@ -330,12 +330,12 @@ async fn only_exact_core_action_source_selects_action_preparation() {
         "action:short".into(),
     ] {
         let (_dir, store, control, mut lease) = fixture();
-        let compiled = webdock_mail_message::compile_action(json!({"resource_id":"owned-resource","from":"sender","from_name":"😀".repeat(80),"to":"a@example.test","subject":"Subject","text":"Body"}), "example.test").unwrap();
+        let compiled = spitzli_mail_message::compile_action(json!({"resource_id":"owned-resource","from":"sender","from_name":"😀".repeat(80),"to":"a@example.test","subject":"Subject","text":"Body"}), "example.test").unwrap();
         let saved = store.put("12", &compiled.payload, None).unwrap();
         lease.source_id = source.clone();
         lease.payload_ref = saved.reference;
         lease.payload_bytes = compiled.payload.len() as i32;
-        lease.request_hash = webdock_mail_protocol::sha256(&compiled.payload);
+        lease.request_hash = spitzli_mail_protocol::sha256(&compiled.payload);
         lease.envelope = compiled.envelope;
         // Caller-shaped context cannot select action preparation.
         lease.source_context = json!({"action":true});

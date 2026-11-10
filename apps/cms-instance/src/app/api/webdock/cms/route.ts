@@ -1,4 +1,4 @@
-import { createCMSBridgeHandler } from "@webdock/cms-bridge/server";
+import { createCMSBridgeHandler } from "@spitzli/cms-bridge/server";
 import { loadCMSConfig } from "../../../../lib/config.ts";
 import { getCMS, handleNativeCMS } from "../../../../lib/cms.ts";
 export const runtime = "nodejs";

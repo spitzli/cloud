@@ -253,7 +253,7 @@ impl StoragePool {
             .application_source
             .as_ref()
             .ok_or(ExecutionError::Denied)?;
-        if receipt.action != webdock_agent_protocol::recovery::RecoveryAction::Backup
+        if receipt.action != spitzli_agent_protocol::recovery::RecoveryAction::Backup
             || owner.app_id != packet.source.app_id
             || owner.project_id != packet.source.project_id
             || owner.cluster_id != packet.source.cluster_id
@@ -357,7 +357,7 @@ impl StoragePool {
                     && receipt.target_nonce == *target_nonce
                     && receipt.source_set_id.as_ref() == Some(admitted_set_id) => {}
                 None if receipt.action
-                    == webdock_agent_protocol::recovery::RecoveryAction::Backup
+                    == spitzli_agent_protocol::recovery::RecoveryAction::Backup
                     && packet.target.is_none() => {}
                 _ => return Err(ExecutionError::Ownership),
             }

@@ -11,9 +11,9 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
+use spitzli_access::{AccessCommand, AccessService, TenantCommand};
+use spitzli_identity::Principal;
 use std::sync::Arc;
-use webdock_access::{AccessCommand, AccessService, TenantCommand};
-use webdock_identity::Principal;
 
 #[path = "access_allowances.rs"]
 mod allowances;
@@ -60,7 +60,7 @@ pub fn routes() -> Router<Arc<ServiceState>> {
         .route("/api/console/tenant-preview/{action}", post(preview))
         .route("/api/portal/studio", post(legacy))
 }
-pub(crate) fn failure(error: webdock_access::Error) -> ApiFailure {
+pub(crate) fn failure(error: spitzli_access::Error) -> ApiFailure {
     reject(
         StatusCode::from_u16(error.status()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
         "access_error",
@@ -68,25 +68,25 @@ pub(crate) fn failure(error: webdock_access::Error) -> ApiFailure {
             "Access service is unavailable."
         } else {
             match error {
-                webdock_access::Error::Unauthorized => "Sign in and complete account setup.",
-                webdock_access::Error::Forbidden => "You do not have access to this action.",
-                webdock_access::Error::LastAdministrator => {
+                spitzli_access::Error::Unauthorized => "Sign in and complete account setup.",
+                spitzli_access::Error::Forbidden => "You do not have access to this action.",
+                spitzli_access::Error::LastAdministrator => {
                     "Keep at least one active customer owner and administrator."
                 }
-                webdock_access::Error::ActivationRequired => {
+                spitzli_access::Error::ActivationRequired => {
                     "This account or organization is not available for local access."
                 }
-                webdock_access::Error::Conflict => {
+                spitzli_access::Error::Conflict => {
                     "This record changed. Refresh and review it before trying again."
                 }
-                webdock_access::Error::NotFound => "Record unavailable.",
-                webdock_access::Error::DomainTaken => {
+                spitzli_access::Error::NotFound => "Record unavailable.",
+                spitzli_access::Error::DomainTaken => {
                     "Another customer already verified this domain."
                 }
-                webdock_access::Error::DomainInUse => {
+                spitzli_access::Error::DomainInUse => {
                     "Something still uses this domain. Remove it there first."
                 }
-                webdock_access::Error::ProjectLimit => {
+                spitzli_access::Error::ProjectLimit => {
                     "Your plan allows no more projects. Ask your provider for a larger plan."
                 }
                 _ => "Check the entered values.",
@@ -101,10 +101,10 @@ async fn actor<'a>(
     let service = state
         .access
         .as_deref()
-        .ok_or_else(|| failure(webdock_access::Error::Configuration))?;
+        .ok_or_else(|| failure(spitzli_access::Error::Configuration))?;
     let actor = auth::resolve(state, headers)
         .await?
-        .ok_or_else(|| failure(webdock_access::Error::Unauthorized))?;
+        .ok_or_else(|| failure(spitzli_access::Error::Unauthorized))?;
     Ok((service, actor))
 }
 fn output(result: Result<Value, ApiFailure>) -> Response {
@@ -364,17 +364,17 @@ async fn preview(
                         &p,
                         input["customerID"]
                             .as_str()
-                            .ok_or_else(|| failure(webdock_access::Error::InvalidInput))?,
+                            .ok_or_else(|| failure(spitzli_access::Error::InvalidInput))?,
                         serde_json::from_value(
                             input.get("mode").cloned().unwrap_or(json!("read_only")),
                         )
-                        .map_err(|_| failure(webdock_access::Error::InvalidInput))?,
+                        .map_err(|_| failure(spitzli_access::Error::InvalidInput))?,
                     )
                     .await
                 }
                 "exit" => a.exit_preview_as(&p).await,
                 "current" => a.current_preview_as(&p).await,
-                _ => Err(webdock_access::Error::NotFound),
+                _ => Err(spitzli_access::Error::NotFound),
             }
             .map_err(failure)
         }
@@ -389,7 +389,7 @@ struct LegacyRequest {
     args: Vec<Value>,
 }
 fn invalid() -> ApiFailure {
-    failure(webdock_access::Error::InvalidInput)
+    failure(spitzli_access::Error::InvalidInput)
 }
 fn legacy_tenant(mut value: Value) -> Result<TenantCommand, ApiFailure> {
     if value["action"] == "profile" && value.get("profile").is_none() {
@@ -418,7 +418,7 @@ async fn legacy(
 ) -> Response {
     let result=async{
         let(a,p)=actor(&s,&h).await?;
-        let expected=match input.operation.as_str(){"session"|"requireAccessOperator"|"accountSites"|"listTenants"|"listTenantInvitations"|"exitTenantPreview"=>0,"listAccess"|"manageAccess"|"getTenant"|"startTenantPreview"=>1,"manageTenant"=>2,_=>return Err(failure(webdock_access::Error::NotFound))};
+        let expected=match input.operation.as_str(){"session"|"requireAccessOperator"|"accountSites"|"listTenants"|"listTenantInvitations"|"exitTenantPreview"=>0,"listAccess"|"manageAccess"|"getTenant"|"startTenantPreview"=>1,"manageTenant"=>2,_=>return Err(failure(spitzli_access::Error::NotFound))};
         if input.args.len()!=expected && !(input.operation=="listAccess"&&input.args.is_empty()){return Err(invalid())}
         let text=||input.args.first().and_then(Value::as_str).ok_or_else(invalid);
         let value=match input.operation.as_str(){
@@ -433,7 +433,7 @@ async fn legacy(
             "manageTenant"=>json!(a.manage_tenant_as(&p,text()?,legacy_tenant(input.args[1].clone())?).await.map_err(failure)?),
             "startTenantPreview"=>a.start_preview_as(&p,text()?).await.map_err(failure)?,
             "exitTenantPreview"=>a.exit_preview_as(&p).await.map_err(failure)?,
-            _=>return Err(failure(webdock_access::Error::NotFound)),
+            _=>return Err(failure(spitzli_access::Error::NotFound)),
         };
         Ok(json!({"data":value}))
     }.await;

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { useApi } from "./context";
 import { useHostingCommand } from "./hosting-client";
 import { useBuildCommand } from "./build-client";

@@ -1,5 +1,5 @@
+use spitzli_mail_runtime::{FilesystemPayloadStore, PrivatePayloadStore};
 use std::{os::unix::fs::PermissionsExt, sync::Arc};
-use webdock_mail_runtime::{FilesystemPayloadStore, PrivatePayloadStore};
 
 #[tokio::test]
 async fn scoped_async_custody_is_immutable_and_cannot_remove_another_customer() {

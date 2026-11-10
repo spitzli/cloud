@@ -3,8 +3,8 @@ use axum::{
     extract::Path,
     response::sse::{Event, Sse},
 };
+use spitzli_plugin_host::{RuntimeDescription, StateProbe};
 use std::{convert::Infallible, time::Duration};
-use webdock_plugin_host::{RuntimeDescription, StateProbe};
 
 #[derive(Clone, Copy)]
 enum StateProbeBoundary {
@@ -85,7 +85,7 @@ impl StateProbe for PluginEndpoints {
         })?;
         StateProbeBoundary::Describe.enter();
         let manifest = client
-            .describe(webdock_plugin_runtime::wire::DescribeRequest {})
+            .describe(spitzli_plugin_runtime::wire::DescribeRequest {})
             .await
             .map_err(|error| {
                 StateProbeBoundary::Describe.failed(&error);
@@ -95,7 +95,7 @@ impl StateProbe for PluginEndpoints {
             .manifest_json;
         StateProbeBoundary::Health.enter();
         let health = client
-            .health(webdock_plugin_runtime::wire::HealthRequest {})
+            .health(spitzli_plugin_runtime::wire::HealthRequest {})
             .await
             .map_err(|error| {
                 StateProbeBoundary::Health.failed(&error);
@@ -135,7 +135,7 @@ async fn snapshot(
     state: &ServiceState,
     headers: &HeaderMap,
     id: &str,
-) -> Result<webdock_plugin_host::OperationSnapshot, ApiFailure> {
+) -> Result<spitzli_plugin_host::OperationSnapshot, ApiFailure> {
     let actor = actor(state, headers).await?;
     endpoints(state)?
         .host
@@ -235,9 +235,9 @@ async fn events(
                 }
                 if matches!(
                     value.status,
-                    webdock_plugin_host::OperationStatus::Succeeded
-                        | webdock_plugin_host::OperationStatus::Failed
-                        | webdock_plugin_host::OperationStatus::Blocked
+                    spitzli_plugin_host::OperationStatus::Succeeded
+                        | spitzli_plugin_host::OperationStatus::Failed
+                        | spitzli_plugin_host::OperationStatus::Blocked
                 ) {
                     break;
                 }

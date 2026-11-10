@@ -1,8 +1,8 @@
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
 use serde_json::json;
+use spitzli_databases::{DatabaseService, StoredAuthority};
+use spitzli_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_databases::{DatabaseService, StoredAuthority};
-use webdock_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
 fn guarded(key: &str) -> String {
     let raw = std::env::var(key).unwrap();
     let u = url::Url::parse(&raw).unwrap();
@@ -35,9 +35,9 @@ async fn persisted_launch_rechecks_grants_membership_and_session() {
         .await
         .unwrap();
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -60,9 +60,9 @@ async fn persisted_launch_rechecks_grants_membership_and_session() {
         )
         .with_allocator(ids.clone()),
     );
-    let cipher = webdock_secrets::SecretCipher::new(&secret).unwrap();
+    let cipher = spitzli_secrets::SecretCipher::new(&secret).unwrap();
     let managed_cluster = ids.allocate().await.unwrap().to_string();
-    let hosting = webdock_hosting::HostingService::new(
+    let hosting = spitzli_hosting::HostingService::new(
         db.clone(),
         auth.clone(),
         worker.clone(),
@@ -85,7 +85,7 @@ async fn persisted_launch_rechecks_grants_membership_and_session() {
     )
     .await
     .unwrap()
-    .with_management(webdock_databases::ManagementConfig {
+    .with_management(spitzli_databases::ManagementConfig {
         cluster_id: Some(managed_cluster.clone()),
         endpoint_domain: Some("database.example.invalid".into()),
         public_ordering: false,
@@ -558,10 +558,10 @@ async fn persisted_launch_rechecks_grants_membership_and_session() {
 async fn managed_revisions(
     owner: &sea_orm::DatabaseConnection,
     service: &DatabaseService,
-    actor: &webdock_identity::Principal,
+    actor: &spitzli_identity::Principal,
     authority: &StoredAuthority,
-    ids: &webdock_persistence::IdAllocator,
-    cipher: &webdock_secrets::SecretCipher,
+    ids: &spitzli_persistence::IdAllocator,
+    cipher: &spitzli_secrets::SecretCipher,
     customer: &str,
     project: &str,
 ) {
@@ -685,9 +685,9 @@ async fn managed_revisions(
 async fn management_catalog(
     owner: &sea_orm::DatabaseConnection,
     service: &DatabaseService,
-    hosting: &webdock_hosting::HostingService,
-    operator: &webdock_identity::Principal,
-    member: &webdock_identity::Principal,
+    hosting: &spitzli_hosting::HostingService,
+    operator: &spitzli_identity::Principal,
+    member: &spitzli_identity::Principal,
     authority: &StoredAuthority,
     customer: &str,
     project: &str,
@@ -1029,8 +1029,8 @@ async fn management_catalog(
 async fn agent_lifecycle(
     owner: &sea_orm::DatabaseConnection,
     service: &DatabaseService,
-    hosting: &webdock_hosting::HostingService,
-    operator: &webdock_identity::Principal,
+    hosting: &spitzli_hosting::HostingService,
+    operator: &spitzli_identity::Principal,
     authority: &StoredAuthority,
     cluster: &str,
     credential: &str,
@@ -1038,7 +1038,7 @@ async fn agent_lifecycle(
     project: &str,
     customer: &str,
 ) {
-    use webdock_databases::*;
+    use spitzli_databases::*;
     let agent = hosting
         .authenticate_agent(cluster, credential)
         .await
@@ -1440,13 +1440,13 @@ async fn agent_lifecycle(
 async fn backup_policy_authority_fixture(
     owner: &sea_orm::DatabaseConnection,
     service: &DatabaseService,
-    hosting: &webdock_hosting::HostingService,
-    operator: &webdock_identity::Principal,
+    hosting: &spitzli_hosting::HostingService,
+    operator: &spitzli_identity::Principal,
     authority: &StoredAuthority,
-    agent: &webdock_hosting::AgentIdentity,
+    agent: &spitzli_hosting::AgentIdentity,
     database: &str,
 ) {
-    use webdock_databases::*;
+    use spitzli_databases::*;
     let original_observation = fixture_value(
         owner,
         "SELECT observation AS value FROM webdock_auth.hosting_agent WHERE cluster_id=$1",
@@ -1686,7 +1686,7 @@ async fn backup_policy_authority_fixture(
         .await
         .unwrap();
     let schema: serde_json::Value =
-        serde_json::from_str(webdock_databases::BACKUP_STATUS_SCHEMA).unwrap();
+        serde_json::from_str(spitzli_databases::BACKUP_STATUS_SCHEMA).unwrap();
     assert!(
         jsonschema::validator_for(&schema)
             .unwrap()
@@ -1775,8 +1775,8 @@ async fn fixture_value(
 async fn upgrade_admission(
     owner: &sea_orm::DatabaseConnection,
     service: &DatabaseService,
-    hosting: &webdock_hosting::HostingService,
-    actor: &webdock_identity::Principal,
+    hosting: &spitzli_hosting::HostingService,
+    actor: &spitzli_identity::Principal,
     authority: &StoredAuthority,
     database: &str,
     project: &str,
@@ -1874,7 +1874,7 @@ async fn upgrade_admission(
                 service,
                 hosting,
                 &agent,
-                webdock_databases::DatabaseAction::PrepareMigration,
+                spitzli_databases::DatabaseAction::PrepareMigration,
             )
             .await;
             assert_eq!(response["pending"], true);
@@ -1882,7 +1882,7 @@ async fn upgrade_admission(
                 service,
                 hosting,
                 &agent,
-                webdock_databases::DatabaseAction::Migrate,
+                spitzli_databases::DatabaseAction::Migrate,
             )
             .await;
             assert_eq!(response["accepted"], true);
@@ -1946,7 +1946,7 @@ async fn upgrade_admission(
                 service,
                 hosting,
                 &agent,
-                webdock_databases::DatabaseAction::Purge,
+                spitzli_databases::DatabaseAction::Purge,
             )
             .await;
             let erased=fixture_value(owner,"SELECT to_jsonb(m) AS value FROM webdock_auth.hosting_database_migration m WHERE id=$1",migration_id).await;
@@ -1975,7 +1975,7 @@ async fn upgrade_admission(
                 service,
                 hosting,
                 &agent,
-                webdock_databases::DatabaseAction::Resize,
+                spitzli_databases::DatabaseAction::Resize,
             )
             .await;
         }
@@ -2094,8 +2094,8 @@ async fn upgrade_admission(
 async fn maintenance_admission(
     owner: &sea_orm::DatabaseConnection,
     service: &DatabaseService,
-    actor: &webdock_identity::Principal,
-    member: &webdock_identity::Principal,
+    actor: &spitzli_identity::Principal,
+    member: &spitzli_identity::Principal,
     authority: &StoredAuthority,
     database: &str,
 ) {
@@ -2228,11 +2228,11 @@ async fn maintenance_admission(
 
 async fn complete_synthetic_stage(
     service: &DatabaseService,
-    hosting: &webdock_hosting::HostingService,
-    agent: &webdock_hosting::AgentIdentity,
-    action: webdock_databases::DatabaseAction,
-) -> (webdock_databases::DatabaseCompletion, serde_json::Value) {
-    use webdock_databases::*;
+    hosting: &spitzli_hosting::HostingService,
+    agent: &spitzli_hosting::AgentIdentity,
+    action: spitzli_databases::DatabaseAction,
+) -> (spitzli_databases::DatabaseCompletion, serde_json::Value) {
+    use spitzli_databases::*;
     let claim = service
         .claim_database_operation(
             hosting.begin_authenticated_agent(agent).await.unwrap(),
@@ -2370,10 +2370,10 @@ async fn complete_synthetic_stage(
 async fn callback_lock_order(
     owner: &sea_orm::DatabaseConnection,
     service: &DatabaseService,
-    hosting: &webdock_hosting::HostingService,
-    agent: &webdock_hosting::AgentIdentity,
-    claim: &webdock_databases::DatabaseClaim,
-    checkpoint: Option<&webdock_databases::DatabaseCheckpoint>,
+    hosting: &spitzli_hosting::HostingService,
+    agent: &spitzli_hosting::AgentIdentity,
+    claim: &spitzli_databases::DatabaseClaim,
+    checkpoint: Option<&spitzli_databases::DatabaseCheckpoint>,
 ) {
     let held = owner.begin().await.unwrap();
     held.query_one_raw(Statement::from_sql_and_values(
@@ -2397,7 +2397,7 @@ async fn callback_lock_order(
                         agent,
                         &claim.spec,
                         &claim.lease,
-                        webdock_databases::DatabaseCallback::Guard,
+                        spitzli_databases::DatabaseCallback::Guard,
                     )
                     .await
             }
@@ -2425,9 +2425,9 @@ async fn retired_order_service(cluster: &str) -> DatabaseService {
     let auth = Database::connect(auth_url.clone()).await.unwrap();
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -2452,7 +2452,7 @@ async fn retired_order_service(cluster: &str) -> DatabaseService {
     .await
     .unwrap()
     .with_new_orders_enabled(false)
-    .with_management(webdock_databases::ManagementConfig {
+    .with_management(spitzli_databases::ManagementConfig {
         cluster_id: Some(cluster.into()),
         endpoint_domain: Some("database.example.invalid".into()),
         public_ordering: false,
@@ -2463,7 +2463,7 @@ async fn retired_order_service(cluster: &str) -> DatabaseService {
 }
 
 async fn saturated_order_and_agent_pools(
-    actor: &webdock_identity::Principal,
+    actor: &spitzli_identity::Principal,
     authority: &StoredAuthority,
     command: &serde_json::Value,
     cluster: &str,
@@ -2482,9 +2482,9 @@ async fn saturated_order_and_agent_pools(
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let rls = std::env::var("DATABASE_RLS_SECRET").unwrap();
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &guarded("AUTH_DATABASE_URL"),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -2493,7 +2493,7 @@ async fn saturated_order_and_agent_pools(
         auth.clone(),
         CookiePolicy::new(false, secret.clone()).unwrap(),
     ));
-    let hosting = webdock_hosting::HostingService::new(
+    let hosting = spitzli_hosting::HostingService::new(
         business.clone(),
         auth.clone(),
         worker.clone(),
@@ -2516,7 +2516,7 @@ async fn saturated_order_and_agent_pools(
     )
     .await
     .unwrap()
-    .with_management(webdock_databases::ManagementConfig {
+    .with_management(spitzli_databases::ManagementConfig {
         cluster_id: Some(cluster.into()),
         endpoint_domain: Some("database.example.invalid".into()),
         public_ordering: false,
@@ -2557,7 +2557,7 @@ async fn saturated_order_and_agent_pools(
 // ignored PostgreSQL fixture above. No synthetic Ready metadata is needed here.
 async fn allocation_enqueue_failure_rolls_back(
     owner: &sea_orm::DatabaseConnection,
-    actor: &webdock_identity::Principal,
+    actor: &spitzli_identity::Principal,
     authority: &StoredAuthority,
     command: &serde_json::Value,
     cluster: &str,
@@ -2600,9 +2600,9 @@ async fn allocation_enqueue_failure_rolls_back(
         .unwrap();
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -2635,7 +2635,7 @@ async fn allocation_enqueue_failure_rolls_back(
     )
     .await
     .unwrap()
-    .with_management(webdock_databases::ManagementConfig {
+    .with_management(spitzli_databases::ManagementConfig {
         cluster_id: Some(cluster.into()),
         endpoint_domain: Some("database.example.invalid".into()),
         public_ordering: false,

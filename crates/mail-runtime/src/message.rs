@@ -1,4 +1,4 @@
-pub use webdock_mail_message::*;
+pub use spitzli_mail_message::*;
 
 /// The SMTP policy proof remains part of Core's admission contract, separate from MIME handling.
 pub fn stamp_message(raw: &[u8], id: &str, proof: &str) -> crate::Result<Vec<u8>> {

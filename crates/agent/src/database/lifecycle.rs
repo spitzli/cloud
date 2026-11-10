@@ -2,7 +2,7 @@ use super::executor::*;
 use super::*;
 use kube::api::{DeleteParams, Preconditions};
 use serde_json::json;
-use webdock_agent_protocol::database::{
+use spitzli_agent_protocol::database::{
     DatabaseCheckpoint, DatabaseCheckpointPhase, DatabaseClaim, DatabaseCompletionProof,
     DatabaseProofState,
 };
@@ -707,7 +707,7 @@ impl NativeDatabaseExecutor {
         claim: &DatabaseClaim,
         authority: &dyn DatabaseAuthority,
     ) -> Result<DatabaseStep> {
-        use webdock_agent_protocol::database::DatabaseExecutionPhase;
+        use spitzli_agent_protocol::database::DatabaseExecutionPhase;
         let b = &claim.spec.backend;
         let uid = b.cnpg_uid.as_deref().ok_or(ExecutionError::Ownership)?;
         let namespace = self.get("Namespace", &b.namespace, None).await?;

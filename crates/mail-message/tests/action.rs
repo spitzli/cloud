@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_mail_message::compile_action;
+use spitzli_mail_message::compile_action;
 
 #[test]
 fn action_compilation_preserves_bounded_input_and_canonical_native_bytes() {
@@ -42,7 +42,7 @@ fn action_compilation_rejects_unbounded_or_caller_authority() {
 
 #[test]
 fn action_preparation_keeps_80_unicode_chars_while_native_keeps_80_utf16_units() {
-    use webdock_mail_message::{SendRequest, prepare_action_message};
+    use spitzli_mail_message::{SendRequest, prepare_action_message};
     for count in [41, 80] {
         let name = "😀".repeat(count);
         let compiled = compile_action(json!({"resource_id":"owned-resource","from":"info","from_name":name,"to":"a@example.test","subject":"Subject","text":"Body"}), "example.test").unwrap();
@@ -64,7 +64,7 @@ fn action_preparation_keeps_80_unicode_chars_while_native_keeps_80_utf16_units()
 
 #[test]
 fn stored_action_profile_cannot_expand_the_plugin_input_contract() {
-    use webdock_mail_message::SendRequest;
+    use spitzli_mail_message::SendRequest;
     let compiled = compile_action(json!({"resource_id":"owned-resource","from":"info","from_name":"Quoted <team>","to":"a@example.test","subject":"Subject","text":"Body"}), "example.test").unwrap();
     let stored: serde_json::Value = serde_json::from_slice(&compiled.payload).unwrap();
     let request = SendRequest::parse_stored_action(stored.clone()).unwrap();

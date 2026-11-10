@@ -13,9 +13,9 @@ use axum::{
     routing::any,
 };
 use serde_json::{Value, json};
+use spitzli_core::features::OperationKind;
+use spitzli_oauth::McpAuthentication;
 use std::{collections::HashSet, sync::Arc};
-use webdock_core::features::OperationKind;
-use webdock_oauth::McpAuthentication;
 
 /// Retained names for the currently implemented native domain commands.
 pub(crate) const TOOLS: &[(&str, &str)] = &[

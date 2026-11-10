@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { cmsUser } from "@webdock/cms-ui/server";
+import { cmsUser } from "@spitzli/cms-ui/server";
 import { getCMS } from "../../../../lib/cms.ts";
 import { contentLocale } from "../../../../lib/public.ts";
 import { PageView } from "../../../../lib/page-view.tsx";

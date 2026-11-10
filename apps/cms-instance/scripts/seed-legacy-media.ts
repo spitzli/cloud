@@ -5,7 +5,7 @@ import { writeFile } from "node:fs/promises";
 import sharp from "sharp";
 import pg from "pg";
 import { getPayload } from "payload";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { loadCMSConfig } from "../src/lib/config.ts";
 import config from "../src/payload.config.ts";
 import { migrations } from "../src/migrations/index.ts";

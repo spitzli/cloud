@@ -1,6 +1,6 @@
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement};
+use spitzli_identity::{CookiePolicy, IdentityService, PasswordAuthentication};
 use webauthn_authenticator_rs::{WebauthnAuthenticator, softpasskey::SoftPasskey};
-use webdock_identity::{CookiePolicy, IdentityService, PasswordAuthentication};
 fn cookie(v: &str) -> &str {
     v.split(';').next().unwrap()
 }

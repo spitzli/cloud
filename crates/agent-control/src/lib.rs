@@ -10,14 +10,14 @@ pub use plugin::PluginRuntimeBackend;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_agent_protocol as wire;
+use spitzli_hosting::{AgentIdentity, HostingService};
+use spitzli_supervisor::{
+    Action, Command, ObservedState, ReadCommand, ReadKind, ResourceMetrics, RuntimeSpec,
+};
 use std::sync::Arc;
 use subtle::ConstantTimeEq;
 use tonic::{Request, Response, Status};
-use webdock_agent_protocol as wire;
-use webdock_hosting::{AgentIdentity, HostingService};
-use webdock_supervisor::{
-    Action, Command, ObservedState, ReadCommand, ReadKind, ResourceMetrics, RuntimeSpec,
-};
 use wire::agent_control_server::{AgentControl, AgentControlServer};
 
 /// A private Unix listener is bound to one enrollment, never selected by request metadata.
@@ -34,8 +34,8 @@ pub struct ControlPlane {
     hosting_enabled: bool,
     plugin_runtime: Option<Arc<dyn PluginRuntimeBackend>>,
     local: Option<LocalBinding>,
-    databases: Option<Arc<webdock_databases::DatabaseService>>,
-    mail: Option<Arc<webdock_mail::incoming::agent::IncomingAgent>>,
+    databases: Option<Arc<spitzli_databases::DatabaseService>>,
+    mail: Option<Arc<spitzli_mail::incoming::agent::IncomingAgent>>,
 }
 fn now() -> u64 {
     chrono::Utc::now().timestamp().max(0) as u64
@@ -49,7 +49,7 @@ fn denied() -> Status {
 fn invalid() -> Status {
     Status::invalid_argument("Invalid agent request")
 }
-fn hosting_error(error: webdock_hosting::HostingError) -> Status {
+fn hosting_error(error: spitzli_hosting::HostingError) -> Status {
     match error.status {
         401 => denied(),
         // A revoked user/grant cancels this operation, not the enrolled agent itself.
@@ -196,7 +196,7 @@ impl ControlPlane {
         hosting: Arc<HostingService>,
         local: Option<LocalBinding>,
     ) -> Result<Self, Status> {
-        webdock_persistence::connection::verify_runtime_role(&db, "webdock_auth_bootstrap")
+        spitzli_persistence::connection::verify_runtime_role(&db, "webdock_auth_bootstrap")
             .await
             .map_err(|_| denied())?;
         if let Some(binding) = &local {
@@ -216,7 +216,7 @@ impl ControlPlane {
             mail: None,
         })
     }
-    pub fn with_databases(mut self, databases: Arc<webdock_databases::DatabaseService>) -> Self {
+    pub fn with_databases(mut self, databases: Arc<spitzli_databases::DatabaseService>) -> Self {
         self.databases = Some(databases);
         self
     }
@@ -225,7 +225,7 @@ impl ControlPlane {
             .max_decoding_message_size(wire::MAX_MESSAGE_BYTES)
             .max_encoding_message_size(wire::MAX_MESSAGE_BYTES)
     }
-    pub fn with_mail(mut self, mail: Arc<webdock_mail::incoming::agent::IncomingAgent>) -> Self {
+    pub fn with_mail(mut self, mail: Arc<spitzli_mail::incoming::agent::IncomingAgent>) -> Self {
         self.mail = Some(mail);
         self
     }
@@ -315,7 +315,7 @@ impl ControlPlane {
             bound.material = Some(material.clone());
             bound.verify_material().map_err(|_| invalid())?;
             wire.material_json = serde_json::to_vec(&material).map_err(|_| invalid())?;
-            if wire.material_json.len() > webdock_supervisor::MAX_RUNTIME_MATERIAL_BYTES {
+            if wire.material_json.len() > spitzli_supervisor::MAX_RUNTIME_MATERIAL_BYTES {
                 return Err(invalid());
             }
         }
@@ -602,7 +602,7 @@ impl AgentControl for ControlPlane {
 impl ControlPlane {
     pub async fn serve_unix(
         self,
-        mut socket: webdock_plugin_runtime::UnixSocket,
+        mut socket: spitzli_plugin_runtime::UnixSocket,
         shutdown: impl std::future::Future<Output = ()> + Send + 'static,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         if self.local.is_none() {
@@ -627,7 +627,7 @@ impl ControlPlane {
     pub async fn serve_mtls(
         self,
         listener: tokio::net::TcpListener,
-        tls: webdock_plugin_runtime::MutualTls,
+        tls: spitzli_plugin_runtime::MutualTls,
         shutdown: impl std::future::Future<Output = ()> + Send + 'static,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         if self.local.is_some() {

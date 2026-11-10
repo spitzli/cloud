@@ -1,9 +1,9 @@
-import { createCMSBridgeHandler } from "@webdock/cms-bridge/server";
-import { PostgresBridgeTransfers } from "@webdock/cms-bridge/postgres";
+import { createCMSBridgeHandler } from "@spitzli/cms-bridge/server";
+import { PostgresBridgeTransfers } from "@spitzli/cms-bridge/postgres";
 import {
   handleCMSRequest,
   type CMSRequestAdapter,
-} from "@webdock/cms-ui/server";
+} from "@spitzli/cms-ui/server";
 import { cmsOptions, getCMS } from "@/lib/cms";
 
 export const runtime = "nodejs";

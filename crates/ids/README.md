@@ -1,6 +1,6 @@
 # Private Webdock IDs
 
-`webdock-ids` is a non-published compatibility and policy wrapper around the exact
+`spitzli-ids` is a non-published compatibility and policy wrapper around the exact
 `maylily` library snapshot in `vendor/maylily`, consumed through a repository-relative
 Cargo path dependency with its `parse` feature. Maylily performs all bit
 packing and decoding through `Options::pack_at` and `Options::parse`. This wrapper
@@ -11,7 +11,7 @@ Maylily's defaults use a different epoch and layout, allow arbitrary-precision
 output, and do not reserve Webdock's legacy identities. We supply every option
 explicitly and keep Webdock's existing validation. Maylily's stateful generator
 has no durable checkpoint resume API, so it cannot replace the database allocator.
-`webdock_persistence::IdAllocator` still locks its checkpoint with `SELECT ... FOR
+`spitzli_persistence::IdAllocator` still locks its checkpoint with `SELECT ... FOR
 UPDATE`, calculates the next candidate, updates the high-water mark, and commits
 before releasing the ID. No process-local Maylily counter is used for allocation.
 
@@ -39,7 +39,7 @@ Generic layouts can encode zero, which is not a platform record ID.
 `Layout::next_after` computes a **candidate**, not an independently reserved ID:
 
 ```rust
-use webdock_ids::{Id, Identity, Layout, PLATFORM_EPOCH_MS};
+use spitzli_ids::{Id, Identity, Layout, PLATFORM_EPOCH_MS};
 let identity = Identity::platform(0, 2)?;
 // Inside a database transaction, lock the persistent row for this identity.
 // Read its saved layout and high-water mark while holding that lock.
@@ -47,7 +47,7 @@ let saved_high_water: Option<Id> = None; // ONLY for a provably never-used ident
 let candidate = Layout::PLATFORM.next_after(identity, saved_high_water, PLATFORM_EPOCH_MS)?;
 // Store candidate.as_i64() as high-water and COMMIT before returning candidate.
 // The database row lock must stay held through that commit.
-# Ok::<(), webdock_ids::Error>(())
+# Ok::<(), spitzli_ids::Error>(())
 ```
 
 Use one durable checkpoint row per namespace/layout/identity, with a unique key.
@@ -93,7 +93,7 @@ platform ID namespace. This library does not guarantee secrecy or unguessability
 
 ## Verification
 
-`cargo test -p webdock-ids` exercises layout/identity limits, signed boundaries,
+`cargo test -p spitzli-ids` exercises layout/identity limits, signed boundaries,
 strict string JSON, clock rollback, sequence exhaustion, restart/high-water
 handling, failed persistence, synchronized concurrent producers, and exhaustive
 packing uniqueness for a small layout. A test deliberately demonstrates the
@@ -126,7 +126,7 @@ locked IDs build from a fresh repository-contained source packaging context:
 
 ```sh
 python3 -B -m unittest tools.tests.test_portable_maylily
-cargo test --locked -p webdock-ids
+cargo test --locked -p spitzli-ids
 ```
 
 For an upstream update, review and record new source hashes explicitly. Do not

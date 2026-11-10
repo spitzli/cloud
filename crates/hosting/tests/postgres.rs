@@ -2,9 +2,9 @@
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_hosting::{AgentIdentity, HostingService};
+use spitzli_identity::{CookiePolicy, IdentityService, Principal};
 use std::sync::Arc;
-use webdock_hosting::{AgentIdentity, HostingService};
-use webdock_identity::{CookiePolicy, IdentityService, Principal};
 async fn db(key: &str) -> DatabaseConnection {
     let value = std::env::var(key).expect("explicit local fixture URL");
     let parsed = url::Url::parse(&value).unwrap();
@@ -121,9 +121,9 @@ impl Fixture {
                 db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
                 std::env::var("DATABASE_RLS_SECRET").unwrap(),
                 std::env::var("BETTER_AUTH_SECRET").unwrap(),
-                Arc::new(webdock_persistence::IdAllocator::new(
+                Arc::new(spitzli_persistence::IdAllocator::new(
                     db("DATABASE_URL").await,
-                    webdock_ids::Identity::platform(0, 2).unwrap(),
+                    spitzli_ids::Identity::platform(0, 2).unwrap(),
                 )),
             )
             .await
@@ -287,7 +287,7 @@ async fn durable_app_create_claim_complete_controls_quotas_and_revocation() {
 #[tokio::test]
 #[ignore = "requires explicit WEBDOCK_HOSTING_DOCKER_TEST=1 and owned local Docker Engine"]
 async fn persisted_docker_commands_execute_with_live_authority_and_uid_fences() {
-    use webdock_supervisor::{Authorizer, Command, ExecutionError, LeaseGuard, RuntimeAdapter};
+    use spitzli_supervisor::{Authorizer, Command, ExecutionError, LeaseGuard, RuntimeAdapter};
     assert_eq!(
         std::env::var("WEBDOCK_HOSTING_DOCKER_TEST").as_deref(),
         Ok("1")
@@ -298,7 +298,7 @@ async fn persisted_docker_commands_execute_with_live_authority_and_uid_fences() 
     }
     #[async_trait::async_trait]
     impl Authorizer for Live {
-        async fn authorize(&self, command: &Command) -> webdock_supervisor::Result<()> {
+        async fn authorize(&self, command: &Command) -> spitzli_supervisor::Result<()> {
             self.host
                 .guard_runtime_command(&self.agent, command)
                 .await
@@ -332,7 +332,7 @@ async fn persisted_docker_commands_execute_with_live_authority_and_uid_fences() 
    let command=f.service.claim_runtime(&f.agent).await.unwrap().unwrap();
    if let Some(blocked)=blocked{let status:String=f.owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT status FROM webdock_auth.hosting_operation WHERE id=$1",[blocked.clone().into()])).await.unwrap().unwrap().try_get("","status").unwrap();assert_eq!(status,"queued");sql(&f.owner,"DELETE FROM webdock_auth.hosting_operation WHERE id=$1",vec![blocked.into()]).await;}
    let mut changed=command.clone();changed.spec.cpu_millicores+=1;assert!(f.service.guard_runtime_command(&f.agent,&changed).await.is_err());
-   names.lock().unwrap().push(command.spec.name());let adapter=webdock_agent::docker::DockerAdapter::connect("/var/run/docker.sock",command.spec.installation.clone(),Some(command.spec.image.clone())).await.unwrap();
+   names.lock().unwrap().push(command.spec.name());let adapter=spitzli_agent::docker::DockerAdapter::connect("/var/run/docker.sock",command.spec.installation.clone(),Some(command.spec.image.clone())).await.unwrap();
    if let Some(old)=&first_uid{assert!(command.expected_runtime_id.is_some());assert_eq!(command.expected_runtime_id.as_ref(),Some(old));}
    let guard=LeaseGuard::new(command.clone(),authority.clone());let observed=adapter.reconcile(&command,&guard).await.unwrap();assert!(observed.ready||command.spec.replicas==0);assert_eq!(observed.resource_id,command.spec.resource_id.to_string(),"resource identity for {action}");assert_eq!(observed.revision,command.spec.revision,"observation revision for {action}");f.service.complete_runtime(&f.agent,&command,&observed).await.unwrap();f.service.complete_runtime(&f.agent,&command,&observed).await.unwrap();first_uid=observed.runtime_id;
   }
@@ -393,11 +393,11 @@ async fn retained_storage_requires_exact_delete_and_purge_proofs() {
 #[tokio::test]
 #[ignore = "requires explicit WEBDOCK_HOSTING_DOCKER_TEST=1, native agent-control migrations and local Engine"]
 async fn core_rpc_daemon_docker_receipts_survive_lost_poll_and_completion_ack() {
+    use spitzli_agent_control::{ControlPlane, LocalBinding};
+    use spitzli_agent_protocol::{self as wire, agent_control_client::AgentControlClient};
     use std::os::unix::fs::PermissionsExt;
     use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
     use tonic::transport::{Endpoint, Server};
-    use webdock_agent_control::{ControlPlane, LocalBinding};
-    use webdock_agent_protocol::{self as wire, agent_control_client::AgentControlClient};
     use wire::agent_control_server::{AgentControl, AgentControlServer};
     struct LoseAck {
         core: ControlPlane,
@@ -541,13 +541,13 @@ async fn core_rpc_daemon_docker_receipts_survive_lost_poll_and_completion_ack() 
   f.configure("docker").await;let mut app_spec=spec();app_spec["args"]=json!(["sh","-c","echo rpc-log-fixture; printf ok >/tmp/index.html; exec httpd -f -p 8080 -h /tmp"]);app_spec["ephemeralBytes"]=json!(16777216);let created=f.service.execute(&f.principal,json!({"action":"apps.create","projectID":f.pid,"name":"rpc-fixture","spec":app_spec,"subscriptionRevision":1,"idempotencyKey":"rpc-create-request-1"})).await.unwrap();let app=created["appID"].as_str().unwrap();*captured_name.lock().unwrap()=Some(format!("wd-{test_installation}-{app}"));
   let channel=Endpoint::from_shared(format!("unix://{}",socket_path.display())).unwrap().connect().await.unwrap();let mut client=AgentControlClient::new(channel);let identity=wire::AgentIdentity{installation:test_installation.clone(),agent_id:"hosting-fixture".into(),generation:1};client.register(wire::Hello{identity:Some(identity.clone()),protocol_version:1,certificate_sha256:String::new(),capabilities_json:b"{}".to_vec()}).await.unwrap();
   let lost_poll=client.poll(wire::PollRequest{identity:Some(identity.clone())}).await.unwrap().into_inner().command.unwrap();assert_eq!(lost_poll.operation_id,created["id"]);
-  let config=webdock_agent::config::AgentConfig{database_runtime:None,mail_runtime:None,recovery_runtime:None,mail_configuration_enabled:false,workloads:false,plugin_runtime_enabled:false,version:1,installation:test_installation.clone(),agent_id:"hosting-fixture".into(),generation:1,state_directory:state.clone(),control:webdock_agent::config::ControlEndpoint::Unix{path:socket_path},runtime:webdock_agent::config::RuntimeConfiguration::Docker{storage_socket:None,socket:"/var/run/docker.sock".into(),initializer_image:None},policy:Default::default()};let mut daemon=webdock_agent::management::Daemon::open(config).await.unwrap();daemon.connect().await.unwrap();assert!(daemon.cycle().await.is_err(),"simulate lost completion acknowledgment after Core commits");assert_eq!(completions.load(Ordering::SeqCst),1);
+  let config=spitzli_agent::config::AgentConfig{database_runtime:None,mail_runtime:None,recovery_runtime:None,mail_configuration_enabled:false,workloads:false,plugin_runtime_enabled:false,version:1,installation:test_installation.clone(),agent_id:"hosting-fixture".into(),generation:1,state_directory:state.clone(),control:spitzli_agent::config::ControlEndpoint::Unix{path:socket_path},runtime:spitzli_agent::config::RuntimeConfiguration::Docker{storage_socket:None,socket:"/var/run/docker.sock".into(),initializer_image:None},policy:Default::default()};let mut daemon=spitzli_agent::management::Daemon::open(config).await.unwrap();daemon.connect().await.unwrap();assert!(daemon.cycle().await.is_err(),"simulate lost completion acknowledgment after Core commits");assert_eq!(completions.load(Ordering::SeqCst),1);
   let polls_before_reconnect=polls.load(Ordering::SeqCst);
   sql(&f.owner,"UPDATE webdock_auth.agent_runtime_dispatch SET receipt_sha256=NULL,completed_at=NULL WHERE operation_id=$1 AND generation=$2",vec![lost_poll.operation_id.clone().into(),(lost_poll.generation as i64).into()]).await;
   daemon.connect().await.unwrap();assert_eq!(completions.load(Ordering::SeqCst),2,"flush exact durable receipt before any new poll");assert_eq!(polls.load(Ordering::SeqCst),polls_before_reconnect);
   let view=f.service.execute(&f.principal,json!({"action":"apps.get","appID":app})).await.unwrap();assert_eq!(view["status"],"ready");
-  let persisted:Value=f.owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT command FROM webdock_auth.agent_runtime_dispatch WHERE operation_id=$1 AND generation=$2",[lost_poll.operation_id.clone().into(),(lost_poll.generation as i64).into()])).await.unwrap().unwrap().try_get("","command").unwrap();let command:webdock_supervisor::Command=serde_json::from_value(persisted).unwrap();
-  let journal:Value=serde_json::from_slice(&std::fs::read(state.join("commands.json")).unwrap()).unwrap();let observed:webdock_supervisor::ObservedState=serde_json::from_value(journal["commands"][&command.operation_id]["result"].clone()).unwrap();
+  let persisted:Value=f.owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT command FROM webdock_auth.agent_runtime_dispatch WHERE operation_id=$1 AND generation=$2",[lost_poll.operation_id.clone().into(),(lost_poll.generation as i64).into()])).await.unwrap().unwrap().try_get("","command").unwrap();let command:spitzli_supervisor::Command=serde_json::from_value(persisted).unwrap();
+  let journal:Value=serde_json::from_slice(&std::fs::read(state.join("commands.json")).unwrap()).unwrap();let observed:spitzli_supervisor::ObservedState=serde_json::from_value(journal["commands"][&command.operation_id]["result"].clone()).unwrap();
   let receipt=wire::Receipt{identity:Some(identity.clone()),operation_id:command.operation_id.clone(),generation:command.generation,request_sha256:command.fingerprint().unwrap(),outcome:wire::Outcome::Succeeded as i32,error_code:String::new(),result:Some(wire::receipt::Result::ObservedJson(serde_json::to_vec(&observed).unwrap()))};
   sql(&f.owner,"UPDATE webdock_auth.agent_runtime_dispatch SET receipt_sha256=NULL,completed_at=NULL WHERE operation_id=$1 AND generation=$2",vec![command.operation_id.clone().into(),(command.generation as i64).into()]).await;
   assert!(client.complete(receipt.clone()).await.unwrap().into_inner().accepted);assert!(client.complete(receipt.clone()).await.unwrap().into_inner().accepted);

@@ -1,6 +1,6 @@
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { databaseBackupPolicyViewSchema } from "@webdock/hosting-contracts";
+import { databaseBackupPolicyViewSchema } from "@spitzli/hosting-contracts";
 import { z } from "zod";
 import { useApi } from "./context";
 import type { BackupRequestMemory } from "./database-backup-intents";

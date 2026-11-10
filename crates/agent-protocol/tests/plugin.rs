@@ -1,5 +1,5 @@
+use spitzli_agent_protocol::plugin::*;
 use std::collections::BTreeMap;
-use webdock_agent_protocol::plugin::*;
 fn fixture() -> PluginRuntimeClaim {
     let files = MATERIAL_FILES
         .iter()
@@ -186,7 +186,7 @@ fn legacy_spec_keeps_its_existing_namespace_and_serialized_fingerprint() {
 #[test]
 fn plugin_poll_request_preserves_old_wire_identity_and_bounds_versions() {
     use prost::Message;
-    use webdock_agent_protocol::{AgentIdentity, PluginRuntimePollRequest, PollRequest};
+    use spitzli_agent_protocol::{AgentIdentity, PluginRuntimePollRequest, PollRequest};
     let identity = Some(AgentIdentity {
         installation: "fixture".into(),
         agent_id: "agent".into(),

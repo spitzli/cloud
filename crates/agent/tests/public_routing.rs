@@ -1,7 +1,7 @@
 #![cfg(feature = "kubernetes")]
 mod support;
-use webdock_agent::kubernetes::public_routing::{PublicRoutingConfig, ingress};
-use webdock_supervisor::{HostingBinding, PublicRoute, ResourceAllowance};
+use spitzli_agent::kubernetes::public_routing::{PublicRoutingConfig, ingress};
+use spitzli_supervisor::{HostingBinding, PublicRoute, ResourceAllowance};
 fn allowance() -> ResourceAllowance {
     ResourceAllowance {
         apps: 2,
@@ -13,14 +13,14 @@ fn allowance() -> ResourceAllowance {
         concurrent_deployments: 1,
     }
 }
-fn spec() -> webdock_supervisor::RuntimeSpec {
+fn spec() -> spitzli_supervisor::RuntimeSpec {
     let mut spec = support::spec();
     spec.hosting_binding = Some(HostingBinding {
-        cluster_id: webdock_core::id::RecordId::parse("42").unwrap(),
+        cluster_id: spitzli_core::id::RecordId::parse("42").unwrap(),
         quota: allowance(),
         final_quota: allowance(),
         public_route: Some(PublicRoute {
-            allocation_id: webdock_core::id::RecordId::parse("43").unwrap(),
+            allocation_id: spitzli_core::id::RecordId::parse("43").unwrap(),
             hostname: "lunares.spitzli.site".into(),
             revision: 1,
         }),
@@ -86,7 +86,7 @@ fn no_implicit_route_or_suffix_lookalike_can_create_ingress() {
 #[test]
 fn certificate_readiness_requires_the_qualified_solver_budget_and_clusterip() {
     use serde_json::json;
-    use webdock_agent::kubernetes::public_routing::compatible_issuer;
+    use spitzli_agent::kubernetes::public_routing::compatible_issuer;
     let issuer = json!({"metadata":{"generation":1},"spec":{"acme":{"server":"https://acme-v02.api.letsencrypt.org/directory","solvers":[{"http01":{"ingress":{"ingressClassName":"traefik","serviceType":"ClusterIP","podTemplate":{"spec":{"resources":{"requests":{"cpu":"25m","memory":"32Mi","ephemeral-storage":"8Mi"},"limits":{"cpu":"200m","memory":"64Mi","ephemeral-storage":"64Mi"}}}}}}}]}},"status":{"conditions":[{"type":"Ready","status":"True","observedGeneration":1}]}});
     assert!(compatible_issuer(&issuer, &config()));
     let mut no_budget = issuer.clone();

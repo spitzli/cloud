@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_databases::{Command, normalize_origin};
+use spitzli_databases::{Command, normalize_origin};
 #[test]
 fn runtime_origin_and_grant_acknowledgments_are_strict() {
     for bad in [

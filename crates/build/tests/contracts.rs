@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_build::contracts::BuildCommand;
+use spitzli_build::contracts::BuildCommand;
 #[test]
 fn retained_command_names_ids_selectors_and_null_semantics() {
     assert!(BuildCommand::parse(json!({"action":"git.builds.request","projectID":"123","targetID":"456","idempotencyKey":"build-request-1234"})).is_ok());
@@ -19,8 +19,8 @@ fn retained_command_names_ids_selectors_and_null_semantics() {
 }
 #[test]
 fn customer_environment_never_changes_host_or_guest_control_configuration() {
+    use spitzli_build::execution::{GuestRequest, Limits};
     use std::collections::BTreeMap;
-    use webdock_build::execution::{GuestRequest, Limits};
     let mut request = GuestRequest {
         recipe: "dockerfile".into(),
         root_directory: ".".into(),
@@ -48,7 +48,7 @@ fn customer_environment_never_changes_host_or_guest_control_configuration() {
 }
 #[test]
 fn readonly_ceiling_is_an_explicit_allowlist() {
-    let ceiling = webdock_build::BuildCeiling {
+    let ceiling = spitzli_build::BuildCeiling {
         read: true,
         write: false,
     };
@@ -79,7 +79,7 @@ fn readonly_ceiling_is_an_explicit_allowlist() {
         );
     }
     assert!(
-        webdock_build::BuildCeiling {
+        spitzli_build::BuildCeiling {
             read: false,
             write: true
         }
@@ -112,7 +112,7 @@ fn log_cursors_are_read_only_and_finite() {
     let base = json!({"action":"git.builds.logs","projectID":"123","buildID":"456","after":"0","limit":20});
     assert!(BuildCommand::parse(base.clone()).is_ok());
     assert!(
-        webdock_build::BuildCeiling {
+        spitzli_build::BuildCeiling {
             read: true,
             write: false
         }

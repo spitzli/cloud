@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { useWorkspacePlugins, databasePlugin, pluginNav } from "./plugins/workspace";
 import { Empty, Failure, Loading } from "./common";
 import * as ui from "./ui";

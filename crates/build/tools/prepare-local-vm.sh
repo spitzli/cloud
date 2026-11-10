@@ -26,8 +26,8 @@ mkdir "$build_fixture_output/rootfs"
 tar --extract --file "$build_fixture_output/rootfs.tar" --directory "$build_fixture_output/rootfs" --no-same-owner
 cd "$build_fixture_root"
 rustup target add x86_64-unknown-linux-musl
-cargo build --release -p webdock-build --no-default-features --bin webdock-build-guest --target x86_64-unknown-linux-musl
-install -m 755 "${CARGO_TARGET_DIR:-target}/x86_64-unknown-linux-musl/release/webdock-build-guest" "$build_fixture_output/rootfs/usr/bin/webdock-build-guest"
+cargo build --release -p spitzli-build --no-default-features --bin spitzli-build-guest --target x86_64-unknown-linux-musl
+install -m 755 "${CARGO_TARGET_DIR:-target}/x86_64-unknown-linux-musl/release/spitzli-build-guest" "$build_fixture_output/rootfs/usr/bin/spitzli-build-guest"
 install -m 755 crates/build/tools/vm-init.sh "$build_fixture_output/rootfs/init"
 truncate --size 2G "$build_fixture_output/base.raw"
 mkfs.ext4 -q -F -d "$build_fixture_output/rootfs" "$build_fixture_output/base.raw"

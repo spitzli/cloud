@@ -357,7 +357,7 @@ async fn retained_configuration_failure(
         "UPDATE webdock_auth.\"oauthClient\" SET \"clientSecret\"=$2 WHERE \"clientId\"=$1",
         vec![
             c.secrets["clientID"].as_str().unwrap().into(),
-            webdock_oauth::legacy_token_hash(
+            spitzli_oauth::legacy_token_hash(
                 c.secrets["environment"]["WEBDOCK_SSO_CLIENT_SECRET"]
                     .as_str()
                     .unwrap(),

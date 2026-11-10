@@ -1,4 +1,4 @@
-use webdock_agent::storage::{StorageConfig, StoragePacket, VolumeRecord, VolumeState};
+use spitzli_agent::storage::{StorageConfig, StoragePacket, VolumeRecord, VolumeState};
 #[test]
 fn legacy_pool_and_volume_wire_fields_round_trip_without_identity_changes() {
     let config = serde_json::json!({"root":"/var/lib/webdock-storage","node":"node-one","clusterID":"789","poolID":"123e4567-e89b-42d3-a456-426614174000","capacityBytes":1073741824u64,"reserveBytes":67108864u64});
@@ -12,7 +12,7 @@ fn legacy_pool_and_volume_wire_fields_round_trip_without_identity_changes() {
         "789",
         1,
         67108864,
-        webdock_supervisor::timestamp().unwrap() + 60,
+        spitzli_supervisor::timestamp().unwrap() + 60,
     )
     .unwrap();
     record.authorize(&packet).unwrap();
@@ -23,7 +23,7 @@ fn legacy_pool_and_volume_wire_fields_round_trip_without_identity_changes() {
         "789",
         2,
         134217728,
-        webdock_supervisor::timestamp().unwrap() + 60,
+        spitzli_supervisor::timestamp().unwrap() + 60,
     )
     .unwrap();
     assert!(record.authorize(&resize).is_err());
@@ -33,7 +33,7 @@ fn legacy_pool_and_volume_wire_fields_round_trip_without_identity_changes() {
         "789",
         1,
         67108864,
-        webdock_supervisor::timestamp().unwrap() + 60,
+        spitzli_supervisor::timestamp().unwrap() + 60,
     )
     .unwrap();
     assert!(record.authorize(&other).is_err());
@@ -47,7 +47,7 @@ fn storage_packets_reject_traversal_expired_leases_and_unknown_parameters() {
             "789",
             1,
             67108864,
-            webdock_supervisor::timestamp().unwrap() + 60
+            spitzli_supervisor::timestamp().unwrap() + 60
         )
         .is_err()
     );
@@ -59,7 +59,7 @@ fn storage_packets_reject_traversal_expired_leases_and_unknown_parameters() {
             "789",
             1,
             67108864,
-            webdock_supervisor::timestamp().unwrap() + 60,
+            spitzli_supervisor::timestamp().unwrap() + 60,
         )
         .unwrap(),
     )
@@ -75,7 +75,7 @@ async fn disposable_filesystem_preserves_identity_enforces_bytes_and_serves_priv
     let _ = tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         .try_init();
-    use webdock_agent::storage::{StorageClient, StoragePool};
+    use spitzli_agent::storage::{StorageClient, StoragePool};
     assert_eq!(
         std::env::var("WEBDOCK_DISPOSABLE_STORAGE_TEST").as_deref(),
         Ok("yes")
@@ -100,7 +100,7 @@ async fn disposable_filesystem_preserves_identity_enforces_bytes_and_serves_priv
     let serve_config = config_path.clone();
     let serve_socket = socket.clone();
     let server = tokio::spawn(async move {
-        webdock_agent::storage::serve(&serve_config, &serve_socket, async {
+        spitzli_agent::storage::serve(&serve_config, &serve_socket, async {
             let _ = stop_rx.await;
         })
         .await
@@ -111,7 +111,7 @@ async fn disposable_filesystem_preserves_identity_enforces_bytes_and_serves_priv
         for _ in 0..200 {if test_socket.exists(){break}tokio::time::sleep(std::time::Duration::from_millis(10)).await;}
         let client=StorageClient::new(test_socket);assert_eq!(client.information().await.unwrap().root,test_root);
         let nodes=vec!["fixture-node".to_string()];assert!(client.capability(&nodes).await.unwrap().ready);
-        let mut packet=StoragePacket::new("456","123","789",1,67108864,webdock_supervisor::timestamp().unwrap()+120).unwrap();
+        let mut packet=StoragePacket::new("456","123","789",1,67108864,spitzli_supervisor::timestamp().unwrap()+120).unwrap();
         let (_,path)=client.ensure(&packet).await.unwrap();let record_path=test_root.join("_pool/state.json");let initial:serde_json::Value=serde_json::from_slice(&std::fs::read(&record_path).unwrap()).unwrap();
         std::fs::write(path.join("proof"),b"retained-content").unwrap();client.retained(&packet).await.unwrap();
         assert_eq!(client.volume_state(&packet).await.unwrap(), VolumeState::Ready);
@@ -119,8 +119,8 @@ async fn disposable_filesystem_preserves_identity_enforces_bytes_and_serves_priv
         let mut file=std::fs::File::create(path.join("fill")).unwrap();let block=vec![0u8;1024*1024];let mut written=0u64;
         loop {match file.write_all(&block){Ok(())=>{written+=block.len() as u64;assert!(written<packet.spec.volume_bytes,"filesystem exceeded approved allocation");},Err(error)=>{assert_eq!(error.raw_os_error(),Some(28));break;}}}
         assert!(written>0);drop(file);std::fs::remove_file(path.join("fill")).unwrap();
-        let wrong=StoragePacket::new("456","999","789",1,67108864,webdock_supervisor::timestamp().unwrap()+120).unwrap();assert!(client.ensure(&wrong).await.is_err());
-        let resize=StoragePacket::new("456","123","789",2,134217728,webdock_supervisor::timestamp().unwrap()+120).unwrap();assert!(client.ensure(&resize).await.is_err());
+        let wrong=StoragePacket::new("456","999","789",1,67108864,spitzli_supervisor::timestamp().unwrap()+120).unwrap();assert!(client.ensure(&wrong).await.is_err());
+        let resize=StoragePacket::new("456","123","789",2,134217728,spitzli_supervisor::timestamp().unwrap()+120).unwrap();assert!(client.ensure(&resize).await.is_err());
         assert!(std::process::Command::new("/usr/bin/umount").arg(test_root.join("456/mount")).status().unwrap().success());assert!(!path.exists());assert!(!client.capability(&nodes).await.unwrap().ready);
         assert!(client.volume_state(&packet).await.is_err());assert!(!path.exists(),"inspection must not remount missing data");
         let image=test_root.join("456/volume.ext4");let absent=test_root.join("456/volume.missing");std::fs::rename(&image,&absent).unwrap();packet.revision=2;assert!(client.ensure(&packet).await.is_err());assert!(!image.exists());std::fs::rename(&absent,&image).unwrap();
@@ -129,7 +129,7 @@ async fn disposable_filesystem_preserves_identity_enforces_bytes_and_serves_priv
         client.purge(&packet).await.unwrap();client.purge(&packet).await.unwrap();assert!(!image.exists());assert!(client.ensure(&packet).await.is_err());
         assert_eq!(client.volume_state(&packet).await.unwrap(),VolumeState::Purged);
         assert!(client.volume_state(&wrong).await.is_err());
-        let missing=StoragePacket::new("457","123","789",1,67108864,webdock_supervisor::timestamp().unwrap()+120).unwrap();assert!(client.volume_state(&missing).await.is_err());
+        let missing=StoragePacket::new("457","123","789",1,67108864,spitzli_supervisor::timestamp().unwrap()+120).unwrap();assert!(client.volume_state(&missing).await.is_err());
         std::fs::write(&image,b"foreign replacement").unwrap();assert!(client.volume_state(&packet).await.is_err());assert_eq!(std::fs::read(&image).unwrap(),b"foreign replacement");std::fs::remove_file(&image).unwrap();
         eprintln!("owned fixed filesystem: written_before_enospc={written}; retained identity/content; missing image/ownership/resize denied; purge tombstone preserved");
     }).await;
@@ -178,7 +178,7 @@ fn docker_quota_binding_requires_exact_pool_identity_driver_and_derived_source()
     use std::collections::HashMap;
     let config:StorageConfig=serde_json::from_value(serde_json::json!({"root":"/var/lib/fixture-storage","node":"fixture-node","clusterID":"789","poolID":"123e4567-e89b-42d3-a456-426614174000","capacityBytes":268435456,"reserveBytes":67108864})).unwrap();
     let mut spec = support_spec();
-    spec.volume = Some(webdock_supervisor::RetainedVolume {
+    spec.volume = Some(spitzli_supervisor::RetainedVolume {
         mount_path: "/data".into(),
         size_bytes: Some(67108864),
     });
@@ -199,9 +199,9 @@ fn docker_quota_binding_requires_exact_pool_identity_driver_and_derived_source()
         ]),
         ..Default::default()
     };
-    webdock_agent::docker::verify_quota_volume(&volume, &spec, &config).unwrap();
+    spitzli_agent::docker::verify_quota_volume(&volume, &spec, &config).unwrap();
     volume.options.insert("device".into(), "/etc".into());
-    assert!(webdock_agent::docker::verify_quota_volume(&volume, &spec, &config).is_err());
+    assert!(spitzli_agent::docker::verify_quota_volume(&volume, &spec, &config).is_err());
     volume.options.insert(
         "device".into(),
         "/var/lib/fixture-storage/456/mount/data".into(),
@@ -210,10 +210,10 @@ fn docker_quota_binding_requires_exact_pool_identity_driver_and_derived_source()
         "webdock.dev/storage-pool".into(),
         uuid::Uuid::new_v4().to_string(),
     );
-    assert!(webdock_agent::docker::verify_quota_volume(&volume, &spec, &config).is_err());
+    assert!(spitzli_agent::docker::verify_quota_volume(&volume, &spec, &config).is_err());
 }
 #[cfg(feature = "docker")]
-fn support_spec() -> webdock_supervisor::RuntimeSpec {
+fn support_spec() -> spitzli_supervisor::RuntimeSpec {
     serde_json::from_value(serde_json::json!({"version":1,"installation":"test-quota","projectId":"123","resourceId":"456","revision":1,"image":format!("docker.io/library/busybox@sha256:{}","a".repeat(64)),"arguments":["sleep","300"],"cpuMillicores":100,"memoryBytes":33554432,"ephemeralBytes":16777216,"replicas":1,"port":8080,"healthPath":null,"volume":null})).unwrap()
 }
 
@@ -227,12 +227,12 @@ async fn disposable_docker_volume_has_real_byte_limit_and_retains_data() {
         query_parameters::*,
     };
     use futures_util::TryStreamExt;
-    use std::{os::unix::fs::PermissionsExt, sync::Arc};
-    use webdock_agent::{
+    use spitzli_agent::{
         docker::DockerAdapter,
         storage::{StorageClient, StoragePool},
     };
-    use webdock_supervisor::*;
+    use spitzli_supervisor::*;
+    use std::{os::unix::fs::PermissionsExt, sync::Arc};
     assert_eq!(
         std::env::var("WEBDOCK_DISPOSABLE_STORAGE_TEST").as_deref(),
         Ok("yes")
@@ -264,7 +264,7 @@ async fn disposable_docker_volume_has_real_byte_limit_and_retains_data() {
     let (stop_tx, stop_rx) = tokio::sync::oneshot::channel();
     let server_socket = helper_socket.clone();
     let server = tokio::spawn(async move {
-        webdock_agent::storage::serve(&config_path, &server_socket, async {
+        spitzli_agent::storage::serve(&config_path, &server_socket, async {
             let _ = stop_rx.await;
         })
         .await

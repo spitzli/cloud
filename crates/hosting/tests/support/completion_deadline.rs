@@ -1,7 +1,7 @@
 //! A live receipt must not settle state after waiting past its persisted deadline.
 use super::*;
 use sea_orm::TransactionTrait;
-use webdock_supervisor::{ObservedState, Phase};
+use spitzli_supervisor::{ObservedState, Phase};
 
 struct AbortCompletion(tokio::task::AbortHandle);
 impl Drop for AbortCompletion {
@@ -71,7 +71,7 @@ async fn mutation_completion_rechecks_deadline_after_application_lock_wait() {
                 revision: command.spec.revision,
                 phase: Phase::Running,
                 ready: true,
-                observed_at: webdock_supervisor::timestamp().unwrap(),
+                observed_at: spitzli_supervisor::timestamp().unwrap(),
                 runtime_id: Some("deadline-owned-runtime".into()),
                 conditions: vec![],
                 storage: None,
@@ -102,8 +102,8 @@ async fn mutation_completion_rechecks_deadline_after_application_lock_wait() {
         })
         .await
         .expect("completion must reach the held application lock while its lease is live");
-        assert!(webdock_supervisor::timestamp().unwrap() < deadline);
-        while webdock_supervisor::timestamp().unwrap() <= deadline {
+        assert!(spitzli_supervisor::timestamp().unwrap() < deadline);
+        while spitzli_supervisor::timestamp().unwrap() <= deadline {
             tokio::time::sleep(std::time::Duration::from_millis(20)).await;
         }
         tx.commit().await.unwrap();
@@ -220,14 +220,14 @@ fn deadline_schema(f: &Fixture) -> String {
     assert!(f.cluster.bytes().all(|b| b.is_ascii_digit()));
     format!("wd_completion_deadline_{}", f.cluster)
 }
-fn ready_observation(command: &webdock_supervisor::Command) -> ObservedState {
+fn ready_observation(command: &spitzli_supervisor::Command) -> ObservedState {
     ObservedState {
         autoscaling: None,
         resource_id: command.spec.resource_id.to_string(),
         revision: command.spec.revision,
         phase: Phase::Running,
         ready: true,
-        observed_at: webdock_supervisor::timestamp().unwrap(),
+        observed_at: spitzli_supervisor::timestamp().unwrap(),
         runtime_id: Some("deadline-owned-runtime".into()),
         conditions: vec![],
         storage: None,
@@ -352,14 +352,14 @@ async fn deadline_scenario(f: Arc<Fixture>, case: CompletionCase) {
                     .await;
             }
             let result = match read.kind {
-                webdock_supervisor::ReadKind::Logs => {
+                spitzli_supervisor::ReadKind::Logs => {
                     json!({"logs":"late-output","truncated":false})
                 }
-                webdock_supervisor::ReadKind::Inspect => {
-                    json!({"resourceId":read.spec.resource_id.to_string(),"revision":read.spec.revision,"phase":"running","ready":true,"observedAt":webdock_supervisor::timestamp().unwrap(),"runtimeId":read.expected_runtime_id,"conditions":[]})
+                spitzli_supervisor::ReadKind::Inspect => {
+                    json!({"resourceId":read.spec.resource_id.to_string(),"revision":read.spec.revision,"phase":"running","ready":true,"observedAt":spitzli_supervisor::timestamp().unwrap(),"runtimeId":read.expected_runtime_id,"conditions":[]})
                 }
-                webdock_supervisor::ReadKind::Metrics => {
-                    json!({"observedAt":webdock_supervisor::timestamp().unwrap(),"cpuNanoseconds":1,"memoryBytes":1024})
+                spitzli_supervisor::ReadKind::Metrics => {
+                    json!({"observedAt":spitzli_supervisor::timestamp().unwrap(),"cpuNanoseconds":1,"memoryBytes":1024})
                 }
             };
             return host
@@ -457,10 +457,10 @@ async fn core_retries_late_uncommitted_success_as_custody_without_poisoning_rece
     result.unwrap();
 }
 async fn core_deadline_scenario(f: Arc<Fixture>) {
+    use spitzli_agent_control::{ControlPlane, LocalBinding};
+    use spitzli_agent_protocol::{self as wire, agent_control_client::AgentControlClient};
     use std::os::unix::fs::PermissionsExt;
     use tonic::transport::{Endpoint, Server};
-    use webdock_agent_control::{ControlPlane, LocalBinding};
-    use webdock_agent_protocol::{self as wire, agent_control_client::AgentControlClient};
     f.configure("docker").await;
     let directory = tempfile::Builder::new()
         .permissions(std::fs::Permissions::from_mode(0o700))
@@ -551,7 +551,7 @@ async fn core_deadline_scenario(f: Arc<Fixture>) {
         .await
         .unwrap();
     let stored:Value=f.owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT command FROM webdock_auth.agent_runtime_dispatch WHERE operation_id=$1 AND generation=$2",[operation.into(),i64::try_from(issued.generation).unwrap().into()])).await.unwrap().unwrap().try_get("","command").unwrap();
-    let command: webdock_supervisor::Command = serde_json::from_value(stored).unwrap();
+    let command: spitzli_supervisor::Command = serde_json::from_value(stored).unwrap();
     assert_eq!(command.lease_until, issued.lease_until);
     let receipt = wire::Receipt {
         identity: Some(identity),

@@ -113,9 +113,9 @@ impl SendControl for HttpSendControl {
 }
 
 #[async_trait::async_trait]
-impl SendControl for webdock_mail_protocol::native_control::NativeControlClient {
+impl SendControl for spitzli_mail_protocol::native_control::NativeControlClient {
     async fn call(&self, input: Value) -> Result<Value, ControlError> {
-        webdock_mail_protocol::native_control::NativeControlClient::call(self, input)
+        spitzli_mail_protocol::native_control::NativeControlClient::call(self, input)
             .await
             .map_err(|error| ControlError {
                 status: error.status,

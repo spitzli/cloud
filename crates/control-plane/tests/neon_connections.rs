@@ -6,6 +6,9 @@ use axum::{
 use http_body_util::BodyExt;
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::{Value, json};
+use spitzli_control_plane::http::{Services, build_app, build_app_with_domains};
+use spitzli_core::config::PlatformConfig;
+use spitzli_identity::{CookiePolicy, IdentityService};
 use std::{
     collections::HashMap,
     sync::{
@@ -14,9 +17,6 @@ use std::{
     },
 };
 use tower::ServiceExt;
-use webdock_control_plane::http::{Services, build_app, build_app_with_domains};
-use webdock_core::config::PlatformConfig;
-use webdock_identity::{CookiePolicy, IdentityService};
 
 #[tokio::test]
 async fn neon_endpoint_authenticates_before_polling_and_preserves_origin_gate() {
@@ -118,9 +118,9 @@ async fn native_http_neon_customer_boundary_strict_input_and_disconnect_replay()
         auth.clone(),
         CookiePolicy::new(false, &secret).unwrap(),
     ));
-    let ids = webdock_persistence::IdAllocator::connect(
+    let ids = spitzli_persistence::IdAllocator::connect(
         &auth_url,
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     )
     .await
     .unwrap();
@@ -159,7 +159,7 @@ async fn native_http_neon_customer_boundary_strict_input_and_disconnect_replay()
         actor_ids.push((user, session));
     }
     let service = Arc::new(
-        webdock_control_plane::neon_connections::NeonConnections::new(
+        spitzli_control_plane::neon_connections::NeonConnections::new(
             runtime,
             auth.clone(),
             identity.clone(),

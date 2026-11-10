@@ -3,7 +3,7 @@ use crate::{Error, Result, policy::Profile};
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde_json::{Value, json};
-use webdock_core::id::RecordId;
+use spitzli_core::id::RecordId;
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RuntimeAccess {

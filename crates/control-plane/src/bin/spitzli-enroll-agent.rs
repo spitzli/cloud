@@ -13,7 +13,7 @@ struct Args {
 #[tokio::main]
 async fn main() -> ExitCode {
     let args = Args::parse();
-    match webdock_control_plane::plugin_bootstrap::enroll_agent(
+    match spitzli_control_plane::plugin_bootstrap::enroll_agent(
         &std::env::vars().collect(),
         &args.target,
         &args.config,
@@ -22,7 +22,7 @@ async fn main() -> ExitCode {
     .await
     {
         Ok(()) => ExitCode::SUCCESS,
-        Err(webdock_control_plane::plugin_bootstrap::SetupError::CommitUncertain) => {
+        Err(spitzli_control_plane::plugin_bootstrap::SetupError::CommitUncertain) => {
             eprintln!("agent_enrollment_commit_uncertain");
             ExitCode::FAILURE
         }

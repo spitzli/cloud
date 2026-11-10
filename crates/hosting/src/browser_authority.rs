@@ -1,8 +1,8 @@
 //! Manual Git deployment authority remains tied to the exact first-party browser grant.
 use super::*;
-use webdock_browser_session::{BrowserSessions, StoredAuthority, revalidate_stored_authority};
+use spitzli_browser_session::{BrowserSessions, StoredAuthority, revalidate_stored_authority};
 pub(super) struct BrowserVerifier {
-    identity: Arc<webdock_identity::IdentityService>,
+    identity: Arc<spitzli_identity::IdentityService>,
     browser: Option<Arc<BrowserSessions>>,
 }
 pub(super) struct BrowserGuard {
@@ -30,17 +30,17 @@ impl BrowserGuard {
         )
         .await
         .map_err(|failure| match failure {
-            webdock_browser_session::Error::Unauthorized
-            | webdock_browser_session::Error::Identity(
-                webdock_identity::IdentityError::Unauthorized
-                | webdock_identity::IdentityError::SecurityState,
+            spitzli_browser_session::Error::Unauthorized
+            | spitzli_browser_session::Error::Identity(
+                spitzli_identity::IdentityError::Unauthorized
+                | spitzli_identity::IdentityError::SecurityState,
             )
-            | webdock_browser_session::Error::OAuth(
-                webdock_oauth::Error::AccessDenied
-                | webdock_oauth::Error::InvalidGrant
-                | webdock_oauth::Error::InvalidClient
-                | webdock_oauth::Error::InvalidScope
-                | webdock_oauth::Error::LoginRequired,
+            | spitzli_browser_session::Error::OAuth(
+                spitzli_oauth::Error::AccessDenied
+                | spitzli_oauth::Error::InvalidGrant
+                | spitzli_oauth::Error::InvalidClient
+                | spitzli_oauth::Error::InvalidScope
+                | spitzli_oauth::Error::LoginRequired,
             ) => error(403, "Git browser approval is no longer valid."),
             _ => error(503, "Git browser authority is unavailable."),
         })?;
@@ -53,7 +53,7 @@ impl BrowserGuard {
 impl HostingService {
     pub fn with_session_authority(
         mut self,
-        identity: Arc<webdock_identity::IdentityService>,
+        identity: Arc<spitzli_identity::IdentityService>,
         browser: Option<Arc<BrowserSessions>>,
     ) -> Self {
         self.browser_authority = Some(Arc::new(BrowserVerifier { identity, browser }));

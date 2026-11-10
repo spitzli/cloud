@@ -1,4 +1,4 @@
-use webdock_access::{CustomerType, TenantProfileInput, website_url};
+use spitzli_access::{CustomerType, TenantProfileInput, website_url};
 #[test]
 fn profile_and_site_boundary_preserve_existing_contracts() {
     let profile = TenantProfileInput {

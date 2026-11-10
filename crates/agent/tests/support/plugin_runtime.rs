@@ -1,4 +1,4 @@
-use webdock_agent_protocol::plugin::*;
+use spitzli_agent_protocol::plugin::*;
 pub fn claim() -> PluginRuntimeClaim {
     let material = PluginRuntimeMaterial {
         files: MATERIAL_FILES
@@ -43,7 +43,7 @@ pub fn claim() -> PluginRuntimeClaim {
             operation_id: "456".into(),
             generation: 1,
             token: "b".repeat(64),
-            lease_until: webdock_supervisor::timestamp().unwrap() + 120,
+            lease_until: spitzli_supervisor::timestamp().unwrap() + 120,
             agent_generation: 1,
             action: PluginRuntimeAction::Apply,
         },

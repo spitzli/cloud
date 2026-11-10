@@ -6,7 +6,7 @@ use kube::{
     api::{ApiResource, DeleteParams, DynamicObject, ListParams, PostParams, Preconditions},
 };
 use serde_json::{Value, json};
-use webdock_agent_protocol::build_storage::{
+use spitzli_agent_protocol::build_storage::{
     BuildStorageAction, BuildStorageReservation, BuildVolumeHandle, SignedBuildStorageReservation,
 };
 
@@ -253,7 +253,7 @@ impl BindingRecord {
         }
     }
 }
-pub use webdock_agent_protocol::build_storage::{
+pub use spitzli_agent_protocol::build_storage::{
     BuildVolumePhase as NodeVolumePhase, BuildVolumeResult as NodeVolumeResult,
 };
 

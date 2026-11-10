@@ -57,9 +57,9 @@ fn candidate_dtos_reject_injected_authority_secrets_unknown_purpose_and_false_pr
 }
 #[test]
 fn live_parser_remains_unwired_and_browser_backup_contracts_remain_unchanged() {
-    assert!(webdock_databases::ManagedCommand::parse(prepare()).is_err());
-    assert!(webdock_databases::ManagedCommand::parse(accept()).is_err());
-    webdock_databases::ManagedCommand::parse(
+    assert!(spitzli_databases::ManagedCommand::parse(prepare()).is_err());
+    assert!(spitzli_databases::ManagedCommand::parse(accept()).is_err());
+    spitzli_databases::ManagedCommand::parse(
         json!({"action":"databases.backupPolicies.get","databaseID":"101"}),
     )
     .unwrap();

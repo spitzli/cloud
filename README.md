@@ -123,8 +123,9 @@ separate offline migration credentials. See [native setup](crates/control-plane/
 
 The older Next.js Console/Auth and TypeScript control plane are archived under `legacy/` and
 excluded from the active Bun workspace. They are historical references, not alternate production
-entry points. Some internal package names and protocol identifiers still use `webdock` for
-compatibility; preserve registered OAuth issuers, audiences, clients and existing encryption keys.
+entry points. Source packages use `@spitzli/*` and Rust crates use `spitzli-*`. Retained protocol
+identifiers and persisted data require a coordinated migration; preserve registered OAuth
+issuers, audiences, clients and existing encryption keys.
 Platform IDs are decimal Snowflake **strings**.
 
 Incoming mail is explicitly enabled per customer, using an isolated Stalwart Community Edition

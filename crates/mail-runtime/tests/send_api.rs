@@ -4,6 +4,11 @@ use axum::{
 };
 use http_body_util::BodyExt;
 use serde_json::{Value, json};
+use spitzli_mail_runtime::{
+    payload::PrivatePayloadStore,
+    send_api::SendApi,
+    send_control::{ControlError, SendControl},
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -12,11 +17,6 @@ use std::{
     },
 };
 use tower::ServiceExt;
-use webdock_mail_runtime::{
-    payload::PrivatePayloadStore,
-    send_api::SendApi,
-    send_control::{ControlError, SendControl},
-};
 
 struct Control {
     calls: Mutex<Vec<Value>>,

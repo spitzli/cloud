@@ -56,7 +56,7 @@ impl BuildService {
     pub async fn execute_build_infrastructure(
         &self,
         actor: &Principal,
-        authority: &webdock_browser_session::StoredAuthority,
+        authority: &spitzli_browser_session::StoredAuthority,
         input: Value,
     ) -> Result<Value> {
         if serde_json::to_vec(&input)

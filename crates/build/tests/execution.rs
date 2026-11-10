@@ -1,17 +1,17 @@
+use spitzli_build::execution::{MAX_LOG, run_bounded};
 use std::{
     process::Command,
     time::{Duration, Instant},
 };
-use webdock_build::execution::{MAX_LOG, run_bounded};
 
 #[test]
 fn frontend_requires_explicit_pinned_vm_capability_and_guest_output_matches_recipe() {
     use sha2::{Digest, Sha256};
-    use std::collections::BTreeMap;
-    use webdock_build::{
+    use spitzli_build::{
         artifact::Archive,
         execution::{GuestRequest, Limits, VmImage, decode_guest_output},
     };
+    use std::collections::BTreeMap;
     let request = GuestRequest {
         recipe: "dockerfile-frontend".into(),
         root_directory: ".".into(),
@@ -85,7 +85,7 @@ fn host_watchdog_kills_process_and_bounds_output() {
     let mut revoked = Command::new("/bin/sleep");
     revoked.arg("30");
     let failed = run_bounded(&mut revoked, Duration::from_secs(2), 1024, &mut || {
-        Err(webdock_build::Error {
+        Err(spitzli_build::Error {
             code: "lease_revoked",
             logs: String::new(),
         })

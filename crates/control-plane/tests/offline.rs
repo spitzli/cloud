@@ -11,7 +11,7 @@ fn migration_cli_rejects_overrides_and_never_prints_connection_credentials() {
         "sslmode=verify-full&ssl-mode=disable",
         "unrecognized_credential=private-fixture-credential",
     ] {
-        let output = Command::new(env!("CARGO_BIN_EXE_webdock-migrate"))
+        let output = Command::new(env!("CARGO_BIN_EXE_spitzli-migrate"))
             .env_clear()
             .env(
                 "WEBDOCK_MIGRATION_DATABASE_URL",
@@ -62,7 +62,7 @@ fn agent_listener_rejects_unavailable_mail_configuration_before_connecting() {
             "Missing WEBDOCK_DATABASE_URL",
         ),
     ] {
-        let output = Command::new(env!("CARGO_BIN_EXE_webdock-agent-control"))
+        let output = Command::new(env!("CARGO_BIN_EXE_spitzli-agent-control"))
             .env_clear()
             .env("WEBDOCK_FEATURES", features)
             .env("WEBDOCK_NATIVE_MAIL_ENABLED", "true")

@@ -1,6 +1,6 @@
 use clap::Parser;
 use sea_orm::{ConnectOptions, Database};
-use webdock_persistence::migrations::{self, MigrationError};
+use spitzli_persistence::migrations::{self, MigrationError};
 
 #[derive(Parser)]
 #[command(about = "Explicit offline Webdock schema setup/upgrade; runtime never migrates")]
@@ -22,7 +22,7 @@ async fn main() -> Result<(), MigrationError> {
     let args = Args::parse();
     let raw =
         std::env::var("WEBDOCK_MIGRATION_DATABASE_URL").map_err(|_| MigrationError::Target)?;
-    let connection = webdock_persistence::connection::ConnectionUrl::parse(&raw, false)
+    let connection = spitzli_persistence::connection::ConnectionUrl::parse(&raw, false)
         .map_err(|_| MigrationError::Target)?;
     connection
         .require_target(&args.target)
@@ -39,11 +39,11 @@ async fn main() -> Result<(), MigrationError> {
         .map_err(|_| MigrationError::Database)?;
     if args.initialize_empty {
         if let Some(path) = args.provision_roles_from {
-            let bytes = webdock_control_plane::config::read_private_file(&path)
+            let bytes = spitzli_control_plane::config::read_private_file(&path)
                 .map_err(|_| MigrationError::BootstrapPrerequisite)?;
             let passwords = serde_json::from_slice(&bytes)
                 .map_err(|_| MigrationError::BootstrapPrerequisite)?;
-            webdock_persistence::roles::provision_roles(&db, database, &passwords).await?;
+            spitzli_persistence::roles::provision_roles(&db, database, &passwords).await?;
         }
         let secret = std::env::var("DATABASE_RLS_SECRET")
             .map_err(|_| MigrationError::BootstrapPrerequisite)?;

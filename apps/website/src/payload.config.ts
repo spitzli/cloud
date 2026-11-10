@@ -1,11 +1,11 @@
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildConfig, type AuthStrategy } from 'payload';
 import { postgresAdapter } from '@payloadcms/db-postgres';
 import nodemailer from 'nodemailer';
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
-import { authSubjectField } from '@webdock/payload-sso';
+import { authSubjectField } from '@spitzli/payload-sso';
 import { sso } from './lib/sso';
 export { sso } from './lib/sso';
 import { LandingPage } from './cms/landing';

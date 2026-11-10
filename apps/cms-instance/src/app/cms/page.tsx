@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { cmsUser } from "@webdock/cms-ui/server";
-import { CMSApp } from "@webdock/cms-ui/client";
+import { cmsUser } from "@spitzli/cms-ui/server";
+import { CMSApp } from "@spitzli/cms-ui/client";
 import { getCMS, cmsOptions } from "../../lib/cms.ts";
 import { sso } from "../../lib/sso.ts";
 export const dynamic = "force-dynamic";

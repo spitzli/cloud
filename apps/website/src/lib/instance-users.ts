@@ -1,1 +1,1 @@
-export { isOperator, canManageUsers, canEditContent, protectUsers, protectContent } from '@webdock/instance-kit';
+export { isOperator, canManageUsers, canEditContent, protectUsers, protectContent } from '@spitzli/instance-kit';

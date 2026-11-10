@@ -1,10 +1,10 @@
 //! Independently supervised private plugin host/callback listener. It never installs or enrolls itself.
 use clap::Parser;
-use std::{path::PathBuf, sync::Arc};
-use webdock_control_plane::{
+use spitzli_control_plane::{
     plugin_config::{ControlListener, PluginConfig, authority_services},
     plugins::{PluginDependencies, PluginEndpoints},
 };
+use std::{path::PathBuf, sync::Arc};
 #[derive(Parser)]
 struct Args {
     #[arg(long)]
@@ -18,43 +18,43 @@ async fn run() -> Result<(), Error> {
     let args = Args::parse();
     let config = PluginConfig::load(&args.config)?;
     let environment = std::env::vars().collect();
-    let platform = webdock_core::config::PlatformConfig::from_map(&environment)?;
+    let platform = spitzli_core::config::PlatformConfig::from_map(&environment)?;
     let auth_url = required("WEBDOCK_DATABASE_URL")?;
-    let auth = webdock_control_plane::db::connect_runtime(
+    let auth = spitzli_control_plane::db::connect_runtime(
         &auth_url,
         "webdock_auth_bootstrap",
         platform.production,
     )
     .await?;
-    let business = webdock_control_plane::db::connect_runtime(
+    let business = spitzli_control_plane::db::connect_runtime(
         &required("WEBDOCK_SESSION_DATABASE_URL")?,
         "webdock_auth_runtime",
         platform.production,
     )
     .await?;
-    let worker = webdock_control_plane::db::connect_runtime(
+    let worker = spitzli_control_plane::db::connect_runtime(
         &required("WEBDOCK_WORKER_DATABASE_URL")?,
         "webdock_worker_runtime",
         platform.production,
     )
     .await?;
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2)?,
+            spitzli_ids::Identity::platform(0, 2)?,
         )
         .await?,
     );
     let authority = authority_services(auth.clone(), ids.clone(), &platform).await?;
-    let neon_connections = Arc::new(webdock_provider_connections::Connections::new(
+    let neon_connections = Arc::new(spitzli_provider_connections::Connections::new(
         business.clone(),
         auth.clone(),
         authority.identity.clone(),
         authority.browser.clone(),
         &required("DATABASE_RLS_SECRET")?,
-        webdock_control_plane::neon_connections::encryption_key(&environment)?,
+        spitzli_control_plane::neon_connections::encryption_key(&environment)?,
     )?);
-    let mail_dependencies = webdock_mail::MailDependencies {
+    let mail_dependencies = spitzli_mail::MailDependencies {
         auth: auth.clone(),
         business: business.clone(),
         worker: worker.clone(),
@@ -78,13 +78,13 @@ async fn run() -> Result<(), Error> {
         &config,
     )
     .await?;
-    let mail = if webdock_control_plane::mail::native_control_configured(
+    let mail = if spitzli_control_plane::mail::native_control_configured(
         config.mail.as_ref(),
         &std::env::vars().collect(),
     ) && let Some(configuration) = &config.mail
     {
         Some(
-            webdock_control_plane::mail::initialize_sender(
+            spitzli_control_plane::mail::initialize_sender(
                 mail_dependencies.clone(),
                 services.host.clone(),
                 configuration,
@@ -98,10 +98,10 @@ async fn run() -> Result<(), Error> {
     };
     let native_mail = match &mail {
         Some(sender) => Some(
-            Arc::new(webdock_mail::managed_control::ManagedControl::new(
+            Arc::new(spitzli_mail::managed_control::ManagedControl::new(
                 sender.clone(),
                 Arc::new(
-                    webdock_mail::submissions::Submissions::new(
+                    spitzli_mail::submissions::Submissions::new(
                         mail_dependencies,
                         &required("DATABASE_RLS_SECRET")?,
                         true,
@@ -134,14 +134,14 @@ async fn run() -> Result<(), Error> {
     let exports = services.host.clone().export_service(
         services
             .exports
-            .unwrap_or_else(|| Arc::new(webdock_plugin_host::UnconfiguredExportSources)),
+            .unwrap_or_else(|| Arc::new(spitzli_plugin_host::UnconfiguredExportSources)),
     );
     let repository = services
         .repository
         .map(|repository| repository.authority_service());
     match &config.control {
         ControlListener::Unix { path } => {
-            let mut socket = webdock_plugin_runtime::UnixSocket::bind(path)?;
+            let mut socket = spitzli_plugin_runtime::UnixSocket::bind(path)?;
             let incoming = socket.incoming()?;
             server
                 .add_service(services.host.rpc())

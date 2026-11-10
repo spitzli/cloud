@@ -1,11 +1,11 @@
 //! Plain transport is an explicit loopback adapter using the same post-DATA classifier.
+use spitzli_mail_runtime::smtp::submit_loopback;
 use std::time::Duration;
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::TcpListener,
 };
-use webdock_mail_runtime::smtp::submit_loopback;
-async fn attempt(mode: u8) -> Result<(), webdock_mail_runtime::smtp::SmtpFailure> {
+async fn attempt(mode: u8) -> Result<(), spitzli_mail_runtime::smtp::SmtpFailure> {
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let port = listener.local_addr().unwrap().port();
     let server = tokio::spawn(async move {

@@ -1,42 +1,42 @@
 [package]
-name = "webdock-control-plane"
+name = "spitzli-control-plane"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-default-run = "webdock-control-plane"
+default-run = "spitzli-control-plane"
 
 [dependencies]
 reqwest = { version = "0.12", default-features = false, features = ["json"] }
-webdock-export-protocol={path="../export-protocol"}
+spitzli-export-protocol={path="../export-protocol"}
 rmcp={version="=3.5.1",default-features=false,features=["server","transport-streamable-http-server"]}
-webdock-build={path="../build"}
-webdock-plugin-host={path="../plugin-host"}
-webdock-plugin-protocol={path="../plugin-protocol"}
-webdock-repository-protocol={path="../repository-protocol"}
+spitzli-build={path="../build"}
+spitzli-plugin-host={path="../plugin-host"}
+spitzli-plugin-protocol={path="../plugin-protocol"}
+spitzli-repository-protocol={path="../repository-protocol"}
 ed25519-dalek="2"
 hex="0.4"
 getrandom="0.2"
 rcgen = { version = "0.14", features = ["x509-parser"] }
 x509-parser = "0.18"
-webdock-mail = { path = "../mail" }
-webdock-databases = { path = "../databases" }
-webdock-provider-connections = { path = "../provider-connections" }
+spitzli-mail = { path = "../mail" }
+spitzli-databases = { path = "../databases" }
+spitzli-provider-connections = { path = "../provider-connections" }
 sha2 = "0.10"
 subtle = "2.6"
-webdock-core = { path = "../core" }
-webdock-identity = { path = "../identity" }
-webdock-registry = { path = "../registry" }
-webdock-persistence = { path = "../persistence" }
-webdock-ids = { path = "../ids" }
-webdock-oauth = { path = "../oauth" }
-webdock-browser-session = { path = "../browser-session" }
-webdock-access = { path = "../access" }
-webdock-hosting = { path = "../hosting" }
-webdock-agent-control = { path = "../agent-control" }
-webdock-agent-protocol = { path = "../agent-protocol" }
-webdock-plugin-runtime = { path = "../plugin-runtime" }
-webdock-plugin-http = { path = "../plugin-http" }
+spitzli-core = { path = "../core" }
+spitzli-identity = { path = "../identity" }
+spitzli-registry = { path = "../registry" }
+spitzli-persistence = { path = "../persistence" }
+spitzli-ids = { path = "../ids" }
+spitzli-oauth = { path = "../oauth" }
+spitzli-browser-session = { path = "../browser-session" }
+spitzli-access = { path = "../access" }
+spitzli-hosting = { path = "../hosting" }
+spitzli-agent-control = { path = "../agent-control" }
+spitzli-agent-protocol = { path = "../agent-protocol" }
+spitzli-plugin-runtime = { path = "../plugin-runtime" }
+spitzli-plugin-http = { path = "../plugin-http" }
 tonic = { version = "0.14.6", features = ["transport", "tls-ring"] }
 rustix = { version = "1", features = ["process", "fs"] }
 base64 = "0.22"
@@ -58,15 +58,15 @@ tower-http = { version = "0.6", features = ["cors", "trace", "limit", "fs"] }
 governor = "0.10.4"
 clap = { version = "4", features = ["derive"] }
 
-webdock-plugin-kit = { path = "../plugin-kit" }
+spitzli-plugin-kit = { path = "../plugin-kit" }
 
 [dev-dependencies]
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
-webdock-agent = { path = "../agent", default-features = false, features = ["docker"] }
+spitzli-agent = { path = "../agent", default-features = false, features = ["docker"] }
 tokio-postgres = "0.7"
 serde-saphyr = "0.0.29"
 tempfile = "3"
-webdock-secrets = { path = "../secrets" }
+spitzli-secrets = { path = "../secrets" }
 http-body-util = "0.1"
 totp-rs = { version = "=6.0.0", features = ["otpauth"] }
 

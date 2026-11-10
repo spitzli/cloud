@@ -1,4 +1,4 @@
-use webdock_control_plane::{
+use spitzli_control_plane::{
     app::build_runtime,
     config::runtime_config,
     runtime::{self, Error, Result},

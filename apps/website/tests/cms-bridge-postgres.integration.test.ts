@@ -9,9 +9,9 @@ import {
   up,
   down,
 } from "../src/migrations-instance/20261018_180000_cms_bridge.ts";
-import { PostgresBridgeTransfers } from "@webdock/cms-bridge/postgres";
+import { PostgresBridgeTransfers } from "@spitzli/cms-bridge/postgres";
 import { projectBridgeUser } from "../../../packages/cms-bridge/src/auth.ts";
-import { bridgeRequestDigest } from "@webdock/cms-bridge/server";
+import { bridgeRequestDigest } from "@spitzli/cms-bridge/server";
 
 test(
   "website bridge migration and transfers work with restricted PostgreSQL roles and remain portable",

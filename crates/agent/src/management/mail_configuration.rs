@@ -128,7 +128,7 @@ impl RemoteAuthority {
 }
 #[async_trait::async_trait]
 impl ConfigurationAuthority for RemoteAuthority {
-    async fn guard(&self, claim: &ConfigurationClaim) -> webdock_supervisor::Result<()> {
+    async fn guard(&self, claim: &ConfigurationClaim) -> spitzli_supervisor::Result<()> {
         claim
             .validate(chrono::Utc::now())
             .map_err(|_| ExecutionError::Expired)?;
@@ -192,7 +192,7 @@ impl ConfigurationAuthority for RemoteAuthority {
         &self,
         claim: &ConfigurationClaim,
         checkpoint: ConfigurationCheckpoint,
-    ) -> webdock_supervisor::Result<()> {
+    ) -> spitzli_supervisor::Result<()> {
         ConfigurationAuthority::guard(self, claim).await?;
         checkpoint
             .validate()

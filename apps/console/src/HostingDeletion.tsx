@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useBlocker } from "@tanstack/react-router";
-import { formatResource } from "@webdock/hosting-contracts";
+import { formatResource } from "@spitzli/hosting-contracts";
 import { Modal } from "./common";
 import { deleteCommand, deletionPlanSchema, type DeletionPlan, type HostingApp } from "./hosting-contracts";
 import { useHostingAction, useHostingCommand } from "./hosting-client";

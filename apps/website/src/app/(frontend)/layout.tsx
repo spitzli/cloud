@@ -1,7 +1,7 @@
 import Script from 'next/script';
 import analytics from '@/lib/managed-analytics.json';
-import {I18nProvider} from '@webdock/i18n/react';
-import {getRequestI18n} from '@webdock/i18n/next';
+import {I18nProvider} from '@spitzli/i18n/react';
+import {getRequestI18n} from '@spitzli/i18n/next';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import '../globals.css';

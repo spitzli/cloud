@@ -15,6 +15,7 @@ use kube::{
 pub use lifecycle::verify_retirement_manifest;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_supervisor::*;
 use std::{
     io::{Read, Write},
     path::{Path, PathBuf},
@@ -22,7 +23,6 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use webdock_supervisor::*;
 
 fn helm_upgrade_options(action: Action) -> Vec<&'static str> {
     let mut options = vec![
@@ -1144,7 +1144,7 @@ mod helm_rollback_tests {
 
     #[test]
     fn real_helm_failed_port_upgrade_restores_previous_release_without_duplicate_ports() {
-        use webdock_core::id::RecordId;
+        use spitzli_core::id::RecordId;
         let root = tempfile::tempdir().unwrap();
         let mut spec = RuntimeSpec {
             autoscaling: None,

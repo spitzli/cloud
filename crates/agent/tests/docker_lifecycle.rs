@@ -6,9 +6,9 @@ use bollard::{
     query_parameters::*,
 };
 use futures_util::TryStreamExt;
+use spitzli_agent::docker::DockerAdapter;
+use spitzli_supervisor::*;
 use std::sync::Arc;
-use webdock_agent::docker::DockerAdapter;
-use webdock_supervisor::*;
 struct TestAuthority;
 #[async_trait::async_trait]
 impl Authorizer for TestAuthority {
@@ -237,7 +237,7 @@ async fn isolated_docker_lifecycle_preserves_data_and_reconciles_without_duplica
         assert!(metrics.cpu_nanoseconds.is_some());
         assert!(metrics.memory_bytes.is_some());
         let mut foreign = spec.clone();
-        foreign.project_id = webdock_core::id::RecordId::parse("999").unwrap();
+        foreign.project_id = spitzli_core::id::RecordId::parse("999").unwrap();
         assert!(matches!(
             adapter.inspect(&foreign).await,
             Err(ExecutionError::Ownership)
@@ -341,8 +341,8 @@ async fn isolated_docker_lifecycle_preserves_data_and_reconciles_without_duplica
 #[ignore = "requires explicit disposable WEBDOCK_DOCKER_TEST_IMAGE and local Engine"]
 async fn scoped_secret_and_socket_mounts_use_reviewed_descriptor_and_nonroot_identity() {
     use sha2::{Digest, Sha256};
+    use spitzli_agent::policy::{GrantKind, MountGrant, RuntimePolicy, RuntimePolicyConfig};
     use std::{io::Write, os::unix::fs::PermissionsExt};
-    use webdock_agent::policy::{GrantKind, MountGrant, RuntimePolicy, RuntimePolicyConfig};
     let image = std::env::var("WEBDOCK_DOCKER_TEST_IMAGE").unwrap();
     let directory = tempfile::Builder::new()
         .permissions(std::fs::Permissions::from_mode(0o700))

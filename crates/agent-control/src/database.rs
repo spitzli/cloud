@@ -1,7 +1,7 @@
 //! Database RPCs delegate to the retained database authority within the same authenticated transaction.
 use super::*;
 use wire::database::{DatabaseCheckpoint, DatabaseCompletion, DatabaseJobSpec, DatabaseLease};
-fn domain_error(error: webdock_databases::Error) -> Status {
+fn domain_error(error: spitzli_databases::Error) -> Status {
     match error.status {
         401 => denied(),
         403 | 409 => Status::failed_precondition("Database operation authority changed"),
@@ -150,7 +150,7 @@ impl wire::database_control_server::DatabaseControl for ControlPlane {
                 &agent,
                 &spec,
                 &lease,
-                webdock_databases::DatabaseCallback::Guard,
+                spitzli_databases::DatabaseCallback::Guard,
             )
             .await
             .map_err(domain_error)?;

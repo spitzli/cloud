@@ -5,9 +5,9 @@ use crate::{
     crypto::{hash_password, random},
     security::digest,
 };
+use spitzli_persistence::postgres::{Connection, Pool, Transaction};
 use std::time::Duration;
 use tokio_postgres::types::Type;
-use webdock_persistence::postgres::{Connection, Pool, Transaction};
 const BUDGET: Duration = Duration::from_secs(30);
 
 // The caller holds the canonical user FOR UPDATE: a new mapping FK cannot race admission.

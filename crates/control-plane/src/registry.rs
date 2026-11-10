@@ -11,9 +11,9 @@ use axum::{
     routing::get,
 };
 use serde_json::{Value, json};
+use spitzli_identity::Principal;
+use spitzli_registry::{RegistryError, RegistryService};
 use std::{collections::HashSet, sync::Arc};
-use webdock_identity::Principal;
-use webdock_registry::{RegistryError, RegistryService};
 
 pub fn routes() -> Router<Arc<ServiceState>> {
     let mut router = Router::new();

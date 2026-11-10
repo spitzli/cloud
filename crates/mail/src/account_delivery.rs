@@ -7,6 +7,10 @@ use reqwest::{
 };
 use sea_orm::{Database, DatabaseConnection};
 use serde::{Deserialize, Serialize};
+use spitzli_identity::{
+    CookiePolicy, Delivery, DeliveryError, DeliveryKind, DeliveryRequest, IdentityService,
+    RlsSigner, SecretKeys,
+};
 use std::{
     collections::BTreeMap,
     io::Read,
@@ -14,10 +18,6 @@ use std::{
     path::{Path, PathBuf},
     sync::Arc,
     time::Duration,
-};
-use webdock_identity::{
-    CookiePolicy, Delivery, DeliveryError, DeliveryKind, DeliveryRequest, IdentityService,
-    RlsSigner, SecretKeys,
 };
 
 #[derive(Deserialize)]
@@ -56,7 +56,7 @@ fn unavailable(_: impl std::fmt::Display) -> DeliveryError {
     DeliveryError::Unavailable
 }
 fn canonical_id(value: &str) -> bool {
-    webdock_core::id::RecordId::parse(value).is_ok()
+    spitzli_core::id::RecordId::parse(value).is_ok()
 }
 fn origin(value: &str) -> Result<url::Url, DeliveryError> {
     let parsed = url::Url::parse(value).map_err(unavailable)?;
@@ -74,7 +74,7 @@ fn origin(value: &str) -> Result<url::Url, DeliveryError> {
 }
 fn account_origin(value: &str) -> Result<url::Url, DeliveryError> {
     let url = url::Url::parse(value).map_err(unavailable)?;
-    webdock_identity::validate_account_origin(&url).map_err(unavailable)?;
+    spitzli_identity::validate_account_origin(&url).map_err(unavailable)?;
     Ok(url)
 }
 /// Configuration and trust files are operator-owned; no caller can substitute these paths.
@@ -429,7 +429,7 @@ impl Delivery for MailDelivery {
 }
 pub struct AccountDispatcher {
     identity: Arc<IdentityService>,
-    access: webdock_access::AccessService,
+    access: spitzli_access::AccessService,
 }
 impl AccountDispatcher {
     pub async fn connect(config: DispatcherConfiguration) -> Result<Self, DeliveryError> {
@@ -456,18 +456,18 @@ impl AccountDispatcher {
             .with_secret_keys(secret_keys()?)
             .with_delivery(mail.clone()),
         );
-        let allocator = Arc::new(webdock_persistence::IdAllocator::new(
+        let allocator = Arc::new(spitzli_persistence::IdAllocator::new(
             business.clone(),
-            webdock_ids::Identity::platform(0, 2).map_err(unavailable)?,
+            spitzli_ids::Identity::platform(0, 2).map_err(unavailable)?,
         ));
-        let access = webdock_access::AccessService::new(
+        let access = spitzli_access::AccessService::new(
             business,
             auth,
             identity.clone(),
             allocator,
             RlsSigner::new(config.rls_secret, "webdock_auth_runtime").map_err(unavailable)?,
             Arc::new(secret_keys()?),
-            webdock_access::AccessConfig {
+            spitzli_access::AccessConfig {
                 auth_origin: account_origin(&config.account_origin)?,
                 console_origins: vec![],
                 allow_local_http: true,
@@ -492,7 +492,7 @@ impl AccountDispatcher {
 }
 async fn restricted(url: &str, role: &str) -> Result<DatabaseConnection, DeliveryError> {
     let url =
-        webdock_persistence::connection::ConnectionUrl::parse(url, false).map_err(unavailable)?;
+        spitzli_persistence::connection::ConnectionUrl::parse(url, false).map_err(unavailable)?;
     let mut options = sea_orm::ConnectOptions::new(url.as_str().to_owned());
     options
         .max_connections(4)
@@ -502,7 +502,7 @@ async fn restricted(url: &str, role: &str) -> Result<DatabaseConnection, Deliver
         .idle_timeout(Duration::from_secs(60))
         .sqlx_logging(false);
     let db = Database::connect(options).await.map_err(unavailable)?;
-    webdock_persistence::connection::verify_runtime_role(&db, role)
+    spitzli_persistence::connection::verify_runtime_role(&db, role)
         .await
         .map_err(unavailable)?;
     Ok(db)

@@ -3,6 +3,7 @@ use super::config::{RecoveryProfileConfig, private};
 use crate::storage::StorageGuard;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{
     collections::BTreeMap,
     io::{Read, Write},
@@ -11,7 +12,6 @@ use std::{
     process::Stdio,
     time::Duration,
 };
-use webdock_supervisor::{ExecutionError, Result};
 struct GuardedRead<'a, R> {
     inner: R,
     guard: &'a StorageGuard,

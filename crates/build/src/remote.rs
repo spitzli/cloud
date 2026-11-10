@@ -4,8 +4,8 @@ use crate::{
     artifact::{ArtifactStore, MAX_OUTPUT, StoredArtifact},
     error, io,
 };
+use spitzli_object_storage::Store;
 use std::io::Read;
-use webdock_object_storage::Store;
 
 #[derive(Clone)]
 pub struct RemoteArtifacts {

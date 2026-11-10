@@ -28,9 +28,9 @@ async fn main() {
         row.is_some(),
         "Complete the owned account browser fixture first"
     );
-    let ids = webdock_persistence::IdAllocator::connect(
+    let ids = spitzli_persistence::IdAllocator::connect(
         &guard("AUTH_DATABASE_URL"),
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     )
     .await
     .unwrap();
@@ -42,7 +42,7 @@ async fn main() {
     let proxy_secret = format!("{}{}", uuid::Uuid::new_v4(), uuid::Uuid::new_v4());
     let gateway_secret = format!("{}{}", uuid::Uuid::new_v4(), uuid::Uuid::new_v4());
     let cipher =
-        webdock_secrets::SecretCipher::new(&std::env::var("BETTER_AUTH_SECRET").unwrap()).unwrap();
+        spitzli_secrets::SecretCipher::new(&std::env::var("BETTER_AUTH_SECRET").unwrap()).unwrap();
     let sealed = cipher
         .seal(&proxy_secret, &format!("database:{binding}:{user}"))
         .unwrap();

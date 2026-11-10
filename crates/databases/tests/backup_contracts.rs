@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_databases::ManagedCommand;
+use spitzli_databases::ManagedCommand;
 #[test]
 fn operator_policy_commands_and_exact_recovery_are_native_contracts() {
     for action in [
@@ -40,7 +40,7 @@ fn restore_requires_expected_data_hash_and_never_selects_latest() {
 #[test]
 fn public_backup_status_keeps_unqualified_actions_disabled_and_observations_separate() {
     let schema: serde_json::Value =
-        serde_json::from_str(webdock_databases::BACKUP_STATUS_SCHEMA).unwrap();
+        serde_json::from_str(spitzli_databases::BACKUP_STATUS_SCHEMA).unwrap();
     let validator = jsonschema::validator_for(&schema).unwrap();
     let absent = json!({"status":"not-configured","lastSuccessAt":null,"recoverableUntil":null,"lastRestoreTestAt":null,"observedControls":null,"publicRecoveryAvailable":false,"disabledReason":"production-qualification-required","rpoSeconds":null,"rtoSeconds":null});
     assert!(validator.is_valid(&absent));

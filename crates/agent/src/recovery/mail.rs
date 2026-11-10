@@ -10,6 +10,8 @@ use crate::storage::StorageGuard;
 use base64::Engine;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_agent_protocol::recovery::RecoveryClaim;
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{
     collections::BTreeMap,
     io::{Read, Write},
@@ -19,8 +21,6 @@ use std::{
     sync::{Arc, atomic::AtomicBool},
     time::Duration,
 };
-use webdock_agent_protocol::recovery::RecoveryClaim;
-use webdock_supervisor::{ExecutionError, Result};
 
 fn name(value: &str) -> Result<&str> {
     if value.is_empty()
@@ -937,7 +937,7 @@ async fn restore_inner(
     let source = url(core)?;
     let target_binding = format!("{}:{}/{}", core.server_name, core.port, core.database);
     scope.check().await?;
-    let result = tokio::process::Command::new("/usr/local/bin/webdock-migrate")
+    let result = tokio::process::Command::new("/usr/local/bin/spitzli-migrate")
         .args([
             "--target",
             &target_binding,
@@ -1144,10 +1144,10 @@ async fn verify_private_key(
         4096,
     )?)
     .map_err(|_| ExecutionError::Denied)?;
-    let key = webdock_mail_runtime::secrets::private_payload_key_from_hex(key.trim_end())
+    let key = spitzli_mail_runtime::secrets::private_payload_key_from_hex(key.trim_end())
         .map_err(|_| ExecutionError::Denied)?;
     let cipher =
-        webdock_mail_runtime::secrets::MailCipher::new(&key).map_err(|_| ExecutionError::Denied)?;
+        spitzli_mail_runtime::secrets::MailCipher::new(&key).map_err(|_| ExecutionError::Denied)?;
     let sentinel = sql(
         endpoint,
         "SELECT sealed FROM private_payload_key WHERE singleton;",

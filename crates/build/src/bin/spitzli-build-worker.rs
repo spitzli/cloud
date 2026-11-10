@@ -1,9 +1,9 @@
-use webdock_build::worker::WorkerConfig;
+use spitzli_build::worker::WorkerConfig;
 #[tokio::main]
 async fn main() {
     let mut args = std::env::args().skip(1);
     if args.next().as_deref() != Some("--config") {
-        eprintln!("Usage: webdock-build-worker --config /private/config.json [--once]");
+        eprintln!("Usage: spitzli-build-worker --config /private/config.json [--once]");
         std::process::exit(2);
     }
     let Some(path) = args.next() else {

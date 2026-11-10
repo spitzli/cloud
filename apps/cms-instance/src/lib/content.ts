@@ -6,14 +6,14 @@ import type {
 } from "payload";
 import { APIError } from "payload";
 import { createHash } from "node:crypto";
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 import {
   protectContent,
   protectUsers,
   canManageUsers,
-} from "@webdock/instance-kit";
-import { authSubjectField } from "@webdock/payload-sso";
-import type { CMSOptions } from "@webdock/cms-ui/types";
+} from "@spitzli/instance-kit";
+import { authSubjectField } from "@spitzli/payload-sso";
+import type { CMSOptions } from "@spitzli/cms-ui/types";
 export const modules: CMSOptions["modules"] = [
   {
     slug: "pages",

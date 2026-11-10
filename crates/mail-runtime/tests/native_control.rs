@@ -1,5 +1,5 @@
-use webdock_mail_protocol::native_control::NativeControlClient;
-use webdock_mail_runtime::SendControl;
+use spitzli_mail_protocol::native_control::NativeControlClient;
+use spitzli_mail_runtime::SendControl;
 #[tokio::test]
 async fn native_client_is_send_control_and_preserves_safe_status() {
     let channel = tonic::transport::Endpoint::from_static("http://127.0.0.1:1").connect_lazy();

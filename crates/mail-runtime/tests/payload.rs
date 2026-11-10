@@ -1,9 +1,9 @@
 use base64::{Engine, engine::general_purpose::STANDARD};
+use spitzli_mail_runtime::payload::PrivatePayloadStore;
 use std::{
     fs,
     os::unix::fs::{PermissionsExt, symlink},
 };
-use webdock_mail_runtime::payload::PrivatePayloadStore;
 
 #[test]
 fn retained_volume_is_private_immutable_and_bound_to_key_customer_and_reference() {

@@ -1,5 +1,5 @@
 use chrono::{Duration, Utc};
-use webdock_agent_protocol::mail::*;
+use spitzli_agent_protocol::mail::*;
 
 fn claim() -> MailClaim {
     let material = MailMaterial::Credentials {

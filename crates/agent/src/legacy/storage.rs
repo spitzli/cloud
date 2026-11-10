@@ -90,7 +90,7 @@ pub(super) fn verify(
 /// The local helper still always passes its own fixed node/root above.
 pub(super) fn verify_objects(
     spec: &RuntimeSpec,
-    cluster_id: &webdock_core::id::RecordId,
+    cluster_id: &spitzli_core::id::RecordId,
     root: &std::path::Path,
     node: &str,
     existing_pv: Option<&PersistentVolume>,

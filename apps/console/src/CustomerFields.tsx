@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { countryOptions } from "./countries";
 import { FieldError } from "./live-validation";
 import type { RegistryRecord } from "./api";

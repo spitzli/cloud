@@ -3,14 +3,14 @@
 mod fixture;
 use fixture::AUTH_SECRET;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
-use std::{collections::BTreeMap, sync::Arc};
-use webdock_identity::{
+use spitzli_identity::{
     CookiePolicy, IdentityError, IdentityService, MfaProof, PasswordAuthentication, SecretKeys,
 };
-use webdock_persistence::{
+use spitzli_persistence::{
     IdAllocator,
     postgres::{Limits, Pool},
 };
+use std::{collections::BTreeMap, sync::Arc};
 
 fn keys() -> SecretKeys {
     SecretKeys::new(
@@ -60,7 +60,7 @@ async fn service(f: &fixture::Fixture) -> IdentityService {
     .with_allocator(Arc::new(
         IdAllocator::connect_native(
             &f.bootstrap_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
             "webdock_auth_bootstrap",
             false,
         )
@@ -70,7 +70,7 @@ async fn service(f: &fixture::Fixture) -> IdentityService {
 }
 async fn seed(f: &fixture::Fixture) {
     sql(f,r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('op','Operator','op@example.test',true,'operator',true,false),('a','A','a@example.test',true,'user',false,false),('b','B','b@example.test',true,'user',false,false)"#).await;
-    let hash = webdock_identity::hash_password("Owned-original-password-123").unwrap();
+    let hash = spitzli_identity::hash_password("Owned-original-password-123").unwrap();
     f.owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,r#"INSERT INTO webdock_auth.account(id,"accountId","providerId","userId",password,"updatedAt") VALUES('21','op','credential','op',$1,now()),('22','a','credential','a',$1,now()),('23','b','credential','b',$1,now())"#,[hash.into()])).await.unwrap();
     f.owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,r#"INSERT INTO webdock_auth."twoFactor"(id,secret,"backupCodes","userId",verified) VALUES('31',$1,$2,'op',true)"#,[keys().encrypt("0123456789abcdefghijklmnopqrstuv").unwrap().into(),keys().encrypt("[\"owned-recovery-one\",\"owned-recovery-two\"]").unwrap().into()])).await.unwrap();
 }
@@ -352,7 +352,7 @@ async fn native_password_cannot_use_a_credential_replaced_after_verification() {
     let f = fixture::Fixture::start().await;
     seed(&f).await;
     let service = Arc::new(service(&f).await);
-    let changed = webdock_identity::hash_password("Owned-replaced-password-456").unwrap();
+    let changed = spitzli_identity::hash_password("Owned-replaced-password-456").unwrap();
     let guard = f.owner.begin().await.unwrap();
     guard
         .execute_raw(Statement::from_sql_and_values(

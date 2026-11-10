@@ -1,4 +1,4 @@
-import {msgid} from '@webdock/i18n';
+import {msgid} from '@spitzli/i18n';
 export const faqs = [
   { question: msgid("What is Spitzli Cloud?"), answer: msgid("Spitzli Cloud brings websites, applications and their services together. It is operated by Spitzli Development, with a direct connection to the person building your project.") },
   { question: msgid("Do I need my own domain?"), answer: msgid("No. A public project can use an address such as your-project.spitzli.site. You can also connect a domain you own.") },

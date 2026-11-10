@@ -82,7 +82,7 @@ struct UploadGatewayConfig {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct BuildStorageConfig {
-    target: webdock_agent_protocol::build_storage::BuildStorageTarget,
+    target: spitzli_agent_protocol::build_storage::BuildStorageTarget,
     signing_key_file: PathBuf,
     requests_namespace: String,
     receipts_namespace: String,
@@ -90,7 +90,7 @@ struct BuildStorageConfig {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct StorageConfig {
-    storage: webdock_object_storage::S3Config,
+    storage: spitzli_object_storage::S3Config,
     credential_file: PathBuf,
 }
 #[derive(Deserialize)]
@@ -503,13 +503,13 @@ impl KubernetesWorkerConfig {
             serde_json::from_slice(&owned_file(&self.staging_storage.credential_file, 8192)?)
                 .map_err(|_| error("invalid_staging_credentials"))?;
         let staging = if let Some(ca) = &policy.certificate_authority_pem {
-            webdock_object_storage::Store::s3_with_ca(
+            spitzli_object_storage::Store::s3_with_ca(
                 self.staging_storage.storage,
                 credentials,
                 ca.as_bytes(),
             )
         } else {
-            webdock_object_storage::Store::s3(self.staging_storage.storage, credentials)
+            spitzli_object_storage::Store::s3(self.staging_storage.storage, credentials)
         }
         .map_err(|_| error("invalid_staging_storage"))?;
         let upload_gateway = if let Some(config) = &self.upload_gateway {

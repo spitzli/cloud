@@ -6,7 +6,7 @@ Studio embeds the Tabularis explorer, SQL editor and data grid. The API authoriz
 
 1. Apply the existing Auth, hosting and Studio migrations first, then run `node --import tsx legacy/control-plane/scripts/legacy/migrate-databases.ts` with the Auth migration database credentials. The new tables live in `webdock_auth`; use the existing schema owner/runtime privilege conventions.
 2. Configure Auth with `WEBDOCK_DATABASE_GATEWAY_ORIGIN` and a random `WEBDOCK_DATABASE_GATEWAY_SECRET` of at least 32 characters. The gateway uses the same secret. Auth also needs its existing `BETTER_AUTH_SECRET`, Studio OAuth consumer configuration and hosting region configuration. Production authorization retains the existing verified-region gate (`WEBDOCK_HOSTING_EU_VERIFIED=true` for the verified non-Vercel runtime, or the existing `vercel-fra1` policy).
-3. Configure and start the native Rust gateway using `.env.example` and `cargo run -p webdock-database-gateway` from the repository root. Put TLS in front of it, including WebSocket upgrades. Use a gateway hostname on the same site as Studio, for example `database.webdock.dev` and `studio.webdock.dev`. The session cookie is HttpOnly, SameSite=Strict, Secure over HTTPS, and scoped to its workspace path. Cross-site embedding is not supported.
+3. Configure and start the native Rust gateway using `.env.example` and `cargo run -p spitzli-database-gateway` from the repository root. Put TLS in front of it, including WebSocket upgrades. Use a gateway hostname on the same site as Studio, for example `database.webdock.dev` and `studio.webdock.dev`. The session cookie is HttpOnly, SameSite=Strict, Secure over HTTPS, and scoped to its workspace path. Cross-site embedding is not supported.
 4. Provision a separate Tabularis process/container **and storage directory for every database binding, user and permission profile**. Restrict network access to the gateway and the assigned database. Configure only the assigned saved connection; do not mount unrelated credentials, plugins or host files. Runtime origins must be explicitly included in the gateway allowlist.
 5. Use a dedicated PostgreSQL login whose actual privileges match the grant. A read role has only CONNECT, schema USAGE and SELECT on approved objects. A write role adds only intended INSERT/UPDATE/DELETE (and required sequence permissions). Schema roles may manage only their own project schema. Remove inherited/public privileges that would expose other tenants. The gateway does not infer SQL permissions from text; PostgreSQL enforces them, including arbitrary SQL typed into the console. SQLite runtimes instead receive only the approved project volume; the production Lunares grants allow full schema/data access to that volume. A read-only SQLite grant requires a separately verified read-only connection and mount.
 6. Build Tabularis from the source recorded in `vendor/tabularis-web-ui.json`; apply `vendor/tabularis-web-ui.patch` to the recorded base commit when reconstructing it. Build the web assets with `pnpm build` and the Rust server with `TABULARIS_BUILD_COMMIT=<sourceCommit> cargo build --release --manifest-path src-tauri/Cargo.toml --bin tabularis --locked`. Configure `TABULARIS_EXPECTED_COMMIT` to that same source commit. Debug builds without a stamped commit intentionally fail the production gateway check.
@@ -110,8 +110,8 @@ Host configuration, arbitrary connection creation, extensions, tunnels, uploads/
 From the repository root with Node 24:
 
 ```sh
-npm test -w @webdock/database-gateway
-npm run check -w @webdock/database-gateway
+npm test -w @spitzli/database-gateway
+npm run check -w @spitzli/database-gateway
 node --import tsx --test packages/database-contracts/src/index.test.ts
 node --env-file=.env.database-test.local --import tsx --test legacy/control-plane/tests/ported-auth/databases/integration.test.ts
 ```
@@ -122,7 +122,7 @@ The Auth integration test intentionally resets schemas only in the dedicated fix
 
 ## Container deployment
 
-Build the gateway with `npm run build -w @webdock/database-gateway`, then build its Dockerfile from `apps/database-gateway` after loading/building the pinned Tabularis image. The Tabularis image uses `deploy/Tabularis.Dockerfile` against an archived pinned source tree containing built `packages/web-ui/dist` assets. Stamp the full `SOURCE_COMMIT`. Import the exact images into k3s; pods intentionally use `imagePullPolicy: Never`. Keep a copy of the image digests in the rollout record.
+Build the gateway with `npm run build -w @spitzli/database-gateway`, then build its Dockerfile from `apps/database-gateway` after loading/building the pinned Tabularis image. The Tabularis image uses `deploy/Tabularis.Dockerfile` against an archived pinned source tree containing built `packages/web-ui/dist` assets. Stamp the full `SOURCE_COMMIT`. Import the exact images into k3s; pods intentionally use `imagePullPolicy: Never`. Keep a copy of the image digests in the rollout record.
 
 `deploy/render.py` renders restricted pods, per-runtime secrets/state claims, internal TLS, default-deny network policies and the gateway ingress from a private operator inventory. Its JSON output contains secrets and must remain outside Git with mode 0600. CA keys and runtime keys are private; leaf certificates expire after 365 days and must be renewed before expiry. Use a server-side dry run before applying. The SQLite inventory references an existing approved claim; Lunares uses a retained local-PV alias of the same quota-backed data directory as its bot, on the same node, so SQLite locking/WAL are shared. This alias does not allocate another copy of the database. Revoke database grants and stop browser runtimes before decommissioning the bot volume; retain/delete handling must respect both consumers. Existing customer workload quotas are unchanged.
 
@@ -174,7 +174,7 @@ trust is unchanged. Incomplete, wildcard or inconsistent targets fail validation
 
 Internal targets additionally produce `<output>.database-ingress.json`, containing
 only a separate database-side NetworkPolicy selecting the supplied database pods
-and allowing TCP 5432 from this exact runtime pod in `webdock-databases`. Apply it
+and allowing TCP 5432 from this exact runtime pod in `spitzli-databases`. Apply it
 to the **database cluster** after review. External targets produce no ingress
 manifest. Always use a fresh output path to avoid confusing an older ingress file
 with the current render. Existing inventory rows without these fields retain
@@ -221,7 +221,7 @@ revision changes, secret redaction, and opt-in behavior without Docker.
 
 To exercise the actual packaged runtime and its stamped commit, build the gateway
 image and replace the binary variable above with
-`WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE=webdock-database-gateway:managed-viewer-test`.
+`WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE=spitzli-database-gateway:managed-viewer-test`.
 This variant also verifies UID 65532 with a read-only root filesystem, all Linux
 capabilities dropped, no privilege escalation, a 256 PID limit and private tmpfs.
 Its test containers use host networking solely to reach the disposable loopback
@@ -232,7 +232,7 @@ PostgreSQL fixture; deployment networking remains governed by NetworkPolicy.
 The production gateway executable now lives in `crates/database-gateway`; see its README for boundaries and tests. Build the native image from the repository root:
 
 ```sh
-docker build -f deploy/docker/database-gateway.Dockerfile -t webdock-database-gateway:rust-local .
+docker build -f deploy/docker/database-gateway.Dockerfile -t spitzli-database-gateway:rust-local .
 ```
 
-To run the retained PostgreSQL/TLS acceptance against the native host binary, set `WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY` to `target/debug/webdock-database-gateway`, alongside the existing `WEBDOCK_MANAGED_RUNTIME_TEST_BINARY` and `WEBDOCK_MANAGED_RUNTIME_TEST_WEB_ROOT` for the pinned browser runtime. The image variant uses `WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE=webdock-database-gateway:rust-local`. Both create only disposable local databases. The TypeScript server sources remain a temporary contract-test oracle while all current cases move to native tests; they are not an active production entrypoint.
+To run the retained PostgreSQL/TLS acceptance against the native host binary, set `WEBDOCK_MANAGED_RUNTIME_TEST_GATEWAY_BINARY` to `target/debug/spitzli-database-gateway`, alongside the existing `WEBDOCK_MANAGED_RUNTIME_TEST_BINARY` and `WEBDOCK_MANAGED_RUNTIME_TEST_WEB_ROOT` for the pinned browser runtime. The image variant uses `WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE=spitzli-database-gateway:rust-local`. Both create only disposable local databases. The TypeScript server sources remain a temporary contract-test oracle while all current cases move to native tests; they are not an active production entrypoint.

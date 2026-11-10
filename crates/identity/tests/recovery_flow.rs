@@ -1,11 +1,11 @@
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement};
+use spitzli_identity::{
+    CookiePolicy, Delivery, DeliveryError, DeliveryRequest, IdentityService,
+    PasswordAuthentication, SecretKeys,
+};
 use std::{
     collections::BTreeMap,
     sync::{Arc, Mutex},
-};
-use webdock_identity::{
-    CookiePolicy, Delivery, DeliveryError, DeliveryRequest, IdentityService,
-    PasswordAuthentication, SecretKeys,
 };
 #[derive(Default)]
 struct Capture(Mutex<Vec<DeliveryRequest>>);

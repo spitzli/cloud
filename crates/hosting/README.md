@@ -27,7 +27,7 @@ restricted `webdock_auth_runtime`, `webdock_auth_bootstrap` and
   only successful, action-shaped results are exposed. Execution envelopes,
   receipt digests and internal failure details stay private.
 - `claim_runtime(&AgentIdentity)` selects eligible native Docker work, acquires
-  its lease and derives `webdock_supervisor::Command` in one transaction.
+  its lease and derives `spitzli_supervisor::Command` in one transaction.
   Unsupported commands remain queued without acquiring a lease; polling never
   marks them failed. Unsupported oldest rows do not prevent selection of eligible
   work in other projects. Retained Kubernetes work uses its dedicated executor.
@@ -50,7 +50,7 @@ BusyBox image already present in local Docker, Bun/Playwright available and
 the Console built, run:
 
 ```sh
-WEBDOCK_HOSTING_BROWSER_TEST=1 cargo test -p webdock-hosting \
+WEBDOCK_HOSTING_BROWSER_TEST=1 cargo test -p spitzli-hosting \
   --features docker-test --test postgres \
   native_browser::console_drives_real_native_hosting_and_docker \
   --locked -- --ignored --exact --nocapture
@@ -133,8 +133,8 @@ commands return an explicit unavailable error, never a fabricated successful res
 ## Validation
 
 ```sh
-cargo test -p webdock-hosting
-cargo clippy -p webdock-hosting --all-targets --all-features --no-deps -- -D warnings
+cargo test -p spitzli-hosting
+cargo clippy -p spitzli-hosting --all-targets --all-features --no-deps -- -D warnings
 ```
 
 Database tests require explicit loopback URLs for `webdock_rls_test` from
@@ -146,8 +146,8 @@ unique records and clean only those records; they do not reset schemas or shared
 data. The test-created installation singleton is serialized by a fixture lock.
 
 ```sh
-cargo test -p webdock-hosting --test postgres -- --ignored --test-threads=1
-WEBDOCK_HOSTING_DOCKER_TEST=1 cargo test -p webdock-hosting --features docker-test -- --include-ignored --test-threads=1
+cargo test -p spitzli-hosting --test postgres -- --ignored --test-threads=1
+WEBDOCK_HOSTING_DOCKER_TEST=1 cargo test -p spitzli-hosting --features docker-test -- --include-ignored --test-threads=1
 ```
 
 The Docker test explicitly uses `/var/run/docker.sock`, requires its reviewed image

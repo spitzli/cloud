@@ -1,12 +1,12 @@
 #![cfg(feature = "kubernetes")]
 mod support;
-use webdock_agent::legacy::{deployment_update, name, namespace, owner_labels};
-use webdock_supervisor::*;
+use spitzli_agent::legacy::{deployment_update, name, namespace, owner_labels};
+use spitzli_supervisor::*;
 fn spec() -> RuntimeSpec {
     let mut spec = support::spec();
     spec.hosting_binding = Some(HostingBinding {
         public_route: None,
-        cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
+        cluster_id: spitzli_core::id::RecordId::parse("789").unwrap(),
         quota: allowance(),
         final_quota: allowance(),
     });
@@ -41,7 +41,7 @@ fn retained_probe_host_is_only_a_header_for_its_own_container() {
             spec: spec.clone(),
             expected_runtime_id: None,
         };
-        let (created, _) = webdock_agent::legacy::new_workload(&command).unwrap();
+        let (created, _) = spitzli_agent::legacy::new_workload(&command).unwrap();
         command.expected_runtime_id = Some("retained-uid".into());
         let updated = deployment_update(existing(&spec), &command).unwrap();
         for deployment in [created, updated] {
@@ -159,8 +159,8 @@ async fn existing_kubernetes_uid_local_volume_data_and_secret_references_survive
         % 1_000_000_000_000_000
         + 1000;
     let mut spec = spec();
-    spec.project_id = webdock_core::id::RecordId::parse(&numeric.to_string()).unwrap();
-    spec.resource_id = webdock_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
+    spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
+    spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
     spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
     spec.arguments.extend(["-h".into(), "/data".into()]);
     spec.volume = Some(RetainedVolume {
@@ -282,7 +282,7 @@ async fn existing_kubernetes_uid_local_volume_data_and_secret_references_survive
     let observed_claim = claims.get(&claim).await.unwrap().metadata.uid;
     let result = tokio::spawn(async move {
         let deadline = tokio::time::Instant::now() + Duration::from_secs(90);
-        while !webdock_agent::legacy::inspect(client_for_task.clone(), &spec)
+        while !spitzli_agent::legacy::inspect(client_for_task.clone(), &spec)
             .await
             .unwrap()
             .ready
@@ -302,7 +302,7 @@ async fn existing_kubernetes_uid_local_volume_data_and_secret_references_survive
             spec: spec.clone(),
             expected_runtime_id: Some(uid.clone()),
         };
-        let result = webdock_agent::legacy::reconcile(
+        let result = spitzli_agent::legacy::reconcile(
             client_for_task.clone(),
             &update,
             &LeaseGuard::new(update.clone(), Arc::new(Authority)),
@@ -321,7 +321,7 @@ async fn existing_kubernetes_uid_local_volume_data_and_secret_references_survive
             ..update.clone()
         };
         assert_eq!(
-            webdock_agent::legacy::reconcile(
+            spitzli_agent::legacy::reconcile(
                 client_for_task.clone(),
                 &stop,
                 &LeaseGuard::new(stop.clone(), Arc::new(Authority))
@@ -339,7 +339,7 @@ async fn existing_kubernetes_uid_local_volume_data_and_secret_references_survive
             },
             ..update
         };
-        let result = webdock_agent::legacy::reconcile(
+        let result = spitzli_agent::legacy::reconcile(
             client_for_task,
             &resume,
             &LeaseGuard::new(resume.clone(), Arc::new(Authority)),
@@ -394,27 +394,27 @@ async fn existing_kubernetes_uid_local_volume_data_and_secret_references_survive
 #[test]
 fn new_legacy_objects_use_original_names_and_restricted_retained_claim() {
     let mut spec = support::spec();
-    spec.hosting_binding = Some(webdock_supervisor::HostingBinding {
+    spec.hosting_binding = Some(spitzli_supervisor::HostingBinding {
         public_route: None,
-        cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
+        cluster_id: spitzli_core::id::RecordId::parse("789").unwrap(),
         quota: allowance(),
         final_quota: allowance(),
     });
-    spec.volume = Some(webdock_supervisor::RetainedVolume {
+    spec.volume = Some(spitzli_supervisor::RetainedVolume {
         mount_path: "/data".into(),
         size_bytes: Some(67108864),
     });
-    let command = webdock_supervisor::Command {
+    let command = spitzli_supervisor::Command {
         operation_id: "initial-create".into(),
         generation: 1,
-        lease_until: webdock_supervisor::timestamp().unwrap() + 60,
+        lease_until: spitzli_supervisor::timestamp().unwrap() + 60,
         authorization: "fixture-only".into(),
         material: None,
-        action: webdock_supervisor::Action::Apply,
+        action: spitzli_supervisor::Action::Apply,
         spec,
         expected_runtime_id: None,
     };
-    let (deployment, service) = webdock_agent::legacy::new_workload(&command).unwrap();
+    let (deployment, service) = spitzli_agent::legacy::new_workload(&command).unwrap();
     let value = serde_json::to_value(deployment).unwrap();
     assert_eq!(value["metadata"]["namespace"], "wd-123");
     assert_eq!(value["metadata"]["name"], "app-456");
@@ -444,8 +444,8 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         api::{DeleteParams, ListParams},
         config::{KubeConfigOptions, Kubeconfig},
     };
+    use spitzli_agent::storage::{StorageClient, StoragePacket, StoragePool};
     use std::{os::unix::fs::PermissionsExt, sync::Arc, time::Duration};
-    use webdock_agent::storage::{StorageClient, StoragePacket, StoragePool};
     assert_eq!(
         std::env::var("WEBDOCK_DISPOSABLE_NODE_TEST").as_deref(),
         Ok("yes")
@@ -486,7 +486,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
     let server_socket = socket.clone();
     let (stop_tx, stop_rx) = tokio::sync::oneshot::channel();
     let server = tokio::spawn(async move {
-        webdock_agent::storage::serve(&config_path, &server_socket, async {
+        spitzli_agent::storage::serve(&config_path, &server_socket, async {
             let _ = stop_rx.await;
         })
         .await
@@ -503,8 +503,8 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         % 1_000_000_000_000
         + 1000;
     let mut spec = spec();
-    spec.project_id = webdock_core::id::RecordId::parse(&numeric.to_string()).unwrap();
-    spec.resource_id = webdock_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
+    spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
+    spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
     spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
     spec.memory_bytes = 134217728;
     spec.volume = Some(RetainedVolume {
@@ -538,7 +538,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
     let test_root = root.clone();
     let test = tokio::spawn(async move {
         let mut command = command;
-        let first = webdock_agent::legacy::reconcile_with_storage(
+        let first = spitzli_agent::legacy::reconcile_with_storage(
             test_client.clone(),
             &command,
             &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -566,7 +566,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
             Api::namespaced(test_client.clone(), &namespace(&test_spec));
         let claim_name = format!("{}-data", name(&test_spec));
         let claim_uid = claims.get(&claim_name).await.unwrap().metadata.uid;
-        let retry = webdock_agent::legacy::reconcile_with_storage(
+        let retry = spitzli_agent::legacy::reconcile_with_storage(
             test_client.clone(),
             &command,
             &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -580,7 +580,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         command.operation_id = "stop-allocation".into();
         command.action = Action::Stop;
         assert_eq!(
-            webdock_agent::legacy::reconcile_with_storage(
+            spitzli_agent::legacy::reconcile_with_storage(
                 test_client.clone(),
                 &command,
                 &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -594,7 +594,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         command.spec.revision = 3;
         command.operation_id = "resume-allocation".into();
         command.action = Action::Apply;
-        let resumed = webdock_agent::legacy::reconcile_with_storage(
+        let resumed = spitzli_agent::legacy::reconcile_with_storage(
             test_client.clone(),
             &command,
             &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -620,7 +620,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         command.operation_id = "forbidden-resize".into();
         command.spec.volume.as_mut().unwrap().size_bytes = Some(134217728);
         assert!(
-            webdock_agent::legacy::reconcile_with_storage(
+            spitzli_agent::legacy::reconcile_with_storage(
                 test_client.clone(),
                 &command,
                 &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -635,7 +635,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         purge.action = Action::PurgeStorage;
         purge.expected_runtime_id = None;
         assert!(
-            webdock_agent::legacy::reconcile_with_storage(
+            spitzli_agent::legacy::reconcile_with_storage(
                 test_client.clone(),
                 &purge,
                 &LeaseGuard::new(purge.clone(), Arc::new(Authority)),
@@ -646,7 +646,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         );
         command.operation_id = "retire-allocation".into();
         command.action = Action::Retire;
-        let retired = webdock_agent::legacy::reconcile_with_storage(
+        let retired = spitzli_agent::legacy::reconcile_with_storage(
             test_client.clone(),
             &command,
             &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -671,7 +671,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
             std::fs::read(path.join("index.html")).unwrap(),
             b"allocated-content"
         );
-        let replay = webdock_agent::legacy::reconcile_with_storage(
+        let replay = spitzli_agent::legacy::reconcile_with_storage(
             test_client.clone(),
             &command,
             &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -681,7 +681,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         .unwrap();
         assert_eq!(replay.storage, retired.storage);
         let retained_state = std::fs::read(test_root.join("_pool/state.json")).unwrap();
-        let inspected = webdock_agent::legacy::inspect_completed(
+        let inspected = spitzli_agent::legacy::inspect_completed(
             test_client.clone(),
             &command,
             &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -700,7 +700,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         );
         purge.spec.revision = 5;
         purge.operation_id = "purge-allocation".into();
-        let purged = webdock_agent::legacy::reconcile_with_storage(
+        let purged = spitzli_agent::legacy::reconcile_with_storage(
             test_client.clone(),
             &purge,
             &LeaseGuard::new(purge.clone(), Arc::new(Authority)),
@@ -716,7 +716,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
             })
         );
         assert!(!path.exists());
-        let inspected = webdock_agent::legacy::inspect_completed(
+        let inspected = spitzli_agent::legacy::inspect_completed(
             test_client.clone(),
             &purge,
             &LeaseGuard::new(purge.clone(), Arc::new(Authority)),
@@ -727,7 +727,7 @@ async fn disposable_node_allocates_fixed_storage_and_preserves_claims_on_retry_s
         assert_eq!(inspected.storage, purged.storage);
         assert!(claims.get_opt(&claim_name).await.unwrap().is_none());
         assert_eq!(
-            webdock_agent::legacy::reconcile_with_storage(
+            spitzli_agent::legacy::reconcile_with_storage(
                 test_client,
                 &purge,
                 &LeaseGuard::new(purge.clone(), Arc::new(Authority)),

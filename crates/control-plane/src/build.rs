@@ -11,8 +11,8 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use serde_json::Value;
+use spitzli_core::features::OperationKind;
 use std::sync::Arc;
-use webdock_core::features::OperationKind;
 fn unavailable() -> ApiFailure {
     reject(
         StatusCode::SERVICE_UNAVAILABLE,
@@ -37,7 +37,7 @@ pub(crate) async fn execute(
         .features
         .require(
             "hosting",
-            if webdock_build::contracts::read_action(action) {
+            if spitzli_build::contracts::read_action(action) {
                 OperationKind::Read
             } else {
                 OperationKind::Provision
@@ -50,7 +50,7 @@ pub(crate) async fn execute(
             &actor.principal,
             &actor.authority,
             input,
-            webdock_build::BuildCeiling {
+            spitzli_build::BuildCeiling {
                 read: true,
                 write: !actor.read_only(),
             },
@@ -89,8 +89,8 @@ pub(crate) fn credential_endpoint(path: &str) -> bool {
         })
 }
 pub(crate) fn worker_routes(
-    service: Option<Arc<webdock_build::BuildService>>,
-    features: webdock_core::features::FeatureSet,
+    service: Option<Arc<spitzli_build::BuildService>>,
+    features: spitzli_core::features::FeatureSet,
 ) -> Router<Arc<ServiceState>> {
     let Some(service) = service else {
         return Router::new();
@@ -98,13 +98,13 @@ pub(crate) fn worker_routes(
     Router::new()
         .nest_service(
             "/api/hosting/git/worker",
-            webdock_build::http::worker_router(service),
+            spitzli_build::http::worker_router(service),
         )
         .route_layer(middleware::from_fn_with_state(features, worker_boundary))
 }
 
 async fn worker_boundary(
-    State(features): State<webdock_core::features::FeatureSet>,
+    State(features): State<spitzli_core::features::FeatureSet>,
     request: Request,
     next: Next,
 ) -> Response {

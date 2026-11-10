@@ -34,11 +34,11 @@ pub struct RuntimeFixture {
     pub runtime: PathBuf,
     pub socket: PathBuf,
     stop: tokio::sync::oneshot::Sender<()>,
-    server: tokio::task::JoinHandle<webdock_supervisor::Result<()>>,
+    server: tokio::task::JoinHandle<spitzli_supervisor::Result<()>>,
 }
 impl RuntimeFixture {
     pub async fn new(cluster: String) -> Self {
-        use webdock_agent::storage::{StorageKind, StoragePool};
+        use spitzli_agent::storage::{StorageKind, StoragePool};
         assert_eq!(rustix::process::geteuid().as_raw(), 0);
         let base = tempfile::Builder::new()
             .prefix("webdock-native-db-owned-")
@@ -67,7 +67,7 @@ impl RuntimeFixture {
         let server_socket = socket.clone();
         let (stop, shutdown) = tokio::sync::oneshot::channel();
         let server = tokio::spawn(async move {
-            webdock_agent::storage::serve_kind(
+            spitzli_agent::storage::serve_kind(
                 &storage,
                 &server_socket,
                 StorageKind::Database,
@@ -160,9 +160,9 @@ impl RuntimeFixture {
                     .await
                     .unwrap();
             }
-            let packet: webdock_agent::storage::database::DatabaseStoragePacket=serde_json::from_value(serde_json::json!({"version":1,"installationID":id,"clusterID":self.cluster,"revision":1,"node":self.node,"poolID":self.pool,"volumeBytes":536870912,"leaseUntil":chrono::Utc::now()+chrono::Duration::seconds(120)})).unwrap();
+            let packet: spitzli_agent::storage::database::DatabaseStoragePacket=serde_json::from_value(serde_json::json!({"version":1,"installationID":id,"clusterID":self.cluster,"revision":1,"node":self.node,"poolID":self.pool,"volumeBytes":536870912,"leaseUntil":chrono::Utc::now()+chrono::Duration::seconds(120)})).unwrap();
             let state =
-                webdock_agent::storage::database::DatabaseStorageClient::new(self.socket.clone());
+                spitzli_agent::storage::database::DatabaseStorageClient::new(self.socket.clone());
             if self.base.join("volumes").join(&id).exists() {
                 state.purge(&packet).await.unwrap();
             }

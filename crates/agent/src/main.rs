@@ -1,8 +1,8 @@
 use clap::{Parser, Subcommand};
+use spitzli_agent::{config::AgentConfig, management::Daemon};
 use std::path::PathBuf;
-use webdock_agent::{config::AgentConfig, management::Daemon};
 #[derive(Parser)]
-#[command(name = "webdock-agent", about = "Webdock enrolled runtime executor")]
+#[command(name = "spitzli-agent", about = "Webdock enrolled runtime executor")]
 struct Arguments {
     #[arg(long)]
     config: PathBuf,
@@ -24,7 +24,7 @@ async fn main() -> std::process::ExitCode {
     let result = async {
         let config = AgentConfig::load(&args.config)?;
         match args.action {
-            Action::Validate => webdock_agent::management::validate_configuration(&config),
+            Action::Validate => spitzli_agent::management::validate_configuration(&config),
             Action::Run => {
                 Daemon::open(config)
                     .await?

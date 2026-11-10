@@ -1,6 +1,6 @@
 //! Run only against an explicitly supplied disposable PostgreSQL fixture.
 use sea_orm::{ConnectOptions, ConnectionTrait, Database, DbBackend, Statement};
-use webdock_identity::{
+use spitzli_identity::{
     CookiePolicy, IdentityError, IdentityService, PasswordAuthentication, RlsSigner,
 };
 

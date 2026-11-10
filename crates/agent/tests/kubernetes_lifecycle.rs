@@ -7,12 +7,12 @@ use kube::{
     config::{KubeConfigOptions, Kubeconfig},
 };
 use sha2::{Digest, Sha256};
-use std::{collections::BTreeMap, path::PathBuf, sync::Arc};
-use webdock_agent::{
+use spitzli_agent::{
     kubernetes::{ApprovedChart, KubernetesAdapter},
     policy::{GrantKind, MountGrant, RuntimePolicy, RuntimePolicyConfig},
 };
-use webdock_supervisor::*;
+use spitzli_supervisor::*;
+use std::{collections::BTreeMap, path::PathBuf, sync::Arc};
 struct TestAuthority;
 #[async_trait::async_trait]
 impl Authorizer for TestAuthority {

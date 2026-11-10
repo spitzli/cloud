@@ -1,6 +1,6 @@
 use serde_json::json;
+use spitzli_agent::config::{AgentConfig, IdentityState};
 use std::{os::unix::fs::PermissionsExt, path::Path};
-use webdock_agent::config::{AgentConfig, IdentityState};
 fn private() -> tempfile::TempDir {
     tempfile::Builder::new()
         .permissions(std::fs::Permissions::from_mode(0o700))
@@ -60,8 +60,8 @@ async fn daemon_without_runtime_adapters_fails_closed_after_configuration_valida
     );
     let config = AgentConfig::load(&path).unwrap();
     assert!(matches!(
-        webdock_agent::management::Daemon::open(config).await,
-        Err(webdock_agent::management::AgentError::Configuration(
+        spitzli_agent::management::Daemon::open(config).await,
+        Err(spitzli_agent::management::AgentError::Configuration(
             "Runtime adapter is not included in this build"
         ))
     ));

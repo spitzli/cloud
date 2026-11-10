@@ -1,5 +1,5 @@
 use super::*;
-use webdock_agent::database::{DatabaseAuthority, DatabaseRuntime, DatabaseStep};
+use spitzli_agent::database::{DatabaseAuthority, DatabaseRuntime, DatabaseStep};
 use wire::database::*;
 use wire::database_control_server::{DatabaseControl, DatabaseControlServer};
 struct DatabaseCore {
@@ -79,7 +79,7 @@ impl DatabaseRuntime for DatabaseFixture {
         &self,
         c: &DatabaseClaim,
         a: &dyn DatabaseAuthority,
-    ) -> webdock_supervisor::Result<DatabaseStep> {
+    ) -> spitzli_supervisor::Result<DatabaseStep> {
         a.guard(c).await?;
         self.0.fetch_add(1, Ordering::SeqCst);
         if c.spec.phase == DatabaseExecutionPhase::Apply {
@@ -261,7 +261,7 @@ impl DatabaseRuntime for DatabaseEntry {
         &self,
         _: &DatabaseClaim,
         _: &dyn DatabaseAuthority,
-    ) -> webdock_supervisor::Result<DatabaseStep> {
+    ) -> spitzli_supervisor::Result<DatabaseStep> {
         self.0.fetch_add(1, Ordering::SeqCst);
         Err(ExecutionError::Runtime)
     }
@@ -345,7 +345,7 @@ async fn delayed_database_guard_cannot_enter_runtime_after_lease_expiry() {
     );
     assert!(matches!(
         result,
-        Err(webdock_agent::management::AgentError::Execution(
+        Err(spitzli_agent::management::AgentError::Execution(
             ExecutionError::Expired
         ))
     ));

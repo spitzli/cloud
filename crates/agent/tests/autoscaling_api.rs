@@ -1,13 +1,13 @@
 #![cfg(feature = "kubernetes")]
 mod support;
 use serde_json::{Value, json};
+use spitzli_agent::kubernetes::autoscaling;
+use spitzli_supervisor::*;
 use std::sync::Arc;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     sync::Mutex,
 };
-use webdock_agent::kubernetes::autoscaling;
-use webdock_supervisor::*;
 
 struct Allow;
 #[async_trait::async_trait]

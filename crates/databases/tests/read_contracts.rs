@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_databases::ManagedCommand;
+use spitzli_databases::ManagedCommand;
 
 #[test]
 fn safe_operation_read_uses_strict_managed_contract() {
@@ -20,7 +20,7 @@ fn safe_operation_read_uses_strict_managed_contract() {
 
 #[test]
 fn read_boundary_rejects_writes_secrets_authority_and_unbounded_queries() {
-    use webdock_databases::DatabaseReadCommand;
+    use spitzli_databases::DatabaseReadCommand;
     for input in [
         json!({"action":"databases.offers.create","projectID":"101","planRevisionID":"202","name":"Stale new database","idempotencyKey":"read-must-not-quote"}),
         json!({"action":"databases.acceptOrder","projectID":"101","offerID":"202","idempotencyKey":"read-must-not-accept"}),
@@ -57,7 +57,7 @@ fn read_boundary_rejects_writes_secrets_authority_and_unbounded_queries() {
 
 #[test]
 fn discovery_is_exact_read_allowlist_with_strict_native_schemas() {
-    let tools = webdock_databases::database_read_tools();
+    let tools = spitzli_databases::database_read_tools();
     assert_eq!(tools.len(), 7);
     for tool in tools {
         assert_eq!(tool["annotations"]["readOnlyHint"], true);

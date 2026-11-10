@@ -9,13 +9,13 @@ use sea_orm::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_persistence::connection::ConnectionUrl;
 use std::{
     collections::{BTreeMap, HashMap},
     net::SocketAddr,
     path::{Path, PathBuf},
     time::Duration,
 };
-use webdock_persistence::connection::ConnectionUrl;
 #[derive(Debug, thiserror::Error)]
 pub enum SetupError {
     #[error("Invalid private plugin setup input")]
@@ -52,7 +52,7 @@ fn encode(value: &impl Serialize) -> Result<Vec<u8>> {
 }
 fn input<T: serde::de::DeserializeOwned>(path: &Path) -> Result<T> {
     serde_json::from_value(
-        webdock_plugin_protocol::release::strict_json(&files::read(path, 16384)?)
+        spitzli_plugin_protocol::release::strict_json(&files::read(path, 16384)?)
             .map_err(|_| SetupError::Input)?,
     )
     .map_err(|_| SetupError::Input)
@@ -163,10 +163,10 @@ impl Offline {
         if url.path().strip_prefix('/') != Some(actual.as_str()) {
             return Err(SetupError::Target);
         }
-        webdock_persistence::migrations::verify_bootstrap_baseline(&tx)
+        spitzli_persistence::migrations::verify_bootstrap_baseline(&tx)
             .await
             .map_err(|_| SetupError::History)?;
-        if !webdock_persistence::migrations::native_schema_ready(&tx).await {
+        if !spitzli_persistence::migrations::native_schema_ready(&tx).await {
             return Err(SetupError::History);
         }
         Ok(Self {
@@ -182,9 +182,9 @@ impl Offline {
         db.execute_unprepared("SET ROLE webdock_platform_owner")
             .await
             .map_err(|_| SetupError::Role)?;
-        let ids = webdock_persistence::IdAllocator::new(
+        let ids = spitzli_persistence::IdAllocator::new(
             db.clone(),
-            webdock_ids::Identity::platform(0, 2).map_err(|_| SetupError::Input)?,
+            spitzli_ids::Identity::platform(0, 2).map_err(|_| SetupError::Input)?,
         );
         let id = ids
             .allocate()
@@ -258,12 +258,12 @@ pub async fn bootstrap_plugins(
     }
     let domain = origin.host_str().ok_or(SetupError::Input)?;
     let raw_catalog = files::read(&input.installation_catalog, 8 * 1024 * 1024)?;
-    let value = webdock_plugin_protocol::release::strict_json(&raw_catalog)
+    let value = spitzli_plugin_protocol::release::strict_json(&raw_catalog)
         .map_err(|_| SetupError::Input)?;
     if value["platformID"] != input.platform_id {
         return Err(SetupError::Input);
     }
-    webdock_plugin_host::catalog::Catalog::from_bytes(&raw_catalog)
+    spitzli_plugin_host::catalog::Catalog::from_bytes(&raw_catalog)
         .map_err(|_| SetupError::Input)?;
     files::parent(destination)?;
     let checksum = sha(encode(
@@ -272,7 +272,7 @@ pub async fn bootstrap_plugins(
     if destination.try_exists().map_err(|_| SetupError::Output)? {
         files::directory(destination)?;
         let record: KernelRecord = serde_json::from_value(
-            webdock_plugin_protocol::release::strict_json(&files::read(
+            spitzli_plugin_protocol::release::strict_json(&files::read(
                 &destination.join("bootstrap.json"),
                 16384,
             )?)
@@ -316,7 +316,7 @@ pub async fn bootstrap_plugins(
         .pem();
     let ca_key = key.serialize_pem();
     let core =
-        webdock_plugin_host::provisioning::tls::issue_runtime_identity(&ca_pem, &ca_key, domain)
+        spitzli_plugin_host::provisioning::tls::issue_runtime_identity(&ca_pem, &ca_key, domain)
             .map_err(|_| SetupError::Input)?;
     let mut invocation = [0u8; 32];
     getrandom::getrandom(&mut invocation).map_err(|_| SetupError::Database)?;

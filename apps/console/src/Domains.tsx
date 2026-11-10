@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useHostingCommand } from "./hosting-client";
-import { publicAddressViewSchema } from "@webdock/hosting-contracts";
+import { publicAddressViewSchema } from "@spitzli/hosting-contracts";
 import { useState } from "react";
 import { z } from "zod";
 import { useApi, useSession } from "./context";

@@ -3,10 +3,10 @@
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_agent_control::{ControlPlane, LocalBinding};
+use spitzli_agent_protocol::{self as wire, workload_control_client::WorkloadControlClient};
 use std::sync::Arc;
 use tonic::transport::{Endpoint, Server};
-use webdock_agent_control::{ControlPlane, LocalBinding};
-use webdock_agent_protocol::{self as wire, workload_control_client::WorkloadControlClient};
 
 async fn db(key: &str) -> DatabaseConnection {
     let raw = std::env::var(key).unwrap();
@@ -26,7 +26,7 @@ async fn execute(db: &DatabaseConnection, sql: &str, values: Vec<sea_orm::Value>
 }
 async fn cluster(
     owner: &DatabaseConnection,
-    ids: &webdock_persistence::IdAllocator,
+    ids: &spitzli_persistence::IdAllocator,
     agent: &str,
 ) -> (String, String) {
     let cluster = ids.allocate().await.unwrap().to_string();
@@ -45,9 +45,9 @@ async fn agents_poll_their_cluster_and_report() {
     let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
     let auth = db("AUTH_DATABASE_URL").await;
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &std::env::var("AUTH_DATABASE_URL").unwrap(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -79,7 +79,7 @@ async fn agents_poll_their_cluster_and_report() {
     }
 
     let hosting = Arc::new(
-        webdock_hosting::HostingService::new(
+        spitzli_hosting::HostingService::new(
             db("DATABASE_URL").await,
             auth.clone(),
             db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,

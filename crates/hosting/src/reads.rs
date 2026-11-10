@@ -1,11 +1,11 @@
 //! Durable native reads use the same retained operation and session authority as mutations.
 use super::*;
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
-use subtle::ConstantTimeEq;
-use webdock_supervisor::{
+use spitzli_supervisor::{
     HostingBinding, ObservedState, Phase, ReadCommand, ReadKind, ResourceMetrics, RetainedVolume,
     RuntimeSpec,
 };
+use subtle::ConstantTimeEq;
 impl HostingService {
     pub(super) fn read_mac(&self, agent: &AgentIdentity, command: &ReadCommand) -> Result<String> {
         let fingerprint = command
@@ -66,9 +66,9 @@ impl HostingService {
                 .map_err(|_| error(503, "Invalid persisted scaling policy."))?,
             version: 1,
             installation: field(&cluster, "runtime_installation")?.into(),
-            project_id: webdock_core::id::RecordId::parse(field(&op, "project_id")?)
+            project_id: spitzli_core::id::RecordId::parse(field(&op, "project_id")?)
                 .map_err(|_| error(400, "Invalid project."))?,
-            resource_id: webdock_core::id::RecordId::parse(field(&op, "app_id")?)
+            resource_id: spitzli_core::id::RecordId::parse(field(&op, "app_id")?)
                 .map_err(|_| error(400, "Invalid app."))?,
             revision: app["observed_revision"]
                 .as_u64()
@@ -91,7 +91,7 @@ impl HostingService {
             hosting_binding: if legacy {
                 Some(HostingBinding {
                     public_route: None,
-                    cluster_id: webdock_core::id::RecordId::parse(&agent.cluster)
+                    cluster_id: spitzli_core::id::RecordId::parse(&agent.cluster)
                         .map_err(|_| error(400, "Invalid cluster."))?,
                     quota: serde_json::from_value(claim["desired"]["quota"].clone())
                         .map_err(|_| error(503, "Read allowance unavailable."))?,

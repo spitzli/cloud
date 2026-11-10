@@ -393,13 +393,13 @@ pub struct StoredArtifact {
     pub(crate) digest: String,
     pub(crate) image_digest: String,
     pub(crate) size: u64,
-    pub(crate) remote: Option<webdock_object_storage::ObjectReceipt>,
+    pub(crate) remote: Option<spitzli_object_storage::ObjectReceipt>,
 }
 impl StoredArtifact {
     pub fn format_version(&self) -> Result<u8> {
         storage_format(&self.key, &self.digest)
     }
-    pub fn remote_storage(&self) -> Option<&webdock_object_storage::ObjectReceipt> {
+    pub fn remote_storage(&self) -> Option<&spitzli_object_storage::ObjectReceipt> {
         self.remote.as_ref()
     }
     pub(crate) fn validate_remote(&self) -> Result<()> {

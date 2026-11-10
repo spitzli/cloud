@@ -1,4 +1,4 @@
-import { I18nProvider } from "@webdock/i18n/react";
+import { I18nProvider } from "@spitzli/i18n/react";
 import assert from "node:assert/strict";
 import { after, test } from "node:test";
 import { act } from "react";

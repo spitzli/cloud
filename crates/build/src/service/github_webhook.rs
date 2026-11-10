@@ -1,7 +1,7 @@
 //! Signed GitHub events enqueue existing source-bound builds; provider credentials stay in plugins.
 use super::*;
 use serde::Deserialize;
-use webdock_repository_protocol::Action;
+use spitzli_repository_protocol::Action;
 
 pub const MAX_GITHUB_WEBHOOK_BODY: usize = 1024 * 1024;
 

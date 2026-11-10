@@ -1,9 +1,9 @@
-use std::{path::PathBuf, sync::Arc, time::Duration};
-use webdock_database_gateway::{
+use spitzli_database_gateway::{
     control::HttpControl,
     managed::{ManagedRuntimes, ProcessConfig, ProcessManager},
     server::{Gateway, Options},
 };
+use std::{path::PathBuf, sync::Arc, time::Duration};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 #[derive(clap::Parser)]
 struct Args {
@@ -80,7 +80,7 @@ async fn main() -> Result<(), Error> {
     } else {
         None
     };
-    let trust = webdock_database_gateway::trust::Trust::from_pem(pem.as_deref())?;
+    let trust = spitzli_database_gateway::trust::Trust::from_pem(pem.as_deref())?;
     let gateway = Gateway::new_with_trust(
         Options {
             public_origin: required("WEBDOCK_DATABASE_GATEWAY_ORIGIN")?,

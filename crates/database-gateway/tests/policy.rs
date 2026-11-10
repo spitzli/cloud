@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_database_gateway::policy::{Profile, authorize_rpc, public_result};
+use spitzli_database_gateway::policy::{Profile, authorize_rpc, public_result};
 #[test]
 fn bound_connection_replaces_only_identity_fields_and_blocks_host_configuration() {
     for command in [

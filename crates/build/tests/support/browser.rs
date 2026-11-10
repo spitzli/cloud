@@ -1,8 +1,8 @@
 //! Real first-party OAuth handoff using the existing isolated operator fixture.
 use super::*;
-use webdock_browser_session::{BrowserConfig, BrowserSessions, StoredAuthority};
-use webdock_identity::SecretKeys;
-use webdock_oauth::{
+use spitzli_browser_session::{BrowserConfig, BrowserSessions, StoredAuthority};
+use spitzli_identity::SecretKeys;
+use spitzli_oauth::{
     AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientPurpose,
     ClientRegistration, OAuthConfig, OAuthService,
 };
@@ -30,9 +30,9 @@ impl BrowserFixture {
             )
             .unwrap()
         };
-        let ids = Arc::new(webdock_persistence::IdAllocator::new(
+        let ids = Arc::new(spitzli_persistence::IdAllocator::new(
             db("AUTH_DATABASE_URL").await,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         ));
         let cookies =
             CookiePolicy::new(false, "fixture-hosting-cookie-key-at-least-32-bytes").unwrap();

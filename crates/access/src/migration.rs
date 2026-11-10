@@ -153,7 +153,7 @@ impl AccessService {
         let mut bytes = [0u8; 32];
         getrandom::getrandom(&mut bytes).map_err(|_| Error::Configuration)?;
         let password = tokio::task::spawn_blocking(move || {
-            webdock_identity::hash_password(&hex::encode(bytes))
+            spitzli_identity::hash_password(&hex::encode(bytes))
         })
         .await
         .map_err(|_| Error::Configuration)??;
@@ -321,7 +321,7 @@ impl AccessService {
     async fn offline_actor(
         &self,
         tx: &DatabaseTransaction,
-        actor: &webdock_identity::Principal,
+        actor: &spitzli_identity::Principal,
     ) -> Result<()> {
         let current = self
             .identity

@@ -2,12 +2,12 @@
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
 use serde::Deserialize;
 use sha2::Digest;
-use std::{collections::BTreeMap, sync::Arc};
-use webauthn_authenticator_rs::{WebauthnAuthenticator, softpasskey::SoftPasskey};
-use webdock_identity::{
+use spitzli_identity::{
     CookiePolicy, IdentityService, MfaProof, NeonAuthClient, PasswordAuthentication, RlsSigner,
     SecretKeys,
 };
+use std::{collections::BTreeMap, sync::Arc};
+use webauthn_authenticator_rs::{WebauthnAuthenticator, softpasskey::SoftPasskey};
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Fixture {
@@ -27,16 +27,16 @@ async fn paced_signin(
     service: &IdentityService,
     email: &str,
     password: &str,
-) -> webdock_identity::Result<PasswordAuthentication> {
+) -> spitzli_identity::Result<PasswordAuthentication> {
     for _ in 0..7 {
         match service.authenticate_password(email, password).await {
-            Err(webdock_identity::IdentityError::RateLimited) => {
+            Err(spitzli_identity::IdentityError::RateLimited) => {
                 tokio::time::sleep(std::time::Duration::from_secs(11)).await
             }
             result => return result,
         }
     }
-    Err(webdock_identity::IdentityError::RateLimited)
+    Err(spitzli_identity::IdentityError::RateLimited)
 }
 #[tokio::test]
 #[ignore = "requires owned Neon child fixture; creates synthetic account, never production"]
@@ -57,9 +57,9 @@ async fn managed_first_factor_requires_mfa_and_revokes_native_and_rls_authority(
     let auth = Database::connect(&f.bootstrap_url).await.unwrap();
     let runtime = Database::connect(&f.runtime_url).await.unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &f.bootstrap_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -414,7 +414,7 @@ async fn managed_first_factor_requires_mfa_and_revokes_native_and_rls_authority(
     );
     assert!(matches!(
         paced_signin(&service, &email, password).await,
-        Err(webdock_identity::IdentityError::Unauthorized)
+        Err(spitzli_identity::IdentityError::Unauthorized)
     ));
     // Respect Managed Auth's real endpoint throttle after the deliberate wrong-password probe.
     tokio::time::sleep(std::time::Duration::from_secs(11)).await;
@@ -545,9 +545,9 @@ async fn prepare_owned_image_operator_registry_mapping() {
     assert!(email.starts_with("neon-operator-") && email.ends_with("@example.invalid"));
     let user = owned["userID"].as_str().unwrap();
     let owner = Database::connect(&f.owner_url).await.unwrap();
-    let allocator = webdock_persistence::IdAllocator::connect(
+    let allocator = spitzli_persistence::IdAllocator::connect(
         &f.bootstrap_url,
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     )
     .await
     .unwrap();

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import type { Socket } from "node:net";
 import { buildConfig } from "payload";
-import { cmsFields } from "@webdock/cms-ui/schema";
+import { cmsFields } from "@spitzli/cms-ui/schema";
 import { media } from "../src/lib/content.ts";
 
 const storageModule = (file: string) =>

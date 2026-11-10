@@ -5,14 +5,14 @@ use k8s_openapi::api::{
 };
 use kube::{Api, Client, api::ListParams};
 use serde_json::{Value, json};
-use std::sync::atomic::{AtomicBool, Ordering};
-use tokio::sync::Mutex;
-use webdock_agent::mail::{configuration::ConfigurationRuntime, kubernetes::KubernetesMailRuntime};
-use webdock_agent_protocol::{
+use spitzli_agent::mail::{configuration::ConfigurationRuntime, kubernetes::KubernetesMailRuntime};
+use spitzli_agent_protocol::{
     mail::{MailClaim, MailProof},
     mail_configuration::*,
 };
-use webdock_supervisor::ExecutionError;
+use spitzli_supervisor::ExecutionError;
+use std::sync::atomic::{AtomicBool, Ordering};
+use tokio::sync::Mutex;
 
 fn authority() -> ConfigurationAuthority {
     ConfigurationAuthority {

@@ -5,7 +5,7 @@ import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import type { ManagedRuntimeAccess, RuntimeAccess } from "@webdock/database-contracts";
+import type { ManagedRuntimeAccess, RuntimeAccess } from "@spitzli/database-contracts";
 import { GatewayError } from "./policy";
 
 export type ManagedRuntime = RuntimeAccess & { authenticationOrigin: string };

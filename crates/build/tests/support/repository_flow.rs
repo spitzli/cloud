@@ -1,8 +1,8 @@
 //! Database-backed repository leases with a real private RPC runtime and callback authority.
 use super::browser;
 use super::*;
+use spitzli_repository_protocol::{self as protocol, LeaseClaims, runtime};
 use std::os::unix::fs::PermissionsExt;
-use webdock_repository_protocol::{self as protocol, LeaseClaims, runtime};
 struct FixtureHandler {
     pause: std::sync::atomic::AtomicBool,
     entered: tokio::sync::Notify,
@@ -30,7 +30,7 @@ impl runtime::Handler for FixtureHandler {
             std::future::pending::<()>().await;
         }
         Ok(
-            webdock_build::artifact::Archive::from_files(std::collections::BTreeMap::from([(
+            spitzli_build::artifact::Archive::from_files(std::collections::BTreeMap::from([(
                 "Dockerfile".into(),
                 b"FROM scratch\n".to_vec(),
             )]))
@@ -72,21 +72,21 @@ async fn installed_repository_runtime_rechecks_domain_grants_and_configuration()
   sql(&f.owner,"INSERT INTO webdock_auth.plugin_grant(plugin_id,customer_id,project_id,capabilities) VALUES($1,$2,$3,$4)",vec![plugin.clone().into(),f.cid.clone().into(),f.pid.clone().into(),manifest["capabilities"].clone().into()]).await;
   let uid=rustix::process::geteuid().as_raw();let host_path=directory.path().join("host.json");let runtime_path=directory.path().join("repository.sock");let authority_path=directory.path().join("authority.sock");
   std::fs::write(&host_path,json!({"runtimes":{plugin.clone():{"generation":1,"namespace":"fixtures","service":"fixture-plugin","credentialSha256":credential,"peers":[{"kind":"unix","uid":uid}],"projects":{}}}}).to_string()).unwrap();std::fs::set_permissions(&host_path,std::fs::Permissions::from_mode(0o600)).unwrap();
-  let ids=Arc::new(webdock_persistence::IdAllocator::new(db("DATABASE_URL").await,webdock_ids::Identity::platform(0,2).unwrap()));let secret=std::env::var("DATABASE_RLS_SECRET").unwrap();let issuer=ed25519_dalek::SigningKey::from_bytes(&[39;32]);let publisher=ed25519_dalek::SigningKey::from_bytes(&[41;32]);
+  let ids=Arc::new(spitzli_persistence::IdAllocator::new(db("DATABASE_URL").await,spitzli_ids::Identity::platform(0,2).unwrap()));let secret=std::env::var("DATABASE_RLS_SECRET").unwrap();let issuer=ed25519_dalek::SigningKey::from_bytes(&[39;32]);let publisher=ed25519_dalek::SigningKey::from_bytes(&[41;32]);
   let descriptor=protocol::Descriptor{v:1,plugin_id:plugin.clone(),version:"1.0.0".into(),manifest_sha256:digest,image:manifest["image"].as_str().unwrap().into(),protocol:"webdock.repository.v1".into(),signer_key_id:"fixture".into()}.sign(&publisher).unwrap();
   let binding_path=directory.path().join("repository.json");std::fs::write(&binding_path,json!({"runtimes":{plugin.clone():{"descriptor":descriptor,"publisherKeyId":"fixture","publisherPublicKeyHex":hex::encode(publisher.verifying_key().as_bytes()),"registryUrl":"https://registry.invalid","transport":{"kind":"unix","path":runtime_path}}}}).to_string()).unwrap();std::fs::set_permissions(&binding_path,std::fs::Permissions::from_mode(0o600)).unwrap();
-  let host=Arc::new(webdock_plugin_host::HostService::new(db("DATABASE_URL").await,db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,secret.clone(),ids.clone(),Arc::new(webdock_plugin_host::FileBindings::new(host_path)),ed25519_dalek::SigningKey::from_bytes(&[37;32])).await.unwrap());
-  let gate=Arc::new(webdock_build::RepositoryAdmission::new(db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,secret.clone(),host,issuer.clone(),Arc::new(webdock_build::FileRepositoryBindings::new(binding_path))).await.unwrap().with_session_authority(db("AUTH_DATABASE_URL").await,browser.identity.clone(),Some(browser.browser.clone())).await.unwrap());
+  let host=Arc::new(spitzli_plugin_host::HostService::new(db("DATABASE_URL").await,db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,secret.clone(),ids.clone(),Arc::new(spitzli_plugin_host::FileBindings::new(host_path)),ed25519_dalek::SigningKey::from_bytes(&[37;32])).await.unwrap());
+  let gate=Arc::new(spitzli_build::RepositoryAdmission::new(db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,secret.clone(),host,issuer.clone(),Arc::new(spitzli_build::FileRepositoryBindings::new(binding_path))).await.unwrap().with_session_authority(db("AUTH_DATABASE_URL").await,browser.identity.clone(),Some(browser.browser.clone())).await.unwrap());
   let mut socket=runtime::UnixSocket::bind(&authority_path).unwrap();let incoming=socket.incoming().unwrap();let callback=gate.clone().authority_service();let mut tasks=Tasks(vec![tokio::spawn(async move {let _socket=socket;tonic::transport::Server::builder().add_service(callback).serve_with_incoming(incoming).await.unwrap();})]);
   let authority=runtime::RemoteAuthority::new(runtime::connect_unix(&authority_path).await.unwrap(),plugin.clone(),1,protocol::sha256(descriptor.as_bytes()),vec![runtime::CorePeer::Unix{uid}]).unwrap();
   let handler=Arc::new(FixtureHandler{pause:std::sync::atomic::AtomicBool::new(false),entered:tokio::sync::Notify::new(),resolved:std::sync::Mutex::new(None)});let server=runtime::Runtime::new(descriptor,&publisher.verifying_key(),1,issuer.verifying_key(),Arc::new(authority),handler.clone()).unwrap();let socket=runtime::UnixSocket::bind(&runtime_path).unwrap();tasks.0.push(tokio::spawn(async move{server.serve_unix(socket,std::future::pending()).await.unwrap()}));
-  let service=Arc::new(webdock_build::BuildService::new(db("DATABASE_URL").await,db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,secret,ids,f.service.clone(),"registry.invalid".into()).await.unwrap().with_session_authority(db("AUTH_DATABASE_URL").await,browser.identity.clone(),Some(browser.browser.clone())).await.unwrap().with_repository_provider(Arc::new(webdock_build::PluginRepositoryProvider::new(gate))));
+  let service=Arc::new(spitzli_build::BuildService::new(db("DATABASE_URL").await,db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,secret,ids,f.service.clone(),"registry.invalid".into()).await.unwrap().with_session_authority(db("AUTH_DATABASE_URL").await,browser.identity.clone(),Some(browser.browser.clone())).await.unwrap().with_repository_provider(Arc::new(spitzli_build::PluginRepositoryProvider::new(gate))));
   let mut draft=spec();draft.as_object_mut().unwrap().remove("image");draft.as_object_mut().unwrap().remove("template");let app=f.service.execute(&f.principal,json!({"action":"apps.prepare","projectID":f.pid,"name":"repository-target","spec":draft,"subscriptionRevision":1,"idempotencyKey":"repository-target-1"})).await.unwrap();let app=app["appID"].as_str().or_else(||app["id"].as_str()).unwrap();
   sql(&f.owner,"INSERT INTO webdock_auth.git_connection(id,customer_id,installation_id,account_id,account_login,permissions,state,repository_plugin_id) VALUES($1,$2,'1234','1234','fixture','{}','active',$3)",vec![connection.clone().into(),f.cid.clone().into(),plugin.clone().into()]).await;sql(&f.owner,"INSERT INTO webdock_auth.git_repository(connection_id,customer_id,repository_id,metadata) VALUES($1,$2,'123456','{}')",vec![connection.clone().into(),f.cid.clone().into()]).await;
   service.execute(&f.principal,json!({"action":"git.source.configure","projectID":f.pid,"targetID":app,"connectionID":connection,"repositoryID":"123456","branch":"main","rootDirectory":".","recipe":"dockerfile","revision":0,"autoPublish":true})).await.unwrap();
   let request=json!({"action":"git.builds.request","projectID":f.pid,"targetID":app,"idempotencyKey":"repository-build-1"});
   sql(&f.owner,"UPDATE webdock_auth.plugin_grant SET revoked_at=now() WHERE plugin_id=$1",vec![plugin.clone().into()]).await;assert!(service.execute(&f.principal,request.clone()).await.is_err());sql(&f.owner,"UPDATE webdock_auth.plugin_grant SET revoked_at=NULL WHERE plugin_id=$1",vec![plugin.clone().into()]).await;
-  let build=service.execute_with_authority(&f.principal,&browser.authority,request,webdock_build::BuildCeiling{read:true,write:true}).await.unwrap();
+  let build=service.execute_with_authority(&f.principal,&browser.authority,request,spitzli_build::BuildCeiling{read:true,write:true}).await.unwrap();
   let credential="R".repeat(43);sql(&f.owner,"INSERT INTO webdock_auth.git_worker(id,credential_hash,enabled,country,isolation,evidence,capacity) VALUES($1,$2,true,'ZZ','microvm','repository fixture',1)",vec![worker_id.into(),protocol::sha256(credential.as_bytes()).into()]).await;let worker=service.authenticate_worker(&credential).await.unwrap();let claim=service.claim_build(&worker).await.unwrap().unwrap();let build=build["id"].as_str().unwrap().to_owned();let generation=claim["generation"].as_i64().unwrap() as i32;
   sql(&f.owner,"UPDATE webdock_auth.session SET \"expiresAt\"=now()-interval '1 second' WHERE id=$1",vec![f.sid.clone().into()]).await;
   assert!(service.source_archive(&worker,&build,generation).await.unwrap().len()>512,"persisted build authority survives browser expiry");
@@ -99,7 +99,7 @@ async fn installed_repository_runtime_rechecks_domain_grants_and_configuration()
 
   sql(&f.owner,"UPDATE webdock_auth.\"user\" SET banned=true WHERE id=$1",vec![f.uid.clone().into()]).await;assert!(service.source_archive(&worker,&build,generation).await.is_err());sql(&f.owner,"UPDATE webdock_auth.\"user\" SET banned=false WHERE id=$1",vec![f.uid.clone().into()]).await;
   sql(&f.owner,"UPDATE webdock_auth.session SET \"expiresAt\"=now()+interval '1 hour' WHERE id=$1",vec![f.sid.clone().into()]).await;
-  service.execute_with_authority(&f.principal,&browser.authority,json!({"action":"git.builds.request","projectID":f.pid,"targetID":app,"idempotencyKey":"repository-browser-fence-1"}),webdock_build::BuildCeiling{read:true,write:true}).await.unwrap();
+  service.execute_with_authority(&f.principal,&browser.authority,json!({"action":"git.builds.request","projectID":f.pid,"targetID":app,"idempotencyKey":"repository-browser-fence-1"}),spitzli_build::BuildCeiling{read:true,write:true}).await.unwrap();
   let admitted=handler.resolved.lock().unwrap().clone().unwrap();
   let row=f.owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT actor_authority FROM webdock_auth.repository_lease WHERE id=$1::uuid",[admitted.id.clone().into()])).await.unwrap().unwrap().try_get::<Value>("","actor_authority").unwrap();assert_eq!(row["kind"],"first-party-browser");
   // Re-open only this fixture's receipt to exercise a lost-result callback after the browser transaction has committed.

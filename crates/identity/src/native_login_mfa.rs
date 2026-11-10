@@ -5,9 +5,9 @@ use crate::{
     neon::NeonSource,
     security::{digest, totp},
 };
+use spitzli_persistence::postgres::Transaction;
 use subtle::ConstantTimeEq;
 use tokio_postgres::{Row, types::Type};
-use webdock_persistence::postgres::Transaction;
 
 impl IdentityService {
     pub(crate) async fn native_complete_mfa(

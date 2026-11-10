@@ -13,7 +13,7 @@ ExecStart=/usr/bin/python3 /opt/webdock-hosting-agent/storage_service.py
 Restart=on-failure
 RestartSec=15
 UMask=0077
-RuntimeDirectory=webdock-storage
+RuntimeDirectory=spitzli-storage
 RuntimeDirectoryMode=0700
 Environment=PYTHONDONTWRITEBYTECODE=1
 NoNewPrivileges=true

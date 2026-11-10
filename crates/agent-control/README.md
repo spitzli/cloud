@@ -13,7 +13,7 @@ A connectivity-only heartbeat advances only transport liveness. Capacity freshne
 The executable is part of the Core package:
 
 ```sh
-cargo run -p webdock-control-plane --bin webdock-agent-control -- --config /absolute/private/control.json
+cargo run -p spitzli-control-plane --bin spitzli-agent-control -- --config /absolute/private/control.json
 ```
 
 It uses the same explicit restricted database environment as the hosting built-in; it neither loads environment files nor migrates at startup. `WEBDOCK_FEATURES` must permit accepted work for a configured Hosting, Databases or incoming Mail domain. Incoming Mail additionally requires the explicit native-agent flag and reviewed image/hostname/retained-key configuration documented in the Core README. Keep the configuration file mode 0600. Local configuration:

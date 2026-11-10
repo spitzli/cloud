@@ -32,7 +32,7 @@ fn fixture() -> (
     let config = crate::storage::StorageConfig {
         root: "/var/lib/webdock-storage".into(),
         node: "node-02".into(),
-        cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
+        cluster_id: spitzli_core::id::RecordId::parse("789").unwrap(),
         pool_id: "11111111-1111-4111-8111-111111111111".into(),
         capacity_bytes: 2_147_483_648,
         reserve_bytes: 67_108_864,
@@ -178,7 +178,7 @@ fn privileged_initialization_or_unproved_public_routing_is_rejected_before_reuse
     }
     let mut routed = command.clone();
     routed.spec.hosting_binding.as_mut().unwrap().public_route = Some(PublicRoute {
-        allocation_id: webdock_core::id::RecordId::parse("55").unwrap(),
+        allocation_id: spitzli_core::id::RecordId::parse("55").unwrap(),
         hostname: "fixture.apps.example".into(),
         revision: 5,
     });

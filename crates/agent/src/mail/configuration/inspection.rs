@@ -2,8 +2,8 @@ use super::*;
 #[cfg(feature = "kubernetes")]
 use crate::mail::MailAuthority;
 use crate::mail::client::Client;
-use webdock_agent_protocol::mail::{MailAction, MailCheckpoint, MailClaim, MailMaterial, MailSpec};
-use webdock_agent_protocol::mail_configuration::ConfigurationCheckpointPhase;
+use spitzli_agent_protocol::mail::{MailAction, MailCheckpoint, MailClaim, MailMaterial, MailSpec};
+use spitzli_agent_protocol::mail_configuration::ConfigurationCheckpointPhase;
 
 pub(in crate::mail) struct Inspection {
     pub runtime_id: String,

@@ -7,8 +7,8 @@ use kube::{
     core::{ApiResource, GroupVersionKind},
 };
 use serde_json::{Value, json};
+use spitzli_plugin_protocol::{MILLI, WORKLOAD_KINDS, quantity};
 use std::collections::BTreeMap;
-use webdock_plugin_protocol::{MILLI, WORKLOAD_KINDS, quantity};
 
 const MANAGER: &str = "webdock-workloads";
 const OWNER: &str = "webdock.dev/";

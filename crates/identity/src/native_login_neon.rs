@@ -6,8 +6,8 @@ use crate::{
     neon_client::NeonLogin,
     security::digest,
 };
+use spitzli_persistence::postgres::Transaction;
 use tokio_postgres::types::Type;
-use webdock_persistence::postgres::Transaction;
 
 impl IdentityService {
     pub(super) async fn native_provider_login(

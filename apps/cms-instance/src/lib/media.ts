@@ -1,8 +1,8 @@
 import sharp from "sharp";
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 import { randomUUID } from "node:crypto";
-import { CMSInputError } from "@webdock/cms-ui/schema";
-import { MEDIA_BYTES } from "@webdock/cms-bridge/types";
+import { CMSInputError } from "@spitzli/cms-ui/schema";
+import { MEDIA_BYTES } from "@spitzli/cms-bridge/types";
 type FileInput = { data: Buffer; name: string; mimetype: string; size: number };
 const formats: Record<string, { mime: string; extension: string }> = {
   jpeg: { mime: "image/jpeg", extension: "jpg" },

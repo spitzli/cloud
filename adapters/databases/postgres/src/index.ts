@@ -1,8 +1,8 @@
 import { Pool, type PoolConfig } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { ScopedPool, verifiedPostgresConfig } from "@webdock/database-runtime";
-import type { DatabaseConfig } from "@webdock/database-runtime";
-export type { DatabaseConfig } from "@webdock/database-runtime";
+import { ScopedPool, verifiedPostgresConfig } from "@spitzli/database-runtime";
+import type { DatabaseConfig } from "@spitzli/database-runtime";
+export type { DatabaseConfig } from "@spitzli/database-runtime";
 export function databaseURL(raw: string): URL {
   let url: URL;
   try {

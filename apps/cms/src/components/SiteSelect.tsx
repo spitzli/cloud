@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import {useI18n} from '@webdock/i18n/react';
+import {useI18n} from '@spitzli/i18n/react';
 export function SiteSelect({sites}:{sites:{id:number;name:string;tenant:number;locale:string}[]}) {
  const {t}=useI18n();
  const ref=useRef<HTMLSelectElement>(null);

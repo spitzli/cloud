@@ -59,7 +59,7 @@ fn load(payload: Vec<u8>, job: &SendLease) -> Result<(DispatchMessage, PreparedM
     let action = job
         .source_id
         .strip_prefix("action:")
-        .is_some_and(webdock_mail_protocol::valid_digest);
+        .is_some_and(spitzli_mail_protocol::valid_digest);
     let message = match job.payload_format {
         PayloadFormat::Request => {
             let value = serde_json::from_slice(&payload).map_err(|_| Error::Invalid)?;

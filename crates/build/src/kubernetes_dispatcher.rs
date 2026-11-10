@@ -80,7 +80,7 @@ struct DispatchAttempt {
     uid: Option<String>,
     lease_until: i64,
     cancel_requested: bool,
-    storage_request: Option<webdock_agent_protocol::build_storage::BuildStorageReservation>,
+    storage_request: Option<spitzli_agent_protocol::build_storage::BuildStorageReservation>,
 }
 
 fn text<'a>(value: &'a Value, camel: &str, snake: &str) -> Result<&'a str> {
@@ -174,7 +174,7 @@ impl DispatchAttempt {
             crate::contracts::id(id)?;
         }
         let storage_request: Option<
-            webdock_agent_protocol::build_storage::BuildStorageReservation,
+            spitzli_agent_protocol::build_storage::BuildStorageReservation,
         > = value
             .get("storageRequest")
             .or_else(|| value.get("storage_request"))
@@ -675,7 +675,7 @@ impl KubernetesBuildDispatcher {
         attempt: &DispatchAttempt,
         receipt: &mut DispatchReceipt,
     ) -> Result<()> {
-        use webdock_agent_protocol::build_storage::{
+        use spitzli_agent_protocol::build_storage::{
             BuildStorageAction, BuildStorageReservation, BuildVolumePhase,
         };
         let storage = self
@@ -803,7 +803,7 @@ impl KubernetesBuildDispatcher {
         attempt: &DispatchAttempt,
         receipt: &mut DispatchReceipt,
     ) -> Result<()> {
-        use webdock_agent_protocol::build_storage::{
+        use spitzli_agent_protocol::build_storage::{
             BuildStorageAction, BuildStorageReservation, BuildVolumePhase,
         };
         let Some(storage) = &self.storage else {
@@ -853,7 +853,7 @@ impl KubernetesBuildDispatcher {
                 return Err(error("build_storage_pending"));
             };
             if reply.failure_code
-                == Some(webdock_agent_protocol::build_storage::BuildVolumeFailure::Expired)
+                == Some(spitzli_agent_protocol::build_storage::BuildVolumeFailure::Expired)
             {
                 storage.cleanup(&operation).await?;
                 receipt.storage_operation = None;
@@ -1462,7 +1462,7 @@ mod tests {
         active: bool,
     }
     struct StorageRemote {
-        snapshot: webdock_agent_protocol::build_storage::BuildStorageReservation,
+        snapshot: spitzli_agent_protocol::build_storage::BuildStorageReservation,
         epoch: u64,
         maps: BTreeMap<String, Value>,
         handle: Option<Value>,
@@ -1473,7 +1473,7 @@ mod tests {
         retire_ttl_seconds: i64,
     }
     fn storage_http(s: &mut Remote, method: &str, path: &str, mut body: Value) -> (u16, Value) {
-        use webdock_agent_protocol::build_storage::{
+        use spitzli_agent_protocol::build_storage::{
             BuildStorageAction, BuildVolumeHandle, BuildVolumePhase, BuildVolumeReply,
             BuildVolumeResult, SignedBuildStorageReservation,
         };
@@ -1665,7 +1665,7 @@ mod tests {
                 request.expires_at = chrono::Utc::now()
                     + chrono::Duration::seconds(
                         if request.action
-                            == webdock_agent_protocol::build_storage::BuildStorageAction::Retire
+                            == spitzli_agent_protocol::build_storage::BuildStorageAction::Retire
                         {
                             storage.retire_ttl_seconds
                         } else {
@@ -1876,7 +1876,7 @@ mod tests {
         tempfile::TempDir,
         tokio::task::JoinHandle<()>,
     ) {
-        use webdock_agent_protocol::build_storage::{
+        use spitzli_agent_protocol::build_storage::{
             BuildStorageAction, BuildStorageReservation, BuildStorageTarget,
         };
         let state = Arc::new(Mutex::new(Remote {

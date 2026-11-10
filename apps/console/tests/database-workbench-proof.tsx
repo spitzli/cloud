@@ -2,10 +2,10 @@
 import { z } from "zod";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { I18nProvider } from "@webdock/i18n/react";
+import { I18nProvider } from "@spitzli/i18n/react";
 import { Buffer } from "buffer/";
 import { preloadTabularisWorkspace } from "@tabularis/web-ui";
-import { DatabaseWorkbenchWithActions } from "@webdock/module-databases/ui/workbench";
+import { DatabaseWorkbenchWithActions } from "@spitzli/module-databases/ui/workbench";
 const result = z.union([z.object({ launch: z.object({ code: z.string(), gatewayOrigin: z.string() }) }), z.object({ error: z.string() })]);
 const launch = async (id: string) => result.parse(await (await fetch(`/__launch/${id}`)).json());
 const actions = { launchDatabase: launch, launchManagedDatabase: launch };

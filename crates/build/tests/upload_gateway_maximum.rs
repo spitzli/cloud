@@ -2,19 +2,19 @@
 #![cfg(all(feature = "service", feature = "worker", feature = "kubernetes-job"))]
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_build::{
+    artifact::{Archive, MAX_OUTPUT},
+    container_runner::{ContainerBuildRequest, Strategy},
+    execution::Limits,
+    kubernetes_transfer::{AttemptTransfer, MAX_TRANSFER_RESULT, ResultIdentity, verify_result},
+    kubernetes_upload::{AttemptUploadGateway, router},
+};
 use std::{
     collections::BTreeMap,
     fs::File,
     os::{fd::AsRawFd, unix::fs::OpenOptionsExt},
     path::Path,
     time::Duration,
-};
-use webdock_build::{
-    artifact::{Archive, MAX_OUTPUT},
-    container_runner::{ContainerBuildRequest, Strategy},
-    execution::Limits,
-    kubernetes_transfer::{AttemptTransfer, MAX_TRANSFER_RESULT, ResultIdentity, verify_result},
-    kubernetes_upload::{AttemptUploadGateway, router},
 };
 const FILESYSTEM_BYTES: u64 = 640 * 1024 * 1024;
 fn write(root: &Path, name: &str, value: &Value) {
