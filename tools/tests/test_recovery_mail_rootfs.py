@@ -58,7 +58,7 @@ class MailRootfsTests(unittest.TestCase):
    with tarfile.open(oci,'w') as archive:
     for name,data in [(digest,payload),(md,raw)]:
      entry=tarfile.TarInfo('blobs/sha256/'+name);entry.size=len(data);archive.addfile(entry,io.BytesIO(data))
-   binding={'owned':{'platformManifestDigest':'sha256:'+md}};worker=manifest['files']['/usr/local/bin/webdock-mail']['sha256'];receipt=runner.mail_image_layout(oci,binding,'owned',worker)
+   binding={'owned':{'platformManifestDigest':'sha256:'+md}};worker=manifest['files']['/usr/local/bin/spitzli-mail']['sha256'];receipt=runner.mail_image_layout(oci,binding,'owned',worker)
    self.assertEqual(receipt['closure']['files'],manifest['files']);self.assertGreater(receipt['inodeEntriesUpper'],len(manifest['files']))
    with self.assertRaises(ValueError):runner.mail_image_layout(oci,binding,'owned','0'*64)
 

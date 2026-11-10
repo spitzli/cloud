@@ -57,7 +57,7 @@ def run(s3_path, mc, access):
         }
         value_file = private / "values.yaml"
         value_file.write_text(yaml.safe_dump(values))
-        template = subprocess.run(["helm", "template", "owned-registry", str(ROOT / "deploy/helm/webdock-registry"), "--values", str(value_file)], capture_output=True, text=True, check=True, timeout=20)
+        template = subprocess.run(["helm", "template", "owned-registry", str(ROOT / "deploy/helm/spitzli-registry"), "--values", str(value_file)], capture_output=True, text=True, check=True, timeout=20)
         config_map = next(v for v in yaml.safe_load_all(template.stdout) if v and v["kind"] == "ConfigMap")
         config = yaml.safe_load(config_map["data"]["config.yml"])
         # Only this owned loopback fixture omits TLS; production chart enforces HTTPS.
@@ -101,7 +101,7 @@ def run(s3_path, mc, access):
             log = run_output / f"{case}.log"
             with log.open("wb") as stream:
                 log.chmod(0o600)
-                result = subprocess.run(["cargo", "test", "--locked", "-p", "webdock-build", "--all-features", "--test", "registry_storage", case, "--", "--include-ignored", "--exact"], cwd=ROOT, env=environment, stdout=stream, stderr=subprocess.STDOUT, timeout=180)
+                result = subprocess.run(["cargo", "test", "--locked", "-p", "spitzli-build", "--all-features", "--test", "registry_storage", case, "--", "--include-ignored", "--exact"], cwd=ROOT, env=environment, stdout=stream, stderr=subprocess.STDOUT, timeout=180)
             tail = "\n".join(log.read_text().splitlines()[-24:])
             for secret in [password, s3["credentials"]["accessKeyId"], s3["credentials"]["secretAccessKey"]]:
                 tail = tail.replace(secret, "[redacted]")

@@ -69,7 +69,7 @@ class PortableMaylily(unittest.TestCase):
             for package in json.loads(metadata.stdout)["packages"]:
                 if package["source"] is None:
                     self.assertTrue(Path(package["manifest_path"]).is_relative_to(context), package["name"])
-            build = subprocess.run(["cargo", "build", "--locked", "--offline", "-p", "webdock-ids"], cwd=context, env=environment, capture_output=True, text=True, timeout=180)
+            build = subprocess.run(["cargo", "build", "--locked", "--offline", "-p", "spitzli-ids"], cwd=context, env=environment, capture_output=True, text=True, timeout=180)
             self.assertEqual(build.returncode, 0, build.stderr[-4000:])
 
 

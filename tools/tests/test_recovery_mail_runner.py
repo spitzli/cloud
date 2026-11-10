@@ -35,7 +35,7 @@ class MailRunnerTests(unittest.TestCase):
   self.assertEqual(recipe.splitlines()[0],'FROM webdock-rust-storage-test:owned AS mailbase')
   self.assertIn('FROM scratch',recipe);self.assertIn('--mount=from=mailbase,source=/,target=/cached-base,ro',recipe)
   self.assertIn('/tmp/rootfs.py /tmp/mail /mail-rootfs mail',recipe);self.assertIn('USER 65532:65532',recipe)
-  self.assertIn('ENTRYPOINT ["/usr/local/bin/webdock-mail"]',recipe);self.assertNotIn('apt-get',recipe)
+  self.assertIn('ENTRYPOINT ["/usr/local/bin/spitzli-mail"]',recipe);self.assertNotIn('apt-get',recipe)
   self.assertIn('COPY mail-dns-probe /tmp/mail-dns-probe',recipe);self.assertIn('/tmp/mail-stage.sh /tmp/mail-dns-probe',recipe)
   self.assertNotIn('mail-dns-probe',recipe.split('FROM scratch\n',1)[1])
   self.assertFalse(any(line.startswith('FROM sha256:') for line in recipe.splitlines()))

@@ -28,7 +28,7 @@ class AgentControlChart(unittest.TestCase):
         pod=deployment['spec']['template']['spec'];self.assertFalse(pod['automountServiceAccountToken']);self.assertFalse(pod['enableServiceLinks']);self.assertNotIn('initContainers',pod);self.assertNotIn('hostNetwork',pod);self.assertNotIn('fsGroup',pod['securityContext'])
         self.assertEqual(pod['securityContext']['runAsUser'],65532);self.assertTrue(pod['securityContext']['runAsNonRoot']);self.assertEqual(pod['securityContext']['seccompProfile'],{'type':'RuntimeDefault'})
         self.assertEqual(len(pod['containers']),1);container=pod['containers'][0]
-        self.assertEqual(container['image'],BASE['image']);self.assertEqual(container['command'],['/usr/local/bin/webdock-agent-control']);self.assertEqual(container['args'],['--config','/private/agent-control.json'])
+        self.assertEqual(container['image'],BASE['image']);self.assertEqual(container['command'],['/usr/local/bin/spitzli-agent-control']);self.assertEqual(container['args'],['--config','/private/agent-control.json'])
         self.assertEqual(container['envFrom'],[{'secretRef':{'name':'owned-agent-env'}}]);self.assertNotIn('owned-http-env',json.dumps(deployment))
         self.assertEqual(container['securityContext'],{'readOnlyRootFilesystem':True,'allowPrivilegeEscalation':False,'capabilities':{'drop':['ALL']}})
         self.assertIn({'name':'private','mountPath':'/private','readOnly':True},container['volumeMounts'])

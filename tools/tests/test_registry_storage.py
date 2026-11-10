@@ -7,7 +7,7 @@ import unittest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-CHART = ROOT / "deploy/helm/webdock-registry"
+CHART = ROOT / "deploy/helm/spitzli-registry"
 VALUES = {
     "image": "registry@sha256:ddf754342cfc8acc51a56d5d0ab6af06826461864460636d8bd5c546dab2a7b8",
     "existingSecret": "operator-private-registry",

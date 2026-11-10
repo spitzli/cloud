@@ -54,7 +54,7 @@ class BackendDeliveryTests(unittest.TestCase):
         for base in bases:
             if base not in ['runtime','source-context','scratch','build-base']:self.assertRegex(base,r'@sha256:[a-f0-9]{64}$')
         self.assertIn('USER 65532:65532',source)
-        self.assertIn('webdock-kubernetes-build-worker',source)
+        self.assertIn('spitzli-kubernetes-build-worker',source)
 
     def test_runtime_package_bootstrap_uses_explicit_verified_ca_before_compilation(self):
         source=(ROOT/'deploy/docker/backend.Dockerfile').read_text()

@@ -25,23 +25,23 @@ class ArtifactSelectionTests(unittest.TestCase):
         self.base_pin.parent.mkdir(parents=True);self.pin.parent.mkdir(parents=True)
         self.overlay=self.root/'.runtime-test/input-overlay/overlay.json';self.overlay.parent.mkdir(parents=True)
         self.hashes={};base_entries={}
-        names=('webdock-control-plane','webdock-agent-control','webdock-migrate','webdock-bootstrap-operator','webdock-enroll-agent','webdock-bootstrap-plugins','webdock-plugin-control','webdock-plugin-controller','webdock-agent','webdock-storage','webdock-recovery','webdock-recovery-gateway','bootstrap-test')
+        names=('spitzli-control-plane','spitzli-agent-control','spitzli-migrate','spitzli-bootstrap-operator','spitzli-enroll-agent','spitzli-bootstrap-plugins','spitzli-plugin-control','spitzli-plugin-controller','spitzli-agent','spitzli-storage','spitzli-recovery','spitzli-recovery-gateway','bootstrap-test')
         for name in names:
             path=self.base_pin.parent/name;path.write_bytes(b'ELF original fixture '+name.encode());path.chmod(0o500)
             base_entries[name]={'path':str(path),'copiedStrippedSHA256':digest(path),'bytes':path.stat().st_size,'mode':'0500','originalBuildSHA256':'a'*64,'source':'original fixture compile provenance'}
         path=self.elf_path('bootstrap-test');path.write_bytes(b'ELF new diagnostic fixture');path.chmod(0o500)
-        new_agent=self.pin.parent/'webdock-agent';new_agent.write_bytes(b'ELF new convergent Agent');new_agent.chmod(0o500)
-        self.hashes={'bootstrap-test':digest(path),'webdock-agent':digest(new_agent),'webdock-storage':base_entries['webdock-storage']['copiedStrippedSHA256']}
+        new_agent=self.pin.parent/'spitzli-agent';new_agent.write_bytes(b'ELF new convergent Agent');new_agent.chmod(0o500)
+        self.hashes={'bootstrap-test':digest(path),'spitzli-agent':digest(new_agent),'spitzli-storage':base_entries['spitzli-storage']['copiedStrippedSHA256']}
         self.archive=self.base_pin.parent/'public-source.tar.gz';self.archive.write_bytes(b'curated original source fixture')
         self.base_pin.write_text(json.dumps({'binaries':base_entries,'publicSourceArchiveSHA256':digest(self.archive),'sourceSHA256':{},'migrations':{},'rootLockSHA256':'a'*64}))
         self.test_archive=self.pin.parent/'diagnostic-test-source.tar.gz';self.test_archive.write_bytes(b'new diagnostic source fixture')
         self.inventory=self.pin.parent/'diagnostic-test-compilation.json';self.inventory.write_text(json.dumps({'inputs':{},'rootLockSHA256':'a'*64,'migrations':{},'archiveSHA256':digest(self.test_archive)}))
         entries={**base_entries,'bootstrap-test':{'path':str(path),'copiedStrippedSHA256':digest(path),'bytes':path.stat().st_size,'mode':'0500','originalBuildSHA256':'b'*64,'source':'diagnostic fixture compile provenance'}}
-        entries['webdock-agent']={'path':str(new_agent),'copiedStrippedSHA256':digest(new_agent),'bytes':new_agent.stat().st_size,'mode':'0500','originalBuildSHA256':'c'*64,'source':'new convergent Agent fixture provenance'}
-        self.pin.write_text(json.dumps({'version':'source-health-pair-v1','originalBasePin':{'path':str(self.base_pin),'sha256':digest(self.base_pin)},'originalBaseSourceArchive':{'path':str(self.archive),'sha256':digest(self.archive)},'binaries':entries,'unchangedOriginalELFs':sorted(set(names)-{'bootstrap-test','webdock-agent'}),'diagnosticTest':{'name':'bootstrap-test','compilationInventory':{'path':str(self.inventory),'sha256':digest(self.inventory)},'sourceArchive':{'path':str(self.test_archive),'sha256':digest(self.test_archive)},'sourceSHA256':{},'rootLockSHA256':'a'*64,'migrations':{}}}))
-        mixed=json.loads(self.pin.read_text());mixed['replacementCompilation']={'names':['bootstrap-test','webdock-agent'],'sourceArchive':mixed['diagnosticTest']['sourceArchive'],'compilationInventory':mixed['diagnosticTest']['compilationInventory']};self.pin.write_text(json.dumps(mixed))
+        entries['spitzli-agent']={'path':str(new_agent),'copiedStrippedSHA256':digest(new_agent),'bytes':new_agent.stat().st_size,'mode':'0500','originalBuildSHA256':'c'*64,'source':'new convergent Agent fixture provenance'}
+        self.pin.write_text(json.dumps({'version':'source-health-pair-v1','originalBasePin':{'path':str(self.base_pin),'sha256':digest(self.base_pin)},'originalBaseSourceArchive':{'path':str(self.archive),'sha256':digest(self.archive)},'binaries':entries,'unchangedOriginalELFs':sorted(set(names)-{'bootstrap-test','spitzli-agent'}),'diagnosticTest':{'name':'bootstrap-test','compilationInventory':{'path':str(self.inventory),'sha256':digest(self.inventory)},'sourceArchive':{'path':str(self.test_archive),'sha256':digest(self.test_archive)},'sourceSHA256':{},'rootLockSHA256':'a'*64,'migrations':{}}}))
+        mixed=json.loads(self.pin.read_text());mixed['replacementCompilation']={'names':['bootstrap-test','spitzli-agent'],'sourceArchive':mixed['diagnosticTest']['sourceArchive'],'compilationInventory':mixed['diagnosticTest']['compilationInventory']};self.pin.write_text(json.dumps(mixed))
         self.files={}
-        paths=('tools/tests/recovery-admission-component.py','tools/tests/recovery_fixture_custody.py','tools/tests/mail-application-recovery.py','agents/kubernetes/ntfy_recovery.py','deploy/helm/webdock-agent/Chart.yaml','deploy/helm/webdock-agent/values.yaml','deploy/helm/webdock-agent/values.schema.json','deploy/helm/webdock-agent/templates/agent.yaml')
+        paths=('tools/tests/recovery-admission-component.py','tools/tests/recovery_fixture_custody.py','tools/tests/mail-application-recovery.py','agents/kubernetes/ntfy_recovery.py','deploy/helm/spitzli-agent/Chart.yaml','deploy/helm/spitzli-agent/values.yaml','deploy/helm/spitzli-agent/values.schema.json','deploy/helm/spitzli-agent/templates/agent.yaml')
         for rel in paths:
             live=self.root/rel;live.parent.mkdir(parents=True,exist_ok=True);live.write_bytes(Path(__file__).with_name('recovery_fixture_custody.py').read_bytes() if rel=='tools/tests/recovery_fixture_custody.py' else ('pinned '+rel).encode())
             copied=self.overlay.parent/'files'/rel;copied.parent.mkdir(parents=True,exist_ok=True);copied.write_bytes(live.read_bytes());self.files[rel]=digest(copied)
@@ -49,7 +49,7 @@ class ArtifactSelectionTests(unittest.TestCase):
         for name,value in [('ARTIFACT_PIN_SHA256',digest(self.pin)),('BASE_PIN_SHA256',digest(self.base_pin)),('TEST_SOURCE_ARCHIVE_SHA256',digest(self.test_archive)),('TEST_COMPILATION_SHA256',digest(self.inventory)),('ARTIFACT_ELFS',self.hashes),('ARTIFACT_PIN_PATH',str(self.pin.relative_to(self.root)))]:patch.object(runner,name,value,create=True).start()
 
     def elf_path(self,name):
-        return (self.pin.parent if name in ('bootstrap-test','webdock-agent') else self.base_pin.parent)/name
+        return (self.pin.parent if name in ('bootstrap-test','spitzli-agent') else self.base_pin.parent)/name
 
     def write_overlay(self):
         self.overlay.write_text(json.dumps({'purpose':'recovery-source-component-input-overlay-v1','baseArtifactPinSHA256':digest(self.pin),'files':self.files}))
@@ -63,7 +63,7 @@ class ArtifactSelectionTests(unittest.TestCase):
         selected=self.select();target=self.root/'build';target.mkdir()
         runner.copy_whole_inputs(selected,target)
         for name,expected in self.hashes.items():self.assertEqual(digest(target/name),expected)
-        self.assertEqual((target/'chart/Chart.yaml').read_bytes(),(self.overlay.parent/'files/deploy/helm/webdock-agent/Chart.yaml').read_bytes())
+        self.assertEqual((target/'chart/Chart.yaml').read_bytes(),(self.overlay.parent/'files/deploy/helm/spitzli-agent/Chart.yaml').read_bytes())
         self.assertEqual(selected['driver'],'docker')
 
     def test_missing_manifest_driver_or_overlay_rejected(self):
@@ -82,13 +82,13 @@ class ArtifactSelectionTests(unittest.TestCase):
             path=self.elf_path(name);original=path.read_bytes();path.chmod(0o700);path.write_bytes(b'changed');path.chmod(0o500)
             with self.subTest(name=name),self.assertRaises(ValueError):self.select()
             path.chmod(0o700);path.write_bytes(original);path.chmod(0o500)
-        path=self.elf_path('webdock-agent');original=path.read_bytes();path.unlink();other=self.root/'other';other.write_bytes(original);path.symlink_to(other)
+        path=self.elf_path('spitzli-agent');original=path.read_bytes();path.unlink();other=self.root/'other';other.write_bytes(original);path.symlink_to(other)
         with self.assertRaises(ValueError):self.select()
         path.unlink();path.write_bytes(original);path.chmod(0o500)
         with patch.object(runner.os,'getuid',return_value=os.getuid()+1),self.assertRaises(ValueError):self.select()
 
     def test_overlay_missing_extra_changed_live_and_symlink_denied(self):
-        rel='deploy/helm/webdock-agent/Chart.yaml';expected=self.files.pop(rel);self.write_overlay()
+        rel='deploy/helm/spitzli-agent/Chart.yaml';expected=self.files.pop(rel);self.write_overlay()
         with self.assertRaises(ValueError):self.select()
         self.files[rel]=expected;self.files['extra']='0'*64;self.write_overlay()
         with self.assertRaises(ValueError):self.select()
@@ -98,7 +98,7 @@ class ArtifactSelectionTests(unittest.TestCase):
         with self.assertRaises(ValueError):self.select()
 
     def test_source_archive_and_precopy_drift_denied(self):
-        selected=self.select();path=self.elf_path('webdock-agent');path.chmod(0o700);path.write_bytes(b'changed after selection');path.chmod(0o500)
+        selected=self.select();path=self.elf_path('spitzli-agent');path.chmod(0o700);path.write_bytes(b'changed after selection');path.chmod(0o500)
         target=self.root/'build';target.mkdir()
         with self.assertRaises(ValueError):runner.copy_whole_inputs(selected,target)
         self.archive.write_bytes(b'changed archive')
@@ -110,7 +110,7 @@ class ArtifactSelectionTests(unittest.TestCase):
 
     def test_cli_bad_elf_or_contradictory_path_denies_before_import_and_acquisition(self):
         for mutation in ('elf','test'):
-            path=self.elf_path('webdock-agent');original=path.read_bytes()
+            path=self.elf_path('spitzli-agent');original=path.read_bytes()
             args=['component','--driver','docker','--artifact-pin',str(self.pin),'--input-overlay',str(self.overlay),'--input-overlay-sha256',digest(self.overlay)]
             if mutation=='elf':path.chmod(0o700);path.write_bytes(b'changed');path.chmod(0o500)
             else:args+=['--test',str(self.root/'historical935e')]
@@ -119,9 +119,9 @@ class ArtifactSelectionTests(unittest.TestCase):
             path.chmod(0o700);path.write_bytes(original);path.chmod(0o500)
 
     def test_extra_live_chart_file_and_manifest_entry_redirection_denied(self):
-        extra=self.root/'deploy/helm/webdock-agent/extra.yaml';extra.write_text('unexpected')
+        extra=self.root/'deploy/helm/spitzli-agent/extra.yaml';extra.write_text('unexpected')
         with self.assertRaises(ValueError):self.select()
-        extra.unlink();entry=json.loads(self.pin.read_text());entry['binaries']['webdock-agent']['path']=str(self.root/'foreign-agent')
+        extra.unlink();entry=json.loads(self.pin.read_text());entry['binaries']['spitzli-agent']['path']=str(self.root/'foreign-agent')
         self.pin.write_text(json.dumps(entry));self.write_overlay()
         with patch.object(runner,'ARTIFACT_PIN_SHA256',digest(self.pin)),self.assertRaises(ValueError):self.select()
 
@@ -166,7 +166,7 @@ class ArtifactSelectionTests(unittest.TestCase):
         self.assertEqual(namespace['m'].VALUE,'verified-fixture')
         self.assertEqual(namespace['m'].profile.VALUE,'verified-dependency')
         target=self.root/'build';target.mkdir();runner.copy_whole_inputs(inputs,target)
-        self.assertEqual(digest(target/'webdock-agent'),self.hashes['webdock-agent'])
+        self.assertEqual(digest(target/'spitzli-agent'),self.hashes['spitzli-agent'])
 
     def test_manifest_descriptor_bytes_survive_postverification_fifo_or_symlink_swap(self):
         original_verified=runner.verified_file;original_read=Path.read_bytes
@@ -194,10 +194,10 @@ class ArtifactSelectionTests(unittest.TestCase):
                     path.unlink();path.write_bytes(original)
 
     def test_copy_rejects_mode_drift_before_staging_that_executable(self):
-        selected=self.select();agent=self.elf_path('webdock-agent');agent.chmod(0o700)
+        selected=self.select();agent=self.elf_path('spitzli-agent');agent.chmod(0o700)
         target=self.root/'build';target.mkdir()
         with self.assertRaises(ValueError):runner.copy_whole_inputs(selected,target)
-        self.assertFalse((target/'webdock-agent').exists())
+        self.assertFalse((target/'spitzli-agent').exists())
 
     def custody_import_probe(self,kind):
         import builtins,py_compile,sys,types
@@ -264,7 +264,7 @@ class ArtifactSelectionTests(unittest.TestCase):
             self.assertEqual(module.ROOT,self.root)
             self.assertEqual(module.Fixture.command.__globals__['ROOT'],self.root)
         target=self.root/'build';target.mkdir();runner.copy_whole_inputs(inputs,target)
-        self.assertEqual(digest(target/'webdock-agent'),self.hashes['webdock-agent'])
+        self.assertEqual(digest(target/'spitzli-agent'),self.hashes['spitzli-agent'])
 
     def reject_before_command(self):
         args=['component','--artifact-pin',str(self.pin),'--driver','docker','--input-overlay',str(self.overlay),'--input-overlay-sha256',digest(self.overlay)]
@@ -275,8 +275,8 @@ class ArtifactSelectionTests(unittest.TestCase):
         original=self.pin.read_bytes()
         for change in ('missing','foreign'):
             manifest=json.loads(original)
-            if change=='missing':del manifest['binaries']['webdock-recovery-gateway']
-            else:manifest['binaries']['webdock-agent']['path']=str(self.pin.parent/'foreign-agent')
+            if change=='missing':del manifest['binaries']['spitzli-recovery-gateway']
+            else:manifest['binaries']['spitzli-agent']['path']=str(self.pin.parent/'foreign-agent')
             self.pin.write_text(json.dumps(manifest));self.write_overlay()
             with self.subTest(change=change),patch.object(runner,'ARTIFACT_PIN_SHA256',digest(self.pin)):self.reject_before_command()
         self.pin.write_bytes(original)
@@ -302,9 +302,9 @@ class ArtifactSelectionTests(unittest.TestCase):
 
     def test_health_pair_requires_new_agent_instead_of_original_fallback(self):
         selected=self.select()
-        self.assertEqual(selected['binaries']['webdock-agent']['path'],self.pin.parent/'webdock-agent')
-        self.assertNotEqual(selected['binaries']['webdock-agent']['sha256'],json.loads(self.base_pin.read_text())['binaries']['webdock-agent']['copiedStrippedSHA256'])
-        manifest=json.loads(self.pin.read_text());manifest['binaries']['webdock-agent']['path']=str(self.base_pin.parent/'webdock-agent');self.pin.write_text(json.dumps(manifest));self.write_overlay()
+        self.assertEqual(selected['binaries']['spitzli-agent']['path'],self.pin.parent/'spitzli-agent')
+        self.assertNotEqual(selected['binaries']['spitzli-agent']['sha256'],json.loads(self.base_pin.read_text())['binaries']['spitzli-agent']['copiedStrippedSHA256'])
+        manifest=json.loads(self.pin.read_text());manifest['binaries']['spitzli-agent']['path']=str(self.base_pin.parent/'spitzli-agent');self.pin.write_text(json.dumps(manifest));self.write_overlay()
         with patch.object(runner,'ARTIFACT_PIN_SHA256',digest(self.pin)):self.reject_before_command()
 
 class CapacitySqlLiteralTests(unittest.TestCase):

@@ -105,18 +105,18 @@ ARTIFACT_PIN_PATH='.runtime-test/recovery-source-health-component-f065cab12793/p
 ARTIFACT_PIN_SHA256='983748be8f399a509b617c5cbea425dba92519c3f1b574e5fb216b4515fe34fd'
 TEST_SOURCE_ARCHIVE_SHA256='530af9cbe63d3d48aff1a44bb7ce6c86b9bee6389fc818c61ed25b2fe241c088'
 TEST_COMPILATION_SHA256='c632b8f9ccebe600b7edbe8736258bf06c21ef471ede145ee0911ac65c4b06fb'
-ORIGINAL_ELF_NAMES=('webdock-control-plane','webdock-agent-control','webdock-migrate','webdock-bootstrap-operator','webdock-enroll-agent','webdock-bootstrap-plugins','webdock-plugin-control','webdock-plugin-controller','webdock-agent','webdock-storage','webdock-recovery','webdock-recovery-gateway','bootstrap-test')
+ORIGINAL_ELF_NAMES=('spitzli-control-plane','spitzli-agent-control','spitzli-migrate','spitzli-bootstrap-operator','spitzli-enroll-agent','spitzli-bootstrap-plugins','spitzli-plugin-control','spitzli-plugin-controller','spitzli-agent','spitzli-storage','spitzli-recovery','spitzli-recovery-gateway','bootstrap-test')
 ARTIFACT_ELFS={
     'bootstrap-test':'1ea75dc509c091c2140ed6c8e06f82e309f5ae34bb6b6825ccda11a55e6bf25a',
-    'webdock-agent':'84d3bd2efae22b961ab6a33d70899f1154575e7473c3551aba7feb871c0b6875',
-    'webdock-storage':'1f2bc06b80cc68c81a5bb392ead2358e66d8c34d971837af2df1128ed72e2301',
+    'spitzli-agent':'84d3bd2efae22b961ab6a33d70899f1154575e7473c3551aba7feb871c0b6875',
+    'spitzli-storage':'1f2bc06b80cc68c81a5bb392ead2358e66d8c34d971837af2df1128ed72e2301',
 }
-REPLACED_ELF_NAMES=('bootstrap-test','webdock-agent')
+REPLACED_ELF_NAMES=('bootstrap-test','spitzli-agent')
 CHART_INPUTS=('Chart.yaml','values.yaml','values.schema.json','templates/agent.yaml')
 OVERLAY_INPUTS={
     'tools/tests/recovery-admission-component.py','tools/tests/recovery_fixture_custody.py',
     'tools/tests/mail-application-recovery.py','agents/kubernetes/ntfy_recovery.py',
-    *('deploy/helm/webdock-agent/'+name for name in CHART_INPUTS),
+    *('deploy/helm/spitzli-agent/'+name for name in CHART_INPUTS),
 }
 CUSTODY_INPUT='tools/tests/recovery_fixture_custody.py'
 CUSTODY_SHA256='4313a68353a2964d933047a79e2ff96ed4b690da2945d9a5f0f7c9dd8b8d307c'
@@ -162,7 +162,7 @@ def verified_file(path,expected,copy_to=None,*,read_bytes=False,expected_mode=No
 # Next component has only the two current executables and the exact retained helper.
 AUTHORITY_PIN_PATH='.runtime-test/recovery-mail-canonical-worker/pin-auth-bootstrap-current.json'
 AUTHORITY_PIN_SHA256='0855a9f6b2d4c54dba63a81e986ead8ddbf389c406cf1cefe21c8ff33c63f25c'
-AUTHORITY_ELFS={'webdock-agent': 'ec38fca972efeda9dcc2a4d05bacc6e618f5171951bce2a6d32e14b06b60d0f7', 'webdock-storage': '162fc3ac385e760cf516e7287b76ee68576ad2c7196a454d64db072becfe7920', 'bootstrap-test': '938bc682b02090fbe7179cb960dd7548559f576816a235f1a38bef9104216493', 'webdock-recovery': '893a53bf399d5769fc3248e37a4103847b7804297661a47fa0db320b0d3919d3', 'webdock-recovery-gateway': '5053a27a3db1efdaa3a947bd987fa6c7c5beea4c786e7dba9252e7a8f7b98815', 'webdock-migrate': '7e7becd5f4519191569146206a8bfc8ea467f4eee26e3b7d91a45eb0ce17e4ee', 'webdock-mail': '427ea4a927f5f79e28bbd0388ab71dc2b2c2665f50afdba5a431e59e042bf937'}
+AUTHORITY_ELFS={'spitzli-agent': 'ec38fca972efeda9dcc2a4d05bacc6e618f5171951bce2a6d32e14b06b60d0f7', 'spitzli-storage': '162fc3ac385e760cf516e7287b76ee68576ad2c7196a454d64db072becfe7920', 'bootstrap-test': '938bc682b02090fbe7179cb960dd7548559f576816a235f1a38bef9104216493', 'spitzli-recovery': '893a53bf399d5769fc3248e37a4103847b7804297661a47fa0db320b0d3919d3', 'spitzli-recovery-gateway': '5053a27a3db1efdaa3a947bd987fa6c7c5beea4c786e7dba9252e7a8f7b98815', 'spitzli-migrate': '7e7becd5f4519191569146206a8bfc8ea467f4eee26e3b7d91a45eb0ce17e4ee', 'spitzli-mail': '427ea4a927f5f79e28bbd0388ab71dc2b2c2665f50afdba5a431e59e042bf937'}
 CURRENT_GATEWAY_PIN_PATH='.runtime-test/recovery-mail-auth-gateway-current/gateway-pin.json'
 CURRENT_GATEWAY_PIN_SHA256='f3f630d4afba94d5d6c42baa4f63ea0ce562dafbab524c0072c70d75241a71f2'
 CURRENT_AGENT_PIN_PATH='.runtime-test/recovery-mail-auth-gateway-current/agent-pin-v2.json'
@@ -236,7 +236,7 @@ def verify_mail_dns_build_probe(root):
     directory=Path(root)/MAIL_DNS_PROBE_DIR
     compilation=json.loads(verified_file(directory/'compilation.json',MAIL_DNS_COMPILATION_SHA256,read_bytes=True))
     verified_file(directory/'public-source.tar.gz',MAIL_DNS_ARCHIVE_SHA256)
-    if compilation['privateLockSHA256']!=DIAGNOSTIC_MAIL_LOCK_SHA256 or compilation['inputs']['plugins/mail/src/lib.rs']!=MAIL_DNS_TEST_LIB_SHA256 or compilation['runtimeWorkerSHA256']!=AUTHORITY_ELFS['webdock-mail']:raise ValueError('DNS test-tool compile provenance mismatch')
+    if compilation['privateLockSHA256']!=DIAGNOSTIC_MAIL_LOCK_SHA256 or compilation['inputs']['plugins/mail/src/lib.rs']!=MAIL_DNS_TEST_LIB_SHA256 or compilation['runtimeWorkerSHA256']!=AUTHORITY_ELFS['spitzli-mail']:raise ValueError('DNS test-tool compile provenance mismatch')
     for name,expected in compilation['inputs'].items():
         if Path(name).is_absolute() or '..' in Path(name).parts:raise ValueError('invalid DNS test-tool source path')
         verified_file(Path(root)/name,expected)
@@ -244,18 +244,18 @@ def verify_mail_dns_build_probe(root):
     return {'path':path,'sha256':MAIL_DNS_PROBE_SHA256,'bytes':MAIL_DNS_PROBE_BYTES,'mode':0o500,'scope':'BUILD-ONLY actual constructor test; never a runtime binary or final image file'}
 
 def validate_current_gateway_provenance(pin,record,core,binary):
-    if set(pin)!={'version','binaries','compilationSHA256','sourceArchiveSHA256','rootLockSHA256','compilerInputs'} or pin['version']!='source-matched-gateway-v1' or pin['binaries']!={'webdock-recovery-gateway':binary}:raise ValueError('incorrect finite current gateway declaration')
+    if set(pin)!={'version','binaries','compilationSHA256','sourceArchiveSHA256','rootLockSHA256','compilerInputs'} or pin['version']!='source-matched-gateway-v1' or pin['binaries']!={'spitzli-recovery-gateway':binary}:raise ValueError('incorrect finite current gateway declaration')
     if not isinstance(pin['compilerInputs'],dict) or any(Path(n).is_absolute() or '..'in Path(n).parts for n in pin['compilerInputs']):raise ValueError('invalid gateway source path')
     if record['inputs']!=pin['compilerInputs'] or record['rootLockSHA256']!=core['rootLockSHA256'] or pin['rootLockSHA256']!=core['rootLockSHA256'] or record['runtimeExecutables']!=pin['binaries'] or record['archiveSHA256']!=pin['sourceArchiveSHA256']:raise ValueError('gateway compiler/source disagreement')
     artifact=record['actualCargoArtifact']
-    if artifact['target']['name']!='webdock-recovery-gateway' or artifact['target']['kind']!=['bin'] or artifact['profile']['debuginfo']!=0 or artifact['profile']['test']is not False or set(artifact['features'])!={'default','docker','kubernetes','local-recovery-fixture'}:raise ValueError('unqualified gateway compiler controls')
+    if artifact['target']['name']!='spitzli-recovery-gateway' or artifact['target']['kind']!=['bin'] or artifact['profile']['debuginfo']!=0 or artifact['profile']['test']is not False or set(artifact['features'])!={'default','docker','kubernetes','local-recovery-fixture'}:raise ValueError('unqualified gateway compiler controls')
 
 def validate_current_agent_provenance(pin,record,core,binary):
-    if set(pin)!={'version','binaries','compilationSHA256','sourceArchiveSHA256','rootLockSHA256','compilerInputs'} or pin['version']!='source-matched-agent-v2' or pin['binaries']!={'webdock-agent':binary}:raise ValueError('incorrect finite current Agent declaration')
+    if set(pin)!={'version','binaries','compilationSHA256','sourceArchiveSHA256','rootLockSHA256','compilerInputs'} or pin['version']!='source-matched-agent-v2' or pin['binaries']!={'spitzli-agent':binary}:raise ValueError('incorrect finite current Agent declaration')
     if not isinstance(pin['compilerInputs'],dict) or any(Path(n).is_absolute() or '..'in Path(n).parts for n in pin['compilerInputs']):raise ValueError('invalid additional finite Agent compiler inputs')
     if record['inputs']!=pin['compilerInputs'] or record['rootLockSHA256']!=core['rootLockSHA256'] or pin['rootLockSHA256']!=core['rootLockSHA256'] or record['runtimeExecutables']!=pin['binaries'] or record['archiveSHA256']!=pin['sourceArchiveSHA256']:raise ValueError('current Agent compiler/source disagreement')
     artifact=record['actualCargoArtifact']
-    if artifact['target']['name']!='webdock-agent' or artifact['target']['kind']!=['bin'] or artifact['profile']['debuginfo']!=0 or not {'docker','kubernetes','local-recovery-fixture'}<=set(artifact['features']):raise ValueError('unqualified current Agent build controls')
+    if artifact['target']['name']!='spitzli-agent' or artifact['target']['kind']!=['bin'] or artifact['profile']['debuginfo']!=0 or not {'docker','kubernetes','local-recovery-fixture'}<=set(artifact['features']):raise ValueError('unqualified current Agent build controls')
 
 def select_authority_inputs(*,root,artifact_pin,driver,input_overlay,input_overlay_sha256,test=None):
     if artifact_pin is None or input_overlay is None or input_overlay_sha256 is None:raise ValueError('explicit authority manifest/overlay required')
@@ -274,7 +274,7 @@ def select_authority_inputs(*,root,artifact_pin,driver,input_overlay,input_overl
         retained_mail=json.loads(verified_file(retained_mail_pin,RETAINED_MATCHED_MAIL_PIN_SHA256,read_bytes=True))
         retained_mail_comp=json.loads(verified_file(retained_mail_pin.parent/'compilation.json',retained_mail['compilationSHA256'],read_bytes=True))
         verified_file(retained_mail_pin.parent/'public-source.tar.gz',retained_mail['sourceArchiveSHA256'])
-        if retained_mail.get('version')!='source-matched-mail-v1' or retained_mail.get('fixtureMode')!='matched-mail-v1' or retained_mail_comp['archiveSHA256']!=retained_mail['sourceArchiveSHA256'] or retained_mail_comp['runtimeExecutables']!={n:retained_mail['binaries'][n] for n in ('bootstrap-test','webdock-migrate','webdock-mail')}:raise ValueError('retained Mail compiler disagreement')
+        if retained_mail.get('version')!='source-matched-mail-v1' or retained_mail.get('fixtureMode')!='matched-mail-v1' or retained_mail_comp['archiveSHA256']!=retained_mail['sourceArchiveSHA256'] or retained_mail_comp['runtimeExecutables']!={n:retained_mail['binaries'][n] for n in ('bootstrap-test','spitzli-migrate','spitzli-mail')}:raise ValueError('retained Mail compiler disagreement')
     if driver!=('kubernetes' if mail_mode else 'docker'):raise ValueError('artifact/runtime kind mismatch')
     retained_pin=root/RETAINED_AUTHORITY_PIN_PATH
     retained=json.loads(verified_file(retained_pin,RETAINED_AUTHORITY_PIN_SHA256,read_bytes=True))
@@ -292,7 +292,7 @@ def select_authority_inputs(*,root,artifact_pin,driver,input_overlay,input_overl
     if manifest.get('retainedCLIPin')!={'path':str(cli_pin),'sha256':RETAINED_CLI_PIN_SHA256}:raise ValueError('incorrect retained standalone provenance')
     cli_compilation=json.loads(verified_file(cli_pin.parent/'compilation.json',cli_manifest['compilationSHA256'],read_bytes=True))
     verified_file(cli_pin.parent/'public-source.tar.gz',cli_manifest['sourceArchiveSHA256'])
-    if cli_compilation['archiveSHA256']!=cli_manifest['sourceArchiveSHA256'] or any(cli_compilation['runtimeExecutables'][n]!=cli_manifest['binaries'][n] for n in ('webdock-recovery','webdock-recovery-gateway')):raise ValueError('standalone compiler source disagreement')
+    if cli_compilation['archiveSHA256']!=cli_manifest['sourceArchiveSHA256'] or any(cli_compilation['runtimeExecutables'][n]!=cli_manifest['binaries'][n] for n in ('spitzli-recovery','spitzli-recovery-gateway')):raise ValueError('standalone compiler source disagreement')
     base_pin=root/BASE_PIN_PATH;base=json.loads(verified_file(base_pin,BASE_PIN_SHA256,read_bytes=True))
     if manifest.get('version')!=('source-matched-mail-v1' if mail_mode else 'source-ntfy-byte-path-v1') or set(manifest['binaries'])!=set(AUTHORITY_ELFS) or manifest['originalBasePin']!={'path':str(base_pin),'sha256':BASE_PIN_SHA256}:raise ValueError('incorrect finite authority executable set')
     archive=base_pin.parent/'public-source.tar.gz';verified_file(archive,base['publicSourceArchiveSHA256'])
@@ -306,7 +306,7 @@ def select_authority_inputs(*,root,artifact_pin,driver,input_overlay,input_overl
         diagnostic=manifest.get('diagnosticWorker')
         if not isinstance(diagnostic,dict) or set(diagnostic)!={'compilationSHA256','sourceArchiveSHA256','standaloneLockSHA256'} or diagnostic['standaloneLockSHA256']!=DIAGNOSTIC_MAIL_LOCK_SHA256:raise ValueError('incorrect standalone worker provenance')
         worker_compilation=json.loads(verified_file(pin.parent/'worker-compilation.json',diagnostic['compilationSHA256'],read_bytes=True));verified_file(pin.parent/'worker-source.tar.gz',diagnostic['sourceArchiveSHA256'])
-        if worker_compilation['archiveSHA256']!=diagnostic['sourceArchiveSHA256'] or worker_compilation['standaloneLockSHA256']!=DIAGNOSTIC_MAIL_LOCK_SHA256 or worker_compilation['inputs'].get('plugins/mail/Cargo.lock')!=DIAGNOSTIC_MAIL_LOCK_SHA256 or worker_compilation['runtimeExecutables']!={'webdock-mail':manifest['binaries']['webdock-mail']} or worker_compilation['idsConsumed'] or worker_compilation['maylilyConsumed'] or worker_compilation['externalConsumedFiles']:raise ValueError('standalone worker source disagreement')
+        if worker_compilation['archiveSHA256']!=diagnostic['sourceArchiveSHA256'] or worker_compilation['standaloneLockSHA256']!=DIAGNOSTIC_MAIL_LOCK_SHA256 or worker_compilation['inputs'].get('plugins/mail/Cargo.lock')!=DIAGNOSTIC_MAIL_LOCK_SHA256 or worker_compilation['runtimeExecutables']!={'spitzli-mail':manifest['binaries']['spitzli-mail']} or worker_compilation['idsConsumed'] or worker_compilation['maylilyConsumed'] or worker_compilation['externalConsumedFiles']:raise ValueError('standalone worker source disagreement')
         for name,expected in worker_compilation['inputs'].items():
             if Path(name).is_absolute() or '..' in Path(name).parts:raise ValueError('invalid standalone worker source path')
             verified_file(root/name,expected)
@@ -316,27 +316,27 @@ def select_authority_inputs(*,root,artifact_pin,driver,input_overlay,input_overl
         current_agent=json.loads(verified_file(current_agent_pin,CURRENT_AGENT_PIN_SHA256,read_bytes=True))
         agent_record=json.loads(verified_file(current_agent_pin.parent/'agent-compilation-v2.json',current_agent['compilationSHA256'],read_bytes=True))
         verified_file(current_agent_pin.parent/'agent-source-v2.tar.gz',current_agent['sourceArchiveSHA256'])
-        validate_current_agent_provenance(current_agent,agent_record,compilation,manifest['binaries']['webdock-agent'])
+        validate_current_agent_provenance(current_agent,agent_record,compilation,manifest['binaries']['spitzli-agent'])
         for name,expected in current_agent['compilerInputs'].items():verified_file(root/name,expected)
         current_gateway_pin=root/CURRENT_GATEWAY_PIN_PATH
         if manifest.get('currentGatewayPin')!={'path':str(current_gateway_pin),'sha256':CURRENT_GATEWAY_PIN_SHA256}:raise ValueError('incorrect finite current gateway provenance')
         current_gateway=json.loads(verified_file(current_gateway_pin,CURRENT_GATEWAY_PIN_SHA256,read_bytes=True))
         gateway_record=json.loads(verified_file(current_gateway_pin.parent/'gateway-compilation.json',current_gateway['compilationSHA256'],read_bytes=True))
         verified_file(current_gateway_pin.parent/'gateway-source.tar.gz',current_gateway['sourceArchiveSHA256'])
-        validate_current_gateway_provenance(current_gateway,gateway_record,compilation,manifest['binaries']['webdock-recovery-gateway'])
+        validate_current_gateway_provenance(current_gateway,gateway_record,compilation,manifest['binaries']['spitzli-recovery-gateway'])
         for name,expected in current_gateway['compilerInputs'].items():verified_file(root/name,expected)
 
 
     binaries={}
     for name,expected in AUTHORITY_ELFS.items():
-        entry=manifest['binaries'][name];path=(current_agent_pin.parent if mail_mode and name=='webdock-agent' else retained_test_pin.parent if mail_mode and name=='bootstrap-test' else pin.parent if name=='bootstrap-test' or mail_mode and name=='webdock-mail' else retained_mail_pin.parent if mail_mode and name=='webdock-migrate' else runtime_pin.parent if name in ('webdock-agent','webdock-storage') else cli_pin.parent)/name
-        if mail_mode and name=='webdock-recovery-gateway':path=current_gateway_pin.parent/name
-        if mail_mode and name=='webdock-migrate' and entry!=retained_mail['binaries'][name]:raise ValueError('retained Mail executable changed')
-        if name=='webdock-agent' and mail_mode and entry!=current_agent['binaries'][name]:raise ValueError('current Agent executable changed')
-        if (name=='webdock-storage' or name=='webdock-agent' and not mail_mode) and entry!=runtime['binaries'][name]:raise ValueError('retained6f1 runtime executable changed')
-        if name in ('webdock-recovery','webdock-recovery-gateway') and not(mail_mode and name=='webdock-recovery-gateway') and entry!=cli_manifest['binaries'][name]:raise ValueError('retained standalone executable changed')
+        entry=manifest['binaries'][name];path=(current_agent_pin.parent if mail_mode and name=='spitzli-agent' else retained_test_pin.parent if mail_mode and name=='bootstrap-test' else pin.parent if name=='bootstrap-test' or mail_mode and name=='spitzli-mail' else retained_mail_pin.parent if mail_mode and name=='spitzli-migrate' else runtime_pin.parent if name in ('spitzli-agent','spitzli-storage') else cli_pin.parent)/name
+        if mail_mode and name=='spitzli-recovery-gateway':path=current_gateway_pin.parent/name
+        if mail_mode and name=='spitzli-migrate' and entry!=retained_mail['binaries'][name]:raise ValueError('retained Mail executable changed')
+        if name=='spitzli-agent' and mail_mode and entry!=current_agent['binaries'][name]:raise ValueError('current Agent executable changed')
+        if (name=='spitzli-storage' or name=='spitzli-agent' and not mail_mode) and entry!=runtime['binaries'][name]:raise ValueError('retained6f1 runtime executable changed')
+        if name in ('spitzli-recovery','spitzli-recovery-gateway') and not(mail_mode and name=='spitzli-recovery-gateway') and entry!=cli_manifest['binaries'][name]:raise ValueError('retained standalone executable changed')
         if entry['path']!=str(path) or entry['copiedStrippedSHA256']!=expected or entry['mode']!='0500':raise ValueError('incorrect authority executable binding')
-        if mail_mode and name=='webdock-recovery-gateway' and entry!=current_gateway['binaries'][name]:raise ValueError('current gateway executable changed')
+        if mail_mode and name=='spitzli-recovery-gateway' and entry!=current_gateway['binaries'][name]:raise ValueError('current gateway executable changed')
         verified_file(path,expected,expected_mode=0o500,expected_size=entry['bytes']);binaries[name]={'path':path,'sha256':expected,'mode':0o500,'bytes':entry['bytes']}
     tools={}
     if set(manifest['operatorTools'])!={'mc','age-keygen','ssh-keygen'}:raise ValueError('incorrect operator tool set')
@@ -351,7 +351,7 @@ def select_authority_inputs(*,root,artifact_pin,driver,input_overlay,input_overl
         raw=verified_file(overlay_path.parent/'files'/rel,expected,read_bytes=rel in (*PYTHON_INPUTS,CUSTODY_INPUT,AUTHORITY_OPERATOR_INPUT,RELAY_INPUT,GATEWAY_RECIPE))
         if raw is not None:python_sources[rel]=raw
         verified_file(root/rel,expected)
-    for directory in (root/'deploy/helm/webdock-agent',overlay_path.parent/'files/deploy/helm/webdock-agent'):
+    for directory in (root/'deploy/helm/spitzli-agent',overlay_path.parent/'files/deploy/helm/spitzli-agent'):
         entries=list(directory.rglob('*'))
         if any(p.is_symlink() for p in entries) or {p.relative_to(directory).as_posix() for p in entries if p.is_file()}!=set(CHART_INPUTS):raise ValueError('incorrect authority chart')
     if test is not None and Path(test).absolute()!=binaries['bootstrap-test']['path']:raise ValueError('contradictory authority test override')
@@ -390,7 +390,7 @@ def select_whole_inputs(*,root,artifact_pin,driver,input_overlay,input_overlay_s
     test_archive=artifact_pin.parent/'diagnostic-test-source.tar.gz';compilation_path=artifact_pin.parent/'diagnostic-test-compilation.json';diagnostic=manifest['diagnosticTest']
     if diagnostic['name']!='bootstrap-test' or diagnostic['sourceArchive']!={'path':str(test_archive),'sha256':TEST_SOURCE_ARCHIVE_SHA256} or diagnostic['compilationInventory']!={'path':str(compilation_path),'sha256':TEST_COMPILATION_SHA256}:
         raise ValueError('incorrect diagnostic test source locations')
-    if manifest['replacementCompilation']!={'names':['bootstrap-test','webdock-agent'],'sourceArchive':diagnostic['sourceArchive'],'compilationInventory':diagnostic['compilationInventory']}:raise ValueError('incorrect finite replacement compilation binding')
+    if manifest['replacementCompilation']!={'names':['bootstrap-test','spitzli-agent'],'sourceArchive':diagnostic['sourceArchive'],'compilationInventory':diagnostic['compilationInventory']}:raise ValueError('incorrect finite replacement compilation binding')
     verified_file(test_archive,TEST_SOURCE_ARCHIVE_SHA256)
     compilation=json.loads(verified_file(compilation_path,TEST_COMPILATION_SHA256,read_bytes=True))
     if compilation['inputs']!=diagnostic['sourceSHA256'] or compilation['rootLockSHA256']!=diagnostic['rootLockSHA256'] or compilation['migrations']!=diagnostic['migrations'] or compilation['archiveSHA256']!=TEST_SOURCE_ARCHIVE_SHA256:
@@ -404,7 +404,7 @@ def select_whole_inputs(*,root,artifact_pin,driver,input_overlay,input_overlay_s
         raw=verified_file(input_overlay.parent/'files'/rel,expected,read_bytes=rel in PYTHON_INPUTS or rel==CUSTODY_INPUT)
         if raw is not None:python_sources[rel]=raw
         verified_file(root/rel,expected)
-    for directory in (root/'deploy/helm/webdock-agent',input_overlay.parent/'files/deploy/helm/webdock-agent'):
+    for directory in (root/'deploy/helm/spitzli-agent',input_overlay.parent/'files/deploy/helm/spitzli-agent'):
         entries=list(directory.rglob('*'))
         if any(p.is_symlink() for p in entries):raise ValueError('symlink chart entry')
         actual={p.relative_to(directory).as_posix() for p in entries if not p.is_dir()}
@@ -425,7 +425,7 @@ def copy_whole_inputs(selected,build):
     for name,entry in selected['binaries'].items():
         verified_file(entry['path'],entry['sha256'],build/name,expected_mode=entry['mode'],expected_size=entry['bytes']);(build/name).chmod(0o555)
     for rel in CHART_INPUTS:
-        source='deploy/helm/webdock-agent/'+rel;destination=build/'chart'/rel
+        source='deploy/helm/spitzli-agent/'+rel;destination=build/'chart'/rel
         destination.parent.mkdir(parents=True,exist_ok=True)
         verified_file(selected['overlay'].parent/'files'/source,selected['overlayFiles'][source],destination)
 
@@ -658,14 +658,14 @@ MAIL_TOOL_AUDIT = TOOL_AUDIT.replace('records={};good=True', """tools.update({'p
 'ssh-keygen':('/usr/bin/ssh-keygen',None),'docker':('/usr/bin/docker',['--version']),'k3s':('/usr/local/bin/k3s',['--version']),'kubectl':('/usr/local/bin/kubectl',None),'ctr':('/usr/local/bin/ctr',None),'crictl':('/usr/local/bin/crictl',['--version']),
 'dd':('/usr/bin/dd',['--version']),'sync':('/usr/bin/sync',['--version']),'mount':('/usr/bin/mount',['--version']),'umount':('/usr/bin/umount',['--version']),'fallocate':('/usr/bin/fallocate',['--version']),
 'ip':(None,['-Version']),'iptables':(None,['--version']),'tar':('/bin/tar',['--version']),'sleep':('/bin/sleep',['--version']),
-'webdock-agent':('/usr/local/bin/webdock-agent',None),'webdock-storage':('/usr/local/bin/webdock-storage',None),'webdock-recovery':('/usr/local/bin/webdock-recovery',None),'webdock-recovery-gateway':('/usr/local/bin/webdock-recovery-gateway',None),'webdock-migrate':('/usr/local/bin/webdock-migrate',None),'webdock-mail':('/usr/local/bin/webdock-mail',None)})
+'spitzli-agent':('/usr/local/bin/spitzli-agent',None),'spitzli-storage':('/usr/local/bin/spitzli-storage',None),'spitzli-recovery':('/usr/local/bin/spitzli-recovery',None),'spitzli-recovery-gateway':('/usr/local/bin/spitzli-recovery-gateway',None),'spitzli-migrate':('/usr/local/bin/spitzli-migrate',None),'spitzli-mail':('/usr/local/bin/spitzli-mail',None)})
 records={};good=True""")
 
 MAIL_BASE_REFERENCE='webdock-rust-storage-test:owned'
 MAIL_IMAGE_MAX=192*1024**2
 def mail_image_recipe(run,run_label,kind_label,kind,builder):
     if re.fullmatch('[a-f0-9]{12}',run) is None or re.fullmatch('wd-owned-recovery-component:[a-f0-9]{12}',builder) is None:raise ValueError('invalid own Mail build namespace')
-    return f'FROM {MAIL_BASE_REFERENCE} AS mailbase\nFROM {builder} AS closure\nCOPY webdock-mail /tmp/mail\nCOPY mail-rootfs.py /tmp/rootfs.py\nCOPY mail-stage.sh /tmp/mail-stage.sh\nCOPY mail-dns-probe /tmp/mail-dns-probe\nRUN --mount=from=mailbase,source=/,target=/cached-base,ro python3 /tmp/rootfs.py /tmp/mail /mail-rootfs mail /tmp/mail-stage.sh /tmp/mail-dns-probe\nFROM scratch\nCOPY --from=closure /mail-rootfs /\nLABEL {run_label}="{run}" {kind_label}="{kind}"\nENV WEBDOCK_RECOVERY_COMPONENT_TEST=1\nUSER 65532:65532\nENTRYPOINT ["/usr/local/bin/webdock-mail"]\nCMD []\n'
+    return f'FROM {MAIL_BASE_REFERENCE} AS mailbase\nFROM {builder} AS closure\nCOPY spitzli-mail /tmp/mail\nCOPY mail-rootfs.py /tmp/rootfs.py\nCOPY mail-stage.sh /tmp/mail-stage.sh\nCOPY mail-dns-probe /tmp/mail-dns-probe\nRUN --mount=from=mailbase,source=/,target=/cached-base,ro python3 /tmp/rootfs.py /tmp/mail /mail-rootfs mail /tmp/mail-stage.sh /tmp/mail-dns-probe\nFROM scratch\nCOPY --from=closure /mail-rootfs /\nLABEL {run_label}="{run}" {kind_label}="{kind}"\nENV WEBDOCK_RECOVERY_COMPONENT_TEST=1\nUSER 65532:65532\nENTRYPOINT ["/usr/local/bin/spitzli-mail"]\nCMD []\n'
 def retained_mail_stage(base):
     archive=Path(base)/'retained-runtime-source.tar.gz'
     verified_file(archive,'368ee1e06c04dfba6436fe44e839237ea6aa0bfa40898600238eda725f07fbb3')
@@ -721,7 +721,7 @@ def mail_image_layout(archive,bindings,reference,worker_hash=None):
         cases={'valid':{'constructorOk':True,'readable':True,'readErrno':None},'malformed':{'constructorOk':False,'readable':True,'readErrno':None},'missing':{'constructorOk':False,'readable':False,'readErrno':2},'inaccessible':{'constructorOk':False,'readable':False,'readErrno':13}}
         if dns!={'uid':65532,'gid':65532,'probeSHA256':MAIL_DNS_PROBE_SHA256,'constructorOnlyNoQuery':True,'cases':cases,'dummyFilesAndProbeRemoved':True} or any(n.startswith('/etc/') or n=='/mail-dns-probe' for n in (*regular,*aliases,*directories)):raise ValueError('Mail actual DNS constructor proof or empty etc contract missing')
         expected={n:{k:v[k] for k in ('bytes','sha256')} for n,v in receipt['files'].items()}
-        if regular!=expected or aliases!=receipt['symlinks'] or regular['/usr/local/bin/webdock-mail']['sha256']!=worker_hash or total>MAIL_IMAGE_MAX:raise ValueError('Mail OCI closure differs from source receipt')
+        if regular!=expected or aliases!=receipt['symlinks'] or regular['/usr/local/bin/spitzli-mail']['sha256']!=worker_hash or total>MAIL_IMAGE_MAX:raise ValueError('Mail OCI closure differs from source receipt')
         result['closure']=receipt
     return result
 
@@ -1340,9 +1340,9 @@ def main():
             copy_source_provenance(inputs,base)
             for name,entry in inputs['binaries'].items():report['binaries'][name]={'sourceSHA256':entry['sha256'],'copiedSHA256':sha(build/name)}
         else:
-            for name,src in [('bootstrap-test',args.test.absolute()),('webdock-agent',ROOT/'target/debug/webdock-agent'),('webdock-storage',ROOT/'target/debug/webdock-storage')]:
+            for name,src in [('bootstrap-test',args.test.absolute()),('spitzli-agent',ROOT/'target/debug/spitzli-agent'),('spitzli-storage',ROOT/'target/debug/spitzli-storage')]:
                 dst=build/name;shutil.copy2(src,dst);dst.chmod(0o555);report['binaries'][name]={'sourceSHA256':sha(src),'copiedSHA256':sha(dst),'execution':'UNUSED preflight metadata only'}
-            shutil.copytree(ROOT/'deploy/helm/webdock-agent',build/'chart')
+            shutil.copytree(ROOT/'deploy/helm/spitzli-agent',build/'chart')
         h=hashlib.sha256()
         for p in sorted((build/'chart').rglob('*')):
             if p.is_file():
@@ -1370,10 +1370,10 @@ def main():
         pause_current,owned_pause=acquire_image('pause',pause_ref,('pull',pause_ref),commands,acquisitions,verify_pause)
         pause_id=pause_current['Id'];pause_receipt=PauseImage(pause_ref,pause_id,selected_rows[0]['SchemaV2Manifest']['config']['digest'],owned_pause,K3S,pause_tag);report['pauseProvenance']={'pinnedK3s':K3S,'requiredVersionFromHelp':pause_tag,'resolvedPlatformDescriptor':selected[0],'importReference':pause_ref,'imageID':pause_id,'configurationID':pause_receipt.configuration_id,'absentBefore':owned_pause}
         chart_sha=h.hexdigest()
-        extra_binaries=(' webdock-recovery webdock-recovery-gateway mc'+(' webdock-migrate webdock-mail' if args.mail else '')) if args.bytes else ''
+        extra_binaries=(' spitzli-recovery spitzli-recovery-gateway mc'+(' spitzli-migrate spitzli-mail' if args.mail else '')) if args.bytes else ''
         relay_copy='COPY recovery_minio_relay.py /usr/local/lib/recovery_minio_relay.py\nCOPY tool_audit.py /usr/local/lib/recovery_tool_audit.py\n' if args.bytes else ''
         tool_build_receipt='RUN mkdir -p /usr/local/share/webdock && python3 /usr/local/lib/recovery_tool_audit.py > /usr/local/share/webdock/recovery-tool-build.json && dpkg-query -W python3 sqlite3 age openssl openssh-client iproute2 > /usr/local/share/webdock/recovery-tool-packages.tsv\n' if args.bytes else ''
-        (build/'Dockerfile').write_text(f'{MAIL_PG18_STAGE if args.mail else ""}FROM {K3S} AS k3s\nFROM webdock-rust-storage-test:owned\nLABEL {RUN_LABEL}="{run}" {KIND_LABEL}="{KIND}"\nCOPY --from=k3s /bin/k3s /usr/local/bin/k3s\nCOPY --from=k3s /bin/cni /bin/bandwidth /bin/bridge /bin/firewall /bin/flannel /bin/host-local /bin/loopback /bin/portmap /usr/local/bin/\nRUN ln -s /usr/local/bin/k3s /usr/local/bin/kubectl && ln -s /usr/local/bin/k3s /usr/local/bin/ctr && ln -s /usr/local/bin/k3s /usr/local/bin/crictl\nCOPY bootstrap-test webdock-agent webdock-storage{extra_binaries} /usr/local/bin/\n{relay_copy}COPY chart /chart\nRUN apt-get update && apt-get install -y --no-install-recommends openssh-client iproute2 age openssl python3 sqlite3 && rm -rf /var/lib/apt/lists/*\n{MAIL_PG18_INSTALL if args.mail else ""}{tool_build_receipt}COPY entrypoint /usr/local/bin/owned-component\nENTRYPOINT ["/usr/local/bin/owned-component"]\n')
+        (build/'Dockerfile').write_text(f'{MAIL_PG18_STAGE if args.mail else ""}FROM {K3S} AS k3s\nFROM webdock-rust-storage-test:owned\nLABEL {RUN_LABEL}="{run}" {KIND_LABEL}="{KIND}"\nCOPY --from=k3s /bin/k3s /usr/local/bin/k3s\nCOPY --from=k3s /bin/cni /bin/bandwidth /bin/bridge /bin/firewall /bin/flannel /bin/host-local /bin/loopback /bin/portmap /usr/local/bin/\nRUN ln -s /usr/local/bin/k3s /usr/local/bin/kubectl && ln -s /usr/local/bin/k3s /usr/local/bin/ctr && ln -s /usr/local/bin/k3s /usr/local/bin/crictl\nCOPY bootstrap-test spitzli-agent spitzli-storage{extra_binaries} /usr/local/bin/\n{relay_copy}COPY chart /chart\nRUN apt-get update && apt-get install -y --no-install-recommends openssh-client iproute2 age openssl python3 sqlite3 && rm -rf /var/lib/apt/lists/*\n{MAIL_PG18_INSTALL if args.mail else ""}{tool_build_receipt}COPY entrypoint /usr/local/bin/owned-component\nENTRYPOINT ["/usr/local/bin/owned-component"]\n')
         (build/'entrypoint').write_text('#!/bin/bash\nexit 64\n');(build/'entrypoint').chmod(0o555)
         def verify_component(current):
             labels=current.get('Config',{}).get('Labels') or {}
@@ -1383,12 +1383,12 @@ def main():
         if args.bytes:
             gateway_run=uuid.uuid4().hex[:12];gateway_tag=ComponentImage(gateway_run,'').reference
             gateway_build=base/'gateway-build';gateway_build.mkdir(mode=0o700)
-            entry=inputs['binaries']['webdock-recovery-gateway'];verified_file(entry['path'],entry['sha256'],gateway_build/'gateway',expected_mode=0o500,expected_size=entry['bytes'])
+            entry=inputs['binaries']['spitzli-recovery-gateway'];verified_file(entry['path'],entry['sha256'],gateway_build/'gateway',expected_mode=0o500,expected_size=entry['bytes'])
             verified_file(inputs['overlay'].parent/'files'/GATEWAY_RECIPE,inputs['overlayFiles'][GATEWAY_RECIPE],gateway_build/'rootfs.py')
             main_before=json.loads(commands.call('gateway-builder-main-identity','image','inspect',component_tag).stdout)[0]
             verify_component(main_before)
             if main_before['Id']!=component_receipt.image_id:raise ValueError('own main gateway builder identity changed')
-            (gateway_build/'Dockerfile').write_text(f'FROM {component_tag} AS closure\nCOPY gateway /tmp/gateway\nCOPY rootfs.py /tmp/rootfs.py\nRUN python3 /tmp/rootfs.py /tmp/gateway /gateway-rootfs\nFROM scratch\nCOPY --from=closure /gateway-rootfs /\nLABEL {RUN_LABEL}="{gateway_run}" {KIND_LABEL}="{KIND}"\nUSER 65532:65532\nENTRYPOINT ["/usr/local/bin/webdock-recovery-gateway"]\n')
+            (gateway_build/'Dockerfile').write_text(f'FROM {component_tag} AS closure\nCOPY gateway /tmp/gateway\nCOPY rootfs.py /tmp/rootfs.py\nRUN python3 /tmp/rootfs.py /tmp/gateway /gateway-rootfs\nFROM scratch\nCOPY --from=closure /gateway-rootfs /\nLABEL {RUN_LABEL}="{gateway_run}" {KIND_LABEL}="{KIND}"\nUSER 65532:65532\nENTRYPOINT ["/usr/local/bin/spitzli-recovery-gateway"]\n')
             class GatewayAcquisition:
                 def record(self,kind,value):acquisitions.record('gateway-image' if kind=='component' else kind,value)
             def verify_gateway(current):
@@ -1447,7 +1447,7 @@ def main():
             acquisitions.record('mail-image',{'reference':mail_tag,'imageID':actual['Id'],'state':'verified'})
             mail_archive,mail_reference,mail_bindings=save_owned_gateway(commands,acquisitions,base,actual,'mail')
             report['mailImageCustody']={'run':mail_run,'reference':mail_tag,'imageID':actual['Id'],'imageBytes':actual['Size'],'immutableReference':mail_reference,'archiveBytes':mail_archive.stat().st_size,'archiveSHA256':sha(mail_archive),'bindings':mail_bindings,'sourceBaseReference':MAIL_BASE_REFERENCE,'sourceBaseID':base_before['Id'],'sourceBaseDescriptor':base_before.get('Descriptor'),'builderComponentID':image_id}
-            mail_layout=mail_image_layout(mail_archive,mail_bindings,mail_reference,inputs['binaries']['webdock-mail']['sha256']);report['mailImageCustody']['closureInventory']=mail_layout
+            mail_layout=mail_image_layout(mail_archive,mail_bindings,mail_reference,inputs['binaries']['spitzli-mail']['sha256']);report['mailImageCustody']['closureInventory']=mail_layout
             ce_archive=base/'ce-source.tar';acquisitions.record('ce-archive',{'reference':str(ce_archive),'sourceReference':CE,'state':'pending'})
             commands.call('save-exact-cached-ce-source','save','--output',str(ce_archive),CE,timeout=90)
             if ce_archive.stat().st_size>1073741824:raise ValueError('CE source archive bound')
@@ -1479,7 +1479,7 @@ __OWNED_NESTING__
 printf cli_dispatch >/diagnostics/stage
 set +e
 id
-stat -c '%u:%g %a %F' /usr/local/bin/k3s /usr/local/bin/kubectl /usr/local/bin/webdock-storage /usr/local/bin/webdock-agent
+stat -c '%u:%g %a %F' /usr/local/bin/k3s /usr/local/bin/kubectl /usr/local/bin/spitzli-storage /usr/local/bin/spitzli-agent
 readlink /usr/local/bin/kubectl
 /usr/local/bin/k3s --version
 /usr/local/bin/k3s kubectl version --client; echo direct_k3s_kubectl=$?

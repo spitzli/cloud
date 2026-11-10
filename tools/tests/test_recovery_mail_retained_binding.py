@@ -19,13 +19,13 @@ class MailRetainedBindingTests(unittest.TestCase):
     return original(path,expected,*args,**kw)
    # Chart tree admission is real: copy only the four finite public text inputs.
    import shutil
-   chart=overlay.parent/'files/deploy/helm/webdock-agent';chart.parent.mkdir(parents=True)
-   shutil.copytree(ROOT/'deploy/helm/webdock-agent',chart)
+   chart=overlay.parent/'files/deploy/helm/spitzli-agent';chart.parent.mkdir(parents=True)
+   shutil.copytree(ROOT/'deploy/helm/spitzli-agent',chart)
    with patch.object(r,'verified_file',side_effect=admitted),patch('subprocess.run',side_effect=AssertionError('selection must not acquire/execute')):
     return r.select_whole_inputs(root=ROOT,artifact_pin=pin,driver='kubernetes',input_overlay=overlay,input_overlay_sha256=digest)
  def test_actual_current_test_and_six_retained_paths(self):
   selected=self.select();parent=ROOT/'.runtime-test/recovery-matched-mail-candidate-e3312f1bff72'
-  self.assertEqual(selected['binaries']['webdock-migrate']['path'],parent/'webdock-migrate');self.assertEqual(selected['binaries']['webdock-mail']['path'],(ROOT/r.AUTHORITY_PIN_PATH).parent/'webdock-mail')
+  self.assertEqual(selected['binaries']['spitzli-migrate']['path'],parent/'spitzli-migrate');self.assertEqual(selected['binaries']['spitzli-mail']['path'],(ROOT/r.AUTHORITY_PIN_PATH).parent/'spitzli-mail')
   self.assertEqual(selected['binaries']['bootstrap-test']['path'],(ROOT/r.RETAINED_TEST_PIN_PATH).parent/'bootstrap-test')
   self.assertEqual(selected['retainedMatchedMailPin'],parent/'pin.json');self.assertEqual(set(selected['compilation']['runtimeExecutables']),{'bootstrap-test'})
   with tempfile.TemporaryDirectory() as tmp:
@@ -47,7 +47,7 @@ class MailRetainedBindingTests(unittest.TestCase):
   for field in ('path','sha256'):
    value=json.loads(json.dumps(original));value['retainedMatchedMailPin'][field]='foreign'
    with self.assertRaises(ValueError):self.select(value)
-  for name in ('webdock-migrate','webdock-mail'):
-   value=json.loads(json.dumps(original));value['binaries'][name]['path']=str(((ROOT/r.RETAINED_MATCHED_MAIL_PIN_PATH).parent if name=='webdock-mail' else (ROOT/r.AUTHORITY_PIN_PATH).parent)/name)
+  for name in ('spitzli-migrate','spitzli-mail'):
+   value=json.loads(json.dumps(original));value['binaries'][name]['path']=str(((ROOT/r.RETAINED_MATCHED_MAIL_PIN_PATH).parent if name=='spitzli-mail' else (ROOT/r.AUTHORITY_PIN_PATH).parent)/name)
    with self.assertRaises(ValueError):self.select(value)
 if __name__=='__main__':unittest.main()

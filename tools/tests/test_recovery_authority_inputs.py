@@ -12,12 +12,12 @@ class AuthorityInputsTests(unittest.TestCase):
   self.retained=self.root/r.RETAINED_AUTHORITY_PIN_PATH;self.retained.parent.mkdir(parents=True)
   self.runtime=self.root/r.RETAINED_RUNTIME_PIN_PATH;self.runtime.parent.mkdir(parents=True)
   self.standalone=self.root/r.RETAINED_CLI_PIN_PATH;self.standalone.parent.mkdir(parents=True)
-  helper=self.runtime.parent/'webdock-storage';helper.write_bytes(b'old verified helper');helper.chmod(0o500)
-  self.entries={'webdock-storage':{'path':str(helper),'copiedStrippedSHA256':sha(helper),'bytes':helper.stat().st_size,'mode':'0500'}}
-  for name in ('bootstrap-test','webdock-agent','webdock-recovery','webdock-recovery-gateway'):
-   p=(self.runtime.parent if name=='webdock-agent' else self.standalone.parent if name in ('webdock-recovery','webdock-recovery-gateway') else self.pin.parent)/name;p.write_bytes(name.encode());p.chmod(0o500);self.entries[name]={'path':str(p),'copiedStrippedSHA256':sha(p),'bytes':p.stat().st_size,'mode':'0500'}
+  helper=self.runtime.parent/'spitzli-storage';helper.write_bytes(b'old verified helper');helper.chmod(0o500)
+  self.entries={'spitzli-storage':{'path':str(helper),'copiedStrippedSHA256':sha(helper),'bytes':helper.stat().st_size,'mode':'0500'}}
+  for name in ('bootstrap-test','spitzli-agent','spitzli-recovery','spitzli-recovery-gateway'):
+   p=(self.runtime.parent if name=='spitzli-agent' else self.standalone.parent if name in ('spitzli-recovery','spitzli-recovery-gateway') else self.pin.parent)/name;p.write_bytes(name.encode());p.chmod(0o500);self.entries[name]={'path':str(p),'copiedStrippedSHA256':sha(p),'bytes':p.stat().st_size,'mode':'0500'}
   archive=self.base.parent/'public-source.tar.gz';archive.write_bytes(b'original public source')
-  self.base.write_text(json.dumps({'binaries':{'webdock-storage':self.entries['webdock-storage']},'publicSourceArchiveSHA256':sha(archive)}))
+  self.base.write_text(json.dumps({'binaries':{'spitzli-storage':self.entries['spitzli-storage']},'publicSourceArchiveSHA256':sha(archive)}))
   source=self.pin.parent/'public-source.tar.gz';source.write_bytes(b'new current source')
   compilation=self.pin.parent/'compilation.json';compilation.write_text(json.dumps({'archiveSHA256':sha(source),'rootLockSHA256':'a'*64,'migrations':{},'inputs':{},'runtimeExecutables':{'bootstrap-test':self.entries['bootstrap-test']}}))
   tools={}
@@ -25,7 +25,7 @@ class AuthorityInputsTests(unittest.TestCase):
    p=self.retained.parent/'operator-tools'/name;p.parent.mkdir(exist_ok=True);p.write_bytes(b'fixed tool '+name.encode());p.chmod(0o500);tools[name]={'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size,'mode':'0500'}
   retained_source=self.retained.parent/'public-source.tar.gz';retained_source.write_bytes(b'original430 source')
   retained_compilation=self.retained.parent/'compilation.json';retained_compilation.write_bytes(b'original430 compilation')
-  self.retained.write_text(json.dumps({'binaries':{'webdock-agent':self.entries['webdock-agent']},'operatorTools':tools,'compilationSHA256':sha(retained_compilation),'sourceArchiveSHA256':sha(retained_source)}))
+  self.retained.write_text(json.dumps({'binaries':{'spitzli-agent':self.entries['spitzli-agent']},'operatorTools':tools,'compilationSHA256':sha(retained_compilation),'sourceArchiveSHA256':sha(retained_source)}))
   runtime_source=self.runtime.parent/'public-source.tar.gz';runtime_source.write_bytes(b'original6f1 runtime source')
   runtime_compilation=self.runtime.parent/'compilation.json';runtime_compilation.write_text(json.dumps({'archiveSHA256':sha(runtime_source),'runtimeExecutables':self.entries}))
   self.runtime.write_text(json.dumps({'binaries':self.entries,'sourceArchiveSHA256':sha(runtime_source),'compilationSHA256':sha(runtime_compilation)}))
@@ -48,12 +48,12 @@ class AuthorityInputsTests(unittest.TestCase):
   self.overlay_data['baseArtifactPinSHA256']=sha(self.pin);self.overlay.write_text(json.dumps(self.overlay_data))
  def select(self,**kw):return r.select_whole_inputs(root=self.root,artifact_pin=self.pin,driver='docker',input_overlay=self.overlay,input_overlay_sha256=sha(self.overlay),**kw)
  def test_exact_five_binaries_and_operator_tool_set(self):
-  selected=self.select();self.assertEqual(set(selected['binaries']),{'bootstrap-test','webdock-agent','webdock-storage','webdock-recovery','webdock-recovery-gateway'});self.assertTrue(selected['authorityOnly'])
+  selected=self.select();self.assertEqual(set(selected['binaries']),{'bootstrap-test','spitzli-agent','spitzli-storage','spitzli-recovery','spitzli-recovery-gateway'});self.assertTrue(selected['authorityOnly'])
  def test_wrong_parent_pin_denied(self):
   self.base.write_text('{}')
   with self.assertRaises(ValueError):self.select()
  def test_changed_current_agent_or_mode_denied(self):
-  agent=P(self.entries['webdock-agent']['path']);agent.chmod(0o700)
+  agent=P(self.entries['spitzli-agent']['path']);agent.chmod(0o700)
   with self.assertRaises(ValueError):self.select()
  def test_changed_operator_utility_denied(self):
   tool=self.retained.parent/'operator-tools/mc';tool.chmod(0o700);tool.write_bytes(b'wrong utility');tool.chmod(0o500)
@@ -67,14 +67,14 @@ class AuthorityInputsTests(unittest.TestCase):
   (self.retained.parent/'public-source.tar.gz').write_bytes(b'wrong archive')
   with self.assertRaises(ValueError):self.select()
  def test_foreign_agent_location_cannot_be_substituted(self):
-  self.entries['webdock-agent']['path']=str(self.retained.parent/'webdock-agent')
+  self.entries['spitzli-agent']['path']=str(self.retained.parent/'spitzli-agent')
   self.pin.write_text(json.dumps(self.manifest));self.write_overlay()
   with patch.object(r,'AUTHORITY_PIN_SHA256',sha(self.pin)),self.assertRaises(ValueError):self.select()
  def test_retained_pin_itself_is_rehashed(self):
   self.retained.write_text('{}')
   with self.assertRaises(ValueError):self.select()
  def test_old_helper_location_is_not_current_compiler_provenance(self):
-  self.entries['webdock-storage']['path']=str(self.base.parent/'webdock-storage')
+  self.entries['spitzli-storage']['path']=str(self.base.parent/'spitzli-storage')
   self.pin.write_text(json.dumps(self.manifest));self.write_overlay()
   with patch.object(r,'AUTHORITY_PIN_SHA256',sha(self.pin)),self.assertRaises(ValueError):self.select()
  def test_test_compilation_must_bind_exact_current_test(self):
@@ -91,13 +91,13 @@ class MatchedMailInputsTests(unittest.TestCase):
  write_overlay=AuthorityInputsTests.write_overlay
  def prepare_mail(self):
   self.mail_parent=self.root/r.RETAINED_MATCHED_MAIL_PIN_PATH;self.mail_parent.parent.mkdir(parents=True)
-  for name in ('webdock-migrate','webdock-mail'):
+  for name in ('spitzli-migrate','spitzli-mail'):
    p=self.mail_parent.parent/name;p.write_bytes(('retained '+name).encode());p.chmod(0o500)
    self.entries[name]={'path':str(p),'copiedStrippedSHA256':sha(p),'bytes':p.stat().st_size,'mode':'0500'}
   old_test=self.mail_parent.parent/'bootstrap-test';old_test.write_bytes(b'original e331 test');old_test.chmod(0o500)
   parent_entries={**self.entries,'bootstrap-test':{'path':str(old_test),'copiedStrippedSHA256':sha(old_test),'bytes':old_test.stat().st_size,'mode':'0500'}}
   archive=self.mail_parent.parent/'public-source.tar.gz';archive.write_bytes(b'retained e331 public sources')
-  compilation=self.mail_parent.parent/'compilation.json';compilation.write_text(json.dumps({'archiveSHA256':sha(archive),'runtimeExecutables':{n:parent_entries[n] for n in ('bootstrap-test','webdock-migrate','webdock-mail')}}))
+  compilation=self.mail_parent.parent/'compilation.json';compilation.write_text(json.dumps({'archiveSHA256':sha(archive),'runtimeExecutables':{n:parent_entries[n] for n in ('bootstrap-test','spitzli-migrate','spitzli-mail')}}))
   self.parent_manifest={'version':'source-matched-mail-v1','fixtureMode':'matched-mail-v1','binaries':parent_entries,'sourceArchiveSHA256':sha(archive),'compilationSHA256':sha(compilation)}
   self.mail_parent.write_text(json.dumps(self.parent_manifest))
   self.manifest['version']='source-matched-mail-v1';self.manifest['fixtureMode']='matched-mail-v1';self.manifest['retainedMatchedMailPin']={'path':str(self.mail_parent),'sha256':sha(self.mail_parent)}
@@ -118,29 +118,29 @@ class MatchedMailInputsTests(unittest.TestCase):
   current.write_text(json.dumps(value));self.test_compilation=self.test_pin.parent/'compilation.json';self.test_compilation.write_bytes(current.read_bytes());self.manifest['compilationSHA256']=sha(self.test_compilation)
   for name in ('public-source.tar.gz','external-maylily-source.tar.gz','external-maylily-manifest.diff','external-maylily-receipt.json','external-compile-freshness.json'):(self.test_pin.parent/name).write_bytes((self.pin.parent/name).read_bytes())
   test_record={key:self.manifest[key] for key in ('compilationSHA256','sourceArchiveSHA256','rootLockSHA256','migrations','externalMaylily','externalCompileFreshnessSHA256')};test_record['binaries']={'bootstrap-test':self.entries['bootstrap-test']};self.test_pin.write_text(json.dumps(test_record));self.manifest['retainedTestPin']={'path':str(self.test_pin),'sha256':sha(self.test_pin)}
-  worker=self.pin.parent/'webdock-mail';worker.write_bytes(b'current standalone diagnostic worker');worker.chmod(0o500);self.entries['webdock-mail']={'path':str(worker),'copiedStrippedSHA256':sha(worker),'bytes':worker.stat().st_size,'mode':'0500'}
+  worker=self.pin.parent/'spitzli-mail';worker.write_bytes(b'current standalone diagnostic worker');worker.chmod(0o500);self.entries['spitzli-mail']={'path':str(worker),'copiedStrippedSHA256':sha(worker),'bytes':worker.stat().st_size,'mode':'0500'}
   private_lock=self.root/'plugins/mail/Cargo.lock';private_lock.parent.mkdir(parents=True);private_lock.write_bytes(b'unit private worker lock');self.worker_lock_sha=sha(private_lock);worker_source=self.root/'plugins/mail/src/main.rs';worker_source.parent.mkdir();worker_source.write_bytes(b'unit fixed enum only')
-  worker_archive=self.pin.parent/'worker-source.tar.gz';worker_archive.write_bytes(b'unit private worker sources');worker_comp=self.pin.parent/'worker-compilation.json';worker_comp.write_text(json.dumps({'archiveSHA256':sha(worker_archive),'standaloneLockSHA256':self.worker_lock_sha,'runtimeExecutables':{'webdock-mail':self.entries['webdock-mail']},'idsConsumed':False,'maylilyConsumed':False,'externalConsumedFiles':{},'inputs':{'plugins/mail/Cargo.lock':sha(private_lock),'plugins/mail/src/main.rs':sha(worker_source)}}));self.manifest['diagnosticWorker']={'sourceArchiveSHA256':sha(worker_archive),'compilationSHA256':sha(worker_comp),'standaloneLockSHA256':self.worker_lock_sha}
+  worker_archive=self.pin.parent/'worker-source.tar.gz';worker_archive.write_bytes(b'unit private worker sources');worker_comp=self.pin.parent/'worker-compilation.json';worker_comp.write_text(json.dumps({'archiveSHA256':sha(worker_archive),'standaloneLockSHA256':self.worker_lock_sha,'runtimeExecutables':{'spitzli-mail':self.entries['spitzli-mail']},'idsConsumed':False,'maylilyConsumed':False,'externalConsumedFiles':{},'inputs':{'plugins/mail/Cargo.lock':sha(private_lock),'plugins/mail/src/main.rs':sha(worker_source)}}));self.manifest['diagnosticWorker']={'sourceArchiveSHA256':sha(worker_archive),'compilationSHA256':sha(worker_comp),'standaloneLockSHA256':self.worker_lock_sha}
   self.dns=self.root/r.MAIL_DNS_PROBE_DIR;self.dns.mkdir(parents=True)
   tool=self.dns/'dns-constructor-test';tool.write_bytes(b'unit build-only constructor probe');tool.chmod(0o500)
   (self.dns/'public-source.tar.gz').write_bytes(b'unit public test-source archive')
   lib=self.root/'plugins/mail/src/lib.rs';lib.write_bytes(b'unit cfg test only probe')
-  (self.dns/'compilation.json').write_text(json.dumps({'privateLockSHA256':self.worker_lock_sha,'inputs':{'plugins/mail/src/lib.rs':sha(lib)},'runtimeWorkerSHA256':self.entries['webdock-mail']['copiedStrippedSHA256']}))
+  (self.dns/'compilation.json').write_text(json.dumps({'privateLockSHA256':self.worker_lock_sha,'inputs':{'plugins/mail/src/lib.rs':sha(lib)},'runtimeWorkerSHA256':self.entries['spitzli-mail']['copiedStrippedSHA256']}))
   recipe=("MAIL_DNS_PROBE_SHA256="+repr(sha(tool))+"\n").encode()
   for dest in (self.root/r.GATEWAY_RECIPE,self.overlay.parent/'files'/r.GATEWAY_RECIPE):dest.write_bytes(recipe)
   self.overlay_data['files'][r.GATEWAY_RECIPE]=hashlib.sha256(recipe).hexdigest()
   self.agent_pin=self.root/r.CURRENT_AGENT_PIN_PATH;self.agent_pin.parent.mkdir(parents=True)
-  current_agent=self.agent_pin.parent/'webdock-agent';current_agent.write_bytes(b'unit current Agent');current_agent.chmod(0o500)
-  self.entries['webdock-agent']={'path':str(current_agent),'copiedStrippedSHA256':sha(current_agent),'bytes':current_agent.stat().st_size,'mode':'0500'}
+  current_agent=self.agent_pin.parent/'spitzli-agent';current_agent.write_bytes(b'unit current Agent');current_agent.chmod(0o500)
+  self.entries['spitzli-agent']={'path':str(current_agent),'copiedStrippedSHA256':sha(current_agent),'bytes':current_agent.stat().st_size,'mode':'0500'}
   agent_archive=self.agent_pin.parent/'agent-source-v2.tar.gz';agent_archive.write_bytes(b'unit actual Agent source')
-  agent_comp=self.agent_pin.parent/'agent-compilation-v2.json';agent_comp.write_text(json.dumps({'inputs':{},'rootLockSHA256':'a'*64,'runtimeExecutables':{'webdock-agent':self.entries['webdock-agent']},'archiveSHA256':sha(agent_archive),'actualCargoArtifact':{'target':{'name':'webdock-agent','kind':['bin']},'profile':{'debuginfo':0},'features':['docker','kubernetes','local-recovery-fixture']}}))
-  self.agent_pin.write_text(json.dumps({'version':'source-matched-agent-v2','binaries':{'webdock-agent':self.entries['webdock-agent']},'compilationSHA256':sha(agent_comp),'sourceArchiveSHA256':sha(agent_archive),'rootLockSHA256':'a'*64,'compilerInputs':{}}));self.manifest['currentAgentPin']={'path':str(self.agent_pin),'sha256':sha(self.agent_pin)}
+  agent_comp=self.agent_pin.parent/'agent-compilation-v2.json';agent_comp.write_text(json.dumps({'inputs':{},'rootLockSHA256':'a'*64,'runtimeExecutables':{'spitzli-agent':self.entries['spitzli-agent']},'archiveSHA256':sha(agent_archive),'actualCargoArtifact':{'target':{'name':'spitzli-agent','kind':['bin']},'profile':{'debuginfo':0},'features':['docker','kubernetes','local-recovery-fixture']}}))
+  self.agent_pin.write_text(json.dumps({'version':'source-matched-agent-v2','binaries':{'spitzli-agent':self.entries['spitzli-agent']},'compilationSHA256':sha(agent_comp),'sourceArchiveSHA256':sha(agent_archive),'rootLockSHA256':'a'*64,'compilerInputs':{}}));self.manifest['currentAgentPin']={'path':str(self.agent_pin),'sha256':sha(self.agent_pin)}
   self.gateway_pin=self.root/r.CURRENT_GATEWAY_PIN_PATH;self.gateway_pin.parent.mkdir(parents=True,exist_ok=True)
-  gateway=self.gateway_pin.parent/'webdock-recovery-gateway';gateway.write_bytes(b'unit current gateway');gateway.chmod(0o500)
-  self.entries['webdock-recovery-gateway']={'path':str(gateway),'copiedStrippedSHA256':sha(gateway),'bytes':gateway.stat().st_size,'mode':'0500'}
+  gateway=self.gateway_pin.parent/'spitzli-recovery-gateway';gateway.write_bytes(b'unit current gateway');gateway.chmod(0o500)
+  self.entries['spitzli-recovery-gateway']={'path':str(gateway),'copiedStrippedSHA256':sha(gateway),'bytes':gateway.stat().st_size,'mode':'0500'}
   archive=self.gateway_pin.parent/'gateway-source.tar.gz';archive.write_bytes(b'unit gateway source')
-  compilation=self.gateway_pin.parent/'gateway-compilation.json';compilation.write_text(json.dumps({'inputs':{},'rootLockSHA256':'a'*64,'runtimeExecutables':{'webdock-recovery-gateway':self.entries['webdock-recovery-gateway']},'archiveSHA256':sha(archive),'actualCargoArtifact':{'target':{'name':'webdock-recovery-gateway','kind':['bin']},'profile':{'debuginfo':0,'test':False},'features':['default','docker','kubernetes','local-recovery-fixture']}}))
-  self.gateway_pin.write_text(json.dumps({'version':'source-matched-gateway-v1','binaries':{'webdock-recovery-gateway':self.entries['webdock-recovery-gateway']},'compilationSHA256':sha(compilation),'sourceArchiveSHA256':sha(archive),'rootLockSHA256':'a'*64,'compilerInputs':{}}));self.manifest['currentGatewayPin']={'path':str(self.gateway_pin),'sha256':sha(self.gateway_pin)}
+  compilation=self.gateway_pin.parent/'gateway-compilation.json';compilation.write_text(json.dumps({'inputs':{},'rootLockSHA256':'a'*64,'runtimeExecutables':{'spitzli-recovery-gateway':self.entries['spitzli-recovery-gateway']},'archiveSHA256':sha(archive),'actualCargoArtifact':{'target':{'name':'spitzli-recovery-gateway','kind':['bin']},'profile':{'debuginfo':0,'test':False},'features':['default','docker','kubernetes','local-recovery-fixture']}}))
+  self.gateway_pin.write_text(json.dumps({'version':'source-matched-gateway-v1','binaries':{'spitzli-recovery-gateway':self.entries['spitzli-recovery-gateway']},'compilationSHA256':sha(compilation),'sourceArchiveSHA256':sha(archive),'rootLockSHA256':'a'*64,'compilerInputs':{}}));self.manifest['currentGatewayPin']={'path':str(self.gateway_pin),'sha256':sha(self.gateway_pin)}
   self.pin.write_text(json.dumps(self.manifest));self.write_overlay()
  def select_mail(self,driver='kubernetes'):
   with patch.object(r,'AUTHORITY_PIN_SHA256',sha(self.pin)),patch.object(r,'AUTHORITY_ELFS',{n:e['copiedStrippedSHA256'] for n,e in self.entries.items()}),patch.object(r,'RETAINED_MATCHED_MAIL_PIN_SHA256',sha(self.mail_parent)),patch.object(r,'MAIL_ALLOWED_LIVE_DRIFT',self.later_live_drift),patch.object(r,'MAIL_EXTERNAL_ROOT',self.external),patch.object(r,'MAIL_EXTERNAL_FILES',self.external_files),patch.object(r,'RETAINED_TEST_PIN_SHA256',sha(self.test_pin)),patch.object(r,'DIAGNOSTIC_MAIL_LOCK_SHA256',self.worker_lock_sha),patch.object(r,'MAIL_DNS_COMPILATION_SHA256',sha(self.dns/'compilation.json')),patch.object(r,'MAIL_DNS_ARCHIVE_SHA256',sha(self.dns/'public-source.tar.gz')),patch.object(r,'MAIL_DNS_PROBE_SHA256',sha(self.dns/'dns-constructor-test')),patch.object(r,'MAIL_DNS_PROBE_BYTES',(self.dns/'dns-constructor-test').stat().st_size),patch.object(r,'MAIL_DNS_TEST_LIB_SHA256',sha(self.root/'plugins/mail/src/lib.rs')),patch.object(r,'CURRENT_AGENT_PIN_SHA256',sha(self.agent_pin)),patch.object(r,'CURRENT_GATEWAY_PIN_SHA256',sha(self.gateway_pin)):
@@ -158,10 +158,10 @@ class MatchedMailInputsTests(unittest.TestCase):
   with self.assertRaises(ValueError):self.select_mail()
 
  def test_live_target_or_foreign_worker_location_cannot_replace_pinned_current_binary(self):
-  self.prepare_mail();self.entries['webdock-mail']['path']=str(self.root/'target/debug/webdock-mail');self.pin.write_text(json.dumps(self.manifest));self.write_overlay()
+  self.prepare_mail();self.entries['spitzli-mail']['path']=str(self.root/'target/debug/spitzli-mail');self.pin.write_text(json.dumps(self.manifest));self.write_overlay()
   with self.assertRaises(ValueError):self.select_mail()
  def test_missing_migrator_compilation_binding_fails_before_acquisition(self):
-  self.prepare_mail();compilation=self.mail_parent.parent/'compilation.json';value=json.loads(compilation.read_text());value['runtimeExecutables'].pop('webdock-migrate');compilation.write_text(json.dumps(value));self.parent_manifest['compilationSHA256']=sha(compilation);self.mail_parent.write_text(json.dumps(self.parent_manifest));self.manifest['retainedMatchedMailPin']['sha256']=sha(self.mail_parent);self.pin.write_text(json.dumps(self.manifest));self.write_overlay()
+  self.prepare_mail();compilation=self.mail_parent.parent/'compilation.json';value=json.loads(compilation.read_text());value['runtimeExecutables'].pop('spitzli-migrate');compilation.write_text(json.dumps(value));self.parent_manifest['compilationSHA256']=sha(compilation);self.mail_parent.write_text(json.dumps(self.parent_manifest));self.manifest['retainedMatchedMailPin']['sha256']=sha(self.mail_parent);self.pin.write_text(json.dumps(self.manifest));self.write_overlay()
   with self.assertRaises(ValueError):self.select_mail()
 
  def test_additional_compiled_protocol_drift_denies_before_acquisition(self):
@@ -205,7 +205,7 @@ class MatchedMailInputsTests(unittest.TestCase):
 
  def test_diagnostic_worker_and_retained_test_cannot_fallback_or_drift(self):
   self.prepare_mail();self.select_mail()
-  worker=self.pin.parent/'webdock-mail';worker.chmod(0o700)
+  worker=self.pin.parent/'spitzli-mail';worker.chmod(0o700)
   with self.assertRaises(ValueError):self.select_mail()
   worker.chmod(0o500);(self.root/'plugins/mail/src/main.rs').write_bytes(b'unknown source')
   with self.assertRaises(ValueError):self.select_mail()
