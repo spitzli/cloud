@@ -3,21 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bun --bun next dev",
-    "build": "bun --bun next build",
-    "start": "bun --bun next start",
+    "dev": "bun --bun vite dev",
+    "build": "bun --bun vite build",
+    "start": "bun .output/server/index.mjs",
     "lint": "eslint",
     "test": "bun test --isolate ./tests",
+    "test:unit": "bun --no-env-file test --isolate ./tests/waitlist-release.test.tsx ./tests/theme.test.mjs ./tests/sso-policy.test.ts ./tests/cms-bridge-policy.test.ts ./tests/request-adapter.test.mjs",
+    "test:runtime": "bun --no-env-file tests/runtime-acceptance.mjs",
+    "test:runtime:bun": "bun --no-env-file tests/runtime-acceptance.mjs bun",
+    "test:runtime:dev": "bun --no-env-file tests/runtime-acceptance.mjs dev",
     "payload": "bun --env-file=.env.instance ../../node_modules/payload/bin.js --disable-transpile",
     "cms:types": "bun run payload generate:types",
     "cms:migrate": "PAYLOAD_MIGRATING=true bun run payload migrate",
     "test:prefetch": "bun tests/intent-prefetch-production.mjs",
-    "test:sso-policy": "bun test --isolate ./tests/sso-policy.test.ts"
+    "test:sso-policy": "bun test --isolate ./tests/sso-policy.test.ts",
+    "typecheck": "bun --bun vinext typegen && bun --bun tsc --noEmit",
+    "build:vercel": "NITRO_PRESET=vercel bun run build"
   },
   "dependencies": {
-    "next": "16.3.8",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "payload": "4.0.0-canary.37",
     "@payloadcms/next": "4.0.0-canary.37",
     "@payloadcms/ui": "4.0.0-canary.37",
@@ -31,11 +36,12 @@
     "@spitzli/cms-ui": "*",
     "@spitzli/i18n": "*",
     "@spitzli/database-runtime": "*",
-    "@spitzli/cms-bridge": "*"
+    "@spitzli/cms-bridge": "*",
+    "vinext": "1.4.5",
+    "react-server-dom-webpack": "19.3.1"
   },
   "devDependencies": {
     "@types/bun": "1.4.3",
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -43,7 +49,14 @@
     "eslint-config-next": "16.3.8",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "@types/nodemailer": "^8.0.2"
+    "@types/nodemailer": "^8.0.2",
+    "vite": "8.3.4",
+    "@vitejs/plugin-react": "6.1.2",
+    "@vitejs/plugin-rsc": "0.5.39",
+    "next": "16.3.8",
+    "nitro": "3.0.261103-rc",
+    "srvx": "1.0.8",
+    "@tailwindcss/vite": "4.3.3"
   },
   "engines": {
     "bun": ">=1.4.3"

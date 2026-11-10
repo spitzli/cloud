@@ -13,8 +13,8 @@ APPLICATIONS = ['extensions/managed-cms', 'apps/cms-instance']
 PACKAGES = ['plugin-sdk', 'cms-ui', 'cms-bridge', 'payload-sso', 'oauth-session', 'instance-kit', 'i18n', 'database-runtime']
 ROOT_FILES = ['LICENSE', 'COMMERCIAL-LICENSING.md', 'NOTICE']
 SOURCE_DIRS = {'src', 'ui', 'tests', 'compiled', 'locales'}
-SOURCE_FILES = {'package.json', 'tsconfig.json', 'README.md', 'LICENSE', 'NOTICE', 'build.ts', 'manifest.ts', 'next.config.ts', 'build-migration.mjs'}
-EXCLUDED_DIRS = {'node_modules', 'dist', '.next', '.git', 'coverage', '__pycache__', '.cache', 'private', 'secrets', 'data', 'runtime'}
+SOURCE_FILES = {'package.json', 'tsconfig.json', 'README.md', 'LICENSE', 'NOTICE', 'build.ts', 'manifest.ts', 'next.config.ts', 'vite.config.ts', 'build-migration.mjs'}
+EXCLUDED_DIRS = {'node_modules', 'dist', '.next', '.output', '.vinext', '.runtime-test', '.git', 'coverage', '__pycache__', '.cache', 'private', 'secrets', 'data', 'runtime'}
 WITHHELD = {'extensions/managed-cms/tests/image-smoke.mjs', 'packages/cms-bridge/tests/postgres.test.ts'}
 SOURCE_SUFFIXES = {'.ts', '.tsx', '.mjs', '.json', '.css', '.html', '.md', '.po', '.pot'}
 SECRET = re.compile(rb'-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----|github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|AKIA[A-Z0-9]{16}')
@@ -104,20 +104,19 @@ EXPOSE 3443 3444
 CMD ["bun","runtime.js"]
 '''
     return prefix + f'''RUN bun run --filter @spitzli/cms-instance build
-RUN rm -rf apps/cms-instance/.next/standalone/node_modules/drizzle-kit apps/cms-instance/.next/standalone/node_modules/esbuild apps/cms-instance/.next/standalone/node_modules/@esbuild apps/cms-instance/.next/standalone/node_modules/payload/node_modules/esbuild apps/cms-instance/.next/standalone/node_modules/payload/node_modules/@esbuild apps/cms-instance/.next/standalone/node_modules/payload/node_modules/tsx
+RUN rm -rf apps/cms-instance/dist/standalone/node_modules/drizzle-kit apps/cms-instance/dist/standalone/node_modules/esbuild apps/cms-instance/dist/standalone/node_modules/@esbuild apps/cms-instance/dist/standalone/node_modules/payload/node_modules/esbuild apps/cms-instance/dist/standalone/node_modules/payload/node_modules/@esbuild apps/cms-instance/dist/standalone/node_modules/payload/node_modules/tsx
 FROM {BUN_IMAGE}
-ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production PORT=3000 HOST=0.0.0.0
 WORKDIR /app
-COPY --from=build --chown=65532:65532 /app/apps/cms-instance/.next/standalone ./
-COPY --from=build --chown=65532:65532 /app/apps/cms-instance/.next/static ./apps/cms-instance/.next/static
-COPY --from=build --chown=65532:65532 /app/apps/cms-instance/.next/migrate.mjs ./migrate.mjs
+COPY --from=build --chown=65532:65532 /app/apps/cms-instance/dist/standalone ./
+COPY --from=build --chown=65532:65532 /app/apps/cms-instance/dist/migrate.mjs ./migrate.mjs
 COPY --from=build /app/LICENSE /app/COMMERCIAL-LICENSING.md /app/NOTICE /usr/share/licenses/spitzli-cloud/
 RUN mkdir -p /data/media /data/transfers && chown -R 65532:65532 /data
 USER 65532:65532
 VOLUME ["/data"]
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s CMD ["bun","-e","fetch('http://127.0.0.1:3000/api/health').then(r=>{{if(!r.ok)process.exit(1)}}).catch(()=>process.exit(1))"]
-CMD ["bun","apps/cms-instance/server.js"]
+CMD ["bun","server.js"]
 '''
 
 
@@ -137,7 +136,7 @@ def export_cms(source: Path, output: Path) -> dict:
         upstream = json.loads(checked_bytes(source / 'package.json'))
         patched = {}
         for name, relative in upstream.get('patchedDependencies', {}).items():
-            if name.split('@')[0] in {'drizzle-orm'} or name.startswith(('@payloadcms/storage-s3@', '@payloadcms/plugin-cloud-storage@')):
+            if name.split('@')[0] in {'drizzle-orm', 'vinext'} or name.startswith(('@payloadcms/storage-s3@', '@payloadcms/plugin-cloud-storage@')):
                 path = Path(relative)
                 if path.is_absolute() or '..' in path.parts or path.parts[0] != 'patches':
                     raise ValueError('Patch path outside reviewed source')

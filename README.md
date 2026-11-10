@@ -96,7 +96,7 @@ Spitzli's GitHub CI uses [Blacksmith](tools/plugin-ci/BLACKSMITH.md).
 | --- | --- |
 | `crates/control-plane` | Core HTTP API, account/OAuth protocols and orchestration |
 | `apps/console` | React Console and account screens; Vite |
-| `apps/website` | Public website; Next.js |
+| `apps/website` | Public website and CMS; Vinext / Vite |
 | `crates/agent`, `crates/agent-control` | Authorized workload execution and reporting |
 | `crates/build` | Durable build lifecycle and Kubernetes execution |
 | `crates/plugin-host`, `crates/plugin-runtime` | Plugin admission, limits, pinned workloads and RPC |

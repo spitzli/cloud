@@ -171,7 +171,7 @@ test(
       };
       // Exercise the real runtime grants and forced user policy used by Payload's subject projection.
       const payload = {
-        find: async ({ where }: any) => ({
+        find: async ({ where }: { where: { authSubject: { equals: string } } }) => ({
           docs: (
             await runtime.query(
               'SELECT id,auth_subject AS "authSubject",email,name,role,disabled FROM webdock.users WHERE auth_subject=$1',
@@ -179,7 +179,7 @@ test(
             )
           ).rows,
         }),
-        create: async ({ data }: any) => {
+        create: async ({ data }: { data: Record<string, unknown> }) => {
           await runtime.query(
             "INSERT INTO webdock.users(auth_subject,email,name,role,disabled) VALUES($1,$2,$3,$4,$5)",
             [data.authSubject, data.email, data.name, data.role, data.disabled],

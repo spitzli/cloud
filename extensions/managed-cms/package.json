@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": { "build": "bun build.ts", "check": "tsc --noEmit", "test": "bun test tests", "start": "bun dist/runtime.js" },
-  "dependencies": { "@spitzli/plugin-sdk": "*", "@spitzli/cms-ui": "*", "@spitzli/cms-bridge": "*", "react": "19.2.8", "react-dom": "19.2.8", "zod": "4.6.5" },
+  "dependencies": { "@spitzli/plugin-sdk": "*", "@spitzli/cms-ui": "*", "@spitzli/cms-bridge": "*", "react": "19.3.1", "react-dom": "19.3.1", "zod": "4.6.5" },
   "engines": { "bun": ">=1.4.3" },
   "license": "Apache-2.0"
 }

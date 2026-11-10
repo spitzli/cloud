@@ -29,8 +29,8 @@
     "buffer": "6.0.3",
     "dompurify": "3.4.16",
     "qrcode.react": "4.2.0",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "tailwind-merge": "3.7.0",
     "zod": "4.6.5"
   },

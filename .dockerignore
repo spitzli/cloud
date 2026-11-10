@@ -20,6 +20,9 @@
 !infra/mail/**
 **/node_modules
 **/.next
+**/.output
+**/.vinext
+**/.runtime-test
 **/dist
 **/.git
 **/.env*

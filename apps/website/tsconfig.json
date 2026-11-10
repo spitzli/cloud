@@ -17,11 +17,6 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "paths": {
       "@/*": [
         "./src/*"
@@ -35,7 +30,8 @@
       "node",
       "react",
       "react-dom",
-      "bun"
+      "bun",
+      "vite/client"
     ]
   },
   "include": [

@@ -7,17 +7,17 @@
     "bun": ">=1.4.3"
   },
   "scripts": {
-    "dev": "bun --bun next dev",
-    "build": "bun --bun next build && bun build-migration.mjs",
-    "start": "bun --bun next start",
+    "dev": "bun --bun vite dev",
+    "build": "bun --bun vite build && bun build-migration.mjs",
+    "start": "bun --bun vinext start",
     "test": "bun test --isolate ./tests/*.test.ts",
     "payload": "bun ../../node_modules/payload/bin.js --disable-transpile",
-    "migrate": "bun src/migrate.ts"
+    "migrate": "bun src/migrate.ts",
+    "typecheck": "bun --bun vinext typegen && bun --bun tsc --noEmit"
   },
   "dependencies": {
-    "next": "16.3.8",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "payload": "4.0.0-canary.37",
     "@payloadcms/next": "4.0.0-canary.37",
     "@payloadcms/db-postgres": "4.0.0-canary.37",
@@ -30,14 +30,21 @@
     "@spitzli/instance-kit": "*",
     "@spitzli/i18n": "*",
     "@spitzli/database-runtime": "*",
-    "pg": "8.16.3"
+    "pg": "8.16.3",
+    "vinext": "1.4.5",
+    "react-server-dom-webpack": "19.3.1"
   },
   "devDependencies": {
     "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "esbuild": "0.25.12"
+    "esbuild": "0.25.12",
+    "vite": "8.3.4",
+    "@vitejs/plugin-react": "6.1.2",
+    "@vitejs/plugin-rsc": "0.5.39",
+    "next": "16.3.8",
+    "@vercel/nft": "1.11.1"
   },
   "license": "Apache-2.0"
 }

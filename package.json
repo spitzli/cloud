@@ -54,7 +54,8 @@
   "patchedDependencies": {
     "drizzle-orm@0.45.2": "patches/drizzle-orm@0.45.2.patch",
     "@payloadcms/storage-s3@4.0.0-canary.37": "patches/@payloadcms%2Fstorage-s3@4.0.0-canary.37.patch",
-    "@payloadcms/plugin-cloud-storage@4.0.0-canary.37": "patches/@payloadcms%2Fplugin-cloud-storage@4.0.0-canary.37.patch"
+    "@payloadcms/plugin-cloud-storage@4.0.0-canary.37": "patches/@payloadcms%2Fplugin-cloud-storage@4.0.0-canary.37.patch",
+    "vinext@1.4.5": "patches/vinext@1.4.5.patch"
   },
   "dependencies": {
     "@neon/config": "1.10.0",
