@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 
 import Link from "next/link";
-import { LiveSearchForm } from "@webdock/search/form";
+import { LiveSearchForm } from "@spitzli/search/form";
 import { listURL } from "./list-query";
 export function ListControls({
   path,

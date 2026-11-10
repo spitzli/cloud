@@ -1,5 +1,5 @@
 import { demoAccess } from "./demo-bridges";
-import { createCMSStudioShop } from "@webdock/module-cms/server/studio-shop";
+import { createCMSStudioShop } from "@spitzli/module-cms/server/studio-shop";
 export {
   type ShopKind,
   type ShopOption,
@@ -10,7 +10,7 @@ export {
   type ShopMedia,
   type ShopCustomer,
   type ShopResult,
-} from "@webdock/module-cms/server/studio-shop";
+} from "@spitzli/module-cms/server/studio-shop";
 export const { shopAccess, shopRequest } = createCMSStudioShop({
   demoAccess,
   fetch: (input, init) => globalThis.fetch(input, init),

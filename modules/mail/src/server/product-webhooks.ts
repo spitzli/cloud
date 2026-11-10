@@ -1,8 +1,8 @@
 import type { MailProductStore } from "./provider-ports";
 import { createHash, randomUUID } from "node:crypto";
-import type { MailActor, EventType } from "@webdock/mail-contracts";
-import { isMailEvent } from "@webdock/mail-contracts";
-import { parseID, parsePageQuery } from "@webdock/mail-contracts/validation";
+import type { MailActor, EventType } from "@spitzli/mail-contracts";
+import { isMailEvent } from "@spitzli/mail-contracts";
+import { parseID, parsePageQuery } from "@spitzli/mail-contracts/validation";
 import { MailError, mailUnavailable } from "./product-access";
 import {
   webhookEndpointProblem,

@@ -1,8 +1,8 @@
-use std::{collections::BTreeMap, os::unix::fs::symlink, path::Path, process::Command};
-use webdock_build::{
+use spitzli_build::{
     artifact,
     frontend::{self, FrontendConfig, configure_exporters},
 };
+use std::{collections::BTreeMap, os::unix::fs::symlink, path::Path, process::Command};
 
 fn config(directory: &str) -> FrontendConfig {
     FrontendConfig {

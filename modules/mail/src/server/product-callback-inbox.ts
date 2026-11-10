@@ -1,15 +1,15 @@
 import type { MailProductStore } from "./provider-ports";
 import { createHash, timingSafeEqual, randomUUID } from "node:crypto";
-import type { DatabaseReader } from "@webdock/core/identity";
-import type { EventType } from "@webdock/mail-contracts";
+import type { DatabaseReader } from "@spitzli/core/identity";
+import type { EventType } from "@spitzli/mail-contracts";
 import {
   parseAddress,
   parseID,
   parseScheduleTime,
-} from "@webdock/mail-contracts/validation";
+} from "@spitzli/mail-contracts/validation";
 import { MailError } from "./product-access";
 type Dependencies = {
-  authDatabase: import("@webdock/core/identity").DatabaseReader;
+  authDatabase: import("@spitzli/core/identity").DatabaseReader;
   withDatabaseScope: <T>(
     scope: { kind: "system"; purpose: string },
     run: () => T,

@@ -3,7 +3,7 @@ use crate::{Connections, Error, Guard, Result, field, load, neon, one, purpose, 
 use async_trait::async_trait;
 use serde::Deserialize;
 use serde_json::{Value, json};
-use webdock_plugin_host::http::{HttpAdapterContext, HttpResult, NamedHttpAdapter};
+use spitzli_plugin_host::http::{HttpAdapterContext, HttpResult, NamedHttpAdapter};
 
 pub(crate) fn inventory_path(path: &str) -> Result<(Option<&str>, &str)> {
     let parts: Vec<_> = path.split('/').collect();
@@ -558,12 +558,12 @@ impl NamedHttpAdapter for Connections {
         &self,
         context: &HttpAdapterContext<'_>,
         input: Value,
-    ) -> std::result::Result<HttpResult, webdock_plugin_host::PluginError> {
+    ) -> std::result::Result<HttpResult, spitzli_plugin_host::PluginError> {
         self.database_request(context, input)
             .await
             .map(|body| HttpResult { status: 200, body })
             .map_err(|error| {
-                use webdock_plugin_host::{ErrorCode, PluginError};
+                use spitzli_plugin_host::{ErrorCode, PluginError};
                 let code = match error {
                     Error::Forbidden => ErrorCode::PermissionDenied,
                     Error::Conflict => ErrorCode::Conflict,

@@ -1,5 +1,5 @@
 [package]
-name = "webdock-build"
+name = "spitzli-build"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,16 +7,16 @@ license.workspace = true
 
 [features]
 default = ["service"]
-service = ["dep:webdock-agent-protocol","dep:webdock-export-protocol","dep:webdock-browser-session","dep:sea-orm", "dep:tokio", "dep:webdock-identity", "dep:webdock-persistence", "dep:webdock-hosting", "dep:hmac", "dep:subtle", "dep:oci-client", "dep:rustls", "dep:getrandom", "dep:base64", "dep:axum", "dep:reqwest", "dep:url", "dep:webdock-repository-protocol", "dep:webdock-plugin-host", "dep:webdock-plugin-runtime", "dep:tonic", "dep:uuid"]
+service = ["dep:spitzli-agent-protocol","dep:spitzli-export-protocol","dep:spitzli-browser-session","dep:sea-orm", "dep:tokio", "dep:spitzli-identity", "dep:spitzli-persistence", "dep:spitzli-hosting", "dep:hmac", "dep:subtle", "dep:oci-client", "dep:rustls", "dep:getrandom", "dep:base64", "dep:axum", "dep:reqwest", "dep:url", "dep:spitzli-repository-protocol", "dep:spitzli-plugin-host", "dep:spitzli-plugin-runtime", "dep:tonic", "dep:uuid"]
 worker = ["dep:tokio", "dep:reqwest", "dep:url", "dep:oci-client", "dep:rustls", "dep:base64"]
-kubernetes-job = ["dep:kube", "dep:k8s-openapi", "dep:futures-util", "dep:tokio", "dep:webdock-agent-protocol"]
+kubernetes-job = ["dep:kube", "dep:k8s-openapi", "dep:futures-util", "dep:tokio", "dep:spitzli-agent-protocol"]
 local-registry-test = ["service", "worker"]
 
 [dependencies]
-webdock-agent-protocol={path="../agent-protocol",optional=true}
-webdock-export-protocol={path="../export-protocol",optional=true}
-webdock-browser-session={path="../browser-session",optional=true}
-webdock-object-storage = { path = "../object-storage" }
+spitzli-agent-protocol={path="../agent-protocol",optional=true}
+spitzli-export-protocol={path="../export-protocol",optional=true}
+spitzli-browser-session={path="../browser-session",optional=true}
+spitzli-object-storage = { path = "../object-storage" }
 async-trait.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -28,9 +28,9 @@ tempfile = "3"
 libc = "0.2"
 sea-orm = { workspace = true, optional = true }
 tokio = { workspace = true, optional = true }
-webdock-identity = { path = "../identity", optional = true }
-webdock-persistence = { path = "../persistence", optional = true }
-webdock-hosting = { path = "../hosting", optional = true }
+spitzli-identity = { path = "../identity", optional = true }
+spitzli-persistence = { path = "../persistence", optional = true }
+spitzli-hosting = { path = "../hosting", optional = true }
 hmac = { version = "0.12", optional = true }
 chrono.workspace = true
 subtle = { version = "2.6", optional = true }
@@ -43,9 +43,9 @@ base64 = { version="0.22", optional=true }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"], optional = true }
 oci-client = { version = "0.18", default-features = false, features = ["rustls-tls-no-provider"], optional = true }
 
-webdock-repository-protocol={path="../repository-protocol",optional=true}
-webdock-plugin-host={path="../plugin-host",optional=true}
-webdock-plugin-runtime={path="../plugin-runtime",optional=true}
+spitzli-repository-protocol={path="../repository-protocol",optional=true}
+spitzli-plugin-host={path="../plugin-host",optional=true}
+spitzli-plugin-runtime={path="../plugin-runtime",optional=true}
 ed25519-dalek="2"
 tonic={version="0.14.6",default-features=false,features=["codegen","transport","tls-ring"],optional=true}
 uuid={version="1",features=["v4"],optional=true}
@@ -55,26 +55,26 @@ futures-util = { version = "0.3", optional = true, features = ["io"] }
 
 [dev-dependencies]
 jsonschema = { version = "0.59", default-features = false }
-webdock-object-storage = { path = "../object-storage", features = ["local-test"] }
+spitzli-object-storage = { path = "../object-storage", features = ["local-test"] }
 url.workspace = true
-webdock-ids = { path = "../ids" }
+spitzli-ids = { path = "../ids" }
 tower = { version = "0.5", features = ["util"] }
 http = "1"
 http-body-util = "0.1"
 
 [[bin]]
-name="webdock-build-worker"
-path="src/bin/webdock-build-worker.rs"
+name="spitzli-build-worker"
+path="src/bin/spitzli-build-worker.rs"
 required-features=["worker"]
 
 [[bin]]
-name="webdock-build-runner"
-path="src/bin/webdock-build-container-runner.rs"
+name="spitzli-build-runner"
+path="src/bin/spitzli-build-container-runner.rs"
 required-features=["worker","kubernetes-job"]
 
 [[bin]]
-name="webdock-kubernetes-build-worker"
-path="src/bin/webdock-kubernetes-build-worker.rs"
+name="spitzli-kubernetes-build-worker"
+path="src/bin/spitzli-kubernetes-build-worker.rs"
 required-features=["worker","kubernetes-job"]
 
 [lints]

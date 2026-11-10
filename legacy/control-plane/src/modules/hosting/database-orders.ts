@@ -2,8 +2,8 @@ import {
   nativeClusterDemand,
   clusterCapacityDemand,
   databasePoolCapacity,
-} from "@webdock/mail-core/capacity";
-import { createHostingDatabaseOrders } from "@webdock/module-databases/server/database-orders";
+} from "@spitzli/mail-core/capacity";
+import { createHostingDatabaseOrders } from "@spitzli/module-databases/server/database-orders";
 import { assertDatabaseMaintenanceAllowed } from "./database-protection";
 import { authorizeHosting } from "./authorization";
 import { clusterLock, audit } from "./db";

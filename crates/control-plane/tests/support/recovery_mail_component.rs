@@ -2,9 +2,9 @@
 //! Physical ceilings are explicit; an existing local CE volume is NOT called a per-volume quota.
 use super::*;
 use sea_orm::TransactionTrait;
+use spitzli_agent::storage::recovery_pool::{ApprovedRecoveryVolume, RecoveryVolumeRole};
+use spitzli_agent_protocol::mail::MailResources;
 use std::{collections::BTreeMap, path::PathBuf};
-use webdock_agent::storage::recovery_pool::{ApprovedRecoveryVolume, RecoveryVolumeRole};
-use webdock_agent_protocol::mail::MailResources;
 
 const MIB: u64 = 1024 * 1024;
 const GIB: u64 = 1024 * MIB;
@@ -78,7 +78,7 @@ impl MailBudget {
     }
     pub fn target_volumes(&self, customer: &str) -> BTreeMap<String, ApprovedRecoveryVolume> {
         let customer =
-            webdock_core::id::RecordId::parse(customer).expect("real Registry customer ID");
+            spitzli_core::id::RecordId::parse(customer).expect("real Registry customer ID");
         let pg = |role, bytes| ApprovedRecoveryVolume {
             role,
             bytes,
@@ -466,7 +466,7 @@ fn mail_install_terminal_failure(body: &Value) -> bool {
 }
 #[test]
 fn actual_install_operation_snapshot_blocked_is_terminal_in_the_fixture() {
-    use webdock_plugin_host::{OperationSnapshot, OperationStatus};
+    use spitzli_plugin_host::{OperationSnapshot, OperationStatus};
     for status in [OperationStatus::Failed, OperationStatus::Blocked] {
         let actual = OperationSnapshot {
             kind: "install",
@@ -487,9 +487,9 @@ fn actual_install_operation_snapshot_blocked_is_terminal_in_the_fixture() {
 pub(super) async fn install_current_release(
     app: &Router,
     console: &str,
-    endpoints: &webdock_control_plane::plugins::PluginEndpoints,
-    worker: &webdock_control_plane::plugins::installation::worker::InstallationWorker,
-    descriptor: &webdock_plugin_host::CatalogDescriptor,
+    endpoints: &spitzli_control_plane::plugins::PluginEndpoints,
+    worker: &spitzli_control_plane::plugins::installation::worker::InstallationWorker,
+    descriptor: &spitzli_plugin_host::CatalogDescriptor,
     owner: &DatabaseConnection,
 ) -> Value {
     let target = descriptor
@@ -835,10 +835,10 @@ pub(super) fn signed_catalog(
     policy: Value,
     recipe: Value,
     key: &ed25519_dalek::SigningKey,
-) -> webdock_plugin_host::Catalog {
+) -> spitzli_plugin_host::Catalog {
     use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD as B64};
     use ed25519_dalek::Signer;
-    webdock_core::id::RecordId::parse(cluster).expect("actual enrolled cluster ID");
+    spitzli_core::id::RecordId::parse(cluster).expect("actual enrolled cluster ID");
     let (name, digest) = image
         .split_once("@sha256:")
         .expect("actual current owned OCI root");
@@ -869,28 +869,28 @@ pub(super) fn signed_catalog(
         "releases":[{"id":"mail","version":version,"registryURL":"https://registry.owned.test","kid":"owned-mail-current","jws":signed,"manifestRaw":raw,"descriptor":raw,"recipe":recipe,"supportedFeatures":["add-domains","create-mailboxes","manage-incoming"],"targetIDs":["matched-mail"]}]});
     let raw_catalog = serde_json::to_vec(&catalog).unwrap();
     private_bytes(Path::new("/owned/mail-fixture/catalog.json"), &raw_catalog);
-    webdock_plugin_host::Catalog::from_bytes(&raw_catalog)
+    spitzli_plugin_host::Catalog::from_bytes(&raw_catalog)
         .expect("real signed current Mail release catalog")
 }
 
 /// Uses the current production generic installer, native control and canonical Mail ledger.
 /// Every native actor/session/customer is supplied by the genuine existing foundation.
 pub(super) struct MailCore {
-    pub plugins: Arc<webdock_control_plane::plugins::PluginEndpoints>,
-    pub http: Arc<webdock_control_plane::mail::MailEndpoints>,
-    pub sender: Arc<webdock_mail::sending::Sending>,
-    pub managed: Arc<webdock_mail::managed_control::ManagedControl>,
+    pub plugins: Arc<spitzli_control_plane::plugins::PluginEndpoints>,
+    pub http: Arc<spitzli_control_plane::mail::MailEndpoints>,
+    pub sender: Arc<spitzli_mail::sending::Sending>,
+    pub managed: Arc<spitzli_mail::managed_control::ManagedControl>,
 }
 pub(super) async fn core_services(
-    dependencies: webdock_mail::MailDependencies,
-    oauth: Arc<webdock_oauth::OAuthService>,
-    plugin_config: &webdock_control_plane::plugin_config::PluginConfig,
+    dependencies: spitzli_mail::MailDependencies,
+    oauth: Arc<spitzli_oauth::OAuthService>,
+    plugin_config: &spitzli_control_plane::plugin_config::PluginConfig,
     private_environment: &HashMap<String, String>,
-    transports: Vec<webdock_mail::transport_adoption::ConfiguredTransport>,
+    transports: Vec<spitzli_mail::transport_adoption::ConfiguredTransport>,
 ) -> MailCore {
     let plugins = Arc::new(
-        webdock_control_plane::plugins::PluginEndpoints::initialize(
-            webdock_control_plane::plugins::PluginDependencies {
+        spitzli_control_plane::plugins::PluginEndpoints::initialize(
+            spitzli_control_plane::plugins::PluginDependencies {
                 business: dependencies.business.clone(),
                 worker: dependencies.worker.clone(),
                 auth: dependencies.auth.clone(),
@@ -907,7 +907,7 @@ pub(super) async fn core_services(
         .await
         .expect("actual current native plugin/installation services"),
     );
-    let sender = webdock_control_plane::mail::initialize_sender(
+    let sender = spitzli_control_plane::mail::initialize_sender(
         dependencies.clone(),
         plugins.host.clone(),
         plugin_config
@@ -920,12 +920,12 @@ pub(super) async fn core_services(
     .await
     .expect("actual canonical Mail sender");
     let keys = Arc::new(
-        webdock_mail::keys::NativeKeys::new(dependencies.clone(), SECRET, true)
+        spitzli_mail::keys::NativeKeys::new(dependencies.clone(), SECRET, true)
             .await
             .expect("actual native key service"),
     );
     let queue = Arc::new(
-        webdock_mail::submissions::Submissions::new(dependencies, SECRET, true)
+        spitzli_mail::submissions::Submissions::new(dependencies, SECRET, true)
             .await
             .expect("actual canonical Mail queue"),
     );
@@ -933,14 +933,14 @@ pub(super) async fn core_services(
         .get("MAIL_SEND_WORKER_SECRET")
         .expect("private generated worker credential");
     let http = Arc::new(
-        webdock_control_plane::mail::MailEndpoints::sending_only(keys, worker_secret)
+        spitzli_control_plane::mail::MailEndpoints::sending_only(keys, worker_secret)
             .unwrap()
             .with_queue(queue.clone())
             .with_sender(sender.clone())
             .with_operator_transports(transports)
             .unwrap(),
     );
-    let managed = Arc::new(webdock_mail::managed_control::ManagedControl::new(
+    let managed = Arc::new(spitzli_mail::managed_control::ManagedControl::new(
         sender.clone(),
         queue,
         plugins.host.clone(),
@@ -1066,9 +1066,9 @@ async fn actual_mail_cold_gateway_tls_verifies_fixture_chain_with_python() {
     let port = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
     let gateway_port = port.local_addr().unwrap().port();
     drop(port);
-    let server = tokio::spawn(webdock_agent::recovery::gateway::serve(
-        webdock_agent::recovery::gateway::Configuration {
-            profile: webdock_agent::recovery::gateway::Profile::Mail,
+    let server = tokio::spawn(spitzli_agent::recovery::gateway::serve(
+        spitzli_agent::recovery::gateway::Configuration {
+            profile: spitzli_agent::recovery::gateway::Profile::Mail,
             certificate: pki.certificate.clone(),
             private_key: pki.private_key.clone(),
             port: gateway_port,
@@ -1259,7 +1259,7 @@ fn write_source_filesystem_receipt(
         || !(["core", "metadata"].contains(&role)
             || role
                 .strip_prefix("ce-")
-                .is_some_and(|c| webdock_core::id::RecordId::parse(c).is_ok()))
+                .is_some_and(|c| spitzli_core::id::RecordId::parse(c).is_ok()))
     {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -1478,7 +1478,7 @@ fn source_filesystem(role: &str, bytes: u64, uid: u32) -> PathBuf {
         (["core", "metadata"].contains(&role) && bytes == 512 * MIB && uid == 70)
             || (role
                 .strip_prefix("ce-")
-                .is_some_and(|c| webdock_core::id::RecordId::parse(c).is_ok())
+                .is_some_and(|c| spitzli_core::id::RecordId::parse(c).is_ok())
                 && bytes == 2 * GIB
                 && uid == 65532)
     );
@@ -1786,7 +1786,7 @@ pub(super) async fn prepare_outgoing_project(app: &Router, console: &str) -> (St
     (id, project["id"].as_str().unwrap().to_owned())
 }
 fn local_smtp_account(customer: &str) -> Value {
-    webdock_core::id::RecordId::parse(customer).expect("real customer ID");
+    spitzli_core::id::RecordId::parse(customer).expect("real customer ID");
     json!({"customerID":customer,"accountID":null,"mode":"managed","transportRevision":1,"bindingRevision":1,"byokRevision":null,"transport":{"kind":"smtp","host":"127.0.0.1","port":1025}})
 }
 pub(super) async fn confirmed_and_uncertain_send(
@@ -1833,15 +1833,15 @@ pub(super) async fn confirmed_and_uncertain_send(
 
 #[derive(Clone)]
 pub(crate) struct FoundationDependencies {
-    pub mail: webdock_mail::MailDependencies,
-    pub oauth: Arc<webdock_oauth::OAuthService>,
-    pub registry: Arc<webdock_registry::RegistryService>,
-    pub access: Arc<webdock_access::AccessService>,
+    pub mail: spitzli_mail::MailDependencies,
+    pub oauth: Arc<spitzli_oauth::OAuthService>,
+    pub registry: Arc<spitzli_registry::RegistryService>,
+    pub access: Arc<spitzli_access::AccessService>,
 }
 pub(super) struct Foundation {
     pub app: Router,
     pub core: MailCore,
-    pub worker: webdock_control_plane::plugins::installation::worker::InstallationWorker,
+    pub worker: spitzli_control_plane::plugins::installation::worker::InstallationWorker,
     pub metadata_container: String,
     pub metadata_password: PathBuf,
     pub authority: PathBuf,
@@ -1850,7 +1850,7 @@ pub(super) struct Foundation {
     pub callback_stop: Option<tokio::sync::oneshot::Sender<()>>,
     pub callback: tokio::task::JoinHandle<()>,
     pub root: PathBuf,
-    pub descriptor: webdock_plugin_host::CatalogDescriptor,
+    pub descriptor: spitzli_plugin_host::CatalogDescriptor,
 }
 fn installer_admin_uri(metadata_admin: &url::Url) -> url::Url {
     let mut administrator = metadata_admin.clone();
@@ -1893,7 +1893,7 @@ fn actual_installer_admin_driver_accepts_its_fixture_url_without_changing_sqlx_t
 fn fixture_runtime_issuer_material_passes_actual_production_trust_validation() {
     let temporary = tempfile::tempdir().unwrap();
     let pki = make_pki(&temporary.path().join("pki"));
-    let result = webdock_plugin_host::provisioning::tls::issue_runtime_identity(
+    let result = spitzli_plugin_host::provisioning::tls::issue_runtime_identity(
         &std::fs::read_to_string(pki.authority).unwrap(),
         &std::fs::read_to_string(pki.root.join("issuer.key")).unwrap(),
         "wd-owned-recovery-mail.mail-runtime.owned.test",
@@ -1906,22 +1906,22 @@ fn fixture_runtime_issuer_material_passes_actual_production_trust_validation() {
 
 struct TransportContractDeny;
 #[tonic::async_trait]
-impl webdock_plugin_runtime::ActionHandler for TransportContractDeny {
+impl spitzli_plugin_runtime::ActionHandler for TransportContractDeny {
     async fn invoke(
         &self,
-        _: &webdock_plugin_protocol::InvocationClaims,
+        _: &spitzli_plugin_protocol::InvocationClaims,
         _: &str,
         _: Value,
         _: Value,
-    ) -> Result<Value, webdock_plugin_protocol::PluginError> {
-        Err(webdock_plugin_protocol::PluginError::denied())
+    ) -> Result<Value, spitzli_plugin_protocol::PluginError> {
+        Err(spitzli_plugin_protocol::PluginError::denied())
     }
 }
 
 #[tokio::test]
 async fn actual_fixture_runtime_connection_pki_describe_health_and_peer_negatives() {
-    use webdock_control_plane::plugin_config::{RuntimeConnection, RuntimeTransport};
-    use webdock_plugin_runtime::{CorePeer, MutualTls, RemoteAuthority, Runtime, wire};
+    use spitzli_control_plane::plugin_config::{RuntimeConnection, RuntimeTransport};
+    use spitzli_plugin_runtime::{CorePeer, MutualTls, RemoteAuthority, Runtime, wire};
     let temporary = tempfile::tempdir().unwrap();
     let pki = make_pki(&temporary.path().join("core"));
     let wrong_ca = make_pki(&temporary.path().join("wrong"));
@@ -1942,10 +1942,10 @@ async fn actual_fixture_runtime_connection_pki_describe_health_and_peer_negative
     );
     let host = format!(
         "{}.{}",
-        webdock_agent_protocol::plugin::PluginRuntimeSpec::namespace_name("owned-recovery", "mail"),
+        spitzli_agent_protocol::plugin::PluginRuntimeSpec::namespace_name("owned-recovery", "mail"),
         policy["runtimeDomain"].as_str().unwrap()
     );
-    let issued = webdock_plugin_host::provisioning::tls::issue_runtime_identity(
+    let issued = spitzli_plugin_host::provisioning::tls::issue_runtime_identity(
         &std::fs::read_to_string(&pki.authority).unwrap(),
         &std::fs::read_to_string(pki.root.join("issuer.key")).unwrap(),
         &host,
@@ -1955,7 +1955,7 @@ async fn actual_fixture_runtime_connection_pki_describe_health_and_peer_negative
     let runtime_key = pki.root.join("transport-runtime.key");
     private_bytes(&runtime_cert, issued.certificate_pem.as_bytes());
     private_bytes(&runtime_key, issued.private_key_pem.as_bytes());
-    let callbacks = webdock_plugin_kit::transport::RuntimeTransport {
+    let callbacks = spitzli_plugin_kit::transport::RuntimeTransport {
         listen: Some(pki.root.join("unused.sock")),
         core_tls: Some(serde_json::from_value(policy["core"].clone()).unwrap()),
         ..Default::default()
@@ -1974,7 +1974,7 @@ async fn actual_fixture_runtime_connection_pki_describe_health_and_peer_negative
         }],
     )
     .unwrap();
-    let manifest = webdock_plugin_protocol::Manifest::parse(include_bytes!(
+    let manifest = spitzli_plugin_protocol::Manifest::parse(include_bytes!(
         "../../../../plugins/mail/manifest.json"
     ))
     .unwrap();
@@ -2035,7 +2035,7 @@ async fn actual_fixture_runtime_connection_pki_describe_health_and_peer_negative
     let (mut client, peer) = positive.ok().unwrap();
     assert!(matches!(
         peer,
-        webdock_plugin_runtime::PeerIdentity::MutualTls { .. }
+        spitzli_plugin_runtime::PeerIdentity::MutualTls { .. }
     ));
     let described = client.describe(wire::DescribeRequest {}).await;
     assert!(described.is_ok(), "transport contract Describe denied");
@@ -2133,7 +2133,7 @@ struct GatewayClientIdentity {
     certificate_sha256: String,
 }
 fn gateway_client_identity(pki: &MailPki) -> GatewayClientIdentity {
-    let issued = webdock_plugin_host::provisioning::tls::issue_runtime_identity(
+    let issued = spitzli_plugin_host::provisioning::tls::issue_runtime_identity(
         &std::fs::read_to_string(&pki.authority).unwrap(),
         &std::fs::read_to_string(pki.root.join("issuer.key")).unwrap(),
         "mail-gateway.owned.test",
@@ -2185,9 +2185,9 @@ fn actual_mail_profile_separates_real_gateway_leaf_and_matches_core_tls_origin()
         &gateway.certificate_sha256,
         &ed25519_dalek::SigningKey::from_bytes(&[7; 32]),
     );
-    let core_peer: webdock_plugin_runtime::CorePeer =
+    let core_peer: spitzli_plugin_runtime::CorePeer =
         serde_json::from_value(json!({"kind":"mutualTls","certificateSha256":core_sha})).unwrap();
-    let gateway_peer: webdock_plugin_runtime::CorePeer = serde_json::from_value(
+    let gateway_peer: spitzli_plugin_runtime::CorePeer = serde_json::from_value(
         recipe["privateConfiguration"]["delivery"]["gatewayPeers"][0].clone(),
     )
     .unwrap();
@@ -2203,7 +2203,7 @@ fn actual_mail_profile_separates_real_gateway_leaf_and_matches_core_tls_origin()
     );
     // The retained production main compares these actual serialized CorePeer values.
     let old_gateway_peer = core_peer.clone();
-    let core_identity = webdock_plugin_runtime::PeerIdentity::MutualTls {
+    let core_identity = spitzli_plugin_runtime::PeerIdentity::MutualTls {
         certificates: vec![core.contents.clone()],
     };
     assert!(
@@ -2212,13 +2212,13 @@ fn actual_mail_profile_separates_real_gateway_leaf_and_matches_core_tls_origin()
     );
     assert!(core_peer.permits(&core_identity));
     assert!(!gateway_peer.permits(&core_identity));
-    let cert = webdock_plugin_kit::read_file(&gateway.certificate, false).unwrap();
+    let cert = spitzli_plugin_kit::read_file(&gateway.certificate, false).unwrap();
     let leaf = x509_parser::pem::parse_x509_pem(&cert).unwrap().1;
     assert_eq!(
         format!("{:x}", Sha256::digest(&leaf.contents)),
         gateway.certificate_sha256
     );
-    let authenticated = webdock_plugin_runtime::PeerIdentity::MutualTls {
+    let authenticated = spitzli_plugin_runtime::PeerIdentity::MutualTls {
         certificates: vec![leaf.contents],
     };
     assert!(gateway_peer.permits(&authenticated));
@@ -2280,7 +2280,7 @@ fn actual_mail_profile_separates_real_gateway_leaf_and_matches_core_tls_origin()
         verified.status.success(),
         "actual gateway leaf chain verification failed category={category}"
     );
-    let transport = |core: Value| webdock_plugin_kit::transport::RuntimeTransport {
+    let transport = |core: Value| spitzli_plugin_kit::transport::RuntimeTransport {
         listen: Some(temporary.path().join("unused.sock")),
         core_tls: Some(serde_json::from_value(core).unwrap()),
         ..Default::default()
@@ -2301,10 +2301,10 @@ fn actual_mail_fixture_pki_role_chains_and_hostname_negatives_are_verified() {
     let key = std::fs::read_to_string(core.root.join("issuer.key")).unwrap();
     let runtime_name = format!(
         "{}.mail-runtime.owned.test",
-        webdock_agent_protocol::plugin::PluginRuntimeSpec::namespace_name("owned-recovery", "mail")
+        spitzli_agent_protocol::plugin::PluginRuntimeSpec::namespace_name("owned-recovery", "mail")
     );
     let runtime =
-        webdock_plugin_host::provisioning::tls::issue_runtime_identity(&ca, &key, &runtime_name)
+        spitzli_plugin_host::provisioning::tls::issue_runtime_identity(&ca, &key, &runtime_name)
             .unwrap();
     let runtime_path = core.root.join("unit-runtime.crt");
     private_bytes(&runtime_path, runtime.certificate_pem.as_bytes());
@@ -2385,13 +2385,13 @@ fn actual_mail_fixture_pki_role_chains_and_hostname_negatives_are_verified() {
 
 pub(super) async fn foundation(
     dependencies: FoundationDependencies,
-    hosting: Arc<webdock_hosting::HostingService>,
+    hosting: Arc<spitzli_hosting::HostingService>,
     cluster: &str,
     incoming_customer: &str,
     outgoing: (String, String),
 ) -> Foundation {
     use base64::Engine;
-    use webdock_control_plane::{
+    use spitzli_control_plane::{
         http::{Services, build_app_with_domains},
         plugin_config::PluginConfig,
     };
@@ -2448,7 +2448,7 @@ pub(super) async fn foundation(
             .collect::<Vec<_>>()
     );
     // Local SMTP has no provider password; seal its empty credential material in the native format.
-    let fixture_cipher = webdock_mail::secrets::MailCipher::new(
+    let fixture_cipher = spitzli_mail::secrets::MailCipher::new(
         &base64::engine::general_purpose::STANDARD.encode([0u8; 32]),
     )
     .unwrap();
@@ -2458,7 +2458,7 @@ pub(super) async fn foundation(
             let sealed = fixture_cipher
                 .seal(&json!({}), &format!("send-transport:{id}:1"))
                 .unwrap();
-            webdock_mail::transport_adoption::ConfiguredTransport::managed(
+            spitzli_mail::transport_adoption::ConfiguredTransport::managed(
                 (*id).into(),
                 None,
                 sealed,
@@ -2512,7 +2512,7 @@ pub(super) async fn foundation(
     )
     .await;
     let app = build_app_with_domains(
-        webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+        spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
             ("WEBDOCK_AUTH_ORIGIN".into(), AUTH.into()),
             ("WEBDOCK_STUDIO_ORIGIN".into(), STUDIO.into()),
             ("WEBDOCK_CONSOLE_ORIGIN".into(), CONSOLE.into()),
@@ -2541,7 +2541,7 @@ pub(super) async fn foundation(
         &worker_path,
         &json!({"storageTargets":[{"id":"matched-private","adminUrl":administrator.as_str(),"authority":pki.authority,"runtimeHost":"172.30.254.1","runtimePort":metadata_admin.port().unwrap()}]}),
     );
-    let worker = webdock_control_plane::plugins::installation::worker::InstallationWorker::load(
+    let worker = spitzli_control_plane::plugins::installation::worker::InstallationWorker::load(
         &worker_path,
         &dependencies.mail.worker,
         &config,
@@ -2582,7 +2582,7 @@ pub(super) async fn core_fixture() -> Fixture {
     directory(root);
     let pki = make_pki(&root.join("core-tls"));
     let (container, url, _) = source_postgres("core", "webdock_operator_test", &pki).await;
-    let passwords = webdock_persistence::roles::LOGIN_ROLES
+    let passwords = spitzli_persistence::roles::LOGIN_ROLES
         .iter()
         .copied()
         .chain(["webdock_offline_migrate"])
@@ -2603,14 +2603,14 @@ pub(super) async fn core_fixture() -> Fixture {
         passwords,
     };
     let owner = connect(fixture.url.as_str()).await.unwrap();
-    webdock_persistence::roles::provision_roles(
+    spitzli_persistence::roles::provision_roles(
         &owner,
         "webdock_operator_test",
         &fixture.passwords,
     )
     .await
     .unwrap();
-    webdock_persistence::migrations::bootstrap(&owner, "webdock_operator_test", SECRET)
+    spitzli_persistence::migrations::bootstrap(&owner, "webdock_operator_test", SECRET)
         .await
         .unwrap();
     owner.close().await.unwrap();
@@ -2667,7 +2667,7 @@ fn create_kube(value: &Value) {
     );
 }
 fn source_ce_filesystem(customer: &str) -> PathBuf {
-    webdock_core::id::RecordId::parse(customer).expect("real original Registry customer");
+    spitzli_core::id::RecordId::parse(customer).expect("real original Registry customer");
     source_filesystem(&format!("ce-{customer}"), 2 * GIB, 65532)
 }
 fn kubectl_forward_category(raw: &[u8]) -> &'static str {
@@ -2821,7 +2821,7 @@ fn forward_query_args(namespace: &str, kind: &str, name: Option<&str>) -> Option
                 .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
     }) || namespace
         .strip_prefix("wd-mail-c")
-        .is_some_and(|v| webdock_core::id::RecordId::parse(v).is_ok());
+        .is_some_and(|v| spitzli_core::id::RecordId::parse(v).is_ok());
     if !dns || !owned {
         return None;
     }
@@ -3538,7 +3538,7 @@ fn forward_owner_binding(
     *pinned = Some(binding);
     Ok(())
 }
-fn forward_runtime_producer(spec: &webdock_agent_protocol::plugin::PluginRuntimeSpec) -> Value {
+fn forward_runtime_producer(spec: &spitzli_agent_protocol::plugin::PluginRuntimeSpec) -> Value {
     let labels = spec.labels();
     let annotations = json!({"webdock.dev/spec-sha256":spec.fingerprint().unwrap()});
     json!({"namespace":spec.namespace,"sourceGeneration":spec.runtime_generation,
@@ -5102,12 +5102,12 @@ const MAIL_RUNTIME_SPEC_SQL: &str = "SELECT COALESCE((SELECT spec FROM webdock_a
 
 async fn runtime_spec(
     owner: &DatabaseConnection,
-) -> webdock_agent_protocol::plugin::PluginRuntimeSpec {
+) -> spitzli_agent_protocol::plugin::PluginRuntimeSpec {
     let outcome = tokio::time::timeout(Duration::from_secs(120), async {
         loop {
             let value = row(owner, MAIL_RUNTIME_SPEC_SQL, vec![]).await;
             if !value.is_null() {
-                let spec: webdock_agent_protocol::plugin::PluginRuntimeSpec =
+                let spec: spitzli_agent_protocol::plugin::PluginRuntimeSpec =
                     serde_json::from_value(value).unwrap();
                 spec.validate().unwrap();
                 return spec;
@@ -5491,7 +5491,7 @@ fn prelude_forward_status() -> Value {
     })
 }
 struct MailPrelude {
-    spec: webdock_agent_protocol::plugin::PluginRuntimeSpec,
+    spec: spitzli_agent_protocol::plugin::PluginRuntimeSpec,
     uid: String,
     owner: std::sync::Mutex<Option<Value>>,
     namespace: File,
@@ -5673,7 +5673,7 @@ async fn verify_gateway_client_role(foundation: &Foundation, owner: &DatabaseCon
     for (key, value) in spec.labels() {
         assert_eq!(secret["metadata"]["labels"][&key], value);
     }
-    let files = webdock_agent_protocol::plugin::MATERIAL_FILES
+    let files = spitzli_agent_protocol::plugin::MATERIAL_FILES
         .iter()
         .map(|name| {
             let raw = base64::engine::general_purpose::STANDARD
@@ -5686,7 +5686,7 @@ async fn verify_gateway_client_role(foundation: &Foundation, owner: &DatabaseCon
             (name.to_string(), String::from_utf8(raw).unwrap())
         })
         .collect();
-    let material = webdock_agent_protocol::plugin::PluginRuntimeMaterial { files };
+    let material = spitzli_agent_protocol::plugin::PluginRuntimeMaterial { files };
     assert_eq!(
         material.fingerprint().unwrap(),
         spec.material_sha256,
@@ -5696,20 +5696,20 @@ async fn verify_gateway_client_role(foundation: &Foundation, owner: &DatabaseCon
         .unwrap()
         .1;
     let client = &foundation.gateway_client;
-    let certificate = webdock_plugin_kit::read_file(&client.certificate, false).unwrap();
+    let certificate = spitzli_plugin_kit::read_file(&client.certificate, false).unwrap();
     let client_leaf = x509_parser::pem::parse_x509_pem(&certificate).unwrap().1;
     assert_eq!(
         format!("{:x}", Sha256::digest(&client_leaf.contents)),
         client.certificate_sha256
     );
-    let tls = webdock_plugin_runtime::PinnedMutualTls {
+    let tls = spitzli_plugin_runtime::PinnedMutualTls {
         certificate,
-        private_key: webdock_plugin_kit::read_file(&client.private_key, true).unwrap(),
-        authority: webdock_plugin_kit::read_file(&foundation.authority, false).unwrap(),
+        private_key: spitzli_plugin_kit::read_file(&client.private_key, true).unwrap(),
+        authority: spitzli_plugin_kit::read_file(&foundation.authority, false).unwrap(),
         server_certificate_sha256: format!("{:x}", Sha256::digest(&leaf.contents)),
     };
     let result=tokio::time::timeout(Duration::from_secs(10),async {
-        let (channel,_)=webdock_plugin_runtime::pinned_mtls_authenticated("https://172.30.254.1:19443".into(),spec.runtime_host,tls).await.expect("actual operator gateway pinned mutual TLS");
+        let (channel,_)=spitzli_plugin_runtime::pinned_mtls_authenticated("https://172.30.254.1:19443".into(),spec.runtime_host,tls).await.expect("actual operator gateway pinned mutual TLS");
         let request=tonic::codegen::http::Request::builder().method("GET").uri("/v1/emails/1").body(tonic::body::Body::empty()).unwrap();
         let reply=channel.oneshot(request).await.expect("actual gateway role request");
         assert_eq!(reply.status(),StatusCode::UNAUTHORIZED,"gateway TLS role must reach actual native token authentication, without a send credential");
@@ -5739,7 +5739,7 @@ fn mail_agent_and_helper_staging_are_distinct_private_siblings() {
 }
 
 async fn install_mail_profile(c: &mut Context<'_>, runtime: &Value) -> (Value, String) {
-    use webdock_agent::recovery::config::{
+    use spitzli_agent::recovery::config::{
         KubernetesSource, PostgresEndpoint, RecoveryMode, RecoveryProfileConfig,
         RecoveryRuntimeConfig, RecoverySource, fingerprint,
     };
@@ -5792,7 +5792,7 @@ async fn install_mail_profile(c: &mut Context<'_>, runtime: &Value) -> (Value, S
         independent.insert(name.to_owned(), files.join(name));
     }
     // Preserve the actual retained installation encryption secret separately, never expose it publicly.
-    let installation_secret = webdock_control_plane::plugin_config::installation_secret().unwrap();
+    let installation_secret = spitzli_control_plane::plugin_config::installation_secret().unwrap();
     private_bytes(
         &files.join("installation-key"),
         installation_secret.as_bytes(),
@@ -5830,7 +5830,7 @@ async fn install_mail_profile(c: &mut Context<'_>, runtime: &Value) -> (Value, S
     );
     let profile = RecoveryProfileConfig {
         id: "mail-source".into(),
-        profile: webdock_agent_protocol::recovery::RecoveryProfile::MailInstallationV1,
+        profile: spitzli_agent_protocol::recovery::RecoveryProfile::MailInstallationV1,
         key_custody_id: operator["keyCustodyID"].as_str().unwrap().into(),
         destination: serde_json::from_value(operator["destination"].clone()).unwrap(),
         write_credentials: "/owned/operator-recovery/writer.json".into(),
@@ -5876,7 +5876,7 @@ async fn install_mail_profile(c: &mut Context<'_>, runtime: &Value) -> (Value, S
         }),
     })
     .unwrap();
-    let expected = webdock_agent::storage::StorageClient::new(
+    let expected = spitzli_agent::storage::StorageClient::new(
         c.agent_config["runtime"]["storageSocket"]
             .as_str()
             .unwrap()
@@ -5896,7 +5896,7 @@ async fn install_mail_profile(c: &mut Context<'_>, runtime: &Value) -> (Value, S
     let helper_staging = helper_staging_path(&staging);
     directory(&helper_staging);
     std::os::unix::fs::chown(&helper_staging, Some(65532), Some(65532)).unwrap();
-    webdock_agent::config::private_directory(&staging)
+    spitzli_agent::config::private_directory(&staging)
         .expect("Agent keeps its own private staging");
     assert_eq!(
         std::fs::symlink_metadata(&helper_staging).unwrap().uid(),
@@ -5915,7 +5915,7 @@ async fn install_mail_profile(c: &mut Context<'_>, runtime: &Value) -> (Value, S
     c.agent_config["recoveryRuntime"] = json!(path);
     private(c.agent_config_path, c.agent_config);
     *c.helper = spawn(
-        "/usr/local/bin/webdock-storage",
+        "/usr/local/bin/spitzli-storage",
         &[
             "--config".as_ref(),
             c.storage_config.as_os_str(),
@@ -5933,7 +5933,7 @@ async fn install_mail_profile(c: &mut Context<'_>, runtime: &Value) -> (Value, S
     super::app_component::cli_validate(c.agent_config_path);
     let sequence=row(c.owner,"SELECT to_jsonb(last_sequence) AS value FROM webdock_auth.hosting_agent WHERE cluster_id=$1",vec![c.cluster.into()]).await.as_i64().unwrap();
     *c.agent = spawn(
-        "/usr/local/bin/webdock-agent",
+        "/usr/local/bin/spitzli-agent",
         &[
             "--config".as_ref(),
             c.agent_config_path.as_os_str(),
@@ -6036,9 +6036,9 @@ fn source_mailbox_sentinel(mailbox: &Value) -> Value {
 fn cli(config: &Path, args: &[&std::ffi::OsStr]) -> Vec<u8> {
     let mut values = vec!["--config".as_ref(), config.as_os_str()];
     values.extend_from_slice(args);
-    super::byte_component::run_private("/usr/local/bin/webdock-recovery", &values, None)
+    super::byte_component::run_private("/usr/local/bin/spitzli-recovery", &values, None)
 }
-fn endpoint_uri(endpoint: &webdock_agent::recovery::config::PostgresEndpoint) -> url::Url {
+fn endpoint_uri(endpoint: &spitzli_agent::recovery::config::PostgresEndpoint) -> url::Url {
     let mut uri = url::Url::parse(&format!(
         "postgresql://postgres@localhost:{}/{}",
         endpoint.port, endpoint.database
@@ -6064,12 +6064,12 @@ async fn cold_restore(
     sends: &Value,
     source_mount: &Path,
 ) {
-    use webdock_agent::recovery::config::{
+    use spitzli_agent::recovery::config::{
         PostgresEndpoint, RecoveryMode, RecoveryProfileConfig, RecoveryRuntimeConfig,
         RecoverySource, RecoveryTarget, TargetConfiguration, fingerprint,
     };
-    use webdock_agent::storage::recovery_pool::RecoveryStorageTrust;
-    use webdock_agent::storage::{StorageClient, StorageConfig};
+    use spitzli_agent::storage::recovery_pool::RecoveryStorageTrust;
+    use spitzli_agent::storage::{StorageClient, StorageConfig};
     let set = &captured["set"];
     let proof = &set["proof"];
     assert_eq!(
@@ -6193,7 +6193,7 @@ async fn cold_restore(
         &json!({"root":pool,"node":node,"clusterID":c.cluster,"poolID":uuid::Uuid::new_v4(),"capacityBytes":8*GIB,"reserveBytes":256*MIB}),
     );
     super::byte_component::run_private(
-        "/usr/local/bin/webdock-storage",
+        "/usr/local/bin/spitzli-storage",
         &[
             "--config".as_ref(),
             storage.as_os_str(),
@@ -6203,7 +6203,7 @@ async fn cold_restore(
     );
     let bootstrap_socket = cold.join("bootstrap.sock");
     let mut helper = spawn(
-        "/usr/local/bin/webdock-storage",
+        "/usr/local/bin/spitzli-storage",
         &[
             "--config".as_ref(),
             storage.as_os_str(),
@@ -6257,7 +6257,7 @@ async fn cold_restore(
     let metadata_endpoint = endpoint(&metadata_database, "metadata");
     let target = RecoveryTarget {
         id: "mail-cold".into(),
-        profile: webdock_agent_protocol::recovery::RecoveryProfile::MailInstallationV1,
+        profile: spitzli_agent_protocol::recovery::RecoveryProfile::MailInstallationV1,
         capacity_bytes: 128 * MIB,
         nonce: uuid::Uuid::new_v4().to_string(),
         configuration: TargetConfiguration::Mail {
@@ -6310,7 +6310,7 @@ async fn cold_restore(
     let helper_stage = helper_staging_path(&stage);
     directory(&helper_stage);
     std::os::unix::fs::chown(&helper_stage, Some(65532), Some(65532)).unwrap();
-    webdock_agent::config::private_directory(&stage)
+    spitzli_agent::config::private_directory(&stage)
         .expect("Restore CLI keeps its own private staging");
     assert_eq!(
         std::fs::symlink_metadata(&helper_stage).unwrap().uid(),
@@ -6327,11 +6327,11 @@ async fn cold_restore(
         agent_staging_directory: helper_stage,
         socket_directory: peer,
         targets: vec![
-            webdock_agent::storage::recovery_pool::RecoveryStorageTarget {
+            spitzli_agent::storage::recovery_pool::RecoveryStorageTarget {
                 id: target.id.clone(),
                 sha256: fingerprint(&(target.clone(), identity.clone())).unwrap(),
                 nonce: Some(target.nonce.clone()),
-                action: webdock_agent_protocol::recovery::RecoveryAction::Restore,
+                action: spitzli_agent_protocol::recovery::RecoveryAction::Restore,
                 profile: target.profile,
                 capacity_bytes: target.capacity_bytes,
                 volumes: MailBudget::current().target_volumes(c.customer),
@@ -6349,14 +6349,14 @@ async fn cold_restore(
     };
     let trust_value: RecoveryStorageTrust =
         serde_json::from_slice(&super::app_component::private_input(&trust_path, 1048576)).unwrap();
-    let check = webdock_agent::storage::StoragePool::open(&storage)
+    let check = spitzli_agent::storage::StoragePool::open(&storage)
         .is_ok_and(|pool| pool.with_recovery_trust(&trust_path).is_ok());
     let _ = super::write_diagnostic_json(
         Path::new("/diagnostics/mail-cold-trust-startup.json"),
         &json!({"readOnlyCurrentTrustValidation":check,"coreSigners":metadata(&trust_value.core_signers),"operatorSigners":metadata(&trust_value.operator_signers),"verification":metadata(&trust_value.verification_directory),"helperStage":metadata(&trust_value.agent_staging_directory),"socketDirectory":metadata(&trust_value.socket_directory),"trustFile":metadata(&trust_path),"targetCount":trust_value.targets.len(),"targets":trust_value.targets.iter().map(|t|json!({"capacityBytes":t.capacity_bytes,"noncePresent":t.nonce.is_some(),"volumeCount":t.volumes.len(),"volumes":t.volumes.values().map(|v|json!({"bytes":v.bytes,"uid":v.uid,"gid":v.gid,"cpuMillis":v.cpu_millicores,"memoryBytes":v.memory_bytes,"tmpBytes":v.tmp_bytes,"imageExactlyKnown":([PG_IMAGE,CE_IMAGE].contains(&v.image.as_str()))})).collect::<Vec<_>>() })).collect::<Vec<_>>() }),
     );
     helper = spawn(
-        "/usr/local/bin/webdock-storage",
+        "/usr/local/bin/spitzli-storage",
         &[
             "--config".as_ref(),
             storage.as_os_str(),
@@ -6440,7 +6440,7 @@ async fn cold_restore(
     .unwrap();
     let reservations: BTreeMap<
         String,
-        webdock_agent::storage::recovery_pool::RecoveryReservationReceipt,
+        spitzli_agent::storage::recovery_pool::RecoveryReservationReceipt,
     > = serde_json::from_value(local["reservations"].clone()).unwrap();
     assert_eq!(reservations.len(), 1);
     let reserved = reservations.values().next().unwrap();
@@ -6981,8 +6981,8 @@ fn postgres_scratch_checks_the_approved_aggregate_instead_of_assigning_it_to_eac
 }
 
 async fn verify_pg_role_filesystem(
-    endpoint: &webdock_agent::recovery::config::PostgresEndpoint,
-    record: &webdock_agent::storage::recovery_pool::RecoveryVolumeRecord,
+    endpoint: &spitzli_agent::recovery::config::PostgresEndpoint,
+    record: &spitzli_agent::storage::recovery_pool::RecoveryVolumeRecord,
     nonce: &str,
 ) -> Value {
     let name = format!("wd-recovery-pg-{nonce}-{}", record.resource_id);
@@ -7042,7 +7042,7 @@ const FORWARD_SERVER_CONFIG: &str = "/run/webdock/runtime/runtime.json";
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct ForwardServerConfig {
-    transport: webdock_plugin_kit::transport::RuntimeTransport,
+    transport: spitzli_plugin_kit::transport::RuntimeTransport,
     core_pin: String,
 }
 #[derive(serde::Deserialize)]
@@ -7052,7 +7052,7 @@ struct ForwardProbeTarget {
     address: std::net::SocketAddr,
 }
 fn forward_tool_prepare(root: &Path) {
-    use webdock_control_plane::plugin_config::{RuntimeConnection, RuntimeTransport};
+    use spitzli_control_plane::plugin_config::{RuntimeConnection, RuntimeTransport};
     directory(root);
     let pki = make_pki(&root.join("client"));
     let core_leaf = x509_parser::pem::parse_x509_pem(&std::fs::read(&pki.certificate).unwrap())
@@ -7071,10 +7071,10 @@ fn forward_tool_prepare(root: &Path) {
     );
     let host = format!(
         "{}.{}",
-        webdock_agent_protocol::plugin::PluginRuntimeSpec::namespace_name("owned-recovery", "mail"),
+        spitzli_agent_protocol::plugin::PluginRuntimeSpec::namespace_name("owned-recovery", "mail"),
         policy["runtimeDomain"].as_str().unwrap()
     );
-    let issued = webdock_plugin_host::provisioning::tls::issue_runtime_identity(
+    let issued = spitzli_plugin_host::provisioning::tls::issue_runtime_identity(
         &std::fs::read_to_string(&pki.authority).unwrap(),
         &std::fs::read_to_string(pki.root.join("issuer.key")).unwrap(),
         &host,
@@ -7087,7 +7087,7 @@ fn forward_tool_prepare(root: &Path) {
         "listenTls":{"address":"0.0.0.0:8443","certificate":paths.join("runtime.crt"),"privateKey":paths.join("runtime.key"),"authority":paths.join("core-ca.crt")},
         "coreTls":{"origin":"https://172.30.254.1:19444","domain":"172.30.254.1","certificate":paths.join("runtime.crt"),"privateKey":paths.join("runtime.key"),"authority":paths.join("core-ca.crt"),"serverCertificateSha256":core_pin}
     });
-    let transport: webdock_plugin_kit::transport::RuntimeTransport =
+    let transport: spitzli_plugin_kit::transport::RuntimeTransport =
         serde_json::from_value(transport_value.clone()).unwrap();
     transport
         .validate()
@@ -7206,10 +7206,10 @@ fn forward_error_chain(mut error: &(dyn std::error::Error + 'static)) -> Value {
     }
 }
 async fn forward_probe(
-    connection: &webdock_control_plane::plugin_config::RuntimeConnection,
+    connection: &spitzli_control_plane::plugin_config::RuntimeConnection,
     route: &str,
 ) -> Value {
-    use webdock_plugin_runtime::wire;
+    use spitzli_plugin_runtime::wire;
     let mut report = json!({"route":route,"stage":"connect","connected":false,"describe":false,"health":false,"error":null});
     let connected =
         tokio::time::timeout(Duration::from_secs(5), connection.connect_authenticated()).await;
@@ -7233,7 +7233,7 @@ async fn forward_probe(
     .await
     {
         Ok(Ok(response)) => {
-            let manifest = webdock_plugin_protocol::Manifest::parse(include_bytes!(
+            let manifest = spitzli_plugin_protocol::Manifest::parse(include_bytes!(
                 "../../../../plugins/mail/manifest.json"
             ))
             .unwrap();
@@ -7297,8 +7297,8 @@ async fn forward_runtime_tool() {
             println!("forward_runtime_prepared");
         }
         Ok("serve") => {
-            use webdock_plugin_runtime::{CorePeer, RemoteAuthority, Runtime};
-            let bytes = webdock_plugin_kit::read_file(Path::new(FORWARD_SERVER_CONFIG), true)
+            use spitzli_plugin_runtime::{CorePeer, RemoteAuthority, Runtime};
+            let bytes = spitzli_plugin_kit::read_file(Path::new(FORWARD_SERVER_CONFIG), true)
                 .expect("actual staged private server configuration");
             let config: ForwardServerConfig =
                 serde_json::from_slice(&bytes).expect("typed server configuration");
@@ -7326,7 +7326,7 @@ async fn forward_runtime_tool() {
                 .unwrap()
                 .material()
                 .expect("actual listener material");
-            let manifest = webdock_plugin_protocol::Manifest::parse(include_bytes!(
+            let manifest = spitzli_plugin_protocol::Manifest::parse(include_bytes!(
                 "../../../../plugins/mail/manifest.json"
             ))
             .unwrap();
@@ -7351,15 +7351,15 @@ async fn forward_runtime_tool() {
                 .expect("owned standard Runtime");
         }
         Ok("probe") => {
-            use webdock_control_plane::plugin_config::{RuntimeConnection, RuntimeTransport};
+            use spitzli_control_plane::plugin_config::{RuntimeConnection, RuntimeTransport};
             let root = Path::new(FORWARD_TOOL_ROOT);
             let mut connection: RuntimeConnection = serde_json::from_slice(
-                &webdock_plugin_kit::read_file(&root.join("connection.json"), true)
+                &spitzli_plugin_kit::read_file(&root.join("connection.json"), true)
                     .expect("actual private consumer config"),
             )
             .expect("actual consumer DTO");
             let target: ForwardProbeTarget = serde_json::from_slice(
-                &webdock_plugin_kit::read_file(&root.join("target.json"), true)
+                &spitzli_plugin_kit::read_file(&root.join("target.json"), true)
                     .expect("owned bound target"),
             )
             .expect("typed target");
@@ -7439,7 +7439,7 @@ fn forward_prepare_uses_actual_consumer_serde_and_exact_six_staged_files() {
     let config: ForwardServerConfig =
         serde_json::from_slice(&std::fs::read(root.join("source/runtime.json")).unwrap()).unwrap();
     config.transport.validate().unwrap();
-    let consumer: webdock_control_plane::plugin_config::RuntimeConnection =
+    let consumer: spitzli_control_plane::plugin_config::RuntimeConnection =
         serde_json::from_slice(&std::fs::read(root.join("connection.json")).unwrap()).unwrap();
     assert_eq!(consumer.generation, 1);
     for item in std::fs::read_dir(root.join("source")).unwrap() {

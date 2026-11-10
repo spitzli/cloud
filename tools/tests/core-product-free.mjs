@@ -12,7 +12,7 @@ const bun = process.env.BUN_BINARY || process.execPath;
 const fixture = await mkdtemp(join(tmpdir(), 'webdock-core-product-free-'));
 try {
   const manifest = JSON.parse(await readFile(join(root, 'packages/core/package.json'), 'utf8'));
-  const core = join(fixture, 'node_modules/@webdock/core');
+  const core = join(fixture, 'node_modules/@spitzli/core');
   await mkdir(dirname(core), { recursive: true });
   await cp(join(root, 'packages/core'), core, { recursive: true });
   for (const dependency of Object.keys(manifest.dependencies)) {
@@ -22,12 +22,12 @@ try {
   }
   const imports = [];
   for (const [name, target] of Object.entries(manifest.exports)) {
-    if (!name.includes('*')) imports.push('@webdock/core/' + name.slice(2));
+    if (!name.includes('*')) imports.push('@spitzli/core/' + name.slice(2));
     else {
       const directory = dirname(target);
       for (const file of await readdir(join(core, directory))) {
         if (file.endsWith('.ts') && !file.endsWith('.test.ts'))
-          imports.push('@webdock/core/' + name.slice(2).replace('*', file.slice(0, -3)));
+          imports.push('@spitzli/core/' + name.slice(2).replace('*', file.slice(0, -3)));
       }
     }
   }
@@ -43,14 +43,14 @@ if (!result.success) { for (const log of result.logs) console.error(log); proces
   const build = spawnSync(bun, ['--no-env-file', builder], { cwd: fixture, encoding: 'utf8', timeout: 30000 });
   assert.equal(build.status, 0, build.stderr || build.stdout);
   const originalEntry = await readFile(entry, 'utf8');
-  await writeFile(entry, "import '@webdock/module-mail/manifest';\n" + originalEntry);
+  await writeFile(entry, "import '@spitzli/module-mail/manifest';\n" + originalEntry);
   const denied = spawnSync(bun, ['--no-env-file', builder], { cwd: fixture, encoding: 'utf8', timeout: 30000 });
   assert.notEqual(denied.status, 0, 'Resolver must reject product package imports');
   assert.match(denied.stderr, /Forbidden product import @webdock\/module-mail\/manifest/);
   const run = spawnSync(bun, ['--no-env-file', join(fixture, 'dist/entry.js')], { cwd: fixture, encoding: 'utf8', timeout: 30000 });
   assert.equal(run.status, 0, run.stderr || run.stdout);
   assert.equal(JSON.parse(run.stdout.trim()).length, imports.length);
-  console.log(`Built and imported ${imports.length} @webdock/core exports with all product package imports denied.`);
+  console.log(`Built and imported ${imports.length} @spitzli/core exports with all product package imports denied.`);
 } finally {
   await rm(fixture, { recursive: true, force: true });
 }

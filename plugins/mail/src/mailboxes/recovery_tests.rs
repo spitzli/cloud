@@ -145,7 +145,7 @@ impl Fixture {
         let store = Store::connect_tls(&url, &ca)
             .await
             .expect("owned_store_connect");
-        let db = webdock_plugin_kit::postgres::connect(&url, Some(&ca))
+        let db = spitzli_plugin_kit::postgres::connect(&url, Some(&ca))
             .await
             .expect("owned_sql_connect");
         let ownership = db.query_one("SELECT current_user::text,pg_get_userbyid(datdba)::text,(SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()) FROM pg_database WHERE datname=current_database()", &[]).await.unwrap();

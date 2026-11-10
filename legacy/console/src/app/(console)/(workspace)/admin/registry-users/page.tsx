@@ -1,6 +1,6 @@
 import {browserAuthConfiguration} from "@/lib/browser-auth-config";
 import Link from 'next/link';
-import {getRequestI18n} from '@webdock/i18n/next';
+import {getRequestI18n} from '@spitzli/i18n/next';
 import {requireRegistryOperator} from '@/lib/registry-page';
 export default async function RegistryUsers({searchParams}:{searchParams:Promise<{page?:string}>}){
  const {payload}=await requireRegistryOperator(),i18n=await getRequestI18n(),params=await searchParams;

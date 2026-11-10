@@ -1,7 +1,7 @@
 "use client";
-import { useI18n } from "@webdock/i18n/react";
-import { msgid } from "@webdock/i18n";
-import { useModule } from "@webdock/module-sdk/react";
+import { useI18n } from "@spitzli/i18n/react";
+import { msgid } from "@spitzli/i18n";
+import { useModule } from "@spitzli/module-sdk/react";
 import React, { type ReactNode } from "react";
 export type StorageConnectionsView = {
   stores: {

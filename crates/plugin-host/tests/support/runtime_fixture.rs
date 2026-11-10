@@ -1,5 +1,5 @@
+use spitzli_plugin_runtime::wire;
 use tonic::{Request, Response, Status};
-use webdock_plugin_runtime::wire;
 /// The fixture callback grants no candidate invocation or workload authority.
 #[derive(Clone)]
 pub struct DenyHost;

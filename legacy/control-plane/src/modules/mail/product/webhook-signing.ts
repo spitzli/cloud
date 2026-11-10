@@ -1,1 +1,1 @@
-export * from "@webdock/module-mail/server/product-webhook-signing";
+export * from "@spitzli/module-mail/server/product-webhook-signing";

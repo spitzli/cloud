@@ -21,7 +21,7 @@ import {
   completeGitRelease,
 } from "../../src/modules/hosting/git-deployments";
 import { createGitHubProvider } from "../../src/modules/hosting/git-github";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 const url = new URL(process.env.DATABASE_URL!);
 if (
   !["localhost", "127.0.0.1"].includes(url.hostname) ||

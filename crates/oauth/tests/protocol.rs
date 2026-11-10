@@ -1,4 +1,4 @@
-use webdock_oauth::{OAuthConfig, legacy_token_hash};
+use spitzli_oauth::{OAuthConfig, legacy_token_hash};
 #[test]
 fn issuer_resource_configuration_and_legacy_hash_are_exact() {
     assert_eq!(

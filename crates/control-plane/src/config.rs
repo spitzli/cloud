@@ -1,7 +1,7 @@
 use crate::runtime::{Error, Result as RuntimeResult};
+use spitzli_core::config::PlatformConfig;
 use std::collections::HashMap;
 use std::time::Duration;
-use webdock_core::config::PlatformConfig;
 
 /// Retained protocol identifiers are independent of the public account origin.
 pub(crate) struct AuthCompatibility {
@@ -12,9 +12,9 @@ impl AuthCompatibility {
     pub fn from_map(
         env: &HashMap<String, String>,
         platform: &PlatformConfig,
-    ) -> Result<Self, webdock_core::ContractError> {
+    ) -> Result<Self, spitzli_core::ContractError> {
         let origin = |key: &str| {
-            webdock_core::config::canonical_origin(
+            spitzli_core::config::canonical_origin(
                 env.get(key)
                     .map(String::as_str)
                     .unwrap_or(&platform.auth_origin),
@@ -22,7 +22,7 @@ impl AuthCompatibility {
             )
         };
         let passkey_rp_origin = url::Url::parse(&origin("WEBDOCK_PASSKEY_RP_ORIGIN")?)
-            .map_err(|_| webdock_core::ContractError("Invalid passkey RP origin".into()))?;
+            .map_err(|_| spitzli_core::ContractError("Invalid passkey RP origin".into()))?;
         let oauth_issuer = format!("{}/api/auth", origin("WEBDOCK_OAUTH_ISSUER_ORIGIN")?);
         Ok(Self {
             passkey_rp_origin,
@@ -69,7 +69,7 @@ pub fn read_private_file(path: &std::path::Path) -> std::io::Result<Vec<u8>> {
 
 /// Contains credentials and deliberately implements neither Debug nor Serialize.
 pub struct RuntimeDatabaseConfig {
-    pub uri: webdock_persistence::connection::ConnectionUrl,
+    pub uri: spitzli_persistence::connection::ConnectionUrl,
     pub min_connections: u32,
     pub max_connections: u32,
     pub connect_timeout: Duration,
@@ -171,7 +171,7 @@ pub fn runtime_config(env: &HashMap<String, String>) -> RuntimeResult<RuntimeCon
         .get("WEBDOCK_DATABASE_URL")
         .ok_or_else(|| Error::Message("Missing WEBDOCK_DATABASE_URL".into()))?;
     let uri =
-        webdock_persistence::connection::ConnectionUrl::parse(database_url, platform.production)
+        spitzli_persistence::connection::ConnectionUrl::parse(database_url, platform.production)
             .map_err(|_| Error::Message("Invalid PostgreSQL connection policy".into()))?;
     let binding = env
         .get("WEBDOCK_BIND_ADDRESS")

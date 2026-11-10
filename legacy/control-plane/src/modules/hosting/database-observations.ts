@@ -1,4 +1,4 @@
-import { createHostingDatabaseObservations } from "@webdock/module-databases/server/database-observations";
+import { createHostingDatabaseObservations } from "@spitzli/module-databases/server/database-observations";
 import { verifyAgent } from "./clusters";
 import { transaction } from "./db";
 export const { databaseObservationConfig, reportDatabaseObservations } =

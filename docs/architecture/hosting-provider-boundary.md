@@ -2,7 +2,7 @@
 
 Source checkpoint: 2026-10-15. No cluster resources, provider projects or live credentials changed.
 
-The existing Vercel project reader/list/delete client now lives in `adapters/hosting/vercel/src/projects.ts`. Its validation, team/project ownership checks, response allowlists, bounded reads, timeout handling, delete verification and provider error codes are unchanged. `@webdock/hosting-contracts/vercel` remains a compatibility export. Data types and deployment-boundary descriptions live in `@webdock/module-hosting/providers`.
+The existing Vercel project reader/list/delete client now lives in `adapters/hosting/vercel/src/projects.ts`. Its validation, team/project ownership checks, response allowlists, bounded reads, timeout handling, delete verification and provider error codes are unchanged. `@spitzli/hosting-contracts/vercel` remains a compatibility export. Data types and deployment-boundary descriptions live in `@spitzli/module-hosting/providers`.
 
 The existing BYOK OAuth/control HTTP transport moved from `apps/control-plane/src/modules/hosting/byok-vercel.ts` to the adapter's `transport.ts`. API composition preserves its existing `HostingError` status/message contract. Credentials and team scope remain explicit arguments; the adapter has no database, app import, environment credential discovery or import-time network call. It keeps the fixed Vercel origin, no-redirect policy, 10-second timeout, two-megabyte response bound and redacted errors. Integration ownership, OAuth state consumption, account binding, credential encryption, operation leases and deployment publication remain existing service responsibilities.
 

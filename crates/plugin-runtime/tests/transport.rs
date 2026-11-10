@@ -1,16 +1,16 @@
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::{Signer, SigningKey};
 use serde_json::{Value, json};
+use spitzli_plugin_protocol::{InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::{
+    ActionHandler, InvocationAuthority, PeerIdentity, Runtime, UnixSocket, connect_unix, wire,
+};
 use std::{
     sync::{
         Arc,
         atomic::{AtomicBool, Ordering},
     },
     time::{Duration, SystemTime, UNIX_EPOCH},
-};
-use webdock_plugin_protocol::{InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::{
-    ActionHandler, InvocationAuthority, PeerIdentity, Runtime, UnixSocket, connect_unix, wire,
 };
 
 struct Echo;
@@ -272,8 +272,8 @@ fn certificate(
 }
 #[tokio::test]
 async fn mtls_rejects_untrusted_expired_and_revoked_clients() {
+    use spitzli_plugin_runtime::{MutualTls, connect_mtls};
     use tonic::transport::{Certificate, ClientTlsConfig, Endpoint, Identity};
-    use webdock_plugin_runtime::{MutualTls, connect_mtls};
     let (root, issuer) = ca();
     let (server_cert, server_key) = certificate(&issuer, true, false);
     let (client_cert, client_key) = certificate(&issuer, false, false);
@@ -316,14 +316,14 @@ async fn mtls_rejects_untrusted_expired_and_revoked_clients() {
             .is_ok()
     );
     use sha2::{Digest, Sha256};
-    let pinned = || webdock_plugin_runtime::PinnedMutualTls {
+    let pinned = || spitzli_plugin_runtime::PinnedMutualTls {
         certificate: client_cert.pem().into_bytes(),
         private_key: client_key.serialize_pem().into_bytes(),
         authority: root.pem().into_bytes(),
         server_certificate_sha256: hex::encode(Sha256::digest(server_cert.der())),
     };
     let mut enrolled =
-        webdock_plugin_runtime::connect_pinned_mtls(origin.clone(), "localhost".into(), pinned())
+        spitzli_plugin_runtime::connect_pinned_mtls(origin.clone(), "localhost".into(), pinned())
             .await
             .unwrap();
     assert!(
@@ -335,12 +335,12 @@ async fn mtls_rejects_untrusted_expired_and_revoked_clients() {
     let mut wrong_pin = pinned();
     wrong_pin.server_certificate_sha256 = "0".repeat(64);
     assert!(
-        webdock_plugin_runtime::connect_pinned_mtls(origin.clone(), "localhost".into(), wrong_pin)
+        spitzli_plugin_runtime::connect_pinned_mtls(origin.clone(), "localhost".into(), wrong_pin)
             .await
             .is_err()
     );
     assert!(
-        webdock_plugin_runtime::connect_pinned_mtls(
+        spitzli_plugin_runtime::connect_pinned_mtls(
             origin.clone(),
             "wrong.invalid".into(),
             pinned()

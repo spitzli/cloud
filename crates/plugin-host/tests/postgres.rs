@@ -6,10 +6,10 @@ mod mcp;
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{AdmissionInput, FileBindings, HostService};
+use spitzli_plugin_runtime::{InvocationAuthority, PeerIdentity};
 use std::sync::Arc;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{AdmissionInput, FileBindings, HostService};
-use webdock_plugin_runtime::{InvocationAuthority, PeerIdentity};
 async fn db(key: &str) -> DatabaseConnection {
     let value = std::env::var(key).expect("explicit local fixture URL");
     let parsed = url::Url::parse(&value).unwrap();
@@ -135,9 +135,9 @@ async fn real_admission_data_cas_receipts_authority_revocation_and_admin() {
             db("DATABASE_URL").await,
             db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
-            Arc::new(webdock_persistence::IdAllocator::new(
+            Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )),
             Arc::new(FileBindings::new(path.clone())),
             ed25519_dalek::SigningKey::from_bytes(&[19; 32]),
@@ -162,7 +162,7 @@ async fn real_admission_data_cas_receipts_authority_revocation_and_admin() {
                     &principal,
                     admission(&plugin, &pid, "notes.write", "operation-1"),
                     true,
-                    &webdock_browser_session::StoredAuthority::LocalSession {},
+                    &spitzli_browser_session::StoredAuthority::LocalSession {},
                 )
                 .await
                 .unwrap();
@@ -527,20 +527,20 @@ async fn real_admission_data_cas_receipts_authority_revocation_and_admin() {
 #[cfg(feature = "test-transport")]
 async fn local_http_checks(
     host: &HostService,
-    principal: &webdock_identity::Principal,
+    principal: &spitzli_identity::Principal,
     plugin: &str,
     project: &str,
     owner: &DatabaseConnection,
 ) {
+    use spitzli_plugin_host::http::{BoundRequest, HttpResult, HttpTransport};
     use tokio::io::{AsyncReadExt, AsyncWriteExt};
-    use webdock_plugin_host::http::{BoundRequest, HttpResult, HttpTransport};
     struct Local {
         status: u16,
         revoke: Option<(DatabaseConnection, String)>,
     }
     #[async_trait::async_trait]
     impl HttpTransport for Local {
-        async fn send(&self, input: BoundRequest) -> webdock_plugin_protocol::Result<HttpResult> {
+        async fn send(&self, input: BoundRequest) -> spitzli_plugin_protocol::Result<HttpResult> {
             assert_eq!(input.url.host_str(), Some("provider.invalid"));
             assert_eq!(
                 input.binding.addresses,
@@ -668,16 +668,16 @@ async fn remote_host_roundtrip(
     host: Arc<HostService>,
     plugin: &str,
     manifest: &str,
-    admitted: &webdock_plugin_host::AdmittedInvocation,
+    admitted: &spitzli_plugin_host::AdmittedInvocation,
     identity: Arc<IdentityService>,
     cookie: &str,
     mcp: &mcp::McpFixture,
 ) {
-    use std::os::unix::fs::PermissionsExt;
-    use webdock_plugin_protocol::{InvocationClaims, Manifest, PluginError};
-    use webdock_plugin_runtime::{
+    use spitzli_plugin_protocol::{InvocationClaims, Manifest, PluginError};
+    use spitzli_plugin_runtime::{
         ActionHandler, CorePeer, HostClient, RemoteAuthority, Runtime, UnixSocket,
     };
+    use std::os::unix::fs::PermissionsExt;
     struct Document(HostClient);
     #[tonic::async_trait]
     impl ActionHandler for Document {
@@ -746,10 +746,10 @@ async fn remote_host_roundtrip(
             .await
             .unwrap()
     }));
-    let mut client = webdock_plugin_runtime::connect_unix(&plugin_path)
+    let mut client = spitzli_plugin_runtime::connect_unix(&plugin_path)
         .await
         .unwrap();
-    let request = |input: Value| webdock_plugin_runtime::wire::InvokeRequest {
+    let request = |input: Value| spitzli_plugin_runtime::wire::InvokeRequest {
         invocation_token: admitted.token.clone(),
         action: admitted.claims.action.clone(),
         input_json: serde_json::to_vec(&input).unwrap(),
@@ -793,20 +793,20 @@ async fn remote_host_roundtrip(
     let secret_path = directory.path().join("mcp.secret");
     std::fs::write(&secret_path, &mcp.secret).unwrap();
     std::fs::set_permissions(&secret_path, std::fs::Permissions::from_mode(0o600)).unwrap();
-    let mut endpoints = webdock_control_plane::plugins::PluginEndpoints::new(
+    let mut endpoints = spitzli_control_plane::plugins::PluginEndpoints::new(
         host,
-        webdock_control_plane::plugin_config::RuntimeConnections::new(connection_file),
+        spitzli_control_plane::plugin_config::RuntimeConnections::new(connection_file),
         None,
     );
-    endpoints.mcp_client = Some(webdock_control_plane::plugin_config::McpClientConfig {
+    endpoints.mcp_client = Some(spitzli_control_plane::plugin_config::McpClientConfig {
         client_id: mcp.client.clone(),
         secret: secret_path,
     });
     let endpoints = Arc::new(endpoints);
-    let app = webdock_control_plane::http::build_app_with_domains(
-        webdock_core::config::PlatformConfig::from_map(&std::collections::HashMap::new()).unwrap(),
+    let app = spitzli_control_plane::http::build_app_with_domains(
+        spitzli_core::config::PlatformConfig::from_map(&std::collections::HashMap::new()).unwrap(),
         db("AUTH_DATABASE_URL").await,
-        webdock_control_plane::http::Services {
+        spitzli_control_plane::http::Services {
             identity: Some(identity),
             oauth: Some(mcp.oauth.clone()),
             plugins: Some(endpoints),
@@ -981,7 +981,7 @@ async fn bounded_database(key: &str, name: &str) -> DatabaseConnection {
 }
 async fn invocation_revoke_race(
     owner: &DatabaseConnection,
-    principal: &webdock_identity::Principal,
+    principal: &spitzli_identity::Principal,
     plugin: &str,
     customer: &str,
     project: &str,
@@ -996,9 +996,9 @@ async fn invocation_revoke_race(
             bounded_database("DATABASE_URL", &data_name).await,
             bounded_database("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", &control_name).await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
-            Arc::new(webdock_persistence::IdAllocator::new(
+            Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )),
             Arc::new(FileBindings::new(path.into())),
             ed25519_dalek::SigningKey::from_bytes(&[19; 32]),

@@ -3,9 +3,9 @@
 Build the controller daemon separately from the disposable runner:
 
 ```sh
-cargo build -p webdock-build --no-default-features --features service,worker,kubernetes-job \
-  --bin webdock-kubernetes-build-worker
-webdock-kubernetes-build-worker --config /private/kubernetes-worker.json
+cargo build -p spitzli-build --no-default-features --features service,worker,kubernetes-job \
+  --bin spitzli-kubernetes-build-worker
+spitzli-kubernetes-build-worker --config /private/kubernetes-worker.json
 ```
 
 The hardened worker requires the `service` feature for its isolated bounded
@@ -27,7 +27,7 @@ no VM image, KVM check, guest-command path or ambient backend factory.
 
 `worker.example.json` is deliberately disabled and uses invalid placeholder hosts,
 IDs and pins. Copy it into a private file and replace every operator input; it is
-not deployable configuration. `webdock-kubernetes-build-worker.service` is an
+not deployable configuration. `spitzli-kubernetes-build-worker.service` is an
 uninstalled controller-side systemd template. Provision its dedicated Unix user,
 owned mode-0600 configuration/credential files and the four distinct mode-0700
 subdirectories under `/var/lib/webdock-build` before installing it. The controller
@@ -227,6 +227,6 @@ and early `--once` rejection. Run with `--features service,worker,kubernetes-job
 as well to cover the upload-listener feature build.
 
 ```sh
-cargo test -p webdock-build --no-default-features --features worker,kubernetes-job \
+cargo test -p spitzli-build --no-default-features --features worker,kubernetes-job \
   --lib kubernetes_
 ```

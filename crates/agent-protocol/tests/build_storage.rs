@@ -1,6 +1,6 @@
 use chrono::{Duration, Utc};
 use ed25519_dalek::SigningKey;
-use webdock_agent_protocol::build_storage::{
+use spitzli_agent_protocol::build_storage::{
     BuildStorageAction, BuildStorageReservation, BuildStorageTarget, BuildVolumeHandle,
     SignedBuildStorageReservation,
 };
@@ -165,7 +165,7 @@ fn allocation_identity_survives_renewal_but_not_customer_attempt_or_capacity_cha
 
 #[test]
 fn volume_reply_is_bound_to_request_uid_operation_and_tenant_without_private_error_payloads() {
-    use webdock_agent_protocol::build_storage::{
+    use spitzli_agent_protocol::build_storage::{
         BuildVolumePhase, BuildVolumeReply, BuildVolumeResult,
     };
     let request = reservation();

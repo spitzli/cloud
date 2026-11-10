@@ -2,7 +2,7 @@ import type { ComponentType } from "react";
 import type {
   HostingCommand,
   HostingProjectContext,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export interface HostingUIServices {
   hostingCall<T>(command: HostingCommand): Promise<T>;
   hostingPageCall<T>(command: HostingCommand, returnTo: string): Promise<T>;

@@ -1,7 +1,7 @@
 "use client";
 import DOMPurify from "dompurify";
 import { useMemo } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 
 export function MessageHTML({ html }: { html: string }) {
   const { t } = useI18n();

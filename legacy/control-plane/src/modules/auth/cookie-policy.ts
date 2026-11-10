@@ -1,1 +1,1 @@
-export { cookiePolicy } from "@webdock/auth-better-auth/compatibility";
+export { cookiePolicy } from "@spitzli/auth-better-auth/compatibility";

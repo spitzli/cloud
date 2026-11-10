@@ -1,6 +1,6 @@
 "use client";
-import {msgid} from '@webdock/i18n';
-import { useI18n } from '@webdock/i18n/react';
+import {msgid} from '@spitzli/i18n';
+import { useI18n } from '@spitzli/i18n/react';
 
 import { Fragment, useActionState, useId } from "react";
 import type { FormState } from "../lib/actions";

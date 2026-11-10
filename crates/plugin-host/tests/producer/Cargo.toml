@@ -1,15 +1,15 @@
 [package]
-name = "webdock-storage-producer-fixture"
+name = "spitzli-storage-producer-fixture"
 version = "0.0.0"
 edition = "2024"
 publish = false
 [workspace]
 [dependencies]
-webdock-object-storage-plugin = { path = "../../../../plugins/object-storage" }
-webdock-plugin-host = { path = "../.." }
-webdock-plugin-protocol = { path = "../../../plugin-protocol" }
-webdock-plugin-http = { path = "../../../plugin-http" }
-webdock-plugin-kit = { path = "../../../plugin-kit" }
+spitzli-object-storage-plugin = { path = "../../../../plugins/object-storage" }
+spitzli-plugin-host = { path = "../.." }
+spitzli-plugin-protocol = { path = "../../../plugin-protocol" }
+spitzli-plugin-http = { path = "../../../plugin-http" }
+spitzli-plugin-kit = { path = "../../../plugin-kit" }
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "time"] }
 async-trait = "0.1"
 serde_json = "1"

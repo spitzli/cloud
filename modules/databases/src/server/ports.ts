@@ -1,8 +1,8 @@
 import type {
   HostingRuntimePorts,
   DatabaseReader,
-} from "@webdock/hosting-contracts/runtime-ports";
-import type { HostingAllowances } from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts/runtime-ports";
+import type { HostingAllowances } from "@spitzli/hosting-contracts";
 /** Host-provided runtime/credential ports. Database services never construct provider clients. */
 export interface DatabaseRuntimePorts extends HostingRuntimePorts {
   requireDatabases(intent?: "access" | "provision"): void;

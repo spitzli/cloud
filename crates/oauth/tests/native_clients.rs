@@ -3,13 +3,13 @@
 mod fixture;
 use fixture::AUTH_SECRET;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
-use std::{collections::BTreeMap, sync::Arc, time::Duration};
-use webdock_identity::{CookiePolicy, IdentityService, SecretKeys};
-use webdock_oauth::{ClientAuthMethod, ClientAuthentication, Error, OAuthConfig, OAuthService};
-use webdock_persistence::{
+use spitzli_identity::{CookiePolicy, IdentityService, SecretKeys};
+use spitzli_oauth::{ClientAuthMethod, ClientAuthentication, Error, OAuthConfig, OAuthService};
+use spitzli_persistence::{
     IdAllocator,
     postgres::{Limits, Pool},
 };
+use std::{collections::BTreeMap, sync::Arc, time::Duration};
 const REDIRECT: &str = "https://console.example.test/api/sso/callback";
 fn credentials(secret: &str) -> ClientAuthentication {
     ClientAuthentication {
@@ -20,7 +20,7 @@ fn credentials(secret: &str) -> ClientAuthentication {
 }
 async fn setup() -> (fixture::Fixture, Arc<OAuthService>, Pool) {
     let f = fixture::Fixture::start().await;
-    let hash = webdock_oauth::legacy_token_hash("owned-client-secret");
+    let hash = spitzli_oauth::legacy_token_hash("owned-client-secret");
     f.owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,r#"INSERT INTO webdock_auth."oauthClient"(id,"clientId","clientSecret",name,disabled,"skipConsent","enableEndSession",scopes,"redirectUris","postLogoutRedirectUris","grantTypes","responseTypes","tokenEndpointAuthMethod","requirePKCE","subjectType",metadata,"createdAt","updatedAt") VALUES('103','102',$1,'Owned native client',false,true,true,'["openid","profile","email"]','["https://console.example.test/api/sso/callback"]','[]','["authorization_code"]','["code"]','client_secret_post',true,'public','{"webdock_binding":"104"}',now(),now())"#,[hash.into()])).await.unwrap();
     f.owner.execute_unprepared("INSERT INTO webdock_auth.app_binding(id,client_id,label,organization_id,enabled) VALUES('104','102','Owned native client',null,true)").await.unwrap();
     let keys = Arc::new(
@@ -32,7 +32,7 @@ async fn setup() -> (fixture::Fixture, Arc<OAuthService>, Pool) {
         .unwrap(),
     );
     let tx = f.owner.begin().await.unwrap();
-    webdock_oauth::stage_signing_key(&tx, "105", &keys)
+    spitzli_oauth::stage_signing_key(&tx, "105", &keys)
         .await
         .unwrap();
     tx.commit().await.unwrap();
@@ -43,7 +43,7 @@ async fn setup() -> (fixture::Fixture, Arc<OAuthService>, Pool) {
     let ids = Arc::new(
         IdAllocator::connect_native(
             &f.bootstrap_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
             "webdock_auth_bootstrap",
             false,
         )

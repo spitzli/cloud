@@ -1,6 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 
 export async function WorkspaceContext({
   items,

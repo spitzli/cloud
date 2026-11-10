@@ -25,7 +25,7 @@
 ## Tasks
 
 1. **Core: operator resource list.** `GET /api/console/plugins/{id}/resources` (operator only, not preview) returning the index rows with customer and project names. Test in `crates/plugin-host/tests/self_service.rs`.
-2. **Console: native plugin UI.** `import.meta.glob` over `plugins/*/ui/index.tsx`; `@webdock/plugin-ui` SDK (invoke/query hooks, UI kit). The resource page and the extension page render the native component when one exists; otherwise the declarative panel. The extension page also gets a resource list across customers.
+2. **Console: native plugin UI.** `import.meta.glob` over `plugins/*/ui/index.tsx`; `@spitzli/plugin-ui` SDK (invoke/query hooks, UI kit). The resource page and the extension page render the native component when one exists; otherwise the declarative panel. The extension page also gets a resource list across customers.
 3. **Dev: every plugin installed.** `tools/dev/local.mjs` seeds a list of plugins (image in the local registry, release, installation, runtime, private config, own database and role). Tiltfile builds and runs each. Compose gets a `pg-shared` server.
 4. **Plugin: postgres.** Offerings `shared` and `dedicated`. Features `create-shared`, `create-dedicated`. Actions: `databases.create`, `instances.create`, `databases.view`, `databases.credentials`, `databases.rotate`, `databases.delete`, `instances.delete`. Integration tests against a disposable local PostgreSQL.
 5. **Plugin UI: postgres.** Resource page with status, connection details, reveal password, rotate and delete.

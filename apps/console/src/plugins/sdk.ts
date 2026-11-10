@@ -1,4 +1,4 @@
-// The surface first-party plugin UIs (`plugins/<id>/ui`) import as `@webdock/plugin-ui`.
+// The surface first-party plugin UIs (`plugins/<id>/ui`) import as `@spitzli/plugin-ui`.
 // Every call goes through the plugin action API, so the Core gates apply exactly as for panels.
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect, useMemo, useRef, useState, type ComponentType } from "react";
@@ -7,7 +7,7 @@ import { SessionContext, useApi } from "../context";
 import { sessionCacheScope } from "../session-cache";
 import { invokePlugin } from "./views";
 export * as ui from "../ui";
-export { useI18n } from "@webdock/i18n/react";
+export { useI18n } from "@spitzli/i18n/react";
 export { Empty, Failure, Loading } from "../common";
 export { usePluginStorage, usePluginScope, storageKeySchema, storageHashSchema, STORAGE_CONTENT_TYPES, type TransferDescriptor, type BinaryTransferOptions } from "./storage";
 

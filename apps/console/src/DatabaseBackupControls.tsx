@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef, type SubmitEvent } from "react";
-import { useI18n } from "@webdock/i18n/react";
-import type { DatabaseBackupPolicyView, DatabaseView } from "@webdock/hosting-contracts";
+import { useI18n } from "@spitzli/i18n/react";
+import type { DatabaseBackupPolicyView, DatabaseView } from "@spitzli/hosting-contracts";
 import type { useBackupRequest } from "./database-backup-request";
 import * as ui from "./ui";
 import { formText } from "./form";
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 
 type Request = ReturnType<typeof useBackupRequest>;
 interface Props { database: DatabaseView; data: DatabaseBackupPolicyView; request: Request; writable: boolean; observed: boolean }

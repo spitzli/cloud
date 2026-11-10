@@ -2,7 +2,7 @@ import { resolveSessionReference } from "../auth/principal";
 import { withAuthenticatedDatabase } from "../../db/database-context";
 import { authorizeQueuedMailbox, authorizeMailbox } from "./mail-access";
 import { transaction } from "../hosting/db";
-import { createNativeSessions } from "@webdock/module-mail/server/native-sessions";
+import { createNativeSessions } from "@spitzli/module-mail/server/native-sessions";
 export const {
   launchWebmail,
   exchangeWebmail,

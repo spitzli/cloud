@@ -1,6 +1,6 @@
-import { activeIdentity } from "@webdock/core/identity";
+import { activeIdentity } from "@spitzli/core/identity";
 import { currentConsolePrincipal, selectedIdentityDirectory } from "../auth/principal";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { withAuthenticatedDatabase } from "../../db/database-context";
 import type { PoolClient } from "pg";
 import { database } from "../../db/runtime";

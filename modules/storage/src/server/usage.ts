@@ -1,4 +1,4 @@
-import { activeIdentity } from "@webdock/core/identity";
+import { activeIdentity } from "@spitzli/core/identity";
 import { randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import type { StoragePorts, StorageDependencies } from "./ports";

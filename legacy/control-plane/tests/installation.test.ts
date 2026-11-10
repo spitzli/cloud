@@ -13,7 +13,7 @@ import {
 import {
   isMailOperation,
   isMailProvisioning,
-} from "@webdock/module-mail/manifest";
+} from "@spitzli/module-mail/manifest";
 const disabled = {
   WEBDOCK_MODULES: JSON.stringify({
     configVersion: 1,
@@ -169,7 +169,7 @@ test("disabled products reject direct requests before any mounted handler", asyn
 
 test("Studio command classifiers distinguish databases and retain existing-resource actions during draining", async () => {
   const { moduleForOperation, isModuleProvisioning, moduleForPath } =
-    await import("@webdock/module-sdk/selection");
+    await import("@spitzli/module-sdk/selection");
   expect(
     moduleForOperation("hosting.command", [{ action: "databases.list" }]),
   ).toBe("databases");

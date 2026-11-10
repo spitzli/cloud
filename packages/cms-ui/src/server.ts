@@ -1,4 +1,4 @@
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 /* eslint-disable @typescript-eslint/no-explicit-any -- Explicit module and field allowlists constrain dynamic CMS schemas; native validation remains authoritative. */
 import { APIError, createLocalReq, type Payload } from "payload";
 import { cmsFields, defaultData, editableData, CMSInputError } from "./schema";

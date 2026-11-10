@@ -1,7 +1,7 @@
 # Shared native Mail gateway on the managed cluster
 
 `render.py` prepares one shared API/worker plus browser-gateway pod in
-`webdock-mail-gateway`. It does **not** provision a Stalwart instance. Only explicitly
+`spitzli-mail-gateway`. It does **not** provision a Stalwart instance. Only explicitly
 incoming-enabled customers have an isolated instance, managed by the hosting agent.
 
 The renderer creates no secrets, volumes or PVCs. Before applying it:
@@ -30,8 +30,8 @@ python3 apps/mail/deploy/render.py \
   --api-image "$MAIL_API_IMAGE_DIGEST" \
   --gateway-image "$MAIL_GATEWAY_IMAGE_DIGEST" > mail-gateway.json
 kubectl apply --dry-run=client -f mail-gateway.json
-kubectl apply --server-side --field-manager=webdock-mail-gateway -f mail-gateway.json
-kubectl -n webdock-mail-gateway rollout status deployment/mail-gateway
+kubectl apply --server-side --field-manager=spitzli-mail-gateway -f mail-gateway.json
+kubectl -n spitzli-mail-gateway rollout status deployment/mail-gateway
 ```
 
 The public ingress exposes only `/v1/emails`, `/session` and `/s/`. Neither

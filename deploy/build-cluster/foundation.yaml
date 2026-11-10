@@ -247,7 +247,7 @@ spec:
       && m.subPath == 'attempt.json' && m.readOnly))))))
     message: Runner handoff must be read-only and bound to this exact attempt.
   - expression: variables.deletionCleanup || (variables.containers.all(c, c.image != variables.approvedRunner || (has(c.command) && ((c.name == 'runner'
-      && c.command == ['/usr/local/bin/webdock-build-entrypoint'] && (!has(c.args) || size(c.args) == 0)) || (c.name == 'download' && c.command == ['/usr/local/bin/webdock-build-runner']
+      && c.command == ['/usr/local/bin/webdock-build-entrypoint'] && (!has(c.args) || size(c.args) == 0)) || (c.name == 'download' && c.command == ['/usr/local/bin/spitzli-build-runner']
       && c.args == ['download','--config','/handoff/attempt.json','--policy','/etc/webdock-build/transfer-policy.json','--input-dir','/workspace/input'])))))
     message: Only fixed trusted transfer and runner commands are admitted.
   - expression: variables.deletionCleanup || (!variables.mappingHelper || (size(variables.p.containers) == 1 && variables.p.containers[0].name == 'runner'

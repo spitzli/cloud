@@ -1,1 +1,1 @@
-export * from "@webdock/module-hosting/server/allowances";
+export * from "@spitzli/module-hosting/server/allowances";

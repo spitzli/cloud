@@ -4,7 +4,7 @@ Goal: ship the first independent operator management application with customer/p
 
 Architecture: `apps/admin` inside the public `spitzli/webdock` monorepo, with its own Vercel project; Next.js UI with a minimal Payload backend for authentication, access-controlled persistence and audit events. A dedicated `webdock_admin` schema/login in the existing Neon database contains only management records. The websites keep their independent deployments/admins and do not call this management application.
 
-Spec: `docs/architecture/webdock-control-plane.md`. User confirmed management scope and selected Snowflake on 2026-10-03. Execution: inline, using the existing authorization to implement, sign, push and deploy.
+Spec: `docs/architecture/spitzli-control-plane.md`. User confirmed management scope and selected Snowflake on 2026-10-03. Execution: inline, using the existing authorization to implement, sign, push and deploy.
 
 ## Constraints
 

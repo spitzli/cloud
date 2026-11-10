@@ -1,6 +1,6 @@
 import 'server-only';
-import {HostingError} from '@webdock/hosting-contracts';
-import type {DatabaseCommand} from '@webdock/database-contracts';
+import {HostingError} from '@spitzli/hosting-contracts';
+import type {DatabaseCommand} from '@spitzli/database-contracts';
 import {studioCall} from './studio-client';
 import {AccessError,StudioError} from './studio-errors';
 import {HostingSessionRequiredError} from './hosting-page-access';

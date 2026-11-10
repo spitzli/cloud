@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { commandSchema, type HostingCommand } from "@webdock/hosting-contracts";
+import { commandSchema, type HostingCommand } from "@spitzli/hosting-contracts";
 import type { z } from "zod";
 import { useApi } from "./context";
 import { ApiError } from "./api";

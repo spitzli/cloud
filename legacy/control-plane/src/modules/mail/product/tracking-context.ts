@@ -1,4 +1,4 @@
-import { createMailTrackingContext } from "@webdock/module-mail/server/product-tracking-context";
+import { createMailTrackingContext } from "@spitzli/module-mail/server/product-tracking-context";
 import { withAuthenticatedDatabase } from "../../../db/database-context";
 import { mailDatabase as database } from "./store";
 import { authorizeMailSession } from "./access";

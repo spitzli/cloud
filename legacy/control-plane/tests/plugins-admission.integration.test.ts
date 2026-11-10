@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import { ScopedPool, withDatabaseScope } from "@webdock/database-runtime";
+import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
 import { initializePluginState } from "../src/modules/plugins/bootstrap";
 import { requestPluginState } from "../src/modules/plugins/store";
 import { createModuleAdmission } from "../src/modules/plugins/admission";

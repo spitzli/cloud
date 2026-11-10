@@ -76,7 +76,7 @@ never delete unknown objects automatically.
 
 ```sh
 bun test --isolate apps/cms-instance/tests/*.test.ts
-bun run --filter @webdock/cms-instance build
+bun run --filter @spitzli/cms-instance build
 python3 -B apps/cms-instance/scripts/acceptance.py
 python3 -B apps/cms-instance/scripts/acceptance.py --s3
 # Also test the built immutable server and bounded migration executable:

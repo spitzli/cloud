@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { handleHostingRequest } from "../../src/modules/mcp/hosting-api";
-import { HostingError, type HostingCommand } from "@webdock/hosting-contracts";
+import { HostingError, type HostingCommand } from "@spitzli/hosting-contracts";
 test("hosting REST strictly maps routes and keeps operator/membership enforcement in the shared service", async () => {
   const commands: HostingCommand[] = [];
   const deps = {

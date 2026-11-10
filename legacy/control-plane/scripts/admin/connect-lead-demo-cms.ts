@@ -79,7 +79,7 @@ await runOperator(async (actor) => {
               notes:
                 "Webdock Lead: " +
                 site.id +
-                " · Independent demo with own schema/runtime role and central Webdock management (no Payload panel). Native @webdock/lead-bookings 0.1.0; test requests only. Features: " +
+                " · Independent demo with own schema/runtime role and central Webdock management (no Payload panel). Native @spitzli/lead-bookings 0.1.0; test requests only. Features: " +
                 site.features.join(", ") +
                 ". Modern / and reconstructed /old. No SMTP/payment/fulfillment.",
             },

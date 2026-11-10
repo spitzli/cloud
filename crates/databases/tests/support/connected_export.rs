@@ -1,14 +1,14 @@
 //! Actual owned Native database export qualification. Only public refs/counts/hashes leave memory.
 use sea_orm::DatabaseConnection;
 use serde_json::{Value, json};
+use spitzli_databases::DatabaseService;
+use spitzli_identity::{Principal, RlsSigner};
 use std::{
     io::{Read, Seek},
     path::Path,
     process::Stdio,
     time::Duration,
 };
-use webdock_databases::DatabaseService;
-use webdock_identity::{Principal, RlsSigner};
 fn tool(name: &str) -> String {
     assert!(["psql", "pg_dump"].contains(&name));
     [
@@ -34,7 +34,7 @@ pub(super) async fn qualify(
     )
     .unwrap();
     let tx = signer.begin(business, principal).await.unwrap();
-    let actor = webdock_databases::DatabaseExportSubject {
+    let actor = spitzli_databases::DatabaseExportSubject {
         customer,
         project,
         subject: &principal.user_id,
@@ -232,7 +232,7 @@ pub(super) async fn reject_transition(
     )
     .unwrap();
     let tx = signer.begin(business, principal).await.unwrap();
-    let actor = webdock_databases::DatabaseExportSubject {
+    let actor = spitzli_databases::DatabaseExportSubject {
         customer,
         project,
         subject: &principal.user_id,

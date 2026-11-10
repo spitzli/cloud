@@ -1,4 +1,4 @@
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import { getHostingApplication } from '@/lib/hosting-application';
 import { HostingProjectHeader } from '@/components/hosting/project-context';
 import { applicationState } from '@/lib/workspace-navigation';

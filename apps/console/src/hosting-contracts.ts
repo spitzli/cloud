@@ -6,7 +6,7 @@ import {
   environmentPatchSchema,
   parseResourceInput,
   resourceID,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { formText } from "./form";
 const revision = z.number().int().nonnegative();
 export const appSchema = appViewSchema.and(

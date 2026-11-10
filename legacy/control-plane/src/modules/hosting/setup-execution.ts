@@ -4,7 +4,7 @@ import {
   beforePluginSetupReady,
 } from "./plugin-provisioning-runtime";
 import { authorizeSetupConfiguration } from "./permissions";
-import { createHostingSetupExecution } from "@webdock/module-hosting/server/setup-execution";
+import { createHostingSetupExecution } from "@spitzli/module-hosting/server/setup-execution";
 import { transaction } from "./db";
 import { replay } from "./operations";
 import { authorizeHosting } from "./authorization";

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useBlocker } from "@tanstack/react-router";
 import { z } from "zod";
-import { Failure, Loading, ui, usePluginMutation, usePluginQuery, usePluginSubmission, type PluginSubmission, type ResourceProps } from "@webdock/plugin-ui";
+import { Failure, Loading, ui, usePluginMutation, usePluginQuery, usePluginSubmission, type PluginSubmission, type ResourceProps } from "@spitzli/plugin-ui";
 
 const stateSchema = z.enum(["staging", "queued", "leased", "preparation_review", "handoff", "unknown", "accepted", "rejected", "cancelled"]);
 type SendState = z.infer<typeof stateSchema>;

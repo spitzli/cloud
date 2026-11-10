@@ -18,7 +18,7 @@ test -x /usr/local/bin/buildctl
 test -x /usr/local/bin/buildkitd
 install -d -m 755 /opt/webdock-build-worker
 install -m 644 worker.py guest.py /opt/webdock-build-worker/
-install -m 644 webdock-build-guest.service /etc/systemd/system/
+install -m 644 spitzli-build-guest.service /etc/systemd/system/
 cat > /etc/systemd/system/buildkit.service <<'EOF'
 [Unit]
 Description=Disposable guest BuildKit
@@ -30,6 +30,6 @@ ExecStart=/usr/local/bin/buildkitd --oci-worker=true --containerd-worker=false
 [Install]
 WantedBy=multi-user.target
 EOF
-printf 'virtio_blk\nvirtio_console\n' > /etc/modules-load.d/webdock-build.conf
-systemctl enable webdock-build-guest.service buildkit.service
+printf 'virtio_blk\nvirtio_console\n' > /etc/modules-load.d/spitzli-build.conf
+systemctl enable spitzli-build-guest.service buildkit.service
 # The image must have no SSH/agent/cloud credentials, provider tokens, or source checkout.

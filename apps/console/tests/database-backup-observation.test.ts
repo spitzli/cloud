@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { databaseBackupPolicyViewSchema, databaseBackupStatusSchema } from "@webdock/hosting-contracts";
+import { databaseBackupPolicyViewSchema, databaseBackupStatusSchema } from "@spitzli/hosting-contracts";
 import { backupObservationCurrent } from "../src/database-backup-observation";
 import { backup, history } from "./support/database-backup-fixture";
 await test("observation freshness uses the documented strict 90-second fence conservatively without assuming clock synchronization", () => {

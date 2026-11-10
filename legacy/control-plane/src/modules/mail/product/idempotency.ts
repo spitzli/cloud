@@ -1,4 +1,4 @@
-import { createMailIdempotency } from "@webdock/module-mail/server/product-idempotency";
+import { createMailIdempotency } from "@spitzli/module-mail/server/product-idempotency";
 import { mailDatabase as database, withMailTransaction } from "./store";
 import { assertMailAccess } from "./access";
 export const {

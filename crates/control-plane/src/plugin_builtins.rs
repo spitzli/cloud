@@ -1,7 +1,7 @@
 //! Core alone determines which compiled services are actually configured and loaded.
 use super::*;
-use webdock_core::features::{FeatureSet, FeatureState};
-use webdock_plugin_host::BuiltinModule;
+use spitzli_core::features::{FeatureSet, FeatureState};
+use spitzli_plugin_host::BuiltinModule;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -72,7 +72,7 @@ async fn activate(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use webdock_core::features::FeatureSet;
+    use spitzli_core::features::FeatureSet;
 
     #[test]
     fn only_loaded_non_disabled_hosting_and_databases_can_activate() {

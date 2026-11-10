@@ -1,4 +1,4 @@
-import { createHostingGitReconciliation } from "@webdock/module-hosting/server/git-reconciliation";
+import { createHostingGitReconciliation } from "@spitzli/module-hosting/server/git-reconciliation";
 import { authorizeHosting } from "./authorization";
 import { transaction, audit } from "./db";
 import { resolveGitVercelCredential } from "./git-vercel";

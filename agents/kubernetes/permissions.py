@@ -9,9 +9,9 @@ def permissions(namespaces):
  def role(kind,name,rules,namespace=None):
   return {'apiVersion':'rbac.authorization.k8s.io/v1','kind':kind,'metadata':{'name':name,**({'namespace':namespace} if namespace else {})},'rules':rules}
  def binding(kind,name,rolekind,namespace=None):
-  return {'apiVersion':'rbac.authorization.k8s.io/v1','kind':kind,'metadata':{'name':name,**({'namespace':namespace} if namespace else {})},'roleRef':{'apiGroup':'rbac.authorization.k8s.io','kind':rolekind,'name':name},'subjects':[{'kind':'ServiceAccount','name':'webdock-agent','namespace':'webdock-agent'}]}
+  return {'apiVersion':'rbac.authorization.k8s.io/v1','kind':kind,'metadata':{'name':name,**({'namespace':namespace} if namespace else {})},'roleRef':{'apiGroup':'rbac.authorization.k8s.io','kind':rolekind,'name':name},'subjects':[{'kind':'ServiceAccount','name':'spitzli-agent','namespace':'spitzli-agent'}]}
  def rule(group,resources,verbs):return {'apiGroups':[group],'resources':resources,'verbs':verbs}
- items=[{'apiVersion':'v1','kind':'Namespace','metadata':{'name':'webdock-agent'}},{'apiVersion':'v1','kind':'ServiceAccount','metadata':{'name':'webdock-agent','namespace':'webdock-agent'},'automountServiceAccountToken':False}]
+ items=[{'apiVersion':'v1','kind':'Namespace','metadata':{'name':'spitzli-agent'}},{'apiVersion':'v1','kind':'ServiceAccount','metadata':{'name':'spitzli-agent','namespace':'spitzli-agent'},'automountServiceAccountToken':False}]
  items+=[role('ClusterRole','webdock-inventory',[rule('',['nodes','namespaces'],['get','list']),rule('storage.k8s.io',['storageclasses'],['get','list'])]),binding('ClusterRoleBinding','webdock-inventory','ClusterRole')]
  for namespace in sorted(set(namespaces)):
   rules=[rule('',['pods','services','persistentvolumeclaims'],['get','list']),rule('',['pods/log'],['get']),rule('apps',['deployments','statefulsets','daemonsets'],['get','list','patch']),rule('apps',['deployments/scale','statefulsets/scale'],['get','patch']),rule('batch',['jobs'],['get','list']),rule('batch',['cronjobs'],['get','list','patch']),rule('autoscaling',['horizontalpodautoscalers'],['get','list']),rule('networking.k8s.io',['ingresses'],['get','list']),rule('metrics.k8s.io',['pods'],['get','list'])]

@@ -1,6 +1,10 @@
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::{Signer, SigningKey};
 use serde_json::{Value, json};
+use spitzli_plugin_protocol::{InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::{
+    ActionHandler, InvocationAuthority, PeerIdentity, Runtime, UnixSocket, wire,
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -8,10 +12,6 @@ use std::{
         atomic::{AtomicUsize, Ordering},
     },
     time::{SystemTime, UNIX_EPOCH},
-};
-use webdock_plugin_protocol::{InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::{
-    ActionHandler, InvocationAuthority, PeerIdentity, Runtime, UnixSocket, wire,
 };
 struct Authority;
 #[tonic::async_trait]
@@ -63,7 +63,7 @@ struct Handler(AtomicUsize);
 impl ActionHandler for Handler {
     async fn authorize_storage(
         &self,
-        a: &webdock_plugin_protocol::storage::StorageAuthorization,
+        a: &spitzli_plugin_protocol::storage::StorageAuthorization,
     ) -> Result<(), PluginError> {
         if self.0.load(Ordering::SeqCst) == 0 && a.resource_epoch == "active-1" {
             Ok(())
@@ -116,7 +116,7 @@ async fn actual_runtime_uses_private_plan_abi_and_rejects_changed_resource_direc
     let server = tokio::spawn(runtime.serve_unix(socket, async {
         let _ = stopped.await;
     }));
-    let mut client = webdock_plugin_runtime::connect_unix(&path).await.unwrap();
+    let mut client = spitzli_plugin_runtime::connect_unix(&path).await.unwrap();
     for mode in 0..4 {
         handler.0.store(mode, Ordering::SeqCst);
         let result = client

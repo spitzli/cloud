@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/module-storage",
+  "name": "@spitzli/module-storage",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,9 +9,9 @@
     "./ui/*": "./src/ui/*.tsx"
   },
   "dependencies": {
-    "@webdock/module-sdk": "*",
-    "@webdock/core": "*",
-    "@webdock/i18n": "*"
+    "@spitzli/module-sdk": "*",
+    "@spitzli/core": "*",
+    "@spitzli/i18n": "*"
   },
   "devDependencies": {
     "@types/pg": "^8"

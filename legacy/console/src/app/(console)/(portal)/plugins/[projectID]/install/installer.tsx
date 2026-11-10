@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import type { GitHubView } from "@webdock/api-client/integrations";
+import type { GitHubView } from "@spitzli/api-client/integrations";
 import type {
   PluginImport,
   PluginSource,
   PluginSourceCommand,
   PluginSourceView,
-} from "@webdock/api-client/plugin-sources";
+} from "@spitzli/api-client/plugin-sources";
 import {
   encodePluginChunk,
   gitPluginSource,

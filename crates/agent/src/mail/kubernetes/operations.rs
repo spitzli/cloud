@@ -584,7 +584,7 @@ impl MailAuthority for Execution<'_> {
     async fn checkpoint(
         &self,
         claim: &MailClaim,
-        checkpoint: webdock_agent_protocol::mail::MailCheckpoint,
+        checkpoint: spitzli_agent_protocol::mail::MailCheckpoint,
     ) -> Result<()> {
         MailAuthority::guard(self, claim).await?;
         self.authority.checkpoint(claim, checkpoint).await
@@ -682,7 +682,7 @@ fn creation_handoff(current: &DynamicObject, desired: &Value, claim: &MailClaim)
         .ok_or(ExecutionError::Ownership)?;
     if annotations
         .get("webdock.dev/mail-creation-operation")
-        .is_none_or(|operation| webdock_core::id::RecordId::parse(operation).is_err())
+        .is_none_or(|operation| spitzli_core::id::RecordId::parse(operation).is_err())
     {
         return Err(ExecutionError::Ownership);
     }
@@ -752,7 +752,7 @@ fn fields_overlap(fields: &Value, desired: &Value) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use webdock_agent_protocol::mail::*;
+    use spitzli_agent_protocol::mail::*;
     struct Authority;
     #[async_trait::async_trait]
     impl MailAuthority for Authority {}

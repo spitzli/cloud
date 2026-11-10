@@ -3,8 +3,7 @@ use kube::{
     api::{ApiResource, DynamicObject, GroupVersionKind, Patch, PatchParams},
 };
 use serde_json::json;
-use std::{collections::BTreeMap, os::unix::fs::PermissionsExt, path::Path};
-use webdock_agent::{
+use spitzli_agent::{
     mail::{
         MailAuthority, MailRuntime,
         kubernetes::{
@@ -13,8 +12,9 @@ use webdock_agent::{
     },
     storage::{StorageClient, StorageConfig},
 };
-use webdock_agent_protocol::mail::MailClaim;
-use webdock_supervisor::ExecutionError;
+use spitzli_agent_protocol::mail::MailClaim;
+use spitzli_supervisor::ExecutionError;
+use std::{collections::BTreeMap, os::unix::fs::PermissionsExt, path::Path};
 
 pub async fn adopt(
     client: Client,

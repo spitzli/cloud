@@ -1,9 +1,9 @@
 import {requireInstalledOperation} from "../../installation";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { withHostingDatabase } from "../../db/database-context";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import { hostingIdentity } from "../hosting/bridge";
 import { readHostingJSON, requireHostingEnvironment } from "../hosting/http";
 import { transaction } from "../hosting/db";

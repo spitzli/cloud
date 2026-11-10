@@ -1,7 +1,7 @@
 import { IntentLink } from '@/components/intent-link';
 import Image from 'next/image';
-import {LanguagePicker} from '@webdock/i18n/picker';
-import {getRequestI18n} from '@webdock/i18n/next';
+import {LanguagePicker} from '@spitzli/i18n/picker';
+import {getRequestI18n} from '@spitzli/i18n/next';
 import { ThemePicker } from '@/components/theme-picker';
 import { Dock } from '@/components/dock';
 import { getLanding } from '@/lib/landing';

@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { activeIdentity } from "@webdock/core/identity";
+import { activeIdentity } from "@spitzli/core/identity";
 import {
   selectedIdentityDirectory,
   withConsolePrincipal,

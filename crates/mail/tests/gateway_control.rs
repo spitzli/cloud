@@ -1,4 +1,4 @@
-use webdock_mail::gateway_control::HttpControl;
+use spitzli_mail::gateway_control::HttpControl;
 #[test]
 fn control_requires_canonical_tls_auth_and_same_pod_submission_endpoint() {
     let secret = "x".repeat(32);

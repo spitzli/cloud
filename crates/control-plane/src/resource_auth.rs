@@ -5,8 +5,8 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use serde::Deserialize;
+use spitzli_oauth::{ClientAuthMethod, ClientAuthentication, McpAuthentication};
 use std::{path::PathBuf, sync::Arc};
-use webdock_oauth::{ClientAuthMethod, ClientAuthentication, McpAuthentication};
 
 /// A bounded HTTP failure preserves protocol headers without bloating every result.
 pub struct ResourceFailure(Box<Response>);

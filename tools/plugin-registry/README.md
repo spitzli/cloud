@@ -143,7 +143,7 @@ cargo run --offline --locked --quiet \
 ```
 
 The helper reads at most 64 KiB plus one sentinel byte, uses the authoritative
-`webdock_plugin_protocol::Manifest::parse`, rejects zero OCI digests and prints
+`spitzli_plugin_protocol::Manifest::parse`, rejects zero OCI digests and prints
 exact original bytes on success. Errors contain no manifest data. `--authoring`
 allows the zero digest for pre-build checks only; no other rule is relaxed.
 

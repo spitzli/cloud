@@ -14,7 +14,7 @@ import {
   issueEnrollment,
   consumeEnrollment,
 } from "../../src/modules/hosting/clusters";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 const root = path.resolve(import.meta.dirname, "../../..");
 const scratch = path.join(
   root,

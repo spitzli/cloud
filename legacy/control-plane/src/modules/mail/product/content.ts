@@ -1,4 +1,4 @@
-import { createMailContent } from "@webdock/module-mail/server/product-content";
+import { createMailContent } from "@spitzli/module-mail/server/product-content";
 import { mailDatabase as database } from "./store";
 export const {
   sealMailAttachments,

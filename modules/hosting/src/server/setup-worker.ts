@@ -1,5 +1,5 @@
 import type { HostingPorts } from "./ports";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import type { SetupRow } from "./project-setup";
 export type Dependencies = {
   executeAuthorizedSetup: ReturnType<

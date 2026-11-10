@@ -6,9 +6,9 @@ use crate::{
 };
 use axum::http::{Method, StatusCode};
 use serde_json::{Value, json};
+use spitzli_core::features::OperationKind;
+use spitzli_oauth::McpAuthentication;
 use std::collections::HashSet;
-use webdock_core::features::OperationKind;
-use webdock_oauth::McpAuthentication;
 
 pub(crate) fn is_database(input: &Value) -> bool {
     input
@@ -22,7 +22,7 @@ pub(crate) async fn execute(
     input: Value,
 ) -> Result<Value, ResourceFailure> {
     // Reject all non-allowlisted actions, authority injection and secrets before any domain dispatch.
-    webdock_databases::DatabaseReadCommand::parse(input.clone()).map_err(|_| invalid())?;
+    spitzli_databases::DatabaseReadCommand::parse(input.clone()).map_err(|_| invalid())?;
     state
         .config
         .features
@@ -96,12 +96,12 @@ pub(crate) fn command(
             _ => return Err(invalid()),
         }
     }
-    webdock_databases::DatabaseReadCommand::parse(input.clone()).map_err(|_| invalid())?;
+    spitzli_databases::DatabaseReadCommand::parse(input.clone()).map_err(|_| invalid())?;
     Ok(input)
 }
 
 pub(crate) fn tool(name: &str, args: Value) -> Result<Option<Value>, ResourceFailure> {
-    let Some((action, _)) = webdock_databases::DATABASE_READ_TOOLS
+    let Some((action, _)) = spitzli_databases::DATABASE_READ_TOOLS
         .iter()
         .find(|(_, tool)| *tool == name)
     else {
@@ -113,7 +113,7 @@ pub(crate) fn tool(name: &str, args: Value) -> Result<Option<Value>, ResourceFai
     }
     input.insert("action".into(), json!(action));
     let input = Value::Object(input);
-    webdock_databases::DatabaseReadCommand::parse(input.clone()).map_err(|_| invalid())?;
+    spitzli_databases::DatabaseReadCommand::parse(input.clone()).map_err(|_| invalid())?;
     Ok(Some(input))
 }
 

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { useI18n } from "@webdock/i18n/react";
-import { DatabaseCredentialPanelWithActions } from "@webdock/module-databases/ui/database-details";
+import { useI18n } from "@spitzli/i18n/react";
+import { DatabaseCredentialPanelWithActions } from "@spitzli/module-databases/ui/database-details";
 import { useApi, useSession } from "./context";
 import { sessionCacheScope } from "./session-cache";
 import { Failure, Loading } from "./common";

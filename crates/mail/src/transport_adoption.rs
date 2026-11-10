@@ -6,8 +6,8 @@ use crate::{
     proof::valid_id,
 };
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
-use webdock_browser_session::StoredAuthority;
-use webdock_identity::Principal;
+use spitzli_browser_session::StoredAuthority;
+use spitzli_identity::Principal;
 
 pub struct ConfiguredTransport {
     customer: String,

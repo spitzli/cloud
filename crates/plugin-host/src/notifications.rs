@@ -1,7 +1,7 @@
 //! What Core keeps from the agent's reports (see `webdock_rls.report_plugin_workload`): notices,
 //! mailed once to the workspace's owners and admins and listed in the console, and log history.
 use super::*;
-use webdock_identity::{Delivery, DeliveryKind, DeliveryRequest};
+use spitzli_identity::{Delivery, DeliveryKind, DeliveryRequest};
 
 impl HostService {
     /// Retention also runs when units are quiet or gone, and when mail is not configured.

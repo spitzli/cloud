@@ -5,7 +5,7 @@ kind: CronJob
 metadata:
   name: webdock-mail-dispatch
   labels:
-    app.kubernetes.io/part-of: webdock-mail
+    app.kubernetes.io/part-of: spitzli-mail
 spec:
   schedule: "* * * * *"
   timeZone: Etc/UTC
@@ -58,7 +58,7 @@ kind: CronJob
 metadata:
   name: webdock-mail-events
   labels:
-    app.kubernetes.io/part-of: webdock-mail
+    app.kubernetes.io/part-of: spitzli-mail
 spec:
   schedule: "* * * * *"
   timeZone: Etc/UTC
@@ -111,7 +111,7 @@ kind: CronJob
 metadata:
   name: webdock-mail-webhooks
   labels:
-    app.kubernetes.io/part-of: webdock-mail
+    app.kubernetes.io/part-of: spitzli-mail
 spec:
   schedule: "* * * * *"
   timeZone: Etc/UTC
@@ -164,7 +164,7 @@ kind: CronJob
 metadata:
   name: webdock-mail-maintenance
   labels:
-    app.kubernetes.io/part-of: webdock-mail
+    app.kubernetes.io/part-of: spitzli-mail
 spec:
   schedule: "17 * * * *"
   timeZone: Etc/UTC

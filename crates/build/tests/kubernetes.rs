@@ -4,15 +4,15 @@ use http::{Request, Response};
 use http_body_util::{BodyExt, Full};
 use kube::{Client, client::Body};
 use serde_json::{Value, json};
+use spitzli_build::kubernetes::{
+    KubernetesBuildConfig, KubernetesBuildLimits, KubernetesBuildProfile, KubernetesBuildRequest,
+    KubernetesJobBuildExecutor, KubernetesJobPhase, KubernetesLogBounds, TrustedProject,
+};
 use std::{
     collections::BTreeSet,
     sync::{Arc, Mutex},
 };
 use tower::service_fn;
-use webdock_build::kubernetes::{
-    KubernetesBuildConfig, KubernetesBuildLimits, KubernetesBuildProfile, KubernetesBuildRequest,
-    KubernetesJobBuildExecutor, KubernetesJobPhase, KubernetesLogBounds, TrustedProject,
-};
 
 fn config() -> KubernetesBuildConfig {
     KubernetesBuildConfig {
@@ -50,7 +50,7 @@ fn request() -> KubernetesBuildRequest {
 }
 
 fn hard_fixture() -> (KubernetesBuildConfig, KubernetesBuildRequest) {
-    use webdock_agent_protocol::build_storage::{
+    use spitzli_agent_protocol::build_storage::{
         BuildStorageAction, BuildStorageReservation, BuildStorageTarget, BuildVolumeHandle,
     };
     let mut config = config();
@@ -157,7 +157,7 @@ async fn api_omitted_false_pvc_read_only_is_equivalent_but_true_is_foreign() {
         assert_eq!(method, "GET");
         (200, state.lock().unwrap().clone())
     });
-    let handle = webdock_build::kubernetes::KubernetesJobHandle {
+    let handle = spitzli_build::kubernetes::KubernetesJobHandle {
         request,
         namespace: executor.namespace().into(),
         uid: "uid-original".into(),

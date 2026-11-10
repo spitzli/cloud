@@ -2,14 +2,14 @@
 #[path = "support/configuration_fixture.rs"]
 mod configuration_fixture;
 use configuration_fixture::{ConfigurationAuthority, configuration_claim};
+use spitzli_agent::mail::{MailAuthority, MailRuntime, docker::DockerMailRuntime};
+use spitzli_agent_protocol::mail::*;
+use spitzli_supervisor::{ExecutionError, Result};
 use std::sync::{
     Arc,
     atomic::{AtomicBool, Ordering},
 };
 use tokio::sync::Mutex;
-use webdock_agent::mail::{MailAuthority, MailRuntime, docker::DockerMailRuntime};
-use webdock_agent_protocol::mail::*;
-use webdock_supervisor::{ExecutionError, Result};
 
 const IMAGE: &str = "registry.example.test/webdock/mail@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 struct Authority {
@@ -329,7 +329,7 @@ async fn management(
 
 #[test]
 fn mail_configuration_requires_a_pinned_image_and_bounded_installation() {
-    use webdock_agent::mail::docker::DockerMailConfig;
+    use spitzli_agent::mail::docker::DockerMailConfig;
     for (image, installation) in [
         ("stalwartlabs/stalwart:latest", "fixture"),
         (IMAGE, "../other"),
@@ -750,8 +750,8 @@ async fn ce_configuration_group_user_dkim_contract() {
 #[ignore = "explicit owned Docker CE native configuration executor"]
 async fn native_configuration_replays_checkpoint_and_contracts_membership_without_rotation() {
     use serde_json::json;
-    use webdock_agent::mail::configuration::ConfigurationRuntime;
-    use webdock_agent_protocol::mail_configuration::*;
+    use spitzli_agent::mail::configuration::ConfigurationRuntime;
+    use spitzli_agent_protocol::mail_configuration::*;
     assert_eq!(
         std::env::var("WEBDOCK_MAIL_RUNTIME_DOCKER_TEST").as_deref(),
         Ok("1")

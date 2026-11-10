@@ -1,9 +1,9 @@
 //! Explicit native session domain operations, retaining canonical lock/authority order.
 use super::{IdentityService, native_session};
 use crate::{IdentityError, IssuedSession, Result, SessionSummary};
+use spitzli_persistence::postgres::{Connection, Transaction};
 use std::time::Duration;
 use tokio_postgres::types::Type;
-use webdock_persistence::postgres::{Connection, Transaction};
 const BUDGET: Duration = Duration::from_secs(30);
 impl IdentityService {
     async fn management_connection(&self) -> Result<Connection> {

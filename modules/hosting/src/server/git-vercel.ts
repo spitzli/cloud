@@ -1,6 +1,6 @@
 import type { HostingPorts } from "./ports";
 import { createHash } from "node:crypto";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 export type Dependencies = {
   decryptMailSecret: HostingPorts["decryptMailSecret"];

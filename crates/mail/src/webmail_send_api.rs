@@ -311,7 +311,7 @@ async fn export(
     input["leaseToken"] = json!(lease);
     input["payloadRef"] = json!(reference);
     input["payloadBytes"] = json!(message.raw.len());
-    input["requestHash"] = json!(webdock_mail_protocol::sha256(&message.raw));
+    input["requestHash"] = json!(spitzli_mail_protocol::sha256(&message.raw));
     input["envelope"] = json!({"from":message.from,"to":message.to});
     let staged: Staged = call(
         control,

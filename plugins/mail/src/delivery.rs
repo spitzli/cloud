@@ -1,9 +1,9 @@
 //! Durable action ingress. No transport runs in an invocation future.
 use crate::{Plugin, Result, invalid, store_error};
 use serde_json::{Value, json};
+use spitzli_mail_runtime::{PrivatePayloadStore, SendControl};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, PluginError};
 use std::sync::Arc;
-use webdock_mail_runtime::{PrivatePayloadStore, SendControl};
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, PluginError};
 
 pub struct Delivery {
     pub control: Arc<dyn SendControl>,
@@ -19,7 +19,7 @@ impl Delivery {
         })
     }
 }
-fn control_error(_: webdock_mail_runtime::ControlError) -> PluginError {
+fn control_error(_: spitzli_mail_runtime::ControlError) -> PluginError {
     PluginError::new(
         ErrorCode::Unavailable,
         "Mail request could not be completed",
@@ -28,8 +28,8 @@ fn control_error(_: webdock_mail_runtime::ControlError) -> PluginError {
 pub fn public_reply(value: &Value) -> Result<Value> {
     let id = value["id"]
         .as_str()
-        .filter(|s| webdock_mail_runtime::proof::valid_id(s))
-        .ok_or_else(|| control_error(webdock_mail_runtime::ControlError::unavailable()))?;
+        .filter(|s| spitzli_mail_runtime::proof::valid_id(s))
+        .ok_or_else(|| control_error(spitzli_mail_runtime::ControlError::unavailable()))?;
     let state = value["state"]
         .as_str()
         .filter(|s| {
@@ -46,7 +46,7 @@ pub fn public_reply(value: &Value) -> Result<Value> {
                     | "cancelled"
             )
         })
-        .ok_or_else(|| control_error(webdock_mail_runtime::ControlError::unavailable()))?;
+        .ok_or_else(|| control_error(spitzli_mail_runtime::ControlError::unavailable()))?;
     Ok(json!({"id":id,"state":state}))
 }
 impl Plugin {
@@ -73,7 +73,7 @@ impl Plugin {
             .store
             .customer_fence(&claims.customer_id)
             .await
-            .map_err(|_| control_error(webdock_mail_runtime::ControlError::unavailable()))?;
+            .map_err(|_| control_error(spitzli_mail_runtime::ControlError::unavailable()))?;
         let resource = input["resource_id"]
             .as_str()
             .ok_or_else(|| invalid("Invalid mail request"))?;
@@ -95,7 +95,7 @@ impl Plugin {
                 "Verify the domain before sending",
             ));
         }
-        let compiled = webdock_mail_message::compile_action(input.clone(), &domain.domain)
+        let compiled = spitzli_mail_message::compile_action(input.clone(), &domain.domain)
             .map_err(|_| invalid("Invalid mail request"))?;
         let policy = self.private_policy(&claims.project_id).await?;
         let reference = uuid::Uuid::new_v4().to_string();
@@ -103,7 +103,7 @@ impl Plugin {
         let reply = public_reply(&admission)?;
         let created = admission["created"]
             .as_bool()
-            .ok_or_else(|| control_error(webdock_mail_runtime::ControlError::unavailable()))?;
+            .ok_or_else(|| control_error(spitzli_mail_runtime::ControlError::unavailable()))?;
         if !created && admission["state"] != "staging" {
             return Ok(reply);
         }
@@ -113,7 +113,7 @@ impl Plugin {
             admission["payloadRef"]
                 .as_str()
                 .filter(|s| valid_uuid(s))
-                .ok_or_else(|| control_error(webdock_mail_runtime::ControlError::unavailable()))?
+                .ok_or_else(|| control_error(spitzli_mail_runtime::ControlError::unavailable()))?
                 .to_owned()
         };
         if admission["state"] != "staging"
@@ -122,7 +122,7 @@ impl Plugin {
             || !admission["uploadToken"].as_str().is_some_and(valid_uuid)
         {
             return Err(control_error(
-                webdock_mail_runtime::ControlError::unavailable(),
+                spitzli_mail_runtime::ControlError::unavailable(),
             ));
         }
         let lease = json!({"id":admission["id"],"customerID":claims.customer_id,"payloadRef":reference,"uploadToken":admission["uploadToken"]});
@@ -141,7 +141,7 @@ impl Plugin {
                 .call(json!({"action":"send.abortPayload","lease":lease}))
                 .await;
             return Err(control_error(
-                webdock_mail_runtime::ControlError::unavailable(),
+                spitzli_mail_runtime::ControlError::unavailable(),
             ));
         }
         if delivery
@@ -152,7 +152,7 @@ impl Plugin {
             != true
         {
             return Err(control_error(
-                webdock_mail_runtime::ControlError::unavailable(),
+                spitzli_mail_runtime::ControlError::unavailable(),
             ));
         }
         Ok(json!({"id":admission["id"],"state":"queued"}))
@@ -175,7 +175,7 @@ impl Plugin {
         let items = result["items"]
             .as_array()
             .filter(|i| i.len() <= 20)
-            .ok_or_else(|| control_error(webdock_mail_runtime::ControlError::unavailable()))?;
+            .ok_or_else(|| control_error(spitzli_mail_runtime::ControlError::unavailable()))?;
         let mut safe = Vec::with_capacity(items.len());
         for item in items {
             let mut row = public_reply(item)?;
@@ -183,7 +183,7 @@ impl Plugin {
                 row[key] = item
                     .get(key)
                     .ok_or_else(
-                        || control_error(webdock_mail_runtime::ControlError::unavailable()),
+                        || control_error(spitzli_mail_runtime::ControlError::unavailable()),
                     )?
                     .clone();
             }
@@ -203,7 +203,7 @@ impl Plugin {
                 != true
         {
             return Err(control_error(
-                webdock_mail_runtime::ControlError::unavailable(),
+                spitzli_mail_runtime::ControlError::unavailable(),
             ));
         }
         Ok(())
@@ -240,9 +240,9 @@ pub fn private_policy_digest(
         platform_sha256: Option<String>,
     }
     let platform_sha256 = relay.is_none().then(|| {
-        webdock_mail_protocol::sha256(&serde_json::to_vec(platform).expect("private platform JSON"))
+        spitzli_mail_protocol::sha256(&serde_json::to_vec(platform).expect("private platform JSON"))
     });
-    webdock_mail_protocol::sha256(
+    spitzli_mail_protocol::sha256(
         &serde_json::to_vec(&Snapshot {
             version: 1,
             selection: "project",

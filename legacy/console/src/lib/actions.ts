@@ -1,5 +1,5 @@
 "use server";
-import { RegistryError as APIError } from "@webdock/api-client/errors";
+import { RegistryError as APIError } from "@spitzli/api-client/errors";
 import { ZodError } from "zod";
 import {
   writeCustomer,

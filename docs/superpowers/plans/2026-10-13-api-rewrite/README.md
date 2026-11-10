@@ -113,7 +113,7 @@ export function apiCall<T>(path: string, init: RequestInit): Promise<T>;
 
 A02 produces `apps/api/drizzle/0000_baseline.sql`, `apps/api/src/db/schema/{auth,registry,access,plans,platform,mail,hosting,databases}.ts`, `apps/api/src/db/rls.sql` and `apps/api/scripts/migrate.ts`. Baseline is a structural comparison artifact, not SQL to recreate production tables. Review generated diff against actual schema, defaults, constraints, indexes, functions, triggers, RLS, grants and search paths. Subsequent additive migrations use one migration lock, a direct verified-TLS migrator connection and transaction where supported. Existing migration journals stay intact. Do not let both Payload and Drizzle migrate the same objects.
 
-Retain `@webdock/database-runtime`, exact role/audience semantics, certificate verification and tenant context. Drizzle uses checked-out ScopedPool clients for transaction-bound SQL; prove no separate pool query escapes a transaction. Better Auth uses its restricted authentication pool. A system purpose is installed only by an authenticated worker/agent dispatcher, never synthesized because user context is missing.
+Retain `@spitzli/database-runtime`, exact role/audience semantics, certificate verification and tenant context. Drizzle uses checked-out ScopedPool clients for transaction-bound SQL; prove no separate pool query escapes a transaction. Better Auth uses its restricted authentication pool. A system purpose is installed only by an authenticated worker/agent dispatcher, never synthesized because user context is missing.
 
 Pool budget: handoff's “pool max 4” is not the whole process. Auth currently creates up to three pools. Prior production evidence reports a PgBouncer database budget of ten. Before selecting maxima, measure all API/auth/worker/legacy/gateway users and rolling-deploy overlap; the sum must fit the actual current budget. Initial API/worker limits are configuration, not a capacity claim.
 
@@ -144,7 +144,7 @@ Each task follows: characterize old behavior → fail a focused new test → mov
 
 A01 creates `apps/api/tests/helpers/{database,identity,http,providers}.ts` and test scripts. DB helper rejects non-loopback hosts and wrong DB names before opening connections, provisions only disposable `webdock_admin_test` and RLS test databases, and has no production fallback. Identity helper seeds two tenants, operator with/without MFA, customer admin/member, revoked session and active/expired preview. Provider helper is an injected local fake capable of recording an external success then timing out. Fake results never count as sandbox/live evidence.
 
-Run API pure/HTTP tests with `bun test <explicit file>`, DB tests via `npm run test:integration -w @webdock/api -- <explicit file>` (script sets the checked fixture env). Preserve existing Node suites: `npm run test:auth`, `npm run test`, `npm run test:sso`, `npm run test -w @webdock/database-runtime`. Existing app scripts only match `tests/*.test.ts`; explicitly run nested `apps/auth/tests/databases/integration.test.ts`, PgBouncer integration and component tests too. Four historical opt-in RLS skips are not an RLS pass.
+Run API pure/HTTP tests with `bun test <explicit file>`, DB tests via `npm run test:integration -w @spitzli/api -- <explicit file>` (script sets the checked fixture env). Preserve existing Node suites: `npm run test:auth`, `npm run test`, `npm run test:sso`, `npm run test -w @spitzli/database-runtime`. Existing app scripts only match `tests/*.test.ts`; explicitly run nested `apps/auth/tests/databases/integration.test.ts`, PgBouncer integration and component tests too. Four historical opt-in RLS skips are not an RLS pass.
 
 ## 6. API rewrite work packages
 
@@ -170,7 +170,7 @@ The headings below are dependency groups. Implement the smaller reviewable slice
 - [ ] Test with real non-owner business/auth/worker roles: no scope denied, forged signature denied, wrong audience denied, expired session denied, tenant A cannot read B, scope change mid-transaction denied, release-before-completion cannot late-commit, PgBouncer transaction reuse does not leak context.
 - [ ] Wrap Drizzle around existing pg/ScopedPool; remove `attachDatabasePool` only in API copy. Preserve parameterized raw SQL locks/constraints where clearer than ORM translation.
 - [ ] Compare schema before/after an empty migration; no drops, renames or privilege widening. Test failed migration rollback and repeat invocation.
-- [ ] `npm run test:integration -w @webdock/api -- tests/database-compat.test.ts tests/schema-parity.test.ts`; run existing database-runtime unit and PgBouncer suites.
+- [ ] `npm run test:integration -w @spitzli/api -- tests/database-compat.test.ts tests/schema-parity.test.ts`; run existing database-runtime unit and PgBouncer suites.
 
 **Produces:** compatible runtime DB access and offline migration ownership, no production schema mutation.
 
@@ -203,7 +203,7 @@ The headings below are dependency groups. Implement the smaller reviewable slice
 - [ ] Characterize operator/admin/member/foreign-tenant rights for every dispatch operation. Test expired preview remains restrictive until explicit exit.
 - [ ] Move services with signed scope, owner-protection SQL, organization/customer mapping triggers, invitation security, grants and audit. Keep actor out of browser parameters.
 - [ ] Switch Auth and Studio actions for this slice to the shared transport together; leave UI translation/redirect/revalidation local.
-- [ ] Test concurrent last-owner removal, revoked session, archived customer, wrong organization, mismatched site grant, preview write/live-provider denial and explicit exit. `npm run test:integration -w @webdock/api -- tests/access.test.ts`.
+- [ ] Test concurrent last-owner removal, revoked session, archived customer, wrong organization, mismatched site grant, preview write/live-provider denial and explicit exit. `npm run test:integration -w @spitzli/api -- tests/access.test.ts`.
 
 ### A06 — Registry and Payload hook replacement
 
@@ -213,7 +213,7 @@ The headings below are dependency groups. Implement the smaller reviewable slice
 - [ ] Implement explicit services with current field limits and same transaction for mutation/audit. Preserve audit actor mapping from native operator record, not assumed equality to central subject.
 - [ ] Replace Payload local reads/writes, including MCP and provider inventory updates, through registry services. Tenant synchronization trigger remains active.
 - [ ] Enumerate `/system`-only operator capabilities from Users/Customers/Projects/Instances/Audit and reproduce needed controls in existing Studio before closing `/system`. General delete remains forbidden; dedicated lifecycle handles deletion.
-- [ ] `npm run test:integration -w @webdock/api -- tests/registry.test.ts`; compare before/after DTO pagination/sort/null relations. Freeze Payload migration/writer only at this slice's actual cutover.
+- [ ] `npm run test:integration -w @spitzli/api -- tests/registry.test.ts`; compare before/after DTO pagination/sort/null relations. Freeze Payload migration/writer only at this slice's actual cutover.
 
 ### A07 — Manual plans, private offers and storage contracts
 
@@ -222,7 +222,7 @@ The headings below are dependency groups. Implement the smaller reviewable slice
 - [ ] Copy current tests including `assign-custom`; assert no template created by individual assignment, extras retained, immutable history, tenant lock and revision conflict.
 - [ ] Port manual template/offer acceptance unchanged: customer acceptance is not operator assignment, and no payment is collected. Paid acceptance will be a separate B06 operation.
 - [ ] Test concurrent acceptance/revision change, expired/revoked offer, wrong tenant, preview denial, finite/unlimited quota representation and unchanged hosting allowances.
-- [ ] `npm run test:integration -w @webdock/api -- tests/plans.test.ts`; compare exact base/extras/revision/history before/after.
+- [ ] `npm run test:integration -w @spitzli/api -- tests/plans.test.ts`; compare exact base/extras/revision/history before/after.
 
 ### A08 — Platform settings, secrets, storage and worker foundation
 
@@ -242,7 +242,7 @@ The headings below are dependency groups. Implement the smaller reviewable slice
 - [ ] Preserve idempotency, quota reservation/recovery, If-Match, scheduled/batch state, callback inbox, suppression, webhook signing/SSRF protection/replay, encrypted content/retention, native submission and ambiguous-send `outcome_unknown` semantics.
 - [ ] Worker calls existing `runMailJob(job, deadline)` under authenticated `mail-cron` purpose. Remove dependency on VERCEL_ENV from the new worker path without opening the legacy cron publicly. Only one scheduler owns dispatch/events/webhooks/maintenance.
 - [ ] Test provider accepted then timeout → no resend, signature mutation, chunked size limit, concurrent quota, suspended connection, late callback, key revoked, tenant preview, DNS verification and Stalwart suspend/resume retained data. No real delivery in fixture tests.
-- [ ] `npm run test:integration -w @webdock/api -- tests/mail.test.ts`; ported Mail suites and existing contract tests must pass. Incoming live/private deployment IDs remain untouched.
+- [ ] `npm run test:integration -w @spitzli/api -- tests/mail.test.ts`; ported Mail suites and existing contract tests must pass. Incoming live/private deployment IDs remain untouched.
 
 ### A10 — Hosting and git build control
 
@@ -252,7 +252,7 @@ The headings below are dependency groups. Implement the smaller reviewable slice
 - [ ] Move actor checks, reservations, revision locks, operations, environment encryption/redaction, cluster enrollment, BYOK, git source policy, artifact publication/reconciliation and callback dedupe together with dependent SQL.
 - [ ] Preserve authenticated system-purpose/cluster context and EU location admission. Do not rewrite Python executors or change their stored endpoint URLs prematurely.
 - [ ] Test duplicate operation, revoked agent, stale revision, capacity race, build completion after lease lost, log cancellation/backpressure, app deletion retaining storage, explicit purge and protected control-plane resources.
-- [ ] `npm run test:integration -w @webdock/api -- tests/hosting.test.ts`; run existing hosting/git/deployment contract suites. No infrastructure mutation against real customers for parity tests.
+- [ ] `npm run test:integration -w @spitzli/api -- tests/hosting.test.ts`; run existing hosting/git/deployment contract suites. No infrastructure mutation against real customers for parity tests.
 
 ### A11 — Managed databases and native gateways
 
@@ -261,7 +261,7 @@ The headings below are dependency groups. Implement the smaller reviewable slice
 - [ ] Preserve billing/order reservation, credentials display, maintenance/migration, observed resource state, gateway tickets and schema access boundaries; platform DB self-maintenance protection is mandatory.
 - [ ] Keep gateway and customer data plane separate; credential display remains a current-authorized one-time response, never cache/log.
 - [ ] Test real non-owner RLS, other customer/cluster denial, source migration retained volume, deletion/purge separation, gateway expiry/revocation, TLS wrong host and CA failure, archive/platform SQL isolation.
-- [ ] `npm run test:integration -w @webdock/api -- tests/databases.test.ts`; include current nested databases integration and opt-in RLS suites explicitly.
+- [ ] `npm run test:integration -w @spitzli/api -- tests/databases.test.ts`; include current nested databases integration and opt-in RLS suites explicitly.
 
 ### A12 — Provider OAuth and publication
 
@@ -298,7 +298,7 @@ The headings below are dependency groups. Implement the smaller reviewable slice
 - [ ] Verify all 523 inventoried source files are assigned either UI/shared or a completed API task; every operation from studio shapes, Mail contract, hosting schema, MCP and inline action has a caller/guard/test/cutover owner.
 - [ ] Resolve source imports transitively, including workspace exports and dynamic imports. Fail boundary test for reachable pg/Drizzle/Payload Local API/Better Auth server/provider credentials from either UI server entrypoint. Allow browser Better Auth client and existing customer-CMS packages in their own apps.
 - [ ] Remove `/system`/Payload wildcard handlers and `withPayload` only after A06 capabilities pass; retain explicit SSO/refresh/logout aliases in ingress. Unknown former CRUD paths return 410/404, never fallback to a different tenant handler.
-- [ ] Run `npm run check -w @webdock/auth`, `npm run check -w @webdock/admin`, both production builds, changed-file lint, all ported suites and client contract tests. Remove actual unused dependencies/secrets after traffic transfer, not before rollback image exists.
+- [ ] Run `npm run check -w @spitzli/auth`, `npm run check -w @spitzli/admin`, both production builds, changed-file lint, all ported suites and client contract tests. Remove actual unused dependencies/secrets after traffic transfer, not before rollback image exists.
 
 ### A16 — Operational rehearsal and cutover
 

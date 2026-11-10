@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import {
   withDatabaseScope,
   currentDatabaseScope,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import { createSetupFixture } from "./helpers/setup-fixture";
 
 const integration = process.env.WEBDOCK_RLS_FIXTURE_FILE ? test : test.skip;

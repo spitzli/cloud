@@ -3,7 +3,7 @@
 //! a node reconciler can prove exact Job/Pod/PV absence. No tenant RPC is exposed.
 use super::*;
 use ed25519_dalek::VerifyingKey;
-use webdock_agent_protocol::build_storage::{
+use spitzli_agent_protocol::build_storage::{
     BuildStorageAction, BuildStorageReservation, BuildStorageTarget, SignedBuildStorageReservation,
 };
 

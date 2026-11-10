@@ -1,8 +1,8 @@
-import { readAuthProtocolSelection } from "@webdock/auth-configuration/protocols";
+import { readAuthProtocolSelection } from "@spitzli/auth-configuration/protocols";
 import Elysia from "elysia";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { PluginError } from "@spitzli/plugin-sdk/contracts";
-import { pluginRoute } from "@webdock/core/plugin-exposure";
+import { pluginRoute } from "@spitzli/core/plugin-exposure";
 import type { ApiConfig } from "../config";
 import type { Mount } from "../route-manifest";
 import { authorizeRegistry } from "../modules/mcp/mcp-auth";

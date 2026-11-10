@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import {useI18n} from '@webdock/i18n/react';
+import {useI18n} from '@spitzli/i18n/react';
 
 export function ThemePicker() {
   const {t}=useI18n();

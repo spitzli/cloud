@@ -1,11 +1,11 @@
 import {browserAuthConfiguration} from "./browser-auth-config";
-import {moduleForPath} from "@webdock/module-sdk/selection";
+import {moduleForPath} from "@spitzli/module-sdk/selection";
 import {hasProductModules} from "./module-data";
 import {relatedID} from "./presentation";
 import 'server-only';
-import { filterRows } from '@webdock/search';
+import { filterRows } from '@spitzli/search';
 import { headers } from 'next/headers';
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import { getStudioSession } from './studio-client';
 import { getTenant, listTenants } from './tenants';
 import { productSearch } from "@distribution/search";

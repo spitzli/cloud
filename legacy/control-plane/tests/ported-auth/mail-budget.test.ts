@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { database } from "../../src/db/runtime";
-import { nativeMailSchemaSQL } from "@webdock/mail-core/schema";
+import { nativeMailSchemaSQL } from "@spitzli/mail-core/schema";
 import {
   mailBudgetSchemaSQL,
   reserveMailBudget,

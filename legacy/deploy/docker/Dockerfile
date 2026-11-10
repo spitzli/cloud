@@ -5,7 +5,7 @@ COPY . .
 RUN bun install --frozen-lockfile
 
 FROM dependencies AS api-build
-RUN bun run --filter @webdock/api build
+RUN bun run --filter @spitzli/api build
 
 FROM oven/bun:1.4.3 AS api
 WORKDIR /app
@@ -28,7 +28,7 @@ CMD []
 
 FROM dependencies AS console-build
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN bun run --filter @webdock/admin build
+RUN bun run --filter @spitzli/admin build
 
 FROM oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288 AS console
 WORKDIR /app
@@ -43,7 +43,7 @@ CMD ["bun", "apps/console/server.js"]
 
 FROM dependencies AS auth-build
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN bun run --filter @webdock/auth build
+RUN bun run --filter @spitzli/auth build
 
 FROM oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288 AS auth
 WORKDIR /app
@@ -58,7 +58,7 @@ CMD ["bun", "apps/auth/server.js"]
 
 # Core distribution: no product packages or source tree in the runtime image.
 FROM dependencies AS core-api-build
-RUN bun run --filter @webdock/api build:core
+RUN bun run --filter @spitzli/api build:core
 
 FROM oven/bun:1.4.3-slim@sha256:14a223fa35747ec728bce300ef85888bc5f7958164d15bbba6a54b22b52a3288 AS api-core
 WORKDIR /app

@@ -1,4 +1,4 @@
-import { readAuthProtocolSelection } from "@webdock/auth-configuration/protocols";
+import { readAuthProtocolSelection } from "@spitzli/auth-configuration/protocols";
 import Elysia from "elysia";
 import collectionRoutes from "../routes/operator/registry/[collection]/index";
 import recordRoutes from "../routes/operator/registry/[collection]/[id]";

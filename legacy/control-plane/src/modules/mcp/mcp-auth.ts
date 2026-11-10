@@ -1,5 +1,5 @@
 import { RegistryError } from "../registry/service";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { currentRegistryActor } from "../integrations/operator";
 import { POST as nativeIntrospection } from "../../protocols/legacy-auth/api/mcp/introspect/route";
 import type { RegistryActor } from "../registry/compat";

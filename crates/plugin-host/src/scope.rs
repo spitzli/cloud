@@ -3,7 +3,7 @@ use hmac::{Hmac, Mac};
 use sea_orm::{ConnectionTrait, DatabaseTransaction, DbBackend, Statement};
 use serde_json::{Value, json};
 use sha2::Sha256;
-use webdock_plugin_protocol::Result;
+use spitzli_plugin_protocol::Result;
 /// This signer has no public raw-scope entry point.
 pub(crate) struct HostScopes {
     secret: String,

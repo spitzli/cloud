@@ -13,12 +13,12 @@ impl Store {
     pub async fn connect(url: &str, ca: Option<&[u8]>) -> Result<Self> {
         let migrations = [include_str!("../migrations/0001_metadata.sql")];
         let client = match ca {
-            Some(ca) => webdock_plugin_kit::storage_tls(url, ca, "archives", &migrations)
+            Some(ca) => spitzli_plugin_kit::storage_tls(url, ca, "archives", &migrations)
                 .await
                 .map_err(|_| "Archive metadata unavailable")?,
             None => {
-                webdock_plugin_kit::loopback(url).map_err(|_| "Private metadata TLS required")?;
-                webdock_plugin_kit::storage(url, "archives", &migrations)
+                spitzli_plugin_kit::loopback(url).map_err(|_| "Private metadata TLS required")?;
+                spitzli_plugin_kit::storage(url, "archives", &migrations)
                     .await
                     .map_err(|_| "Archive metadata unavailable")?
             }
@@ -37,7 +37,7 @@ impl Store {
         })
     }
     async fn connection(&self) -> Result<Client> {
-        let c = webdock_plugin_kit::postgres::connect(&self.url, self.ca.as_deref())
+        let c = spitzli_plugin_kit::postgres::connect(&self.url, self.ca.as_deref())
             .await
             .map_err(|_| "Archive metadata unavailable")?;
         c.batch_execute("SET statement_timeout='500ms'; SET synchronous_commit=on")

@@ -13,8 +13,8 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use spitzli_oauth::McpAuthentication;
 use std::sync::Arc;
-use webdock_oauth::McpAuthentication;
 
 #[derive(Clone, Copy, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
@@ -147,7 +147,7 @@ pub(crate) async fn execute(
     }
     .map_err(domain_error)
 }
-fn domain_error(error: webdock_registry::RegistryError) -> ResourceFailure {
+fn domain_error(error: spitzli_registry::RegistryError) -> ResourceFailure {
     let status = StatusCode::from_u16(error.status()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
     public_error(
         status,
@@ -187,7 +187,7 @@ async fn handle(
         if tail.len()>1 { return Err(public_error(StatusCode::NOT_FOUND,"Not found")); }
         let collection=Collection::parse(collection)?;
         let id=tail.first().map(|v|(*v).to_owned());
-        if let Some(id)=&id { webdock_registry::contracts::record_id(id).map_err(domain_error)?; }
+        if let Some(id)=&id { spitzli_registry::contracts::record_id(id).map_err(domain_error)?; }
         let operation=match (method,collection,id) {
             (Method::GET,collection,Some(id))=>Operation::Get{collection,id},
             (Method::GET,collection,None)=>Operation::List(crate::registry::list_query(collection.name(),uri.query()).map_err(ResourceFailure::from)?),

@@ -66,7 +66,7 @@ An older agent must never interpret an automatic policy as fixed replicas.
 2. Run the owned PostgreSQL admission test and the real Kubernetes tests below.
    The latter are restricted to explicitly selected loopback test clusters.
 3. Roll out compatible agents with the reviewed HPA permissions limited to their
-   application namespaces. `deploy/helm/webdock-agent` keeps mutation permissions
+   application namespaces. `deploy/helm/spitzli-agent` keeps mutation permissions
    disabled unless `autoscalingEnabled` is true. No build-pod permissions change.
 4. Set `WEBDOCK_AGENT_AUTOSCALING_ENABLED=true` only on a qualified agent. For the
    Helm agent chart this is controlled by `autoscalingEnabled`.
@@ -89,11 +89,11 @@ Do not roll back to components that cannot manage the remaining policies.
 ```sh
 bun test packages/hosting-contracts/src
 bun test apps/console/tests/hosting-autoscaling.test.ts
-cargo test --locked -p webdock-supervisor --test autoscaling
-cargo test --locked -p webdock-hosting --test autoscaling
+cargo test --locked -p spitzli-supervisor --test autoscaling
+cargo test --locked -p spitzli-hosting --test autoscaling
 WEBDOCK_HOSTING_AUTOSCALING_ENABLED=true cargo test --locked \
-  -p webdock-hosting --test autoscaling_postgres -- --ignored
-WEBDOCK_AGENT_AUTOSCALING_ENABLED=true cargo test --locked -p webdock-agent --features kubernetes --test autoscaling_api -- --include-ignored
+  -p spitzli-hosting --test autoscaling_postgres -- --ignored
+WEBDOCK_AGENT_AUTOSCALING_ENABLED=true cargo test --locked -p spitzli-agent --features kubernetes --test autoscaling_api -- --include-ignored
 bun apps/console/tests/autoscaling-browser.mjs
 ```
 
@@ -104,7 +104,7 @@ context named `kind-webdock-rust-*`, `WEBDOCK_KUBE_TEST_CONFIG`,
 BusyBox and `WEBDOCK_AGENT_AUTOSCALING_ENABLED=true`:
 
 ```sh
-cargo test --locked -p webdock-agent --features kubernetes \
+cargo test --locked -p spitzli-agent --features kubernetes \
   --test autoscaling real_ -- --ignored --nocapture
 ```
 

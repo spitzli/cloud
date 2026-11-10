@@ -1,7 +1,7 @@
 import type { DatabaseRuntimePorts } from "./ports";
 import { X509Certificate } from "node:crypto";
-import { HostingError } from "@webdock/hosting-contracts";
-import type { Connection } from "@webdock/hosting-contracts/runtime-ports";
+import { HostingError } from "@spitzli/hosting-contracts";
+import type { Connection } from "@spitzli/hosting-contracts/runtime-ports";
 export type Dependencies = {
   requireDatabases: DatabaseRuntimePorts["requireDatabases"];
   decryptSecret: DatabaseRuntimePorts["decryptSecret"];

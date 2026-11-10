@@ -50,13 +50,13 @@ def build(binary,root):
                 if not library(parent.resolve(strict=True)):raise ValueError('library symlink escape')
                 links[alias]=target
         files[resolved]=resolved
-    files[Path('/usr/local/bin/webdock-recovery-gateway')]=binary
+    files[Path('/usr/local/bin/spitzli-recovery-gateway')]=binary
     # Copy regular canonical paths first; never follow a generated absolute symlink while writing.
     for dest,src in files.items():
         target=root/str(dest).lstrip('/');target.parent.mkdir(parents=True,exist_ok=True)
         size=src.stat().st_size;total+=size
         if total>256*1024*1024:raise ValueError('gateway filesystem exceeds 256MiB')
-        shutil.copyfile(src,target);target.chmod(0o555 if dest.name=='webdock-recovery-gateway' else stat.S_IMODE(src.stat().st_mode)&0o755)
+        shutil.copyfile(src,target);target.chmod(0o555 if dest.name=='spitzli-recovery-gateway' else stat.S_IMODE(src.stat().st_mode)&0o755)
     for alias,target in sorted(links.items(),key=lambda row:len(row[0].parts),reverse=True):
         path=root/str(alias).lstrip('/');path.parent.mkdir(parents=True,exist_ok=True)
         if path.exists() or path.is_symlink():raise ValueError('dependency alias collision')
@@ -105,7 +105,7 @@ def build_mail(binary,root):
     if not binary.is_file() or binary.is_symlink() or root.exists() or not MAIL_BASE_ROOT.is_dir():raise ValueError('fresh Mail closure required')
     root.mkdir(mode=0o755);root.chmod(0o755)
     for parent in (root/'etc',root/'run',root/'run/webdock'):parent.mkdir(mode=0o755);parent.chmod(0o755)
-    files={Path('/usr/local/bin/webdock-mail'):binary};links={};source_receipts={}
+    files={Path('/usr/local/bin/spitzli-mail'):binary};links={};source_receipts={}
     selected=[binary]
     for path in MAIL_TOOLS:
         canonical,source=mail_source(Path(path),links,tool=Path(path).name);files[canonical]=source;selected.append(source)
@@ -129,7 +129,7 @@ def build_mail(binary,root):
     for dest,source in sorted(files.items()):
         metadata=source.stat();total+=metadata.st_size
         if total>MAIL_MAX_BYTES:raise ValueError('Mail closure byte bound')
-        target=root/str(dest).lstrip('/');target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target);target.chmod(0o555 if dest.name=='webdock-mail' else stat.S_IMODE(metadata.st_mode)&0o755)
+        target=root/str(dest).lstrip('/');target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target);target.chmod(0o555 if dest.name=='spitzli-mail' else stat.S_IMODE(metadata.st_mode)&0o755)
         source_receipts[str(dest)]={'bytes':metadata.st_size,'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'source':str(source) if source==binary else '/cached-base/'+str(dest).lstrip('/')}
     for alias,target in sorted(links.items(),key=lambda row:len(row[0].parts),reverse=True):
         path=root/str(alias).lstrip('/');path.parent.mkdir(parents=True,exist_ok=True)
@@ -168,7 +168,7 @@ def smoke_file_plumbing(root,stage_file,invocation,fixed_path):
         private.rename(target)
         actual=(target/'runtime/runtime.json').stat()
         if (actual.st_dev,actual.st_ino,actual.st_uid,actual.st_gid,stat.S_IMODE(actual.st_mode),actual.st_nlink)!=(identity.st_dev,identity.st_ino,65532,65532,0o600,1):raise ValueError('stage relocation inode contract')
-        command=[str(invocation),'--userspec=65532:65532',str(root),'/usr/local/bin/webdock-mail','/run/webdock/runtime/runtime.json']
+        command=[str(invocation),'--userspec=65532:65532',str(root),'/usr/local/bin/spitzli-mail','/run/webdock/runtime/runtime.json']
         positive=subprocess.run(command,capture_output=True,timeout=5,env=environment)
         expected=b'mail_startup_stage stage=args\nmail_startup_stage stage=config_read\nmail_startup_stage stage=config_decode\nmail_plugin_start_failed\n'
         if positive.returncode!=1 or positive.stdout or positive.stderr!=expected:raise ValueError('positive real-reader plumbing smoke failed')
@@ -245,7 +245,7 @@ def smoke_mail(root,stage_file,dns_probe):
     for command in [('/bin/sh','-ec',':'),*((p,'--version') for p in MAIL_TOOLS if p!='/bin/sh')]:
         result=subprocess.run([str(invocation),'--userspec=65532:65532',str(root),*command],capture_output=True,timeout=5,env={'PATH':fixed_path,'LC_ALL':'C'})
         if result.returncode or result.stderr or len(result.stdout)>65536:raise ValueError('scratch Mail command smoke failed')
-    result=subprocess.run([str(invocation),'--userspec=65532:65532',str(root),'/usr/local/bin/webdock-mail','/unconfigured'],capture_output=True,timeout=5,env={'PATH':fixed_path,'LC_ALL':'C'})
+    result=subprocess.run([str(invocation),'--userspec=65532:65532',str(root),'/usr/local/bin/spitzli-mail','/unconfigured'],capture_output=True,timeout=5,env={'PATH':fixed_path,'LC_ALL':'C'})
     if result.returncode!=1 or result.stdout or result.stderr!=b'mail_plugin_start_failed\n':raise ValueError('scratch Mail worker smoke failed')
     plumbing=smoke_file_plumbing(root,stage_file,invocation,fixed_path)
     dns=smoke_system_dns(root,dns_probe,invocation,fixed_path)

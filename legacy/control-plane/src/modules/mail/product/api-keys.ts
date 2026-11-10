@@ -1,4 +1,4 @@
-import { createMailApiKeys } from "@webdock/module-mail/server/product-api-keys";
+import { createMailApiKeys } from "@spitzli/module-mail/server/product-api-keys";
 import { authDatabase } from "../../../db/runtime";
 import { withMailDatabase } from "../../../db/database-context";
 import { mailDatabase as database } from "./store";

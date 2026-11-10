@@ -166,11 +166,11 @@ async fn restricted_core_connections_authority_replay_cleanup_and_provider_races
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let identity = Arc::new(IdentityService::new(
         auth.clone(),
-        webdock_identity::CookiePolicy::new(false, &secret).unwrap(),
+        spitzli_identity::CookiePolicy::new(false, &secret).unwrap(),
     ));
-    let allocator = webdock_persistence::IdAllocator::connect(
+    let allocator = spitzli_persistence::IdAllocator::connect(
         &auth_url,
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     )
     .await
     .unwrap();
@@ -752,8 +752,8 @@ async fn restricted_core_connections_authority_replay_cleanup_and_provider_races
 #[test]
 fn native_identity_failure_is_unavailable_without_exposing_diagnostics() {
     assert!(matches!(
-        super::authority_error(webdock_browser_session::Error::Identity(
-            webdock_identity::IdentityError::Persistence
+        super::authority_error(spitzli_browser_session::Error::Identity(
+            spitzli_identity::IdentityError::Persistence
         )),
         super::Error::Unavailable
     ));

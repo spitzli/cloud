@@ -86,9 +86,9 @@ function init(value) {
   if (!initialized()) {
     // A fresh volume invalidates any operator output from a previous database.
     rmSync(file("initial-secrets.json"), { force: true });
-    run("webdock-migrate", ["--target", target, "--initialize-empty", "--provision-roles-from", file("roles.json")], admin);
+    run("spitzli-migrate", ["--target", target, "--initialize-empty", "--provision-roles-from", file("roles.json")], admin);
   } else {
-    run("webdock-migrate", ["--target", target], admin);
+    run("spitzli-migrate", ["--target", target], admin);
   }
   if (existsSync(file("initial-secrets.json"))) {
     // Sign-in redirect URIs were registered with the scheme used at bootstrap.
@@ -100,7 +100,7 @@ function init(value) {
     email: "operator@example.test", name: "Local operator", password: value.operatorPassword,
     authOrigin: origins.WEBDOCK_AUTH_ORIGIN, studioOrigin: origins.WEBDOCK_STUDIO_ORIGIN, consoleOrigin: origins.WEBDOCK_CONSOLE_ORIGIN,
   });
-  run("webdock-bootstrap-operator", ["--target", target, "--config", file("operator.json"), "--output", file("initial-secrets.json")], {
+  run("spitzli-bootstrap-operator", ["--target", target, "--config", file("operator.json"), "--output", file("initial-secrets.json")], {
     ...origins, WEBDOCK_AUTH_SECRET: value.auth, DATABASE_URL_UNPOOLED: url("webdock_offline_migrate", value.roles.webdock_offline_migrate),
   });
   writeFileSync(file("scheme"), scheme, { mode: 0o600 });

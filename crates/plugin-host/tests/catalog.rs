@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_plugin_host::catalog::Catalog;
+use spitzli_plugin_host::catalog::Catalog;
 #[path = "support/catalog_fixture.rs"]
 mod catalog_fixture;
 use catalog_fixture::catalog;

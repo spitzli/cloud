@@ -35,7 +35,7 @@ Root owns dependency resolution and OAuth private access-row locking/expiry API.
 
 **Files:** `crates/databases/Cargo.toml`, Root `Cargo.lock`, Archives `Cargo.lock`; runtime lock unchanged.
 
-**Interface:** `webdock-oauth = { path = "../oauth" }`, no features or registry additions.
+**Interface:** `spitzli-oauth = { path = "../oauth" }`, no features or registry additions.
 
 - [x] Snapshot Root/Archives/runtime registry tuples and manifest hashes.
 - [x] Add the single path declaration; run Root `cargo metadata --offline --all-features --format-version 1`.

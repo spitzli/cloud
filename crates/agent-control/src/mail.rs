@@ -1,13 +1,13 @@
 //! Mail methods share ControlPlane's transport verification and Hosting agent transaction.
 use super::*;
 use wire::mail::{MailCheckpoint, MailCompletion, MailLease, MailSpec};
-fn mail_error(error: webdock_mail::incoming::Error) -> Status {
+fn mail_error(error: spitzli_mail::incoming::Error) -> Status {
     match error {
-        webdock_mail::incoming::Error::Invalid => invalid(),
-        webdock_mail::incoming::Error::Conflict => {
+        spitzli_mail::incoming::Error::Invalid => invalid(),
+        spitzli_mail::incoming::Error::Conflict => {
             Status::failed_precondition("Mail operation authority changed")
         }
-        webdock_mail::incoming::Error::Unavailable => {
+        spitzli_mail::incoming::Error::Unavailable => {
             Status::failed_precondition("Mail operation unavailable")
         }
     }

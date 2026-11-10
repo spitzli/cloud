@@ -13,7 +13,7 @@ use serde_json::{Value, json};
 pub async fn stage_signing_key(
     tx: &DatabaseTransaction,
     id: &str,
-    keys: &webdock_identity::SecretKeys,
+    keys: &spitzli_identity::SecretKeys,
 ) -> Result<()> {
     if id.starts_with('0')
         || !id.bytes().all(|b| b.is_ascii_digit())
@@ -154,7 +154,7 @@ pub(crate) fn verified_public_claims(
 
 /// Shared private operation; callers must own signing authority and key eligibility.
 pub(crate) fn sign_encrypted(
-    keys: &webdock_identity::SecretKeys,
+    keys: &spitzli_identity::SecretKeys,
     raw: &str,
     id: &str,
     claims: &Value,

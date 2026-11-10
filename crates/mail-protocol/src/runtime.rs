@@ -2,6 +2,7 @@
 //! configuration, and it is called once after the entire MIME artifact has been verified.
 use crate::*;
 use serde_json::Value;
+pub use spitzli_plugin_runtime::{MutualTls, PeerIdentity, UnixSocket};
 use std::{
     future::Future,
     sync::Arc,
@@ -12,7 +13,6 @@ use tonic::{
     Request, Response, Status,
     transport::{Server, ServerTlsConfig},
 };
-pub use webdock_plugin_runtime::{MutualTls, PeerIdentity, UnixSocket};
 use wire::mail_runtime_server::{MailRuntime, MailRuntimeServer};
 
 #[async_trait::async_trait]
@@ -223,7 +223,7 @@ impl MailRuntime for Runtime {
         &self,
         request: Request<wire::DescribeRequest>,
     ) -> std::result::Result<Response<wire::DescriptorReply>, Status> {
-        let peer = webdock_plugin_runtime::authenticated_peer(&request)?;
+        let peer = spitzli_plugin_runtime::authenticated_peer(&request)?;
         tokio::time::timeout(
             Duration::from_secs(3),
             self.authority.authorize_probe(&peer),
@@ -244,7 +244,7 @@ impl MailRuntime for Runtime {
         &self,
         request: Request<tonic::Streaming<wire::SendFrame>>,
     ) -> std::result::Result<Response<wire::SendReceipt>, Status> {
-        let peer = webdock_plugin_runtime::authenticated_peer(&request)?;
+        let peer = spitzli_plugin_runtime::authenticated_peer(&request)?;
         let _slot = self
             .slots
             .try_acquire()
@@ -294,14 +294,14 @@ impl MailRuntime for Runtime {
 /// Plugin-side callback client. The configured worker leaf/UID and authenticated Core channel
 /// are independent of anything in an incoming request or message metadata.
 pub struct RemoteAuthority {
-    worker: webdock_plugin_runtime::CorePeer,
-    probe: webdock_plugin_runtime::CorePeer,
+    worker: spitzli_plugin_runtime::CorePeer,
+    probe: spitzli_plugin_runtime::CorePeer,
     client: wire::mail_authority_client::MailAuthorityClient<tonic::transport::Channel>,
 }
 impl RemoteAuthority {
     pub fn new(
-        worker: webdock_plugin_runtime::CorePeer,
-        probe: webdock_plugin_runtime::CorePeer,
+        worker: spitzli_plugin_runtime::CorePeer,
+        probe: spitzli_plugin_runtime::CorePeer,
         channel: tonic::transport::Channel,
     ) -> Self {
         Self {

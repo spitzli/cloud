@@ -21,10 +21,10 @@ pub enum AgentError {
     #[error("Plugin runtime delivery remains pending")]
     PluginPending,
     #[error(transparent)]
-    Execution(#[from] webdock_supervisor::ExecutionError),
+    Execution(#[from] spitzli_supervisor::ExecutionError),
 }
 pub type Result<T> = std::result::Result<T, AgentError>;
-pub use webdock_agent_protocol as wire;
+pub use spitzli_agent_protocol as wire;
 #[cfg(feature = "kubernetes")]
 mod database;
 #[cfg(feature = "kubernetes")]
@@ -46,6 +46,10 @@ pub use mail_configuration::configuration_claim;
 
 use crate::config::{AgentConfig, ControlEndpoint, IdentityState, private_directory, read_private};
 use sha2::{Digest, Sha256};
+use spitzli_supervisor::{
+    Action, Authorizer, Command, ExecutionError, Executor, Journal, ReadCommand, ReadKind,
+    RuntimeAdapter, timestamp,
+};
 use std::{
     os::unix::fs::{FileTypeExt, MetadataExt},
     sync::{
@@ -58,10 +62,6 @@ use tokio::sync::{Mutex, RwLock};
 use tonic::{
     Request, Status,
     transport::{Certificate, Channel, ClientTlsConfig, Endpoint, Identity},
-};
-use webdock_supervisor::{
-    Action, Authorizer, Command, ExecutionError, Executor, Journal, ReadCommand, ReadKind,
-    RuntimeAdapter, timestamp,
 };
 use wire::agent_control_client::AgentControlClient;
 
@@ -227,7 +227,7 @@ impl RemoteAuthority {
         authorization: String,
         intent: wire::Intent,
         fingerprint: String,
-    ) -> webdock_supervisor::Result<()> {
+    ) -> spitzli_supervisor::Result<()> {
         let session = self
             .session
             .read()
@@ -269,7 +269,7 @@ impl RemoteAuthority {
 }
 #[async_trait::async_trait]
 impl Authorizer for RemoteAuthority {
-    async fn authorize(&self, c: &Command) -> webdock_supervisor::Result<()> {
+    async fn authorize(&self, c: &Command) -> spitzli_supervisor::Result<()> {
         self.guard(
             c.operation_id.clone(),
             c.generation,
@@ -285,7 +285,7 @@ impl Authorizer for RemoteAuthority {
         )
         .await
     }
-    async fn authorize_read(&self, c: &ReadCommand) -> webdock_supervisor::Result<()> {
+    async fn authorize_read(&self, c: &ReadCommand) -> spitzli_supervisor::Result<()> {
         self.guard(
             c.operation_id.clone(),
             c.generation,
@@ -986,7 +986,7 @@ impl Daemon {
         if raw.spec_json.len() > 65536 {
             return Err(AgentError::Configuration("Command exceeds limit"));
         }
-        let spec: webdock_supervisor::RuntimeSpec = serde_json::from_slice(&raw.spec_json)
+        let spec: spitzli_supervisor::RuntimeSpec = serde_json::from_slice(&raw.spec_json)
             .map_err(|_| AgentError::Configuration("Invalid workload specification"))?;
         spec.validate()?;
         if spec.installation != self.config.installation {
@@ -1002,14 +1002,14 @@ impl Daemon {
                 if raw.log_tail != 0 {
                     return Err(AgentError::Configuration("Invalid mutation parameters"));
                 }
-                if raw.material_json.len() > webdock_supervisor::MAX_RUNTIME_MATERIAL_BYTES {
+                if raw.material_json.len() > spitzli_supervisor::MAX_RUNTIME_MATERIAL_BYTES {
                     return Err(AgentError::Configuration("Runtime material exceeds limit"));
                 }
                 let material = if raw.material_json.is_empty() {
                     None
                 } else {
                     Some(
-                        serde_json::from_slice::<webdock_supervisor::RuntimeMaterial>(
+                        serde_json::from_slice::<spitzli_supervisor::RuntimeMaterial>(
                             &raw.material_json,
                         )
                         .map_err(|_| AgentError::Configuration("Invalid runtime material"))?,
@@ -1091,7 +1091,7 @@ impl Daemon {
     async fn read(
         &self,
         command: &ReadCommand,
-    ) -> webdock_supervisor::Result<wire::receipt::Result> {
+    ) -> spitzli_supervisor::Result<wire::receipt::Result> {
         self.authority.authorize_read(command).await?;
         // This is read-only work. Authority is checked before, periodically while pending,
         // and freshly after it; ownership is independently checked on both sides of the read.
@@ -1412,25 +1412,25 @@ mod idle_cycle_tests {
     struct UnusedRuntime;
     #[async_trait::async_trait]
     impl RuntimeAdapter for UnusedRuntime {
-        fn capabilities(&self) -> webdock_supervisor::Capabilities {
+        fn capabilities(&self) -> spitzli_supervisor::Capabilities {
             panic!("pending delivery inspection must not contact a runtime")
         }
         async fn reconcile(
             &self,
             _: &Command,
-            _: &webdock_supervisor::LeaseGuard,
-        ) -> std::result::Result<webdock_supervisor::ObservedState, ExecutionError> {
+            _: &spitzli_supervisor::LeaseGuard,
+        ) -> std::result::Result<spitzli_supervisor::ObservedState, ExecutionError> {
             panic!("pending delivery inspection must not execute work")
         }
         async fn inspect(
             &self,
-            _: &webdock_supervisor::RuntimeSpec,
-        ) -> std::result::Result<webdock_supervisor::ObservedState, ExecutionError> {
+            _: &spitzli_supervisor::RuntimeSpec,
+        ) -> std::result::Result<spitzli_supervisor::ObservedState, ExecutionError> {
             panic!("pending delivery inspection must remain local")
         }
         async fn logs(
             &self,
-            _: &webdock_supervisor::RuntimeSpec,
+            _: &spitzli_supervisor::RuntimeSpec,
             _: u32,
         ) -> std::result::Result<String, ExecutionError> {
             panic!("pending delivery inspection must remain local")

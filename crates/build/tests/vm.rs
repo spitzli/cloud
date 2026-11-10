@@ -1,10 +1,10 @@
 //! Explicit disposable local KVM acceptance. Never runs customer code on the host.
 use sha2::{Digest, Sha256};
-use std::{collections::BTreeMap, path::PathBuf};
-use webdock_build::{
+use spitzli_build::{
     artifact::Archive,
     execution::{GuestRequest, Limits, VmImage},
 };
+use std::{collections::BTreeMap, path::PathBuf};
 fn digest(path: &std::path::Path) -> String {
     hex::encode(Sha256::digest(std::fs::read(path).unwrap()))
 }

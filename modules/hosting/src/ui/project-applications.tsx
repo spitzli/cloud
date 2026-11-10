@@ -1,11 +1,11 @@
 import * as React from "react";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import type {
   HostingAppView,
   HostingPage,
   HostingProjectContext,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { HostingUIServices } from "./services";
 export function createProjectApplicationsView(
   services: Pick<HostingUIServices, "hostingCall" | "applicationState">,

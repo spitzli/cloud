@@ -1,1 +1,1 @@
-export * from "@webdock/module-hosting/ui/arguments";
+export * from "@spitzli/module-hosting/ui/arguments";

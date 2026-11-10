@@ -1,7 +1,7 @@
 //! Serialization-only private authority tests; no credential fixture or authentication claim.
 use serde_json::{Value, json};
-use webdock_browser_session::BrowserAuthority;
-use webdock_browser_session::StoredAuthority;
+use spitzli_browser_session::BrowserAuthority;
+use spitzli_browser_session::StoredAuthority;
 #[path = "../src/database_authority.rs"]
 mod database_authority;
 use database_authority::DatabaseAuthority;
@@ -67,7 +67,7 @@ fn public_commands_cannot_supply_any_private_authority_variant() {
     ] {
         let mut command = json!({"action":"databases.get","databaseID":"101"});
         command[field] = json!({"kind":"database-mcp"});
-        assert!(webdock_databases::ManagedCommand::parse(command).is_err());
+        assert!(spitzli_databases::ManagedCommand::parse(command).is_err());
     }
 }
 
@@ -99,7 +99,7 @@ fn strict_private_mcp_codec_roundtrip_is_not_authentication_or_browser_fallback(
 #[test]
 fn manual_backup_commands_cannot_submit_retained_authority_or_claim_durable_policy() {
     let input = json!({"action":"databases.backup","databaseID":"101","revision":1,"idempotencyKey":"original-proof-contract-123"});
-    webdock_databases::ManagedCommand::parse(input.clone()).unwrap();
+    spitzli_databases::ManagedCommand::parse(input.clone()).unwrap();
     for field in [
         "authority",
         "nativeAuthority",
@@ -110,6 +110,6 @@ fn manual_backup_commands_cannot_submit_retained_authority_or_claim_durable_poli
     ] {
         let mut bad = input.clone();
         bad[field] = json!({"kind":"database-mcp"});
-        assert!(webdock_databases::ManagedCommand::parse(bad).is_err());
+        assert!(spitzli_databases::ManagedCommand::parse(bad).is_err());
     }
 }

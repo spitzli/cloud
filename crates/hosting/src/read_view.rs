@@ -2,8 +2,8 @@
 use crate::{Result, error};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use webdock_core::id::RecordId;
-use webdock_supervisor::{ObservedState, ResourceMetrics};
+use spitzli_core::id::RecordId;
+use spitzli_supervisor::{ObservedState, ResourceMetrics};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]

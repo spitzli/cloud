@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-10",
+  "pr": "https://github.com/spitzli/cloud/pull/100",
+  "mergeCommit": "43b56d4666c29cdd4a29b3b47a28b4cbc912b14c",
+  "sourceTree": "68b65d60e73fffd2443f2a9804e73507ec28422e",
+  "blacksmith": {
+    "runner_name": "blacksmith-4vcpu-ubuntu-2404-mzlr7d3rxersubsv",
+    "runner_group_name": "blacksmith scale sets - blacksmith-4vcpu-ubuntu-2404",
+    "conclusion": "success",
+    "html_url": "https://github.com/spitzli/cloud/actions/runs/42820185555/job/129843447152"
+  },
+  "deployment": {
+    "activeDeployment": "dpl_AN1VG3EYevKfNj6AhP76H1phyZia",
+    "priorDeployment": "dpl_76uf9mm7J5omUJWN69GGgonTA2Tt",
+    "sourceCommit": "43b56d4666c29cdd4a29b3b47a28b4cbc912b14c",
+    "canonicalDomain": "console.spitzli.cloud",
+    "qualifiedPrebuilt": true,
+    "candidateRequestsPassed": 21,
+    "promoted": true,
+    "rollbackDeployment": "dpl_76uf9mm7J5omUJWN69GGgonTA2Tt"
+  },
+  "publicVerification": {
+    "requestsPassed": 21,
+    "exactIndexAssetsAndOidcMetadata": true,
+    "customerDeepLinks": true,
+    "cspAndPublicConfigurationPreserved": true,
+    "anonymousSessionNull": true
+  },
+  "build": "local prebuilt; no remote application build",
+  "scope": "Console artifact only; no Core, database, credential or runtime-flag changes",
+  "limits": "Anonymous deployed-byte/routing checks and synthetic local role fixtures; not genuine customer login or full-platform E2E."
+}

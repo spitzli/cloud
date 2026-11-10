@@ -1,6 +1,6 @@
 import type { Fetch } from "./http";
-import type { DispatchOutcome, EmailRequest } from "@webdock/mail-contracts";
-import { parseEmail } from "@webdock/mail-contracts/validation";
+import type { DispatchOutcome, EmailRequest } from "@spitzli/mail-contracts";
+import { parseEmail } from "@spitzli/mail-contracts/validation";
 type Credential = {
   consumerKey: string;
   consumerSecret: string;

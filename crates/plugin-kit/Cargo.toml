@@ -1,5 +1,5 @@
 [package]
-name = "webdock-plugin-kit"
+name = "spitzli-plugin-kit"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.94"
@@ -14,8 +14,8 @@ serde = { version = "1", features = ["derive"] }
 hex = "0.4"
 serde_json = "1"
 tonic = "0.14.6"
-webdock-plugin-protocol = { path = "../plugin-protocol" }
-webdock-plugin-runtime = { path = "../plugin-runtime" }
+spitzli-plugin-protocol = { path = "../plugin-protocol" }
+spitzli-plugin-runtime = { path = "../plugin-runtime" }
 rustix = { version = "1", features = ["process", "fs"] }
 tokio = { version = "1", features = ["rt"] }
 tokio-postgres = "0.7"

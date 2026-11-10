@@ -17,12 +17,12 @@ pub use executor::{
 pub use manifests::backend_manifests;
 pub use observations::DatabaseCapabilities;
 use serde::{Deserialize, Serialize};
+use spitzli_agent_protocol::database::{DatabaseAction, DatabaseJobSpec};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{
     collections::{BTreeMap, BTreeSet},
     path::{Path, PathBuf},
 };
-use webdock_agent_protocol::database::{DatabaseAction, DatabaseJobSpec};
-use webdock_supervisor::{ExecutionError, Result};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AuxiliaryDatabase {
@@ -64,7 +64,7 @@ fn invalid() -> ExecutionError {
     ExecutionError::Invalid("database operator configuration")
 }
 fn id(value: &str) -> bool {
-    webdock_core::id::RecordId::parse(value).is_ok()
+    spitzli_core::id::RecordId::parse(value).is_ok()
 }
 fn role(value: &str) -> bool {
     value.strip_prefix("webdock_").is_some_and(|v| {

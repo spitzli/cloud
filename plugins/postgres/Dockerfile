@@ -5,9 +5,9 @@ WORKDIR /src
 COPY . .
 RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/plugins/postgres/target \
     cargo build --manifest-path plugins/postgres/Cargo.toml --locked --release \
-    && cp plugins/postgres/target/release/webdock-postgres /webdock-postgres
+    && cp plugins/postgres/target/release/spitzli-postgres /spitzli-postgres
 
 FROM docker.io/library/debian:trixie-slim
-COPY --from=build /webdock-postgres /usr/local/bin/webdock-postgres
+COPY --from=build /spitzli-postgres /usr/local/bin/spitzli-postgres
 USER 65532:65532
-ENTRYPOINT ["/usr/local/bin/webdock-postgres"]
+ENTRYPOINT ["/usr/local/bin/spitzli-postgres"]

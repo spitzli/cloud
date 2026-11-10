@@ -168,7 +168,7 @@ lock or production cutover is included.
 ```bash
 cargo test --manifest-path plugins/mail/Cargo.toml --locked
 cargo clippy --manifest-path plugins/mail/Cargo.toml --locked --all-targets -- -D warnings
-cargo test --locked -p webdock-agent --test application_recovery
+cargo test --locked -p spitzli-agent --test application_recovery
 python3 -m unittest discover -s agents/kubernetes -p test_ntfy_recovery.py
 python3 tools/tests/mail-application-recovery.py /absolute/path/to/coordinated/recovery-object
 ```

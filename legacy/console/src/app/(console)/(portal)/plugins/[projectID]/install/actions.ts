@@ -4,7 +4,7 @@ import type {
   PluginImport,
   PluginSourceCommand,
   PluginSourceView,
-} from "@webdock/api-client/plugin-sources";
+} from "@spitzli/api-client/plugin-sources";
 import { requireRegistryOperator } from "@/lib/registry-page";
 import { studioCall } from "@/lib/studio-client";
 import { PluginSourceError, StudioError } from "@/lib/studio-errors";

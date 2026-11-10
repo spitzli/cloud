@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import { capacityRlsSQL } from "@webdock/mail-core/capacity";
+import { capacityRlsSQL } from "@spitzli/mail-core/capacity";
 import { buildDatabaseRls } from "../../src/db/database-rls-schema";
 import { databaseClusterRlsSQL } from "../../src/db/database-cluster-rls";
 import { databaseMailRlsSQL } from "../../src/db/database-mail-rls";

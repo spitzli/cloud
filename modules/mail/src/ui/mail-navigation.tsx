@@ -1,7 +1,7 @@
 "use client";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useI18n } from "@webdock/i18n/react";
-import { useMailNavigation } from "@webdock/module-mail/hooks";
+import { useI18n } from "@spitzli/i18n/react";
+import { useMailNavigation } from "@spitzli/module-mail/hooks";
 import type { ReactNode } from "react";
 import type { mailNavigation } from "../navigation";
 export function MailNavigation({

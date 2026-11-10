@@ -1,8 +1,8 @@
 import {
   nativeClusterDemand,
   clusterCapacityDemand,
-} from "@webdock/mail-core/capacity";
-import { createHostingReservations } from "@webdock/module-hosting/server/reservations";
+} from "@spitzli/mail-core/capacity";
+import { createHostingReservations } from "@spitzli/module-hosting/server/reservations";
 import { authorizeHosting } from "./authorization";
 import { transaction, audit, planLock, clusterLock } from "./db";
 import { replay } from "./operations";

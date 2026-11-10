@@ -10,9 +10,9 @@ import {
   HostingError,
   resourceID,
   type HostingActor,
-} from "@webdock/hosting-contracts";
-import type { Agent } from "@webdock/hosting-contracts/runtime-ports";
-import type { Connection } from "@webdock/hosting-contracts/runtime-ports";
+} from "@spitzli/hosting-contracts";
+import type { Agent } from "@spitzli/hosting-contracts/runtime-ports";
+import type { Connection } from "@spitzli/hosting-contracts/runtime-ports";
 export type Dependencies = {
   operationAuthority?(
     db: Connection,

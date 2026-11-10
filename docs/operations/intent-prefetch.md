@@ -35,13 +35,13 @@ background prefetch of every footer route.
 ## Local verification
 
 ```sh
-bun run --filter @webdock/console build
-bun run --filter @webdock/console lint
+bun run --filter @spitzli/console build
+bun run --filter @spitzli/console lint
 bun test --isolate apps/console/tests
 WEBDOCK_BROWSER_DIST="$PWD/apps/console/dist" bun apps/console/tests/intent-prefetch-browser.mjs
 WEBDOCK_BROWSER_DIST="$PWD/apps/console/dist" bun apps/console/tests/prefetch-loading-browser.mjs
 bun test --isolate apps/website/tests/waitlist-release.test.tsx apps/website/tests/sso-policy.test.ts apps/website/tests/cms-bridge-policy.test.ts
-bun run --filter @webdock/web test:prefetch
+bun run --filter @spitzli/web test:prefetch
 ```
 
 The owned Console browser fixture proves summary warming before click, no query

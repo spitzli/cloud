@@ -1,7 +1,7 @@
 use crate::{ExecutionError, Result};
 use serde::{Deserialize, Serialize};
+use spitzli_core::id::RecordId;
 use std::collections::BTreeMap;
-use webdock_core::id::RecordId;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RetainedVolume {
@@ -73,7 +73,7 @@ pub fn valid_health_host(host: &str) -> bool {
         return false;
     }
     let origin = format!("https://{host}");
-    webdock_core::config::canonical_origin(&origin, true).is_ok_and(|canonical| {
+    spitzli_core::config::canonical_origin(&origin, true).is_ok_and(|canonical| {
         canonical == origin || (port == Some("443") && canonical == format!("https://{hostname}"))
     })
 }

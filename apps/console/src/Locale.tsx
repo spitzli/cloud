@@ -1,8 +1,8 @@
 import { useContext, useEffect, useId, useState, type ReactNode } from "react";
 import { CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
 import { TranslateIcon } from "@phosphor-icons/react/dist/csr/Translate";
-import { I18nProvider, useOptionalI18n } from "@webdock/i18n/react";
-import { resolveLocale, type Preference } from "@webdock/i18n";
+import { I18nProvider, useOptionalI18n } from "@spitzli/i18n/react";
+import { resolveLocale, type Preference } from "@spitzli/i18n";
 import { ApiContext } from "./context";
 import { alignBelowTrigger, menuPanel } from "./UserMenu";
 import { button, cx } from "./ui";

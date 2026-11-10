@@ -1,7 +1,7 @@
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/csr/ArrowClockwise";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/csr/WarningCircle";
 import { useEffect, useRef, type ReactNode } from "react";
-import { useOptionalI18n } from "@webdock/i18n/react";
+import { useOptionalI18n } from "@spitzli/i18n/react";
 import * as ui from "./ui";
 import { describeFailure } from "./AuthFrame";
 const state = "flex items-start gap-3 rounded-lg border border-outline bg-surface px-5 py-6 max-sm:px-4 max-sm:py-5";

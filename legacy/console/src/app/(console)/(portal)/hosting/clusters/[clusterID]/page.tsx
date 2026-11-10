@@ -1,14 +1,14 @@
 import type { OwnClusterView, OwnInventoryView } from "@/lib/hosting-views";
-import {LiveSearchForm} from "@webdock/search/form";
+import {LiveSearchForm} from "@spitzli/search/form";
 import { uiLabel } from "@/lib/ui-labels";
 import Link from "next/link";
 import { randomUUID } from "node:crypto";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import {
   formatResource,
   type InventoryResource,
   resourceKindSchema,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { HostingForm } from "@/components/hosting/form";
 import { HostingTable } from "@/components/hosting/table";

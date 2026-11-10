@@ -1,5 +1,5 @@
 [package]
-name = "webdock-registry-manifest-validator"
+name = "spitzli-registry-manifest-validator"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.94"
@@ -9,7 +9,7 @@ publish = false
 [workspace]
 
 [dependencies]
-webdock-plugin-protocol = { path = "../../../crates/plugin-protocol" }
+spitzli-plugin-protocol = { path = "../../../crates/plugin-protocol" }
 serde_json = "1"
 
 [profile.dev]

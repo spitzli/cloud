@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { getRequestI18n } from "@webdock/i18n/next";
-import type { DatabaseView } from "@webdock/hosting-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import type { DatabaseView } from "@spitzli/hosting-contracts";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { HostingForm } from "@/components/hosting/form";
 export default async function DatabaseDeletion({

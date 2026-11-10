@@ -1,9 +1,9 @@
 import {browserAuthConfiguration} from "@/lib/browser-auth-config";
 import { AreaNavigation } from "@/components/area-navigation";
-import {LiveSearchForm} from "@webdock/search/form";
+import {LiveSearchForm} from "@spitzli/search/form";
 import {uiLabel} from "@/lib/ui-labels";
 
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";

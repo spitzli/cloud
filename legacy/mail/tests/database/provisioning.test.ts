@@ -2,9 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
-import { nativeMailSchemaSQL } from "@webdock/mail-core/schema";
-import { getMailService, requestMailService } from "@webdock/mail-core";
-import { openSecret } from "@webdock/mail-core/secrets";
+import { nativeMailSchemaSQL } from "@spitzli/mail-core/schema";
+import { getMailService, requestMailService } from "@spitzli/mail-core";
+import { openSecret } from "@spitzli/mail-core/secrets";
 import { processMailOperation } from "../../src/provisioning.ts";
 
 const url = new URL(process.env.DATABASE_URL!);

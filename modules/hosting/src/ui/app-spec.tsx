@@ -1,9 +1,9 @@
 import * as React from "react";
 import { ContainerArguments } from "./arguments";
 import { ApplicationEnvironment } from "./environment";
-import { ResourceField } from "@webdock/hosting-contracts/react";
-import type { AppSpec } from "@webdock/hosting-contracts";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { ResourceField } from "@spitzli/hosting-contracts/react";
+import type { AppSpec } from "@spitzli/hosting-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
 export async function AppSpecFields({
   spec,
   custom,

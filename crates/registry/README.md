@@ -12,7 +12,7 @@ Project archival always checks retained non-retired CMS inventory, even if that
 feature is disabled. Additional trusted `ArchiveGuard` implementations supplement
 this check. Existing database deletion fences remain effective.
 
-The host must inject its coordinated `webdock_persistence::IdAllocator` with
+The host must inject its coordinated `spitzli_persistence::IdAllocator` with
 `with_allocator(Arc::new(allocator))`. Its dedicated pool commits ID high-water state
 independently of business rollback. `DatabaseAllocator` is retained only for migration
 compatibility; `RegistryService::new` alone selects that transitional allocator.
@@ -20,8 +20,8 @@ compatibility; `RegistryService::new` alone selects that transitional allocator.
 Validation:
 
 ```sh
-cargo test -p webdock-registry
-cargo clippy -p webdock-registry --all-targets -- -D warnings
+cargo test -p spitzli-registry
+cargo clippy -p spitzli-registry --all-targets -- -D warnings
 ```
 
 The ignored PostgreSQL integration test requires an already provisioned local
@@ -31,7 +31,7 @@ The ignored PostgreSQL integration test requires an already provisioned local
 (identity fixture reads), and `DATABASE_RLS_SECRET`. Run it with:
 
 ```sh
-cargo test -p webdock-registry -- --include-ignored
+cargo test -p spitzli-registry -- --include-ignored
 ```
 
 The fixture refuses non-loopback URLs and other database names. It inserts unique

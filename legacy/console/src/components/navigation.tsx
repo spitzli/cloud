@@ -1,12 +1,12 @@
 "use client";
 import { lazy, Suspense } from "react";
-import { useModuleNavigation, useModuleView } from "@webdock/module-sdk/react";
+import { useModuleNavigation, useModuleView } from "@spitzli/module-sdk/react";
 import {hasProductModules} from "@/lib/module-data";
-import { moduleForPath } from "@webdock/module-sdk/selection";
+import { moduleForPath } from "@spitzli/module-sdk/selection";
 import { productManifests } from "@distribution/navigation";
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 
 import { ConsoleIcon, type ConsoleIconName } from "./console-icon";
 import { NavigationPending } from "./navigation-pending";

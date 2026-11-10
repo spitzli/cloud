@@ -537,7 +537,7 @@ impl DatabaseService {
         cmd: &Value,
     ) -> Result<(String, Option<Value>)> {
         let hash = hex::encode(Sha256::digest(
-            webdock_hosting::canonical_command(cmd)
+            spitzli_hosting::canonical_command(cmd)
                 .map_err(|_| invalid())?
                 .as_bytes(),
         ));
@@ -599,12 +599,12 @@ mod retained_browser_tests {
     use super::super::authority::browser_failure as managed_authentication_error;
     #[test]
     fn managed_database_failure_is_transient_not_definitive_original_authority_loss() {
-        let error = managed_authentication_error(webdock_browser_session::Error::Database(
+        let error = managed_authentication_error(spitzli_browser_session::Error::Database(
             sea_orm::DbErr::Custom("isolated transient test only".into()),
         ));
         assert_eq!(error.status, 503);
         assert_eq!(
-            managed_authentication_error(webdock_browser_session::Error::Unauthorized).status,
+            managed_authentication_error(spitzli_browser_session::Error::Unauthorized).status,
             404
         );
     }

@@ -1,6 +1,6 @@
 "use client";
-import {msgid} from "@webdock/i18n";
-import { useI18n } from '@webdock/i18n/react';
+import {msgid} from "@spitzli/i18n";
+import { useI18n } from '@spitzli/i18n/react';
 
 import { useActionState, useState } from "react";
 import { keyAction } from "./actions";

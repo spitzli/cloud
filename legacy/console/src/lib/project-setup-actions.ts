@@ -1,13 +1,13 @@
 "use server";
-import type { SetupActionState } from "@webdock/module-hosting/ui-types";
-export type { SetupActionState } from "@webdock/module-hosting/ui-types";
+import type { SetupActionState } from "@spitzli/module-hosting/ui-types";
+export type { SetupActionState } from "@spitzli/module-hosting/ui-types";
 import { revalidatePath } from "next/cache";
 import {
   hostingError,
   setupCommandSchema,
   type SetupView,
   type SetupInspection,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { hostingCall } from "./hosting-client";
 
 export async function saveSetup(

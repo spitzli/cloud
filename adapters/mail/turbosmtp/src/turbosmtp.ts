@@ -3,7 +3,7 @@ import type {
   MailCredentialMaster,
   MailCredentialIssuer,
   MailConsumerKeyProvider,
-} from "@webdock/module-mail/server/provider-ports";
+} from "@spitzli/module-mail/server/provider-ports";
 import type { Fetch } from "./http";
 // Server-only provider adapter. Authorization tokens stay server-side; newly created tenant keys are shown once to authorized administrators.
 // Contract: https://serversmtp.com/turbo-api/turbo-smtp.yaml (V2, MIT).

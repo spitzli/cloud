@@ -9,7 +9,7 @@ import { requireInstalledOperation } from "../../installation";
 import { withHostingDatabase } from "../../db/database-context";
 import { transaction } from "../hosting/db";
 import { executeDatabase } from "../databases/service";
-import { HostingError, type HostingActor } from "@webdock/hosting-contracts";
+import { HostingError, type HostingActor } from "@spitzli/hosting-contracts";
 import { hostingBridge, executeHostingBridgeCommand } from "../hosting/bridge";
 import { databaseBridge } from "../databases/http";
 import { delegatedToken, nativeHeaders } from "./request-context";

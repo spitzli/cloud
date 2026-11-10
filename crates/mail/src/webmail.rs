@@ -15,10 +15,10 @@ use sea_orm::{DatabaseConnection, DatabaseTransaction, QueryResult};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
+use spitzli_browser_session::{BrowserSessions, StoredAuthority};
+use spitzli_identity::{IdentityService, Principal, RlsSigner};
+use spitzli_persistence::IdAllocator;
 use std::sync::Arc;
-use webdock_browser_session::{BrowserSessions, StoredAuthority};
-use webdock_identity::{IdentityService, Principal, RlsSigner};
-use webdock_persistence::IdAllocator;
 
 #[derive(Clone)]
 pub struct WebmailDependencies {

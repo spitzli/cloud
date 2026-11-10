@@ -1,12 +1,12 @@
 //! Operator-reviewed repository grants. Credentials never come from runtime commands.
 use base64::{Engine, engine::general_purpose::STANDARD};
 use serde::{Deserialize, Serialize};
+use spitzli_supervisor::*;
 use std::{
     collections::BTreeMap,
     os::unix::fs::MetadataExt,
     path::{Path, PathBuf},
 };
-use webdock_supervisor::*;
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RegistryConfig {
@@ -41,7 +41,7 @@ impl RegistryConfig {
             return Err(ExecutionError::Invalid("registry configuration"));
         }
         for (project, grant) in &config.projects {
-            webdock_core::id::RecordId::parse(project)
+            spitzli_core::id::RecordId::parse(project)
                 .map_err(|_| ExecutionError::Invalid("registry project"))?;
             if !grant.read_only
                 || grant.credential_scope_evidence.trim().is_empty()

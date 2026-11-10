@@ -1,4 +1,4 @@
-import { createMailStudio } from "@webdock/module-mail/server/product-studio";
+import { createMailStudio } from "@spitzli/module-mail/server/product-studio";
 import { withAuthenticatedDatabase } from "../../../db/database-context";
 import { getTenantTracking, manageTenantTracking } from "../mail-tracking";
 import { rotateManagedSendingCredential } from "./provider-credentials";
@@ -36,7 +36,7 @@ import {
   listMailWebhookDeliveries,
 } from "./webhooks";
 import { setMailSuppression, removeMailSuppression } from "./suppressions";
-export { mailStudioShapes } from "@webdock/module-mail/server/product-studio";
+export { mailStudioShapes } from "@spitzli/module-mail/server/product-studio";
 export const { dispatchMailStudio } = createMailStudio({
   withAuthenticatedDatabase,
   getTenantTracking,

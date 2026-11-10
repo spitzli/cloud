@@ -1,4 +1,4 @@
-import type { SetupView, SetupInspection } from "@webdock/hosting-contracts";
+import type { SetupView, SetupInspection } from "@spitzli/hosting-contracts";
 export type HostingFormState = {
   environmentReset?: boolean;
   error?: string;
@@ -22,7 +22,7 @@ import type {
   byokPolicySchema,
   HostingClusterView,
   InventoryResource,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 
 export type OwnInfrastructurePolicy = z.infer<typeof byokPolicySchema> & {
   revision: number;

@@ -1,17 +1,17 @@
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::{Signer, SigningKey};
 use serde_json::{Value, json};
+use spitzli_plugin_protocol::{InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::{
+    ActionHandler, InvocationAuthority, JobHandler, PeerIdentity, Runtime, UnixSocket,
+    connect_unix, wire,
+};
 use std::{
     sync::{
         Arc,
         atomic::{AtomicBool, AtomicUsize, Ordering},
     },
     time::{Duration, SystemTime, UNIX_EPOCH},
-};
-use webdock_plugin_protocol::{InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::{
-    ActionHandler, InvocationAuthority, JobHandler, PeerIdentity, Runtime, UnixSocket,
-    connect_unix, wire,
 };
 
 struct Authority(AtomicBool);

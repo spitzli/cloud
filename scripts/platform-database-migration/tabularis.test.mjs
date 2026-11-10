@@ -28,7 +28,7 @@ const fixture = () => ({
       kind: "Deployment",
       metadata: {
         name: "db-webdock-operator",
-        namespace: "webdock-databases",
+        namespace: "spitzli-databases",
         resourceVersion: "10",
       },
       spec: {
@@ -64,7 +64,7 @@ const fixture = () => ({
       kind: "Secret",
       metadata: {
         name: "db-webdock-operator",
-        namespace: "webdock-databases",
+        namespace: "spitzli-databases",
         resourceVersion: "11",
       },
       data: {
@@ -80,7 +80,7 @@ const fixture = () => ({
       kind: "NetworkPolicy",
       metadata: {
         name: "db-webdock-operator",
-        namespace: "webdock-databases",
+        namespace: "spitzli-databases",
         resourceVersion: "12",
       },
       spec: {

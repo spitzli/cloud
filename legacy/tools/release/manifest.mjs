@@ -193,8 +193,8 @@ async function fileHash(file) {
 function requiredArtifacts(artifacts, version, evidence) {
   const chartNames = [
     "webdock",
-    "webdock-agent",
-    ...(evidence.databaseRuntime ? ["webdock-databases"] : []),
+    "spitzli-agent",
+    ...(evidence.databaseRuntime ? ["spitzli-databases"] : []),
   ];
   const expected = new Set([
     ...evidenceImages(evidence).map((name) => `${name}.oci.tar`),
@@ -212,8 +212,8 @@ function requiredArtifacts(artifacts, version, evidence) {
       throw Error(`Missing ${name} image`);
   for (const name of [
     "webdock",
-    "webdock-agent",
-    ...(evidence.databaseRuntime ? ["webdock-databases"] : []),
+    "spitzli-agent",
+    ...(evidence.databaseRuntime ? ["spitzli-databases"] : []),
   ])
     if (!artifacts.some((item) => item.file === `${name}-${version}.tgz`))
       throw Error(`Missing ${name} chart`);

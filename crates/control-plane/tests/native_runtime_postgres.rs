@@ -1,14 +1,14 @@
 //! Actual native binary against an exclusively owned PostgreSQL fixture.
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{AdmissionInput, FileBindings, HostService};
+use spitzli_plugin_runtime::PeerIdentity;
 use std::{
     process::{Command, Stdio},
     sync::Arc,
     time::Duration,
 };
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{AdmissionInput, FileBindings, HostService};
-use webdock_plugin_runtime::PeerIdentity;
 #[allow(
     dead_code,
     reason = "Reuse existing owned PostgreSQL roles and migration fixture"
@@ -147,7 +147,7 @@ async fn actual_core(mode: NativeMode) {
     let fixture = fixture::DatabaseFixture::start().await;
     let owner = fixture.owner().await;
     if native_recovery {
-        let hash = webdock_identity::hash_password("Owned-original-password-123").unwrap();
+        let hash = spitzli_identity::hash_password("Owned-original-password-123").unwrap();
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('owned-recovery-user','Owned recovery','recovery@example.test',true,'user',true,false);CREATE TABLE public.owned_recovery_audit(app text);CREATE FUNCTION public.owned_recovery_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_recovery_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_recovery_audit AFTER INSERT ON webdock_auth.identity_recovery_token FOR EACH ROW EXECUTE FUNCTION public.owned_recovery_audit()"#).await.unwrap();
         sql(&owner,r#"INSERT INTO webdock_auth.account(id,"accountId","providerId","userId",password,"updatedAt") VALUES('owned-recovery-credential','owned-recovery-user','credential','owned-recovery-user',$1,now())"#,vec![hash.into()]).await;
     }
@@ -156,7 +156,7 @@ async fn actual_core(mode: NativeMode) {
         WITH hint AS MATERIALIZED(SELECT set_config('webdock.organization_allocation','{"customer_id":"62001","organization_id":"62002"}',true)) INSERT INTO webdock_admin.customers(id,name) SELECT '62001','Foreign login customer' FROM hint;
         INSERT INTO webdock_admin.projects(id,name,customer_id) VALUES('61003','Owned project','61001'),('62003','Foreign project','62001');
         INSERT INTO webdock_auth.member(id,"organizationId","userId",role,"createdAt") VALUES('61004','61002','owned-recovery-user','owner',now())"#).await.unwrap();
-        let keys = webdock_identity::SecretKeys::new(
+        let keys = spitzli_identity::SecretKeys::new(
             std::collections::BTreeMap::from([(
                 1,
                 "owned-native-http-secret-at-least-32bytes".into(),
@@ -176,12 +176,12 @@ async fn actual_core(mode: NativeMode) {
         INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('owned-other-session','owned-other-token','owned-session-user',now()+interval '1 hour',now()),('foreign-session','foreign-token','foreign-user',now()+interval '1 hour',now())"#).await.unwrap();
     }
     if native_browser || native_introspection {
-        let client_hash = webdock_oauth::legacy_token_hash("owned-core-browser-secret");
+        let client_hash = spitzli_oauth::legacy_token_hash("owned-core-browser-secret");
         sql(&owner,r#"INSERT INTO webdock_auth."oauthClient"(id,"clientId","clientSecret",name,disabled,"skipConsent","enableEndSession",scopes,"redirectUris","postLogoutRedirectUris","grantTypes","responseTypes","tokenEndpointAuthMethod","requirePKCE","subjectType",metadata,"createdAt","updatedAt") VALUES('103','102',$1,'Owned browser',false,true,true,'["openid","profile","email"]','["http://localhost:3121/api/sso/callback","http://localhost:3120/api/sso/callback"]','["http://localhost:3121/login"]','["authorization_code","refresh_token"]','["code"]','client_secret_post',true,'public','{"webdock_binding":"104"}',now(),now())"#,vec![client_hash.into()]).await;
         owner.execute_unprepared("INSERT INTO webdock_auth.app_binding(id,client_id,label,organization_id,enabled) VALUES('104','102','Owned browser',null,true);CREATE TABLE public.owned_browser_http_audit(app text);CREATE FUNCTION public.owned_browser_http_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_browser_http_audit VALUES(current_setting('application_name'));RETURN NEW;END $$;CREATE TRIGGER owned_browser_http_audit AFTER INSERT ON webdock_auth.identity_browser_flow FOR EACH ROW EXECUTE FUNCTION public.owned_browser_http_audit()").await.unwrap();
     }
     if native_oauth || native_authority {
-        let keys = webdock_identity::SecretKeys::new(
+        let keys = spitzli_identity::SecretKeys::new(
             std::collections::BTreeMap::from([(
                 1,
                 "owned-native-http-secret-at-least-32bytes".into(),
@@ -191,7 +191,7 @@ async fn actual_core(mode: NativeMode) {
         )
         .unwrap();
         let tx = owner.begin().await.unwrap();
-        webdock_oauth::stage_signing_key(&tx, "301", &keys)
+        spitzli_oauth::stage_signing_key(&tx, "301", &keys)
             .await
             .unwrap();
         tx.commit().await.unwrap();
@@ -201,7 +201,7 @@ async fn actual_core(mode: NativeMode) {
         WITH hint AS MATERIALIZED(SELECT set_config('webdock.organization_allocation','{"customer_id":"100","organization_id":"101"}',true)) INSERT INTO webdock_admin.customers(id,name) SELECT '100','Owned HTTP customer' FROM hint;
         INSERT INTO webdock_auth.member(id,"organizationId","userId",role,"createdAt") VALUES('503','101','501','owner',now())"#).await.unwrap();
         if !native_mcp {
-            sql(&owner,r#"INSERT INTO webdock_auth."oauthAccessToken"(id,token,"clientId","sessionId","userId",scopes,resources,"expiresAt","createdAt") VALUES('504',$1,'102','502','501','["openid","profile","email"]','[]',now()+interval '1 hour',now())"#,vec![webdock_oauth::legacy_token_hash("owned-http-access").into()]).await;
+            sql(&owner,r#"INSERT INTO webdock_auth."oauthAccessToken"(id,token,"clientId","sessionId","userId",scopes,resources,"expiresAt","createdAt") VALUES('504',$1,'102','502','501','["openid","profile","email"]','[]',now()+interval '1 hour',now())"#,vec![spitzli_oauth::legacy_token_hash("owned-http-access").into()]).await;
         }
     }
     if native_grants {
@@ -211,9 +211,9 @@ async fn actual_core(mode: NativeMode) {
         owner.execute_unprepared("UPDATE webdock_auth.\"oauthClient\" SET scopes='[\"openid\",\"profile\",\"email\",\"offline_access\"]' WHERE \"clientId\"='102';CREATE TABLE public.owned_oauth_token_audit(app text,kind text);CREATE FUNCTION public.owned_oauth_token_audit() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$ BEGIN INSERT INTO public.owned_oauth_token_audit VALUES(current_setting('application_name'),TG_TABLE_NAME);RETURN NEW;END $$;CREATE TRIGGER owned_oauth_token_audit AFTER INSERT ON webdock_auth.\"oauthAccessToken\" FOR EACH ROW EXECUTE FUNCTION public.owned_oauth_token_audit();CREATE TRIGGER owned_oauth_token_audit AFTER INSERT ON webdock_auth.\"oauthRefreshToken\" FOR EACH ROW EXECUTE FUNCTION public.owned_oauth_token_audit()").await.unwrap();
     }
     if native_mcp {
-        sql(&owner,r#"INSERT INTO webdock_auth."oauthClient"(id,"clientId","clientSecret",name,disabled,"skipConsent","enableEndSession",scopes,"redirectUris","grantTypes","responseTypes","tokenEndpointAuthMethod","requirePKCE","subjectType",metadata,"createdAt","updatedAt") VALUES('901','902',$1,'Owned MCP',false,true,true,'["hosting:read","hosting:write"]','["http://localhost:3121/api/sso/callback"]','["authorization_code"]','["code"]','client_secret_post',true,'public','{"webdock_hosting":true}',now(),now())"#,vec![webdock_oauth::legacy_token_hash("owned-http-mcp-secret").into()]).await;
+        sql(&owner,r#"INSERT INTO webdock_auth."oauthClient"(id,"clientId","clientSecret",name,disabled,"skipConsent","enableEndSession",scopes,"redirectUris","grantTypes","responseTypes","tokenEndpointAuthMethod","requirePKCE","subjectType",metadata,"createdAt","updatedAt") VALUES('901','902',$1,'Owned MCP',false,true,true,'["hosting:read","hosting:write"]','["http://localhost:3121/api/sso/callback"]','["authorization_code"]','["code"]','client_secret_post',true,'public','{"webdock_hosting":true}',now(),now())"#,vec![spitzli_oauth::legacy_token_hash("owned-http-mcp-secret").into()]).await;
         owner.execute_unprepared(r#"INSERT INTO webdock_auth."oauthResource"(id,identifier,name,"accessTokenTtl","refreshTokenTtl","allowedScopes",disabled,"createdAt","updatedAt") VALUES('904','http://localhost:3120/api/mcp','Owned MCP',300,28800,'["hosting:read","hosting:write"]',false,now(),now());INSERT INTO webdock_auth."oauthClientResource"(id,"clientId","resourceId","createdAt") VALUES('905','902','http://localhost:3120/api/mcp',now())"#).await.unwrap();
-        sql(&owner,r#"INSERT INTO webdock_auth."oauthAccessToken"(id,token,"clientId","sessionId","userId",scopes,resources,"expiresAt","createdAt") VALUES('903',$1,'902','502','501','["hosting:read"]','["http://localhost:3120/api/mcp"]',now()+interval '300 seconds',now())"#,vec![webdock_oauth::legacy_token_hash("owned-http-mcp").into()]).await;
+        sql(&owner,r#"INSERT INTO webdock_auth."oauthAccessToken"(id,token,"clientId","sessionId","userId",scopes,resources,"expiresAt","createdAt") VALUES('903',$1,'902','502','501','["hosting:read"]','["http://localhost:3120/api/mcp"]',now()+interval '300 seconds',now())"#,vec![spitzli_oauth::legacy_token_hash("owned-http-mcp").into()]).await;
     }
     let before = journal(&owner).await;
     let account_counts = || {
@@ -252,7 +252,7 @@ async fn actual_core(mode: NativeMode) {
     let private = tempfile::tempdir().unwrap();
     let log = private.path().join("core.log");
     let secret = "owned-native-http-secret-at-least-32bytes";
-    let mut command = Command::new(env!("CARGO_BIN_EXE_webdock-control-plane"));
+    let mut command = Command::new(env!("CARGO_BIN_EXE_spitzli-control-plane"));
     command
         .env_clear()
         .env("PATH", std::env::var("PATH").unwrap())
@@ -477,7 +477,7 @@ async fn actual_core(mode: NativeMode) {
             row.try_get::<String>("", "app").unwrap(),
             "spitzli-native-postgres"
         );
-        let keys = webdock_identity::SecretKeys::new(
+        let keys = spitzli_identity::SecretKeys::new(
             std::collections::BTreeMap::from([(1, secret.to_owned())]),
             1,
             Some(secret.to_owned()),
@@ -491,7 +491,7 @@ async fn actual_core(mode: NativeMode) {
             .await
             .unwrap()
             .unwrap();
-        let request: webdock_identity::DeliveryRequest = serde_json::from_str(
+        let request: spitzli_identity::DeliveryRequest = serde_json::from_str(
             &keys
                 .decrypt(&row.try_get::<String>("", "payload").unwrap())
                 .unwrap(),
@@ -930,7 +930,7 @@ async fn actual_core(mode: NativeMode) {
                     .unwrap()
                     .try_get::<String>("", "payload")
                     .unwrap();
-                let keys = webdock_identity::SecretKeys::new(
+                let keys = spitzli_identity::SecretKeys::new(
                     std::collections::BTreeMap::from([(1, secret.into())]),
                     1,
                     Some(secret.into()),
@@ -1239,7 +1239,7 @@ async fn actual_core(mode: NativeMode) {
 async fn sigterm_cancels_stalled_database_initialization() {
     let stalled = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let port = stalled.local_addr().unwrap().port();
-    let mut process=Process(Command::new(env!("CARGO_BIN_EXE_webdock-control-plane"))
+    let mut process=Process(Command::new(env!("CARGO_BIN_EXE_spitzli-control-plane"))
         .env_clear().env("PATH",std::env::var("PATH").unwrap())
         .env("NODE_ENV","development")
         .env("WEBDOCK_DATABASE_URL",format!("postgres://webdock_auth_bootstrap:fixture@127.0.0.1:{port}/stalled?sslmode=disable"))

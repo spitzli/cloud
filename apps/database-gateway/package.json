@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/database-gateway",
+  "name": "@spitzli/database-gateway",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,19 +7,19 @@
     "bun": ">=1.4.3"
   },
   "scripts": {
-    "start": "cargo run --manifest-path ../../Cargo.toml -p webdock-database-gateway",
-    "test": "cargo test --manifest-path ../../Cargo.toml -p webdock-database-gateway",
+    "start": "cargo run --manifest-path ../../Cargo.toml -p spitzli-database-gateway",
+    "test": "cargo test --manifest-path ../../Cargo.toml -p spitzli-database-gateway",
     "test:compatibility": "bun test --isolate ./tests/*.test.ts",
-    "check": "cargo check --manifest-path ../../Cargo.toml -p webdock-database-gateway",
-    "build": "cargo build --manifest-path ../../Cargo.toml --release -p webdock-database-gateway"
+    "check": "cargo check --manifest-path ../../Cargo.toml -p spitzli-database-gateway",
+    "build": "cargo build --manifest-path ../../Cargo.toml --release -p spitzli-database-gateway"
   },
   "devDependencies": {
     "@types/node": "^24",
     "@types/ws": "8.18.2",
     "typescript": "^5",
-    "@webdock/database-contracts": "*",
+    "@spitzli/database-contracts": "*",
     "ws": "8.22.0",
-    "@webdock/integration-tabularis-web": "*"
+    "@spitzli/integration-tabularis-web": "*"
   },
   "license": "Apache-2.0"
 }

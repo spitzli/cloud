@@ -1,4 +1,4 @@
-import { createMailSuppressions } from "@webdock/module-mail/server/product-suppressions";
+import { createMailSuppressions } from "@spitzli/module-mail/server/product-suppressions";
 import { mailDatabase as database, withMailTransaction } from "./store";
 import { assertMailAccess } from "./access";
 export const {

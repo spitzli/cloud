@@ -1,7 +1,7 @@
 use crate::{Result, invalid};
 use serde::Deserialize;
 use serde_json::Value;
-pub use webdock_browser_session::StoredAuthority;
+pub use spitzli_browser_session::StoredAuthority;
 #[derive(Deserialize)]
 #[serde(tag = "action", rename_all = "camelCase", deny_unknown_fields)]
 pub enum Command {

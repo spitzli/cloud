@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import {useActionState,useState} from 'react';
-import {useI18n} from '@webdock/i18n/react';
+import {useI18n} from '@spitzli/i18n/react';
 import type {NativeSendingView} from '@/lib/mail-sending';
 import {sendingAction} from './actions';
 export function SendingPanel({data}:{data:NativeSendingView}){

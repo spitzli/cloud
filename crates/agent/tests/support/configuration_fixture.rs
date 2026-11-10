@@ -1,18 +1,18 @@
+use spitzli_agent_protocol::mail::{MailClaim, MailLease, MailMaterial, MailProof};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::sync::Mutex;
-use webdock_agent_protocol::mail::{MailClaim, MailLease, MailMaterial, MailProof};
-use webdock_supervisor::{ExecutionError, Result};
 pub(super) struct ConfigurationAuthority {
     pub(super) allowed: AtomicBool,
     pub(super) drop_applied: AtomicBool,
     pub(super) checkpoints:
-        Mutex<Vec<webdock_agent_protocol::mail_configuration::ConfigurationCheckpoint>>,
+        Mutex<Vec<spitzli_agent_protocol::mail_configuration::ConfigurationCheckpoint>>,
 }
 #[async_trait::async_trait]
-impl webdock_agent::mail::configuration::ConfigurationAuthority for ConfigurationAuthority {
+impl spitzli_agent::mail::configuration::ConfigurationAuthority for ConfigurationAuthority {
     async fn guard(
         &self,
-        claim: &webdock_agent_protocol::mail_configuration::ConfigurationClaim,
+        claim: &spitzli_agent_protocol::mail_configuration::ConfigurationClaim,
     ) -> Result<()> {
         claim
             .validate(chrono::Utc::now())
@@ -24,8 +24,8 @@ impl webdock_agent::mail::configuration::ConfigurationAuthority for Configuratio
     }
     async fn checkpoint(
         &self,
-        claim: &webdock_agent_protocol::mail_configuration::ConfigurationClaim,
-        checkpoint: webdock_agent_protocol::mail_configuration::ConfigurationCheckpoint,
+        claim: &spitzli_agent_protocol::mail_configuration::ConfigurationClaim,
+        checkpoint: spitzli_agent_protocol::mail_configuration::ConfigurationCheckpoint,
     ) -> Result<()> {
         self.guard(claim).await?;
         let mut stored = self.checkpoints.lock().await;
@@ -38,7 +38,7 @@ impl webdock_agent::mail::configuration::ConfigurationAuthority for Configuratio
         }
         if matches!(
             checkpoint.phase,
-            webdock_agent_protocol::mail_configuration::ConfigurationCheckpointPhase::Applied { .. }
+            spitzli_agent_protocol::mail_configuration::ConfigurationCheckpointPhase::Applied { .. }
         ) && self.drop_applied.swap(false, Ordering::SeqCst)
         {
             return Err(ExecutionError::Journal);
@@ -49,8 +49,8 @@ impl webdock_agent::mail::configuration::ConfigurationAuthority for Configuratio
 pub(super) fn configuration_claim(
     lifecycle: &MailClaim,
     proof: &MailProof,
-) -> webdock_agent_protocol::mail_configuration::ConfigurationClaim {
-    use webdock_agent_protocol::mail_configuration::*;
+) -> spitzli_agent_protocol::mail_configuration::ConfigurationClaim {
+    use spitzli_agent_protocol::mail_configuration::*;
     let MailMaterial::Credentials {
         username, password, ..
     } = &lifecycle.material

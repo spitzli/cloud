@@ -1,14 +1,14 @@
 //! Operator fixture transport; uses the same verified multipart adapter as native storage.
 use serde::Deserialize;
 use std::{os::unix::fs::OpenOptionsExt, path::PathBuf};
-use webdock_object_storage::{Credentials, ObjectReceipt, S3Config, Store, MAX_TRANSFER};
+use spitzli_object_storage::{Credentials, ObjectReceipt, S3Config, Store, MAX_TRANSFER};
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Configuration { config: S3Config, credentials: Credentials }
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     if args.len() != 5 { return Err("expected mode/config/scope/file/receipt".into()); }
-    let bytes = webdock_plugin_kit::read_file(&PathBuf::from(&args[1]), true).map_err(|_| "private config unavailable")?;
+    let bytes = spitzli_plugin_kit::read_file(&PathBuf::from(&args[1]), true).map_err(|_| "private config unavailable")?;
     let config: Configuration = serde_json::from_slice(&bytes)?;
     let store = Store::loopback_test(config.config, config.credentials)?;
     let scope = args[2].to_str().ok_or("invalid scope")?;
@@ -21,7 +21,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             output.sync_all()?;
         }
         Some("download") => {
-            let receipt: ObjectReceipt = serde_json::from_slice(&webdock_plugin_kit::read_file(&PathBuf::from(&args[4]), true).map_err(|_| "private receipt unavailable")?)?;
+            let receipt: ObjectReceipt = serde_json::from_slice(&spitzli_plugin_kit::read_file(&PathBuf::from(&args[4]), true).map_err(|_| "private receipt unavailable")?)?;
             let mut output = tokio::fs::OpenOptions::new().create_new(true).write(true).mode(0o600).open(&args[3]).await?;
             if let Err(error) = store.download(scope, &receipt, &mut output, MAX_TRANSFER).await {
                 drop(output); tokio::fs::remove_file(&args[3]).await?; return Err(error.into());

@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { HostingTable } from "@/components/hosting/table";
 import { getStudioSession } from "@/lib/studio-client";
 import { databaseCall } from "@/lib/database-client";
 import { withHostingPageAccess } from "@/lib/hosting-page-access";
-import type { DatabaseDirectory } from "@webdock/database-contracts";
+import type { DatabaseDirectory } from "@spitzli/database-contracts";
 import { ManagedDatabaseRows } from "@/components/databases/managed-rows";
 import "../databases/style.css";
 export default async function ManagedDatabases({

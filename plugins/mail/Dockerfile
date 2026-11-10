@@ -5,11 +5,11 @@ WORKDIR /src
 COPY . .
 RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/plugins/mail/target \
     cargo build --manifest-path plugins/mail/Cargo.toml --locked --release \
-    && cp plugins/mail/target/release/webdock-mail /webdock-mail \
-    && cp plugins/mail/target/release/webdock-mail-gateway /webdock-mail-gateway
+    && cp plugins/mail/target/release/spitzli-mail /spitzli-mail \
+    && cp plugins/mail/target/release/spitzli-mail-gateway /spitzli-mail-gateway
 
 FROM docker.io/library/debian:trixie-slim
-COPY --from=build /webdock-mail /usr/local/bin/webdock-mail
-COPY --from=build /webdock-mail-gateway /usr/local/bin/webdock-mail-gateway
+COPY --from=build /spitzli-mail /usr/local/bin/spitzli-mail
+COPY --from=build /spitzli-mail-gateway /usr/local/bin/spitzli-mail-gateway
 USER 65532:65532
-ENTRYPOINT ["/usr/local/bin/webdock-mail"]
+ENTRYPOINT ["/usr/local/bin/spitzli-mail"]

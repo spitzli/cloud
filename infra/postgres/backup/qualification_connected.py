@@ -81,11 +81,11 @@ class Connected(Fixture):
   threading.Thread(target=accept,daemon=True).start()
   password_file=self.out/'role-passwords.json';password_file.write_text(json.dumps(self.s['rolePasswords']));password_file.chmod(0o600)
   env={**os.environ,'WEBDOCK_MIGRATION_DATABASE_URL':f'postgresql://postgres:{self.s["coreAdministrator"]}@127.0.0.1:{port}/webdock_rls_test','DATABASE_RLS_SECRET':self.s['rlsKey'],'BETTER_AUTH_SECRET':self.s['masterKey']}
-  try:self.run(['cargo','run','--locked','-p','webdock-control-plane','--bin','webdock-migrate','--','--target',f'127.0.0.1:{port}/webdock_rls_test','--initialize-empty','--provision-roles-from',str(password_file)],env=env,timeout=600)
+  try:self.run(['cargo','run','--locked','-p','spitzli-control-plane','--bin','spitzli-migrate','--','--target',f'127.0.0.1:{port}/webdock_rls_test','--initialize-empty','--provision-roles-from',str(password_file)],env=env,timeout=600)
   finally:listener.close()
   self.docker('exec',self.s['coreID'],'psql','-U','postgres','-d','webdock_rls_test','-c','INSERT INTO webdock_auth.snowflake_state(singleton) VALUES(true)')
  def binary(self):
-  build=self.run(['cargo','test','--locked','-p','webdock-agent-control','--test','database_backup_connected','--no-run','--message-format=json'],timeout=600)
+  build=self.run(['cargo','test','--locked','-p','spitzli-agent-control','--test','database_backup_connected','--no-run','--message-format=json'],timeout=600)
   artifacts=[json.loads(line) for line in build.splitlines() if line.startswith('{')]
   binary=next(Path(a['executable']) for a in artifacts if a.get('reason')=='compiler-artifact' and a.get('executable') and a['target']['name']=='database_backup_connected')
   self.docker('exec',self.s['name'],'mkdir','-p','/connected/lib')

@@ -187,7 +187,7 @@ service. This does not establish Wasabi or production-provider compatibility.
 ### First-party integration contract and local fixture API
 
 The exact command contract is exported as
-`webdock_databases::MANAGED_COMMAND_SCHEMA` and stored in
+`spitzli_databases::MANAGED_COMMAND_SCHEMA` and stored in
 `crates/databases/src/managed-command.schema.json`. Parse requests with
 `ManagedCommand::parse`; execute them through the existing authenticated
 `DatabaseService::execute_managed(principal, stored_authority, command)` entrypoint.
@@ -277,7 +277,7 @@ prevents readiness. The sample IDs/time/hash are illustrative; they are not a
 production request or a recovery commitment.
 
 Public managed database views expose `backup` according to
-`webdock_databases::BACKUP_STATUS_SCHEMA`
+`spitzli_databases::BACKUP_STATUS_SCHEMA`
 (`crates/databases/src/backup-status.schema.json`). Status is `not-configured`,
 `configuration-pending`, `configured`, `suspension-pending` or `suspended`.
 `observedControls` is null before agent evidence; afterward it separately reports

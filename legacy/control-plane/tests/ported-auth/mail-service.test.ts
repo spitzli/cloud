@@ -13,19 +13,19 @@ import {
 import {
   nativeMailSchemaSQL,
   nativeMailClusterSchemaSQL,
-} from "@webdock/mail-core/schema";
+} from "@spitzli/mail-core/schema";
 import { mailBudgetSchemaSQL } from "../../src/modules/mail/mail-budget";
 import {
   mailInstanceDemand,
   nativeClusterDemand,
-} from "@webdock/mail-core/capacity";
+} from "@spitzli/mail-core/capacity";
 import { hostingSchemaSQL } from "../../src/modules/hosting/schema";
 import {
   getMailService,
   requestMailService,
   claimMailOperation,
   finishMailOperation,
-} from "@webdock/mail-core";
+} from "@spitzli/mail-core";
 
 const url = new URL(process.env.DATABASE_URL!);
 if (

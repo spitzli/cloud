@@ -8,7 +8,7 @@ use crate::{
 use hickory_resolver::{TokioResolver, proto::rr::RData};
 use sea_orm::{ConnectionTrait, DbBackend, Statement};
 use serde_json::Value;
-use webdock_identity::Principal;
+use spitzli_identity::Principal;
 
 /// Where the TXT record for `domain` goes.
 pub fn challenge_name(domain: &str) -> String {

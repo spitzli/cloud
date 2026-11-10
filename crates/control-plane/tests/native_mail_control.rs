@@ -1,5 +1,5 @@
+use spitzli_control_plane::{mail::native_control_configured, plugin_config::MailConfig};
 use std::collections::HashMap;
-use webdock_control_plane::{mail::native_control_configured, plugin_config::MailConfig};
 #[test]
 fn required_native_service_is_unavailable_when_listener_feature_is_absent() {
     let mail = MailConfig {
@@ -36,8 +36,8 @@ async fn console_mail_admission_authenticates_before_polling_a_large_body() {
         seen.store(true, Ordering::SeqCst);
         Ok::<_, std::io::Error>(Bytes::from(vec![b'x'; 100_000]))
     }));
-    let app = webdock_control_plane::http::build_app(
-        webdock_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
+    let app = spitzli_control_plane::http::build_app(
+        spitzli_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
         sea_orm::DatabaseConnection::default(),
     );
     let response = app

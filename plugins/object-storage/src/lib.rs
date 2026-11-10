@@ -9,15 +9,15 @@ pub mod sdk;
 pub mod store;
 
 use serde_json::Value;
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 use std::sync::Arc;
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::ActionHandler;
 pub struct Handler(pub Arc<engine::Engine>);
 #[tonic::async_trait]
 impl ActionHandler for Handler {
     async fn authorize_storage(
         &self,
-        authorization: &webdock_plugin_protocol::storage::StorageAuthorization,
+        authorization: &spitzli_plugin_protocol::storage::StorageAuthorization,
     ) -> Result<(), PluginError> {
         self.0
             .authorize_data(authorization)

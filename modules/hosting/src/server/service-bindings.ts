@@ -1,12 +1,12 @@
 import type { Connection } from "./authorization";
-import type { DatabaseServices } from "@webdock/database-contracts/runtime-ports";
+import type { DatabaseServices } from "@spitzli/database-contracts/runtime-ports";
 import type { HostingPorts } from "./ports";
 import {
   HostingError,
   serviceCommandSchema,
   type HostingActor,
   type ServiceBindingView,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { BindingMaterial } from "./binding-runtime";
 import { limits } from "./allowances";
 export type Dependencies = {

@@ -24,7 +24,7 @@
 
 ## Exact shared model contract
 
-Package: `packages/page-builder`, exports `@webdock/page-builder/model` and `@webdock/page-builder/render`. Source is pure TypeScript with no new runtime dependency.
+Package: `packages/page-builder`, exports `@spitzli/page-builder/model` and `@spitzli/page-builder/render`. Source is pure TypeScript with no new runtime dependency.
 
 ```ts
 export type Breakpoint = 'desktop' | 'tablet' | 'mobile';

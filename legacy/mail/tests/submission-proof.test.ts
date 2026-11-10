@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomBytes} from 'node:crypto';
-import {messageDigest,hookMessageDigest,signSubmission,verifySubmission} from '@webdock/mail-core/submission-proof';
+import {messageDigest,hookMessageDigest,signSubmission,verifySubmission} from '@spitzli/mail-core/submission-proof';
 test('SMTP admission proof binds content, customer, envelope and route revision',()=>{
  const raw=Buffer.from('From: a@example.test\r\nSubject: A\r\n folded subject\r\n\r\nBody\r\n');
  const digest=messageDigest(raw);

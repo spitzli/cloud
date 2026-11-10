@@ -9,14 +9,14 @@ import type {
   VercelDeployment,
   VercelDomain,
   VercelProjectSnapshot,
-} from "@webdock/hosting-provider-contracts";
+} from "@spitzli/hosting-provider-contracts";
 export type {
   VercelAPIErrorCode,
   VercelDeploymentStatus,
   VercelDeployment,
   VercelDomain,
   VercelProjectSnapshot,
-} from "@webdock/hosting-provider-contracts";
+} from "@spitzli/hosting-provider-contracts";
 const messages: Record<VercelAPIErrorCode, string> = {
   unavailable: "Vercel project information is temporarily unavailable.",
   disconnected: "Reconnect the Vercel integration to read project information.",

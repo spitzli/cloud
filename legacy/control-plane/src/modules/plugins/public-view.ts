@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
-import { withDatabaseScope } from "@webdock/database-runtime";
-import type { ModuleView } from "@webdock/module-sdk";
+import { withDatabaseScope } from "@spitzli/database-runtime";
+import type { ModuleView } from "@spitzli/module-sdk";
 import { readInstalledPlugins } from "./store";
 /** Public metadata only. Call admission at the actual durable SQL boundary. */
 export async function readPublicInstallation(

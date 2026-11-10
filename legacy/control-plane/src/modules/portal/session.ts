@@ -1,8 +1,8 @@
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 import { legacyClerkMemberships } from "../auth/clerk-provider";
 import { introspectToken } from "../auth/introspection";
-import { configureOAuthSession } from "@webdock/oauth-session";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { configureOAuthSession } from "@spitzli/oauth-session";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { database } from "../../db/runtime";
 /** Read the existing mapping under the exact session verified by introspection. */
 export function createPortalSession() {

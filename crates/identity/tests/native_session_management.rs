@@ -3,9 +3,9 @@
 mod fixture;
 use fixture::AUTH_SECRET;
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
+use spitzli_identity::{CookiePolicy, IdentityError, IdentityService, SecretKeys};
+use spitzli_persistence::postgres::{Limits, Pool};
 use std::{sync::Arc, time::Duration};
-use webdock_identity::{CookiePolicy, IdentityError, IdentityService, SecretKeys};
-use webdock_persistence::postgres::{Limits, Pool};
 async fn sql(db: &impl ConnectionTrait, text: &str) {
     db.execute_unprepared(text).await.unwrap();
 }

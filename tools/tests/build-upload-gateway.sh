@@ -32,7 +32,7 @@ cleanup_outer() {
   rmdir -- "$work"
 }
 trap cleanup_outer EXIT
-cargo test -p webdock-build --features worker,kubernetes-job --test upload_gateway_live --no-run --message-format=json > "$work/build.json"
+cargo test -p spitzli-build --features worker,kubernetes-job --test upload_gateway_live --no-run --message-format=json > "$work/build.json"
 test_binary=$(python3 - "$work/build.json" <<'PY'
 import json, sys
 executables=[]

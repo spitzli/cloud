@@ -1,4 +1,4 @@
-import type { RuntimeAccess } from "@webdock/database-contracts";
+import type { RuntimeAccess } from "@spitzli/database-contracts";
 
 export class GatewayError extends Error {
   constructor(

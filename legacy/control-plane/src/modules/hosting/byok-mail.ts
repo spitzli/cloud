@@ -1,4 +1,4 @@
-import { createHostingByokMail } from "@webdock/module-hosting/server/byok-mail";
+import { createHostingByokMail } from "@spitzli/module-hosting/server/byok-mail";
 import { requireMail } from "../../installation";
 import { domainProvider } from "./provider-composition";
 import { encryptMailSecret, decryptMailSecret } from "../platform/platform";

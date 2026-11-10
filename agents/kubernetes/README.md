@@ -10,7 +10,7 @@ Production now runs `daemon.py` as the enabled `webdock-hosting-agent.service` o
 python3 agents/kubernetes/connect.py \
   --ssh root@213.136.65.22 \
   --identity ~/.ssh/codeberg_1p.pub \
-  --credentials /private/webdock-agent.json \
+  --credentials /private/spitzli-agent.json \
   --manage --interval 15
 ```
 

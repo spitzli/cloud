@@ -1,8 +1,8 @@
 import { authorizeSetupConfiguration } from "./permissions";
 import { requireDatabases } from "./product-admission";
 import { requireMail } from "../../installation";
-export { assertSetupConfirmation } from "@webdock/module-hosting/server/setup-confirmation";
-import { createHostingSetupPreview } from "@webdock/module-hosting/server/setup-preview";
+export { assertSetupConfirmation } from "@spitzli/module-hosting/server/setup-confirmation";
+import { createHostingSetupPreview } from "@spitzli/module-hosting/server/setup-preview";
 import {
   applicationCapabilities,
   setupBuildCapabilities,

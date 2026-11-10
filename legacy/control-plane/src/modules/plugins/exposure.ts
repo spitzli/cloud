@@ -3,7 +3,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
   pluginTools,
   invokePluginExposure,
-} from "@webdock/core/plugin-exposure";
+} from "@spitzli/core/plugin-exposure";
 import { PluginError } from "@spitzli/plugin-sdk/contracts";
 import {
   getRuntimePlugin,

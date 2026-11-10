@@ -1,6 +1,6 @@
 import 'server-only';
 import {headers} from 'next/headers';
-import {requestAPI} from '@webdock/api-client';
+import {requestAPI} from '@spitzli/api-client';
 import {StudioError,AccessError,studioError} from './studio-errors';
 export type StudioSession={user:{id:string;name:string;email:string;role:'operator'|'user';emailVerified:boolean;twoFactorEnabled:boolean;mustChangePassword:boolean};operator:boolean};
 export type AuthSession={user:StudioSession['user'] & {banned?:boolean};session:{id:string;userId:string;expiresAt:string}};

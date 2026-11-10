@@ -1,8 +1,8 @@
 use k8s_openapi::api::core::v1::Service;
 use kube::{Api, Client};
 use serde_json::{Value, json};
+use spitzli_agent_protocol::mail::{MailClaim, MailMaterial};
 use std::time::Duration;
-use webdock_agent_protocol::mail::{MailClaim, MailMaterial};
 pub struct RetainedDraft {
     username: String,
     password: String,

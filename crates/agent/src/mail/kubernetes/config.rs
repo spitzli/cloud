@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{collections::BTreeMap, path::Path};
-use webdock_supervisor::{ExecutionError, Result};
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct KubernetesMailConfig {
@@ -77,13 +77,13 @@ impl KubernetesMailConfig {
             || self.installation.len() > 24
             || !dns(&self.node)
             || !dns(&self.gateway_namespace)
-            || !webdock_supervisor::image_digest(&self.image)
+            || !spitzli_supervisor::image_digest(&self.image)
             || self.retained.len() > 256
         {
             return Err(ExecutionError::Invalid("Mail Kubernetes configuration"));
         }
         for (customer, binding) in &self.retained {
-            if webdock_core::id::RecordId::parse(customer).is_err()
+            if spitzli_core::id::RecordId::parse(customer).is_err()
                 || ![
                     &binding.namespace_uid,
                     &binding.deployment_uid,

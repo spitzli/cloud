@@ -5,8 +5,8 @@ import {
   HostingError,
   type HostingActor,
   type ServiceRuntime,
-} from "@webdock/hosting-contracts";
-import type { MailActor } from "@webdock/mail-contracts";
+} from "@spitzli/hosting-contracts";
+import type { MailActor } from "@spitzli/mail-contracts";
 import type { Connection } from "./authorization";
 import type { BindingMaterial } from "./binding-runtime";
 export type Dependencies = {

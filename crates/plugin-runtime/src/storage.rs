@@ -1,6 +1,6 @@
 //! Private producer revalidation. Runs on the existing authenticated Runtime listener.
 use super::*;
-use webdock_plugin_protocol::storage::{StorageAuthorization, StorageDirection};
+use spitzli_plugin_protocol::storage::{StorageAuthorization, StorageDirection};
 pub(crate) async fn authorize(
     runtime: &Runtime,
     request: Request<wire::StorageAuthorizationRequest>,

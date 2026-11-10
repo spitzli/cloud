@@ -1,6 +1,6 @@
 import { signedDatabaseScope } from "./signed-scope";
 import { createDatabases, createWorkerDatabases } from "./client";
-import { currentDatabaseScope } from "@webdock/database-runtime";
+import { currentDatabaseScope } from "@spitzli/database-runtime";
 const local = process.env.NODE_ENV !== "production";
 const businessURL = process.env.DATABASE_URL || "";
 export const databasePools =

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { I18nProvider } from '@webdock/i18n/react';
+import { I18nProvider } from '@spitzli/i18n/react';
 import { Editor } from '../src/components/editor';
 
 test('localized editor labels never translate customer-authored option names or field values', () => {

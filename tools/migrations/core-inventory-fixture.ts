@@ -5,7 +5,7 @@ import { Pool } from "pg";
 import { spawnSync } from "node:child_process";
 import { createServer } from "node:net";
 import { fileURLToPath } from "node:url";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 const target = new URL(process.env.CORE_INVENTORY_OWNER_URL || "");
 if (process.env.WEBDOCK_TEST_OPERATOR !== "true" || target.hostname !== "127.0.0.1" || target.pathname !== "/webdock_operator_test") throw Error("Disposable operator inventory fixture required");
 const { verifyModuleShutdown, assertCoreInventoryEmpty } = await import("../../legacy/control-plane/src/module-preflight");

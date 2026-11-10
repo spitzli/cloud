@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use webdock_plugin_protocol::storage::StorageAuthorization;
+use spitzli_plugin_protocol::storage::StorageAuthorization;
 #[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Kind {
@@ -61,10 +61,10 @@ pub struct Archive {
     pub epoch: String,
     pub expires_at: i64,
     pub source_binding: Option<String>,
-    pub core_source: Option<webdock_export_protocol::SourceRef>,
+    pub core_source: Option<spitzli_export_protocol::SourceRef>,
     pub job: Option<String>,
     pub failure: Option<Failure>,
-    pub receipt: Option<webdock_object_storage::ObjectReceipt>,
+    pub receipt: Option<spitzli_object_storage::ObjectReceipt>,
     pub diagnostics: Option<crate::diagnostics::Diagnostics>,
 }
 impl Archive {
@@ -78,8 +78,8 @@ impl Archive {
         Ok(())
     }
     /// Historical unqualified exports stay inspectable/deletable, never byte-readable.
-    pub fn source(&self) -> crate::Result<Option<&webdock_export_protocol::SourceRef>> {
-        use webdock_export_protocol::SourceKind;
+    pub fn source(&self) -> crate::Result<Option<&spitzli_export_protocol::SourceRef>> {
+        use spitzli_export_protocol::SourceKind;
         let expected = match self.kind {
             Kind::Diagnostics if self.core_source.is_none() => return Ok(None),
             Kind::Diagnostics => return Err("Invalid source kind"),
@@ -100,7 +100,7 @@ impl Archive {
         }
         Ok(Some(source))
     }
-    pub fn ready(&self, now: i64) -> crate::Result<&webdock_object_storage::ObjectReceipt> {
+    pub fn ready(&self, now: i64) -> crate::Result<&spitzli_object_storage::ObjectReceipt> {
         if self.state != State::Ready || self.expires_at <= now {
             return Err("Archive unavailable");
         }
@@ -109,7 +109,7 @@ impl Archive {
         }
         let receipt = self.receipt.as_ref().ok_or("Archive unavailable")?;
         if self.kind == Kind::BuildLog
-            && receipt.size_bytes > webdock_export_protocol::MAX_BUILD_LOG_GZIP_BYTES
+            && receipt.size_bytes > spitzli_export_protocol::MAX_BUILD_LOG_GZIP_BYTES
         {
             return Err("Build log output limit");
         }
@@ -120,7 +120,7 @@ impl Archive {
         self.owned(&a.customer_id, &a.project_id)?;
         if a.plugin_id != "archives"
             || a.action != "archives.download"
-            || a.direction != webdock_plugin_protocol::storage::StorageDirection::Download
+            || a.direction != spitzli_plugin_protocol::storage::StorageDirection::Download
             || a.resource_id != self.id.to_string()
             || a.resource_epoch != self.epoch
             || a.exact_bytes != r.size_bytes

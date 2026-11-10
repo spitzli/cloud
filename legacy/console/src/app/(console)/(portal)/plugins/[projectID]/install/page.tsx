@@ -1,6 +1,6 @@
 import Link from "next/link";
-import type { GitHubView } from "@webdock/api-client/integrations";
-import type { PluginSourceView } from "@webdock/api-client/plugin-sources";
+import type { GitHubView } from "@spitzli/api-client/integrations";
+import type { PluginSourceView } from "@spitzli/api-client/plugin-sources";
 import { requireRegistryOperator } from "@/lib/registry-page";
 import { studioCall } from "@/lib/studio-client";
 import { PluginInstaller } from "./installer";

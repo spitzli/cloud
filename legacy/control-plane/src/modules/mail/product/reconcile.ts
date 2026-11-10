@@ -1,4 +1,4 @@
-import { createMailReconcile } from "@webdock/module-mail/server/product-reconcile";
+import { createMailReconcile } from "@spitzli/module-mail/server/product-reconcile";
 import { discardExpiredUncertainContent } from "./content";
 import { mailDatabase as database } from "./store";
 import { withMailTransaction } from "./store";

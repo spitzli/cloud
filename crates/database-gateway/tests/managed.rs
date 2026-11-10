@@ -1,8 +1,8 @@
-use std::{path::PathBuf, time::Duration};
-use webdock_database_gateway::{
+use spitzli_database_gateway::{
     control::ManagedAccess,
     managed::{ManagedRuntimes, ProcessConfig, ProcessManager},
 };
+use std::{path::PathBuf, time::Duration};
 fn access() -> ManagedAccess {
     serde_json::from_value(serde_json::json!({"kind":"managed","scopeID":"123","subject":"fixture","connectionID":"fixture-connection","profile":"schema","revision":"1","expiresAt":(chrono::Utc::now()+chrono::Duration::minutes(1)).to_rfc3339(),"database":{"host":"127.0.0.1","port":1,"database":"fixture","username":"fixture","password":"synthetic-unused-fixture-password","caCertificate":"synthetic-unused-fixture-ca"}})).unwrap()
 }

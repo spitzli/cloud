@@ -16,9 +16,9 @@ pub mod store;
 pub use engine::Engine;
 
 use serde_json::{Value, json};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::{ActionHandler, HostClient, JobHandler};
 use std::sync::Arc;
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::{ActionHandler, HostClient, JobHandler};
 
 pub fn validate_manifest(manifest: &Manifest) -> std::result::Result<(), PluginError> {
     let mut actual = manifest.as_json().clone();
@@ -58,7 +58,7 @@ pub struct Handler {
 impl ActionHandler for Handler {
     async fn authorize_storage(
         &self,
-        a: &webdock_plugin_protocol::storage::StorageAuthorization,
+        a: &spitzli_plugin_protocol::storage::StorageAuthorization,
     ) -> std::result::Result<(), PluginError> {
         self.engine
             .authorize(a)

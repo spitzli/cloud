@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/cms-ui",
+  "name": "@spitzli/cms-ui",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,7 @@
     "payload": "4.0.0-canary.37",
     "react": ">=19",
     "next": ">=16",
-    "@webdock/i18n": "*"
+    "@spitzli/i18n": "*"
   },
   "devDependencies": {
     "happy-dom": "20.14.5"

@@ -1,7 +1,7 @@
 //! Durable fixed-volume authority is separate from execution and publication leases.
 use super::*;
 use crate::KubernetesStoragePolicy;
-use webdock_agent_protocol::build_storage::{
+use spitzli_agent_protocol::build_storage::{
     BuildStorageAction, BuildStorageReservation, BuildStorageTarget, BuildVolumeHandle,
 };
 

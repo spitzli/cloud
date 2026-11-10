@@ -1,7 +1,7 @@
 import type { MailProductStore } from "./provider-ports";
-import type { DatabaseReader } from "@webdock/core/identity";
-import type { MailActor } from "@webdock/mail-contracts";
-import { parseID } from "@webdock/mail-contracts/validation";
+import type { DatabaseReader } from "@spitzli/core/identity";
+import type { MailActor } from "@spitzli/mail-contracts";
+import { parseID } from "@spitzli/mail-contracts/validation";
 import { MailError, mailUnavailable } from "./product-access";
 export function createMailQuota(
   dependencies: Pick<

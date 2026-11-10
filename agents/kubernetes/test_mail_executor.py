@@ -44,7 +44,7 @@ class MailExecutorTests(unittest.TestCase):
         policy = mail_gateway_policy(self.packet())
         self.assertEqual(policy['metadata']['namespace'], 'wd-mail-123')
         self.assertEqual(policy['spec']['podSelector'], {'matchLabels': {'webdock.dev/mail-customer-id': '123'}})
-        self.assertEqual(policy['spec']['ingress'], [{'from': [{'namespaceSelector': {'matchLabels': {'kubernetes.io/metadata.name': 'webdock-mail-gateway'}}, 'podSelector': {'matchLabels': {'app': 'mail-gateway'}}}], 'ports': [{'protocol': 'TCP', 'port': 8080}]}])
+        self.assertEqual(policy['spec']['ingress'], [{'from': [{'namespaceSelector': {'matchLabels': {'kubernetes.io/metadata.name': 'spitzli-mail-gateway'}}, 'podSelector': {'matchLabels': {'app': 'mail-gateway'}}}], 'ports': [{'protocol': 'TCP', 'port': 8080}]}])
         self.assertNotIn('egress', policy['spec'])
 
     def test_wrong_customer_hostname_unsafe_image_expired_lease_and_extra_arguments_are_rejected(self):

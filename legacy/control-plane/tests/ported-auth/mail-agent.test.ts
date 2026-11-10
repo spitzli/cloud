@@ -14,16 +14,16 @@ import { database } from "../../src/db/runtime";
 import {
   nativeMailSchemaSQL,
   nativeMailClusterSchemaSQL,
-} from "@webdock/mail-core/schema";
-import { mailInstanceDemand } from "@webdock/mail-core/capacity";
-import { getMailService, requestMailService } from "@webdock/mail-core";
+} from "@spitzli/mail-core/schema";
+import { mailInstanceDemand } from "@spitzli/mail-core/capacity";
+import { getMailService, requestMailService } from "@spitzli/mail-core";
 import { hostingSchemaSQL } from "../../src/modules/hosting/schema";
 import {
   claimNativeMail,
   checkpointNativeMail,
   completeNativeMail,
 } from "../../src/modules/mail/mail-agent";
-import { openSecret } from "@webdock/mail-core/secrets";
+import { openSecret } from "@spitzli/mail-core/secrets";
 
 const url = new URL(process.env.DATABASE_URL!);
 if (

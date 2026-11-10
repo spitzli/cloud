@@ -13,8 +13,8 @@ use rmcp::{
     },
     service::RequestContext,
 };
+use spitzli_oauth::McpAuthentication;
 use tower::ServiceExt;
-use webdock_oauth::McpAuthentication;
 
 pub(super) fn routes() -> Router<Arc<ServiceState>> {
     Router::new()
@@ -39,7 +39,7 @@ fn route_action<'a>(manifest: &'a Value, method: &str, path: &str) -> Option<&'a
 }
 fn api_input_limit(plugin: &str, action: &Value, read: bool) -> usize {
     if !read && plugin == "mail" && action["name"] == "mail.send" && action["intent"] == "write" {
-        webdock_plugin_host::MAIL_ACTION_INPUT_BYTES
+        spitzli_plugin_host::MAIL_ACTION_INPUT_BYTES
     } else {
         32768
     }
@@ -178,7 +178,7 @@ struct ExposedTool {
     write: bool,
 }
 fn tools(
-    views: &[webdock_plugin_host::PluginView],
+    views: &[spitzli_plugin_host::PluginView],
     can_write: bool,
 ) -> Result<Vec<ExposedTool>, PluginError> {
     let mut output = Vec::new();
@@ -256,7 +256,7 @@ impl ServerHandler for McpHandler {
                 if self.resource == Resource::Registry {
                     "webdock-studio"
                 } else {
-                    "webdock-hosting"
+                    "spitzli-hosting"
                 },
                 "1.0.0",
             ),
@@ -459,7 +459,7 @@ fn large_mcp_name(value: &Value, bytes: usize) -> Option<&str> {
     if !args.input.is_object()
         || !(1..=20).contains(&args.project_id.len())
         || !args.project_id.bytes().all(|b| b.is_ascii_digit())
-        || input_bytes > webdock_plugin_host::MAIL_ACTION_INPUT_BYTES
+        || input_bytes > spitzli_plugin_host::MAIL_ACTION_INPUT_BYTES
         || bytes.saturating_sub(input_bytes) > 16 * 1024
         || !args
             .idempotency_key
@@ -502,7 +502,7 @@ async fn mcp_request_budget(
             return Err(too_large());
         }
         let value =
-            webdock_plugin_protocol::release::strict_json(&bytes).map_err(|_| too_large())?;
+            spitzli_plugin_protocol::release::strict_json(&bytes).map_err(|_| too_large())?;
         let name = large_mcp_name(&value, bytes.len()).ok_or_else(too_large)?;
         let endpoint = state
             .plugins
@@ -596,8 +596,8 @@ async fn mcp(State(state): State<Arc<ServiceState>>, request: Request) -> Respon
 #[cfg(test)]
 mod tests {
     use super::*;
-    fn view() -> webdock_plugin_host::PluginView {
-        webdock_plugin_host::PluginView {
+    fn view() -> spitzli_plugin_host::PluginView {
+        spitzli_plugin_host::PluginView {
             state: "enabled".into(),
             runtime: "ready".into(),
             generation: 1,

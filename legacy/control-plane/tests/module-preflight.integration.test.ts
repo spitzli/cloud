@@ -1,9 +1,9 @@
 import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomUUID } from "node:crypto";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { createWorkerDatabases } from "../src/db/client";
-import { assertMailCanDisable } from "@webdock/module-mail/server/lifecycle";
+import { assertMailCanDisable } from "@spitzli/module-mail/server/lifecycle";
 (process.env.WEBDOCK_RLS_FIXTURE_FILE ? test : test.skip)(
   "Mail shutdown sees retained suspended instances through the restricted worker role",
   async () => {

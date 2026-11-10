@@ -2,6 +2,14 @@
 mod common;
 use ed25519_dalek::SigningKey;
 use serde_json::json;
+use spitzli_mail_protocol::{
+    wire::{
+        mail_authority_server::{MailAuthority, MailAuthorityServer},
+        mail_runtime_client::MailRuntimeClient,
+    },
+    *,
+};
+use spitzli_plugin_runtime::{PeerIdentity, UnixSocket, authenticated_peer};
 use std::{
     collections::HashSet,
     os::unix::fs::{MetadataExt, PermissionsExt},
@@ -12,14 +20,6 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 use tonic::{Request, Response, Status};
-use webdock_mail_protocol::{
-    wire::{
-        mail_authority_server::{MailAuthority, MailAuthorityServer},
-        mail_runtime_client::MailRuntimeClient,
-    },
-    *,
-};
-use webdock_plugin_runtime::{PeerIdentity, UnixSocket, authenticated_peer};
 #[derive(Clone)]
 struct Core {
     key: ed25519_dalek::VerifyingKey,
@@ -163,7 +163,7 @@ async fn actual_provider_process_uses_confidential_live_callback_and_one_externa
     let config = dir.path().join("provider.json");
     std::fs::write(&config,serde_json::to_vec(&json!({"pluginID":"relay-fixture","version":"0.1.0","generation":1,"descriptorSha256":"a".repeat(64),"issuerPublicKeyHex":hex::encode(key.verifying_key().as_bytes()),"worker":{"kind":"unix","uid":dir.path().metadata().unwrap().uid()},"corePeer":{"kind":"unix","uid":dir.path().metadata().unwrap().uid()},"listen":{"kind":"unix","path":runtime_path},"core":{"kind":"unix","path":core_path},"testOrigin":origin})).unwrap()).unwrap();
     std::fs::set_permissions(&config, std::fs::Permissions::from_mode(0o600)).unwrap();
-    let mut child = tokio::process::Command::new(env!("CARGO_BIN_EXE_webdock-mail-relay"))
+    let mut child = tokio::process::Command::new(env!("CARGO_BIN_EXE_spitzli-mail-relay"))
         .arg(&config)
         .env_clear()
         .kill_on_drop(true)
@@ -177,7 +177,7 @@ async fn actual_provider_process_uses_confidential_live_callback_and_one_externa
                 child.try_wait().unwrap().is_none(),
                 "provider exited during startup"
             );
-            if let Ok(channel) = webdock_plugin_runtime::unix_channel(&runtime_path).await {
+            if let Ok(channel) = spitzli_plugin_runtime::unix_channel(&runtime_path).await {
                 break channel;
             }
             tokio::time::sleep(Duration::from_millis(20)).await;
@@ -233,7 +233,7 @@ async fn actual_provider_process_uses_confidential_live_callback_and_one_externa
     drop(upstream);
     // Configuration must be private even if the process has otherwise valid channel settings.
     std::fs::set_permissions(&config, std::fs::Permissions::from_mode(0o644)).unwrap();
-    let rejected = tokio::process::Command::new(env!("CARGO_BIN_EXE_webdock-mail-relay"))
+    let rejected = tokio::process::Command::new(env!("CARGO_BIN_EXE_spitzli-mail-relay"))
         .arg(config)
         .env_clear()
         .output()

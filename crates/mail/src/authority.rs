@@ -7,8 +7,8 @@ use hmac::{Hmac, Mac};
 use sea_orm::{DatabaseTransaction, TransactionTrait};
 use serde_json::{Value, json};
 use sha2::Sha256;
-use webdock_browser_session::{StoredAuthority, revalidate_stored_authority};
-use webdock_identity::{Principal, RlsSigner};
+use spitzli_browser_session::{StoredAuthority, revalidate_stored_authority};
+use spitzli_identity::{Principal, RlsSigner};
 pub(crate) struct AuthorizedCustomer {
     pub auth: DatabaseTransaction,
     pub business: DatabaseTransaction,
@@ -22,7 +22,7 @@ pub(crate) async fn validate_pools(deps: &MailDependencies) -> Result<()> {
         (&deps.business, "webdock_auth_runtime"),
         (&deps.worker, "webdock_worker_runtime"),
     ] {
-        webdock_persistence::connection::verify_runtime_role(db, role)
+        spitzli_persistence::connection::verify_runtime_role(db, role)
             .await
             .map_err(|_| Error::Unavailable)?;
     }

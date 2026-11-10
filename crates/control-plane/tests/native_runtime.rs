@@ -1,7 +1,7 @@
 use axum::{Router, routing::get};
+use spitzli_control_plane::{config::runtime_config, runtime::serve_with_shutdown};
 use std::{collections::HashMap, time::Duration};
 use tokio::sync::{Notify, oneshot};
-use webdock_control_plane::{config::runtime_config, runtime::serve_with_shutdown};
 
 #[test]
 fn native_startup_keeps_explicit_pool_and_binding_policy() {
@@ -22,7 +22,7 @@ fn native_startup_keeps_explicit_pool_and_binding_policy() {
 
 #[test]
 fn native_id_backend_requires_an_explicit_supported_choice() {
-    use webdock_control_plane::config::IdBackend;
+    use spitzli_control_plane::config::IdBackend;
     let mut env = HashMap::from([(
         "WEBDOCK_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
@@ -180,14 +180,14 @@ async fn shutdown_drains_inflight_work_but_does_not_wait_forever() {
 #[test]
 fn native_identity_uncertainty_is_service_unavailability() {
     let response =
-        webdock_control_plane::auth::failure(webdock_identity::IdentityError::Persistence);
+        spitzli_control_plane::auth::failure(spitzli_identity::IdentityError::Persistence);
     assert_eq!(response.status, axum::http::StatusCode::SERVICE_UNAVAILABLE);
     assert_eq!(response.code, "unavailable");
 }
 
 #[test]
 fn native_session_read_backend_requires_explicit_opt_in() {
-    use webdock_control_plane::config::SessionReadBackend;
+    use spitzli_control_plane::config::SessionReadBackend;
     let mut env = HashMap::from([(
         "WEBDOCK_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
@@ -210,7 +210,7 @@ fn native_session_read_backend_requires_explicit_opt_in() {
 
 #[test]
 fn native_session_management_is_explicit_and_shares_native_reads() {
-    use webdock_control_plane::config::{SessionManagementBackend, SessionReadBackend};
+    use spitzli_control_plane::config::{SessionManagementBackend, SessionReadBackend};
     let mut env = HashMap::from([(
         "WEBDOCK_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
@@ -243,7 +243,7 @@ fn native_session_management_is_explicit_and_shares_native_reads() {
 
 #[test]
 fn native_browser_flow_storage_requires_explicit_opt_in() {
-    use webdock_control_plane::config::BrowserFlowBackend;
+    use spitzli_control_plane::config::BrowserFlowBackend;
     let mut env = HashMap::from([(
         "WEBDOCK_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
@@ -266,7 +266,7 @@ fn native_browser_flow_storage_requires_explicit_opt_in() {
 
 #[test]
 fn native_oauth_client_store_requires_explicit_opt_in() {
-    use webdock_control_plane::config::OAuthClientBackend;
+    use spitzli_control_plane::config::OAuthClientBackend;
     let mut env = HashMap::from([(
         "WEBDOCK_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
@@ -289,7 +289,7 @@ fn native_oauth_client_store_requires_explicit_opt_in() {
 
 #[test]
 fn native_oauth_introspection_requires_explicit_opt_in_and_implies_client_reads() {
-    use webdock_control_plane::config::{OAuthClientBackend, OAuthIntrospectionBackend};
+    use spitzli_control_plane::config::{OAuthClientBackend, OAuthIntrospectionBackend};
     let mut env = HashMap::from([(
         "WEBDOCK_DATABASE_URL".into(),
         "postgres://runtime:fixture@127.0.0.1/webdock_test".into(),
@@ -317,7 +317,7 @@ fn native_oauth_introspection_requires_explicit_opt_in_and_implies_client_reads(
 
 #[test]
 fn native_browser_authority_is_explicit_and_shares_native_dependencies() {
-    use webdock_control_plane::config::{
+    use spitzli_control_plane::config::{
         BrowserAuthorityBackend, BrowserFlowBackend, OAuthClientBackend, OAuthIntrospectionBackend,
     };
     let mut env = HashMap::from([(
@@ -355,7 +355,7 @@ fn native_browser_authority_is_explicit_and_shares_native_dependencies() {
 
 #[test]
 fn native_oauth_security_is_explicit_and_implies_its_native_dependencies() {
-    use webdock_control_plane::config::{
+    use spitzli_control_plane::config::{
         IdBackend, OAuthClientBackend, OAuthIntrospectionBackend, OAuthSecurityBackend,
         SessionReadBackend,
     };
@@ -389,7 +389,7 @@ fn native_oauth_security_is_explicit_and_implies_its_native_dependencies() {
 
 #[test]
 fn native_oauth_grants_is_explicit_and_composes_native_authorities() {
-    use webdock_control_plane::config::{
+    use spitzli_control_plane::config::{
         IdBackend, OAuthGrantsBackend, OAuthIntrospectionBackend, OAuthSecurityBackend,
         SessionReadBackend,
     };
@@ -423,7 +423,7 @@ fn native_oauth_grants_is_explicit_and_composes_native_authorities() {
 
 #[test]
 fn native_oauth_tokens_is_explicit_and_composes_the_complete_owned_lifecycle() {
-    use webdock_control_plane::config::{
+    use spitzli_control_plane::config::{
         IdBackend, OAuthGrantsBackend, OAuthSecurityBackend, OAuthTokensBackend, SessionReadBackend,
     };
     let mut env = HashMap::from([(
@@ -453,7 +453,7 @@ fn native_oauth_tokens_is_explicit_and_composes_the_complete_owned_lifecycle() {
 
 #[test]
 fn native_mcp_authority_is_explicit_and_additive_to_existing_capabilities() {
-    use webdock_control_plane::config::{
+    use spitzli_control_plane::config::{
         McpAuthorityBackend, OAuthIntrospectionBackend, OAuthTokensBackend,
     };
     let mut env = HashMap::from([(
@@ -490,7 +490,7 @@ fn native_mcp_authority_is_explicit_and_additive_to_existing_capabilities() {
 
 #[test]
 fn native_account_recovery_is_explicit_and_preserves_other_capabilities() {
-    use webdock_control_plane::config::{
+    use spitzli_control_plane::config::{
         AccountRecoveryBackend, IdBackend, SessionManagementBackend,
     };
     let mut env = HashMap::from([(
@@ -527,7 +527,7 @@ fn native_account_recovery_is_explicit_and_preserves_other_capabilities() {
 
 #[test]
 fn native_password_login_is_explicit_and_composes_its_required_capabilities() {
-    use webdock_control_plane::config::{
+    use spitzli_control_plane::config::{
         AccountRecoveryBackend, IdBackend, PasswordLoginBackend, SessionManagementBackend,
         SessionReadBackend,
     };

@@ -7,7 +7,7 @@ compatibility and account isolation have not been qualified.
 
 ## Boundaries
 
-`webdock-object-storage` is a private byte adapter using Apache Arrow's
+`spitzli-object-storage` is a private byte adapter using Apache Arrow's
 `object_store` 0.14.2 S3 implementation. Product modules retain authorization,
 durable jobs, billing and retention. The raw S3 client is private. Configuration
 uses an explicit endpoint, region, bucket, namespace and restricted credentials;
@@ -123,8 +123,8 @@ uses a separate temporary PostgreSQL container; it never uses the running platfo
 database. Its private diagnostics live under this plan's ignored workspace.
 
 ```sh
-cargo test --locked -p webdock-object-storage --features local-test
-cargo test --locked -p webdock-build --no-default-features --features worker --test remote_artifacts --test artifact --test contracts
+cargo test --locked -p spitzli-object-storage --features local-test
+cargo test --locked -p spitzli-build --no-default-features --features worker --test remote_artifacts --test artifact --test contracts
 python3 tools/tests/object-storage.py
 python3 tools/tests/object-storage.py python3 tools/tests/build-storage.py
 cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
@@ -181,7 +181,7 @@ claim to carry a detached signature. All worker/control/S3/registry credential f
 now reject group/world readability; non-secret readonly configuration is distinct.
 
 The optional `signature.json` signs a domain-separated digest of the exact provenance
-bytes. `webdock_build::evidence::validate` accepts an expected public key; use an
+bytes. `spitzli_build::evidence::validate` accepts an expected public key; use an
 operator-approved pin when making a trust decision. An embedded key alone is not
 organization trust or production approval. Existing Core artifact hashes still bind
 that key/signature to the accepted build record. Rotation does not rewrite historical

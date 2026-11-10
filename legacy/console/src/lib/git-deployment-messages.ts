@@ -1,4 +1,4 @@
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 
 // Service errors and stored status codes are translated only at the presentation boundary.
 export const gitDeploymentMessages = [

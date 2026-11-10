@@ -1,8 +1,8 @@
-use std::{collections::BTreeMap, net::IpAddr, sync::Arc};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use webdock_plugin_http::{
+use spitzli_plugin_http::{
     HttpBinding, HttpRule, MAIL_REQUEST_BYTES, bind_target, send_json, send_mail,
 };
+use std::{collections::BTreeMap, net::IpAddr, sync::Arc};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 fn binding(port: u16, ca: String) -> HttpBinding {
     HttpBinding {
         origin: format!("https://provider.invalid:{port}"),

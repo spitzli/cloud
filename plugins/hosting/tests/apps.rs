@@ -2,11 +2,11 @@
 //! disposable local PostgreSQL (`WEBDOCK_HOSTING_PLUGIN_TEST_ADMIN_URL`, loopback). The objects
 //! themselves run on the local k3s in the live dev stack.
 use serde_json::{Value, json};
+use spitzli_hosting::{Handler, Plugin, Settings, placement, seal::Sealer, store::Store};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 use std::sync::{Arc, Mutex};
 use tokio_postgres::NoTls;
-use webdock_hosting::{Handler, Plugin, Settings, placement, seal::Sealer, store::Store};
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::ActionHandler;
 
 const IMAGE: &str = "nginx:stable-alpine";
 
@@ -156,7 +156,7 @@ impl Fixture {
 
 #[test]
 fn shipped_manifest_is_the_reviewed_contract() {
-    webdock_hosting::validate_manifest(
+    spitzli_hosting::validate_manifest(
         &Manifest::parse(include_bytes!("../manifest.json")).unwrap(),
     )
     .unwrap();
@@ -175,7 +175,7 @@ fn image_references_and_environment_are_bounded() {
             good.to_owned()
         };
         assert!(
-            webdock_hosting::image_reference(&good, false).is_ok(),
+            spitzli_hosting::image_reference(&good, false).is_ok(),
             "{good}"
         );
     }
@@ -189,16 +189,16 @@ fn image_references_and_environment_are_bounded() {
         "nginx;rm",
     ] {
         assert!(
-            webdock_hosting::image_reference(bad, false).is_err(),
+            spitzli_hosting::image_reference(bad, false).is_err(),
             "{bad:?}"
         );
     }
     assert!(
-        webdock_hosting::image_reference("nginx:stable-alpine", true).is_err(),
+        spitzli_hosting::image_reference("nginx:stable-alpine", true).is_err(),
         "production requires a digest"
     );
     let env =
-        webdock_hosting::environment("# comment\nA=1\n\nDATABASE_URL=postgres://x=y\n").unwrap();
+        spitzli_hosting::environment("# comment\nA=1\n\nDATABASE_URL=postgres://x=y\n").unwrap();
     assert_eq!(
         env,
         vec![
@@ -207,7 +207,7 @@ fn image_references_and_environment_are_bounded() {
         ]
     );
     for bad in ["NOVALUE", "1A=x", "A-B=x", "A=1\nA=2", "A=\u{1b}x"] {
-        assert!(webdock_hosting::environment(bad).is_err(), "{bad:?}");
+        assert!(spitzli_hosting::environment(bad).is_err(), "{bad:?}");
     }
 }
 

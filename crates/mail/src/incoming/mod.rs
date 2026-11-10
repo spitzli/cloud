@@ -14,8 +14,8 @@ use crate::{
 };
 use sea_orm::{ConnectionTrait, DatabaseTransaction, DbBackend, QueryResult, Statement};
 use serde::de::DeserializeOwned;
-use webdock_browser_session::StoredAuthority;
-use webdock_identity::{Principal, RlsSigner};
+use spitzli_browser_session::StoredAuthority;
+use spitzli_identity::{Principal, RlsSigner};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

@@ -1,4 +1,4 @@
-import { createMailBatches } from "@webdock/module-mail/server/product-batches";
+import { createMailBatches } from "@spitzli/module-mail/server/product-batches";
 import { mailDatabase as database } from "./store";
 import { withMailTransaction } from "./store";
 import { assertMailAccess } from "./access";

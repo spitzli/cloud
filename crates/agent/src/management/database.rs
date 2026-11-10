@@ -107,7 +107,7 @@ impl RemoteAuthority {
 
 #[async_trait::async_trait]
 impl DatabaseAuthority for RemoteAuthority {
-    async fn guard(&self, claim: &DatabaseClaim) -> webdock_supervisor::Result<()> {
+    async fn guard(&self, claim: &DatabaseClaim) -> spitzli_supervisor::Result<()> {
         claim
             .validate(chrono::Utc::now())
             .map_err(|_| ExecutionError::Expired)?;
@@ -148,7 +148,7 @@ impl DatabaseAuthority for RemoteAuthority {
         &self,
         claim: &DatabaseClaim,
         checkpoint: DatabaseCheckpoint,
-    ) -> webdock_supervisor::Result<()> {
+    ) -> spitzli_supervisor::Result<()> {
         DatabaseAuthority::guard(self, claim).await?;
         checkpoint
             .validate()

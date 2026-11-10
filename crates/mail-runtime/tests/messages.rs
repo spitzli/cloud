@@ -1,5 +1,5 @@
 use serde_json::{Value, json};
-use webdock_mail_runtime::{message::*, proof::*, secrets::MailCipher};
+use spitzli_mail_runtime::{message::*, proof::*, secrets::MailCipher};
 
 #[test]
 fn admitted_request_bytes_preserve_retained_idempotency_hashes() {

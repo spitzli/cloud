@@ -12,6 +12,16 @@ use axum::{
 use futures_util::FutureExt;
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::{Value, json};
+use spitzli_control_plane::{
+    http::{Services, build_app_with_domains},
+    mail::{MailEndpoints, initialize_sender},
+    plugin_config::MailConfig,
+};
+use spitzli_mail::{
+    MailDependencies, keys::NativeKeys, payload::PrivatePayloadStore, submissions::Submissions,
+};
+use spitzli_mail_protocol::sha256;
+use spitzli_plugin_host::{FileBindings, HostService};
 use std::{
     collections::HashMap,
     os::unix::fs::PermissionsExt,
@@ -27,16 +37,6 @@ use tokio::{
     io::AsyncReadExt,
     process::{Child, Command},
 };
-use webdock_control_plane::{
-    http::{Services, build_app_with_domains},
-    mail::{MailEndpoints, initialize_sender},
-    plugin_config::MailConfig,
-};
-use webdock_mail::{
-    MailDependencies, keys::NativeKeys, payload::PrivatePayloadStore, submissions::Submissions,
-};
-use webdock_mail_protocol::sha256;
-use webdock_plugin_host::{FileBindings, HostService};
 const WORKER_SECRET: &str = "mail-platform-owned-worker-secret-at-least32";
 const PAYLOAD_KEY: &str = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
@@ -145,7 +145,7 @@ async fn socket_ready(path: &Path, child: &mut Child) {
                 child.try_wait().unwrap().is_none(),
                 "relay exited during startup"
             );
-            if webdock_plugin_runtime::unix_channel(path).await.is_ok() {
+            if spitzli_plugin_runtime::unix_channel(path).await.is_ok() {
                 return;
             }
             tokio::time::sleep(Duration::from_millis(20)).await;
@@ -255,7 +255,7 @@ async fn run(url: &url::Url, name: &str) {
     let dir = tempfile::tempdir().unwrap();
     std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let owner = Database::connect(url.as_str()).await.unwrap();
-    webdock_persistence::migrations::bootstrap(&owner, name, KEY)
+    spitzli_persistence::migrations::bootstrap(&owner, name, KEY)
         .await
         .unwrap();
     seed(&owner).await;
@@ -278,13 +278,13 @@ async fn run(url: &url::Url, name: &str) {
     let auth = role("AUTH_DATABASE_URL", url).await;
     let business = role("DATABASE_URL", url).await;
     let worker_db = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
-    let ids = Arc::new(webdock_persistence::IdAllocator::new(
+    let ids = Arc::new(spitzli_persistence::IdAllocator::new(
         business.clone(),
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     ));
-    let identity = Arc::new(webdock_identity::IdentityService::new(
+    let identity = Arc::new(spitzli_identity::IdentityService::new(
         auth.clone(),
-        webdock_identity::CookiePolicy::new(false, "owned-platform-cookie-secret-at-least32")
+        spitzli_identity::CookiePolicy::new(false, "owned-platform-cookie-secret-at-least32")
             .unwrap(),
     ));
     let deps = MailDependencies {
@@ -334,7 +334,7 @@ async fn run(url: &url::Url, name: &str) {
     );
     let db = auth.clone();
     let core = TlsServer::bind(move |origin| {
-        let configuration = webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+        let configuration = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
             ("WEBDOCK_AUTH_ORIGIN".into(), origin.into()),
             ("WEBDOCK_FEATURES".into(), "{\"mail\":\"enabled\"}".into()),
         ]))
@@ -353,7 +353,7 @@ async fn run(url: &url::Url, name: &str) {
     let core_ca = dir.path().join("core.pem");
     private(&core_ca, &core.ca);
     let callback = dir.path().join("authority.sock");
-    let mut socket = webdock_plugin_runtime::UnixSocket::bind(&callback).unwrap();
+    let mut socket = spitzli_plugin_runtime::UnixSocket::bind(&callback).unwrap();
     let incoming = socket.incoming().unwrap();
     let (finish_callback, callback_done) = tokio::sync::oneshot::channel();
     let authority = tokio::spawn(async move {
@@ -385,7 +385,7 @@ async fn run(url: &url::Url, name: &str) {
         json!({"pluginID":PLUGIN,"version":"1.0.0","generation":1,"descriptorSha256":descriptor,"issuerPublicKeyHex":hex::encode(key.verifying_key().as_bytes()),"worker":{"kind":"unix","uid":uid},"corePeer":{"kind":"unix","uid":uid},"listen":{"kind":"unix","path":plugin_path},"core":{"kind":"unix","path":callback},"testOrigin":upstream.origin}),
     );
     let relay_binary = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../plugins/mail-relay/target/debug/webdock-mail-relay");
+        .join("../../plugins/mail-relay/target/debug/spitzli-mail-relay");
     assert!(
         relay_binary.exists(),
         "Build relay with --features local-provider-test first"
@@ -407,7 +407,7 @@ async fn run(url: &url::Url, name: &str) {
         json!({"port":port,"controlOrigin":core.origin,"controlSecret":WORKER_SECRET,"controlAuthority":core_ca,"payloadDirectory":payload_dir,"payloadKey":PAYLOAD_KEY}),
     );
     let mut api = child(
-        Path::new(env!("CARGO_BIN_EXE_webdock-mail-api")),
+        Path::new(env!("CARGO_BIN_EXE_spitzli-mail-api")),
         &[Path::new("--config"), &api_config],
     );
     api_ready(&api_origin, &mut api).await;
@@ -456,7 +456,7 @@ async fn run(url: &url::Url, name: &str) {
     let first_id = first["id"].as_str().unwrap();
     assert_eq!(first["state"], "queued");
     let mut worker = child(
-        Path::new(env!("CARGO_BIN_EXE_webdock-mail-worker")),
+        Path::new(env!("CARGO_BIN_EXE_spitzli-mail-worker")),
         &[&worker_config],
     );
     let accepted = outcome(&owner, first_id, "accepted", &mut worker).await;
@@ -507,7 +507,7 @@ async fn run(url: &url::Url, name: &str) {
     )
     .await;
     let mut worker = child(
-        Path::new(env!("CARGO_BIN_EXE_webdock-mail-worker")),
+        Path::new(env!("CARGO_BIN_EXE_spitzli-mail-worker")),
         &[&worker_config],
     );
     outcome(&owner, third_id, "cancelled", &mut worker).await;

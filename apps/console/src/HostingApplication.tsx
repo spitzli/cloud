@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useBlocker } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { commandSchema, formatResource } from "@webdock/hosting-contracts";
+import { commandSchema, formatResource } from "@spitzli/hosting-contracts";
 import { useApi, useSession } from "./context";
 import { Empty, Failure, Loading, Modal } from "./common";
 import { useHostingAction, useHostingCommand } from "./hosting-client";

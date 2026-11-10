@@ -1,8 +1,8 @@
 "use client";
 import { HostingAllowanceFields, HostingAllowanceList } from "./hosting/allowances";
-import { msgid } from '@webdock/i18n';
+import { msgid } from '@spitzli/i18n';
 
-import { useI18n } from '@webdock/i18n/react';
+import { useI18n } from '@spitzli/i18n/react';
 
 import type { Allowances } from "@/lib/plans";
 

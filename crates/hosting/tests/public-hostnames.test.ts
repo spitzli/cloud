@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {randomBytes} from 'node:crypto';
 import {Pool} from 'pg';
-import {withDatabaseScope} from '@webdock/database-runtime';
-import {createDatabases} from '@webdock/adapter-database-postgres';
+import {withDatabaseScope} from '@spitzli/database-runtime';
+import {createDatabases} from '@spitzli/adapter-database-postgres';
 
 const input=process.env.WEBDOCK_PUBLIC_HOST_FIXTURE;
 test('platform hostname authority survives races and deletion without crossing tenants',{skip:!input,timeout:60000},async()=>{

@@ -1,12 +1,12 @@
 //! Real Core RLS projection: user-editable spreadsheet formulas never become report cells.
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
-use std::sync::Arc;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{
     AdmissionInput, ExportSources, FileBindings, HostService, InvocationScope,
 };
-use webdock_plugin_runtime::PeerIdentity;
+use spitzli_plugin_runtime::PeerIdentity;
+use std::sync::Arc;
 #[allow(
     dead_code,
     reason = "existing owned Core fixture also serves job tests"
@@ -35,16 +35,16 @@ async fn observed_report_excludes_formula_control_names_and_foreign_project_reso
     let f = fixture::JobFixture::start_with_connections(8).await;
     let business = f.database.role("webdock_auth_runtime").await;
     let service = Arc::new(
-        webdock_databases::DatabaseService::new(
+        spitzli_databases::DatabaseService::new(
             business.clone(),
             f.auth.clone(),
             f.database.role("webdock_worker_runtime").await,
             f.identity.clone(),
             None,
             Arc::new(
-                webdock_persistence::IdAllocator::connect(
+                spitzli_persistence::IdAllocator::connect(
                     f.database.url.as_str(),
-                    webdock_ids::Identity::platform(0, 4).unwrap(),
+                    spitzli_ids::Identity::platform(0, 4).unwrap(),
                 )
                 .await
                 .unwrap(),
@@ -68,7 +68,7 @@ async fn observed_report_excludes_formula_control_names_and_foreign_project_reso
         .unwrap()
         .unwrap();
     tx.commit().await.unwrap();
-    let signer = webdock_identity::RlsSigner::new(
+    let signer = spitzli_identity::RlsSigner::new(
         "owned-plugin-jobs-rls-secret-32bytes",
         "webdock_auth_runtime",
     )
@@ -110,7 +110,7 @@ async fn observed_report_excludes_formula_control_names_and_foreign_project_reso
             .bind(
                 &scope,
                 &tx,
-                webdock_export_protocol::SourceKind::Report,
+                spitzli_export_protocol::SourceKind::Report,
                 "124",
             )
             .await
@@ -138,7 +138,7 @@ async fn observed_report_excludes_formula_control_names_and_foreign_project_reso
             .bind(
                 &scope,
                 &tx,
-                webdock_export_protocol::SourceKind::Report,
+                spitzli_export_protocol::SourceKind::Report,
                 "124"
             )
             .await

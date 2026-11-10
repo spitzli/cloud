@@ -1,6 +1,6 @@
 use rcgen::{BasicConstraints, CertificateParams, IsCa, KeyPair, KeyUsagePurpose};
+use spitzli_plugin_host::provisioning::tls::issue_runtime_identity;
 use std::{os::unix::fs::PermissionsExt, process::Command, time::Duration};
-use webdock_plugin_host::provisioning::tls::issue_runtime_identity;
 
 pub struct Fixture {
     pub directory: tempfile::TempDir,
@@ -83,7 +83,7 @@ impl Fixture {
             container,
         };
         for attempt in 0..100 {
-            if webdock_plugin_kit::postgres::connect(
+            if spitzli_plugin_kit::postgres::connect(
                 &fixture.admin_url,
                 Some(fixture.ca.as_bytes()),
             )
@@ -101,7 +101,7 @@ impl Fixture {
         unreachable!()
     }
     pub async fn admin(&self) -> tokio_postgres::Client {
-        webdock_plugin_kit::postgres::connect(&self.admin_url, Some(self.ca.as_bytes()))
+        spitzli_plugin_kit::postgres::connect(&self.admin_url, Some(self.ca.as_bytes()))
             .await
             .unwrap()
     }

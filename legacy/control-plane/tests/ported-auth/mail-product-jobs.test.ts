@@ -230,7 +230,7 @@ test("quota recovery releases definitive failure and keeps uncertain handoffs re
       await import("../../src/modules/mail/product/quota");
     const { persistMailMessage } =
       await import("../../src/modules/mail/product/sending");
-    const { parseEmail } = await import("@webdock/mail-contracts/validation");
+    const { parseEmail } = await import("@spitzli/mail-contracts/validation");
     const { withMailTransaction } =
       await import("../../src/modules/mail/product/store");
     const ids: string[] = [];
@@ -270,7 +270,7 @@ test("persistent dispatch cursor reaches tenants beyond the twenty-tenant tick l
   withMailProductFixture(async (f) => {
     const { persistMailMessage } =
       await import("../../src/modules/mail/product/sending");
-    const { parseEmail } = await import("@webdock/mail-contracts/validation");
+    const { parseEmail } = await import("@spitzli/mail-contracts/validation");
     const { withMailTransaction } =
       await import("../../src/modules/mail/product/store");
     const customerRows = (

@@ -7,7 +7,7 @@ class MailPgToolsTests(unittest.TestCase):
   self.assertTrue(hasattr(m,'MAIL_PG18_STAGE'),'current main never installs required PostgreSQL clients')
   tree=ast.parse(P(m.__file__).read_text());main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')
   call=next(n for n in ast.walk(main) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='write_text' and isinstance(n.func.value,ast.BinOp) and isinstance(n.func.value.right,ast.Constant) and n.func.value.right.value=='Dockerfile')
-  value=eval(compile(ast.Expression(call.args[0]),m.__file__,'eval'),{**vars(m),'args':types.SimpleNamespace(mail=True),'RUN_LABEL':'own.run','KIND_LABEL':'own.kind','KIND':'own','run':'a'*12,'extra_binaries':' webdock-migrate webdock-mail','relay_copy':'','tool_build_receipt':'RUN actual-tool-build-audit\n'})
+  value=eval(compile(ast.Expression(call.args[0]),m.__file__,'eval'),{**vars(m),'args':types.SimpleNamespace(mail=True),'RUN_LABEL':'own.run','KIND_LABEL':'own.kind','KIND':'own','run':'a'*12,'extra_binaries':' spitzli-migrate spitzli-mail','relay_copy':'','tool_build_receipt':'RUN actual-tool-build-audit\n'})
   self.assertIn('FROM '+m.PG+' AS pg18',value);self.assertIn(m.MAIL_PG18_INSTALL,value)
   self.assertLess(value.index(m.MAIL_PG18_INSTALL),value.index('RUN actual-tool-build-audit'))
   self.assertNotIn('postgresql-client',value)

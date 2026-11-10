@@ -1,3 +1,3 @@
-{"name":"@webdock/adapter-plugin-tabularium","version":"0.1.0","private":true,"type":"module","exports":{"./integrity":"./src/integrity.ts"},"dependencies":{"jose":"^6.1.0","@spitzli/plugin-sdk":"*"},
+{"name":"@spitzli/adapter-plugin-tabularium","version":"0.1.0","private":true,"type":"module","exports":{"./integrity":"./src/integrity.ts"},"dependencies":{"jose":"^6.1.0","@spitzli/plugin-sdk":"*"},
   "license": "Apache-2.0"
 }

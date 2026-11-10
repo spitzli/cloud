@@ -1,6 +1,6 @@
 # Rust Git builds and OCI publication
 
-`webdock-build` owns retained Git source/build/release state and the isolated OCI worker machinery. Core HTTP adapters remain outside this crate. The provider adapter is unavailable by default: no network provider, artifact import, or build is reported as successful without a real configured implementation.
+`spitzli-build` owns retained Git source/build/release state and the isolated OCI worker machinery. Core HTTP adapters remain outside this crate. The provider adapter is unavailable by default: no network provider, artifact import, or build is reported as successful without a real configured implementation.
 
 The service uses restricted `webdock_auth_runtime` and `webdock_worker_runtime` pools, signed session/fixed `git-worker` RLS scopes, an injected dedicated-pool `IdAllocator`, and `HostingService`. Native migration 0012 points to `migrations/0001_git_authority.sql`; it is additive and runs inside the native migration journal transaction. Existing receipts are retained, with new exact completion hashes for native retry handling. Legacy artifacts without a verified OCI manifest digest cannot enter native publication.
 
@@ -11,7 +11,7 @@ The service uses restricted `webdock_auth_runtime` and `webdock_worker_runtime` 
 - `enroll_worker`, `revoke_worker` require a current mapped operator. `authenticate_worker` returns opaque `WorkerIdentity`; every worker action checks its current persisted generation, enabled state and credential hash.
 - `claim_build`, `guard_build`, `source_archive`, `complete_build` bind source/connection/environment revisions and the worker generation. Build leases last 27 minutes. Completion atomically writes artifact, release, outbox and build state. Exact retries return the prior receipt; changed retries fail.
 - `claim_release`, `guard_release`, `prepare_publication`, `publish_image`, `observe_release` bind live approval and worker leases. Publication expires into reconciliation, never a blind requeue. `publish_local_artifact` combines actual private-store verification, guarded OCI registry upload, and the trusted atomic Hosting SPI.
-- `Archive`, `ArtifactStore`, `VmImage`, `GuestRequest` are worker-local components. `webdock-build-guest` runs only inside the disposable VM. Production OCI publishing uses TLS; the `local-registry-test` feature exposes only an explicit loopback HTTP constructor.
+- `Archive`, `ArtifactStore`, `VmImage`, `GuestRequest` are worker-local components. `spitzli-build-guest` runs only inside the disposable VM. Production OCI publishing uses TLS; the `local-registry-test` feature exposes only an explicit loopback HTTP constructor.
 
 Automatic `git-policy` approval is a durable source policy, not a fabricated browser session. Native helpers check current source revision, approved policy subject, active verified/unbanned account, locally authoritative identity and organization, and current owner/admin membership (or explicit MFA-enabled mapped operator). Manual approval additionally requires its real stored unexpired session. Agent continuation binds the persisted release's exact operation, project, app and image. Hosting app/revision/reservation/operation staging and release linkage commit in one worker transaction.
 
@@ -34,10 +34,10 @@ Tests require explicit owned local database URLs and never reset shared schema o
 set -a
 source .runtime-test/identity-restricted.env
 set +a
-cargo test -p webdock-build --no-default-features --test artifact --test contracts
-WEBDOCK_BUILD_VM_TEST=1 cargo test -p webdock-build --no-default-features --release --test vm -- --include-ignored
-WEBDOCK_BUILD_REGISTRY_TEST=1 cargo test -p webdock-build --all-features --test publisher -- --include-ignored
-WEBDOCK_BUILD_VM_TEST=1 WEBDOCK_BUILD_REGISTRY_TEST=1 cargo test -p webdock-hosting --test postgres git_build_publication -- --include-ignored
+cargo test -p spitzli-build --no-default-features --test artifact --test contracts
+WEBDOCK_BUILD_VM_TEST=1 cargo test -p spitzli-build --no-default-features --release --test vm -- --include-ignored
+WEBDOCK_BUILD_REGISTRY_TEST=1 cargo test -p spitzli-build --all-features --test publisher -- --include-ignored
+WEBDOCK_BUILD_VM_TEST=1 WEBDOCK_BUILD_REGISTRY_TEST=1 cargo test -p spitzli-hosting --test postgres git_build_publication -- --include-ignored
 ```
 
 ## Remaining parity

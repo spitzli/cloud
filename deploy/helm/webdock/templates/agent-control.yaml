@@ -43,7 +43,7 @@ spec:
         - name: agent-control
           image: {{ .Values.image | quote }}
           imagePullPolicy: IfNotPresent
-          command: [/usr/local/bin/webdock-agent-control]
+          command: [/usr/local/bin/spitzli-agent-control]
           args: [--config, /private/agent-control.json]
           envFrom:
             - secretRef: {name: {{ $secret | quote }}}

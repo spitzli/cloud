@@ -4,6 +4,18 @@ mod support;
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection};
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_agent::{
+    config::{AgentConfig, ControlEndpoint, RuntimeConfiguration},
+    database::{DatabaseAuthority, DatabaseRuntime, DatabaseStep},
+    management::Daemon,
+};
+use spitzli_agent_control::{ControlPlane, LocalBinding};
+use spitzli_agent_protocol::{self as wire, database::*};
+use spitzli_databases::{DatabaseService, StoredAuthority};
+use spitzli_supervisor::{
+    Capabilities, Command, ExecutionError, LeaseGuard, ObservedState, Phase, RuntimeAdapter,
+    RuntimeSpec,
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -12,18 +24,6 @@ use std::{
     },
 };
 use support::{connection, exec, identity, row, url};
-use webdock_agent::{
-    config::{AgentConfig, ControlEndpoint, RuntimeConfiguration},
-    database::{DatabaseAuthority, DatabaseRuntime, DatabaseStep},
-    management::Daemon,
-};
-use webdock_agent_control::{ControlPlane, LocalBinding};
-use webdock_agent_protocol::{self as wire, database::*};
-use webdock_databases::{DatabaseService, StoredAuthority};
-use webdock_supervisor::{
-    Capabilities, Command, ExecutionError, LeaseGuard, ObservedState, Phase, RuntimeAdapter,
-    RuntimeSpec,
-};
 #[derive(Clone, Copy, Debug)]
 enum Failure {
     RevokedSession,
@@ -47,7 +47,7 @@ impl DatabaseRuntime for Interrupted {
         &self,
         claim: &DatabaseClaim,
         authority: &dyn DatabaseAuthority,
-    ) -> webdock_supervisor::Result<DatabaseStep> {
+    ) -> spitzli_supervisor::Result<DatabaseStep> {
         authority.guard(claim).await?;
         self.executions.fetch_add(1, Ordering::SeqCst);
         self.claims
@@ -72,7 +72,7 @@ impl DatabaseRuntime for Interrupted {
 struct Apps(AtomicUsize);
 #[async_trait::async_trait]
 impl RuntimeAdapter for Apps {
-    async fn logs(&self, _: &RuntimeSpec, _: u32) -> webdock_supervisor::Result<String> {
+    async fn logs(&self, _: &RuntimeSpec, _: u32) -> spitzli_supervisor::Result<String> {
         Err(ExecutionError::Unsupported("fixture logs"))
     }
     fn capabilities(&self) -> Capabilities {
@@ -86,19 +86,19 @@ impl RuntimeAdapter for Apps {
         &self,
         command: &Command,
         guard: &LeaseGuard,
-    ) -> webdock_supervisor::Result<ObservedState> {
+    ) -> spitzli_supervisor::Result<ObservedState> {
         guard.check_for(command).await?;
         self.0.fetch_add(1, Ordering::SeqCst);
         self.inspect(&command.spec).await
     }
-    async fn inspect(&self, spec: &RuntimeSpec) -> webdock_supervisor::Result<ObservedState> {
+    async fn inspect(&self, spec: &RuntimeSpec) -> spitzli_supervisor::Result<ObservedState> {
         Ok(ObservedState {
             autoscaling: None,
             resource_id: spec.resource_id.to_string(),
             revision: spec.revision,
             phase: Phase::Running,
             ready: true,
-            observed_at: webdock_supervisor::timestamp()?,
+            observed_at: spitzli_supervisor::timestamp()?,
             runtime_id: Some("owned-controlled-app".into()),
             conditions: vec![],
             storage: None,
@@ -160,13 +160,13 @@ async fn poll(
         .into_inner()
         .command
         .unwrap();
-    let claim = webdock_agent::management::database_claim(&raw, 1).unwrap();
+    let claim = spitzli_agent::management::database_claim(&raw, 1).unwrap();
     (claim.spec, claim.lease)
 }
 fn store(config: &AgentConfig, delivery: &wire::DatabaseDelivery) {
     let _journal =
-        webdock_supervisor::Journal::open(config.state_directory.join("commands.json")).unwrap();
-    webdock_agent::outbox::DatabaseOutbox::open(
+        spitzli_supervisor::Journal::open(config.state_directory.join("commands.json")).unwrap();
+    spitzli_agent::outbox::DatabaseOutbox::open(
         config.state_directory.join("database-outbox.json"),
     )
     .unwrap()
@@ -211,9 +211,9 @@ fn changed(mut delivery: wire::DatabaseDelivery, fingerprint: bool) -> wire::Dat
 async fn case(name: String, owner: DatabaseConnection, mode: Failure) {
     eprintln!("database receipt case: {mode:?}");
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &url("AUTH_DATABASE_URL", &name),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -231,7 +231,7 @@ async fn case(name: String, owner: DatabaseConnection, mode: Failure) {
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let rls = std::env::var("DATABASE_RLS_SECRET").unwrap();
     let hosting = Arc::new(
-        webdock_hosting::HostingService::new(
+        spitzli_hosting::HostingService::new(
             business.clone(),
             auth.clone(),
             worker.clone(),
@@ -256,7 +256,7 @@ async fn case(name: String, owner: DatabaseConnection, mode: Failure) {
         )
         .await
         .unwrap()
-        .with_management(webdock_databases::ManagementConfig {
+        .with_management(spitzli_databases::ManagementConfig {
             cluster_id: Some(cluster.clone()),
             endpoint_domain: Some("fixture.test".into()),
             public_ordering: false,
@@ -446,7 +446,7 @@ async fn case(name: String, owner: DatabaseConnection, mode: Failure) {
         daemon.connect().await.unwrap();
         assert!(daemon.cycle().await.is_err());
         drop(daemon);
-        webdock_agent::outbox::DatabaseOutbox::open(
+        spitzli_agent::outbox::DatabaseOutbox::open(
             config.state_directory.join("database-outbox.json"),
         )
         .unwrap()
@@ -627,7 +627,7 @@ async fn stale_database_delivery_cannot_poison_unrelated_hosting_and_heartbeat()
         let test_name = name.clone();
         let result = tokio::spawn(async move {
             let owner = connection(&test_name, "WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
-            webdock_persistence::migrations::bootstrap(
+            spitzli_persistence::migrations::bootstrap(
                 &owner,
                 &test_name,
                 &std::env::var("DATABASE_RLS_SECRET").unwrap(),

@@ -3,8 +3,8 @@
 //! state here: the Core resource index holds their names, so they are a pure fixture.
 use serde::Deserialize;
 use serde_json::{Value, json};
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::ActionHandler;
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 
 type Result<T> = std::result::Result<T, PluginError>;
 pub const PLUGIN_ID: &str = "echo-demo";

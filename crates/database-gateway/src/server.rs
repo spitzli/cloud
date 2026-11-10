@@ -320,7 +320,7 @@ impl Gateway {
         Ok(resolved)
     }
     async fn locate(&self, scope: &str, headers: &HeaderMap) -> Result<Arc<Session>> {
-        webdock_core::id::RecordId::parse(scope).map_err(|_| expired())?;
+        spitzli_core::id::RecordId::parse(scope).map_err(|_| expired())?;
         let mut cookies = Vec::new();
         for raw in headers.get_all(header::COOKIE).iter() {
             let raw = raw.to_str().map_err(|_| expired())?;

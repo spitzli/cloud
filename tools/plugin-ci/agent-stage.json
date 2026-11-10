@@ -47,7 +47,7 @@
   "liveFixturePassed": false,
   "liveFixtureCleanupVerified": true,
   "liveFixtureFailure": "Initial strict readiness times out: syntheticBun loopbackservescorrect data/env buthostHTTPstartupProbe replies hit existing cni0 INPUTdrop policy",
-  "liveFixtureProof": "/opt/spitzli-plugin-ci/agent-fixture-qualification/source-69a30142-lt9fx1kk/fixture-proof.json",
+  "liveFixtureProof": "/opt/webdock-plugin-ci/agent-fixture-qualification/source-69a30142-lt9fx1kk/fixture-proof.json",
   "testFixtureMaximumRequiredGLIBC": "2.34",
   "artifactSHA256": "785cb77477644b1cba3fd4622809d20d810a12de6d7e3c2485d00d1fe6123a39",
   "releaseCompilePassed": true,
@@ -62,7 +62,7 @@
     "onlyChangedPath": "crates/agent/tests/legacy_attachment.rs",
     "allOther4554FilesIdentical": true
   },
-  "liveFixtureDiagnostics": "/opt/spitzli-plugin-ci/agent-fixture-qualification/source-69a30142-lt9fx1kk/owned-pod-diagnostics.jsonl",
+  "liveFixtureDiagnostics": "/opt/webdock-plugin-ci/agent-fixture-qualification/source-69a30142-lt9fx1kk/owned-pod-diagnostics.jsonl",
   "firewallOrProbeSecurityChanged": false,
   "allBuildFixtureAttemptsCleaned": true,
   "furtherBuildHttpFixtureAttempts": "HOLD",
@@ -79,7 +79,7 @@
     "rootBase": "/opt/webdock-agent-qualification/retained-attachment-fixture",
     "ownedRuntimeQAObjectsCreatedYet": true
   },
-  "acceptedRuntimeArtifact": "/home/spitzli-plugin-ci/agent-candidates/bound-69a30142-artifact/webdock-agent",
+  "acceptedRuntimeArtifact": "/home/spitzli-plugin-ci/agent-candidates/bound-69a30142-artifact/spitzli-agent",
   "acceptedRuntimeSHA256": "785cb77477644b1cba3fd4622809d20d810a12de6d7e3c2485d00d1fe6123a39",
   "recompiledRuntimeSHA256": "9e553b6ef53e7cfb05e4b83c6db00673627834154ebdd0c7cca5cee70f65de47",
   "strictByteHashGateWeakened": false,

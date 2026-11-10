@@ -1,5 +1,5 @@
 use serde_json::Value;
-use webdock_secrets::SecretCipher;
+use spitzli_secrets::SecretCipher;
 #[test]
 fn retained_node_ciphertext_requires_the_original_key_and_exact_purpose() {
     let fixture: Value =

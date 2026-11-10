@@ -1,7 +1,7 @@
 use chrono::{Duration, Utc};
 use ed25519_dalek::SigningKey;
-use webdock_agent::storage::build::{BuildStorageLedger, BuildStoragePhase};
-use webdock_agent_protocol::build_storage::{
+use spitzli_agent::storage::build::{BuildStorageLedger, BuildStoragePhase};
+use spitzli_agent_protocol::build_storage::{
     BuildStorageAction, BuildStorageReservation, BuildStorageTarget, SignedBuildStorageReservation,
 };
 
@@ -141,13 +141,13 @@ fn fixed_build_filesystem_enforces_enospc_checks_mount_identity_and_fences_retir
     let _ = tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         .try_init();
+    use spitzli_agent::storage::build::BuildStorageTrust;
+    use spitzli_agent::storage::{StorageGuard, StorageKind, StoragePacket, StoragePool};
     use std::{
         os::unix::fs::{MetadataExt, PermissionsExt},
         process::Command,
         sync::{Arc, atomic::AtomicBool},
     };
-    use webdock_agent::storage::build::BuildStorageTrust;
-    use webdock_agent::storage::{StorageGuard, StorageKind, StoragePacket, StoragePool};
     assert_eq!(
         std::env::var("WEBDOCK_DISPOSABLE_STORAGE_TEST").as_deref(),
         Ok("yes")

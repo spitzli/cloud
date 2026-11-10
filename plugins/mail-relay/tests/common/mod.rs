@@ -84,14 +84,14 @@ impl Fixture {
         Self { origin, ca, task }
     }
     pub fn configuration(&self, key: &str, secret: &str) -> Value {
-        let binding = webdock_plugin_http::HttpBinding {
+        let binding = spitzli_plugin_http::HttpBinding {
             origin: self.origin.clone(),
             addresses: vec!["127.0.0.1".parse().unwrap()],
             headers: BTreeMap::from([
                 ("consumerKey".into(), key.into()),
                 ("consumerSecret".into(), secret.into()),
             ]),
-            rules: vec![webdock_plugin_http::HttpRule {
+            rules: vec![spitzli_plugin_http::HttpRule {
                 method: "POST".into(),
                 path: "/api/v2/mail/send".into(),
                 query: vec![],

@@ -1,4 +1,4 @@
-import { createHostingSetupCapabilities } from "@webdock/module-hosting/server/setup-capabilities";
+import { createHostingSetupCapabilities } from "@spitzli/module-hosting/server/setup-capabilities";
 import { clusterView } from "./clusters";
 export const { applicationCapabilities, setupBuildCapabilities } =
   createHostingSetupCapabilities({

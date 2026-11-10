@@ -4,7 +4,7 @@ use kube::{
     api::{ApiResource, DynamicObject, GroupVersionKind, Patch, PatchParams, PostParams},
 };
 use serde_json::{Value, json};
-use webdock_agent_protocol::database::{
+use spitzli_agent_protocol::database::{
     DatabaseCheckpoint, DatabaseCheckpointPhase, DatabaseClaim, DatabaseCompletionProof,
     DatabaseExecutionPhase, DatabaseJobSpec,
 };
@@ -306,9 +306,9 @@ impl NativeDatabaseExecutor {
         let b = &claim.spec.backend;
         Ok(crate::storage::database::DatabaseStoragePacket {
             version: 1,
-            installation_id: webdock_core::id::RecordId::parse(&b.id)
+            installation_id: spitzli_core::id::RecordId::parse(&b.id)
                 .map_err(|_| ExecutionError::Ownership)?,
-            cluster_id: webdock_core::id::RecordId::parse(&claim.spec.cluster_id)
+            cluster_id: spitzli_core::id::RecordId::parse(&claim.spec.cluster_id)
                 .map_err(|_| ExecutionError::Ownership)?,
             revision: b.revision as u64,
             node: b.node.clone(),
@@ -422,9 +422,9 @@ impl NativeDatabaseExecutor {
             }
             let packet = crate::storage::database::DatabaseStoragePacket {
                 version: 1,
-                installation_id: webdock_core::id::RecordId::parse(&backend.id)
+                installation_id: spitzli_core::id::RecordId::parse(&backend.id)
                     .map_err(|_| ExecutionError::Ownership)?,
-                cluster_id: webdock_core::id::RecordId::parse(&job.cluster_id)
+                cluster_id: spitzli_core::id::RecordId::parse(&job.cluster_id)
                     .map_err(|_| ExecutionError::Ownership)?,
                 revision: backend.revision as u64,
                 node: backend.node.clone(),

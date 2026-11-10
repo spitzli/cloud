@@ -2,7 +2,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { Pool, type PoolClient } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { mailboxSchemaSQL } from "../../modules/mail/src/server/native-mailbox-schema";
 import { mailSendSchemaSQL } from "../../modules/mail/src/server/native-send-schema";
 import { mailBudgetSchemaSQL } from "../../modules/mail/src/server/native-budget";

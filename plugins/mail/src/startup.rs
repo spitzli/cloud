@@ -1,6 +1,6 @@
 //! Listener-scoped retained reconciliation: candidates can be probed without customer effects.
+use spitzli_plugin_runtime::HostClient;
 use std::{future::Future, time::Duration};
-use webdock_plugin_runtime::HostClient;
 
 #[derive(Clone, Copy)]
 pub(super) enum LifetimeEvent {
@@ -115,12 +115,12 @@ async fn resume_when_authorized<F, R, E>(
 mod tests;
 
 pub(super) struct Dispatcher {
-    pub control: std::sync::Arc<dyn webdock_mail_runtime::SendControl>,
-    pub payloads: std::sync::Arc<dyn webdock_mail_runtime::PrivatePayloadStore>,
+    pub control: std::sync::Arc<dyn spitzli_mail_runtime::SendControl>,
+    pub payloads: std::sync::Arc<dyn spitzli_mail_runtime::PrivatePayloadStore>,
     #[cfg(not(test))]
-    pub transport: webdock_mail::executor::ManagedTransport,
+    pub transport: spitzli_mail::executor::ManagedTransport,
     #[cfg(test)]
-    pub transport: Box<dyn webdock_mail_runtime::dispatch::DispatchTransport>,
+    pub transport: Box<dyn spitzli_mail_runtime::dispatch::DispatchTransport>,
 }
 /// One listener-owned sender future. Shutdown prevents a new claim and bounds the in-flight
 /// attempt/receipt drain; dropping it after handoff leaves Core's conservative unknown state.
@@ -168,7 +168,7 @@ where
             if authorized && !*stopped.borrow() {
                 // This future is deliberately retained through shutdown for bounded finalization.
                 let _ =
-                    webdock_mail_runtime::dispatch::dispatch_one(&*control, payloads.clone(), {
+                    spitzli_mail_runtime::dispatch::dispatch_one(&*control, payloads.clone(), {
                         #[cfg(not(test))]
                         {
                             &transport
@@ -183,7 +183,7 @@ where
                     return;
                 }
                 let _ =
-                    webdock_mail_runtime::dispatch::cleanup_payloads(&*control, payloads.clone())
+                    spitzli_mail_runtime::dispatch::cleanup_payloads(&*control, payloads.clone())
                         .await;
             }
             tokio::select! {biased;_=stopped.changed()=>return,()=tokio::time::sleep(Duration::from_millis(250))=>{}}

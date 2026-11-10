@@ -7,7 +7,7 @@ use crate::{
 };
 use sea_orm::DatabaseTransaction;
 use serde::Deserialize;
-use webdock_mail_protocol::valid_digest;
+use spitzli_mail_protocol::valid_digest;
 
 pub struct IncomingConfig {
     pub managed_cluster: String,
@@ -72,7 +72,7 @@ impl IncomingConfig {
             || !(16..=128).contains(&secret.password.len())
             || secret.password.chars().any(|c| c < ' ' || c == '\u{7f}')
             || secret.hook_token.len() > 128
-            || webdock_mail_protocol::sha256(secret.hook_token.as_bytes()) != hook
+            || spitzli_mail_protocol::sha256(secret.hook_token.as_bytes()) != hook
             || !valid_digest(&certificate)
         {
             return Err(Error::Unavailable);

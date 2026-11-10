@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { getManagedDatabasePage } from "@/lib/managed-database-page";
 import { HostingProjectHeader } from "@/components/hosting/project-context";
 import { HostingRefresh } from "@/components/hosting/refresh";

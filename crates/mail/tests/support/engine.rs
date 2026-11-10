@@ -2,11 +2,11 @@
 //! All identities, domains, passwords and volumes are generated for this disposable fixture.
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use serde_json::json;
+use spitzli_mail::jmap::ManagementClient;
 use std::{
     process::{Command, Stdio},
     time::{Duration, Instant},
 };
-use webdock_mail::jmap::ManagementClient;
 pub const PASSWORD: &str = "Rust-Disposable-Mail-Only!123456";
 pub fn docker(args: &[&str]) -> String {
     let output = Command::new("docker")

@@ -1,13 +1,13 @@
 import {
   fetchVercelProject,
   listVercelProjects,
-} from "@webdock/hosting-contracts/vercel";
-import { createHostingByokVercel } from "@webdock/module-hosting/server/byok-vercel";
-import { createVercelJSONTransport } from "@webdock/adapter-hosting-vercel/transport";
+} from "@spitzli/hosting-contracts/vercel";
+import { createHostingByokVercel } from "@spitzli/module-hosting/server/byok-vercel";
+import { createVercelJSONTransport } from "@spitzli/adapter-hosting-vercel/transport";
 import { encryptMailSecret, decryptMailSecret } from "../platform/platform";
 import { transaction, audit, planLock } from "./db";
 import { byokAccess } from "./byok";
-export type { VercelRuntime } from "@webdock/module-hosting/server/byok-vercel";
+export type { VercelRuntime } from "@spitzli/module-hosting/server/byok-vercel";
 export const { vercelJSON, executeByokVercel } = createHostingByokVercel({
   get fetchVercelProject() {
     return fetchVercelProject;

@@ -20,13 +20,13 @@ pub struct Fence {
 impl Store {
     pub async fn connect(url: &str, ca: Option<&[u8]>) -> Result<Self> {
         let client = match ca {
-            Some(ca) => webdock_plugin_kit::storage_tls(url, ca, "object-storage", MIGRATIONS)
+            Some(ca) => spitzli_plugin_kit::storage_tls(url, ca, "object-storage", MIGRATIONS)
                 .await
                 .map_err(|_| "metadata migration unavailable")?,
             None => {
-                webdock_plugin_kit::loopback(url)
+                spitzli_plugin_kit::loopback(url)
                     .map_err(|_| "plaintext metadata requires loopback")?;
-                webdock_plugin_kit::storage(url, "object-storage", MIGRATIONS)
+                spitzli_plugin_kit::storage(url, "object-storage", MIGRATIONS)
                     .await
                     .map_err(|_| "metadata migration unavailable")?
             }
@@ -49,7 +49,7 @@ impl Store {
     }
     /// Independent read committed snapshot; live transfer checks cannot wait on the mutation fence.
     pub async fn read(&self, id: &Uuid) -> Result<Option<Resource>> {
-        let connection = webdock_plugin_kit::postgres::connect(&self.url, self.ca.as_deref())
+        let connection = spitzli_plugin_kit::postgres::connect(&self.url, self.ca.as_deref())
             .await
             .map_err(|_| "metadata unavailable")?;
         connection
@@ -64,7 +64,7 @@ impl Store {
             .transpose()
     }
     pub async fn lock(&self) -> Result<Fence> {
-        let connection = webdock_plugin_kit::postgres::connect(&self.url, self.ca.as_deref())
+        let connection = spitzli_plugin_kit::postgres::connect(&self.url, self.ca.as_deref())
             .await
             .map_err(|_| "metadata unavailable")?;
         // Do not set an idle-session timeout: external effects may be in progress while SQL is idle.

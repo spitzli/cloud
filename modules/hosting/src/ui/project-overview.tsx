@@ -1,7 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
-import type { ServiceBindingView, ProjectOverview as ProjectOverviewData } from "@webdock/hosting-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import type { ServiceBindingView, ProjectOverview as ProjectOverviewData } from "@spitzli/hosting-contracts";
 import { HostingRefresh } from "./refresh";
 import type { HostingUIServices } from "./services";
 export function createProjectOverviewView(

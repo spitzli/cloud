@@ -3,19 +3,19 @@ import type {
   MailActor,
   MailCapability,
   Permission,
-} from "@webdock/mail-contracts";
-import type { DatabaseReader, SessionReference } from "@webdock/core/identity";
+} from "@spitzli/mail-contracts";
+import type { DatabaseReader, SessionReference } from "@spitzli/core/identity";
 import { selectedIdentityDirectory as betterAuthIdentity } from "../../auth/principal";
 import {
   createMailAuthorization,
   mailUnavailable,
-} from "@webdock/module-mail/server/product-access";
+} from "@spitzli/module-mail/server/product-access";
 import { resolveSessionReference } from "../../auth/principal";
 import { mailDatabase as database } from "./store";
 export {
   MailError,
   mailUnavailable,
-} from "@webdock/module-mail/server/product-access";
+} from "@spitzli/module-mail/server/product-access";
 const policy = createMailAuthorization({
   identity: betterAuthIdentity,
   byokAllowed: async (db, customerID) =>

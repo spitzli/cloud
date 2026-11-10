@@ -2,7 +2,7 @@ use super::*;
 use crate::mail::configuration::{
     self, ConfigurationAuthority, ConfigurationRuntime, Inspection, Inspector, inspection_claim,
 };
-use webdock_agent_protocol::mail_configuration::{ConfigurationClaim, ConfigurationProof};
+use spitzli_agent_protocol::mail_configuration::{ConfigurationClaim, ConfigurationProof};
 
 #[async_trait::async_trait]
 impl Inspector for DockerMailRuntime {

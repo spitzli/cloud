@@ -1,13 +1,13 @@
 //! Real plugin storage on a disposable local PostgreSQL (`WEBDOCK_MAIL_PLUGIN_TEST_ADMIN_URL`, loopback),
 //! an in-test SMTP catcher and an in-test turboSMTP stand-in. No message leaves this process.
 use serde_json::{Value, json};
+use spitzli_mail::{Dns, Handler, Plugin, Settings, seal::Sealer, store::Store, transport};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 use std::sync::{Arc, Mutex};
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use tokio_postgres::NoTls;
-use webdock_mail::{Dns, Handler, Plugin, Settings, seal::Sealer, store::Store, transport};
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::ActionHandler;
 
 fn admin_url() -> url::Url {
     let url = url::Url::parse(
@@ -244,14 +244,14 @@ fn send(domain: &str, to: &str) -> Value {
 
 #[test]
 fn shipped_manifest_is_the_reviewed_contract() {
-    webdock_mail::validate_manifest(&Manifest::parse(include_bytes!("../manifest.json")).unwrap())
+    spitzli_mail::validate_manifest(&Manifest::parse(include_bytes!("../manifest.json")).unwrap())
         .unwrap();
 }
 
 #[test]
 fn domain_names_are_normalised_and_bounded() {
     assert_eq!(
-        webdock_mail::domain_name(" Shop.Example.COM. ").unwrap(),
+        spitzli_mail::domain_name(" Shop.Example.COM. ").unwrap(),
         "shop.example.com"
     );
     for bad in [
@@ -263,7 +263,7 @@ fn domain_names_are_normalised_and_bounded() {
         "ex ample.com",
         &format!("{}.com", "a".repeat(64)),
     ] {
-        assert!(webdock_mail::domain_name(bad).is_err(), "{bad}");
+        assert!(spitzli_mail::domain_name(bad).is_err(), "{bad}");
     }
 }
 

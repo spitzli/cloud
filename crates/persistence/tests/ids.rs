@@ -1,7 +1,7 @@
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
+use spitzli_ids::{Identity, Layout};
+use spitzli_persistence::IdAllocator;
 use std::{collections::HashSet, sync::Arc};
-use webdock_ids::{Identity, Layout};
-use webdock_persistence::IdAllocator;
 
 #[tokio::test]
 #[ignore = "requires explicitly owned local WEBDOCK_ID_TEST_DATABASE_URL"]

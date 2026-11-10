@@ -4,10 +4,10 @@ use axum::{
 };
 use http_body_util::BodyExt;
 use sea_orm::DatabaseConnection;
+use spitzli_control_plane::{config::runtime_config, http::build_app};
+use spitzli_core::config::PlatformConfig;
 use std::collections::HashMap;
 use tower::ServiceExt;
-use webdock_control_plane::{config::runtime_config, http::build_app};
-use webdock_core::config::PlatformConfig;
 
 fn app() -> axum::Router {
     build_app(

@@ -1,5 +1,5 @@
 import { getPayload } from 'payload';
-import { configurePayloadSSO } from '@webdock/payload-sso';
+import { configurePayloadSSO } from '@spitzli/payload-sso';
 
 export const sso: ReturnType<typeof configurePayloadSSO> | null = process.env.WEBDOCK_SSO_CLIENT_ID
   ? configurePayloadSSO({

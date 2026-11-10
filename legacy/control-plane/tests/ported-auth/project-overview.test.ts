@@ -6,7 +6,7 @@ import { assertTestDatabase } from "../helpers/database";
 import { createSetupFixture } from "../helpers/setup-fixture";
 import { database, closeDatabases } from "../../src/db/runtime";
 import { executeHosting } from "../../src/modules/hosting/service";
-import { HostingError, type ProjectOverview } from "@webdock/hosting-contracts";
+import { HostingError, type ProjectOverview } from "@spitzli/hosting-contracts";
 afterEach(restoreMocks);
 
 assertTestDatabase(process.env.DATABASE_URL!);

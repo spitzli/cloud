@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { z } from "zod";
-import { HostingError, resourceID } from "@webdock/hosting-contracts";
+import { HostingError, resourceID } from "@spitzli/hosting-contracts";
 import {
   claimMailOperation,
   finishMailOperationInTransaction,

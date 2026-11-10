@@ -6,14 +6,14 @@ use axum::{
 use http_body_util::BodyExt;
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement};
 use serde_json::{Value, json};
+use spitzli_control_plane::http::build_app_with_oauth;
+use spitzli_core::config::PlatformConfig;
+use spitzli_identity::{CookiePolicy, IdentityService, RlsSigner, SecretKeys};
 use std::{
     collections::{BTreeMap, HashMap},
     sync::Arc,
 };
 use tower::ServiceExt;
-use webdock_control_plane::http::build_app_with_oauth;
-use webdock_core::config::PlatformConfig;
-use webdock_identity::{CookiePolicy, IdentityService, RlsSigner, SecretKeys};
 
 fn target(key: &str) -> String {
     let raw = std::env::var(key).unwrap();
@@ -71,9 +71,9 @@ async fn native_http_setup_mfa_registry_audit_and_revocation_are_connected() {
     let db = Database::connect(&auth_url).await.unwrap();
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -107,7 +107,7 @@ async fn native_http_setup_mfa_registry_audit_and_revocation_are_connected() {
     let mapping = ids.allocate().await.unwrap().to_string();
     owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_admin.users(id,name,email,role,auth_subject) VALUES($1,'HTTP fixture',$2,'operator',$3)",[mapping.into(),email.clone().into(),user.clone().into()])).await.unwrap();
     let registry = Arc::new(
-        webdock_registry::RegistryService::new(
+        spitzli_registry::RegistryService::new(
             Database::connect(target("WEBDOCK_REGISTRY_DATABASE_URL"))
                 .await
                 .unwrap(),
@@ -119,12 +119,12 @@ async fn native_http_setup_mfa_registry_audit_and_revocation_are_connected() {
         )
         .with_allocator(ids.clone()),
     );
-    let oauth = Arc::new(webdock_oauth::OAuthService::new(
+    let oauth = Arc::new(spitzli_oauth::OAuthService::new(
         db.clone(),
         identity.clone(),
         ids,
         Arc::new(SecretKeys::new(BTreeMap::from([(1, secret.clone())]), 1, Some(secret)).unwrap()),
-        webdock_oauth::OAuthConfig::new(
+        spitzli_oauth::OAuthConfig::new(
             "http://localhost:3125/api/auth",
             "http://localhost:3120/api/mcp",
             None,
@@ -134,15 +134,15 @@ async fn native_http_setup_mfa_registry_audit_and_revocation_are_connected() {
     let oauth_client = oauth
         .provision_client(
             &owner,
-            webdock_oauth::ClientRegistration {
+            spitzli_oauth::ClientRegistration {
                 name: "HTTP fixture".into(),
                 redirect_uris: vec!["https://client.example.invalid/callback".into()],
                 post_logout_redirect_uris: vec![],
                 scopes: vec!["openid".into(), "profile".into(), "email".into()],
-                auth_method: webdock_oauth::ClientAuthMethod::ClientSecretPost,
+                auth_method: spitzli_oauth::ClientAuthMethod::ClientSecretPost,
                 allow_refresh: false,
                 skip_consent: false,
-                purpose: webdock_oauth::ClientPurpose::OperatorOnly {
+                purpose: spitzli_oauth::ClientPurpose::OperatorOnly {
                     allowed_subjects: vec![user.clone()],
                 },
             },

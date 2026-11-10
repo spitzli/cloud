@@ -1,16 +1,16 @@
 //! Product action custody with a deliberate controlled Core stand-in, using owned TLS PostgreSQL.
 use serde_json::{Value, json};
+use spitzli_mail::{
+    Dns, Handler, Plugin, Settings, delivery::Delivery, payload::PgPrivatePayloadStore,
+    seal::Sealer, store::Store, transport,
+};
+use spitzli_mail_runtime::{ControlError, PrivatePayloadStore, SendControl};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims};
+use spitzli_plugin_runtime::ActionHandler;
 use std::sync::{
     Arc, Mutex,
     atomic::{AtomicBool, Ordering},
 };
-use webdock_mail::{
-    Dns, Handler, Plugin, Settings, delivery::Delivery, payload::PgPrivatePayloadStore,
-    seal::Sealer, store::Store, transport,
-};
-use webdock_mail_runtime::{ControlError, PrivatePayloadStore, SendControl};
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims};
-use webdock_plugin_runtime::ActionHandler;
 struct NoDns;
 #[tonic::async_trait]
 impl Dns for NoDns {
@@ -83,21 +83,21 @@ impl SendControl for Control {
     }
 }
 #[async_trait::async_trait]
-impl webdock_mail_protocol::native_control::Control for Control {
+impl spitzli_mail_protocol::native_control::Control for Control {
     async fn call(
         &self,
-        peer: &webdock_plugin_runtime::PeerIdentity,
+        peer: &spitzli_plugin_runtime::PeerIdentity,
         generation: u64,
         input: Value,
-    ) -> Result<Value, webdock_mail_protocol::native_control::ControlError> {
+    ) -> Result<Value, spitzli_mail_protocol::native_control::ControlError> {
         assert!(matches!(
             peer,
-            webdock_plugin_runtime::PeerIdentity::Unix { .. }
+            spitzli_plugin_runtime::PeerIdentity::Unix { .. }
         ));
         assert_eq!(generation, 2);
         <Self as SendControl>::call(self, input)
             .await
-            .map_err(|e| webdock_mail_protocol::native_control::ControlError { status: e.status })
+            .map_err(|e| spitzli_mail_protocol::native_control::ControlError { status: e.status })
     }
 }
 fn claims(action: &str) -> InvocationClaims {
@@ -178,9 +178,9 @@ async fn lost_admission_resumes_original_payload_and_transition_checks_share_cus
         .tempdir()
         .unwrap();
     let socket_path = directory.path().join("core.sock");
-    let mut socket = webdock_plugin_runtime::UnixSocket::bind(&socket_path).unwrap();
+    let mut socket = spitzli_plugin_runtime::UnixSocket::bind(&socket_path).unwrap();
     let incoming = socket.incoming().unwrap();
-    let service = webdock_mail_protocol::native_control::ControlServer::service(control.clone());
+    let service = spitzli_mail_protocol::native_control::ControlServer::service(control.clone());
     let server = tokio::spawn(async move {
         let _socket = socket;
         tonic::transport::Server::builder()
@@ -189,11 +189,11 @@ async fn lost_admission_resumes_original_payload_and_transition_checks_share_cus
             .await
             .unwrap();
     });
-    let channel = webdock_plugin_runtime::unix_channel(&socket_path)
+    let channel = spitzli_plugin_runtime::unix_channel(&socket_path)
         .await
         .unwrap();
     let native = Arc::new(
-        webdock_mail_protocol::native_control::NativeControlClient::new(channel, 2).unwrap(),
+        spitzli_mail_protocol::native_control::NativeControlClient::new(channel, 2).unwrap(),
     );
     let plugin = plugin
         .with_delivery(Delivery::new(native, payloads.clone()))
@@ -229,13 +229,13 @@ async fn lost_admission_resumes_original_payload_and_transition_checks_share_cus
         .unwrap();
     assert_eq!(receipt, json!({"id":"8811","state":"queued"}));
     let retained = payloads.get("8101", &first).await.unwrap();
-    let request = webdock_mail_runtime::message::SendRequest::parse_stored_action(
+    let request = spitzli_mail_runtime::message::SendRequest::parse_stored_action(
         serde_json::from_slice(&retained).unwrap(),
     )
     .unwrap();
     let compiled = request.compile_action().unwrap();
     assert!(
-        webdock_mail_runtime::message::prepare_action_message(
+        spitzli_mail_runtime::message::prepare_action_message(
             &compiled.raw,
             &compiled.sender,
             &compiled.to
@@ -356,7 +356,7 @@ async fn lost_admission_resumes_original_payload_and_transition_checks_share_cus
     store.engine_enabled("8301", false).await.unwrap();
     store.engine_state("8301", "suspended").await.unwrap();
     assert!(!store.direct_allowed("8301").await.unwrap());
-    let db = webdock_plugin_kit::postgres::connect(&url, Some(&ca))
+    let db = spitzli_plugin_kit::postgres::connect(&url, Some(&ca))
         .await
         .unwrap();
     let legacy = uuid::Uuid::new_v4();

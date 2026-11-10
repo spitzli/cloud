@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 import { hostingCall } from "@/lib/hosting-client";
 import { applicationState } from "@/lib/workspace-navigation";
-import { createProjectApplicationsView } from "@webdock/module-hosting/ui/project-applications";
+import { createProjectApplicationsView } from "@spitzli/module-hosting/ui/project-applications";
 const { ProjectApplications: ProjectApplicationsView } =
   createProjectApplicationsView({ hostingCall, applicationState });
 import { getStudioSession } from "@/lib/studio-client";

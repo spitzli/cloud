@@ -13,13 +13,13 @@ use crate::{
     kubernetes_transfer::{AttemptTransfer, MAX_HANDOFF_BYTES, TransferPolicy, verify_result},
 };
 use sha2::{Digest, Sha256};
+use spitzli_object_storage::{StagingMethod, Store};
 use std::{
     os::unix::fs::{MetadataExt, OpenOptionsExt},
     path::{Path, PathBuf},
     sync::Arc,
     time::Duration,
 };
-use webdock_object_storage::{StagingMethod, Store};
 
 pub struct KubernetesStagingTransfer {
     store: Store,

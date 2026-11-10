@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/adapter-database-postgres",
+  "name": "@spitzli/adapter-database-postgres",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,7 +7,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@webdock/database-runtime": "*",
+    "@spitzli/database-runtime": "*",
     "pg": "8.16.3",
     "drizzle-orm": "1.0.0-rc.4"
   },

@@ -1,4 +1,4 @@
-use webdock_plugin_kit::transport::RuntimeTransport;
+use spitzli_plugin_kit::transport::RuntimeTransport;
 
 #[test]
 fn exactly_one_listener_and_callback_are_required() {

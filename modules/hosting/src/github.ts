@@ -1,1 +1,1 @@
-export type * from "@webdock/hosting-provider-contracts/github";
+export type * from "@spitzli/hosting-provider-contracts/github";

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   currentDatabaseScope,
   withDatabaseScope,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import {
   withHostingDatabase,
   withMailDatabase,

@@ -68,7 +68,7 @@ impl BuildService {
         &self,
         principal: &Principal,
         input: Value,
-        authority: Option<&webdock_browser_session::StoredAuthority>,
+        authority: Option<&spitzli_browser_session::StoredAuthority>,
     ) -> Result<Value> {
         let command: Command =
             serde_json::from_value(input).map_err(|_| error("invalid_command"))?;

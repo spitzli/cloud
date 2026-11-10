@@ -1,7 +1,7 @@
 // Console UI of the hosting plugin. Bundled by the Console; every call goes through the plugin action API.
 import { useState, type ReactNode } from "react";
 import { z } from "zod";
-import { Failure, Loading, ui, usePluginMutation, usePluginQuery, type PluginUI, type ResourceProps } from "@webdock/plugin-ui";
+import { Failure, Loading, ui, usePluginMutation, usePluginQuery, type PluginUI, type ResourceProps } from "@spitzli/plugin-ui";
 
 const appSchema = z.object({
   name: z.string(),

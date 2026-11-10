@@ -138,7 +138,7 @@ pub(crate) fn valid_email(raw: &str) -> Result<String> {
     Ok(email)
 }
 pub(crate) fn id(raw: &str) -> Result<&str> {
-    webdock_core::id::RecordId::parse(raw).map_err(|_| Error::InvalidInput)?;
+    spitzli_core::id::RecordId::parse(raw).map_err(|_| Error::InvalidInput)?;
     Ok(raw)
 }
 pub fn website_url(

@@ -17,7 +17,7 @@ async fn setup_rejects_unreviewed_targets_before_creating_private_output() {
     ] {
         let env = HashMap::from([("DATABASE_URL_UNPOOLED".into(), raw.into())]);
         assert!(
-            webdock_control_plane::plugin_bootstrap::bootstrap_plugins(
+            spitzli_control_plane::plugin_bootstrap::bootstrap_plugins(
                 &env,
                 "localhost:5432/db",
                 &config,
@@ -28,7 +28,7 @@ async fn setup_rejects_unreviewed_targets_before_creating_private_output() {
         );
         assert!(!output.exists());
         assert!(
-            webdock_control_plane::plugin_bootstrap::enroll_agent(
+            spitzli_control_plane::plugin_bootstrap::enroll_agent(
                 &env,
                 "localhost:5432/db",
                 &config,
@@ -77,7 +77,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
         let refused = dir.path().join("refused-kernel");
         let result = f
             .rejected_connection(
-                env!("CARGO_BIN_EXE_webdock-bootstrap-plugins"),
+                env!("CARGO_BIN_EXE_spitzli-bootstrap-plugins"),
                 input.clone(),
                 refused.clone(),
                 role,
@@ -95,7 +95,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
         f.command(bin, config, out)
     };
     let result = run(
-        env!("CARGO_BIN_EXE_webdock-bootstrap-plugins"),
+        env!("CARGO_BIN_EXE_spitzli-bootstrap-plugins"),
         input.clone(),
         output.clone(),
     )
@@ -106,7 +106,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
         String::from_utf8_lossy(&result.stderr)
     );
     assert!(result.stdout.is_empty());
-    let config = webdock_control_plane::plugin_config::PluginConfig::load(
+    let config = spitzli_control_plane::plugin_config::PluginConfig::load(
         &output.join("plugin-config.json"),
     )
     .unwrap();
@@ -127,7 +127,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     }
     let key = std::fs::read(output.join("invocation.key")).unwrap();
     let repeated = run(
-        env!("CARGO_BIN_EXE_webdock-bootstrap-plugins"),
+        env!("CARGO_BIN_EXE_spitzli-bootstrap-plugins"),
         input.clone(),
         output.clone(),
     )
@@ -147,7 +147,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     }
     assert!(
         !run(
-            env!("CARGO_BIN_EXE_webdock-bootstrap-plugins"),
+            env!("CARGO_BIN_EXE_spitzli-bootstrap-plugins"),
             input.clone(),
             copied
         )
@@ -163,7 +163,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     );
     let enrollment = dir.path().join("agent.json");
     let enrolled = run(
-        env!("CARGO_BIN_EXE_webdock-enroll-agent"),
+        env!("CARGO_BIN_EXE_spitzli-enroll-agent"),
         agent_input.clone(),
         enrollment.clone(),
     )
@@ -181,7 +181,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     assert_eq!(secret["credential"].as_str().unwrap().len(), 43);
     let before = std::fs::read(&enrollment).unwrap();
     let repeated = run(
-        env!("CARGO_BIN_EXE_webdock-enroll-agent"),
+        env!("CARGO_BIN_EXE_spitzli-enroll-agent"),
         agent_input.clone(),
         enrollment.clone(),
     )
@@ -192,7 +192,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     // Remote enrollment pins the actual reviewed leaf and writes the matching mTLS record.
     let ca = std::fs::read_to_string(output.join("ca.crt")).unwrap();
     let ca_key = std::fs::read_to_string(output.join("ca.key")).unwrap();
-    let leaf = webdock_plugin_host::provisioning::tls::issue_runtime_identity(
+    let leaf = spitzli_plugin_host::provisioning::tls::issue_runtime_identity(
         &ca,
         &ca_key,
         "agent.example.test",
@@ -208,7 +208,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     );
     let remote_output = dir.path().join("remote-agent.json");
     let result = run(
-        env!("CARGO_BIN_EXE_webdock-enroll-agent"),
+        env!("CARGO_BIN_EXE_spitzli-enroll-agent"),
         remote_input.clone(),
         remote_output.clone(),
     )
@@ -220,7 +220,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     f.assert_remote(&remote, &leaf.certificate_sha256).await;
     assert!(
         run(
-            env!("CARGO_BIN_EXE_webdock-enroll-agent"),
+            env!("CARGO_BIN_EXE_spitzli-enroll-agent"),
             remote_input,
             remote_output
         )
@@ -230,7 +230,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     );
     // Lost output cannot authorize replacement or mint another credential.
     let absent = run(
-        env!("CARGO_BIN_EXE_webdock-enroll-agent"),
+        env!("CARGO_BIN_EXE_spitzli-enroll-agent"),
         agent_input.clone(),
         dir.path().join("replacement.json"),
     )
@@ -243,7 +243,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     fixture::private(&agent_input, &changed);
     assert!(
         !run(
-            env!("CARGO_BIN_EXE_webdock-enroll-agent"),
+            env!("CARGO_BIN_EXE_spitzli-enroll-agent"),
             agent_input,
             enrollment.clone()
         )
@@ -255,7 +255,7 @@ async fn fresh_native_clis_create_private_replayable_kernel_and_agent_without_se
     std::fs::remove_file(output.join("core.key")).unwrap();
     assert!(
         !run(
-            env!("CARGO_BIN_EXE_webdock-bootstrap-plugins"),
+            env!("CARGO_BIN_EXE_spitzli-bootstrap-plugins"),
             input,
             output.clone()
         )

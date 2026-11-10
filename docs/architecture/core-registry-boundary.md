@@ -10,7 +10,7 @@ The service factory receives a typed ORM, raw query/connect pool with read-only 
 
 The extraction preserves the original transaction body: current operator authorization before and after work, the exact local `auth_subject` mapping with a shared row lock, immutable customer/project/CMS binding rules, parent/target locks, deletion fences and transactional audit records. Provider identities, URLs, schema/table names and decimal Snowflake strings remain unchanged. The compatibility store discards caller-provided `user` and `overrideAccess`; its verified identity is supplied by host composition.
 
-Public `registry/types` contains only DTO types; `registry/contracts` contains validation without database imports. `@webdock/api-client/registry` now exports the DTOs using explicit `export type`, so Console consumers cannot pull persistence clients through the compatibility path. Existing API import paths remain thin reexports or composition wrappers.
+Public `registry/types` contains only DTO types; `registry/contracts` contains validation without database imports. `@spitzli/api-client/registry` now exports the DTOs using explicit `export type`, so Console consumers cannot pull persistence clients through the compatibility path. Existing API import paths remain thin reexports or composition wrappers.
 
 ## Verification boundary
 

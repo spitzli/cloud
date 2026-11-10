@@ -5,17 +5,17 @@ use crate::{
 };
 use sea_orm::{sea_query::Expr, *};
 use serde_json::{Value, json};
+use spitzli_identity::{Principal, RlsSigner};
 use std::sync::Arc;
-use webdock_identity::{Principal, RlsSigner};
 
 #[async_trait::async_trait]
 pub trait Allocator: Send + Sync {
     async fn allocate(&self, tx: &DatabaseTransaction) -> Result<String>;
 }
 #[async_trait::async_trait]
-impl Allocator for webdock_persistence::IdAllocator {
+impl Allocator for spitzli_persistence::IdAllocator {
     async fn allocate(&self, _tx: &DatabaseTransaction) -> Result<String> {
-        Ok(webdock_persistence::IdAllocator::allocate(self)
+        Ok(spitzli_persistence::IdAllocator::allocate(self)
             .await?
             .to_string())
     }
@@ -86,7 +86,7 @@ async fn default_projects(tx: &DatabaseTransaction, customer: &str, sql: &str) -
 pub struct RegistryService {
     db: DatabaseConnection,
     signer: Arc<RlsSigner>,
-    mcp: Option<Arc<webdock_oauth::McpGuard>>,
+    mcp: Option<Arc<spitzli_oauth::McpGuard>>,
     allocator: Arc<dyn Allocator>,
     guard: Option<Arc<dyn ArchiveGuard>>,
 }
@@ -112,8 +112,8 @@ impl RegistryService {
     /// Request-owned view: the exact access grant remains checked until commit.
     pub async fn with_mcp_authority(
         &self,
-        oauth: &Arc<webdock_oauth::OAuthService>,
-        authority: &webdock_oauth::McpAuthority,
+        oauth: &Arc<spitzli_oauth::OAuthService>,
+        authority: &spitzli_oauth::McpAuthority,
     ) -> Result<Self> {
         if !authority.registry_scope() {
             return Err(RegistryError::Forbidden("Registry scope is required."));

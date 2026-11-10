@@ -1,6 +1,6 @@
 use super::*;
+use spitzli_agent::plugin_runtime::{PluginRuntimeAuthority, PluginRuntimeExecutor};
 use std::sync::atomic::AtomicUsize;
-use webdock_agent::plugin_runtime::{PluginRuntimeAuthority, PluginRuntimeExecutor};
 use wire::plugin::{
     PluginRuntimeCheckpoint, PluginRuntimeClaim, PluginRuntimeCompletion, PluginRuntimeOutcome,
 };
@@ -204,7 +204,7 @@ async fn exact_plugin_receipt_replays_after_restart_and_lease_expiration_without
     let outbox = dir.path().join("plugin-runtime-outbox.json");
     let contents = std::fs::read_to_string(&outbox).unwrap();
     assert!(!contents.contains("material_json"));
-    let pending = webdock_agent::outbox::PluginRuntimeOutbox::open(&outbox)
+    let pending = spitzli_agent::outbox::PluginRuntimeOutbox::open(&outbox)
         .unwrap()
         .pending()
         .unwrap()

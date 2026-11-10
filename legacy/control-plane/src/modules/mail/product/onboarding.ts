@@ -1,4 +1,4 @@
-import { createMailOnboarding } from "@webdock/module-mail/server/product-onboarding";
+import { createMailOnboarding } from "@spitzli/module-mail/server/product-onboarding";
 import { resolveSessionReference } from "../../auth/principal";
 import { requireMail } from "../../../installation";
 import { withAuthenticatedDatabase } from "../../../db/database-context";

@@ -1,5 +1,5 @@
-import { msgid } from '@webdock/i18n';
-import { filterRows } from '@webdock/search';
+import { msgid } from '@spitzli/i18n';
+import { filterRows } from '@spitzli/search';
 import type { TenantSummary, TenantView, Site } from './studio-contracts';
 
 export type ConsoleResult = { id: string; label: string; href: string; kind: 'navigation' | 'workspace' | 'website' | 'project' | 'application' | 'database'; description?: string; external?: boolean };

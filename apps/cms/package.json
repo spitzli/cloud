@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/cms",
+  "name": "@spitzli/cms",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -30,8 +30,8 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "sharp": "0.35.5",
-    "@webdock/i18n": "*",
-    "@webdock/database-runtime": "*"
+    "@spitzli/i18n": "*",
+    "@spitzli/database-runtime": "*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

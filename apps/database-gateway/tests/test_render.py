@@ -24,8 +24,8 @@ class RendererTest(unittest.TestCase):
             (self.root / ('db-' + row['slug'] + '.key')).write_text('synthetic-key')
 
     def row(self, slug):
-        return {'namespace': 'webdock-databases', 'slug': slug, 'engine': 'postgresql',
-                'runtimeOrigin': 'https://db-' + slug + '.webdock-databases.svc.cluster.local',
+        return {'namespace': 'spitzli-databases', 'slug': slug, 'engine': 'postgresql',
+                'runtimeOrigin': 'https://db-' + slug + '.spitzli-databases.svc.cluster.local',
                 'proxySecret': 'synthetic-private-proxy', 'config': {},
                 'connections': [{'id': slug, 'name': slug, 'params': {
                     'driver': 'postgres', 'host': 'old.invalid', 'port': 5432,
@@ -83,7 +83,7 @@ class RendererTest(unittest.TestCase):
         ingress = json.loads((self.root / 'output.json.database-ingress.json').read_text())['items'][0]
         self.assertEqual(ingress['metadata']['namespace'], 'wd-db-123')
         self.assertEqual(ingress['spec']['ingress'][0]['from'], [{'namespaceSelector': {'matchLabels': {
-            'kubernetes.io/metadata.name': 'webdock-databases'}}, 'podSelector': {'matchLabels': {'app': 'db-website'}}}])
+            'kubernetes.io/metadata.name': 'spitzli-databases'}}, 'podSelector': {'matchLabels': {'app': 'db-website'}}}])
 
     def test_rejects_unbounded_or_inconsistent_target(self):
         self.target()

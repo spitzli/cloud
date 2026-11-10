@@ -3,10 +3,10 @@ use axum::{
     http::{Request, StatusCode},
 };
 use sea_orm::DatabaseConnection;
+use spitzli_control_plane::http::build_app;
+use spitzli_core::config::PlatformConfig;
 use std::collections::HashMap;
 use tower::ServiceExt;
-use webdock_control_plane::http::build_app;
-use webdock_core::config::PlatformConfig;
 
 #[tokio::test]
 async fn public_resources_require_bearer_on_retained_studio_host() {
@@ -97,15 +97,15 @@ async fn native_resources_and_mcp_preserve_scopes_and_live_authority_without_plu
 }
 
 struct DelayAllocator {
-    inner: webdock_persistence::IdAllocator,
+    inner: spitzli_persistence::IdAllocator,
     first: std::sync::atomic::AtomicBool,
 }
 #[async_trait::async_trait]
-impl webdock_registry::Allocator for DelayAllocator {
+impl spitzli_registry::Allocator for DelayAllocator {
     async fn allocate(
         &self,
         _tx: &sea_orm::DatabaseTransaction,
-    ) -> webdock_registry::Result<String> {
+    ) -> spitzli_registry::Result<String> {
         if self.first.swap(false, std::sync::atomic::Ordering::SeqCst) {
             tokio::time::sleep(std::time::Duration::from_secs(3)).await;
         }
@@ -322,7 +322,7 @@ async fn resource_scenario(f: Arc<Fixture>) {
     sql(
         &f.owner,
         "UPDATE webdock_auth.\"oauthAccessToken\" SET revoked=now() WHERE token=$1",
-        vec![webdock_oauth::legacy_token_hash(read).into()],
+        vec![spitzli_oauth::legacy_token_hash(read).into()],
     )
     .await;
     assert_eq!(
@@ -413,10 +413,10 @@ async fn resource_scenario(f: Arc<Fixture>) {
 }
 
 async fn expiry_scenario(f: Arc<Fixture>) {
-    let credentials = webdock_oauth::ClientAuthentication {
+    let credentials = spitzli_oauth::ClientAuthentication {
         client_id: f.registry_client.id.clone(),
         client_secret: Some(f.registry_client.secret.clone()),
-        method: webdock_oauth::ClientAuthMethod::ClientSecretPost,
+        method: spitzli_oauth::ClientAuthMethod::ClientSecretPost,
     };
     let token = issue(
         &f.oauth,
@@ -426,13 +426,13 @@ async fn expiry_scenario(f: Arc<Fixture>) {
         &f.resource,
     )
     .await;
-    sql(&f.owner,"UPDATE webdock_auth.\"oauthAccessToken\" SET \"expiresAt\"=now()+interval '2 seconds' WHERE token=$1",vec![webdock_oauth::legacy_token_hash(&token).into()]).await;
+    sql(&f.owner,"UPDATE webdock_auth.\"oauthAccessToken\" SET \"expiresAt\"=now()+interval '2 seconds' WHERE token=$1",vec![spitzli_oauth::legacy_token_hash(&token).into()]).await;
     let delayed = (*f.registry)
         .clone()
         .with_allocator(Arc::new(DelayAllocator {
-            inner: webdock_persistence::IdAllocator::new(
+            inner: spitzli_persistence::IdAllocator::new(
                 db("AUTH_DATABASE_URL").await,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             ),
             first: std::sync::atomic::AtomicBool::new(true),
         }));
@@ -469,7 +469,7 @@ async fn expiry_scenario(f: Arc<Fixture>) {
 
 async fn mixed_scope_scenario(f: Arc<Fixture>) {
     sql(&f.owner,"UPDATE webdock_auth.\"oauthClient\" SET scopes=scopes || '[\"webdock:read\"]'::jsonb WHERE \"clientId\"=$1",vec![f.hosting_client.id.clone().into()]).await;
-    sql(&f.owner,"UPDATE webdock_auth.\"oauthAccessToken\" SET scopes=scopes || '[\"webdock:read\"]'::jsonb WHERE token=$1",vec![webdock_oauth::legacy_token_hash(&f.hosting_client.read).into()]).await;
+    sql(&f.owner,"UPDATE webdock_auth.\"oauthAccessToken\" SET scopes=scopes || '[\"webdock:read\"]'::jsonb WHERE token=$1",vec![spitzli_oauth::legacy_token_hash(&f.hosting_client.read).into()]).await;
     let app = f.app(None).await;
     assert_eq!(
         request(

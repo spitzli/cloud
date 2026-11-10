@@ -4,7 +4,7 @@ import {
   databaseCommandSchema,
   databasePlanSchema,
   databaseViewSchema,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export { databaseCommandSchema, databasePlanSchema, databaseViewSchema };
 export const planEntry = z.object({
   id: z.string(),

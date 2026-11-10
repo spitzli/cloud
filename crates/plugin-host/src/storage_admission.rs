@@ -1,11 +1,11 @@
 //! Transfer locations are encrypted separately from live authority; no invocation token is renewed.
 use super::*;
 use crate::storage::StorageGateway;
-use webdock_plugin_http::storage::StorageBinding;
-use webdock_plugin_protocol::storage::{
+use spitzli_plugin_http::storage::StorageBinding;
+use spitzli_plugin_protocol::storage::{
     StorageAuthorization, StorageDirection, StoragePlan, TransferDescriptor,
 };
-use webdock_secrets::SecretCipher;
+use spitzli_secrets::SecretCipher;
 
 pub struct StorageCaller {
     subject: String,
@@ -17,7 +17,7 @@ pub struct StorageCaller {
 impl StorageCaller {
     pub fn browser(
         principal: &Principal,
-        authority: webdock_browser_session::StoredAuthority,
+        authority: spitzli_browser_session::StoredAuthority,
         can_write: bool,
     ) -> Self {
         Self {
@@ -30,7 +30,7 @@ impl StorageCaller {
     }
     pub fn workspace(
         principal: &Principal,
-        authority: webdock_browser_session::StoredAuthority,
+        authority: spitzli_browser_session::StoredAuthority,
         can_write: bool,
         customer: String,
     ) -> Self {
@@ -42,7 +42,7 @@ impl StorageCaller {
             customer: Some(customer),
         }
     }
-    pub fn mcp(actor: &webdock_oauth::McpAuthentication) -> Self {
+    pub fn mcp(actor: &spitzli_oauth::McpAuthentication) -> Self {
         Self {
             subject: actor.principal.user_id.clone(),
             session: actor.principal.session_id.clone(),
@@ -520,7 +520,7 @@ mod tests {
         let overhead = serde_json::to_vec(&plan).unwrap().len() - size;
         plan.headers.insert(
             "padding".into(),
-            "a".repeat(webdock_plugin_protocol::storage::MAX_STORAGE_PLAN_BYTES - size - overhead),
+            "a".repeat(spitzli_plugin_protocol::storage::MAX_STORAGE_PLAN_BYTES - size - overhead),
         );
         plan.validate("download", "owned", 1000).unwrap();
         assert_eq!(serde_json::to_vec(&plan).unwrap().len(), 12 * 1024);

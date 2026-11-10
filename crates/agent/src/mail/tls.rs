@@ -5,8 +5,8 @@ use rustls::{
     pki_types::{CertificateDer, ServerName, UnixTime},
 };
 use sha2::{Digest, Sha256};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{net::Ipv4Addr, sync::Arc, time::Duration};
-use webdock_supervisor::{ExecutionError, Result};
 use x509_parser::prelude::FromDer;
 #[derive(Debug)]
 struct OwnedEndpoint {

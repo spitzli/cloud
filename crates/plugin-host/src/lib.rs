@@ -28,7 +28,7 @@ pub use authority::{
     RuntimeAuthority, RuntimeDescription, StateLease, StateProbe,
 };
 pub use bindings::{FileBindings, PeerEnrollment, RuntimeBinding, RuntimeBindings};
-pub use webdock_plugin_protocol::{ErrorCode, PluginError};
+pub use spitzli_plugin_protocol::{ErrorCode, PluginError};
 fn unavailable() -> PluginError {
     PluginError::new(ErrorCode::Unavailable, "Plugin host unavailable")
 }

@@ -1,1 +1,1 @@
-export * from "@webdock/module-databases/ui/workspace-frame";
+export * from "@spitzli/module-databases/ui/workspace-frame";

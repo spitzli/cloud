@@ -3,9 +3,9 @@
 //! is just a new apply. Customers connect through Traefik, routed by TLS server name.
 use serde::Deserialize;
 use serde_json::{Value, json};
+pub use spitzli_plugin_kit::workloads::{HostWorkloads, Workloads};
+use spitzli_plugin_protocol::PluginError;
 use uuid::Uuid;
-pub use webdock_plugin_kit::workloads::{HostWorkloads, Workloads};
-use webdock_plugin_protocol::PluginError;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

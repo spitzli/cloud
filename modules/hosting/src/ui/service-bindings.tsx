@@ -3,11 +3,11 @@ import * as React from "react";
 import type { ComponentProps } from "react";
 import { hostingUIScope } from "./scope";
 import { useState } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import type {
   SetupOptions,
   ServiceSelection,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { HostingForm } from "./form";
 function ConnectServiceState({
   options,

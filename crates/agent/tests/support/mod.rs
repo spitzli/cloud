@@ -1,5 +1,5 @@
-use webdock_core::id::RecordId;
-use webdock_supervisor::*;
+use spitzli_core::id::RecordId;
+use spitzli_supervisor::*;
 pub fn spec() -> RuntimeSpec {
     RuntimeSpec {
         autoscaling: None,

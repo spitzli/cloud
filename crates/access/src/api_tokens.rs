@@ -8,7 +8,7 @@ use crate::{
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use webdock_identity::Principal;
+use spitzli_identity::Principal;
 
 /// Who a bearer token speaks for.
 pub struct ApiActor {

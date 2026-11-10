@@ -1,6 +1,6 @@
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 import { legacyClerkMemberships } from "./clerk-provider";
-import { createBetterAuthRuntime } from "@webdock/auth-better-auth/runtime";
+import { createBetterAuthRuntime } from "@spitzli/auth-better-auth/runtime";
 import { admin, organization, jwt } from "better-auth/plugins";
 import { adminAc, userAc } from "better-auth/plugins/admin/access";
 import { oauthProvider } from "@better-auth/oauth-provider";

@@ -1,4 +1,4 @@
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { recordID } from "../../src/modules/registry/contracts";
 import type { RegistryActor } from "../../src/modules/integrations/operator";
 export function requireApply() {

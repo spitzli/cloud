@@ -1,4 +1,4 @@
-use webdock_postgres::store::Store;
+use spitzli_postgres::store::Store;
 #[tokio::test]
 async fn no_tls_store_is_loopback_only_and_tls_never_falls_back() {
     assert_eq!(

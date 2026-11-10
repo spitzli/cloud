@@ -2,6 +2,10 @@
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::{Signer, SigningKey};
 use serde_json::{Value, json};
+use spitzli_plugin_protocol::{InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::{
+    ActionHandler, InvocationAuthority, JobHandler, PeerIdentity, Runtime, UnixSocket, wire,
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -9,10 +13,6 @@ use std::{
         atomic::{AtomicUsize, Ordering},
     },
     time::{SystemTime, UNIX_EPOCH},
-};
-use webdock_plugin_protocol::{InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::{
-    ActionHandler, InvocationAuthority, JobHandler, PeerIdentity, Runtime, UnixSocket, wire,
 };
 struct Authority;
 #[tonic::async_trait]
@@ -119,7 +119,7 @@ async fn actual_invoke_preserves_mail_unicode_only_and_keeps_other_action_plugin
         let server = tokio::spawn(runtime.serve_unix(socket, async {
             let _ = stopped.await;
         }));
-        let mut client = webdock_plugin_runtime::connect_unix(&path)
+        let mut client = spitzli_plugin_runtime::connect_unix(&path)
             .await
             .unwrap()
             .max_encoding_message_size(224 * 1024);

@@ -3,7 +3,7 @@ use super::*;
 use crate::recovery::RecoveryAuthority;
 use serde_json::Value;
 use wire::recovery::{RecoveryClaim, RecoveryCompletion};
-fn bytes(claim: &RecoveryClaim) -> webdock_supervisor::Result<Vec<u8>> {
+fn bytes(claim: &RecoveryClaim) -> spitzli_supervisor::Result<Vec<u8>> {
     claim.validate().map_err(|_| ExecutionError::Expired)?;
     let bytes = serde_json::to_vec(claim).map_err(|_| ExecutionError::Runtime)?;
     if bytes.len() > 131072 {
@@ -113,7 +113,7 @@ async fn acknowledge_after_finalization(
 }
 #[async_trait::async_trait]
 impl RecoveryAuthority for RemoteAuthority {
-    async fn guard(&self, claim: &RecoveryClaim) -> webdock_supervisor::Result<()> {
+    async fn guard(&self, claim: &RecoveryClaim) -> spitzli_supervisor::Result<()> {
         let body = bytes(claim)?;
         let session = self
             .recovery_session()
@@ -140,7 +140,7 @@ impl RecoveryAuthority for RemoteAuthority {
         claim: &RecoveryClaim,
         phase: &str,
         checkpoint: Value,
-    ) -> webdock_supervisor::Result<Value> {
+    ) -> spitzli_supervisor::Result<Value> {
         checkpoint_call(self, claim, phase, &checkpoint, async {
             let session = self
                 .recovery_session()
@@ -179,8 +179,8 @@ async fn checkpoint_call<T>(
     claim: &RecoveryClaim,
     phase: &str,
     checkpoint: &Value,
-    call: impl std::future::Future<Output = webdock_supervisor::Result<T>>,
-) -> webdock_supervisor::Result<T> {
+    call: impl std::future::Future<Output = spitzli_supervisor::Result<T>>,
+) -> spitzli_supervisor::Result<T> {
     // Exact app metadata phases authorize atomically at the Core checkpoint endpoint.
     // They are not provider-effect guards and never rewrite the original claim.
     if !crate::recovery::app_checkpoint(claim, phase, checkpoint) {
@@ -272,7 +272,7 @@ mod tests {
         struct Guard(AtomicUsize);
         #[async_trait::async_trait]
         impl RecoveryAuthority for Guard {
-            async fn guard(&self, _: &RecoveryClaim) -> webdock_supervisor::Result<()> {
+            async fn guard(&self, _: &RecoveryClaim) -> spitzli_supervisor::Result<()> {
                 self.0.fetch_add(1, Ordering::SeqCst);
                 Err(ExecutionError::Denied)
             }

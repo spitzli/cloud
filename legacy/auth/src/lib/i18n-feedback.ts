@@ -1,4 +1,4 @@
-import type { I18n } from '@webdock/i18n';
+import type { I18n } from '@spitzli/i18n';
 /** Keep action results stable; only their visible wording is localized. */
 export function authMessage(message: string, i18n: Pick<I18n, 't' | 'n'>): string {
  const { t, n } = i18n;

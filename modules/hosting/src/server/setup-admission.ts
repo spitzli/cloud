@@ -1,4 +1,4 @@
-import type { SetupConfiguration } from "@webdock/hosting-contracts";
+import type { SetupConfiguration } from "@spitzli/hosting-contracts";
 import type { HostingPorts } from "./ports";
 /** Only new admission needs provisioning authority; a confirmed setup can finish while products drain. */
 export function assertSetupProducts(

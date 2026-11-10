@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { ui, usePluginScope, type CreateProps, type ResourceProps, type PluginUI, type TransferDescriptor } from "@webdock/plugin-ui";
+import { ui, usePluginScope, type CreateProps, type ResourceProps, type PluginUI, type TransferDescriptor } from "@spitzli/plugin-ui";
 
 const sourceSchema=z.object({sources:z.array(z.object({id:z.string().regex(/^[1-9][0-9]{0,18}$/),kind:z.enum(["postgres","project","report","buildlog"]),state:z.literal("ready")})).max(301),maxBytes:z.number(),maxRetentionSeconds:z.number(),pgSourceRequiresReadonlyRole:z.boolean()});
 const statusSchema=z.object({state:z.enum(["pending","producing","ready","failed","deleting","deleted","expired"]),kind:z.enum(["postgres","project","report","buildlog","diagnostics"]),expires_at:z.number(),source:z.object({version:z.literal(1),kind:z.enum(["postgres","project","report","buildlog"]),id:z.string(),binding:z.string(),commit:z.string().nullable()}).nullable().optional(),failure:z.enum(["readonly_source_unavailable","source_access_changed","output_limit","storage_unavailable","export_failed"]).nullable().optional(),bytes:z.number().nullable(),sha256:z.string().nullable(),jobID:z.string().nullable().optional(),job:z.object({id:z.string(),name:z.string(),state:z.enum(["waiting","active","completed","failed","cancelled"]),attempts:z.number()}).optional()});

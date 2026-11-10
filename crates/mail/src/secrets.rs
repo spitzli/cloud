@@ -1,1 +1,1 @@
-pub use webdock_mail_runtime::secrets::*;
+pub use spitzli_mail_runtime::secrets::*;

@@ -5,7 +5,7 @@ import {
   HostingError,
   hostingError,
   resourceID,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export type Dependencies = {
   withDatabaseScope: HostingPorts["withDatabaseScope"];
   authDatabase: HostingPorts["authDatabase"];

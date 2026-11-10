@@ -360,7 +360,7 @@ Vorhandene npm-Workspaces und Root-Lockdatei zunächst erhalten. Bun ist Runtime
 
 ### Phase 5 — Hosting, Integrationen, CMS-Bridges und MCP
 
-- [ ] Hosting-Control-Plane und alle API-/MCP-Aufrufer gegen bestehende `@webdock/hosting-contracts` portieren. Python-Agent nicht gleichzeitig neu schreiben.
+- [ ] Hosting-Control-Plane und alle API-/MCP-Aufrufer gegen bestehende `@spitzli/hosting-contracts` portieren. Python-Agent nicht gleichzeitig neu schreiben.
 - [ ] Reservierungen, Kapazität, idempotente Operationen, Verschlüsselung, Env-Redaktion, Logs, Volumeaufbewahrung und Relocation erhalten.
 - [ ] GitHub-/Vercel-OAuth und Callbacks samt State/Nonce/PKCE bzw. vorhandenem Providervertrag übernehmen.
 - [ ] CMS-/Canvas-/Shop-/Kalenderbrücken zentralisieren, ohne Inhalte oder Permissions in Kunden-CMS zu duplizieren.
@@ -420,8 +420,8 @@ Erster Baseline-Lauf mit bestehender lokaler Wegwerf-Testdatenbank:
 npm run test:auth
 npm run test
 npm run test:sso
-npm run check -w @webdock/auth
-npm run check -w @webdock/admin
+npm run check -w @spitzli/auth
+npm run check -w @spitzli/admin
 ```
 
 Neue API bekommt klar getrennte Scripts `test`, `test:integration`, `check`, `build`; Tests mit echtem lokalem PostgreSQL und Dragonfly ergänzen HTTP- und pure Servicetests. Produktionsdatenbank wird nie als Testfallback verwendet. Bestehende Node-Testläufe nicht unkontrolliert durch einen Wechsel des gesamten Root-Test-Runners verlieren.

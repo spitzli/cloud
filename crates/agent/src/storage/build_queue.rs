@@ -6,14 +6,14 @@ use kube::{
     api::{DeleteParams, ListParams, PostParams, Preconditions},
 };
 use serde_json::{Value, json};
+use spitzli_agent_protocol::build_storage::{
+    BuildVolumeFailure, BuildVolumePhase, BuildVolumeReply, SignedBuildStorageReservation,
+};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{
     sync::{Arc, atomic::AtomicBool},
     time::Duration,
 };
-use webdock_agent_protocol::build_storage::{
-    BuildVolumeFailure, BuildVolumePhase, BuildVolumeReply, SignedBuildStorageReservation,
-};
-use webdock_supervisor::{ExecutionError, Result};
 
 fn invalid() -> ExecutionError {
     ExecutionError::Invalid("build storage queue")
@@ -302,7 +302,7 @@ impl BuildVolumeQueue {
     fn reply(
         &self,
         object: &ConfigMap,
-        request: &webdock_agent_protocol::build_storage::BuildStorageReservation,
+        request: &spitzli_agent_protocol::build_storage::BuildStorageReservation,
         uid: &str,
     ) -> Result<BuildVolumeReply> {
         if object.immutable != Some(true)

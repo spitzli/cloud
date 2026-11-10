@@ -1,7 +1,7 @@
 //! Owned local browser fixture. Never use a retained customer database.
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement};
+use spitzli_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
 
 fn local(key: &str) -> String {
     let raw = std::env::var(key).expect("explicit test fixture");
@@ -20,9 +20,9 @@ async fn main() {
         .unwrap();
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),

@@ -1,1 +1,1 @@
-pub use webdock_mail_runtime::proof::*;
+pub use spitzli_mail_runtime::proof::*;

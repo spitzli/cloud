@@ -1,9 +1,9 @@
 use super::*;
-use std::sync::atomic::AtomicUsize;
-use webdock_agent::mail::{
+use spitzli_agent::mail::{
     MailAuthority, MailCapabilities, MailRuntime,
     configuration::{ConfigurationAuthority, ConfigurationRuntime},
 };
+use std::sync::atomic::AtomicUsize;
 use wire::mail::{MailClaim, MailLease, MailProof, MailResources};
 use wire::mail_configuration::*;
 use wire::mail_configuration_control_server::{

@@ -1,8 +1,8 @@
 import {
   moduleForOperation,
   isModuleProvisioning,
-} from "@webdock/module-sdk/selection";
-import { createRegistry, type ModuleView, type ModuleManifest } from "@webdock/module-sdk";
+} from "@spitzli/module-sdk/selection";
+import { createRegistry, type ModuleView, type ModuleManifest } from "@spitzli/module-sdk";
 export let builtinManifests: readonly ModuleManifest[] = [];
 let mailProvisioning = isModuleProvisioning;
 /** Trusted distribution composition, called before serving requests. */

@@ -2,10 +2,10 @@
 //! Intentionally unlinked until the coordinated compiler/schema hold is released.
 use super::*;
 use serde::Deserialize;
-use webdock_agent_protocol::recovery::{
+use spitzli_agent_protocol::recovery::{
     RecoveryAction, RecoveryClaim, RecoveryCompletion, RecoveryLease, RecoveryProfile, RecoverySpec,
 };
-use webdock_browser_session::StoredAuthority;
+use spitzli_browser_session::StoredAuthority;
 
 #[derive(Deserialize)]
 #[serde(tag = "action", deny_unknown_fields)]
@@ -155,7 +155,7 @@ impl HostingService {
         if let RecoveryCommand::Export { recovery_set_id } = &command {
             contracts::record_id(recovery_set_id)?;
             let row=one(&tx,"SELECT to_jsonb(s)||jsonb_build_object('profile',p.profile,'profileID',p.source->>'profileID','approvedBy',p.approved_by,'capacityBytes',p.capacity_bytes) AS value FROM webdock_auth.hosting_recovery_set s JOIN webdock_auth.hosting_recovery_policy p ON p.id=s.policy_id JOIN webdock_auth.hosting_operation o ON o.id=s.operation_id WHERE s.id=$1 AND s.referenced AND o.status='succeeded'",vec![recovery_set_id.clone().into()]).await?.map(object).transpose()?.ok_or_else(failure)?;
-            let admitted = webdock_agent_protocol::recovery::custody::AdmittedRecoverySet {
+            let admitted = spitzli_agent_protocol::recovery::custody::AdmittedRecoverySet {
                 version: 1,
                 set_id: field(&row, "id")?.into(),
                 operation_id: field(&row, "operation_id")?.into(),
@@ -341,7 +341,7 @@ impl HostingService {
                 let mut target = declared.clone();
                 target["profileID"] = declared["id"].clone();
                 if p["profile"] == "ntfy-sqlite-offline-v1" {
-                    let runtime: webdock_supervisor::RuntimeSpec =
+                    let runtime: spitzli_supervisor::RuntimeSpec =
                         serde_json::from_value(declared["runtime"].clone())
                             .map_err(|_| failure())?;
                     runtime.validate().map_err(|_| failure())?;
@@ -614,7 +614,7 @@ impl HostingService {
             && c.spec.action == RecoveryAction::Restore
         {
             let target = c.spec.target.as_ref().ok_or_else(failure)?;
-            let runtime: webdock_supervisor::RuntimeSpec =
+            let runtime: spitzli_supervisor::RuntimeSpec =
                 serde_json::from_value(target["runtime"].clone()).map_err(|_| failure())?;
             let app = Self::app(tx, runtime.resource_id.as_str()).await?;
             if app["operation_id"] != c.spec.operation_id
@@ -1128,7 +1128,7 @@ impl HostingService {
             && completion.state == "succeeded"
         {
             let target = c.spec.target.as_ref().ok_or_else(failure)?;
-            let runtime: webdock_supervisor::RuntimeSpec =
+            let runtime: spitzli_supervisor::RuntimeSpec =
                 serde_json::from_value(target["runtime"].clone()).map_err(|_| failure())?;
             let volume = &completion.proof["targetVolume"];
             if completion.proof["networkMode"] != "none"

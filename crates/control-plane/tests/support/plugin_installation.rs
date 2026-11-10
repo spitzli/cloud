@@ -2,6 +2,18 @@
 use axum::Router;
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::Value;
+use spitzli_browser_session::{BrowserConfig, BrowserSessions};
+use spitzli_control_plane::{
+    http::{Services, build_app_with_domains},
+    plugin_config::RuntimeConnections,
+    plugins::PluginEndpoints,
+};
+use spitzli_identity::{CookiePolicy, IdentityService, SecretKeys};
+use spitzli_oauth::{
+    AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientPurpose,
+    ClientRegistration, OAuthConfig, OAuthService,
+};
+use spitzli_plugin_host::{Catalog, FileBindings, HostService};
 use std::{
     collections::{BTreeMap, HashMap},
     os::unix::fs::PermissionsExt,
@@ -9,18 +21,6 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use webdock_browser_session::{BrowserConfig, BrowserSessions};
-use webdock_control_plane::{
-    http::{Services, build_app_with_domains},
-    plugin_config::RuntimeConnections,
-    plugins::PluginEndpoints,
-};
-use webdock_identity::{CookiePolicy, IdentityService, SecretKeys};
-use webdock_oauth::{
-    AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientPurpose,
-    ClientRegistration, OAuthConfig, OAuthService,
-};
-use webdock_plugin_host::{Catalog, FileBindings, HostService};
 pub const SECRET: &str = "owned-install-http-secret-at-least32";
 pub const ORIGIN: &str = "http://localhost:3120";
 
@@ -71,7 +71,7 @@ impl OwnedDatabase {
             address.trim()
         ))
         .unwrap();
-        let passwords = webdock_persistence::roles::LOGIN_ROLES
+        let passwords = spitzli_persistence::roles::LOGIN_ROLES
             .iter()
             .copied()
             .chain(["webdock_offline_migrate"])
@@ -92,14 +92,14 @@ impl OwnedDatabase {
         })
         .await
         .expect("owned PostgreSQL startup");
-        webdock_persistence::roles::provision_roles(
+        spitzli_persistence::roles::provision_roles(
             &owner,
             "webdock_install_http",
             &fixture.passwords,
         )
         .await
         .unwrap();
-        webdock_persistence::migrations::bootstrap(&owner, "webdock_install_http", SECRET)
+        spitzli_persistence::migrations::bootstrap(&owner, "webdock_install_http", SECRET)
             .await
             .unwrap();
         fixture
@@ -173,9 +173,9 @@ impl Fixture {
         let business = database.role("webdock_auth_runtime").await;
         let worker = database.role("webdock_worker_runtime").await;
         let ids = Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 database.url.as_str(),
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )
             .await
             .unwrap(),
@@ -279,7 +279,7 @@ impl Fixture {
         ));
         let app = |first_party: bool| {
             build_app_with_domains(
-                webdock_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
+                spitzli_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
                 auth.clone(),
                 Services {
                     identity: Some(identity.clone()),

@@ -1,7 +1,7 @@
 import { browserAuthConfiguration } from "@/lib/browser-auth-config";
 import { startBrowserPreview, exitBrowserPreview } from "@/lib/preview-actions";
 
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import type { TenantPreview } from "@/lib/studio-client";
 import "./tenant-preview.css";
 export async function TenantPreviewStart({

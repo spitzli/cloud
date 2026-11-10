@@ -1,4 +1,4 @@
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { assertModuleCanDisable } from "./module-preflight-check";
 import { coreLegacyRetentionChecks } from "./db/module-preflight-tables";
 type InventoryReader = { query(sql: string, values?: unknown[]): Promise<{rows: Record<string, unknown>[]}> };

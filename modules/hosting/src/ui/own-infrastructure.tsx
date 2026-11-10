@@ -2,7 +2,7 @@ import * as React from "react";
 import type { OwnInfrastructureView } from "../ui-types";
 import Link from "next/link";
 import { randomUUID } from "node:crypto";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { HostingForm } from "./form";
 import { HostingTable } from "./table";
 import type { HostingUIServices } from "./services";

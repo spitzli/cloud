@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_databases::{DatabaseBindingRoute, DatabaseRouteApproval};
+use spitzli_databases::{DatabaseBindingRoute, DatabaseRouteApproval};
 fn approval() -> serde_json::Value {
     json!({"bindingID":"1","bindingRevision":2,"databaseID":"3","databaseRevision":4,"backendID":"5","backendRevision":6,"credentialRevision":7,"sourceClusterID":"8","customerID":"9","projectID":"10","hostname":"db-5.database.example.invalid","port":32000,"caSha256":"ab".repeat(32),"addresses":["192.0.2.10"],"expectedRouteRevision":null,"idempotencyKey":"reviewed-route-fixture"})
 }

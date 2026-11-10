@@ -1,1 +1,1 @@
-export * from "@webdock/module-hosting/server/git-deployment-schema";
+export * from "@spitzli/module-hosting/server/git-deployment-schema";

@@ -1,5 +1,5 @@
-import { configurePayloadSSO } from "@webdock/payload-sso";
-import { projectBridgeUser } from "@webdock/cms-bridge/auth";
+import { configurePayloadSSO } from "@spitzli/payload-sso";
+import { projectBridgeUser } from "@spitzli/cms-bridge/auth";
 import { payloadEnvironment } from "./config.ts";
 export const sso: ReturnType<typeof configurePayloadSSO> | null = process.env
   .WEBDOCK_SSO_CLIENT_ID

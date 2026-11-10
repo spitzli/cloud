@@ -1,4 +1,4 @@
-import type { DatabaseServices } from "@webdock/database-contracts/runtime-ports";
+import type { DatabaseServices } from "@spitzli/database-contracts/runtime-ports";
 import type { HostingPorts } from "./ports";
 import { createHash } from "node:crypto";
 import { z } from "zod";
@@ -6,7 +6,7 @@ import {
   HostingError,
   hostingError,
   resourceID,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export type Dependencies = {
   guardOperation?: (agent: import("./clusters").Agent, input: {id:string;generation:number}) => Promise<{valid:true}>;
   templateAgentRequest?: (agent: import("./clusters").Agent, action: string, input: unknown) => Promise<unknown>;

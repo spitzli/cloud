@@ -1,5 +1,5 @@
 use chrono::{Duration, Utc};
-use webdock_agent::storage::database::DatabaseStoragePacket;
+use spitzli_agent::storage::database::DatabaseStoragePacket;
 fn packet() -> DatabaseStoragePacket {
     serde_json::from_value(serde_json::json!({"version":1,"installationID":"456","clusterID":"789","revision":1,"node":"fixture-node","poolID":"123e4567-e89b-42d3-a456-426614174000","volumeBytes":67108864,"leaseUntil":Utc::now()+Duration::seconds(120)})).unwrap()
 }
@@ -39,12 +39,12 @@ fn database_storage_preserves_exact_physical_installation_contract() {
 #[tokio::test]
 #[ignore = "requires explicitly owned privileged disposable container; no host mounts"]
 async fn disposable_database_pool_keeps_uid_content_identity_and_separate_rpc() {
+    use spitzli_agent::storage::{
+        StorageClient, StorageKind, StoragePool, VolumeState, database::DatabaseStorageClient,
+    };
     use std::{
         os::unix::fs::{MetadataExt, PermissionsExt},
         path::Path,
-    };
-    use webdock_agent::storage::{
-        StorageClient, StorageKind, StoragePool, VolumeState, database::DatabaseStorageClient,
     };
     assert_eq!(
         std::env::var("WEBDOCK_DISPOSABLE_STORAGE_TEST").as_deref(),
@@ -73,7 +73,7 @@ async fn disposable_database_pool_keeps_uid_content_identity_and_separate_rpc() 
     let server_config = config.clone();
     let server_socket = socket.clone();
     let server = tokio::spawn(async move {
-        webdock_agent::storage::serve_kind(
+        spitzli_agent::storage::serve_kind(
             &server_config,
             &server_socket,
             StorageKind::Database,
@@ -201,7 +201,7 @@ async fn disposable_database_pool_keeps_uid_content_identity_and_separate_rpc() 
 
 #[test]
 fn database_capacity_rejects_foreign_nodes_duplicate_allocations_and_unbounded_sizes() {
-    use webdock_agent::storage::database::DatabaseStorageCapability;
+    use spitzli_agent::storage::database::DatabaseStorageCapability;
     let capability: DatabaseStorageCapability = serde_json::from_value(serde_json::json!({"node":"fixture-node","poolID":"123e4567-e89b-42d3-a456-426614174000","capacityBytes":268435456,"ready":true,"availableBytes":134217728,"allocatedBytes":67108864,"allocations":[{"installationID":"456","volumeBytes":67108864}]})).unwrap();
     let nodes = vec!["fixture-node".into()];
     capability.validate(&nodes).unwrap();

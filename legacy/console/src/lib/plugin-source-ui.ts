@@ -1,7 +1,7 @@
 import type {
   PluginImportStatus,
   PluginSource,
-} from "@webdock/api-client/plugin-sources";
+} from "@spitzli/api-client/plugin-sources";
 
 export function parsePluginConfiguration(
   value: string,

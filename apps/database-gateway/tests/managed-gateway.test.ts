@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { once } from "node:events";
 import { WebSocket, WebSocketServer } from "ws";
-import type { ManagedRuntimeAccess } from "@webdock/database-contracts";
+import type { ManagedRuntimeAccess } from "@spitzli/database-contracts";
 import { createGateway } from "../src/server";
 import type { ManagedRuntimeManager } from "../src/managed-runtimes";
 

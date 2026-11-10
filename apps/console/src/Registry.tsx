@@ -1,4 +1,4 @@
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { CustomerScopeStart } from "./CustomerScope";
 import { CustomerSelfService } from "./plugins/CustomerSelfService";
 import { CustomerPlan } from "./Usage";

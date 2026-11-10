@@ -1,4 +1,4 @@
-import { createMailApi } from "@webdock/module-mail/server/product-api";
+import { createMailApi } from "@spitzli/module-mail/server/product-api";
 import { mailEndpoint } from "./http";
 import { submitMail } from "./sending";
 import { submitMailBatch, getMailBatch } from "./batches";

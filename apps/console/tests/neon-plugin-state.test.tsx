@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { after, test } from "node:test";
 import { act } from "react";
-import { I18nProvider } from "@webdock/i18n/react";
+import { I18nProvider } from "@spitzli/i18n/react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider, defaultScheduler, notifyManager } from "@tanstack/react-query";
 import { Window } from "happy-dom";

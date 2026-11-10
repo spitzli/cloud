@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import {
   healthcheckImage,
   type HostingActor,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { database } from "../../src/db/runtime";
 import { executeHosting } from "../../src/modules/hosting/service";
 import { runSetupBatch } from "../../src/modules/hosting/setup-worker";

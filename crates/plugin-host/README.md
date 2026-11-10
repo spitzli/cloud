@@ -70,7 +70,7 @@ host-authority RPC; Core browser/public API and MCP admission using current
 session or OAuth authority. The real PostgreSQL test exercises those routes
 through an actual plugin RPC process boundary.
 
-`webdock-plugin-controller --config /absolute/private/plugins.json` executes
+`spitzli-plugin-controller --config /absolute/private/plugins.json` executes
 persisted availability commands for already enrolled external runtimes; `--once`
 processes at most one command. It uses the same explicit restricted database
 configuration as the private plugin-control listener. Fifteen-second leases,
@@ -104,8 +104,8 @@ response stands in for an unavailable service.
 ## Validation
 
 ```sh
-cargo test -p webdock-plugin-host
-cargo clippy -p webdock-plugin-host --all-targets --all-features -- -D warnings
+cargo test -p spitzli-plugin-host
+cargo clippy -p spitzli-plugin-host --all-targets --all-features -- -D warnings
 ```
 
 The ignored PostgreSQL integration test needs the retained local `webdock_rls_test`
@@ -116,7 +116,7 @@ fixture and these explicitly supplied environment variables:
 query overrides. Run all local checks with:
 
 ```sh
-cargo test -p webdock-plugin-host --features test-transport -- --include-ignored
+cargo test -p spitzli-plugin-host --features test-transport -- --include-ignored
 ```
 
 Tests create unique records and clean only their own records; they do not reset

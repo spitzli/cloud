@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import {getRequestI18n} from '@webdock/i18n/next';
+import {getRequestI18n} from '@spitzli/i18n/next';
 export async function Dock() {
   const {t}=await getRequestI18n();
   return <figure className="dock" aria-label={t("Illustration: a workspace, an application and its domain connected through Spitzli Cloud.")}>

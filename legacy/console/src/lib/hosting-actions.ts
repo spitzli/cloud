@@ -1,7 +1,7 @@
 "use server";
-import type { HostingFormState } from "@webdock/module-hosting/ui-types";
-export type { HostingFormState } from "@webdock/module-hosting/ui-types";
-import { msgid } from "@webdock/i18n";
+import type { HostingFormState } from "@spitzli/module-hosting/ui-types";
+export type { HostingFormState } from "@spitzli/module-hosting/ui-types";
+import { msgid } from "@spitzli/i18n";
 import { revalidatePath } from "next/cache";
 import {
   commandSchema,
@@ -10,7 +10,7 @@ import {
   hostingError,
   HostingError,
   parseHostingFields,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { hostingCall } from "./hosting-client";
 
 export async function saveHosting(

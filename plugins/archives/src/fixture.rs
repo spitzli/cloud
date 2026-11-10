@@ -8,7 +8,7 @@ pub struct NativeProfile {
     pub ca_sha256: String,
 }
 impl NativeProfile {
-    pub fn validate(&self, c: &webdock_object_storage::S3Config, now: i64) -> crate::Result<()> {
+    pub fn validate(&self, c: &spitzli_object_storage::S3Config, now: i64) -> crate::Result<()> {
         let endpoint =
             url::Url::parse(&c.endpoint).map_err(|_| "Invalid archive fixture target")?;
         if self.run_id.len() != 12
@@ -64,7 +64,7 @@ mod tests {
             expires_at: 2000,
             ca_sha256: "a".repeat(64),
         };
-        let c = webdock_object_storage::S3Config {
+        let c = spitzli_object_storage::S3Config {
             id: "fixture".into(),
             endpoint: "https://123456abcdef.native-archives.test:19443".into(),
             region: "us-east-1".into(),

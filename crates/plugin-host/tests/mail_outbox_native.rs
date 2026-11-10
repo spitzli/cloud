@@ -64,7 +64,7 @@ async fn execution_fence_witness_waits_for_positive_blocker_without_masking_erro
 
 #[tokio::test]
 async fn execution_native_hash_mismatch_preserves_production_bad_request_status() {
-    use webdock_mail::send_control::{ControlError, SendControl};
+    use spitzli_mail::send_control::{ControlError, SendControl};
     struct Mismatch;
     #[async_trait::async_trait]
     impl SendControl for Mismatch {
@@ -79,12 +79,12 @@ async fn execution_native_hash_mismatch_preserves_production_bad_request_status(
     let dir = tempfile::tempdir().unwrap();
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-    let store = webdock_mail::payload::PrivatePayloadStore::open(
+    let store = spitzli_mail::payload::PrivatePayloadStore::open(
         dir.path(),
         &base64::Engine::encode(&base64::engine::general_purpose::STANDARD, [17; 32]),
     )
     .unwrap();
-    let api = webdock_mail::send_api::SendApi::new(
+    let api = spitzli_mail::send_api::SendApi::new(
         std::sync::Arc::new(Mismatch),
         std::sync::Arc::new(store),
     );
@@ -116,10 +116,10 @@ async fn execution_core_origins_keep_production_configuration_and_host_boundarie
         config.auth_origin == auth && config.console_origin() == console,
         "fixture profile mapping changed"
     );
-    let app = webdock_control_plane::http::build_app_with_domains(
+    let app = spitzli_control_plane::http::build_app_with_domains(
         config,
         sea_orm::DatabaseConnection::default(),
-        webdock_control_plane::http::Services::default(),
+        spitzli_control_plane::http::Services::default(),
     );
     for (host, path, expected) in [
         ("localhost:34002", "/api/console/plugins/invoke", 503),
@@ -344,7 +344,7 @@ async fn fix1_attempt_window_detects_duplicates_before_entry_and_exact_mode_tota
 #[test]
 fn fix1_typed_denial_rejects_unavailability_and_wrong_error_class() {
     use fixture::require_control_denial;
-    use webdock_mail_protocol::native_control::ControlError;
+    use spitzli_mail_protocol::native_control::ControlError;
     assert!(
         require_control_denial(Err(ControlError { status: 503 }), 403).is_err(),
         "database/timeout failure passed authorization proof"

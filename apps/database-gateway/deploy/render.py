@@ -7,7 +7,7 @@ SQLite claims must already reference the approved project volume; never copy a l
 import argparse, json, os, pathlib, subprocess, re, ssl, ipaddress
 from urllib.parse import urlsplit
 p=argparse.ArgumentParser(); p.add_argument('--inventory',required=True); p.add_argument('--private-dir',required=True); p.add_argument('--gateway-image',required=True); p.add_argument('--runtime-image',required=True); p.add_argument('--tls-image',required=True); p.add_argument('--runtime-commit',required=True); p.add_argument('--managed-runtimes-config'); p.add_argument('--output',required=True); a=p.parse_args()
-os.umask(0o077); private=pathlib.Path(a.private_dir); inventory=json.loads(pathlib.Path(a.inventory).read_text()); namespace='webdock-databases'; resources=[]
+os.umask(0o077); private=pathlib.Path(a.private_dir); inventory=json.loads(pathlib.Path(a.inventory).read_text()); namespace='spitzli-databases'; resources=[]
 managed=None
 if a.managed_runtimes_config:
  try:

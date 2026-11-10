@@ -7,9 +7,9 @@ use crate::wire::{
 };
 use serde::Deserialize;
 use serde_json::Value;
+use spitzli_plugin_runtime::{PeerIdentity, authenticated_peer};
 use std::{sync::Arc, time::Duration};
 use tonic::{Request, Response, Status, transport::Channel};
-use webdock_plugin_runtime::{PeerIdentity, authenticated_peer};
 pub const COMMAND_BYTES: usize = 160 * 1024;
 pub const RESULT_BYTES: usize = 131_072;
 pub const DECODING_BYTES: usize = COMMAND_BYTES + 1024;

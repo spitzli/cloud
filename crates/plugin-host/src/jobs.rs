@@ -1,5 +1,5 @@
 use super::*;
-use webdock_plugin_protocol::{ErrorCode, JobIdentity};
+use spitzli_plugin_protocol::{ErrorCode, JobIdentity};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

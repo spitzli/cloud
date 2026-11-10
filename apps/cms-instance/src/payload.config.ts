@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { buildConfig, type AuthStrategy } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import sharp from "sharp";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { payloadEnvironment } from "./lib/config.ts";
 import { pages, media, settings, users } from "./lib/content.ts";
 import { sso } from "./lib/sso.ts";

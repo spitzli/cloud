@@ -1,4 +1,4 @@
-import type { ModuleView } from "@webdock/module-sdk";
+import type { ModuleView } from "@spitzli/module-sdk";
 /** Optional dashboard data: disabled products are not contacted; active-provider failures still surface. */
 export function optionalModuleData<T>(
   view: ModuleView | undefined,

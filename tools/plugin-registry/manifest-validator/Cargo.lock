@@ -1232,7 +1232,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-plugin-protocol"
+name = "spitzli-plugin-protocol"
 version = "0.1.0"
 dependencies = [
  "base64",
@@ -1249,11 +1249,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-registry-manifest-validator"
+name = "spitzli-registry-manifest-validator"
 version = "0.1.0"
 dependencies = [
  "serde_json",
- "webdock-plugin-protocol",
+ "spitzli-plugin-protocol",
 ]
 
 [[package]]

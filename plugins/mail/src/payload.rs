@@ -2,14 +2,14 @@
 use crate::store::Store;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use sha2::{Digest, Sha256};
+use spitzli_mail_runtime::{Error, PrivatePayloadStore, Result, SavedPayload, secrets::MailCipher};
 use std::sync::Arc;
-use webdock_mail_runtime::{Error, PrivatePayloadStore, Result, SavedPayload, secrets::MailCipher};
 
 pub fn payload_key(retained_hex: &str) -> Result<String> {
-    webdock_mail_runtime::secrets::private_payload_key_from_hex(retained_hex)
+    spitzli_mail_runtime::secrets::private_payload_key_from_hex(retained_hex)
 }
 fn purpose(customer: &str, reference: &str) -> Result<String> {
-    if !webdock_mail_runtime::proof::valid_id(customer)
+    if !spitzli_mail_runtime::proof::valid_id(customer)
         || !customer.parse::<i64>().is_ok_and(|n| n > 0)
         || !uuid::Uuid::parse_str(reference).is_ok_and(|v| {
             v.to_string() == reference
@@ -65,7 +65,7 @@ impl PgPrivatePayloadStore {
 impl PrivatePayloadStore for PgPrivatePayloadStore {
     async fn put(&self, customer: &str, reference: &str, bytes: &[u8]) -> Result<SavedPayload> {
         let purpose = purpose(customer, reference)?;
-        if bytes.is_empty() || bytes.len() > webdock_mail_message::MAX_MESSAGE {
+        if bytes.is_empty() || bytes.len() > spitzli_mail_message::MAX_MESSAGE {
             return Err(Error::Invalid);
         }
         let permit = self
@@ -109,7 +109,7 @@ impl PrivatePayloadStore for PgPrivatePayloadStore {
             let encoded: String = cipher.open(&sealed, &purpose)?;
             let data = STANDARD.decode(&encoded).map_err(|_| Error::Secret)?;
             if data.is_empty()
-                || data.len() > webdock_mail_message::MAX_MESSAGE
+                || data.len() > spitzli_mail_message::MAX_MESSAGE
                 || data.len() != len as usize
                 || hex::encode(Sha256::digest(&data)) != digest
                 || STANDARD.encode(&data) != encoded

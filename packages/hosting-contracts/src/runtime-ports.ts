@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import type { DatabaseScope } from "@webdock/database-runtime";
+import type { DatabaseScope } from "@spitzli/database-runtime";
 import type { HostingActor, ClusterObservation } from "./index";
 /** Shared control-plane infrastructure, independent of product service implementations. */
 export type DatabaseReader = Pick<PoolClient, "query">;

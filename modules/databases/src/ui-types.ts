@@ -1,7 +1,7 @@
 import type {
   ManagedDatabaseOffer,
   ManagedDatabaseCredentials,
-} from "@webdock/database-contracts/runtime-ports";
+} from "@spitzli/database-contracts/runtime-ports";
 export type DatabaseOffer = ManagedDatabaseOffer;
 export type DatabaseCredentials = ManagedDatabaseCredentials;
 export type DatabaseOrderState = {

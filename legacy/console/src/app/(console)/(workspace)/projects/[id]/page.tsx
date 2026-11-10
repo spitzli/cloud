@@ -3,9 +3,9 @@ import { ProjectApplicationsPanel, ProjectVercelPanel } from "@distribution/proj
 import {auditSummary} from "@/lib/ui-labels";
 import {uiLabel} from "@/lib/ui-labels";
 
-import { msgid } from '@webdock/i18n';
+import { msgid } from '@spitzli/i18n';
 
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 
 import Link from "next/link";
 import { notFound } from "next/navigation";

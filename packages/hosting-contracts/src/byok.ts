@@ -15,7 +15,7 @@ export const namespaceSchema = z
         "kube-system",
         "kube-public",
         "kube-node-lease",
-        "webdock-agent",
+        "spitzli-agent",
       ].includes(v),
   );
 export const byokPolicySchema = z

@@ -1,4 +1,4 @@
-import { msgid } from '@webdock/i18n';
+import { msgid } from '@spitzli/i18n';
 const labels: Readonly<Record<string,string>> = {
  operator:msgid('Platform operator'),owner:msgid('Owner'),admin:msgid('Tenant admin'),member:msgid('Member'),reader:msgid('Reader'),editor:msgid('Editor'),
  active:msgid('Active'),pending:msgid('Pending'),accepted:msgid('Accepted'),rejected:msgid('Declined'),canceled:msgid('Cancelled'),revoked:msgid('Revoked'),expired:msgid('Expired'),archived:msgid('Archived'),stale:msgid('Outdated'),

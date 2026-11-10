@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/auth-better-auth",
+  "name": "@spitzli/auth-better-auth",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "./compatibility": "./src/compatibility.ts"
   },
   "dependencies": {
-    "@webdock/core": "*",
+    "@spitzli/core": "*",
     "better-auth": "1.7.7",
     "better-call": "1.4.0"
   },

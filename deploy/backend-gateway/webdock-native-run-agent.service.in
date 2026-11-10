@@ -1,8 +1,8 @@
 [Unit]
 Description=Webdock enrolled RUN cluster executor
 Wants=network-online.target
-After=network-online.target k3s.service webdock-storage.service
-Requires=webdock-storage.service
+After=network-online.target k3s.service spitzli-storage.service
+Requires=spitzli-storage.service
 StartLimitIntervalSec=300
 StartLimitBurst=3
 

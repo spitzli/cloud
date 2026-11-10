@@ -1,7 +1,7 @@
 import { authorizeSetupConfiguration } from "./permissions";
 import { requireDatabases } from "./product-admission";
 import { requireMail } from "../../installation";
-import { createHostingProjectSetup } from "@webdock/module-hosting/server/project-setup";
+import { createHostingProjectSetup } from "@spitzli/module-hosting/server/project-setup";
 import { executeSetupSource } from "./setup-source";
 import { repairSetupEnvironment, resetGitSetupRetry } from "./setup-recovery";
 import { executeAppCommand } from "./apps";
@@ -14,7 +14,7 @@ import {
   patchEnvironment,
 } from "./environment";
 import { previewProjectSetup, assertSetupConfirmation } from "./setup-preview";
-export type { SetupRow } from "@webdock/module-hosting/server/project-setup";
+export type { SetupRow } from "@spitzli/module-hosting/server/project-setup";
 export const { setupView, readSetup, executeProjectSetup } =
   createHostingProjectSetup({
     authorizeSetupConfiguration,

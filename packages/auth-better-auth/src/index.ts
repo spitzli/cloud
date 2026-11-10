@@ -2,7 +2,7 @@ import type {
   IdentityDirectory,
   LocalIdentity,
   SessionAuthenticator,
-} from "@webdock/core/identity";
+} from "@spitzli/core/identity";
 function identity(
   row: Record<string, unknown> | undefined,
 ): LocalIdentity | null {

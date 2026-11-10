@@ -1,9 +1,9 @@
+use spitzli_ids::{Error, GenerateError, Generator, Id, Identity, Layout, PLATFORM_EPOCH_MS};
 use std::{
     collections::HashSet,
     sync::{Arc, Mutex},
     thread,
 };
-use webdock_ids::{Error, GenerateError, Generator, Id, Identity, Layout, PLATFORM_EPOCH_MS};
 
 fn identity() -> Identity {
     Identity::platform(0, 2).unwrap()

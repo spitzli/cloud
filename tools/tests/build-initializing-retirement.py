@@ -10,7 +10,7 @@ ROOT=Path(__file__).resolve().parents[2]
 
 
 def main():
-    compiled=subprocess.run(['cargo','test','-p','webdock-agent','--no-default-features','--lib','initializing_build_retirement_tests','--no-run','--message-format=json'],cwd=ROOT,capture_output=True,text=True,timeout=180)
+    compiled=subprocess.run(['cargo','test','-p','spitzli-agent','--no-default-features','--lib','initializing_build_retirement_tests','--no-run','--message-format=json'],cwd=ROOT,capture_output=True,text=True,timeout=180)
     if compiled.returncode:
         for row in map(json.loads,compiled.stdout.splitlines()):
             if row.get('reason')=='compiler-message':print(row['message'].get('rendered',''))

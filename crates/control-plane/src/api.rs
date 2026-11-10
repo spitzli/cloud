@@ -21,7 +21,7 @@ pub(super) fn routes() -> Router<Arc<ServiceState>> {
 pub(crate) fn credential_endpoint(path: &str) -> bool {
     path.starts_with("/v1/api/")
 }
-fn access(state: &ServiceState) -> Result<&webdock_access::AccessService, ApiFailure> {
+fn access(state: &ServiceState) -> Result<&spitzli_access::AccessService, ApiFailure> {
     state.access.as_deref().ok_or_else(|| {
         reject(
             StatusCode::SERVICE_UNAVAILABLE,
@@ -30,7 +30,7 @@ fn access(state: &ServiceState) -> Result<&webdock_access::AccessService, ApiFai
         )
     })
 }
-fn access_failure(error: webdock_access::Error) -> ApiFailure {
+fn access_failure(error: spitzli_access::Error) -> ApiFailure {
     crate::access::failure(error)
 }
 /// The token's member as an actor, its workspace, and whether it may write.

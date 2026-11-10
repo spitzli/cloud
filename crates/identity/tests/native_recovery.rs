@@ -3,17 +3,17 @@
 mod fixture;
 use fixture::AUTH_SECRET;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
-use std::{
-    collections::BTreeMap,
-    sync::{Arc, Mutex},
-};
-use webdock_identity::{
+use spitzli_identity::{
     CookiePolicy, Delivery, DeliveryError, DeliveryKind, DeliveryRequest, IdentityError,
     IdentityService, SecretKeys,
 };
-use webdock_persistence::{
+use spitzli_persistence::{
     IdAllocator,
     postgres::{Limits, Pool},
+};
+use std::{
+    collections::BTreeMap,
+    sync::{Arc, Mutex},
 };
 
 #[derive(Default)]
@@ -46,7 +46,7 @@ async fn service(f: &fixture::Fixture, capture: Arc<dyn Delivery>) -> IdentitySe
     .with_allocator(Arc::new(
         IdAllocator::connect_native(
             &f.bootstrap_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
             "webdock_auth_bootstrap",
             false,
         )
@@ -69,7 +69,7 @@ async fn sql(f: &fixture::Fixture, sql: &str) {
     f.owner.execute_unprepared(sql).await.unwrap();
 }
 async fn seed(f: &fixture::Fixture) {
-    let hash = webdock_identity::hash_password("Owned-original-password-123").unwrap();
+    let hash = spitzli_identity::hash_password("Owned-original-password-123").unwrap();
     sql(f,r#"INSERT INTO webdock_auth."user"(id,name,email,"emailVerified",role,"twoFactorEnabled","mustChangePassword") VALUES('a','A','a@example.test',false,'user',true,true),('b','B','b@example.test',true,'user',false,false);
     INSERT INTO webdock_auth.session(id,token,"userId","expiresAt","updatedAt") VALUES('11','owned-a-token','a',now()+interval '1 hour',now()),('12','owned-b-token','b',now()+interval '1 hour',now());
     INSERT INTO webdock_auth.identity_mfa_challenge(token_hash,user_id,credential_digest,expires_at) VALUES(repeat('a',64),'a','old',now()+interval '1 hour')"#).await;
@@ -169,7 +169,7 @@ async fn native_activation_delivers_encrypted_one_use_proof_and_retires_only_its
     assert_eq!(count(&f, "identity_mfa_challenge").await, 0);
     let row=f.owner.query_one_raw(Statement::from_string(DbBackend::Postgres,r#"SELECT a.password,u."twoFactorEnabled",u."mustChangePassword",u."emailVerified" FROM webdock_auth.account a JOIN webdock_auth."user" u ON u.id=a."userId" WHERE u.id='a'"#)).await.unwrap().unwrap();
     assert!(
-        webdock_identity::verify_password(
+        spitzli_identity::verify_password(
             "Owned-new-password-456",
             &row.try_get::<String>("", "password").unwrap()
         )

@@ -1,1 +1,1 @@
-export { resourceScope as hostingUIScope } from "@webdock/console-kit/resource-scope";
+export { resourceScope as hostingUIScope } from "@spitzli/console-kit/resource-scope";

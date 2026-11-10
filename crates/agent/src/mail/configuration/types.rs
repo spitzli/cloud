@@ -138,7 +138,7 @@ pub(super) fn dkim_management() -> DkimManagement {
 }
 
 pub(super) fn valid_dkim_public(
-    key: &webdock_agent_protocol::mail_configuration::ConfigurationDkim,
+    key: &spitzli_agent_protocol::mail_configuration::ConfigurationDkim,
 ) -> bool {
     use base64::{Engine, engine::general_purpose::STANDARD};
     use x509_parser::prelude::FromDer;
@@ -178,7 +178,7 @@ pub(super) fn valid_dkim_public(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use webdock_agent_protocol::mail_configuration::ConfigurationDkim;
+    use spitzli_agent_protocol::mail_configuration::ConfigurationDkim;
     #[test]
     fn dkim_uses_a_real_bounded_rsa_public_key_not_base64_shape() {
         use base64::{Engine, engine::general_purpose::STANDARD};

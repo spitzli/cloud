@@ -143,7 +143,7 @@ def validate_transcripts(output,mode='final'):
         proof=json.loads((output/'checkpoint.json').read_text())['reusedSoftwareProof']
         require(proof and proof['sourceComparison']['allOtherSourceFilesUnchanged'],'Reviewed fixture-only comparison required')
         require((output/'legacy-attachment-test').is_file(),'Refreshed integration test binary missing')
-        if mode=='fixture-only':require(not (output/'webdock-agent').exists() and not (output/'release-build.log').exists(),'Fixture-only compilation must not produce a release binary')
+        if mode=='fixture-only':require(not (output/'spitzli-agent').exists() and not (output/'release-build.log').exists(),'Fixture-only compilation must not produce a release binary')
         return {name:{**value,'reusedFromSourceRef':proof['sourceRef']} for name,value in proof['testTranscripts'].items()}
     required_files={'agent-lib-tests.log':PREFLIGHT_STORAGE_TESTS} if mode=='preflight' else REQUIRED_TESTS
     counts={}
@@ -219,7 +219,7 @@ def build(context,expected,output):
         proof={**checkpoint,'testTranscripts':test_counts,'compiledIntegrationFixture':integration,'acceptedRuntimeSHA256':checkpoint['reusedSoftwareProof']['artifactSHA256'],'releaseBinaryCompiled':False,'liveKubernetesFixtureExecuted':False,'productionActivationPerformed':False,'promotable':False}
         (output/'agent-build-proof.json').write_text(json.dumps(proof,indent=2)+'\n')
         return {'sourceRef':checkpoint['sourceRef'],'fixture':str(output/'legacy-attachment-test'),'sha256':integration['sha256'],'proof':str(output/'agent-build-proof.json'),'releaseBinaryCompiled':False,'productionActivationPerformed':False}
-    probe=subprocess.run(['python3',str(context/'agent_elf.py'),str(output/'webdock-agent'),'--run-help','--output',str(output/'ubuntu24-elf-proof.json')],env=env,capture_output=True,text=True,timeout=30)
+    probe=subprocess.run(['python3',str(context/'agent_elf.py'),str(output/'spitzli-agent'),'--run-help','--output',str(output/'ubuntu24-elf-proof.json')],env=env,capture_output=True,text=True,timeout=30)
     require(probe.returncode==0,'Ubuntu24 ABI/help probe failed')
     abi=json.loads((output/'ubuntu24-elf-proof.json').read_text())
     integration=None
@@ -230,7 +230,7 @@ def build(context,expected,output):
     proof={**checkpoint,'artifactSHA256':abi['sha256'],'ubuntu24ABI':abi,'testTranscripts':test_counts,'compiledIntegrationFixture':integration,'productionActivationPerformed':False,'reviewRequiredBeforePromotion':True}
     if checkpoint['buildMode']=='fixture-refresh':require(abi['sha256']==checkpoint['reusedSoftwareProof']['artifactSHA256'],'Fixture-only source unexpectedly changed the release binary')
     (output/'agent-build-proof.json').write_text(json.dumps(proof,indent=2)+'\n')
-    return {'sourceRef':checkpoint['sourceRef'],'binary':str(output/'webdock-agent'),'sha256':abi['sha256'],'proof':str(output/'agent-build-proof.json'),'productionActivationPerformed':False}
+    return {'sourceRef':checkpoint['sourceRef'],'binary':str(output/'spitzli-agent'),'sha256':abi['sha256'],'proof':str(output/'agent-build-proof.json'),'productionActivationPerformed':False}
 
 
 def main():

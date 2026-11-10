@@ -1,9 +1,9 @@
 import type { MailProductStore } from "./provider-ports";
 import { createHash, randomUUID } from "node:crypto";
-import { MailValidationError } from "@webdock/mail-contracts/validation";
-import type { MailActor, ApiResult } from "@webdock/mail-contracts";
+import { MailValidationError } from "@spitzli/mail-contracts/validation";
+import type { MailActor, ApiResult } from "@spitzli/mail-contracts";
 import { MailError } from "./product-access";
-import type { DatabaseReader } from "@webdock/core/identity";
+import type { DatabaseReader } from "@spitzli/core/identity";
 export function createMailIdempotency(
   dependencies: Pick<
     MailProductStore,

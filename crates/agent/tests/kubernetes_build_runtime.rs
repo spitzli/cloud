@@ -12,6 +12,12 @@ use kube::{
     config::{KubeConfigOptions, Kubeconfig},
 };
 use sha2::{Digest, Sha256};
+use spitzli_agent::kubernetes::{ApprovedChart, KubernetesAdapter};
+use spitzli_build::{
+    artifact::{Archive, ArtifactStore, MAX_OUTPUT, StoredArtifact, validate_oci},
+    publisher::{PublicationGuard, RegistryPublisher},
+};
+use spitzli_supervisor::*;
 use std::{
     collections::BTreeMap,
     os::unix::fs::{MetadataExt, PermissionsExt},
@@ -21,12 +27,6 @@ use std::{
         atomic::{AtomicUsize, Ordering},
     },
 };
-use webdock_agent::kubernetes::{ApprovedChart, KubernetesAdapter};
-use webdock_build::{
-    artifact::{Archive, ArtifactStore, MAX_OUTPUT, StoredArtifact, validate_oci},
-    publisher::{PublicationGuard, RegistryPublisher},
-};
-use webdock_supervisor::*;
 
 struct Authority;
 #[async_trait::async_trait]
@@ -42,7 +42,7 @@ impl Authorizer for Authority {
 struct PublicationAuthority(AtomicUsize);
 #[async_trait::async_trait]
 impl PublicationGuard for PublicationAuthority {
-    async fn check(&self) -> webdock_build::Result<()> {
+    async fn check(&self) -> spitzli_build::Result<()> {
         self.0.fetch_add(1, Ordering::SeqCst);
         Ok(())
     }

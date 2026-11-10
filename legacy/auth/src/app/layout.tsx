@@ -1,6 +1,6 @@
-import { getRequestI18n } from "@webdock/i18n/next";
-import { I18nProvider } from "@webdock/i18n/react";
-import { LanguagePicker } from "@webdock/i18n/picker";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import { I18nProvider } from "@spitzli/i18n/react";
+import { LanguagePicker } from "@spitzli/i18n/picker";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Link from "next/link";

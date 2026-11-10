@@ -1,6 +1,6 @@
 'use server';
 import {redirect} from 'next/navigation';
-import {msgid} from '@webdock/i18n';
+import {msgid} from '@spitzli/i18n';
 import {revalidatePath} from 'next/cache';import {mailCall} from '@/lib/mail-product';import {StudioError} from '@/lib/studio-errors';
 export type MailActionState={error?:string;message?:string;id?:string;key?:string;secret?:string;uncertain?:boolean};
 export async function mailProductAction(_previous:MailActionState,form:FormData):Promise<MailActionState>{

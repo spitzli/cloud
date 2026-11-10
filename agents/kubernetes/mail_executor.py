@@ -92,10 +92,10 @@ def bootstrap_secret(packet):
 def mail_gateway_policy(packet):
     deployment, _ = mail_manifests(packet)
     return {'apiVersion': 'networking.k8s.io/v1', 'kind': 'NetworkPolicy',
-            'metadata': {**deployment['metadata'], 'name': 'webdock-mail-gateway'},
+            'metadata': {**deployment['metadata'], 'name': 'spitzli-mail-gateway'},
             'spec': {'podSelector': {'matchLabels': {'webdock.dev/mail-customer-id': packet['customerID']}},
                      'policyTypes': ['Ingress'], 'ingress': [{'from': [{
-                         'namespaceSelector': {'matchLabels': {'kubernetes.io/metadata.name': 'webdock-mail-gateway'}},
+                         'namespaceSelector': {'matchLabels': {'kubernetes.io/metadata.name': 'spitzli-mail-gateway'}},
                          'podSelector': {'matchLabels': {'app': 'mail-gateway'}}}],
                          'ports': [{'protocol': 'TCP', 'port': 8080}]}]}}
 

@@ -1,4 +1,4 @@
-import { createHostingGitPublication } from "@webdock/module-hosting/server/git-publication";
+import { createHostingGitPublication } from "@spitzli/module-hosting/server/git-publication";
 import {
   createGitVercelObserver,
   gitReleaseHealthPath,

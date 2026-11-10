@@ -56,7 +56,7 @@ class FrozenCoreQuality(unittest.TestCase):
     def test_local_cargo_source_cannot_be_silently_excluded_as_private(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)
-            manifest=b"[package]\nname='consumer'\nversion='0.1.0'\n[dependencies]\nwebdock-secrets={path='../secrets'}\n"
+            manifest=b"[package]\nname='consumer'\nversion='0.1.0'\n[dependencies]\nspitzli-secrets={path='../secrets'}\n"
             archive,digest=self.archive(root,('crates/consumer/Cargo.toml',manifest))
             with self.assertRaisesRegex(ValueError,'Missing frozen local Cargo dependency'):
                 q.prepare(archive,digest,root/'context','reviewed-private-source')

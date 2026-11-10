@@ -1,11 +1,11 @@
 import {notFound} from "next/navigation";
 import {getStudioSession} from "@/lib/studio-client";
 import {studioCall} from "@/lib/studio-client";
-import type {GitHubView} from "@webdock/api-client/integrations";
+import type {GitHubView} from "@spitzli/api-client/integrations";
 
-import { msgid } from '@webdock/i18n';
+import { msgid } from '@spitzli/i18n';
 
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import { Suspense } from "react";
 import { VercelIntegration } from "../../../../components/vercel-integration";
 import Link from "next/link";

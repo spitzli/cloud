@@ -1,8 +1,8 @@
 use sea_orm::{ConnectOptions, ConnectionTrait, Database, DbBackend, Statement};
-use std::collections::BTreeMap;
-use webdock_identity::{
+use spitzli_identity::{
     CookiePolicy, IdentityError, IdentityService, MfaProof, PasswordAuthentication, SecretKeys,
 };
+use std::collections::BTreeMap;
 const SECRET: &str = "fixture-secret-with-at-least-32-bytes";
 fn cookie(header: &str) -> &str {
     header.split(';').next().unwrap()

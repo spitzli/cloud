@@ -10,8 +10,8 @@ use kube::{
     config::{KubeConfigOptions, Kubeconfig},
 };
 use sha2::{Digest, Sha256};
+use spitzli_supervisor::*;
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_supervisor::*;
 struct Authority;
 #[async_trait::async_trait]
 impl Authorizer for Authority {
@@ -43,8 +43,8 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
         % 1_000_000_000_000
         + 1000;
     let mut spec = support::spec();
-    spec.project_id = webdock_core::id::RecordId::parse(&numeric.to_string()).unwrap();
-    spec.resource_id = webdock_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
+    spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
+    spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
     spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
     let allowance = ResourceAllowance {
         apps: 2,
@@ -57,7 +57,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
     };
     spec.hosting_binding = Some(HostingBinding {
         public_route: None,
-        cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
+        cluster_id: spitzli_core::id::RecordId::parse("789").unwrap(),
         quota: allowance.clone(),
         final_quota: allowance,
     });
@@ -71,7 +71,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
             "if test -f {path}; then sha256sum {path}; else echo cleared; fi; echo ready >/tmp/index.html; exec httpd -f -p 8080 -h /tmp"
         ),
     ];
-    let namespace = webdock_agent::legacy::namespace(&spec);
+    let namespace = spitzli_agent::legacy::namespace(&spec);
     let mut destination_ips = vec![];
     for id in [numeric + 3, numeric + 4] {
         let ns = format!("wd-db-{id}");
@@ -155,7 +155,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                 }),
                 service_bindings: materials,
             });
-            let observed = webdock_agent::legacy::reconcile(
+            let observed = spitzli_agent::legacy::reconcile(
                 task.clone(),
                 &command,
                 &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -210,7 +210,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                     );
                 }
             }
-            let logs = webdock_agent::legacy::logs(task.clone(), &spec, 20)
+            let logs = spitzli_agent::legacy::logs(task.clone(), &spec, 20)
                 .await
                 .unwrap();
             if revision < 4 {
@@ -219,7 +219,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                 assert_eq!(logs, "cleared\n");
             }
             let deployment = deployments
-                .get(&webdock_agent::legacy::name(&spec))
+                .get(&spitzli_agent::legacy::name(&spec))
                 .await
                 .unwrap();
             let pod = deployment.spec.unwrap().template.spec.unwrap();
@@ -233,7 +233,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                     volume.unwrap().secret.unwrap().secret_name.unwrap(),
                     format!(
                         "{}-services-{}",
-                        webdock_agent::legacy::name(&spec),
+                        spitzli_agent::legacy::name(&spec),
                         revision.min(2)
                     )
                 );
@@ -244,7 +244,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                 let secret = secrets
                     .get(&format!(
                         "{}-services-{revision}",
-                        webdock_agent::legacy::name(&spec)
+                        spitzli_agent::legacy::name(&spec)
                     ))
                     .await
                     .unwrap();
@@ -254,7 +254,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                 // Original service resources had labels/versioned names but no revision annotation.
                 secrets
                     .patch(
-                        &format!("{}-services-1", webdock_agent::legacy::name(&spec)),
+                        &format!("{}-services-1", spitzli_agent::legacy::name(&spec)),
                         &kube::api::PatchParams::default(),
                         &kube::api::Patch::Merge(
                             serde_json::json!({"metadata":{"annotations":null}}),
@@ -266,7 +266,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                     Api::namespaced(task.clone(), &namespace);
                 policies
                     .patch(
-                        &format!("{}-services", webdock_agent::legacy::name(&spec)),
+                        &format!("{}-services", spitzli_agent::legacy::name(&spec)),
                         &kube::api::PatchParams::default(),
                         &kube::api::Patch::Merge(
                             serde_json::json!({"metadata":{"annotations":null}}),
@@ -280,7 +280,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                     secrets
                         .get_opt(&format!(
                             "{}-services-1",
-                            webdock_agent::legacy::name(&spec)
+                            spitzli_agent::legacy::name(&spec)
                         ))
                         .await
                         .unwrap()
@@ -292,7 +292,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                     secrets
                         .get_opt(&format!(
                             "{}-services-2",
-                            webdock_agent::legacy::name(&spec)
+                            spitzli_agent::legacy::name(&spec)
                         ))
                         .await
                         .unwrap()
@@ -304,7 +304,7 @@ async fn service_ca_rotation_preservation_and_explicit_clear_reach_real_pods() {
                     secrets
                         .get_opt(&format!(
                             "{}-services-2",
-                            webdock_agent::legacy::name(&spec)
+                            spitzli_agent::legacy::name(&spec)
                         ))
                         .await
                         .unwrap()

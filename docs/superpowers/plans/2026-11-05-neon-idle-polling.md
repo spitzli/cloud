@@ -48,6 +48,6 @@ timeout remain unchanged. No database extension was installed.
 - [ ] Record remaining sources of idle traffic, remove temporary credential
   custody, and continue the existing TODO queue.
 
-**Files:** `crates/control-plane/src/bin/webdock-plugin-controller.rs` and
+**Files:** `crates/control-plane/src/bin/spitzli-plugin-controller.rs` and
 `crates/agent/src/management.rs`, plus the dated qualification/operations records.
 No schema or protocol migration is required.

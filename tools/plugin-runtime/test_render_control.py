@@ -5,7 +5,7 @@ from render_control import render
 class ControlPolicyTests(unittest.TestCase):
     def setUp(self):
         self.args = dict(image='webdock.local/core/backend@sha256:' + 'a9' * 32,
-                         namespace='webdock-core', prefix='webdock',
+                         namespace='spitzli-core', prefix='webdock',
                          environment_secret='native-runtime', source_secret='native-source',
                          issuer_secret='native-issuer', callback_sources=['10.89.0.1'],
                          runtime_host='10.0.0.2')

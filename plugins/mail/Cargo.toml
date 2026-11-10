@@ -1,5 +1,5 @@
 [package]
-name = "webdock-mail"
+name = "spitzli-mail"
 version = "0.3.0"
 edition = "2024"
 rust-version = "1.94"
@@ -15,15 +15,15 @@ sha2 = "0.10"
 rustls-pemfile = "2"
 axum = "0.8"
 tokio-stream = { version = "0.1", features = ["net"] }
-webdock-mail-runtime = { path = "../../crates/mail-runtime" }
-webdock-mail-protocol = { path = "../../crates/mail-protocol" }
-webdock-mail-message = { path = "../../crates/mail-message" }
+spitzli-mail-runtime = { path = "../../crates/mail-runtime" }
+spitzli-mail-protocol = { path = "../../crates/mail-protocol" }
+spitzli-mail-message = { path = "../../crates/mail-message" }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["arbitrary_precision"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "time"] }
-webdock-plugin-protocol = { path = "../../crates/plugin-protocol" }
-webdock-plugin-runtime = { path = "../../crates/plugin-runtime" }
-webdock-plugin-kit = { path = "../../crates/plugin-kit" }
+spitzli-plugin-protocol = { path = "../../crates/plugin-protocol" }
+spitzli-plugin-runtime = { path = "../../crates/plugin-runtime" }
+spitzli-plugin-kit = { path = "../../crates/plugin-kit" }
 tonic = { version = "0.14.6", features = ["transport"] }
 ed25519-dalek = "2"
 hex = "0.4"

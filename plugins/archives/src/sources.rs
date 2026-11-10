@@ -1,11 +1,11 @@
 //! Existing pinned Core channel; no public transport can ask for private source material.
 use crate::{MAX_BYTES, Result, now};
-use std::path::Path;
-use tokio::io::{AsyncSeekExt, AsyncWriteExt};
-use webdock_export_protocol::{
+use spitzli_export_protocol::{
     SourceKind, SourceRef,
     wire::{self, export_sources_client::ExportSourcesClient},
 };
+use std::path::Path;
+use tokio::io::{AsyncSeekExt, AsyncWriteExt};
 #[derive(Clone)]
 pub struct Sources {
     client: ExportSourcesClient<tonic::transport::Channel>,
@@ -66,7 +66,7 @@ impl Sources {
     }
     pub async fn validate_download(
         &self,
-        a: &webdock_plugin_protocol::storage::StorageAuthorization,
+        a: &spitzli_plugin_protocol::storage::StorageAuthorization,
         source: Option<&SourceRef>,
         job: &str,
     ) -> Result<()> {
@@ -151,12 +151,12 @@ impl Sources {
         let file = tempfile::tempfile_in(root).map_err(|_| "Private source staging unavailable")?;
         let mut file = tokio::fs::File::from_std(file);
         let source_limit = if source.kind == SourceKind::BuildLog {
-            webdock_export_protocol::MAX_BUILD_LOG_BYTES as u64
+            spitzli_export_protocol::MAX_BUILD_LOG_BYTES as u64
         } else {
             MAX_BYTES
         };
         let archive_limit = if source.kind == SourceKind::BuildLog {
-            webdock_export_protocol::MAX_BUILD_LOG_GZIP_BYTES
+            spitzli_export_protocol::MAX_BUILD_LOG_GZIP_BYTES
         } else {
             MAX_BYTES
         };
@@ -167,7 +167,7 @@ impl Sources {
             .map_err(|_| "Export source interrupted")?
         {
             if !chunk.reference_json.is_empty()
-                || chunk.data.len() > webdock_export_protocol::CHUNK_BYTES
+                || chunk.data.len() > spitzli_export_protocol::CHUNK_BYTES
             {
                 return Err("Invalid export source frame");
             }

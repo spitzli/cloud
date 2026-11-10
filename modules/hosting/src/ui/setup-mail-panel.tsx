@@ -1,8 +1,8 @@
 import { hostingUIScope } from "./scope";
 import * as React from "react";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
-import type { SetupOptions } from "@webdock/hosting-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import type { SetupOptions } from "@spitzli/hosting-contracts";
 import type { HostingUIServices } from "./services";
 export function createSetupMailPanelView(
   services: Pick<HostingUIServices, "mailCall" | "MailProductForm">,

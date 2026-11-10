@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { Pool } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 import { enrollClerkIdentity } from "../src/modules/auth/clerk-mappings";
 const [file, mode] = process.argv.slice(2);
 if (!file || (mode !== undefined && mode !== "--apply"))

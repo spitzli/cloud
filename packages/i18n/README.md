@@ -4,11 +4,11 @@ English source messages are the fallback. German translations live in real GNU g
 
 ## Integration contract
 
-- `@webdock/i18n`: `Locale`, `Preference`, `resolveLocale`, `preferenceFromCookie`, `translator`, `msgid`, `gettext`, `pgettext`, `ngettext`.
-- `@webdock/i18n/react`: `I18nProvider({locale,preference,children})` and `useI18n()`.
-- `@webdock/i18n/next`: request-cached `getRequestI18n()` and `contextHeaders()`. Import only on the server. The latter returns **only** resolved `Accept-Language`, never auth cookies or credentials.
-- `@webdock/i18n/preference`: `createPreferenceResponse(request,{canonicalOrigin})` for an app's POST `/api/locale` handler. Supply trusted app configuration as the origin. It accepts JSON `{preference:"system"|"en"|"de"}` and returns 204 with a host-only, HttpOnly, Secure, SameSite=Lax, year-long cookie. Invalid/duplicate preference cookies resolve to System.
-- `@webdock/i18n/picker`: `LanguagePicker` posts that JSON and refreshes React Server Components without changing the URL or reloading the whole document. Wrap it in the app's provider; optional `className` lets existing app styles size it.
+- `@spitzli/i18n`: `Locale`, `Preference`, `resolveLocale`, `preferenceFromCookie`, `translator`, `msgid`, `gettext`, `pgettext`, `ngettext`.
+- `@spitzli/i18n/react`: `I18nProvider({locale,preference,children})` and `useI18n()`.
+- `@spitzli/i18n/next`: request-cached `getRequestI18n()` and `contextHeaders()`. Import only on the server. The latter returns **only** resolved `Accept-Language`, never auth cookies or credentials.
+- `@spitzli/i18n/preference`: `createPreferenceResponse(request,{canonicalOrigin})` for an app's POST `/api/locale` handler. Supply trusted app configuration as the origin. It accepts JSON `{preference:"system"|"en"|"de"}` and returns 204 with a host-only, HttpOnly, Secure, SameSite=Lax, year-long cookie. Invalid/duplicate preference cookies resolve to System.
+- `@spitzli/i18n/picker`: `LanguagePicker` posts that JSON and refreshes React Server Components without changing the URL or reloading the whole document. Wrap it in the app's provider; optional `className` lets existing app styles size it.
 
 `translator(locale)` exposes `{locale,t,n,p,error,date,number}`. `t('Hello {name}',{name})` substitutes named placeholders as **plain text**, without HTML. `n('{count} page','{count} pages',count)` supplies `{count}`. `p('verb','Open')` keeps distinct gettext contexts. EN and DE both use two plural forms (`n != 1`); the compiler rejects other plural rules. Date/number formatting uses en-GB/de-DE; dates default to Europe/Berlin and accept explicit Intl options.
 

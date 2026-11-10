@@ -1,4 +1,4 @@
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 export function assertSetupConfirmation(input: {
   setupRevision: number;
   submittedRevision: number;

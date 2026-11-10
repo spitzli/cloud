@@ -14,16 +14,16 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use std::sync::Arc;
-use subtle::ConstantTimeEq;
-use webdock_core::features::OperationKind;
-use webdock_mail::incoming::{MailboxCommand, NativeIncoming, ServiceCommand};
-use webdock_mail::keys::{KeyChange, KeyCommand};
-use webdock_mail::sending::{
+use spitzli_core::features::OperationKind;
+use spitzli_mail::incoming::{MailboxCommand, NativeIncoming, ServiceCommand};
+use spitzli_mail::keys::{KeyChange, KeyCommand};
+use spitzli_mail::sending::{
     ProviderExecution, ProviderPolicy, ProviderSnapshot, SendCommand, Sending,
 };
-use webdock_mail::submissions::{QueueCommand, Submissions};
-use webdock_mail::webmail::{FinishWrite, ReserveWrite, WebmailService};
+use spitzli_mail::submissions::{QueueCommand, Submissions};
+use spitzli_mail::webmail::{FinishWrite, ReserveWrite, WebmailService};
+use std::sync::Arc;
+use subtle::ConstantTimeEq;
 
 /// Match the optional Core listener gate before declaring its required host service usable.
 pub fn native_control_configured(
@@ -35,23 +35,23 @@ pub fn native_control_configured(
             .get("WEBDOCK_NATIVE_MAIL_SENDING_ENABLED")
             .map(String::as_str)
             == Some("true")
-        && webdock_core::features::FeatureSet::from_json(
+        && spitzli_core::features::FeatureSet::from_json(
             environment
                 .get("WEBDOCK_FEATURES")
                 .map(String::as_str)
                 .unwrap_or("{}"),
         )
         .is_ok_and(|features| {
-            features.state("mail") != webdock_core::features::FeatureState::Disabled
+            features.state("mail") != spitzli_core::features::FeatureState::Disabled
         })
 }
 /// Provider-neutral policy bridge. The domain keeps this transaction open until its state
 /// transition commits; a separate momentary snapshot would lose the revocation fence.
 pub struct MailProviderPolicy {
-    host: Arc<webdock_plugin_host::HostService>,
+    host: Arc<spitzli_plugin_host::HostService>,
 }
 impl MailProviderPolicy {
-    pub fn new(host: Arc<webdock_plugin_host::HostService>) -> Self {
+    pub fn new(host: Arc<spitzli_plugin_host::HostService>) -> Self {
         Self { host }
     }
 }
@@ -61,33 +61,33 @@ impl ProviderPolicy for MailProviderPolicy {
         &self,
         tx: &sea_orm::DatabaseTransaction,
         source: &Value,
-    ) -> webdock_mail::Result<bool> {
+    ) -> spitzli_mail::Result<bool> {
         self.host
             .mail_source_in(tx, source)
             .await
-            .map_err(|_| webdock_mail::Error::Unavailable)
+            .map_err(|_| spitzli_mail::Error::Unavailable)
     }
     async fn snapshot(
         &self,
         tx: &sea_orm::DatabaseTransaction,
         customer: &str,
         continuation: bool,
-        peer: Option<&webdock_plugin_runtime::PeerIdentity>,
-    ) -> webdock_mail::Result<ProviderSnapshot> {
+        peer: Option<&spitzli_plugin_runtime::PeerIdentity>,
+    ) -> spitzli_mail::Result<ProviderSnapshot> {
         let policy = self
             .host
             .mail_policy_in(tx, customer, continuation)
             .await
-            .map_err(|_| webdock_mail::Error::Unavailable)?;
+            .map_err(|_| spitzli_mail::Error::Unavailable)?;
         if peer.is_some_and(|peer| !policy.permits_peer(peer)) {
-            return Err(webdock_mail::Error::Unavailable);
+            return Err(spitzli_mail::Error::Unavailable);
         }
         let execution = if policy.managed {
             let transport = &policy.transport;
             if transport["region"] != "eu"
                 || !["managed", "byok"].contains(&transport["mode"].as_str().unwrap_or(""))
             {
-                return Err(webdock_mail::Error::Unavailable);
+                return Err(spitzli_mail::Error::Unavailable);
             }
             ProviderExecution::Managed {
                 credentials_sha256: transport["credentials_sha256"]
@@ -97,7 +97,7 @@ impl ProviderPolicy for MailProviderPolicy {
                             && v.bytes()
                                 .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
                     })
-                    .ok_or(webdock_mail::Error::Unavailable)?
+                    .ok_or(spitzli_mail::Error::Unavailable)?
                     .into(),
                 transport: serde_json::json!({"customerID":policy.customer_id,"accountID":transport["provider_account_id"],"mode":transport["mode"],"region":"eu","transportRevision":policy.transport_revision,"bindingRevision":policy.grant_revision,"byokRevision":transport["byok_revision"]}),
                 worker_credential_sha256: policy.binding.credential_sha256.clone(),
@@ -108,15 +108,15 @@ impl ProviderPolicy for MailProviderPolicy {
                 .customers
                 .get(customer)
                 .and_then(|bindings| bindings.get("send"))
-                .ok_or(webdock_mail::Error::Unavailable)?
+                .ok_or(spitzli_mail::Error::Unavailable)?
                 .clone();
             let rule = send_binding
                 .rules
                 .iter()
                 .find(|rule| rule.method == "POST")
-                .ok_or(webdock_mail::Error::Unavailable)?;
-            webdock_plugin_http::bind_target(&rule.method, &rule.path, send_binding.clone())
-                .map_err(|_| webdock_mail::Error::Unavailable)?;
+                .ok_or(spitzli_mail::Error::Unavailable)?;
+            spitzli_plugin_http::bind_target(&rule.method, &rule.path, send_binding.clone())
+                .map_err(|_| spitzli_mail::Error::Unavailable)?;
             ProviderExecution::LegacyHttp(send_binding)
         };
         Ok(ProviderSnapshot {
@@ -197,7 +197,7 @@ fn incoming_value(
 }
 fn incoming_agent_configuration(
     environment: &std::collections::HashMap<String, String>,
-) -> Result<webdock_mail::incoming::agent::MailAgentConfig, InitializationError> {
+) -> Result<spitzli_mail::incoming::agent::MailAgentConfig, InitializationError> {
     if environment
         .get("WEBDOCK_NATIVE_MAIL_ENABLED")
         .map(String::as_str)
@@ -212,7 +212,7 @@ fn incoming_agent_configuration(
     {
         return Err(InitializationError::IncomingAgentDisabled);
     }
-    Ok(webdock_mail::incoming::agent::MailAgentConfig {
+    Ok(spitzli_mail::incoming::agent::MailAgentConfig {
         image: incoming_value(environment, "MAIL_STALWART_IMAGE")?,
         hostname_suffix: incoming_value(environment, "MAIL_HOSTNAME_SUFFIX")?,
         encryption_key: incoming_value(environment, "MAIL_ENCRYPTION_KEY")?,
@@ -220,7 +220,7 @@ fn incoming_agent_configuration(
 }
 /// HTTP admission and the private agent listener must use the same reviewed tenant configuration.
 pub async fn initialize_incoming(
-    dependencies: webdock_mail::MailDependencies,
+    dependencies: spitzli_mail::MailDependencies,
     environment: &std::collections::HashMap<String, String>,
 ) -> Result<Arc<NativeIncoming>, InitializationError> {
     if environment
@@ -232,7 +232,7 @@ pub async fn initialize_incoming(
     }
     NativeIncoming::new(
         dependencies,
-        webdock_mail::incoming::IncomingConfig {
+        spitzli_mail::incoming::IncomingConfig {
             enabled: true,
             mailboxes_enabled: environment
                 .get("WEBDOCK_NATIVE_MAILBOXES_ENABLED")
@@ -252,21 +252,21 @@ pub async fn initialize_incoming(
 }
 /// Core receives only provider-neutral desired state and retained encrypted Mail material.
 pub async fn initialize_incoming_agent(
-    dependencies: webdock_mail::MailDependencies,
+    dependencies: spitzli_mail::MailDependencies,
     environment: &std::collections::HashMap<String, String>,
-) -> Result<Arc<webdock_mail::incoming::agent::IncomingAgent>, InitializationError> {
+) -> Result<Arc<spitzli_mail::incoming::agent::IncomingAgent>, InitializationError> {
     let configuration_enabled = incoming_configuration_enabled(environment)?;
     let configuration = incoming_agent_configuration(environment)?;
     let incoming = initialize_incoming(dependencies, environment).await?;
-    webdock_mail::incoming::agent::IncomingAgent::new(incoming, configuration)
+    spitzli_mail::incoming::agent::IncomingAgent::new(incoming, configuration)
         .map(|agent| agent.with_configuration_enabled(configuration_enabled))
         .map(Arc::new)
         .map_err(|_| InitializationError::IncomingService)
 }
 /// The HTTP process and private callback listener use the same issuer/worker settings.
 pub async fn initialize_sender(
-    dependencies: webdock_mail::MailDependencies,
-    host: Arc<webdock_plugin_host::HostService>,
+    dependencies: spitzli_mail::MailDependencies,
+    host: Arc<spitzli_plugin_host::HostService>,
     configuration: &crate::plugin_config::MailConfig,
     environment: &std::collections::HashMap<String, String>,
     webmail: Option<Arc<WebmailService>>,
@@ -283,7 +283,7 @@ pub async fn initialize_sender(
         .get("WEBDOCK_NATIVE_MAILBOXES_ENABLED")
         .is_some_and(|value| value == "true")
     {
-        Some(webdock_mail::sending::IncomingConfig {
+        Some(spitzli_mail::sending::IncomingConfig {
             managed_cluster: required("MAIL_MANAGED_CLUSTER_ID")?,
             hostname_suffix: required("MAIL_HOSTNAME_SUFFIX")?,
             encryption_key: required("MAIL_ENCRYPTION_KEY")?,
@@ -295,7 +295,7 @@ pub async fn initialize_sender(
         .map_err(|_| InitializationError::SigningKey)?;
     let mut sender = Sending::new(
         dependencies,
-        webdock_mail::sending::SendingConfig {
+        spitzli_mail::sending::SendingConfig {
             enabled: true,
             rls_secret: required("DATABASE_RLS_SECRET")?,
             signing_key: signing_key.to_bytes(),
@@ -424,7 +424,7 @@ mod tests {
     #[test]
     fn draining_keeps_revocation_and_suspension_available() {
         let features =
-            webdock_core::features::FeatureSet::from_json(r#"{"mail":"draining"}"#).unwrap();
+            spitzli_core::features::FeatureSet::from_json(r#"{"mail":"draining"}"#).unwrap();
         for value in [
             json!({"action":"manageNativeSending","customerID":"123",
                 "input":{"action":"revoke","keyID":"456"}}),
@@ -637,12 +637,12 @@ impl GatewayCredentials {
 pub struct MailEndpoints {
     pub service: Option<Arc<WebmailService>>,
     pub incoming: Option<Arc<NativeIncoming>>,
-    pub keys: Option<Arc<webdock_mail::keys::NativeKeys>>,
+    pub keys: Option<Arc<spitzli_mail::keys::NativeKeys>>,
     pub queue: Option<Arc<Submissions>>,
     pub sender: Option<Arc<Sending>>,
     credentials: GatewayCredentials,
     operator_transports:
-        std::collections::BTreeMap<String, webdock_mail::transport_adoption::ConfiguredTransport>,
+        std::collections::BTreeMap<String, spitzli_mail::transport_adoption::ConfiguredTransport>,
 }
 impl MailEndpoints {
     pub fn new(service: Arc<WebmailService>, secret: &str) -> Result<Self, &'static str> {
@@ -657,7 +657,7 @@ impl MailEndpoints {
         })
     }
     pub fn sending_only(
-        keys: Arc<webdock_mail::keys::NativeKeys>,
+        keys: Arc<spitzli_mail::keys::NativeKeys>,
         worker_secret: &str,
     ) -> Result<Self, &'static str> {
         Ok(Self {
@@ -672,7 +672,7 @@ impl MailEndpoints {
     }
     pub fn with_sending(
         mut self,
-        keys: Arc<webdock_mail::keys::NativeKeys>,
+        keys: Arc<spitzli_mail::keys::NativeKeys>,
         worker_secret: &str,
     ) -> Result<Self, &'static str> {
         let hash = GatewayCredentials::hash(worker_secret)?;
@@ -689,7 +689,7 @@ impl MailEndpoints {
     }
     pub fn with_operator_transports(
         mut self,
-        accounts: Vec<webdock_mail::transport_adoption::ConfiguredTransport>,
+        accounts: Vec<spitzli_mail::transport_adoption::ConfiguredTransport>,
     ) -> Result<Self, &'static str> {
         for account in accounts {
             if self
@@ -736,7 +736,7 @@ impl MailEndpoints {
             .as_deref()
             .and_then(WebmailService::gateway_origin)
     }
-    fn sending(&self) -> Result<&webdock_mail::keys::NativeKeys, ApiFailure> {
+    fn sending(&self) -> Result<&spitzli_mail::keys::NativeKeys, ApiFailure> {
         self.keys.as_deref().ok_or_else(unavailable)
     }
 }
@@ -760,9 +760,9 @@ fn invalid() -> ApiFailure {
         "Check the Mail request fields.",
     )
 }
-fn failure(error: webdock_mail::Error) -> ApiFailure {
+fn failure(error: spitzli_mail::Error) -> ApiFailure {
     match error {
-        webdock_mail::Error::Invalid => invalid(),
+        spitzli_mail::Error::Invalid => invalid(),
         _ => reject(
             StatusCode::FORBIDDEN,
             "mail_unavailable",
@@ -770,15 +770,15 @@ fn failure(error: webdock_mail::Error) -> ApiFailure {
         ),
     }
 }
-fn incoming_failure(error: webdock_mail::incoming::Error) -> ApiFailure {
+fn incoming_failure(error: spitzli_mail::incoming::Error) -> ApiFailure {
     match error {
-        webdock_mail::incoming::Error::Invalid => invalid(),
-        webdock_mail::incoming::Error::Unavailable => reject(
+        spitzli_mail::incoming::Error::Invalid => invalid(),
+        spitzli_mail::incoming::Error::Unavailable => reject(
             StatusCode::FORBIDDEN,
             "mail_unavailable",
             "Mail access is unavailable.",
         ),
-        webdock_mail::incoming::Error::Conflict => reject(
+        spitzli_mail::incoming::Error::Conflict => reject(
             StatusCode::CONFLICT,
             "conflict",
             "Mail changed. Reload its current state.",
@@ -1034,7 +1034,7 @@ enum GatewayCommand {
 enum WorkerCommand {
     Queue(Box<QueueCommand>),
     Send(Box<SendCommand>),
-    Webmail(Box<webdock_mail::queued_webmail::WebmailCommand>),
+    Webmail(Box<spitzli_mail::queued_webmail::WebmailCommand>),
 }
 fn queue_command(caller: Caller, value: &Value) -> Result<Option<WorkerCommand>, ApiFailure> {
     if value["action"]

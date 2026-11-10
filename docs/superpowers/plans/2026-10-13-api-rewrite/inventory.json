@@ -1067,7 +1067,7 @@
       "task": "A13",
       "imports": [
         "@/lib/canvas-bridge",
-        "@webdock/page-builder/model",
+        "@spitzli/page-builder/model",
         "next/cache",
         "next/headers"
       ],
@@ -1295,7 +1295,7 @@
         "),to:value(",
         "@/lib/mail-product",
         "@/lib/studio-errors",
-        "@webdock/i18n",
+        "@spitzli/i18n",
         "next/cache",
         "next/navigation"
       ],
@@ -1336,8 +1336,8 @@
       "task": "A08",
       "imports": [
         "./database-client",
-        "@webdock/database-contracts",
-        "@webdock/hosting-contracts",
+        "@spitzli/database-contracts",
+        "@spitzli/hosting-contracts",
         "next/cache"
       ],
       "exports": [
@@ -1354,8 +1354,8 @@
       "task": "A08",
       "imports": [
         "./hosting-client",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n",
         "next/cache"
       ],
       "exports": [
@@ -1373,7 +1373,7 @@
       "task": "A08",
       "imports": [
         "./hosting-client",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "next/cache"
       ],
       "exports": [
@@ -1655,7 +1655,7 @@
       "imports": [
         "./actions",
         "@/lib/platform",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -1671,7 +1671,7 @@
         "./form",
         "@/lib/access-management",
         "@/lib/platform",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -1703,7 +1703,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -1721,7 +1721,7 @@
         "@/lib/access-management",
         "@/lib/auth",
         "@/lib/plans",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -1736,7 +1736,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link"
       ],
       "exports": []
@@ -1750,8 +1750,8 @@
         "@/components/hosting/app-spec",
         "@/components/hosting/form",
         "@/lib/hosting-application",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/link",
         "next/navigation",
         "node:crypto"
@@ -1766,7 +1766,7 @@
       "imports": [
         "@/components/hosting/form",
         "@/lib/hosting-client",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "node:crypto"
       ],
       "exports": []
@@ -1782,7 +1782,7 @@
         "@/components/hosting/refresh",
         "@/lib/hosting-application",
         "@/lib/workspace-navigation",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -1826,7 +1826,7 @@
         "@/components/hosting/form",
         "@/components/hosting/refresh",
         "@/lib/hosting-client",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link",
         "node:crypto"
       ],
@@ -1840,7 +1840,7 @@
       "imports": [
         "@/components/hosting/form",
         "@/lib/hosting-client",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -1857,9 +1857,9 @@
         "@/lib/hosting-client",
         "@/lib/hosting-views",
         "@/lib/ui-labels",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
-        "@webdock/search/form",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
+        "@spitzli/search/form",
         "next/link",
         "node:crypto"
       ],
@@ -1871,7 +1871,7 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -1897,8 +1897,8 @@
         "@/components/hosting/form",
         "@/lib/hosting-client",
         "@/lib/managed-database-page",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/link",
         "next/navigation",
         "node:crypto"
@@ -1913,8 +1913,8 @@
       "imports": [
         "@/components/hosting/form",
         "@/lib/hosting-client",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "node:crypto"
       ],
       "exports": []
@@ -1929,7 +1929,7 @@
         "@/components/hosting/project-context",
         "@/components/hosting/refresh",
         "@/lib/managed-database-page",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -1962,7 +1962,7 @@
       "imports": [
         "@/components/hosting/form",
         "@/lib/hosting-client",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/navigation",
         "node:crypto"
       ],
@@ -1976,7 +1976,7 @@
       "imports": [
         "@/lib/git-connection-routes",
         "@/lib/hosting-client",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link"
       ],
@@ -1988,7 +1988,7 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -2006,7 +2006,7 @@
         "@/lib/hosting-client",
         "@/lib/tenants",
         "@/lib/ui-labels",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link"
       ],
@@ -2022,8 +2022,8 @@
         "@/components/hosting/refresh",
         "@/components/hosting/table",
         "@/lib/hosting-client",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/link",
         "node:crypto"
       ],
@@ -2037,7 +2037,7 @@
       "imports": [
         "@/components/hosting/refresh",
         "@/lib/hosting-client",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -2054,7 +2054,7 @@
         "@/components/hosting/refresh",
         "@/components/hosting/table",
         "@/lib/hosting-client",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link",
         "node:crypto"
       ],
@@ -2103,8 +2103,8 @@
         "@/components/list-controls",
         "@/lib/hosting-client",
         "@/lib/workspace-navigation",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/link",
         "node:crypto"
       ],
@@ -2120,8 +2120,8 @@
         "@/components/hosting/table",
         "@/lib/hosting-client",
         "@/lib/ui-labels",
-        "@webdock/hosting-contracts/vercel",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts/vercel",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -2134,7 +2134,7 @@
       "imports": [
         "@/components/studio-shell",
         "@/lib/auth",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers"
       ],
       "exports": [
@@ -2147,7 +2147,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/next"
+        "@spitzli/i18n/next"
       ],
       "exports": []
     },
@@ -2174,7 +2174,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link",
         "react"
       ],
@@ -2194,7 +2194,7 @@
         "@/lib/auth",
         "@/lib/plans",
         "@/lib/ui-labels",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2225,7 +2225,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -2244,8 +2244,8 @@
         "@/lib/access-management",
         "@/lib/auth",
         "@/lib/ui-labels",
-        "@webdock/i18n/next",
-        "@webdock/search/form",
+        "@spitzli/i18n/next",
+        "@spitzli/search/form",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2261,7 +2261,7 @@
       "task": "A13",
       "imports": [
         "@/lib/canvas-bridge",
-        "@webdock/page-builder/model",
+        "@spitzli/page-builder/model",
         "next/cache",
         "next/headers"
       ],
@@ -2280,7 +2280,7 @@
         "@/lib/canvas-bridge",
         "@/lib/demo-bridges",
         "@/lib/studio-client",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/navigation"
       ],
       "exports": [
@@ -2309,8 +2309,8 @@
       "imports": [
         "./actions",
         "@/lib/demo-bridges",
-        "@webdock/i18n",
-        "@webdock/i18n/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -2329,7 +2329,7 @@
         "@/components/area-navigation",
         "@/lib/auth",
         "@/lib/demo-bridges",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2363,9 +2363,9 @@
         "./content-state",
         "@/lib/content-fields",
         "@/lib/demo-content",
-        "@webdock/i18n",
-        "@webdock/i18n/react",
-        "@webdock/search/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
+        "@spitzli/search/react",
         "react"
       ],
       "exports": [
@@ -2398,7 +2398,7 @@
         "@/lib/auth",
         "@/lib/demo-bridges",
         "@/lib/demo-content",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2418,8 +2418,8 @@
         "@/lib/auth",
         "@/lib/cms-modules",
         "@/lib/demo-bridges",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2435,7 +2435,7 @@
         "@/lib/auth",
         "@/lib/cms-modules",
         "@/lib/demo-bridges",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2467,7 +2467,7 @@
         "./request-list",
         "@/lib/auth",
         "@/lib/demo-bridges",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2483,7 +2483,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -2498,9 +2498,9 @@
       "imports": [
         "./request-form",
         "@/lib/demo-bridges",
-        "@webdock/i18n",
-        "@webdock/i18n/react",
-        "@webdock/search/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
+        "@spitzli/search/react",
         "react"
       ],
       "exports": [
@@ -2530,8 +2530,8 @@
         "./shop-forms",
         "@/lib/auth",
         "@/lib/studio-shop",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/image",
         "next/link",
@@ -2551,9 +2551,9 @@
         ")}</span><span>{i18n.t(",
         "./actions",
         "@/lib/studio-shop",
-        "@webdock/i18n",
-        "@webdock/i18n/react",
-        "@webdock/search/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
+        "@spitzli/search/react",
         "next/image",
         "react"
       ],
@@ -2578,7 +2578,7 @@
         "@/lib/cms-modules",
         "@/lib/demo-bridges",
         "@/lib/tenants",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2597,8 +2597,8 @@
         "@/components/databases/workspace-frame",
         "@/lib/database-client",
         "@/lib/hosting-page-access",
-        "@webdock/database-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/database-contracts",
+        "@spitzli/i18n/next",
         "next/navigation"
       ],
       "exports": []
@@ -2613,8 +2613,8 @@
         "@/components/hosting/tenant-database-navigation",
         "@/lib/database-client",
         "@/lib/hosting-page-access",
-        "@webdock/database-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/database-contracts",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -2640,7 +2640,7 @@
         "@/lib/access-management",
         "@/lib/studio-client",
         "@/lib/tenants",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2731,7 +2731,7 @@
         "@/components/mail/product-form",
         "@/components/mail/product-page",
         "@/lib/mail-product",
-        "@webdock/i18n",
+        "@spitzli/i18n",
         "next/link"
       ],
       "exports": []
@@ -2757,7 +2757,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/react"
+        "@spitzli/i18n/react"
       ],
       "exports": []
     },
@@ -2768,7 +2768,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -2783,7 +2783,7 @@
       "imports": [
         "@/components/mail/webmail",
         "@/lib/mailboxes",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2813,8 +2813,8 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n",
-        "@webdock/i18n/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -2831,7 +2831,7 @@
         "@/lib/access-management",
         "@/lib/auth",
         "@/lib/mail-keys",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2860,7 +2860,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/next"
+        "@spitzli/i18n/next"
       ],
       "exports": []
     },
@@ -2903,7 +2903,7 @@
         "@/lib/platform",
         "@/lib/tenant-mail",
         "@/lib/ui-labels",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -2934,7 +2934,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -2951,7 +2951,7 @@
         "@/lib/mailboxes",
         "@/lib/studio-client",
         "@/lib/studio-errors",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link"
       ],
@@ -3009,7 +3009,7 @@
         "@/components/mail/product-page",
         "@/lib/mail-sending",
         "@/lib/mail-service",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link"
       ],
@@ -3023,7 +3023,7 @@
       "imports": [
         "./actions",
         "@/lib/mail-sending",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link",
         "react"
       ],
@@ -3054,7 +3054,7 @@
       "imports": [
         "./service-actions",
         "@/lib/studio-contracts",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link",
         "react"
       ],
@@ -3071,7 +3071,7 @@
         "../mail-workspace",
         "@/components/mail/connection-settings",
         "@/components/mail/product-page",
-        "@webdock/i18n/next"
+        "@spitzli/i18n/next"
       ],
       "exports": []
     },
@@ -3119,7 +3119,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -3138,8 +3138,8 @@
         "@/lib/mail-product",
         "@/lib/mail-tracking",
         "@/lib/studio-contracts",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/navigation"
       ],
@@ -3181,7 +3181,7 @@
         "@/components/hosting/table",
         "@/components/hosting/tenant-database-navigation",
         "@/lib/hosting-client",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -3244,8 +3244,8 @@
         "@/lib/plans",
         "@/lib/storage-usage",
         "@/lib/ui-labels",
-        "@webdock/i18n",
-        "@webdock/i18n/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -3269,8 +3269,8 @@
         "@/lib/tenant-mail",
         "@/lib/tenants",
         "@/lib/ui-labels",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -3291,7 +3291,7 @@
         "@/lib/demo-bridges",
         "@/lib/tenants",
         "@/lib/ui-labels",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -3323,7 +3323,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -3342,7 +3342,7 @@
         "@/lib/tenants",
         "@/lib/ui-labels",
         "@/lib/workspace-navigation",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -3361,8 +3361,8 @@
         "../../../../lib/list-query",
         "../../../../lib/server",
         "@/lib/ui-labels",
-        "@webdock/i18n/next",
-        "@webdock/search",
+        "@spitzli/i18n/next",
+        "@spitzli/search",
         "next/link",
         "next/navigation",
         "payload"
@@ -3393,7 +3393,7 @@
         "@/components/navigation",
         "@/components/tenant-preview",
         "@/lib/ui-labels",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link",
         "next/navigation"
       ],
@@ -3408,7 +3408,7 @@
         "../../../../../components/editor",
         "../../../../../lib/actions",
         "../../../../../lib/customer-fields",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -3424,8 +3424,8 @@
         "../../../../lib/presentation",
         "../../../../lib/server",
         "@/lib/ui-labels",
-        "@webdock/i18n/next",
-        "@webdock/search",
+        "@spitzli/i18n/next",
+        "@spitzli/search",
         "next/link",
         "next/navigation",
         "payload"
@@ -3438,7 +3438,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link"
       ],
       "exports": []
@@ -3456,8 +3456,8 @@
         "@/components/hosting/table",
         "@/components/workspace-context",
         "@/lib/hosting-client",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "node:crypto"
       ],
       "exports": []
@@ -3469,7 +3469,7 @@
       "task": "A15",
       "imports": [
         "@/components/hosting/form",
-        "@webdock/i18n/next"
+        "@spitzli/i18n/next"
       ],
       "exports": []
     },
@@ -3483,8 +3483,8 @@
         "@/components/hosting/form",
         "@/components/hosting/table",
         "@/lib/hosting-client",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/link",
         "next/navigation"
       ],
@@ -3501,8 +3501,8 @@
         "@/components/list-controls",
         "@/lib/hosting-client",
         "@/lib/server",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/link",
         "node:crypto"
       ],
@@ -3519,8 +3519,8 @@
         "../../../../lib/github",
         "../../../../lib/mcp-auth",
         "../../../../lib/server",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "react"
@@ -3547,7 +3547,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/next"
+        "@spitzli/i18n/next"
       ],
       "exports": []
     },
@@ -3557,7 +3557,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -3574,8 +3574,8 @@
         "@/lib/hosting-client",
         "@/lib/ui-labels",
         "@/lib/workspace-navigation",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -3590,8 +3590,8 @@
         "../../../lib/list-query",
         "../../../lib/presentation",
         "../../../lib/server",
-        "@webdock/i18n/next",
-        "@webdock/search",
+        "@spitzli/i18n/next",
+        "@spitzli/search",
         "next/link",
         "next/navigation",
         "payload"
@@ -3609,8 +3609,8 @@
         "@/lib/project-deletion-actions",
         "@/lib/server",
         "@/lib/sso",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "payload"
@@ -3632,8 +3632,8 @@
         "../../../../../lib/server",
         "@/components/hosting/project-applications",
         "@/lib/ui-labels",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/link",
         "next/navigation",
         "react"
@@ -3649,8 +3649,8 @@
         "../../../../../components/editor",
         "../../../../../lib/actions",
         "../../../../../lib/server",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -3671,8 +3671,8 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/next",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/next",
+        "@spitzli/i18n/react",
         "next",
         "next/font/local"
       ],
@@ -3689,7 +3689,7 @@
         "../../../components/login-form",
         "../../../components/navigation",
         "@payload-config",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/navigation"
       ],
       "exports": [
@@ -3759,7 +3759,7 @@
       "task": "A15",
       "imports": [
         "@/lib/studio-client",
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "POST",
@@ -3943,7 +3943,7 @@
       "imports": [
         "@/lib/hosting-client",
         "@/lib/vercel-oauth",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "GET"
@@ -3956,7 +3956,7 @@
       "task": "A10",
       "imports": [
         "@/lib/hosting-client",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "POST"
@@ -3968,7 +3968,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/preference"
+        "@spitzli/i18n/preference"
       ],
       "exports": [
         "POST"
@@ -4065,7 +4065,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": [
@@ -4081,7 +4081,7 @@
         "../lib/instance-users",
         "../lib/snowflake",
         "../lib/sso",
-        "@webdock/payload-sso",
+        "@spitzli/payload-sso",
         "payload"
       ],
       "exports": [
@@ -4101,7 +4101,7 @@
       "imports": [
         "./navigation-pending",
         "@/lib/workspace-navigation",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link",
         "next/navigation"
       ],
@@ -4120,10 +4120,10 @@
         "./inspector",
         "./stage",
         "@/app/(console)/(portal)/sites/[bindingID]/builder/actions",
-        "@webdock/i18n",
-        "@webdock/i18n/react",
-        "@webdock/page-builder/model",
-        "@webdock/page-builder/render",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
+        "@spitzli/page-builder/model",
+        "@spitzli/page-builder/render",
         "next/link",
         "next/navigation",
         "react"
@@ -4139,7 +4139,7 @@
       "task": "A15",
       "imports": [
         "./history",
-        "@webdock/page-builder/model",
+        "@spitzli/page-builder/model",
         "node:assert/strict",
         "node:test"
       ],
@@ -4151,7 +4151,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/page-builder/model"
+        "@spitzli/page-builder/model"
       ],
       "exports": [
         "History",
@@ -4172,8 +4172,8 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/react",
-        "@webdock/page-builder/model",
+        "@spitzli/i18n/react",
+        "@spitzli/page-builder/model",
         "react"
       ],
       "exports": [
@@ -4187,9 +4187,9 @@
       "task": "A15",
       "imports": [
         "./history",
-        "@webdock/i18n/react",
-        "@webdock/page-builder/model",
-        "@webdock/page-builder/render",
+        "@spitzli/i18n/react",
+        "@spitzli/page-builder/model",
+        "@spitzli/page-builder/render",
         "react"
       ],
       "exports": [
@@ -4203,8 +4203,8 @@
       "task": "A13",
       "imports": [
         "@/lib/cms-modules",
-        "@webdock/i18n/react",
-        "@webdock/search/react",
+        "@spitzli/i18n/react",
+        "@spitzli/search/react",
         "next/link",
         "react"
       ],
@@ -4231,8 +4231,8 @@
       "task": "A11",
       "imports": [
         "@/lib/database-actions",
-        "@webdock/database-contracts",
-        "@webdock/i18n/react",
+        "@spitzli/database-contracts",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -4248,7 +4248,7 @@
       "imports": [
         "@/lib/database-actions",
         "@tabularis/web-ui",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/dynamic",
         "react"
       ],
@@ -4262,7 +4262,7 @@
       "domain": "databases",
       "task": "A11",
       "imports": [
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link",
         "react"
       ],
@@ -4277,8 +4277,8 @@
       "task": "A15",
       "imports": [
         "../lib/actions",
-        "@webdock/i18n",
-        "@webdock/i18n/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -4294,7 +4294,7 @@
       "task": "A12",
       "imports": [
         "../lib/github",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": [
@@ -4307,10 +4307,10 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/hosting-contracts",
-        "@webdock/hosting-contracts/react",
-        "@webdock/i18n",
-        "@webdock/i18n/react"
+        "@spitzli/hosting-contracts",
+        "@spitzli/hosting-contracts/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react"
       ],
       "exports": [
         "HostingAllowanceFields",
@@ -4325,9 +4325,9 @@
       "imports": [
         "./arguments",
         "./environment",
-        "@webdock/hosting-contracts",
-        "@webdock/hosting-contracts/react",
-        "@webdock/i18n/next"
+        "@spitzli/hosting-contracts",
+        "@spitzli/hosting-contracts/react",
+        "@spitzli/i18n/next"
       ],
       "exports": [
         "AppSpecFields"
@@ -4340,7 +4340,7 @@
       "task": "A10",
       "imports": [
         "./form-state",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -4360,8 +4360,8 @@
         "@/components/list-controls",
         "@/lib/hosting-client",
         "@/lib/server",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/link",
         "node:crypto"
       ],
@@ -4376,7 +4376,7 @@
       "task": "A10",
       "imports": [
         "@/lib/managed-database-actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -4390,8 +4390,8 @@
       "task": "A10",
       "imports": [
         "@/lib/managed-database-actions",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/react",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/react",
         "next/link",
         "react"
       ],
@@ -4408,7 +4408,7 @@
       "task": "A10",
       "imports": [
         "./form-state",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -4437,8 +4437,8 @@
       "imports": [
         "./form-state",
         "@/lib/hosting-actions",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/react",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/react",
         "next/link",
         "react"
       ],
@@ -4457,7 +4457,7 @@
         "./table",
         "@/lib/hosting-client",
         "@/lib/hosting-views",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link",
         "node:crypto"
       ],
@@ -4474,9 +4474,9 @@
         "./form",
         "./table",
         "@/lib/hosting-client",
-        "@webdock/i18n/next",
-        "@webdock/search",
-        "@webdock/search/form",
+        "@spitzli/i18n/next",
+        "@spitzli/search",
+        "@spitzli/search/form",
         "next/link"
       ],
       "exports": [
@@ -4491,8 +4491,8 @@
       "imports": [
         "@/lib/hosting-client",
         "@/lib/workspace-navigation",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": [
@@ -4508,8 +4508,8 @@
         "../area-navigation",
         "../workspace-context",
         "@/lib/hosting-client",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n/next"
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n/next"
       ],
       "exports": [
         "HostingProjectHeader"
@@ -4548,7 +4548,7 @@
       "imports": [
         "@/components/area-navigation",
         "@/lib/studio-client",
-        "@webdock/i18n/next"
+        "@spitzli/i18n/next"
       ],
       "exports": [
         "TenantDatabaseNavigation"
@@ -4562,7 +4562,7 @@
       "imports": [
         "../lib/list-query",
         "./live-search-form",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link"
       ],
       "exports": [
@@ -4576,7 +4576,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/search/form"
+        "@spitzli/search/form"
       ],
       "exports": []
     },
@@ -4586,8 +4586,8 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n",
-        "@webdock/i18n/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
         "next/link",
         "next/navigation",
         "react"
@@ -4646,7 +4646,7 @@
       "imports": [
         "@/components/area-navigation",
         "@/lib/workspace-navigation",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/navigation"
       ],
       "exports": [
@@ -4659,7 +4659,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "dompurify",
         "react"
       ],
@@ -4689,7 +4689,7 @@
         "),to:value(",
         "@/lib/mail-product",
         "@/lib/studio-errors",
-        "@webdock/i18n",
+        "@spitzli/i18n",
         "next/cache",
         "next/navigation"
       ],
@@ -4705,7 +4705,7 @@
       "task": "A15",
       "imports": [
         "./product-actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link",
         "react"
       ],
@@ -4725,8 +4725,8 @@
         "@/lib/studio-client",
         "@/lib/studio-errors",
         "@/lib/tenants",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -4766,7 +4766,7 @@
       "imports": [
         "./message-html",
         "@/lib/webmail-actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -4779,7 +4779,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link"
       ],
       "exports": [
@@ -4795,9 +4795,9 @@
         "./area-navigation",
         "./navigation-pending",
         "@/lib/workspace-navigation",
-        "@webdock/i18n",
-        "@webdock/i18n/picker",
-        "@webdock/i18n/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/picker",
+        "@spitzli/i18n/react",
         "next/link",
         "next/navigation",
         "react"
@@ -4818,8 +4818,8 @@
       "imports": [
         "./hosting/allowances",
         "@/lib/plans",
-        "@webdock/i18n",
-        "@webdock/i18n/react"
+        "@spitzli/i18n",
+        "@spitzli/i18n/react"
       ],
       "exports": [
         "AllowanceList",
@@ -4836,8 +4836,8 @@
         "./navigation",
         "./tenant-preview",
         "@/lib/studio-client",
-        "@webdock/i18n/next",
-        "@webdock/i18n/picker",
+        "@spitzli/i18n/next",
+        "@spitzli/i18n/picker",
         "next/link"
       ],
       "exports": [
@@ -4851,7 +4851,7 @@
       "task": "A05",
       "imports": [
         "@/lib/studio-client",
-        "@webdock/i18n/next"
+        "@spitzli/i18n/next"
       ],
       "exports": [
         "TenantPreviewBanner",
@@ -4869,8 +4869,8 @@
         "../lib/vercel-settings",
         "../lib/vercel-store",
         "./vercel-link-form",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": [
@@ -4884,7 +4884,7 @@
       "task": "A12",
       "imports": [
         "../lib/vercel-actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -4901,8 +4901,8 @@
         "../lib/vercel-api",
         "../lib/vercel-project",
         "@/lib/ui-labels",
-        "@webdock/i18n",
-        "@webdock/i18n/next",
+        "@spitzli/i18n",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": [
@@ -4915,7 +4915,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": [
@@ -4980,7 +4980,7 @@
       "imports": [
         "./demo-bridges",
         "./studio-client",
-        "@webdock/page-builder/model"
+        "@spitzli/page-builder/model"
       ],
       "exports": [
         "CanvasCommand",
@@ -4995,7 +4995,7 @@
       "domain": "cms-bridge",
       "task": "A13",
       "imports": [
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "CmsComponentID",
@@ -5027,7 +5027,7 @@
       "imports": [
         "../components/editor",
         "../payload-types",
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "customerFields"
@@ -5040,8 +5040,8 @@
       "task": "A08",
       "imports": [
         "./database-client",
-        "@webdock/database-contracts",
-        "@webdock/hosting-contracts",
+        "@spitzli/database-contracts",
+        "@spitzli/hosting-contracts",
         "next/cache"
       ],
       "exports": [
@@ -5057,8 +5057,8 @@
       "imports": [
         "./hosting-page-access",
         "./sso",
-        "@webdock/database-contracts",
-        "@webdock/hosting-contracts",
+        "@spitzli/database-contracts",
+        "@spitzli/hosting-contracts",
         "next/headers"
       ],
       "exports": [
@@ -5123,7 +5123,7 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/hosting-contracts/git-oauth"
+        "@spitzli/hosting-contracts/git-oauth"
       ],
       "exports": [
         "gitConnectionRoute",
@@ -5137,7 +5137,7 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "gitDeploymentMessages"
@@ -5204,8 +5204,8 @@
       "task": "A08",
       "imports": [
         "./hosting-client",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n",
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n",
         "next/cache"
       ],
       "exports": [
@@ -5221,7 +5221,7 @@
       "task": "A10",
       "imports": [
         "./registry-api",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "payload"
       ],
       "exports": [
@@ -5235,7 +5235,7 @@
       "task": "A10",
       "imports": [
         "./hosting-client",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "react"
       ],
       "exports": [
@@ -5252,8 +5252,8 @@
         "./hosting-page-access",
         "./sso",
         "./vercel-settings",
-        "@webdock/hosting-contracts",
-        "@webdock/hosting-contracts/git-oauth",
+        "@spitzli/hosting-contracts",
+        "@spitzli/hosting-contracts/git-oauth",
         "next/headers"
       ],
       "exports": [
@@ -5269,7 +5269,7 @@
       "task": "A10",
       "imports": [
         "@modelcontextprotocol/sdk/server/mcp.js",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "hostingTools",
@@ -5283,8 +5283,8 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/hosting-contracts",
-        "@webdock/payload-sso",
+        "@spitzli/hosting-contracts",
+        "@spitzli/payload-sso",
         "next/navigation"
       ],
       "exports": [
@@ -5298,7 +5298,7 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "zod"
       ],
       "exports": [
@@ -5314,7 +5314,7 @@
       "domain": "registry",
       "task": "A06",
       "imports": [
-        "@webdock/instance-kit"
+        "@spitzli/instance-kit"
       ],
       "exports": []
     },
@@ -5337,7 +5337,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/search/url"
+        "@spitzli/search/url"
       ],
       "exports": []
     },
@@ -5474,7 +5474,7 @@
       "task": "A08",
       "imports": [
         "./hosting-client",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "next/cache"
       ],
       "exports": [
@@ -5494,7 +5494,7 @@
       "task": "A11",
       "imports": [
         "./hosting-client",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "react"
       ],
       "exports": [
@@ -5656,7 +5656,7 @@
       "domain": "lifecycle",
       "task": "A14",
       "imports": [
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "deletionMessages"
@@ -5754,7 +5754,7 @@
       "domain": "registry",
       "task": "A06",
       "imports": [
-        "@webdock/snowflake"
+        "@spitzli/snowflake"
       ],
       "exports": [
         "snowflakeSQL"
@@ -5766,7 +5766,7 @@
       "domain": "registry",
       "task": "A06",
       "imports": [
-        "@webdock/database-runtime",
+        "@spitzli/database-runtime",
         "pg"
       ],
       "exports": [
@@ -5795,7 +5795,7 @@
       "task": "A04",
       "imports": [
         "../payload.config",
-        "@webdock/payload-sso",
+        "@spitzli/payload-sso",
         "payload"
       ],
       "exports": [
@@ -5841,8 +5841,8 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/hosting-contracts",
-        "@webdock/mail-core"
+        "@spitzli/hosting-contracts",
+        "@spitzli/mail-core"
       ],
       "exports": [
         "AccessView",
@@ -5940,7 +5940,7 @@
       "imports": [
         "./studio-client",
         "./studio-contracts",
-        "@webdock/i18n",
+        "@spitzli/i18n",
         "react"
       ],
       "exports": [
@@ -5957,7 +5957,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "auditFieldLabel",
@@ -5989,7 +5989,7 @@
       "domain": "integrations",
       "task": "A12",
       "imports": [
-        "@webdock/hosting-contracts/vercel"
+        "@spitzli/hosting-contracts/vercel"
       ],
       "exports": []
     },
@@ -6111,7 +6111,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "applicationState",
@@ -6221,7 +6221,7 @@
         "./lib/sso",
         "@payloadcms/db-postgres",
         "@payloadcms/email-nodemailer",
-        "@webdock/database-runtime",
+        "@spitzli/database-runtime",
         "node:path",
         "node:url",
         "nodemailer",
@@ -6261,7 +6261,7 @@
       "imports": [
         "@/components/auth-forms",
         "@/lib/studio-links",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next"
       ],
       "exports": [
@@ -6294,7 +6294,7 @@
         "./actions",
         "@/lib/i18n-feedback",
         "@/lib/platform",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -6311,7 +6311,7 @@
         "@/lib/access-management",
         "@/lib/database-context",
         "@/lib/platform",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -6343,7 +6343,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -6361,7 +6361,7 @@
         "@/lib/access-management",
         "@/lib/auth",
         "@/lib/plans",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -6401,7 +6401,7 @@
       "task": "A15",
       "imports": [
         "@/lib/storage-usage",
-        "@webdock/database-runtime",
+        "@spitzli/database-runtime",
         "node:crypto"
       ],
       "exports": [
@@ -6469,8 +6469,8 @@
         "@/lib/hosting/git-deployments",
         "@/lib/hosting/git-github",
         "@/lib/hosting/http",
-        "@webdock/database-runtime",
-        "@webdock/hosting-contracts"
+        "@spitzli/database-runtime",
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "POST"
@@ -6508,7 +6508,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/preference"
+        "@spitzli/i18n/preference"
       ],
       "exports": [
         "POST"
@@ -6853,7 +6853,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -6872,7 +6872,7 @@
         "@/lib/database-context",
         "@/lib/db",
         "@/lib/mcp",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -6888,7 +6888,7 @@
         "@/components/auth-forms",
         "@/lib/auth",
         "@better-auth/oauth-provider",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next",
         "next/headers",
         "next/navigation"
@@ -6904,7 +6904,7 @@
       "task": "A15",
       "imports": [
         "@/components/auth-forms",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next"
       ],
       "exports": [
@@ -6921,7 +6921,7 @@
         "@/components/invitation",
         "@/lib/auth",
         "@/lib/studio-links",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next",
         "next/headers",
         "next/link"
@@ -6938,9 +6938,9 @@
       "imports": [
         "@/lib/platform",
         "@/lib/studio-links",
-        "@webdock/i18n/next",
-        "@webdock/i18n/picker",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/next",
+        "@spitzli/i18n/picker",
+        "@spitzli/i18n/react",
         "next",
         "next/font/local",
         "next/link"
@@ -6966,7 +6966,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": [
@@ -6996,7 +6996,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link",
         "react"
       ],
@@ -7016,7 +7016,7 @@
         "@/lib/auth",
         "@/lib/i18n-labels",
         "@/lib/plans",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next",
         "next/headers",
         "next/link",
@@ -7033,7 +7033,7 @@
       "task": "A15",
       "imports": [
         "@/components/auth-forms",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/link"
       ],
       "exports": []
@@ -7060,7 +7060,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -7079,8 +7079,8 @@
         "@/lib/auth",
         "@/lib/i18n-labels",
         "@/lib/mcp",
-        "@webdock/i18n/next",
-        "@webdock/search/form",
+        "@spitzli/i18n/next",
+        "@spitzli/search/form",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -7096,7 +7096,7 @@
       "task": "A15",
       "imports": [
         "@/components/auth-forms",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next"
       ],
       "exports": [
@@ -7111,7 +7111,7 @@
       "imports": [
         "@/components/auth-forms",
         "@/lib/studio-links",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next"
       ],
       "exports": [
@@ -7129,7 +7129,7 @@
         "@/lib/database-context",
         "@/lib/db",
         "@/lib/i18n-labels",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -7162,7 +7162,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -7192,7 +7192,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -7210,7 +7210,7 @@
         "@/lib/auth",
         "@/lib/i18n-labels",
         "@/lib/mail-keys",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -7232,7 +7232,7 @@
         "@/lib/mail-domains",
         "@/lib/platform",
         "@/lib/tenant-mail",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -7263,7 +7263,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -7280,7 +7280,7 @@
         "@/lib/access-management",
         "@/lib/auth",
         "@/lib/mail-tracking",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -7300,7 +7300,7 @@
         "@/lib/auth",
         "@/lib/i18n-labels",
         "@/lib/tenants",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -7337,8 +7337,8 @@
         "@/lib/i18n-labels",
         "@/lib/plans",
         "@/lib/storage-usage",
-        "@webdock/i18n",
-        "@webdock/i18n/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -7360,7 +7360,7 @@
         "@/lib/storage-usage",
         "@/lib/tenant-mail",
         "@/lib/tenants",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -7391,7 +7391,7 @@
       "task": "A15",
       "imports": [
         "./actions",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -7409,7 +7409,7 @@
         "@/lib/auth",
         "@/lib/i18n-labels",
         "@/lib/tenants",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next/headers",
         "next/link",
         "next/navigation"
@@ -7426,7 +7426,7 @@
       "imports": [
         "@/components/auth-forms",
         "@/lib/studio-links",
-        "@webdock/i18n/next",
+        "@spitzli/i18n/next",
         "next"
       ],
       "exports": [
@@ -7460,7 +7460,7 @@
         "../lib/sign-in-recovery",
         "./auth-client",
         "./passkeys",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "next/link",
         "react"
       ],
@@ -7480,10 +7480,10 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/hosting-contracts",
-        "@webdock/hosting-contracts/react",
-        "@webdock/i18n",
-        "@webdock/i18n/react"
+        "@spitzli/hosting-contracts",
+        "@spitzli/hosting-contracts/react",
+        "@spitzli/i18n",
+        "@spitzli/i18n/react"
       ],
       "exports": [
         "HostingAllowanceFields",
@@ -7499,7 +7499,7 @@
         "./auth-client",
         "./auth-forms",
         "@/lib/i18n-labels",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -7513,7 +7513,7 @@
       "task": "A03",
       "imports": [
         "./auth-client",
-        "@webdock/i18n/react",
+        "@spitzli/i18n/react",
         "react"
       ],
       "exports": [
@@ -7528,7 +7528,7 @@
       "imports": [
         "./hosting-allowances",
         "@/lib/plans",
-        "@webdock/i18n/react"
+        "@spitzli/i18n/react"
       ],
       "exports": [
         "AllowanceList",
@@ -7548,7 +7548,7 @@
         "./db",
         "./mail",
         "./mcp",
-        "@webdock/search",
+        "@spitzli/search",
         "node:crypto"
       ],
       "exports": [
@@ -7652,9 +7652,9 @@
       "imports": [
         "./access-management",
         "./auth",
-        "@webdock/database-runtime",
-        "@webdock/hosting-contracts",
-        "@webdock/mail-contracts"
+        "@spitzli/database-runtime",
+        "@spitzli/hosting-contracts",
+        "@spitzli/mail-contracts"
       ],
       "exports": [
         "withAuthenticatedDatabase",
@@ -7698,8 +7698,8 @@
         "../hosting/db",
         "../hosting/http",
         "./service",
-        "@webdock/database-runtime",
-        "@webdock/hosting-contracts",
+        "@spitzli/database-runtime",
+        "@spitzli/hosting-contracts",
         "node:crypto",
         "zod"
       ],
@@ -7726,8 +7726,8 @@
       "imports": [
         "../hosting/authorization",
         "../platform",
-        "@webdock/database-contracts",
-        "@webdock/hosting-contracts",
+        "@spitzli/database-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto"
       ],
       "exports": [
@@ -7743,7 +7743,7 @@
       "task": "A02",
       "imports": [
         "@vercel/functions",
-        "@webdock/database-runtime",
+        "@spitzli/database-runtime",
         "pg"
       ],
       "exports": [
@@ -7767,8 +7767,8 @@
         "./database-observations",
         "./http",
         "./operations",
-        "@webdock/database-runtime",
-        "@webdock/hosting-contracts",
+        "@spitzli/database-runtime",
+        "@spitzli/hosting-contracts",
         "node:crypto",
         "zod"
       ],
@@ -7783,7 +7783,7 @@
       "task": "A10",
       "imports": [
         "./authorization",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "limits",
@@ -7803,8 +7803,8 @@
         "./environment",
         "./operations",
         "./reservations",
-        "@webdock/hosting-contracts",
-        "@webdock/search",
+        "@spitzli/hosting-contracts",
+        "@spitzli/search",
         "node:crypto"
       ],
       "exports": [
@@ -7818,7 +7818,7 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "pg"
       ],
       "exports": [
@@ -7840,8 +7840,8 @@
         "./git-oauth",
         "./http",
         "./service",
-        "@webdock/hosting-contracts",
-        "@webdock/hosting-contracts/git-oauth",
+        "@spitzli/hosting-contracts",
+        "@spitzli/hosting-contracts/git-oauth",
         "zod"
       ],
       "exports": [
@@ -7862,7 +7862,7 @@
         "./authorization",
         "./byok",
         "./db",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto"
       ],
       "exports": [
@@ -7878,8 +7878,8 @@
         "../platform",
         "./byok",
         "./db",
-        "@webdock/hosting-contracts",
-        "@webdock/hosting-contracts/vercel",
+        "@spitzli/hosting-contracts",
+        "@spitzli/hosting-contracts/vercel",
         "node:crypto"
       ],
       "exports": [
@@ -7900,8 +7900,8 @@
         "./clusters",
         "./db",
         "./operations",
-        "@webdock/hosting-contracts",
-        "@webdock/search"
+        "@spitzli/hosting-contracts",
+        "@spitzli/search"
       ],
       "exports": [
         "byokAccess",
@@ -7925,7 +7925,7 @@
         "./authorization",
         "./byok",
         "./db",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto"
       ],
       "exports": [
@@ -7948,7 +7948,7 @@
         "./authorization",
         "./clusters",
         "./db",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto",
         "zod"
       ],
@@ -7966,7 +7966,7 @@
       "task": "A10",
       "imports": [
         "./authorization",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "databaseBilling"
@@ -7983,7 +7983,7 @@
         "./authorization",
         "./databases",
         "./db",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "displayDatabaseCredentials"
@@ -8002,7 +8002,7 @@
         "./databases",
         "./db",
         "./operations",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto"
       ],
       "exports": [
@@ -8020,7 +8020,7 @@
         "./databases",
         "./db",
         "./operations",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto"
       ],
       "exports": [
@@ -8035,7 +8035,7 @@
       "imports": [
         "./clusters",
         "./db",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "zod"
       ],
       "exports": [
@@ -8055,8 +8055,8 @@
         "./database-protection",
         "./db",
         "./operations",
-        "@webdock/hosting-contracts",
-        "@webdock/mail-core/capacity",
+        "@spitzli/hosting-contracts",
+        "@spitzli/mail-core/capacity",
         "node:crypto"
       ],
       "exports": [
@@ -8073,7 +8073,7 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "assertDatabaseMaintenanceAllowed"
@@ -8104,8 +8104,8 @@
         "./database-protection",
         "./db",
         "./operations",
-        "@webdock/database-runtime",
-        "@webdock/hosting-contracts"
+        "@spitzli/database-runtime",
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "databaseAccess",
@@ -8121,7 +8121,7 @@
       "imports": [
         "../db",
         "./authorization",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "audit",
@@ -8137,8 +8137,8 @@
       "task": "A10",
       "imports": [
         "../platform",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n"
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n"
       ],
       "exports": [
         "openEnvironment",
@@ -8171,7 +8171,7 @@
         "./git-github",
         "./git-reconciliation",
         "./git-targets",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto"
       ],
       "exports": [
@@ -8198,7 +8198,7 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto"
       ],
       "exports": [
@@ -8222,8 +8222,8 @@
         "./db",
         "./git-deployments",
         "./git-github",
-        "@webdock/hosting-contracts",
-        "@webdock/hosting-contracts/git-oauth",
+        "@spitzli/hosting-contracts",
+        "@spitzli/hosting-contracts/git-oauth",
         "node:crypto"
       ],
       "exports": [
@@ -8246,7 +8246,7 @@
         "./git-github",
         "./git-vercel",
         "./git-vercel-publication",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "assertGitAutomaticSourceHead",
@@ -8267,7 +8267,7 @@
         "./db",
         "./git-vercel",
         "./git-vercel-publication",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "reconcileGitRelease"
@@ -8282,7 +8282,7 @@
         "./authorization",
         "./db",
         "./git-vercel",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "bindGitTarget"
@@ -8296,7 +8296,7 @@
       "imports": [
         "./byok-vercel",
         "./git-vercel",
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "createGitVercelObserver",
@@ -8312,7 +8312,7 @@
         "../platform",
         "./authorization",
         "./byok-vercel",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto"
       ],
       "exports": [
@@ -8335,8 +8335,8 @@
         "./git-publication",
         "./git-vercel",
         "./http",
-        "@webdock/database-runtime",
-        "@webdock/hosting-contracts",
+        "@spitzli/database-runtime",
+        "@spitzli/hosting-contracts",
         "node:crypto",
         "zod"
       ],
@@ -8350,7 +8350,7 @@
       "domain": "hosting",
       "task": "A10",
       "imports": [
-        "@webdock/hosting-contracts"
+        "@spitzli/hosting-contracts"
       ],
       "exports": [
         "readHostingJSON",
@@ -8368,7 +8368,7 @@
         "./clusters",
         "./db",
         "./environment",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto",
         "zod"
       ],
@@ -8401,8 +8401,8 @@
         "./authorization",
         "./db",
         "./operations",
-        "@webdock/hosting-contracts",
-        "@webdock/mail-core/capacity",
+        "@spitzli/hosting-contracts",
+        "@spitzli/mail-core/capacity",
         "zod"
       ],
       "exports": [
@@ -8439,9 +8439,9 @@
         "./db",
         "./git-deployments",
         "./operations",
-        "@webdock/hosting-contracts",
-        "@webdock/i18n",
-        "@webdock/search"
+        "@spitzli/hosting-contracts",
+        "@spitzli/i18n",
+        "@spitzli/search"
       ],
       "exports": [
         "executeHosting"
@@ -8453,7 +8453,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "authMessage"
@@ -8465,7 +8465,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "authLabel"
@@ -8477,7 +8477,7 @@
       "domain": "presentation-or-shared",
       "task": "A15",
       "imports": [
-        "@webdock/i18n"
+        "@spitzli/i18n"
       ],
       "exports": [
         "authFeedbackMessages"
@@ -8502,7 +8502,7 @@
         "./auth",
         "./db",
         "./mcp",
-        "@webdock/database-runtime",
+        "@spitzli/database-runtime",
         "node:crypto"
       ],
       "exports": [
@@ -8516,7 +8516,7 @@
       "task": "A09",
       "imports": [
         "./hosting/authorization",
-        "@webdock/mail-core"
+        "@spitzli/mail-core"
       ],
       "exports": [
         "MailActor",
@@ -8536,10 +8536,10 @@
         "./hosting/authorization",
         "./hosting/clusters",
         "./hosting/db",
-        "@webdock/hosting-contracts",
-        "@webdock/mail-core",
-        "@webdock/mail-core/capacity",
-        "@webdock/mail-core/secrets",
+        "@spitzli/hosting-contracts",
+        "@spitzli/mail-core",
+        "@spitzli/mail-core/capacity",
+        "@spitzli/mail-core/secrets",
         "node:crypto",
         "zod"
       ],
@@ -8558,7 +8558,7 @@
       "task": "A09",
       "imports": [
         "./hosting/authorization",
-        "@webdock/mail-core"
+        "@spitzli/mail-core"
       ],
       "exports": [
         "mailBudgetGrants",
@@ -8578,8 +8578,8 @@
         "./hosting/db",
         "./mail-agent",
         "./mail-submission-configuration",
-        "@webdock/hosting-contracts",
-        "@webdock/mail-core/secrets",
+        "@spitzli/hosting-contracts",
+        "@spitzli/mail-core/secrets",
         "node:crypto",
         "zod"
       ],
@@ -8642,9 +8642,9 @@
         "./mail-sessions",
         "./mail-submissions",
         "./mail-writes",
-        "@webdock/database-runtime",
-        "@webdock/hosting-contracts",
-        "@webdock/mail-core",
+        "@spitzli/database-runtime",
+        "@spitzli/hosting-contracts",
+        "@spitzli/mail-core",
         "node:crypto",
         "zod"
       ],
@@ -8703,8 +8703,8 @@
         "../hosting/byok",
         "./api-keys",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "pg"
       ],
       "exports": [
@@ -8723,8 +8723,8 @@
       "imports": [
         "./access",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation"
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation"
       ],
       "exports": [
         "getMailAnalytics"
@@ -8751,8 +8751,8 @@
         "../db",
         "./access",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto"
       ],
       "exports": [
@@ -8782,7 +8782,7 @@
         "./store",
         "./suppressions",
         "./webhooks",
-        "@webdock/mail-contracts"
+        "@spitzli/mail-contracts"
       ],
       "exports": [
         "mailRoute"
@@ -8818,8 +8818,8 @@
         "./store",
         "./suppressions",
         "./turbo-send",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto"
       ],
       "exports": [
@@ -8842,9 +8842,9 @@
         "./idempotency",
         "./quota",
         "./store",
-        "@webdock/database-runtime",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/database-runtime",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto",
         "pg"
       ],
@@ -8864,7 +8864,7 @@
       "imports": [
         "./access",
         "./store",
-        "@webdock/mail-contracts"
+        "@spitzli/mail-contracts"
       ],
       "exports": [
         "getMailConnections",
@@ -8878,7 +8878,7 @@
       "task": "A09",
       "imports": [
         "./store",
-        "@webdock/mail-contracts",
+        "@spitzli/mail-contracts",
         "node:crypto",
         "pg"
       ],
@@ -8896,7 +8896,7 @@
       "task": "A09",
       "imports": [
         "./jobs",
-        "@webdock/database-runtime",
+        "@spitzli/database-runtime",
         "node:crypto"
       ],
       "exports": [
@@ -8931,8 +8931,8 @@
         "./deadline",
         "./provider-credentials",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto"
       ],
       "exports": [
@@ -8953,8 +8953,8 @@
         "./access",
         "./projections",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "pg"
       ],
       "exports": [
@@ -8969,7 +8969,7 @@
       "imports": [
         "./access",
         "./store",
-        "@webdock/mail-contracts"
+        "@spitzli/mail-contracts"
       ],
       "exports": [
         "getMailHealth"
@@ -8987,8 +8987,8 @@
         "./rate-limit",
         "./request-logs",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto"
       ],
       "exports": [
@@ -9006,8 +9006,8 @@
       "imports": [
         "./access",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto",
         "pg"
       ],
@@ -9034,8 +9034,8 @@
         "./sending",
         "./store",
         "./webhook-transport",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto",
         "pg",
         "zod"
@@ -9078,8 +9078,8 @@
       "imports": [
         "./access",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto"
       ],
       "exports": [
@@ -9135,7 +9135,7 @@
       "domain": "mail",
       "task": "A09",
       "imports": [
-        "@webdock/mail-contracts"
+        "@spitzli/mail-contracts"
       ],
       "exports": [
         "RecipientState",
@@ -9166,7 +9166,7 @@
         "../turbosmtp",
         "./access",
         "./store",
-        "@webdock/mail-contracts",
+        "@spitzli/mail-contracts",
         "node:crypto"
       ],
       "exports": [
@@ -9184,8 +9184,8 @@
       "imports": [
         "./access",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "pg"
       ],
       "exports": [
@@ -9203,7 +9203,7 @@
       "imports": [
         "./access",
         "./store",
-        "@webdock/mail-contracts"
+        "@spitzli/mail-contracts"
       ],
       "exports": [
         "consumeMailRate"
@@ -9222,8 +9222,8 @@
         "./provider-credentials",
         "./quota",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation"
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation"
       ],
       "exports": [
         "reconcileMail"
@@ -9250,8 +9250,8 @@
       "imports": [
         "./access",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto"
       ],
       "exports": [
@@ -9281,8 +9281,8 @@
         "./access",
         "./events",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation"
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation"
       ],
       "exports": [
         "cancelScheduledMail",
@@ -9322,8 +9322,8 @@
         "./store",
         "./suppressions",
         "./turbo-send",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto",
         "pg"
       ],
@@ -9372,8 +9372,8 @@
         "./store",
         "./suppressions",
         "./webhooks",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation"
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation"
       ],
       "exports": [
         "dispatchMailStudio",
@@ -9388,8 +9388,8 @@
       "imports": [
         "./access",
         "./store",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation"
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation"
       ],
       "exports": [
         "getSuppressedRecipients",
@@ -9421,8 +9421,8 @@
       "domain": "mail",
       "task": "A09",
       "imports": [
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation"
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation"
       ],
       "exports": [
         "sendTurboMail"
@@ -9469,8 +9469,8 @@
         "./store",
         "./webhook-signing",
         "./webhook-transport",
-        "@webdock/mail-contracts",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/mail-contracts",
+        "@spitzli/mail-contracts/validation",
         "node:crypto"
       ],
       "exports": [
@@ -9509,7 +9509,7 @@
         "./mail-native-keys",
         "./platform",
         "./turbosmtp",
-        "@webdock/mail-core/secrets",
+        "@spitzli/mail-core/secrets",
         "node:crypto",
         "zod"
       ],
@@ -9549,7 +9549,7 @@
         "./db",
         "./platform",
         "./tenants",
-        "@webdock/mail-core"
+        "@spitzli/mail-core"
       ],
       "exports": [
         "getTenantMailService",
@@ -9567,7 +9567,7 @@
         "./hosting/authorization",
         "./hosting/db",
         "./mail-access",
-        "@webdock/mail-core/secrets",
+        "@spitzli/mail-core/secrets",
         "node:crypto"
       ],
       "exports": [
@@ -9587,8 +9587,8 @@
       "imports": [
         "./hosting/authorization",
         "./mail-send-transport",
-        "@webdock/mail-core",
-        "@webdock/mail-core/secrets",
+        "@spitzli/mail-core",
+        "@spitzli/mail-core/secrets",
         "node:crypto",
         "zod"
       ],
@@ -9614,10 +9614,10 @@
         "./mail-send-transport",
         "./mail-sessions",
         "./mail-writes",
-        "@webdock/mail-core",
-        "@webdock/mail-core/outbox",
-        "@webdock/mail-core/secrets",
-        "@webdock/mail-core/submission-proof",
+        "@spitzli/mail-core",
+        "@spitzli/mail-core/outbox",
+        "@spitzli/mail-core/secrets",
+        "@spitzli/mail-core/submission-proof",
         "node:crypto",
         "zod"
       ],
@@ -9730,8 +9730,8 @@
         "./mail-access",
         "./tenant-mail",
         "./tenants",
-        "@webdock/hosting-contracts",
-        "@webdock/mail-core",
+        "@spitzli/hosting-contracts",
+        "@spitzli/mail-core",
         "zod"
       ],
       "exports": [
@@ -9794,7 +9794,7 @@
         "./database-context",
         "./db",
         "./studio-links",
-        "@webdock/hosting-contracts",
+        "@spitzli/hosting-contracts",
         "node:crypto",
         "pg"
       ],
@@ -9902,8 +9902,8 @@
         "./tenant-mail",
         "./tenant-preview",
         "./tenants",
-        "@webdock/database-runtime",
-        "@webdock/mail-contracts/validation",
+        "@spitzli/database-runtime",
+        "@spitzli/mail-contracts/validation",
         "better-call"
       ],
       "exports": [
@@ -9997,7 +9997,7 @@
         "./storage-usage",
         "./tenant-mail",
         "./tenants",
-        "@webdock/database-runtime",
+        "@spitzli/database-runtime",
         "pg"
       ],
       "exports": [

@@ -1,6 +1,9 @@
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use ed25519_dalek::{Signer, SigningKey};
 use serde_json::{Value, json};
+use spitzli_plugin_http::{HttpBinding, HttpRule};
+use spitzli_plugin_protocol::{InvocationClaims, Manifest};
+use spitzli_plugin_runtime::{UnixSocket, wire};
 use std::{
     collections::BTreeMap,
     os::unix::fs::PermissionsExt,
@@ -12,9 +15,6 @@ use std::{
 };
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tonic::{Request, Response, Status};
-use webdock_plugin_http::{HttpBinding, HttpRule};
-use webdock_plugin_protocol::{InvocationClaims, Manifest};
-use webdock_plugin_runtime::{UnixSocket, wire};
 
 const PROJECT: &str = "1428d399-8861-40a5-a85f-6ed4c669bae0";
 const SERVER: &str = "2428d399-8861-40a5-a85f-6ed4c669bae0";
@@ -87,7 +87,7 @@ impl wire::plugin_host_server::PluginHost for Host {
         request: Request<wire::HostCallRequest>,
     ) -> Result<Response<wire::HostCallResponse>, Status> {
         let request = request.into_inner();
-        let claims = webdock_plugin_protocol::verify_invocation(
+        let claims = spitzli_plugin_protocol::verify_invocation(
             &request.invocation_token,
             &SigningKey::from_bytes(&[7; 32]).verifying_key(),
             "lumaserv-compute",
@@ -105,13 +105,13 @@ impl wire::plugin_host_server::PluginHost for Host {
         {
             return Err(Status::permission_denied("HTTP grant"));
         }
-        let target = webdock_plugin_http::bind_target(
+        let target = spitzli_plugin_http::bind_target(
             "GET",
             input["path"].as_str().unwrap(),
             self.binding.clone(),
         )
         .map_err(|_| Status::permission_denied("HTTP target"))?;
-        let result = webdock_plugin_http::send_json(target, None)
+        let result = spitzli_plugin_http::send_json(target, None)
             .await
             .map_err(|_| Status::unavailable("HTTP failure"))?;
         self.claims(&serde_json::to_vec(&claims).unwrap())?;
@@ -269,7 +269,7 @@ fn write(path: &std::path::Path, bytes: &[u8]) {
 #[tokio::test]
 async fn standalone_private_rpc_scoped_https_redaction_and_revocation() {
     let manifest = Manifest::parse(include_bytes!("manifest.json")).unwrap();
-    webdock_lumaserv_compute::validate_manifest(&manifest).unwrap();
+    spitzli_lumaserv_compute::validate_manifest(&manifest).unwrap();
     let directory = tempfile::tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let mode = Arc::new(AtomicU8::new(0));
@@ -304,7 +304,7 @@ async fn standalone_private_rpc_scoped_https_redaction_and_revocation() {
             .unwrap();
     });
     let _tasks = Tasks(vec![provider_task, host_task]);
-    let mut child = tokio::process::Command::new(env!("CARGO_BIN_EXE_webdock-lumaserv-compute"))
+    let mut child = tokio::process::Command::new(env!("CARGO_BIN_EXE_spitzli-lumaserv-compute"))
         .arg(&config_path)
         .kill_on_drop(true)
         .spawn()
@@ -312,7 +312,7 @@ async fn standalone_private_rpc_scoped_https_redaction_and_revocation() {
     let mut client = tokio::time::timeout(Duration::from_secs(10), async {
         loop {
             assert!(child.try_wait().unwrap().is_none(), "plugin exited");
-            if let Ok(mut client) = webdock_plugin_runtime::connect_unix(&plugin_path).await
+            if let Ok(mut client) = spitzli_plugin_runtime::connect_unix(&plugin_path).await
                 && client.health(wire::HealthRequest {}).await.is_ok()
             {
                 break client;
@@ -368,7 +368,7 @@ async fn standalone_private_rpc_scoped_https_redaction_and_revocation() {
             .success()
     );
     assert!(!plugin_path.exists());
-    child = tokio::process::Command::new(env!("CARGO_BIN_EXE_webdock-lumaserv-compute"))
+    child = tokio::process::Command::new(env!("CARGO_BIN_EXE_spitzli-lumaserv-compute"))
         .arg(&config_path)
         .kill_on_drop(true)
         .spawn()
@@ -376,7 +376,7 @@ async fn standalone_private_rpc_scoped_https_redaction_and_revocation() {
     let mut client = tokio::time::timeout(Duration::from_secs(3), async {
         loop {
             assert!(child.try_wait().unwrap().is_none());
-            if let Ok(mut client) = webdock_plugin_runtime::connect_unix(&plugin_path).await
+            if let Ok(mut client) = spitzli_plugin_runtime::connect_unix(&plugin_path).await
                 && client.health(wire::HealthRequest {}).await.is_ok()
             {
                 break client;
@@ -472,7 +472,7 @@ async fn standalone_private_rpc_scoped_https_redaction_and_revocation() {
     child.wait().await.unwrap();
     std::fs::set_permissions(&config_path, std::fs::Permissions::from_mode(0o644)).unwrap();
     assert!(
-        !tokio::process::Command::new(env!("CARGO_BIN_EXE_webdock-lumaserv-compute"))
+        !tokio::process::Command::new(env!("CARGO_BIN_EXE_spitzli-lumaserv-compute"))
             .arg(&config_path)
             .output()
             .await
@@ -498,7 +498,7 @@ fn descriptor_never_advertises_unimplemented_provider_mutations() {
         }
         assert!(
             Manifest::parse(&serde_json::to_vec(&value).unwrap())
-                .and_then(|manifest| webdock_lumaserv_compute::validate_manifest(&manifest))
+                .and_then(|manifest| spitzli_lumaserv_compute::validate_manifest(&manifest))
                 .is_err()
         );
     }

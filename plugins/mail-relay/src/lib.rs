@@ -1,18 +1,18 @@
 //! Standalone relay provider. Never linked into the platform Core.
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::{collections::HashSet, time::Duration};
-use webdock_mail_message::{Sender, envelope_address, prepare_message};
-use webdock_mail_protocol::{
+use spitzli_mail_message::{Sender, envelope_address, prepare_message};
+use spitzli_mail_protocol::{
     LeaseClaims,
     runtime::Handler,
     wire::{SendReceipt, send_receipt::State},
 };
+use std::{collections::HashSet, time::Duration};
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Configuration {
-    binding: webdock_plugin_http::HttpBinding,
+    binding: spitzli_plugin_http::HttpBinding,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -120,7 +120,7 @@ impl Relay {
                 return Err(rejected());
             }
         }
-        let target = webdock_plugin_http::bind_target("POST", "/api/v2/mail/send", binding)
+        let target = spitzli_plugin_http::bind_target("POST", "/api/v2/mail/send", binding)
             .map_err(|_| rejected())?;
         let mut seen = HashSet::new();
         let mut groups = Vec::new();
@@ -150,13 +150,13 @@ impl Relay {
             return Err(rejected());
         }
         // reference_id is correlation, not provider idempotency. Core owns the attempt fence.
-        let response = webdock_plugin_http::send_mail(target, "application/json", body)
+        let response = spitzli_plugin_http::send_mail(target, "application/json", body)
             .await
             .map_err(|error| match error {
-                webdock_plugin_http::Error::Denied | webdock_plugin_http::Error::Limit => {
+                spitzli_plugin_http::Error::Denied | spitzli_plugin_http::Error::Limit => {
                     rejected()
                 }
-                webdock_plugin_http::Error::Transport => unknown(),
+                spitzli_plugin_http::Error::Transport => unknown(),
             })?;
         if !(200..300).contains(&response.status) {
             return Err(Failure {

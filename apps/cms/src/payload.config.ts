@@ -1,4 +1,4 @@
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder';
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';

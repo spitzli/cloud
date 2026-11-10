@@ -3,12 +3,12 @@ use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statemen
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_build::{BuildService, RepositoryProvider, RepositoryRef, VerifiedCommit};
 use std::{
     collections::BTreeMap,
     path::{Path, PathBuf},
     sync::Arc,
 };
-use webdock_build::{BuildService, RepositoryProvider, RepositoryRef, VerifiedCommit};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 fn first_attempt() -> u32 {
     1
@@ -81,29 +81,29 @@ impl RepositoryProvider for LocalRepository {
         &self,
         _: &RepositoryRef<'_>,
         reference: &str,
-    ) -> webdock_build::Result<VerifiedCommit> {
+    ) -> spitzli_build::Result<VerifiedCommit> {
         if reference != "main" {
-            return Err(webdock_build::Error {
+            return Err(spitzli_build::Error {
                 code: "fixture_reference",
                 logs: String::new(),
             });
         }
         let bytes = git(&self.0, &["rev-parse", "--verify", "main^{commit}"]).map_err(|_| {
-            webdock_build::Error {
+            spitzli_build::Error {
                 code: "fixture_git",
                 logs: String::new(),
             }
         })?;
         VerifiedCommit::new(String::from_utf8_lossy(&bytes).trim().into())
     }
-    async fn archive(&self, _: &RepositoryRef<'_>, commit: &str) -> webdock_build::Result<Vec<u8>> {
+    async fn archive(&self, _: &RepositoryRef<'_>, commit: &str) -> spitzli_build::Result<Vec<u8>> {
         if commit.len() != 40 || !commit.bytes().all(|b| b.is_ascii_hexdigit()) {
-            return Err(webdock_build::Error {
+            return Err(spitzli_build::Error {
                 code: "fixture_commit",
                 logs: String::new(),
             });
         }
-        git(&self.0, &["archive", "--format=tar", commit]).map_err(|_| webdock_build::Error {
+        git(&self.0, &["archive", "--format=tar", commit]).map_err(|_| spitzli_build::Error {
             code: "fixture_git",
             logs: String::new(),
         })
@@ -118,7 +118,7 @@ async fn qualify(stage: &str, input: Input) -> Result<Value, Error> {
         return Err("exact owned fixture identity required".into());
     }
     for id in [&input.customer, &input.project, &input.cluster] {
-        if !webdock_export_protocol::decimal(id) {
+        if !spitzli_export_protocol::decimal(id) {
             return Err("actual native ID required".into());
         }
     }
@@ -127,9 +127,9 @@ async fn qualify(stage: &str, input: Input) -> Result<Value, Error> {
     let business = Database::connect(&input.database).await?;
     let worker_db = Database::connect(&input.worker_database).await?;
     let admin = Database::connect(&input.admin_database).await?;
-    let identity = Arc::new(webdock_identity::IdentityService::new(
+    let identity = Arc::new(spitzli_identity::IdentityService::new(
         auth.clone(),
-        webdock_identity::CookiePolicy::new(false, input.auth_secret.clone())?,
+        spitzli_identity::CookiePolicy::new(false, input.auth_secret.clone())?,
     ));
     let principal = identity
         .authenticate_cookie(&input.cookie)
@@ -140,14 +140,14 @@ async fn qualify(stage: &str, input: Input) -> Result<Value, Error> {
         return Err("actual Native operator required".into());
     }
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &input.admin_database,
-            webdock_ids::Identity::platform(0, 2)?,
+            spitzli_ids::Identity::platform(0, 2)?,
         )
         .await?,
     );
     let hosting = Arc::new(
-        webdock_hosting::HostingService::new(
+        spitzli_hosting::HostingService::new(
             business.clone(),
             auth.clone(),
             worker_db.clone(),
@@ -194,7 +194,7 @@ async fn qualify(stage: &str, input: Input) -> Result<Value, Error> {
                 )
                 .await?;
         }
-        let signer = webdock_identity::RlsSigner::new(input.rls_secret, "webdock_auth_runtime")?;
+        let signer = spitzli_identity::RlsSigner::new(input.rls_secret, "webdock_auth_runtime")?;
         let tx = signer.begin(&business, &principal).await?;
         let row=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT w.id,w.generation,w.enabled FROM webdock_auth.git_build b JOIN webdock_auth.git_worker w ON w.id=b.worker_id WHERE b.id=$1 AND b.project_id=$2 AND b.customer_id=$3",vec![id.into(),input.project.clone().into(),input.customer.clone().into()])).await?.ok_or("prior worker required")?;
         let worker_id: String = row.try_get("", "id")?;
@@ -225,7 +225,7 @@ async fn qualify(stage: &str, input: Input) -> Result<Value, Error> {
             .build_id
             .as_deref()
             .ok_or("exact fixture build required")?;
-        let signer = webdock_identity::RlsSigner::new(input.rls_secret, "webdock_auth_runtime")?;
+        let signer = spitzli_identity::RlsSigner::new(input.rls_secret, "webdock_auth_runtime")?;
         let tx = signer.begin(&business, &principal).await?;
         let changed=tx.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"UPDATE webdock_auth.git_build SET logs=logs||E'\nowned log-corruption probe' WHERE id=$1 AND customer_id=$2 AND project_id=$3 AND status IN ('succeeded','failed') AND completion_hash IS NOT NULL",vec![id.into(),input.customer.into(),input.project.into()])).await?.rows_affected();
         if changed != 1 {
@@ -267,7 +267,7 @@ async fn qualify(stage: &str, input: Input) -> Result<Value, Error> {
             .into())
     };
     let image =
-        webdock_build::execution::VmImage::new(root.join("base.raw"), expected("base.raw")?)?
+        spitzli_build::execution::VmImage::new(root.join("base.raw"), expected("base.raw")?)?
             .with_boot(
                 root.join("kernel"),
                 expected("kernel")?,
@@ -345,7 +345,7 @@ async fn qualify(stage: &str, input: Input) -> Result<Value, Error> {
                 .ok_or("actual generation required")?,
         )?;
         let source = service.source_archive(&worker, &id, generation).await?;
-        let mut job = serde_json::from_value::<webdock_build::execution::GuestRequest>(
+        let mut job = serde_json::from_value::<spitzli_build::execution::GuestRequest>(
             claim["request"].clone(),
         )?;
         job.limits.duration_seconds = 180;
@@ -366,9 +366,9 @@ async fn qualify(stage: &str, input: Input) -> Result<Value, Error> {
         service.guard_build(&worker, &id, generation).await?;
         checkpoint("private_artifact_store");
         let store_dir = private_dir(&input.scratch)?;
-        let store = webdock_build::artifact::ArtifactStore::open(
+        let store = spitzli_build::artifact::ArtifactStore::open(
             store_dir.path().into(),
-            webdock_build::artifact::MAX_OUTPUT,
+            spitzli_build::artifact::MAX_OUTPUT,
         )?;
         let logs = match result {
             Ok(output) => {
@@ -460,14 +460,14 @@ async fn qualify(stage: &str, input: Input) -> Result<Value, Error> {
 #[tokio::main]
 async fn main() {
     let result = async {
-        webdock_archives::initialize_crypto();
+        spitzli_archives::initialize_crypto();
         let mut args = std::env::args().skip(1);
         let stage = args.next().ok_or("stage required")?;
         let path = args.next().ok_or("private fixture input required")?;
         if args.next().is_some() {
             return Err::<Value, Error>("extra arguments refused".into());
         }
-        let input = serde_json::from_slice::<Input>(&webdock_plugin_kit::read_file(
+        let input = serde_json::from_slice::<Input>(&spitzli_plugin_kit::read_file(
             Path::new(&path),
             true,
         )?)?;
@@ -480,7 +480,7 @@ async fn main() {
             if error.downcast_ref::<sea_orm::DbErr>().is_some() {
                 eprintln!("owned_buildlog_error_code_database");
             }
-            if let Some(build) = error.downcast_ref::<webdock_build::Error>()
+            if let Some(build) = error.downcast_ref::<spitzli_build::Error>()
                 && !build.code.is_empty()
                 && build.code.len() <= 80
                 && build
@@ -490,7 +490,7 @@ async fn main() {
             {
                 eprintln!("owned_buildlog_error_code_{}", build.code);
             }
-            if let Some(hosting) = error.downcast_ref::<webdock_hosting::HostingError>()
+            if let Some(hosting) = error.downcast_ref::<spitzli_hosting::HostingError>()
                 && (400..=599).contains(&hosting.status)
             {
                 eprintln!("owned_buildlog_hosting_status_{}", hosting.status);

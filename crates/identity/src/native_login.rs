@@ -13,9 +13,9 @@ use crate::{
     neon::{NeonMapping, NeonSource},
     security::digest,
 };
+use spitzli_persistence::postgres::{Connection, Pool, Transaction};
 use std::time::Duration;
 use tokio_postgres::types::Type;
-use webdock_persistence::postgres::{Connection, Pool, Transaction};
 const BUDGET: Duration = Duration::from_secs(30);
 const MISSING_PASSWORD: &str = "000102030405060708090a0b0c0d0e0f:c7877280641a617ec087f9365d3ad7facccc9681e2af94d0a148b29a67b413ab0e08c7f08f9bd6232c369f5bbd3eec03acc2a170c24fd179aecc67c282756d12";
 enum Outcome {

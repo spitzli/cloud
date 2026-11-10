@@ -1,11 +1,11 @@
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 import { consoleAuthConfiguration } from "../modules/auth/console-configuration";
 import {
   currentDatabaseScope,
   withDatabaseScope,
-} from "@webdock/database-runtime";
-import type { HostingActor } from "@webdock/hosting-contracts";
-import type { MailActor } from "@webdock/mail-contracts";
+} from "@spitzli/database-runtime";
+import type { HostingActor } from "@spitzli/hosting-contracts";
+import type { MailActor } from "@spitzli/mail-contracts";
 
 /** Authentication stays on its bootstrap pool; business queries receive only verified identity. */
 export async function withAuthenticatedDatabase<T>(

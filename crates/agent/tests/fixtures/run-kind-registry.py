@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory(prefix='webdock-registry-private-') as temporar
     kubeconfig=pathlib.Path(temporary)/'kubeconfig';kubeconfig.write_text(json.dumps(config));kubeconfig.chmod(0o600);docker('cp',str(kubeconfig),node+':'+fixture+'/kubeconfig')
 docker('exec',node,'chown','0:0',fixture+'/registry-state.json',fixture+'/kubeconfig')
 docker('exec',node,'chmod','600',fixture+'/registry-state.json',fixture+'/kubeconfig')
-built=subprocess.run(['cargo','test','-p','webdock-agent','--test','registry_tls','--no-run','--message-format=json'],check=True,capture_output=True,text=True)
+built=subprocess.run(['cargo','test','-p','spitzli-agent','--test','registry_tls','--no-run','--message-format=json'],check=True,capture_output=True,text=True)
 executables=[row['executable'] for line in built.stdout.splitlines() if (row:=json.loads(line)).get('reason')=='compiler-artifact' and row.get('target',{}).get('name')=='registry_tls' and row.get('executable')];assert len(executables)==1
 for source,target in [(executables[0],'registry-test'),('/usr/local/bin/helm','helm'),('/usr/lib/libc.so.6','lib/libc.so.6'),('/usr/lib/libgcc_s.so.1','lib/libgcc_s.so.1'),('/usr/lib64/ld-linux-x86-64.so.2','lib/ld-linux-x86-64.so.2')]:
     with tempfile.TemporaryDirectory(prefix='webdock-registry-artifact-') as temporary:

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import type { DatabaseUIServices } from "./services";
 export function createTenantDatabaseNavigationView(
   services: Pick<DatabaseUIServices, "getStudioSession" | "AreaNavigation">,

@@ -1,6 +1,6 @@
 //! Staging is a separate namespace/capability lane, never a retained release receipt.
+use spitzli_object_storage::{Credentials, S3Config, StagingMethod, Store};
 use std::time::Duration;
-use webdock_object_storage::{Credentials, S3Config, StagingMethod, Store};
 #[tokio::test]
 async fn presigned_access_is_method_scope_and_expiry_bound_without_cloud_calls() {
     let store = Store::s3(

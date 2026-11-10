@@ -1,6 +1,6 @@
+use spitzli_agent::outbox::ReceiptOutbox;
+use spitzli_agent_protocol::{Outcome, Receipt};
 use std::os::unix::fs::PermissionsExt;
-use webdock_agent::outbox::ReceiptOutbox;
-use webdock_agent_protocol::{Outcome, Receipt};
 #[test]
 fn exact_receipt_survives_restart_until_acknowledged_and_cannot_be_overwritten() {
     let dir = tempfile::Builder::new()
@@ -13,7 +13,7 @@ fn exact_receipt_survives_restart_until_acknowledged_and_cannot_be_overwritten()
         generation: 1,
         outcome: Outcome::Succeeded as i32,
         request_sha256: "a".repeat(64),
-        result: Some(webdock_agent_protocol::receipt::Result::LogsUtf8(
+        result: Some(spitzli_agent_protocol::receipt::Result::LogsUtf8(
             b"bounded result\n".to_vec(),
         )),
         ..Default::default()
@@ -41,9 +41,9 @@ fn exact_receipt_survives_restart_until_acknowledged_and_cannot_be_overwritten()
 
 #[test]
 fn database_checkpoint_delivery_is_exact_and_separate_from_ephemeral_material() {
+    use spitzli_agent::outbox::DatabaseOutbox;
+    use spitzli_agent_protocol::{DatabaseCheckpointRequest, DatabaseDelivery, database_delivery};
     use std::os::unix::fs::PermissionsExt;
-    use webdock_agent::outbox::DatabaseOutbox;
-    use webdock_agent_protocol::{DatabaseCheckpointRequest, DatabaseDelivery, database_delivery};
     let directory = tempfile::tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let path = directory.path().join("database-outbox.json");

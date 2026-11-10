@@ -42,9 +42,9 @@
 - `verify_connection(token: &str, key: &VerifyingKey, expected: &ConnectionScope, now: i64) -> Result<ConnectionClaims>` verifies signature, structural/time validity and **every** expected scope field. It does not accept caller-supplied scope as live authority; admission must construct expectations from its stored flow.
 
 - [x] Write round-trip tests for all five actions, purpose separation in both directions, wrong issuer, tampering and every mismatched scope field.
-- [x] Add malformed/unknown-field, time/overflow and boundary tests; run `cargo test -p webdock-repository-protocol --test connection --locked` and observe missing-module failure before implementation.
+- [x] Add malformed/unknown-field, time/overflow and boundary tests; run `cargo test -p spitzli-repository-protocol --test connection --locked` and observe missing-module failure before implementation.
 - [x] Implement the module using existing signing, digest, record-ID and slug helpers. Do not refactor or weaken existing leases.
-- [x] Run `cargo test -p webdock-repository-protocol --locked`, package Clippy with warnings denied, targeted Rustfmt and `git diff --check`; all must pass.
+- [x] Run `cargo test -p spitzli-repository-protocol --locked`, package Clippy with warnings denied, targeted Rustfmt and `git diff --check`; all must pass.
 - [x] Obtain independent read-only review, fix material findings and rerun affected checks.
 - [ ] Commit only owned paths, push the authorized `dev` branch, create/link a normal PR and require Blacksmith checks before merge.
 

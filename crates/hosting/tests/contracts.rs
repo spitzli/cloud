@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_hosting::contracts::{app_demand, parse_command, resolve_spec};
+use spitzli_hosting::contracts::{app_demand, parse_command, resolve_spec};
 fn spec() -> serde_json::Value {
     json!({"template":"custom","image":format!("registry.invalid/app@sha256:{}","a".repeat(64)),"args":[],"port":8080,"healthPath":"/health","cpuMillicores":100,"memoryBytes":16777216,"ephemeralBytes":1048576,"replicas":1,"volumeBytes":0})
 }

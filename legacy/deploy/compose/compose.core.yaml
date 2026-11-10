@@ -1,5 +1,5 @@
 # Core API and Console have no product runtime packages. PostgreSQL is external.
-name: webdock-core
+name: spitzli-core
 x-runtime: &runtime
   restart: unless-stopped
   read_only: true

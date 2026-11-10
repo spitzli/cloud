@@ -85,7 +85,7 @@ async function legacyConfigurationDenial(f){
  // the probe exits before transport/backend startup and removes its exact files.
  const config=JSON.parse((await f.kube(['-n',namespace,'exec',pod.metadata.name,'-c','runtime','--','cat','/run/webdock/runtime/runtime.json'])).output);
  config.databaseSources=[{customer:f.report.customer,project:f.report.project,url:'postgresql://fixture:forbidden@127.0.0.1/source'}];
- const script='umask 077; test ! -e /tmp/archives-legacy-probe.json; test ! -e /tmp/archives-legacy-probe.err; trap "rm -f /tmp/archives-legacy-probe.json /tmp/archives-legacy-probe.err" EXIT; cat > /tmp/archives-legacy-probe.json; status=0; /usr/local/bin/webdock-archives /tmp/archives-legacy-probe.json 2>/tmp/archives-legacy-probe.err || status=$?; test "$status" = 1; grep -Fx archives_plugin_start_failed_legacy_database_sources /tmp/archives-legacy-probe.err';
+ const script='umask 077; test ! -e /tmp/archives-legacy-probe.json; test ! -e /tmp/archives-legacy-probe.err; trap "rm -f /tmp/archives-legacy-probe.json /tmp/archives-legacy-probe.err" EXIT; cat > /tmp/archives-legacy-probe.json; status=0; /usr/local/bin/spitzli-archives /tmp/archives-legacy-probe.json 2>/tmp/archives-legacy-probe.err || status=$?; test "$status" = 1; grep -Fx archives_plugin_start_failed_legacy_database_sources /tmp/archives-legacy-probe.err';
  const probe=await f.kube(['-n',namespace,'exec','-i',pod.metadata.name,'-c','runtime','--','/bin/sh','-ec',script],{input:JSON.stringify(config)});
  assert.equal(probe.output,'archives_plugin_start_failed_legacy_database_sources');
  f.report.legacyConfigurationDenied={actualSignedExecutable:true,fixtureFeatureCompiled:true,beforeTransportOrBackend:true,privateProbeFilesRemoved:true};await f.saveReport();

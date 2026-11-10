@@ -1,14 +1,14 @@
 use super::*;
+use spitzli_control_plane::{
+    http::{Services, build_app_with_domains},
+    ui::UiAssets,
+};
+use spitzli_identity::{RlsSigner, SecretKeys};
 use std::{
     collections::{BTreeMap, HashMap},
     path::Path,
     time::Duration,
 };
-use webdock_control_plane::{
-    http::{Services, build_app_with_domains},
-    ui::UiAssets,
-};
-use webdock_identity::{RlsSigner, SecretKeys};
 
 pub struct Fixture<'a> {
     pub incoming: Arc<NativeIncoming>,
@@ -33,25 +33,25 @@ pub async fn run(f: Fixture<'_>) {
     );
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let origin = format!("http://{}", listener.local_addr().unwrap());
-    let ids = Arc::new(webdock_persistence::IdAllocator::new(
+    let ids = Arc::new(spitzli_persistence::IdAllocator::new(
         f.business.clone(),
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     ));
-    let access = webdock_access::AccessService::new(
+    let access = spitzli_access::AccessService::new(
         f.business,
         f.auth.clone(),
         f.identity.clone(),
         ids,
         RlsSigner::new(KEY, "webdock_auth_runtime").unwrap(),
         Arc::new(SecretKeys::new(BTreeMap::from([(1, KEY.into())]), 1, Some(KEY.into())).unwrap()),
-        webdock_access::AccessConfig {
+        spitzli_access::AccessConfig {
             auth_origin: origin.parse().unwrap(),
             console_origins: vec![origin.parse().unwrap()],
             allow_local_http: true,
         },
     )
     .unwrap();
-    let config = webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+    let config = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
         ("WEBDOCK_STUDIO_ORIGIN".into(), origin.clone()),
         ("WEBDOCK_FEATURES".into(), r#"{"mail":"enabled"}"#.into()),
     ]))
@@ -62,7 +62,7 @@ pub async fn run(f: Fixture<'_>) {
         Services {
             identity: Some(f.identity),
             mail: Some(Arc::new(
-                webdock_control_plane::mail::MailEndpoints::incoming_only(f.incoming),
+                spitzli_control_plane::mail::MailEndpoints::incoming_only(f.incoming),
             )),
             access: Some(Arc::new(access)),
             ui: Some(Arc::new(UiAssets::new(&dist, &[], &[], false).unwrap())),

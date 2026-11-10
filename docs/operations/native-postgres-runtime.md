@@ -95,10 +95,10 @@ Native static queries use explicit PostgreSQL parameter types to avoid unnecessa
 prepare/execute/close round trips, retaining all authority checks.
 
 ```sh
-cargo test --locked -p webdock-persistence --lib --tests
-cargo test --locked -p webdock-persistence --test native_pool --test native_ids --test native_tls -- --include-ignored
-cargo test --locked -p webdock-control-plane --test native_runtime_postgres actual_http_write -- --ignored
-cargo clippy --locked -p webdock-persistence -p webdock-control-plane --all-targets -- -D warnings
+cargo test --locked -p spitzli-persistence --lib --tests
+cargo test --locked -p spitzli-persistence --test native_pool --test native_ids --test native_tls -- --include-ignored
+cargo test --locked -p spitzli-control-plane --test native_runtime_postgres actual_http_write -- --ignored
+cargo clippy --locked -p spitzli-persistence -p spitzli-control-plane --all-targets -- -D warnings
 ```
 
 The ignored cases create exclusively owned loopback PostgreSQL containers; they

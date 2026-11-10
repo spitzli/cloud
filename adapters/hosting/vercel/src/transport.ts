@@ -1,7 +1,7 @@
 import {
   HostingProviderError,
   type VercelJSONTransport,
-} from "@webdock/hosting-provider-contracts";
+} from "@spitzli/hosting-provider-contracts";
 type Fetch = (...args: Parameters<typeof fetch>) => ReturnType<typeof fetch>;
 /** Credentials remain explicit per call; fixed origin, bounded responses and no redirect forwarding. */
 export function createVercelJSONTransport(

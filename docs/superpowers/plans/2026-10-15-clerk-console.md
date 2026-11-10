@@ -187,15 +187,15 @@ assert.equal(new Set(expectedAccounts.map(a => a.localID)).size, 4);
 - [ ] Run focused tests while implementing; then run the workspace typechecks, lint and affected full suites on a disposable local database. Existing test scripts load local test configuration and can reset test tables: verify their local-only guard before execution, never use production.
 
 ```bash
-npm run check -w @webdock/admin
-npm run check -w @webdock/auth
-npm run lint -w @webdock/admin
-npm run lint -w @webdock/auth
-npm run test -w @webdock/admin
-npm run test -w @webdock/auth
+npm run check -w @spitzli/admin
+npm run check -w @spitzli/auth
+npm run lint -w @spitzli/admin
+npm run lint -w @spitzli/auth
+npm run test -w @spitzli/admin
+npm run test -w @spitzli/auth
 npm run test:sso
-npm run build -w @webdock/admin
-npm run build -w @webdock/auth
+npm run build -w @spitzli/admin
+npm run build -w @spitzli/auth
 ```
 
 - [ ] Run `npx -y clerk@latest doctor` in the Console workspace and start the app. Inspect with T3 `preview_status` then `preview_open` as needed. Use approved accounts or the user-created initial account; never create a test user silently.

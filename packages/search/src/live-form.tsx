@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useTransition, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { searchFormURL, fieldValueFromURL } from "./url";
 /** Keeps native inputs mounted while server results update; no client index of private global data. */
 export function LiveSearchForm({

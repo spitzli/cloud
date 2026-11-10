@@ -83,7 +83,7 @@ scope retirement. usePluginStorage is object-storage-only and NOT used.
   sha256:e90a6127924fdc516caa26a003ce54071c0a500fb2d32db0947d7849b9403294,
   child manifest sha256:48fecfd6d257aa9e3c1b0bdfaea07881b563dcddb6ea23ed5f1b33c4feb04ac4.
   It predates later minor failure-code fields: final native artifact must rebuild.
-- Nonroot image UID 65532:65532, entrypoint /usr/local/bin/webdock-archives, real pg_dump
+- Nonroot image UID 65532:65532, entrypoint /usr/local/bin/spitzli-archives, real pg_dump
   18.6 (Debian 18.6-1.pgdg13+2) exercised read-only/network-none.
 - Official pinned PostgreSQL18-trixie index:
   edb0c08dc33befd0262ab3b5cf1c4f3f8cfd8b09e88c05b45adee29d6761ddb6,

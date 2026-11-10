@@ -41,7 +41,7 @@ impl HostService {
     pub async fn activate_builtin_with_authority(
         &self,
         actor: &Principal,
-        authority: &webdock_browser_session::StoredAuthority,
+        authority: &spitzli_browser_session::StoredAuthority,
         module: BuiltinModule,
         idempotency_key: &str,
     ) -> Result<Value> {

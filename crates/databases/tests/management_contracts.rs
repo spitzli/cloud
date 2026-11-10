@@ -1,5 +1,5 @@
 use serde_json::{Value, json};
-use webdock_databases::ManagedCommand;
+use spitzli_databases::ManagedCommand;
 fn plan() -> Value {
     json!({"kind":"dedicated","postgresMajor":18,"cpuMillicores":500,"memoryBytes":1073741824,"volumeBytes":10737418240_u64,"logicalStorageAllowanceBytes":null,"name":"Dedicated","monthlyPriceCents":1200,"currency":"EUR","connectionLimit":10,"terms":"The customer accepts the retained fixed monthly database subscription terms."})
 }
@@ -33,13 +33,13 @@ fn maintenance_requires_revision_idempotency_and_exact_confirmation_shape() {
 #[test]
 fn database_checkpoint_retains_agent_lease_generation_and_rejects_unknown_fields() {
     let value = json!({"operationID":"123","generation":2,"leaseToken":"ab".repeat(32),"phase":"applied","cnpgUID":"owned-installation"});
-    let checkpoint: webdock_databases::DatabaseCheckpoint =
+    let checkpoint: spitzli_databases::DatabaseCheckpoint =
         serde_json::from_value(value.clone()).unwrap();
     checkpoint.validate().unwrap();
     assert_eq!(checkpoint.lease.generation, 2);
     let mut extra = value;
     extra["applicationPassword"] = json!("not-a-checkpoint-field");
-    assert!(serde_json::from_value::<webdock_databases::DatabaseCheckpoint>(extra).is_err());
-    let completed: webdock_databases::DatabaseCompletion=serde_json::from_value(json!({"operationID":"123","generation":2,"leaseToken":"ab".repeat(32),"outcome":"succeeded"})).unwrap();
+    assert!(serde_json::from_value::<spitzli_databases::DatabaseCheckpoint>(extra).is_err());
+    let completed: spitzli_databases::DatabaseCompletion=serde_json::from_value(json!({"operationID":"123","generation":2,"leaseToken":"ab".repeat(32),"outcome":"succeeded"})).unwrap();
     assert!(completed.validate().is_err());
 }

@@ -1,9 +1,9 @@
 //! Explicit owned local fixture; credentials stay in a private ignored file.
 use clap::Parser;
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
+use spitzli_identity::{CookiePolicy, IdentityService, SecretKeys};
+use spitzli_oauth::*;
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_identity::{CookiePolicy, IdentityService, SecretKeys};
-use webdock_oauth::*;
 #[derive(Parser)]
 struct Args {
     /// Restore only missing client/projection rows for an exact recorded local fixture.
@@ -25,7 +25,7 @@ fn fixture_path() -> std::path::PathBuf {
     std::path::Path::new(".runtime-test").join(name)
 }
 fn read_fixture(path: &std::path::Path) -> Option<Vec<u8>> {
-    match webdock_control_plane::config::read_private_file(
+    match spitzli_control_plane::config::read_private_file(
         &std::env::current_dir().unwrap().join(path),
     ) {
         Ok(bytes) => Some(bytes),
@@ -108,9 +108,9 @@ async fn main() {
     }
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -199,9 +199,9 @@ async fn repair(owner: &sea_orm::DatabaseConnection, auth_url: &str, path: &std:
     let client = old["clientID"].as_str().unwrap();
     let binding = old["bindingID"].as_str().unwrap();
     let email = old["email"].as_str().unwrap();
-    let ids = webdock_persistence::IdAllocator::connect(
+    let ids = spitzli_persistence::IdAllocator::connect(
         auth_url,
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     )
     .await
     .unwrap();

@@ -1,7 +1,7 @@
-import { requireOAuthCapability } from "@webdock/auth-configuration/protocols";
+import { requireOAuthCapability } from "@spitzli/auth-configuration/protocols";
 import { getBusinessIdentity } from "../auth/business-identity";
 import { withAuthenticatedDatabase } from "../../db/database-context";
-import { searchPage } from "@webdock/search";
+import { searchPage } from "@spitzli/search";
 import { randomBytes } from "node:crypto";
 import { database } from "../../db/runtime";
 import { businessOperator } from "../auth/business-identity";

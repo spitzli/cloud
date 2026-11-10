@@ -2,14 +2,14 @@
 //! Uses existing owned Core fixture without changing its catalog, gateway or migrations.
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
-use std::sync::Arc;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{
     AdmissionInput, FileBindings, HostService,
     storage::{StorageCaller, StorageGateway},
 };
-use webdock_plugin_protocol::{Manifest, storage::StoragePlan};
-use webdock_plugin_runtime::{CorePeer, PeerIdentity, RemoteAuthority, Runtime, UnixSocket, wire};
+use spitzli_plugin_protocol::{Manifest, storage::StoragePlan};
+use spitzli_plugin_runtime::{CorePeer, PeerIdentity, RemoteAuthority, Runtime, UnixSocket, wire};
+use std::sync::Arc;
 #[allow(
     dead_code,
     reason = "shared existing fixture includes unused jobs helpers"
@@ -40,7 +40,7 @@ async fn actor(
     f: &fixture::JobFixture,
     subject: &str,
     session: &str,
-) -> webdock_identity::Principal {
+) -> spitzli_identity::Principal {
     let tx = f.auth.begin().await.unwrap();
     let actor = f
         .identity
@@ -56,9 +56,9 @@ async fn call(
     client: &mut wire::plugin_runtime_client::PluginRuntimeClient<tonic::transport::Channel>,
     action: &str,
     input: Value,
-) -> (webdock_plugin_host::AdmittedInvocation, Value) {
+) -> (spitzli_plugin_host::AdmittedInvocation, Value) {
     let member = actor(f, "member", "member-session").await;
-    let admitted=f.host.admit_with_authority(&member,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":action,"input":input,"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(&member)).await.unwrap();
+    let admitted=f.host.admit_with_authority(&member,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":action,"input":input,"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(&member)).await.unwrap();
     let out = client
         .invoke(wire::InvokeRequest {
             invocation_token: admitted.token.clone(),
@@ -74,16 +74,16 @@ async fn call(
 }
 struct CurrentAuthority {
     host: Arc<HostService>,
-    actor: webdock_identity::Principal,
+    actor: spitzli_identity::Principal,
     runtime: wire::plugin_runtime_client::PluginRuntimeClient<tonic::transport::Channel>,
     id: String,
 }
 #[async_trait::async_trait]
-impl webdock_plugin_host::storage::StorageAuthority for CurrentAuthority {
-    async fn check(&self) -> Result<(), webdock_plugin_protocol::PluginError> {
+impl spitzli_plugin_host::storage::StorageAuthority for CurrentAuthority {
+    async fn check(&self) -> Result<(), spitzli_plugin_protocol::PluginError> {
         let caller = StorageCaller::browser(
             &self.actor,
-            webdock_browser_session::StoredAuthority::local_session(&self.actor),
+            spitzli_browser_session::StoredAuthority::local_session(&self.actor),
             true,
         );
         let access = self.host.storage_access(&self.id, "GET", &caller).await?;
@@ -91,17 +91,17 @@ impl webdock_plugin_host::storage::StorageAuthority for CurrentAuthority {
             .clone()
             .authorize_storage(wire::StorageAuthorizationRequest {
                 authorization_json: serde_json::to_vec(&access.authorization)
-                    .map_err(|_| webdock_plugin_protocol::PluginError::denied())?,
+                    .map_err(|_| spitzli_plugin_protocol::PluginError::denied())?,
             })
             .await
-            .map_err(|_| webdock_plugin_protocol::PluginError::denied())?;
+            .map_err(|_| spitzli_plugin_protocol::PluginError::denied())?;
         Ok(())
     }
 }
 #[tokio::test]
 #[ignore = "owns an isolated Core PostgreSQL fixture and real native producer/runtime on existing MinIO"]
 async fn core_jobs_reservations_and_original_download_authority_remain_canonical() {
-    webdock_archives::initialize_crypto();
+    spitzli_archives::initialize_crypto();
     let mut f = fixture::JobFixture::start_with_connections(8).await;
     let mut params = rcgen::CertificateParams::new(vec![]).unwrap();
     params.is_ca = rcgen::IsCa::Ca(rcgen::BasicConstraints::Unconstrained);
@@ -159,7 +159,7 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
     let exports = f
         .host
         .clone()
-        .export_service(Arc::new(webdock_plugin_host::UnconfiguredExportSources));
+        .export_service(Arc::new(spitzli_plugin_host::UnconfiguredExportSources));
     let service = f.host.clone().rpc();
     let tls = tonic::transport::ServerTlsConfig::new()
         .identity(tonic::transport::Identity::from_pem(
@@ -190,9 +190,9 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
         std::fs::write(path, pem).unwrap();
         std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).unwrap();
     }
-    let transport = webdock_plugin_kit::transport::RuntimeTransport {
+    let transport = spitzli_plugin_kit::transport::RuntimeTransport {
         listen: Some(f.directory.path().join("runtime.sock")),
-        core_tls: Some(webdock_plugin_kit::transport::CoreTls {
+        core_tls: Some(spitzli_plugin_kit::transport::CoreTls {
             origin,
             domain: "localhost".into(),
             certificate: cert_path,
@@ -205,14 +205,14 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
     let host = transport.core_client().await.unwrap();
     host.authorize_runtime("archives", 1).await.unwrap();
     let backend = Arc::new(
-        webdock_archives::backend::Backend::local_test(
+        spitzli_archives::backend::Backend::local_test(
             serde_json::from_value(binding["backend"].clone()).unwrap(),
         )
         .await
         .unwrap(),
     );
     let engine = Arc::new(
-        webdock_archives::Engine::connect(
+        spitzli_archives::Engine::connect(
             binding["database"].as_str().unwrap(),
             None,
             backend,
@@ -222,7 +222,7 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
         .await
         .unwrap(),
     );
-    let handler = Arc::new(webdock_archives::Handler {
+    let handler = Arc::new(spitzli_archives::Handler {
         engine: engine.clone(),
         host: host.clone(),
     });
@@ -253,7 +253,7 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
             .await
             .unwrap();
     }));
-    let mut client = webdock_plugin_runtime::connect_unix(&runtime_path)
+    let mut client = spitzli_plugin_runtime::connect_unix(&runtime_path)
         .await
         .unwrap();
     let id = uuid::Uuid::new_v4();
@@ -282,7 +282,7 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
         .into_inner();
     // Verified S3 bytes alone must not unlock a public download before Core completes the job.
     let member = actor(&f, "member", "member-session").await;
-    let pending=f.host.admit_with_authority(&member,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.download","input":{"resource_id":id},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(&member)).await.unwrap();
+    let pending=f.host.admit_with_authority(&member,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":"archives.download","input":{"resource_id":id},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(&member)).await.unwrap();
     assert!(
         client
             .invoke(wire::InvokeRequest {
@@ -319,7 +319,7 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
     let member = actor(&f, "member", "member-session").await;
     let caller = StorageCaller::browser(
         &member,
-        webdock_browser_session::StoredAuthority::local_session(&member),
+        spitzli_browser_session::StoredAuthority::local_session(&member),
         true,
     );
     let access = f
@@ -341,7 +341,7 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
                 "GET",
                 &StorageCaller::browser(
                     &foreign,
-                    webdock_browser_session::StoredAuthority::local_session(&foreign),
+                    spitzli_browser_session::StoredAuthority::local_session(&foreign),
                     true
                 )
             )
@@ -407,7 +407,7 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
     )
     .await;
     let reader = actor(&f, "member", "member-session").await;
-    let signer = webdock_identity::RlsSigner::new(
+    let signer = spitzli_identity::RlsSigner::new(
         "owned-plugin-jobs-rls-secret-32bytes",
         "webdock_auth_runtime",
     )
@@ -462,7 +462,7 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
         } else {
             json!({"request_id":uuid::Uuid::new_v4(),"kind":"postgres","retention_seconds":3600})
         };
-        let admitted=f.host.admit_with_authority(&reader,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":action,"input":input,"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(&reader)).await;
+        let admitted=f.host.admit_with_authority(&reader,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"archives","projectID":"124","action":action,"input":input,"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(&reader)).await;
         if action == "archives.download" {
             assert!(
                 admitted.is_ok(),

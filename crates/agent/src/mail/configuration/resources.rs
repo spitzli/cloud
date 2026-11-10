@@ -13,7 +13,7 @@ impl Execution<'_> {
             kind,
             id: id.into(),
         };
-        let request_sha256 = webdock_agent_protocol::mail::fingerprint(&(
+        let request_sha256 = spitzli_agent_protocol::mail::fingerprint(&(
             self.claim
                 .spec
                 .fingerprint()

@@ -1,4 +1,4 @@
-import type { HostingActor, ProjectOverview } from "@webdock/hosting-contracts";
+import type { HostingActor, ProjectOverview } from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 
 export function createHostingProjectOverview(dependencies: {

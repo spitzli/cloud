@@ -41,7 +41,7 @@ Run the relevant command in its own terminal after preparing its local configura
 ```bash
 bun run dev:admin
 bun run dev:auth
-bun run --filter @webdock/api dev
+bun run --filter @spitzli/api dev
 ```
 
 Console uses port 3120 and the Auth UI uses port 3125. Running the frontend alone does not provision a backend or establish account access.
@@ -51,13 +51,13 @@ Console uses port 3120 and the Auth UI uses port 3125. Running the frontend alon
 The API fixture creates labeled disposable local PostgreSQL infrastructure and ignored test environment files. It requires Docker. Use the root workspace scripts:
 
 ```bash
-bun run --filter @webdock/api test:setup
-bun run --filter @webdock/api test:setup:rls
-bun test -w @webdock/api
-bun run --filter @webdock/api test:rls
-bun run --filter @webdock/api check
+bun run --filter @spitzli/api test:setup
+bun run --filter @spitzli/api test:setup:rls
+bun test -w @spitzli/api
+bun run --filter @spitzli/api test:rls
+bun run --filter @spitzli/api check
 ```
 
-Run the relevant frontend or shared-package checks for your change. Use `bun run --filter @webdock/api test:teardown` to remove the owned fixture after testing. Follow the fixture output for its actual local target; never point test setup at production.
+Run the relevant frontend or shared-package checks for your change. Use `bun run --filter @spitzli/api test:teardown` to remove the owned fixture after testing. Follow the fixture output for its actual local target; never point test setup at production.
 
 Read repository `AGENTS.md` files before contributing. For Next.js changes, consult the documentation shipped with the installed version.

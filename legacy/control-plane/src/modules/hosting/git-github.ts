@@ -1,13 +1,13 @@
-import { createGitHubProvider as createProvider } from "@webdock/adapter-hosting-github";
-import type { GitHubConfig } from "@webdock/module-hosting/github";
+import { createGitHubProvider as createProvider } from "@spitzli/adapter-hosting-github";
+import type { GitHubConfig } from "@spitzli/module-hosting/github";
 import type { Fetch } from "../shared/http";
-export { parseGitHubWebhook } from "@webdock/adapter-hosting-github";
+export { parseGitHubWebhook } from "@spitzli/adapter-hosting-github";
 export type {
   GitHubConfig,
   GitRepositoryBinding,
   GitSource,
   GitHubWebhook,
-} from "@webdock/module-hosting/github";
+} from "@spitzli/module-hosting/github";
 export function createGitHubProvider(
   config: GitHubConfig = {
     appID: process.env.WEBDOCK_GITHUB_APP_ID ?? "",

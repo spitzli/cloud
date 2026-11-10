@@ -1,6 +1,6 @@
 # First-party browser sessions
 
-`webdock-browser-session` handles the retained Console/Studio `/api/sso/login`, `/api/sso/callback`, and `/api/sso/logout` contract using the native OAuth provider. The browser receives signed opaque host-only cookies. Access, refresh, and ID tokens remain in encrypted authentication-only database rows.
+`spitzli-browser-session` handles the retained Console/Studio `/api/sso/login`, `/api/sso/callback`, and `/api/sso/logout` contract using the native OAuth provider. The browser receives signed opaque host-only cookies. Access, refresh, and ID tokens remain in encrypted authentication-only database rows.
 
 The service uses `openidconnect` 4.0.1 for PKCE/state/nonce generation and RS256 ID-token issuer/audience/expiry/nonce/at-hash verification, `cookie` for signed cookies, and `iron-webcrypto-rs` 0.0.1 solely to read retained Fe26.2 cookies. HMAC verification precedes decryption in that compatibility library; a deterministic JavaScript-generated vector tests the actual wire encoding. No encryption, signing, PKCE or WebAuthn primitive is implemented here.
 

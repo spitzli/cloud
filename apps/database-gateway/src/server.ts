@@ -1,7 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { randomBytes, randomUUID } from "node:crypto";
 import { WebSocket, WebSocketServer, type RawData } from "ws";
-import { runtimeOrigin, type RuntimeAccess, type GatewayAccess } from "@webdock/database-contracts";
+import { runtimeOrigin, type RuntimeAccess, type GatewayAccess } from "@spitzli/database-contracts";
 import { managedIdentity, type ManagedRuntimeManager, type ManagedRuntime } from "./managed-runtimes";
 import { authorizeRpc, publicResult, GatewayError, record } from "./policy";
 

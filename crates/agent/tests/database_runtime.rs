@@ -1,6 +1,6 @@
 #![cfg(feature = "kubernetes")]
-use webdock_agent::database::{DatabaseRuntimeConfig, backend_manifests};
-use webdock_agent_protocol::database::*;
+use spitzli_agent::database::{DatabaseRuntimeConfig, backend_manifests};
+use spitzli_agent_protocol::database::*;
 fn job() -> DatabaseJobSpec {
     serde_json::from_value(serde_json::json!({"version":1,"operationID":"101","agentGeneration":1,"operationGeneration":1,"clusterID":"789","action":"create","phase":"apply","revision":1,"previousPodUID":null,"backend":{"id":"456","kind":"dedicated","namespace":"wd-db-456","node":"fixture-node","poolID":"123e4567-e89b-42d3-a456-426614174000","revision":1,"cnpgUID":null,"resources":{"cpuMillicores":500,"memoryBytes":536870912,"volumeBytes":268435456},"host":"db-456.example.test","directPort":32000,"pooledPort":32001},"database":{"id":"123","kind":"dedicated","name":"db_123","revision":1,"credentialRevision":1,"connectionLimit":10},"members":[{"id":"123","projectID":"321","databaseName":"db_123","enabled":true}],"migration":null})).unwrap()
 }
@@ -92,7 +92,7 @@ async fn database_execution_denies_before_touching_an_unreachable_cluster() {
     std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
     let client =
         kube::Client::try_from(kube::Config::new("https://127.0.0.1:1".parse().unwrap())).unwrap();
-    let executor = webdock_agent::database::NativeDatabaseExecutor::open(client, path).unwrap();
+    let executor = spitzli_agent::database::NativeDatabaseExecutor::open(client, path).unwrap();
     let claim = DatabaseClaim {
         spec: job(),
         lease: DatabaseLease {
@@ -112,9 +112,9 @@ async fn database_execution_denies_before_touching_an_unreachable_cluster() {
     };
     assert!(matches!(
         executor
-            .execute(&claim, &webdock_agent::database::DenyDatabaseAuthority)
+            .execute(&claim, &spitzli_agent::database::DenyDatabaseAuthority)
             .await,
-        Err(webdock_supervisor::ExecutionError::Denied)
+        Err(spitzli_supervisor::ExecutionError::Denied)
     ));
 }
 
@@ -127,18 +127,18 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
         api::{ApiResource, DeleteParams, DynamicObject, GroupVersionKind},
         config::{KubeConfigOptions, Kubeconfig},
     };
+    use spitzli_agent::{
+        database::{DatabaseAuthority, DatabaseStep, NativeDatabaseExecutor},
+        storage::{
+            StorageKind, StoragePool,
+            database::{DatabaseStorageClient, DatabaseStoragePacket},
+        },
+    };
     use std::{
         os::unix::fs::PermissionsExt,
         sync::{
             Arc,
             atomic::{AtomicBool, Ordering},
-        },
-    };
-    use webdock_agent::{
-        database::{DatabaseAuthority, DatabaseStep, NativeDatabaseExecutor},
-        storage::{
-            StorageKind, StoragePool,
-            database::{DatabaseStorageClient, DatabaseStoragePacket},
         },
     };
     assert_eq!(
@@ -187,7 +187,7 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
     let server_socket = socket.clone();
     let (stop, shutdown) = tokio::sync::oneshot::channel();
     let server = tokio::spawn(async move {
-        webdock_agent::storage::serve_kind(
+        spitzli_agent::storage::serve_kind(
             &storage_config,
             &server_socket,
             StorageKind::Database,
@@ -238,8 +238,8 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
     let volume_name = format!("wd-db-{numeric}");
     let packet = DatabaseStoragePacket {
         version: 1,
-        installation_id: webdock_core::id::RecordId::parse(&spec.backend.id).unwrap(),
-        cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
+        installation_id: spitzli_core::id::RecordId::parse(&spec.backend.id).unwrap(),
+        cluster_id: spitzli_core::id::RecordId::parse("789").unwrap(),
         revision: 1,
         node: spec.backend.node.clone(),
         pool_id: pool,
@@ -255,7 +255,7 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
     }
     #[async_trait::async_trait]
     impl DatabaseAuthority for OwnedFixtureAuthority {
-        async fn guard(&self, c: &DatabaseClaim) -> webdock_supervisor::Result<()> {
+        async fn guard(&self, c: &DatabaseClaim) -> spitzli_supervisor::Result<()> {
             if self.allowed.load(Ordering::SeqCst)
                 && c.spec
                     .operation_id
@@ -283,14 +283,14 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
                 }
                 Ok(())
             } else {
-                Err(webdock_supervisor::ExecutionError::Denied)
+                Err(spitzli_supervisor::ExecutionError::Denied)
             }
         }
         async fn checkpoint(
             &self,
             c: &DatabaseClaim,
             p: DatabaseCheckpoint,
-        ) -> webdock_supervisor::Result<()> {
+        ) -> spitzli_supervisor::Result<()> {
             self.guard(c).await?;
             self.checkpoints.lock().await.push(p);
             Ok(())
@@ -372,8 +372,8 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
         assert!(!task_root.join(format!("{}/volume.ext4",claim.spec.backend.id)).exists());
         claim.spec.action=DatabaseAction::Create;
         claim.spec.phase=DatabaseExecutionPhase::Apply;
-        claim.spec.backend.cnpg_uid=Some("foreign-runtime-uid".into());assert!(matches!(executor.execute(&claim,authority.as_ref()).await,Err(webdock_supervisor::ExecutionError::Ownership)));
-        authority.allowed.store(false,Ordering::SeqCst);assert!(matches!(executor.execute(&claim,authority.as_ref()).await,Err(webdock_supervisor::ExecutionError::Denied)));
+        claim.spec.backend.cnpg_uid=Some("foreign-runtime-uid".into());assert!(matches!(executor.execute(&claim,authority.as_ref()).await,Err(spitzli_supervisor::ExecutionError::Ownership)));
+        authority.allowed.store(false,Ordering::SeqCst);assert!(matches!(executor.execute(&claim,authority.as_ref()).await,Err(spitzli_supervisor::ExecutionError::Denied)));
         eprintln!("owned CNPG Apply/Configure/Observe: SCRAM roles and verified TLS direct/pooled logins; retained UID/filesystem; restart/credential rotation/resize/pause/resume/delete/purge; changed UID/revoked guard denied");
     }).await;
     let hosts = std::fs::read_to_string("/etc/hosts")
@@ -436,9 +436,9 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
 
 #[test]
 fn database_dispatch_rejects_tampering_expiry_and_enrollment_mismatch() {
-    use webdock_agent::management::database_claim;
+    use spitzli_agent::management::database_claim;
     let spec = job();
-    let wire = webdock_agent_protocol::DatabaseCommand {
+    let wire = spitzli_agent_protocol::DatabaseCommand {
         request_sha256: spec.fingerprint().unwrap(),
         spec_json: serde_json::to_vec(&spec).unwrap(),
         lease_json: serde_json::to_vec(&DatabaseLease {
@@ -483,7 +483,7 @@ fn backup_manifest_requires_operator_pins_and_keeps_retention_off_on_revoke() {
         secret_access_key: "private-fixture-key-only".into(),
         read_only: false,
     };
-    assert!(webdock_agent::database::backup_manifests(&job, &config(), &material).is_err());
+    assert!(spitzli_agent::database::backup_manifests(&job, &config(), &material).is_err());
     let mut c = serde_json::to_value(config()).unwrap();
     c["backup"] = serde_json::json!({"pluginImage":format!("localhost/fixture-plugin@sha256:{}","a".repeat(64)),"sidecarImage":format!("localhost/fixture-sidecar@sha256:{}","b".repeat(64)),"endpoints":["https://s3.example.invalid"],"egressCIDRs":["192.0.2.10/32"]});
     let endpoint_ca = rcgen::generate_simple_self_signed(vec!["s3.example.invalid".into()])
@@ -506,7 +506,7 @@ fn backup_manifest_requires_operator_pins_and_keeps_retention_off_on_revoke() {
         private_trust.validate().is_err(),
         "public endpoint CA configuration must reject private key material"
     );
-    let objects = webdock_agent::database::backup_manifests(&job, &c, &material).unwrap();
+    let objects = spitzli_agent::database::backup_manifests(&job, &c, &material).unwrap();
     let store = objects.iter().find(|o| o["kind"] == "ObjectStore").unwrap();
     assert!(store["spec"]["configuration"].get("serverName").is_none());
     assert!(store["spec"]["retentionPolicy"].is_null());
@@ -568,7 +568,7 @@ fn recovery_manifest_uses_read_only_source_and_exact_base_time_and_timeline() {
         secret_access_key: "fixture-read-secret-only".into(),
         read_only: true,
     };
-    let objects = webdock_agent::database::backup_manifests(&job, &c, &material).unwrap();
+    let objects = spitzli_agent::database::backup_manifests(&job, &c, &material).unwrap();
     assert!(!objects.iter().any(|o| o["kind"] == "ScheduledBackup"));
     assert!(
         objects.iter().find(|o| o["kind"] == "ObjectStore").unwrap()["spec"]["retentionPolicy"]

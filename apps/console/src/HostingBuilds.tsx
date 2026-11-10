@@ -11,8 +11,8 @@ import { buildLogEventsPath, readBuildLogs, useBuildCommand } from "./build-clie
 import { buildOutcome, buildPolling, buildSchema, buildsPageSchema, canCancelBuild, emptyLogWindow, logPageSchema, mergeLogPage, releaseSchema, releasesPageSchema, sourceGetSchema, sourcesSchema, sourceSchema, sourceSettingsCommand, type Build, type BuildCommand, type BuildRelease, type BuildSource, type SourceSettings, webhookReceiptSchema, type WebhookReceipt, type LogPage, type LogWindow } from "./build-contracts";
 import * as ui from "./ui";
 import { ApiError } from "./api";
-import {useI18n} from "@webdock/i18n/react";
-import {msgid,type I18n} from "@webdock/i18n";
+import {useI18n} from "@spitzli/i18n/react";
+import {msgid,type I18n} from "@spitzli/i18n";
 import {buildCommandSchema,gitConnectionsSchema,gitRepositoriesSchema,type BuildSourceInfo} from "./build-contracts";
 
 type WriteCommand = Extract<BuildCommand, { action: "git.builds.request" | "git.builds.cancel" | "git.source.configure" | "git.source.webhook.configure" | "git.releases.approve" | "git.releases.rollback" }>;

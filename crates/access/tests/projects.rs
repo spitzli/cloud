@@ -2,9 +2,9 @@
 use sea_orm::{
     ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement, TransactionTrait,
 };
+use spitzli_access::*;
+use spitzli_identity::{CookiePolicy, IdentityService, Principal, RlsSigner, SecretKeys};
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_access::*;
-use webdock_identity::{CookiePolicy, IdentityService, Principal, RlsSigner, SecretKeys};
 
 fn guarded(key: &str) -> String {
     let raw = std::env::var(key).unwrap();
@@ -43,9 +43,9 @@ async fn customer_projects() {
     let auth_url = guarded("AUTH_DATABASE_URL");
     let auth = Database::connect(auth_url.clone()).await.unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -237,7 +237,7 @@ async fn customer_projects() {
             access
                 .create_project_as(p("operator"), &customers[1], "Over")
                 .await,
-            Err(webdock_access::Error::ProjectLimit)
+            Err(spitzli_access::Error::ProjectLimit)
         ));
 
         // Domains: owners add one and get the TXT record to publish; members only read.

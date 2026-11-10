@@ -1,9 +1,9 @@
+use spitzli_quality::architecture::{self, Package, Zone};
 use std::{
     collections::{BTreeMap, BTreeSet},
     path::Path,
     process::Command,
 };
-use webdock_quality::architecture::{self, Package, Zone};
 fn package(name: &str, zone: Zone, dependencies: &[&str]) -> Package {
     Package {
         name: name.into(),
@@ -77,11 +77,11 @@ fn actual_cargo_metadata_catches_renamed_optional_target_and_build_edges() {
         "crates/core",
         "[dependencies]\nbridge={path=\"../bridge\",default-features=false}",
     );
-    write(root, "crates/webdock-plugin-protocol", "");
+    write(root, "crates/spitzli-plugin-protocol", "");
     write(
         root,
         "plugins/allowed",
-        "[workspace]\n[dependencies]\nwire={package=\"webdock-plugin-protocol\",path=\"../../crates/webdock-plugin-protocol\"}\n[dev-dependencies]\ncore={path=\"../../crates/core\"}",
+        "[workspace]\n[dependencies]\nwire={package=\"spitzli-plugin-protocol\",path=\"../../crates/spitzli-plugin-protocol\"}\n[dev-dependencies]\ncore={path=\"../../crates/core\"}",
     );
     let manifests = architecture::workspace_manifests(root).unwrap();
     for manifest in &manifests {
@@ -146,12 +146,12 @@ fn export_protocol_and_byte_transport_are_shared_but_cannot_pull_domain_implemen
     )
     .unwrap();
     write(root, "crates/core-domain", "");
-    write(root, "crates/webdock-export-protocol", "");
-    write(root, "crates/webdock-object-storage", "");
+    write(root, "crates/spitzli-export-protocol", "");
+    write(root, "crates/spitzli-object-storage", "");
     write(
         root,
         "plugins/consumer",
-        "[workspace]\n[dependencies]\nwebdock-export-protocol={path=\"../../crates/webdock-export-protocol\"}\nwebdock-object-storage={path=\"../../crates/webdock-object-storage\"}",
+        "[workspace]\n[dependencies]\nspitzli-export-protocol={path=\"../../crates/spitzli-export-protocol\"}\nspitzli-object-storage={path=\"../../crates/spitzli-object-storage\"}",
     );
     lock(&root.join("Cargo.toml"));
     lock(&root.join("plugins/consumer/Cargo.toml"));
@@ -160,7 +160,7 @@ fn export_protocol_and_byte_transport_are_shared_but_cannot_pull_domain_implemen
     assert!(architecture::violations(&graph).is_empty());
     write(
         root,
-        "crates/webdock-object-storage",
+        "crates/spitzli-object-storage",
         "[dependencies]\ncore-domain={path=\"../core-domain\"}",
     );
     lock(&root.join("Cargo.toml"));
@@ -169,6 +169,6 @@ fn export_protocol_and_byte_transport_are_shared_but_cannot_pull_domain_implemen
     assert!(
         architecture::violations(&graph)
             .iter()
-            .any(|finding| finding.contains("webdock-object-storage -> core-domain"))
+            .any(|finding| finding.contains("spitzli-object-storage -> core-domain"))
     );
 }

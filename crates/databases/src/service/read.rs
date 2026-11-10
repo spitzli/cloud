@@ -1,6 +1,6 @@
 //! Authenticated bearer reads; no worker, provisioning, secret material or persisted authority.
 use super::*;
-use webdock_oauth::{McpAuthentication, OAuthService};
+use spitzli_oauth::{McpAuthentication, OAuthService};
 
 impl DatabaseService {
     /// OAuth's server-owned reference is revalidated and retained through the business commit.
@@ -214,14 +214,14 @@ mod retained_authentication_tests {
     #[test]
     fn read_database_failure_is_transient_not_original_authority_revocation() {
         let error = read_guard_error(super::super::authority::oauth_failure(
-            webdock_oauth::Error::Database(sea_orm::DbErr::Custom(
+            spitzli_oauth::Error::Database(sea_orm::DbErr::Custom(
                 "isolated transient test only".into(),
             )),
         ));
         assert_eq!(error.status, 503);
         assert_eq!(
             read_guard_error(super::super::authority::oauth_failure(
-                webdock_oauth::Error::AccessDenied
+                spitzli_oauth::Error::AccessDenied
             ))
             .status,
             403

@@ -1,9 +1,9 @@
 //! Canonical session reads only. Other identity writes retain explicit legacy paths.
 use super::Principal;
 use crate::{IdentityError, Result};
+use spitzli_persistence::postgres::{Pool, Transaction};
 use std::time::Duration;
 use tokio_postgres::types::Type;
-use webdock_persistence::postgres::{Pool, Transaction};
 
 // Both functions are established database authorities. Missing/unknown schema is an error,
 // never a compatibility grant or an automatic fallback to the legacy reader.

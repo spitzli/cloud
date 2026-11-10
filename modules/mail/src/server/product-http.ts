@@ -1,12 +1,12 @@
 import type { MailProductStore } from "./provider-ports";
 import { MailError } from "./product-access";
 import { randomUUID } from "node:crypto";
-import type { MailActor, ApiResult, Permission } from "@webdock/mail-contracts";
-import { MailValidationError } from "@webdock/mail-contracts/validation";
+import type { MailActor, ApiResult, Permission } from "@spitzli/mail-contracts";
+import { MailValidationError } from "@spitzli/mail-contracts/validation";
 import { redactMailLog } from "./product-request-logs";
 type Dependencies = {
   withMailDatabase: <T>(
-    actor: import("@webdock/mail-contracts").MailActor,
+    actor: import("@spitzli/mail-contracts").MailActor,
     run: () => Promise<T>,
   ) => Promise<T>;
   authorizeMailKey: ReturnType<

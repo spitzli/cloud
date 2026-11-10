@@ -110,7 +110,7 @@ def main():
             if result.returncode:
                 raise RuntimeError(f"{title} failed; private diagnostics retained at {directory}")
 
-        run("migration", ["cargo", "run", "--locked", "-p", "webdock-control-plane", "--bin", "webdock-migrate", "--", "--target", f"{address}/webdock_rls_test", "--initialize-empty", "--provision-roles-from", str(password_file)], 420)
+        run("migration", ["cargo", "run", "--locked", "-p", "spitzli-control-plane", "--bin", "spitzli-migrate", "--", "--target", f"{address}/webdock_rls_test", "--initialize-empty", "--provision-roles-from", str(password_file)], 420)
         def sql(statement):
             return docker("exec", custody, "psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "webdock_rls_test", "-c", statement)
 
@@ -138,7 +138,7 @@ def main():
         # Fresh schema-only bootstrap has no legacy Auth generator state; no customer data is seeded.
         docker("exec", custody, "psql", "-U", "postgres", "-d", "webdock_rls_test", "-v", "ON_ERROR_STOP=1", "-c", "INSERT INTO webdock_auth.snowflake_state(singleton) VALUES(true)")
         target, timeout = acceptance_plan(args)
-        run("acceptance", ["cargo", "test", "--locked", "-p", "webdock-hosting", "--test", "postgres", target, "--", "--include-ignored", "--test-threads=1"], timeout)
+        run("acceptance", ["cargo", "test", "--locked", "-p", "spitzli-hosting", "--test", "postgres", target, "--", "--include-ignored", "--test-threads=1"], timeout)
         if args.frontend_only:
             print("Fresh native frontend admission, compatible claims, cross-worker S3 publication, output retention, rollback and terminal-limit queue checks passed.", flush=True)
         elif args.legacy_only:

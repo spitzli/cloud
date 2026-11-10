@@ -1,11 +1,11 @@
 //! Explicit owned guest qualification, independent of Core/schema bootstrap.
-use std::{collections::BTreeMap, path::PathBuf};
-use webdock_build::{
+use spitzli_build::{
     artifact::{Archive, MAX_OUTPUT},
     evidence::{BuildEvidence, assemble},
     execution::{GuestRequest, Limits, VmImage},
     frontend::{FrontendConfig, retained},
 };
+use std::{collections::BTreeMap, path::PathBuf};
 
 #[test]
 #[ignore = "requires explicitly prepared, uniquely owned frontend VM"]
@@ -112,7 +112,7 @@ fn real_frontend_guest_retains_files_and_fails_closed_on_unsafe_or_oversized_out
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(local.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let store =
-        webdock_build::artifact::ArtifactStore::open(local.path().into(), MAX_OUTPUT).unwrap();
+        spitzli_build::artifact::ArtifactStore::open(local.path().into(), MAX_OUTPUT).unwrap();
     let artifact = store.put("100", "200", 1, &bytes).unwrap();
     let files = retained(&store, &artifact, &build, None)
         .unwrap()

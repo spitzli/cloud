@@ -7,7 +7,7 @@ import {
 import {
   isIntegrationCallbackPath,
   integrationResumeCookie,
-} from "@webdock/api-client/integration-callbacks";
+} from "@spitzli/api-client/integration-callbacks";
 /** Encrypt OAuth codes/state before a Clerk handshake; no callback query leaves this cookie. */
 export function createIntegrationCallbackHandoff(options: {
   origin: string;

@@ -3,7 +3,7 @@ import {
   HostingError,
   serviceRuntimeSchema,
   type ServiceRuntime,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 export type Dependencies = {
   bindingMailReady: ReturnType<

@@ -7,8 +7,8 @@ use std::collections::HashMap;
 use tower::ServiceExt;
 #[tokio::test]
 async fn native_operator_allowance_path_exists_and_fails_closed() {
-    let app = webdock_control_plane::http::build_app(
-        webdock_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
+    let app = spitzli_control_plane::http::build_app(
+        spitzli_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
         sea_orm::DatabaseConnection::default(),
     );
     let response = app

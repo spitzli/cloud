@@ -181,7 +181,7 @@ test("unsafe operator origins fail before invoking Hosting and capabilities sepa
   expect(called).toBe(false);
 });
 test("native Hosting conflicts and denial remain generic, with revisions forwarded unchanged", async () => {
-  const { HostingError } = await import("@webdock/hosting-contracts");
+  const { HostingError } = await import("@spitzli/hosting-contracts");
   for (const [status, code] of [
     [403, "permission_denied"],
     [409, "conflict"],

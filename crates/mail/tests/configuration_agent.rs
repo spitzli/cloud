@@ -7,19 +7,19 @@ use sea_orm::{
 };
 use serde_json::json;
 use sha2::{Digest, Sha256};
-use std::collections::BTreeMap;
-use std::sync::Arc;
-use webdock_agent_protocol::mail::*;
-use webdock_agent_protocol::mail_configuration::*;
-use webdock_browser_session::StoredAuthority;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_mail::{
+use spitzli_agent_protocol::mail::*;
+use spitzli_agent_protocol::mail_configuration::*;
+use spitzli_browser_session::StoredAuthority;
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_mail::{
     MailDependencies,
     incoming::{
         IncomingConfig, MailboxCommand, NativeIncoming, ServiceCommand,
         agent::{IncomingAgent, MailAgentConfig},
     },
 };
+use std::collections::BTreeMap;
+use std::sync::Arc;
 const KEY: &str = "owned-incoming-agent-context-key-atleast32";
 const IMAGE: &str = "registry.example.test/stalwart@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 async fn sql(db: &impl ConnectionTrait, query: &str, values: Vec<sea_orm::Value>) {
@@ -122,7 +122,7 @@ async fn fixture(case: Case) {
     url.set_path(&format!("/{name}"));
     let owner = Database::connect(url.as_str()).await.unwrap();
     let result=std::panic::AssertUnwindSafe(async{
-        webdock_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
+        spitzli_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
         sql(&owner,"INSERT INTO webdock_auth.\"user\"(id,name,email,\"emailVerified\",role,\"twoFactorEnabled\",\"mustChangePassword\") VALUES('1001','Operator','operator@example.invalid',true,'operator',true,false)",vec![]).await;
         sql(&owner,"INSERT INTO webdock_auth.session(id,token,\"userId\",\"expiresAt\",\"updatedAt\") VALUES('operator-session','operator-token','1001',now()+interval '1 hour',now())",vec![]).await;
         let tx=owner.begin().await.unwrap();
@@ -138,8 +138,8 @@ async fn fixture(case: Case) {
         let cookie=format!("{}={}",cookies.name(),cookies.sign("operator-token").unwrap());
         let identity=Arc::new(IdentityService::new(auth.clone(),cookies));
         let principal=identity.authenticate_cookie(&cookie).await.unwrap().unwrap();
-        let ids=Arc::new(webdock_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,webdock_ids::Identity::platform(0,2).unwrap()));
-        let hosting=Arc::new(webdock_hosting::HostingService::new(business.clone(),auth.clone(),worker.clone(),KEY.into(),"incoming-platform-encryption-key-atleast32".into(),ids.clone()).await.unwrap());
+        let ids=Arc::new(spitzli_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,spitzli_ids::Identity::platform(0,2).unwrap()));
+        let hosting=Arc::new(spitzli_hosting::HostingService::new(business.clone(),auth.clone(),worker.clone(),KEY.into(),"incoming-platform-encryption-key-atleast32".into(),ids.clone()).await.unwrap());
         let incoming=Arc::new(NativeIncoming::new(MailDependencies{auth:auth.clone(),business:business.clone(),worker:worker.clone(),identity:identity.clone(),browser:None,ids},IncomingConfig{enabled:true,mailboxes_enabled:true,sending_enabled:true,managed_cluster:"200".into(),rls_secret:KEY.into()}).await.unwrap());
         let service=Arc::new(IncomingAgent::new(incoming.clone(),MailAgentConfig{image:IMAGE.into(),hostname_suffix:"example.test".into(),encryption_key:STANDARD.encode([37u8;32])}).unwrap().with_configuration_enabled(true));
         let agent=hosting.authenticate_agent("200",&credential).await.unwrap();
@@ -176,7 +176,7 @@ async fn fixture(case: Case) {
             sql(&owner,"REVOKE SELECT ON webdock_auth.\"user\" FROM webdock_auth_bootstrap",vec![]).await;
             let outcome=service.guard_configuration(hosting.begin_authenticated_agent(&agent).await.unwrap(),&agent,&claim.spec,&claim.lease).await;
             sql(&owner,"GRANT SELECT ON webdock_auth.\"user\" TO webdock_auth_bootstrap",vec![]).await;
-            assert!(matches!(outcome,Err(webdock_mail::incoming::Error::Unavailable)));
+            assert!(matches!(outcome,Err(spitzli_mail::incoming::Error::Unavailable)));
             let row=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT o.state,n.receipt_sha256 FROM webdock_mail.configuration_operation o JOIN webdock_mail.native_configuration_operation n ON n.operation_id=o.id")).await.unwrap().unwrap();assert_eq!(row.try_get::<String>("","state").unwrap(),"running");assert!(row.try_get::<Option<String>>("","receipt_sha256").unwrap().is_none());return;
         }
 
@@ -223,7 +223,7 @@ async fn fixture(case: Case) {
         assert!(service.checkpoint_configuration(hosting.begin_authenticated_agent(&agent).await.unwrap(),&agent,&restriction.spec,forged).await.is_err());
         finish(&service,&hosting,&agent,&restriction).await;
         let directory=incoming.directory(&principal,&StoredAuthority::LocalSession {},"123").await.unwrap();
-        let configuration=directory.configuration.unwrap();assert_eq!(configuration.state,Some(webdock_mail::incoming::ConfigurationState::Succeeded));assert_ne!(configuration.revision,configuration.applied_revision);assert!(!directory.can_retry_configuration);
+        let configuration=directory.configuration.unwrap();assert_eq!(configuration.state,Some(spitzli_mail::incoming::ConfigurationState::Succeeded));assert_ne!(configuration.revision,configuration.applied_revision);assert!(!directory.can_retry_configuration);
         sql(&owner,"UPDATE webdock_auth.plugin_installation SET state='enabled' WHERE id='mail'",vec![]).await;
         assert!(incoming.directory(&principal,&StoredAuthority::LocalSession {},"123").await.unwrap().can_retry_configuration);
         incoming.manage_mailboxes(&principal,&StoredAuthority::LocalSession {},"123",MailboxCommand::ConfigurationRetry{revision:configuration.revision}).await.unwrap();
@@ -241,7 +241,7 @@ async fn fixture(case: Case) {
         sql(&owner,"UPDATE webdock_auth.plugin_installation SET state='enabled' WHERE id='mail'",vec![]).await;
         if case==Case::MaterializedRegrant{
             let event=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT configuration_revision FROM webdock_mail.native_configuration_restriction WHERE customer_id='123' ORDER BY configuration_revision LIMIT 1")).await.unwrap().unwrap();let revision=event.try_get::<i64>("","configuration_revision").unwrap();
-            let allocated=webdock_persistence::IdAllocator::new(business.clone(),webdock_ids::Identity::platform(0,2).unwrap()).allocate().await.unwrap().to_string();
+            let allocated=spitzli_persistence::IdAllocator::new(business.clone(),spitzli_ids::Identity::platform(0,2).unwrap()).allocate().await.unwrap().to_string();
             let tx=hosting.begin_authenticated_agent(&agent).await.unwrap();let result=tx.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT webdock_mail.admit_configuration_restriction('123',$1,$2) AS admitted",[revision.into(),allocated.clone().into()])).await.unwrap().unwrap();assert!(result.try_get::<bool>("","admitted").unwrap());tx.commit().await.unwrap();
             sql(&owner,"INSERT INTO webdock_auth.member(id,\"organizationId\",\"userId\",role,\"createdAt\") VALUES('regranted-native-member','124','1002','member',now())",vec![]).await;
             for mailbox in &mailboxes{incoming.manage_mailboxes(&principal,&StoredAuthority::LocalSession {},"123",MailboxCommand::Grant{mailbox_id:mailbox.clone(),subject:"1002".into()}).await.unwrap();}
@@ -277,8 +277,8 @@ async fn fixture(case: Case) {
 
 async fn prepare(
     service: &IncomingAgent,
-    hosting: &webdock_hosting::HostingService,
-    agent: &webdock_hosting::AgentIdentity,
+    hosting: &spitzli_hosting::HostingService,
+    agent: &spitzli_hosting::AgentIdentity,
     claim: &ConfigurationClaim,
 ) -> ConfigurationCompletion {
     let mut proof = ConfigurationProof {
@@ -361,7 +361,7 @@ async fn prepare(
         }
     }
     for (resource, provider_id) in resources {
-        let request_sha256 = webdock_agent_protocol::mail::fingerprint(&resource).unwrap();
+        let request_sha256 = spitzli_agent_protocol::mail::fingerprint(&resource).unwrap();
         for phase in [
             ConfigurationCheckpointPhase::Handoff {
                 resource: resource.clone(),
@@ -408,8 +408,8 @@ async fn prepare(
 async fn late_guard(
     owner: &DatabaseConnection,
     service: Arc<IncomingAgent>,
-    hosting: Arc<webdock_hosting::HostingService>,
-    agent: webdock_hosting::AgentIdentity,
+    hosting: Arc<spitzli_hosting::HostingService>,
+    agent: spitzli_hosting::AgentIdentity,
     claim: ConfigurationClaim,
 ) {
     let block = owner.begin().await.unwrap();
@@ -439,14 +439,14 @@ async fn late_guard(
         .unwrap();
     assert!(matches!(
         result,
-        Err(webdock_mail::incoming::Error::Conflict)
+        Err(spitzli_mail::incoming::Error::Conflict)
     ));
 }
 
 async fn finish(
     service: &IncomingAgent,
-    hosting: &webdock_hosting::HostingService,
-    agent: &webdock_hosting::AgentIdentity,
+    hosting: &spitzli_hosting::HostingService,
+    agent: &spitzli_hosting::AgentIdentity,
     claim: &ConfigurationClaim,
 ) -> ConfigurationCompletion {
     let receipt = prepare(service, hosting, agent, claim).await;
@@ -464,8 +464,8 @@ async fn finish(
 async fn late_callback(
     owner: &DatabaseConnection,
     service: Arc<IncomingAgent>,
-    hosting: Arc<webdock_hosting::HostingService>,
-    agent: webdock_hosting::AgentIdentity,
+    hosting: Arc<spitzli_hosting::HostingService>,
+    agent: spitzli_hosting::AgentIdentity,
     claim: ConfigurationClaim,
     completion: bool,
 ) {
@@ -474,7 +474,7 @@ async fn late_callback(
         kind: ConfigurationResourceKind::Domain,
         id: domain.clone(),
     };
-    let request_sha256 = webdock_agent_protocol::mail::fingerprint(&resource).unwrap();
+    let request_sha256 = spitzli_agent_protocol::mail::fingerprint(&resource).unwrap();
     let applied = ConfigurationCheckpoint {
         lease: claim.lease.clone(),
         runtime_id: "normal-runtime".into(),
@@ -550,7 +550,7 @@ async fn late_callback(
         .unwrap()
         .unwrap();
     assert!(
-        matches!(result, Err(webdock_mail::incoming::Error::Conflict)),
+        matches!(result, Err(spitzli_mail::incoming::Error::Conflict)),
         "expired projection was committed"
     );
     let row=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT d.state,d.provider_id,c.applied_revision,n.receipt_sha256 FROM webdock_mail.domain d JOIN webdock_mail.configuration c USING(customer_id) JOIN webdock_mail.native_configuration_operation n USING(customer_id)")).await.unwrap().unwrap();
@@ -594,8 +594,8 @@ async fn nonoperator_case(
     owner: &DatabaseConnection,
     incoming: &NativeIncoming,
     service: Arc<IncomingAgent>,
-    hosting: Arc<webdock_hosting::HostingService>,
-    agent: webdock_hosting::AgentIdentity,
+    hosting: Arc<spitzli_hosting::HostingService>,
+    agent: spitzli_hosting::AgentIdentity,
     identity: &IdentityService,
     case: Case,
 ) {

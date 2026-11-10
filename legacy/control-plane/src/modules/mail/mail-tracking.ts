@@ -1,5 +1,5 @@
 import { TrackingClient } from "./turbo-tracking";
-import { createTenantTracking } from "@webdock/module-mail/server/tenant-tracking";
+import { createTenantTracking } from "@spitzli/module-mail/server/tenant-tracking";
 import { resolveSessionReference } from "../auth/principal";
 import { withAuthenticatedDatabase } from "../../db/database-context";
 import { productTrackingContext } from "./product/tracking-context";
@@ -13,7 +13,7 @@ import {
 export {
   TrackingError,
   trackingSchemaSQL,
-} from "@webdock/module-mail/server/tenant-tracking";
+} from "@spitzli/module-mail/server/tenant-tracking";
 export const { trackingHostname, getTenantTracking, manageTenantTracking } =
   createTenantTracking({
     resolveSessionReference,

@@ -39,9 +39,9 @@ impl RlsSigner {
     /// an executable transaction with uncertain scope in the caller's hands.
     pub async fn apply_native<'a>(
         &self,
-        tx: webdock_persistence::postgres::Transaction<'a>,
+        tx: spitzli_persistence::postgres::Transaction<'a>,
         principal: &Principal,
-    ) -> Result<webdock_persistence::postgres::Transaction<'a>> {
+    ) -> Result<spitzli_persistence::postgres::Transaction<'a>> {
         let (raw, signature) = self.signed_scope(principal)?;
         tokio::time::timeout(std::time::Duration::from_secs(5), tx.query_typed_opt("SELECT pg_catalog.set_config('webdock.rls_context',$1,true),pg_catalog.set_config('webdock.rls_signature',$2,true) WHERE current_user::text=$3", &[(&raw,tokio_postgres::types::Type::TEXT),(&signature,tokio_postgres::types::Type::TEXT),(&self.audience,tokio_postgres::types::Type::TEXT)])).await.map_err(|_|IdentityError::Persistence)?.map_err(|_|IdentityError::Persistence)?.ok_or(IdentityError::Persistence)?;
         Ok(tx)

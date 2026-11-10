@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_mail_protocol::outbox::{PayloadFormat, PayloadLease, Preparation, Receipt, SendLease};
+use spitzli_mail_protocol::outbox::{PayloadFormat, PayloadLease, Preparation, Receipt, SendLease};
 
 #[test]
 fn native_outbox_dtos_preserve_order_names_and_strict_receipt_shapes() {

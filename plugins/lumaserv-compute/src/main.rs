@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use spitzli_plugin_runtime::{self as runtime, HostClient};
 use std::{
     collections::BTreeMap,
     io::Read,
@@ -7,7 +8,6 @@ use std::{
     process::ExitCode,
     sync::Arc,
 };
-use webdock_plugin_runtime::{self as runtime, HostClient};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
 #[derive(Deserialize)]
@@ -90,8 +90,8 @@ async fn run() -> Result<(), Error> {
         return Err("unexpected argument".into());
     }
     let config: Configuration = serde_json::from_slice(&file(&path, true)?)?;
-    let manifest = webdock_plugin_protocol::Manifest::parse(&file(&config.manifest, false)?)?;
-    webdock_lumaserv_compute::validate_manifest(&manifest)?;
+    let manifest = spitzli_plugin_protocol::Manifest::parse(&file(&config.manifest, false)?)?;
+    spitzli_lumaserv_compute::validate_manifest(&manifest)?;
     let key: [u8; 32] = hex::decode(config.issuer_public_key_hex)?
         .try_into()
         .map_err(|_| "invalid key")?;
@@ -124,7 +124,7 @@ async fn run() -> Result<(), Error> {
         config.generation,
         config.core_peers,
     )?;
-    let provider = webdock_lumaserv_compute::Compute::new(client, config.projects)?;
+    let provider = spitzli_lumaserv_compute::Compute::new(client, config.projects)?;
     let runtime = runtime::Runtime::new(
         manifest,
         config.generation,

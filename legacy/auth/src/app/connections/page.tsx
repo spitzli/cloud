@@ -1,6 +1,6 @@
 
 import {withAuthenticatedDatabase} from '@/lib/database-context';
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";

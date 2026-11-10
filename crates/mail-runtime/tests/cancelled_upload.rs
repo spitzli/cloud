@@ -4,6 +4,10 @@ use axum::{
     http::{Request, StatusCode},
 };
 use serde_json::{Value, json};
+use spitzli_mail_runtime::{
+    ControlError, FilesystemPayloadStore, PrivatePayloadStore, Result, SavedPayload, SendControl,
+    send_api::SendApi,
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -13,10 +17,6 @@ use std::{
 };
 use tokio::sync::Notify;
 use tower::ServiceExt;
-use webdock_mail_runtime::{
-    ControlError, FilesystemPayloadStore, PrivatePayloadStore, Result, SavedPayload, SendControl,
-    send_api::SendApi,
-};
 
 struct SlowStore {
     filesystem: FilesystemPayloadStore,

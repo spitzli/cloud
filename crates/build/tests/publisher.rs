@@ -1,11 +1,11 @@
 #![cfg(feature = "local-registry-test")]
+use spitzli_build::{
+    artifact::ArtifactStore,
+    publisher::{PublicationGuard, RegistryPublisher},
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::atomic::{AtomicBool, AtomicUsize, Ordering},
-};
-use webdock_build::{
-    artifact::ArtifactStore,
-    publisher::{PublicationGuard, RegistryPublisher},
 };
 struct Guard {
     allowed: AtomicBool,
@@ -13,12 +13,12 @@ struct Guard {
 }
 #[async_trait::async_trait]
 impl PublicationGuard for Guard {
-    async fn check(&self) -> webdock_build::Result<()> {
+    async fn check(&self) -> spitzli_build::Result<()> {
         self.calls.fetch_add(1, Ordering::SeqCst);
         if self.allowed.load(Ordering::SeqCst) {
             Ok(())
         } else {
-            Err(webdock_build::Error {
+            Err(spitzli_build::Error {
                 code: "lease_revoked",
                 logs: String::new(),
             })

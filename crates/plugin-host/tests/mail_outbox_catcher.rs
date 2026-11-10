@@ -19,7 +19,7 @@ async fn actual_smtp_adapter_preserves_prepared_commitment_with_exact_framing() 
     for raw in [MIME, MIME.strip_suffix(b"\r\n").unwrap()] {
         for mode in [Mode::Accept, Mode::StoreThenDropFinalReply] {
             let catcher = Catcher::start(mode, Limits::default()).await.unwrap();
-            let result = webdock_mail::smtp::submit_loopback(
+            let result = spitzli_mail::smtp::submit_loopback(
                 "127.0.0.1",
                 catcher.address().port(),
                 "sender@example.test",

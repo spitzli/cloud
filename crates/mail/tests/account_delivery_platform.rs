@@ -13,6 +13,20 @@ use axum::{
 use futures_util::FutureExt;
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::{Value, json};
+use spitzli_control_plane::{
+    http::{Services, build_app_with_domains},
+    mail::{MailEndpoints, initialize_sender},
+    plugin_config::MailConfig,
+};
+use spitzli_identity::{
+    CookiePolicy, DeliveryKind, DeliveryRequest, IdentityService, PasswordAuthentication,
+    RlsSigner, SecretKeys,
+};
+use spitzli_mail::{
+    MailDependencies, keys::NativeKeys, payload::PrivatePayloadStore, send_api::SendApi,
+    send_control::HttpSendControl, submissions::Submissions,
+};
+use spitzli_plugin_host::{FileBindings, HostService};
 use std::{
     collections::{BTreeMap, HashMap},
     os::unix::fs::PermissionsExt,
@@ -25,20 +39,6 @@ use std::{
 };
 use support::{KEY, bindings, role, seed, sql};
 use tls::TlsServer;
-use webdock_control_plane::{
-    http::{Services, build_app_with_domains},
-    mail::{MailEndpoints, initialize_sender},
-    plugin_config::MailConfig,
-};
-use webdock_identity::{
-    CookiePolicy, DeliveryKind, DeliveryRequest, IdentityService, PasswordAuthentication,
-    RlsSigner, SecretKeys,
-};
-use webdock_mail::{
-    MailDependencies, keys::NativeKeys, payload::PrivatePayloadStore, send_api::SendApi,
-    send_control::HttpSendControl, submissions::Submissions,
-};
-use webdock_plugin_host::{FileBindings, HostService};
 const AUTH_SECRET: &str = "account-platform-owned-auth-secret-at-least32";
 const WORKER_SECRET: &str = "account-platform-mail-worker-secret-at-least32";
 const PAYLOAD_KEY: &str = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
@@ -91,7 +91,7 @@ async fn receipt_boundary(
         .requests
         .lock()
         .unwrap()
-        .push((key, webdock_mail_protocol::sha256(&body)));
+        .push((key, spitzli_mail_protocol::sha256(&body)));
     let response = next.run(Request::from_parts(parts, Body::from(body))).await;
     if response.status() == StatusCode::ACCEPTED && state.lose_once.swap(false, Ordering::SeqCst) {
         let broken = futures_util::stream::once(async {
@@ -112,7 +112,7 @@ async fn receipt_boundary(
 async fn once(path: &Path, success: bool) {
     let output = tokio::time::timeout(
         Duration::from_secs(15),
-        tokio::process::Command::new(env!("CARGO_BIN_EXE_webdock-account-delivery"))
+        tokio::process::Command::new(env!("CARGO_BIN_EXE_spitzli-account-delivery"))
             .arg(path)
             .arg("--once")
             .env_clear()
@@ -185,16 +185,16 @@ async fn run(url: &url::Url, name: &str) {
     let dir = tempfile::tempdir().unwrap();
     std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let owner = Database::connect(url.as_str()).await.unwrap();
-    webdock_persistence::migrations::bootstrap(&owner, name, KEY)
+    spitzli_persistence::migrations::bootstrap(&owner, name, KEY)
         .await
         .unwrap();
     seed(&owner).await;
     let auth = role("AUTH_DATABASE_URL", url).await;
     let business = role("DATABASE_URL", url).await;
     let worker = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
-    let allocator = Arc::new(webdock_persistence::IdAllocator::new(
+    let allocator = Arc::new(spitzli_persistence::IdAllocator::new(
         business.clone(),
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     ));
     let base_identity = Arc::new(IdentityService::new(
         auth.clone(),
@@ -260,7 +260,7 @@ async fn run(url: &url::Url, name: &str) {
                 .unwrap(),
         );
         identity = Some(account.clone());
-        let configuration = webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+        let configuration = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
             ("WEBDOCK_AUTH_ORIGIN".into(), origin.into()),
             ("WEBDOCK_FEATURES".into(), "{\"mail\":\"enabled\"}".into()),
         ]))
@@ -392,14 +392,14 @@ async fn run(url: &url::Url, name: &str) {
     else {
         panic!("owner signin");
     };
-    let access = webdock_access::AccessService::new(
+    let access = spitzli_access::AccessService::new(
         business.clone(),
         auth.clone(),
         identity.clone(),
         allocator,
         RlsSigner::new(KEY, "webdock_auth_runtime").unwrap(),
         Arc::new(keys()),
-        webdock_access::AccessConfig {
+        spitzli_access::AccessConfig {
             auth_origin: url::Url::parse(&core.origin).unwrap(),
             console_origins: vec![],
             allow_local_http: false,
@@ -410,10 +410,10 @@ async fn run(url: &url::Url, name: &str) {
         .manage_tenant(
             session.set_cookie.split(';').next().unwrap(),
             "123",
-            webdock_access::TenantCommand::Invite {
+            spitzli_access::TenantCommand::Invite {
                 email: "recipient@example.test".into(),
                 name: "Recipient".into(),
-                role: webdock_access::MemberRole::Member,
+                role: spitzli_access::MemberRole::Member,
             },
         )
         .await

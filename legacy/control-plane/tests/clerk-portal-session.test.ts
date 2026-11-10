@@ -5,10 +5,10 @@ test("OAuth portal lookup binds freshly verified Clerk authority to its introspe
   const result = Bun.spawnSync([process.execPath,"--no-env-file","-e",`
     import { mock } from "bun:test";
     import assert from "node:assert/strict";
-    import { currentDatabaseScope } from "@webdock/database-runtime";
+    import { currentDatabaseScope } from "@spitzli/database-runtime";
     let proof={operator:true,twoFactorEnabled:true,issuer:"https://identity.example",userID:"provider",verifiedAt:Date.now(),expiresAt:Date.now()+59000,roles:[]};
     let queries=0;
-    mock.module("@webdock/oauth-session",()=>({configureOAuthSession:options=>options}));
+    mock.module("@spitzli/oauth-session",()=>({configureOAuthSession:options=>options}));
     mock.module("./apps/control-plane/src/modules/auth/introspection",()=>({introspectToken:async()=>{throw Error("unexpected");}}));
     mock.module("./apps/control-plane/src/modules/auth/clerk-provider",()=>({legacyClerkMemberships:async()=>proof}));
     mock.module("./apps/control-plane/src/db/runtime",()=>({database:{query:async()=>{queries++;assert.equal(currentDatabaseScope().memberships.operator,true);assert.equal(currentDatabaseScope().memberships.subject,"local");assert.equal(currentDatabaseScope().memberships.sessionID,"session");return {rows:[{value:{id:"registry"}}]};}}}));
@@ -28,7 +28,7 @@ test("authenticated database wrapper supplies fresh proof for a Clerk compatibil
   const result = Bun.spawnSync([process.execPath,"--no-env-file","-e",`
     import { mock } from "bun:test";
     import assert from "node:assert/strict";
-    import { currentDatabaseScope } from "@webdock/database-runtime";
+    import { currentDatabaseScope } from "@spitzli/database-runtime";
     const proof={operator:false,twoFactorEnabled:false,issuer:"https://identity.example",userID:"external",verifiedAt:Date.now(),expiresAt:Date.now()+59000,roles:[]};
     let proofReads=0;
     mock.module("./apps/control-plane/src/modules/auth/auth",()=>({auth:{api:{getSession:async()=>({user:{id:"local",role:"operator"},session:{id:"session"}})}}}));

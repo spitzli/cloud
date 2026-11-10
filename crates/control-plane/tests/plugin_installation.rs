@@ -257,7 +257,7 @@ async fn restricted_http_installation_guards_private_data_and_idempotent_retry()
         "unenrolled target must not be offered"
     );
     let reviewed = serde_json::to_value(
-        webdock_plugin_host::Catalog::from_bytes(&serde_json::to_vec(&fixture.catalog).unwrap())
+        spitzli_plugin_host::Catalog::from_bytes(&serde_json::to_vec(&fixture.catalog).unwrap())
             .unwrap()
             .descriptors(),
     )

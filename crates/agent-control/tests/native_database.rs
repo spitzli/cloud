@@ -4,6 +4,13 @@ mod support;
 use sea_orm::{ConnectionTrait, Database};
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_agent::management::Daemon;
+use spitzli_agent_control::{ControlPlane, LocalBinding};
+use spitzli_agent_protocol::{
+    self as wire,
+    database_control_server::{DatabaseControl, DatabaseControlServer},
+};
+use spitzli_databases::{DatabaseService, StoredAuthority};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -13,13 +20,6 @@ use std::{
 };
 use support::*;
 use tonic::{Request, Response, Status};
-use webdock_agent::management::Daemon;
-use webdock_agent_control::{ControlPlane, LocalBinding};
-use webdock_agent_protocol::{
-    self as wire,
-    database_control_server::{DatabaseControl, DatabaseControlServer},
-};
-use webdock_databases::{DatabaseService, StoredAuthority};
 struct LossyDatabaseControl {
     core: ControlPlane,
     checkpoint: AtomicBool,
@@ -86,14 +86,14 @@ impl DatabaseControl for Service {
 }
 async fn drive(
     daemon: &mut Option<Daemon>,
-    config: &webdock_agent::config::AgentConfig,
+    config: &spitzli_agent::config::AgentConfig,
     owner: &sea_orm::DatabaseConnection,
     id: &str,
     expected: &str,
 ) {
     for _ in 0..180 {
         let result = daemon.as_mut().unwrap().cycle().await;
-        let pending = webdock_agent::outbox::DatabaseOutbox::open(
+        let pending = spitzli_agent::outbox::DatabaseOutbox::open(
             config.state_directory.join("database-outbox.json"),
         )
         .unwrap()
@@ -170,7 +170,7 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
     let init_name = name.clone();
     let initialized = tokio::spawn(async move {
         let owner = connection(&init_name, "WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
-        webdock_persistence::migrations::bootstrap(
+        spitzli_persistence::migrations::bootstrap(
             &owner,
             &init_name,
             &std::env::var("DATABASE_RLS_SECRET").unwrap(),
@@ -178,9 +178,9 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
         .await
         .unwrap();
         let ids = Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 &url("AUTH_DATABASE_URL", &init_name),
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )
             .await
             .unwrap(),
@@ -213,8 +213,8 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
         let auth=connection(&task_name,"AUTH_DATABASE_URL").await;let business=connection(&task_name,"DATABASE_URL").await;let worker=connection(&task_name,"WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await;
         let (identity,actor)=identity(auth.clone(),ids.clone()).await;
         let secret=std::env::var("BETTER_AUTH_SECRET").unwrap();let context_secret=std::env::var("DATABASE_RLS_SECRET").unwrap();
-        let hosting=Arc::new(webdock_hosting::HostingService::new(business.clone(),auth.clone(),worker.clone(),context_secret.clone(),secret.clone(),ids.clone()).await.unwrap());
-        let service=Arc::new(DatabaseService::new(business,auth.clone(),worker,identity,None,ids.clone(),context_secret,&secret,"http://127.0.0.1:3150").await.unwrap().with_management(webdock_databases::ManagementConfig{cluster_id:Some(cluster.clone()),endpoint_domain:Some("fixture.test".into()),public_ordering:false,protected_database_id:None,lease_secret:Some(secret)}).unwrap());
+        let hosting=Arc::new(spitzli_hosting::HostingService::new(business.clone(),auth.clone(),worker.clone(),context_secret.clone(),secret.clone(),ids.clone()).await.unwrap());
+        let service=Arc::new(DatabaseService::new(business,auth.clone(),worker,identity,None,ids.clone(),context_secret,&secret,"http://127.0.0.1:3150").await.unwrap().with_management(spitzli_databases::ManagementConfig{cluster_id:Some(cluster.clone()),endpoint_domain:Some("fixture.test".into()),public_ordering:false,protected_database_id:None,lease_secret:Some(secret)}).unwrap());
         exec(&task_owner,"INSERT INTO webdock_auth.plugin_installation(id,kind,state,desired_state,version) VALUES('hosting','builtin','enabled','enabled','owned-native-test'),('databases','builtin','enabled','enabled','owned-native-test')",vec![]).await;
         let customer=ids.allocate().await.unwrap().to_string();let project=ids.allocate().await.unwrap().to_string();
         exec(&task_owner,"WITH allocation AS (SELECT set_config('webdock.organization_allocation',$2,true)) INSERT INTO webdock_admin.customers(id,name) SELECT $1,'Owned native database fixture' FROM allocation",vec![customer.clone().into(),json!({"customer_id":customer,"organization_id":ids.allocate().await.unwrap().to_string()}).to_string().into()]).await;
@@ -229,7 +229,7 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
         let server=tokio::spawn(async move{tonic::transport::Server::builder().add_service(core.service()).add_service(DatabaseControlServer::new(Service(rpc))).serve_with_incoming_shutdown(tokio_stream::wrappers::UnixListenerStream::new(listener),async{let _=shutdown.await;}).await.unwrap();});
         let state=base.join("agent");std::fs::create_dir(&state).unwrap();std::fs::set_permissions(&state,std::fs::Permissions::from_mode(0o700)).unwrap();
         let chart=std::path::PathBuf::from(std::env::var("WEBDOCK_DATABASE_TEST_CHART").unwrap());
-        let mut config=webdock_agent::config::AgentConfig{version:1,installation,agent_id:"database-fixture".into(),generation:1,state_directory:state,control:webdock_agent::config::ControlEndpoint::Unix{path:socket},runtime:webdock_agent::config::RuntimeConfiguration::Kubernetes{kubeconfig:std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap().into(),context:std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap(),helm:std::env::var("WEBDOCK_DATABASE_TEST_HELM").unwrap().into(),chart_sha256:webdock_agent::kubernetes::ApprovedChart::digest(&chart).unwrap(),chart,storage_socket:None,storage_node:None,public_routing:None},database_runtime:Some(runtime_path),mail_runtime:None,recovery_runtime:None,mail_configuration_enabled:false,policy:Default::default(),workloads:false,plugin_runtime_enabled:false};
+        let mut config=spitzli_agent::config::AgentConfig{version:1,installation,agent_id:"database-fixture".into(),generation:1,state_directory:state,control:spitzli_agent::config::ControlEndpoint::Unix{path:socket},runtime:spitzli_agent::config::RuntimeConfiguration::Kubernetes{kubeconfig:std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap().into(),context:std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap(),helm:std::env::var("WEBDOCK_DATABASE_TEST_HELM").unwrap().into(),chart_sha256:spitzli_agent::kubernetes::ApprovedChart::digest(&chart).unwrap(),chart,storage_socket:None,storage_node:None,public_routing:None},database_runtime:Some(runtime_path),mail_runtime:None,recovery_runtime:None,mail_configuration_enabled:false,policy:Default::default(),workloads:false,plugin_runtime_enabled:false};
         let mut daemon=Daemon::open(config.clone()).await.unwrap();daemon.connect().await.unwrap();assert!(!daemon.cycle().await.unwrap());let mut daemon=Some(daemon);
         let authority=StoredAuthority::LocalSession{};
         service.execute_managed(&actor,&authority,json!({"action":"databases.pools.register","clusterID":cluster,"node":node,"poolID":pool,"revision":1,"idempotencyKey":"owned-native-pool-register"})).await.unwrap();
@@ -245,7 +245,7 @@ async fn owned_database_domain_daemon_and_cnpg_complete_with_exact_restart_repla
         {let receipts=lossy.receipts.lock().unwrap();assert_eq!(receipts.len(),2);assert_eq!(receipts[0],receipts[1]);}
         let physical=row(&task_owner,"SELECT to_jsonb(b) AS value FROM webdock_auth.hosting_database_backend b WHERE id=$1",&backend_id).await;
         exec(&task_owner,"UPDATE webdock_auth.agent_transport_enrollment SET revoked=true WHERE cluster_id=$1",vec![cluster.clone().into()]).await;
-        assert!(matches!(daemon.as_mut().unwrap().cycle().await,Err(webdock_agent::management::AgentError::Revoked)));
+        assert!(matches!(daemon.as_mut().unwrap().cycle().await,Err(spitzli_agent::management::AgentError::Revoked)));
         let resource=kube::api::ApiResource::from_gvk(&kube::api::GroupVersionKind::gvk("postgresql.cnpg.io","v1","Cluster"));
         let clusters:kube::Api<kube::api::DynamicObject>=kube::Api::namespaced_with(client().await,&format!("wd-db-{backend_id}"),&resource);
         let retained=clusters.get("postgres").await.unwrap();assert_eq!(retained.metadata.uid.as_deref(),physical["cnpg_uid"].as_str());assert_eq!(retained.data["status"]["readyInstances"],1);

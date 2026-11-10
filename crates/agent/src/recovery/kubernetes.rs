@@ -12,8 +12,8 @@ use kube::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{collections::BTreeMap, path::Path, time::Duration};
-use webdock_supervisor::{ExecutionError, Result};
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StoppedDeployment {

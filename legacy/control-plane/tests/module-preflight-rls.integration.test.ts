@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { Pool } from "pg";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { createDatabases } from "../src/db/client";
 const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
 (fixtureFile ? test : test.skip)(

@@ -1,1 +1,1 @@
-export * from "@webdock/module-mail/server/submission-proof";
+export * from "@spitzli/module-mail/server/submission-proof";

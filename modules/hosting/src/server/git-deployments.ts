@@ -6,7 +6,7 @@ import {
   gitCommandSchema,
   gitReadActions,
   type HostingActor,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 import type { GitRepositoryBinding } from "../github";
 export type Dependencies = {

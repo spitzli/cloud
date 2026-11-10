@@ -1,10 +1,10 @@
 import type { HostingPorts } from "./ports";
 import { createHash, randomBytes } from "node:crypto";
-import { HostingError, type HostingActor } from "@webdock/hosting-contracts";
+import { HostingError, type HostingActor } from "@spitzli/hosting-contracts";
 import {
   gitOAuthCommandSchema,
   type GitOAuthCommand,
-} from "@webdock/hosting-contracts/git-oauth";
+} from "@spitzli/hosting-contracts/git-oauth";
 export type Dependencies = {
   withHostingDatabase: HostingPorts["withHostingDatabase"];
   encryptMailSecret: HostingPorts["encryptMailSecret"];

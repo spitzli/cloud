@@ -1,6 +1,7 @@
 //! Durable custody for submitted Mail source effects. Drop never proves remote completion.
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{
     collections::BTreeMap,
     io::Write,
@@ -12,7 +13,6 @@ use std::{
     },
 };
 use tokio::sync::{OwnedRwLockReadGuard, OwnedRwLockWriteGuard, RwLock};
-use webdock_supervisor::{ExecutionError, Result};
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct State {
@@ -305,7 +305,7 @@ pub(crate) struct AppCommandStamp {
     payload_fingerprint: String,
 }
 impl AppCommandStamp {
-    pub fn from_command(command: &webdock_supervisor::Command) -> Result<Self> {
+    pub fn from_command(command: &spitzli_supervisor::Command) -> Result<Self> {
         command.validate()?;
         let stamp = Self {
             revision: command.spec.revision,
@@ -355,7 +355,7 @@ impl AppReleasedReceipt {
                 .previous_sha256
                 .bytes()
                 .all(|c| c.is_ascii_digit() || (b'a'..=b'f').contains(&c))
-            || self.sha256 != webdock_supervisor::digest(&(&self.previous_sha256, &self.binding))?
+            || self.sha256 != spitzli_supervisor::digest(&(&self.previous_sha256, &self.binding))?
         {
             return Err(ExecutionError::Journal);
         }
@@ -813,7 +813,7 @@ impl SameFencePermit {
             .as_ref()
             .map(|r| r.sha256.clone())
             .unwrap_or_else(|| "0".repeat(64));
-        let sha256 = webdock_supervisor::digest(&(&previous_sha256, &self.binding))?;
+        let sha256 = spitzli_supervisor::digest(&(&previous_sha256, &self.binding))?;
         next.released = Some(AppReleasedReceipt {
             binding: self.binding.clone(),
             previous_sha256,
@@ -901,7 +901,7 @@ mod tests {
             revision,
             generation: 1,
             operation_id: (1000 + revision).to_string(),
-            payload_fingerprint: webdock_supervisor::digest(&label).unwrap(),
+            payload_fingerprint: spitzli_supervisor::digest(&label).unwrap(),
         }
     }
     fn app_binding() -> AppFenceBinding {

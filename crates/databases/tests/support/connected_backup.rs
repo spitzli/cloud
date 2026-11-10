@@ -3,17 +3,17 @@ use super::support::{exec, identity, row};
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_agent::database::{DatabaseAuthority, DatabaseStep, NativeDatabaseExecutor};
+use spitzli_agent_control::{ControlPlane, LocalBinding};
+use spitzli_agent_protocol::{self as wire, database::*};
+use spitzli_databases::{DatabaseService, StoredAuthority};
+use spitzli_supervisor::ExecutionError;
 use std::{
     os::unix::fs::PermissionsExt,
     path::Path,
     sync::Arc,
     time::{Duration, Instant},
 };
-use webdock_agent::database::{DatabaseAuthority, DatabaseStep, NativeDatabaseExecutor};
-use webdock_agent_control::{ControlPlane, LocalBinding};
-use webdock_agent_protocol::{self as wire, database::*};
-use webdock_databases::{DatabaseService, StoredAuthority};
-use webdock_supervisor::ExecutionError;
 
 type Client = wire::database_control_client::DatabaseControlClient<tonic::transport::Channel>;
 fn private(path: &str, value: &Value) {
@@ -114,7 +114,7 @@ struct RpcAuthority {
 }
 #[async_trait::async_trait]
 impl DatabaseAuthority for RpcAuthority {
-    async fn guard(&self, c: &DatabaseClaim) -> webdock_supervisor::Result<()> {
+    async fn guard(&self, c: &DatabaseClaim) -> spitzli_supervisor::Result<()> {
         let response = self
             .client
             .clone()
@@ -136,7 +136,7 @@ impl DatabaseAuthority for RpcAuthority {
         &self,
         c: &DatabaseClaim,
         p: DatabaseCheckpoint,
-    ) -> webdock_supervisor::Result<()> {
+    ) -> spitzli_supervisor::Result<()> {
         let response = self
             .client
             .clone()
@@ -158,7 +158,7 @@ impl DatabaseAuthority for RpcAuthority {
 struct Harness {
     owner: DatabaseConnection,
     service: Arc<DatabaseService>,
-    actor: webdock_identity::Principal,
+    actor: spitzli_identity::Principal,
     authority: RpcAuthority,
     native: NativeDatabaseExecutor,
     cluster: String,
@@ -166,7 +166,7 @@ struct Harness {
     config: Value,
     storage_stop: tokio::sync::oneshot::Sender<()>,
     server_stop: tokio::sync::oneshot::Sender<()>,
-    storage: tokio::task::JoinHandle<webdock_supervisor::Result<()>>,
+    storage: tokio::task::JoinHandle<spitzli_supervisor::Result<()>>,
     server: tokio::task::JoinHandle<()>,
 }
 impl Harness {
@@ -184,9 +184,9 @@ impl Harness {
             .await
             .unwrap();
         let ids = Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 &connect("AUTH_DATABASE_URL"),
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )
             .await
             .unwrap(),
@@ -213,7 +213,7 @@ impl Harness {
         let secret = connect("BETTER_AUTH_SECRET");
         let rls = connect("DATABASE_RLS_SECRET");
         let hosting = Arc::new(
-            webdock_hosting::HostingService::new(
+            spitzli_hosting::HostingService::new(
                 business.clone(),
                 auth.clone(),
                 worker.clone(),
@@ -238,7 +238,7 @@ impl Harness {
             )
             .await
             .unwrap()
-            .with_management(webdock_databases::ManagementConfig {
+            .with_management(spitzli_databases::ManagementConfig {
                 cluster_id: Some(cluster.clone()),
                 endpoint_domain: Some("fixture.test".into()),
                 public_ordering: false,
@@ -261,7 +261,7 @@ impl Harness {
             std::fs::create_dir("/connected/volumes").unwrap();
             std::fs::set_permissions("/connected/volumes", std::fs::Permissions::from_mode(0o700))
                 .unwrap();
-            webdock_agent::storage::StoragePool::initialize(Path::new("/connected/storage.json"))
+            spitzli_agent::storage::StoragePool::initialize(Path::new("/connected/storage.json"))
                 .unwrap();
         }
         std::fs::create_dir_all("/run/webdock-postgres-storage").unwrap();
@@ -272,10 +272,10 @@ impl Harness {
         .unwrap();
         let (storage_stop, shutdown) = tokio::sync::oneshot::channel();
         let storage = tokio::spawn(async move {
-            webdock_agent::storage::serve_kind(
+            spitzli_agent::storage::serve_kind(
                 Path::new("/connected/storage.json"),
                 Path::new("/run/webdock-postgres-storage/connected.sock"),
-                webdock_agent::storage::StorageKind::Database,
+                spitzli_agent::storage::StorageKind::Database,
                 async {
                     let _ = shutdown.await;
                 },
@@ -400,7 +400,7 @@ impl Harness {
             .unwrap()
             .into_inner()
             .command?;
-        Some(webdock_agent::management::database_claim(&raw, 1).unwrap())
+        Some(spitzli_agent::management::database_claim(&raw, 1).unwrap())
     }
     async fn finish(&self, operation: &str) -> Value {
         self.finish_inner(operation, false).await
@@ -599,21 +599,21 @@ impl Harness {
                 .await
                 .unwrap();
         let ids = Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 &std::env::var("AUTH_DATABASE_URL").unwrap(),
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )
             .await
             .unwrap(),
         );
         let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
         let identity = Arc::new(
-            webdock_identity::IdentityService::new(
+            spitzli_identity::IdentityService::new(
                 auth.clone(),
-                webdock_identity::CookiePolicy::new(false, secret.clone()).unwrap(),
+                spitzli_identity::CookiePolicy::new(false, secret.clone()).unwrap(),
             )
             .with_secret_keys(
-                webdock_identity::SecretKeys::new(
+                spitzli_identity::SecretKeys::new(
                     std::collections::BTreeMap::from([(0, secret.clone())]),
                     0,
                     Some(secret.clone()),
@@ -634,7 +634,7 @@ impl Harness {
         )
         .await
         .unwrap()
-        .with_management(webdock_databases::ManagementConfig {
+        .with_management(spitzli_databases::ManagementConfig {
             cluster_id: Some(self.cluster.clone()),
             endpoint_domain: Some("fixture.test".into()),
             public_ordering: false,
@@ -798,9 +798,9 @@ async fn backup(h: &Harness) {
     assert_eq!(observation.spec.phase, DatabaseExecutionPhase::Observe);
     let recorded = h.finish(&observation.spec.operation_id).await;
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &std::env::var("AUTH_DATABASE_URL").unwrap(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -1030,9 +1030,9 @@ async fn resume_revoked_backup(
 impl Harness {
     async fn service_test_id(&self) -> String {
         // Use the real allocator through its own bootstrap role, as in the existing fixtures.
-        let ids = webdock_persistence::IdAllocator::connect(
+        let ids = spitzli_persistence::IdAllocator::connect(
             &std::env::var("AUTH_DATABASE_URL").unwrap(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap();

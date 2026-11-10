@@ -1,4 +1,4 @@
-import { createMailConnectionSettings } from "@webdock/module-mail/ui/connection-settings";
+import { createMailConnectionSettings } from "@spitzli/module-mail/ui/connection-settings";
 import { loadMailPage } from "./product-page";
 import { mailRead } from "@/lib/mail-product";
 import { getStudioSession } from "@/lib/studio-client";

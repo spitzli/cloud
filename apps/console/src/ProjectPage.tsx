@@ -1,4 +1,4 @@
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { projectLink } from "./project-links";
 import { ProjectRuntime } from "./ProjectRuntime";
 import { Placement } from "./Placement";

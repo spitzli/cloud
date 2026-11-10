@@ -7,10 +7,10 @@
 mod fixture;
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{AdmissionInput, FileBindings, HostService};
+use spitzli_plugin_runtime::PeerIdentity;
 use std::sync::Arc;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{AdmissionInput, FileBindings, HostService};
-use webdock_plugin_runtime::PeerIdentity;
 
 fn peer() -> PeerIdentity {
     PeerIdentity::Unix {
@@ -59,10 +59,10 @@ async fn create(
     f: &fixture::JobFixture,
     project: &str,
     key: &str,
-) -> webdock_plugin_protocol::Result<webdock_plugin_host::AdmittedInvocation> {
+) -> spitzli_plugin_protocol::Result<spitzli_plugin_host::AdmittedInvocation> {
     f.host.admit_with_authority(&f.actor, serde_json::from_value::<AdmissionInput>(json!({
         "pluginID":"job-fixture","projectID":project,"action":"create","input":{},"idempotencyKey":key
-    })).unwrap(), true, &webdock_browser_session::StoredAuthority::local_session(&f.actor)).await
+    })).unwrap(), true, &spitzli_browser_session::StoredAuthority::local_session(&f.actor)).await
 }
 async fn allocated(f: &fixture::JobFixture) -> Value {
     f.owner
@@ -122,9 +122,9 @@ async fn retired_postgres_stale_grants_cannot_create_but_retained_work_and_maint
             .await,
         "owned-plugin-jobs-rls-secret-32bytes".into(),
         Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 f.database.url.as_str(),
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )
             .await
             .unwrap(),
@@ -146,7 +146,7 @@ async fn retired_postgres_stale_grants_cannot_create_but_retained_work_and_maint
         .unwrap()
         .unwrap();
     tx.commit().await.unwrap();
-    let proof = webdock_browser_session::StoredAuthority::local_session(&owner);
+    let proof = spitzli_browser_session::StoredAuthority::local_session(&owner);
     let command = |action: &str, input: Value, key: &str| {
         serde_json::from_value::<AdmissionInput>(json!({"pluginID":"postgres","projectID":"124","action":action,"input":input,"idempotencyKey":key})).unwrap()
     };
@@ -182,12 +182,12 @@ async fn retired_postgres_stale_grants_cannot_create_but_retained_work_and_maint
                     actor,
                     command(action, input.clone(), "fresh-after-retirement"),
                     true,
-                    &webdock_browser_session::StoredAuthority::local_session(actor),
+                    &spitzli_browser_session::StoredAuthority::local_session(actor),
                 )
                 .await;
             assert_eq!(
                 denied.err().unwrap().code,
-                webdock_plugin_protocol::ErrorCode::Conflict
+                spitzli_plugin_protocol::ErrorCode::Conflict
             );
         }
         assert_eq!(
@@ -300,7 +300,7 @@ async fn concurrent_last_slot_creates_count_before_either_plugin_returns() {
     );
     assert_eq!(
         a.as_ref().err().or(b.as_ref().err()).unwrap().code,
-        webdock_plugin_protocol::ErrorCode::Conflict
+        spitzli_plugin_protocol::ErrorCode::Conflict
     );
     assert_eq!(
         usize::from(a.is_ok()) + usize::from(b.is_ok()),
@@ -425,7 +425,7 @@ async fn uncertain_create_survives_revocation_expiry_and_runtime_promotion() {
             .err()
             .unwrap()
             .code,
-        webdock_plugin_protocol::ErrorCode::PermissionDenied
+        spitzli_plugin_protocol::ErrorCode::PermissionDenied
     );
     assert_eq!(allocated(&f).await["job-fixture.unit"], 1);
 }
@@ -478,7 +478,7 @@ async fn create_job_owns_the_slot_and_completion_indexes_before_releasing_it() {
 #[tokio::test]
 #[ignore = "owns a disposable PostgreSQL18 container"]
 async fn terminal_job_errors_and_invalid_results_do_not_prove_no_external_resource() {
-    use webdock_plugin_protocol::{ErrorCode, PluginError};
+    use spitzli_plugin_protocol::{ErrorCode, PluginError};
     for result in [
         Err(PluginError::new(ErrorCode::Unavailable, "Lost response")),
         Ok(json!({})),
@@ -588,7 +588,7 @@ async fn queued_delete_keeps_the_resource_count_until_the_job_proves_deletion() 
         .unwrap();
     let deleting = f.host.admit_with_authority(&f.actor, serde_json::from_value::<AdmissionInput>(json!({
         "pluginID":"job-fixture","projectID":"124","action":"delete","input":{"resource_id":"bucket"},"idempotencyKey":"delete-bucket"
-    })).unwrap(), true, &webdock_browser_session::StoredAuthority::local_session(&f.actor)).await.unwrap();
+    })).unwrap(), true, &spitzli_browser_session::StoredAuthority::local_session(&f.actor)).await.unwrap();
     let handle = f.host.authenticate(peer(), &deleting.token).await.unwrap();
     let concurrent_handle = f.host.authenticate(peer(), &deleting.token).await.unwrap();
     let budget = f.owner.begin().await.unwrap();
@@ -660,7 +660,7 @@ enum CreateMode {
 }
 struct NonIdempotentCreate {
     effects: sea_orm::DatabaseConnection,
-    host: webdock_plugin_runtime::HostClient,
+    host: spitzli_plugin_runtime::HostClient,
     mode: CreateMode,
 }
 impl NonIdempotentCreate {
@@ -676,14 +676,14 @@ impl NonIdempotentCreate {
     }
 }
 #[tonic::async_trait]
-impl webdock_plugin_runtime::ActionHandler for NonIdempotentCreate {
+impl spitzli_plugin_runtime::ActionHandler for NonIdempotentCreate {
     async fn invoke(
         &self,
-        _: &webdock_plugin_protocol::InvocationClaims,
+        _: &spitzli_plugin_protocol::InvocationClaims,
         token: &str,
         _: Value,
         _: Value,
-    ) -> webdock_plugin_protocol::Result<Value> {
+    ) -> spitzli_plugin_protocol::Result<Value> {
         if matches!(self.mode, CreateMode::Job | CreateMode::JobLost) {
             return self
                 .host
@@ -697,8 +697,8 @@ impl webdock_plugin_runtime::ActionHandler for NonIdempotentCreate {
         }
         let output = self.effect().await;
         if matches!(self.mode, CreateMode::Lost) {
-            return Err(webdock_plugin_protocol::PluginError::new(
-                webdock_plugin_protocol::ErrorCode::Unavailable,
+            return Err(spitzli_plugin_protocol::PluginError::new(
+                spitzli_plugin_protocol::ErrorCode::Unavailable,
                 "Lost external response",
             ));
         }
@@ -706,18 +706,18 @@ impl webdock_plugin_runtime::ActionHandler for NonIdempotentCreate {
     }
 }
 #[tonic::async_trait]
-impl webdock_plugin_runtime::JobHandler for NonIdempotentCreate {
+impl spitzli_plugin_runtime::JobHandler for NonIdempotentCreate {
     async fn run(
         &self,
-        _: &webdock_plugin_protocol::InvocationClaims,
+        _: &spitzli_plugin_protocol::InvocationClaims,
         _: &str,
         _: Value,
         _: Value,
-    ) -> webdock_plugin_protocol::Result<Value> {
+    ) -> spitzli_plugin_protocol::Result<Value> {
         let output = self.effect().await;
         if matches!(self.mode, CreateMode::JobLost) {
-            return Err(webdock_plugin_protocol::PluginError::new(
-                webdock_plugin_protocol::ErrorCode::Unavailable,
+            return Err(spitzli_plugin_protocol::PluginError::new(
+                spitzli_plugin_protocol::ErrorCode::Unavailable,
                 "Lost external response",
             ));
         }
@@ -725,7 +725,7 @@ impl webdock_plugin_runtime::JobHandler for NonIdempotentCreate {
     }
 }
 struct RunningCreate {
-    endpoints: webdock_control_plane::plugins::PluginEndpoints,
+    endpoints: spitzli_control_plane::plugins::PluginEndpoints,
     tasks: Vec<tokio::task::JoinHandle<()>>,
 }
 impl Drop for RunningCreate {
@@ -736,7 +736,7 @@ impl Drop for RunningCreate {
     }
 }
 async fn runtime(f: &fixture::JobFixture, mode: CreateMode) -> RunningCreate {
-    use webdock_plugin_runtime::{CorePeer, HostClient, RemoteAuthority, Runtime, UnixSocket};
+    use spitzli_plugin_runtime::{CorePeer, HostClient, RemoteAuthority, Runtime, UnixSocket};
     sql(
         &f.owner,
         "CREATE TABLE external_effects(id text PRIMARY KEY)",
@@ -764,7 +764,7 @@ async fn runtime(f: &fixture::JobFixture, mode: CreateMode) -> RunningCreate {
     let path = f.directory.path().join("runtime.sock");
     let socket = UnixSocket::bind(&path).unwrap();
     let runtime = Runtime::new(
-        webdock_plugin_protocol::Manifest::parse(&serde_json::to_vec(&f.manifest).unwrap())
+        spitzli_plugin_protocol::Manifest::parse(&serde_json::to_vec(&f.manifest).unwrap())
             .unwrap(),
         1,
         ed25519_dalek::SigningKey::from_bytes(&[19; 32]).verifying_key(),
@@ -794,9 +794,9 @@ async fn runtime(f: &fixture::JobFixture, mode: CreateMode) -> RunningCreate {
     use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(&connections, std::fs::Permissions::from_mode(0o600)).unwrap();
     RunningCreate {
-        endpoints: webdock_control_plane::plugins::PluginEndpoints::new(
+        endpoints: spitzli_control_plane::plugins::PluginEndpoints::new(
             f.host.clone(),
-            webdock_control_plane::plugin_config::RuntimeConnections::new(connections),
+            spitzli_control_plane::plugin_config::RuntimeConnections::new(connections),
             None,
         ),
         tasks: vec![host_task, runtime_task],
@@ -805,16 +805,16 @@ async fn runtime(f: &fixture::JobFixture, mode: CreateMode) -> RunningCreate {
 async fn invoke_create(
     f: &fixture::JobFixture,
     r: &RunningCreate,
-) -> webdock_plugin_protocol::Result<Value> {
+) -> spitzli_plugin_protocol::Result<Value> {
     let tx = f.auth.begin().await.unwrap();
     let principal = f
         .identity
         .authenticate_session_in(&tx, "operator", "session")
         .await
         .unwrap()
-        .ok_or_else(webdock_plugin_protocol::PluginError::denied)?;
+        .ok_or_else(spitzli_plugin_protocol::PluginError::denied)?;
     tx.commit().await.unwrap();
-    r.endpoints.invoke(&webdock_control_plane::auth::AuthenticatedActor { principal,authority:webdock_browser_session::StoredAuthority::local_session(&f.actor) },
+    r.endpoints.invoke(&spitzli_control_plane::auth::AuthenticatedActor { principal,authority:spitzli_browser_session::StoredAuthority::local_session(&f.actor) },
         serde_json::from_value(json!({"pluginID":"job-fixture","projectID":"124","action":"create","input":{},"idempotencyKey":"external-create"})).unwrap()).await
 }
 async fn external_count(f: &fixture::JobFixture) -> i64 {
@@ -903,8 +903,8 @@ async fn uncertain_create_job_is_never_redispatched() {
     assert_eq!(allocated(&f).await["job-fixture.unit"], 1);
 }
 
-async fn delete(f: &fixture::JobFixture) -> webdock_plugin_host::AdmittedInvocation {
-    f.host.admit_with_authority(&f.actor,serde_json::from_value(json!({"pluginID":"job-fixture","projectID":"124","action":"delete","input":{"resource_id":"bucket"},"idempotencyKey":"delete-bucket"})).unwrap(),true,&webdock_browser_session::StoredAuthority::local_session(&f.actor)).await.unwrap()
+async fn delete(f: &fixture::JobFixture) -> spitzli_plugin_host::AdmittedInvocation {
+    f.host.admit_with_authority(&f.actor,serde_json::from_value(json!({"pluginID":"job-fixture","projectID":"124","action":"delete","input":{"resource_id":"bucket"},"idempotencyKey":"delete-bucket"})).unwrap(),true,&spitzli_browser_session::StoredAuthority::local_session(&f.actor)).await.unwrap()
 }
 #[tokio::test]
 #[ignore = "owns a disposable PostgreSQL18 container"]
@@ -1007,20 +1007,20 @@ async fn regression_completed_create_job_reenqueues_exact_ack_without_dispatch()
 async fn mcp_completed_create_replays_once_and_revoked_access_denies_cached_metadata() {
     use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
     use sha2::{Digest, Sha256};
-    use webdock_oauth::{
+    use spitzli_oauth::{
         AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientAuthentication,
         ClientPurpose, ClientRegistration, CodeExchange, OAuthConfig, OAuthService,
     };
     let mut f = product().await;
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             f.database.url.as_str(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
     );
-    let keys = webdock_identity::SecretKeys::new(
+    let keys = spitzli_identity::SecretKeys::new(
         std::collections::BTreeMap::from([(0, "owned-mcp-resource-replay-key-32bytes".into())]),
         0,
         None,

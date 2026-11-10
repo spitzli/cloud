@@ -2,16 +2,16 @@
 //! The Core admits every call (audience, access mode, resource ownership); this plugin checks
 //! again that a resource belongs to the invoking project before touching it.
 pub mod dedicated;
-pub use webdock_plugin_kit::seal;
+pub use spitzli_plugin_kit::seal;
 pub mod shared;
 pub mod store;
 
 use serde::Deserialize;
 use serde_json::{Value, json};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::ActionHandler;
 use std::sync::Arc;
 use uuid::Uuid;
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::ActionHandler;
 
 type Result<T> = std::result::Result<T, PluginError>;
 pub const PLUGIN_ID: &str = "postgres";

@@ -9,8 +9,8 @@ use kube::{
     core::{ApiResource, DynamicObject, GroupVersionKind},
 };
 use serde_json::{Value, json};
+use spitzli_agent::workloads::WorkloadExecutor;
 use std::time::Duration;
-use webdock_agent::workloads::WorkloadExecutor;
 
 async fn client() -> Client {
     let path = std::env::var("WEBDOCK_WORKLOAD_TEST_KUBECONFIG").expect("local dev kubeconfig");

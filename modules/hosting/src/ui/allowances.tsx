@@ -1,14 +1,14 @@
 "use client";
 import * as React from "react";
-import { ResourceField } from "@webdock/hosting-contracts/react";
-import { formatResource } from "@webdock/hosting-contracts";
-import { msgid } from "@webdock/i18n";
-import { useI18n } from "@webdock/i18n/react";
+import { ResourceField } from "@spitzli/hosting-contracts/react";
+import { formatResource } from "@spitzli/hosting-contracts";
+import { msgid } from "@spitzli/i18n";
+import { useI18n } from "@spitzli/i18n/react";
 import {
   hostingDimensions,
   normalizeHostingAllowances,
   type HostingAllowances,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 const labels = {
   apps: msgid("Hosting apps"),
   cpuMillicores: msgid("CPU cores"),

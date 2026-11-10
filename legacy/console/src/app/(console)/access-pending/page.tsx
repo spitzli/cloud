@@ -1,4 +1,4 @@
-import {getRequestI18n} from '@webdock/i18n/next';
+import {getRequestI18n} from '@spitzli/i18n/next';
 import {AccountControls} from '@/components/account-controls';
 import {clerkConsoleEnabled} from '@/lib/console-identity';
 import {notFound} from 'next/navigation';

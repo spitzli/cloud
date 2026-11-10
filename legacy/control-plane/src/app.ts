@@ -1,4 +1,4 @@
-import { ModuleError } from "@webdock/module-sdk";
+import { ModuleError } from "@spitzli/module-sdk";
 import { moduleForRequest } from "./installation";
 import { HTTPError } from "./plugins/body";
 import { RegistryError } from "./modules/registry/service";

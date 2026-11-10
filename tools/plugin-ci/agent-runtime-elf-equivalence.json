@@ -1,7 +1,7 @@
 {
-  "acceptedArtifact": "/home/spitzli-plugin-ci/agent-candidates/bound-69a30142-artifact/webdock-agent",
+  "acceptedArtifact": "/home/spitzli-plugin-ci/agent-candidates/bound-69a30142-artifact/spitzli-agent",
   "acceptedSHA256": "785cb77477644b1cba3fd4622809d20d810a12de6d7e3c2485d00d1fe6123a39",
-  "recompiledArtifact": "/home/spitzli-plugin-ci/agent-candidates/runtimeqa-38a9d13a-artifact/webdock-agent",
+  "recompiledArtifact": "/home/spitzli-plugin-ci/agent-candidates/runtimeqa-38a9d13a-artifact/spitzli-agent",
   "recompiledSHA256": "9e553b6ef53e7cfb05e4b83c6db00673627834154ebdd0c7cca5cee70f65de47",
   "changedSections": {
     ".strtab": {

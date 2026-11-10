@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
-import { RegistryError } from "@webdock/core/registry/errors";
-import type { RegistryTransaction } from "@webdock/core/registry/ports";
+import { RegistryError } from "@spitzli/core/registry/errors";
+import type { RegistryTransaction } from "@spitzli/core/registry/ports";
 
 /** Historical inventory still protects project ownership after CMS removal. */
 export async function retainedRegistryInventory(

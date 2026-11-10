@@ -1,6 +1,6 @@
 //! Offline private-RPC byte-contract tests; this mock does not qualify Core authority.
+use spitzli_export_protocol::{SourceKind, SourceRef, wire};
 use std::pin::Pin;
-use webdock_export_protocol::{SourceKind, SourceRef, wire};
 #[derive(Clone)]
 struct Source {
     bytes: Vec<u8>,
@@ -76,7 +76,7 @@ async fn produce(
     active: bool,
 ) -> (
     tempfile::TempDir,
-    webdock_archives::Result<(SourceRef, tokio::fs::File)>,
+    spitzli_archives::Result<(SourceRef, tokio::fs::File)>,
 ) {
     use std::os::unix::fs::PermissionsExt;
     let directory = tempfile::Builder::new()
@@ -84,7 +84,7 @@ async fn produce(
         .tempdir()
         .unwrap();
     let path = directory.path().join("core.sock");
-    let mut socket = webdock_plugin_runtime::UnixSocket::bind(&path).unwrap();
+    let mut socket = spitzli_plugin_runtime::UnixSocket::bind(&path).unwrap();
     let incoming = socket.incoming().unwrap();
     let service = wire::export_sources_server::ExportSourcesServer::new(Source { bytes, active });
     let _server = Server(tokio::spawn(async move {
@@ -95,8 +95,8 @@ async fn produce(
             .await
             .unwrap();
     }));
-    let channel = webdock_plugin_runtime::unix_channel(&path).await.unwrap();
-    let result = webdock_archives::sources::Sources::new(channel)
+    let channel = spitzli_plugin_runtime::unix_channel(&path).await.unwrap();
+    let result = spitzli_archives::sources::Sources::new(channel)
         .produce("offline-typed-byte-fixture", &reference(), directory.path())
         .await;
     (directory, result)

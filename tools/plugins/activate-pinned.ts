@@ -2,8 +2,8 @@
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { Pool } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
-import { pinnedHTTPTransport } from "@webdock/core/plugin-http";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
+import { pinnedHTTPTransport } from "@spitzli/core/plugin-http";
 export async function activatePinnedPlugin(
   env: Record<string, string>,
   id: string,

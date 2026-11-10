@@ -1,7 +1,7 @@
 import * as React from "react";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import {
   formatResource,
   hostingDimensions,
@@ -11,11 +11,11 @@ import {
   type HostingProjectView,
   type HostingPage,
   type HostingUsageView,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { HostingTable } from "./table";
 import { HostingForm } from "./form";
 import { HostingAllowanceFields } from "./allowances";
-import { Pagination, ListControls } from "@webdock/console-kit/list-controls";
+import { Pagination, ListControls } from "@spitzli/console-kit/list-controls";
 import type { HostingUIServices } from "./services";
 export function createCustomerView(
   services: Pick<

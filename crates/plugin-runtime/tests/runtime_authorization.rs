@@ -1,12 +1,12 @@
+use spitzli_plugin_protocol::ErrorCode;
+use spitzli_plugin_runtime::{
+    CorePeer, HostClient, InvocationAuthority, PeerIdentity, RemoteAuthority, UnixSocket, wire,
+};
 use std::sync::{
     Arc,
     atomic::{AtomicUsize, Ordering},
 };
 use tonic::{Request, Response, Status};
-use webdock_plugin_protocol::ErrorCode;
-use webdock_plugin_runtime::{
-    CorePeer, HostClient, InvocationAuthority, PeerIdentity, RemoteAuthority, UnixSocket, wire,
-};
 
 #[derive(Clone, Default)]
 struct Host {
@@ -178,10 +178,10 @@ async fn lazy_unix_callback_recovers_after_initial_absence_and_rechecks_private_
         .unwrap();
     let path = directory.path().join("late.sock");
     assert!(
-        webdock_plugin_runtime::unix_channel(&path).await.is_err(),
+        spitzli_plugin_runtime::unix_channel(&path).await.is_err(),
         "eager API must remain eager"
     );
-    let client = HostClient::new(webdock_plugin_runtime::unix_channel_lazy(&path).unwrap());
+    let client = HostClient::new(spitzli_plugin_runtime::unix_channel_lazy(&path).unwrap());
     assert!(client.authorize_runtime("mail", 7).await.is_err());
     let mut socket = UnixSocket::bind(&path).unwrap();
     let incoming = socket.incoming().unwrap();
@@ -218,9 +218,9 @@ async fn lazy_pinned_callback_recovers_from_initial_offline_without_weakening_tl
         KeyUsagePurpose,
     };
     use sha2::{Digest, Sha256};
+    use spitzli_plugin_runtime::PinnedMutualTls;
     use std::time::Duration;
     use tonic::transport::{Certificate, Identity, ServerTlsConfig};
-    use webdock_plugin_runtime::PinnedMutualTls;
     let mut params = CertificateParams::new(Vec::<String>::new()).unwrap();
     params.is_ca = IsCa::Ca(BasicConstraints::Unconstrained);
     params.key_usages = vec![
@@ -253,11 +253,11 @@ async fn lazy_pinned_callback_recovers_from_initial_offline_without_weakening_tl
     let origin = format!("https://localhost:{}", address.port());
     drop(reserved);
     assert!(
-        webdock_plugin_runtime::pinned_mtls_channel(origin.clone(), "localhost".into(), material())
+        spitzli_plugin_runtime::pinned_mtls_channel(origin.clone(), "localhost".into(), material())
             .await
             .is_err()
     );
-    let channel = webdock_plugin_runtime::pinned_mtls_channel_lazy(
+    let channel = spitzli_plugin_runtime::pinned_mtls_channel_lazy(
         origin.clone(),
         "localhost".into(),
         material(),
@@ -309,7 +309,7 @@ async fn lazy_pinned_callback_recovers_from_initial_offline_without_weakening_tl
             tls.authority = foreign.pem().into_bytes();
         }
         let channel =
-            webdock_plugin_runtime::pinned_mtls_channel_lazy(origin.clone(), domain.into(), tls)
+            spitzli_plugin_runtime::pinned_mtls_channel_lazy(origin.clone(), domain.into(), tls)
                 .await
                 .unwrap();
         assert!(
@@ -323,7 +323,7 @@ async fn lazy_pinned_callback_recovers_from_initial_offline_without_weakening_tl
     let mut malformed = material();
     malformed.authority = b"invalid trust".to_vec();
     assert!(
-        webdock_plugin_runtime::pinned_mtls_channel_lazy(origin, "localhost".into(), malformed)
+        spitzli_plugin_runtime::pinned_mtls_channel_lazy(origin, "localhost".into(), malformed)
             .await
             .is_err()
     );

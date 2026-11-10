@@ -1,9 +1,9 @@
-import { HostingError, type HostingActor } from "@webdock/hosting-contracts";
+import { HostingError, type HostingActor } from "@spitzli/hosting-contracts";
 import {
   PluginError,
   type PluginErrorCode,
 } from "@spitzli/plugin-sdk/contracts";
-import type { ManagedAppsHandler } from "@webdock/core/plugin-apps";
+import type { ManagedAppsHandler } from "@spitzli/core/plugin-apps";
 /** Uses native Hosting authorization and its revision/idempotency fences. */
 export function createManagedAppsHandler(
   executeHosting: (actor: HostingActor, command: unknown) => Promise<any>,

@@ -10,7 +10,7 @@ import {
   type SetupResources,
   type SetupPreview,
   type SetupProgress,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export type Dependencies = {
   authorizeSetupConfiguration: ReturnType<
     typeof import("./permissions").createHostingPermissions

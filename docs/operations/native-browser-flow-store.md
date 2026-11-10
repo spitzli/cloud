@@ -40,9 +40,9 @@ is introduced. No schema, encryption-key rotation or provider network dependency
 is required; existing role and verified-TLS/file-authority checks still apply.
 
 ```sh
-cargo test --locked -p webdock-browser-session --test native_store -- --include-ignored --test-threads=1
-cargo test --locked -p webdock-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
-cargo clippy --locked -p webdock-browser-session -p webdock-control-plane --all-targets -- -D warnings
+cargo test --locked -p spitzli-browser-session --test native_store -- --include-ignored --test-threads=1
+cargo test --locked -p spitzli-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
+cargo clippy --locked -p spitzli-browser-session -p spitzli-control-plane --all-targets -- -D warnings
 cargo fmt --all -- --check
 ```
 

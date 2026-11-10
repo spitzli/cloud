@@ -1,5 +1,5 @@
 [package]
-name = "webdock-mail"
+name = "spitzli-mail"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,11 +7,11 @@ license.workspace = true
 publish = false
 
 [features]
-test-support = ["webdock-mail-runtime/test-support"]
+test-support = ["spitzli-mail-runtime/test-support"]
 
 [dependencies]
-webdock-plugin-host = { path = "../plugin-host" }
-webdock-mail-runtime = { path = "../mail-runtime" }
+spitzli-plugin-host = { path = "../plugin-host" }
+spitzli-mail-runtime = { path = "../mail-runtime" }
 aes-gcm = "0.10"
 async-trait.workspace = true
 base64 = "0.22"
@@ -22,10 +22,10 @@ hmac = "0.12"
 ed25519-dalek = "2"
 tonic = { version = "0.14.6", default-features = false, features = ["codegen", "transport", "tls-ring"] }
 tokio-stream = "0.1"
-webdock-mail-protocol = { path = "../mail-protocol" }
-webdock-plugin-runtime = { path = "../plugin-runtime" }
-webdock-plugin-http = { path = "../plugin-http" }
-webdock-mail-message = { path = "../mail-message" }
+spitzli-mail-protocol = { path = "../mail-protocol" }
+spitzli-plugin-runtime = { path = "../plugin-runtime" }
+spitzli-plugin-http = { path = "../plugin-http" }
+spitzli-mail-message = { path = "../mail-message" }
 mail-send = { version = "0.6.2", default-features = false, features = ["ring", "tls12"] }
 smtp-proto = "0.2"
 rustls = { version = "0.23", default-features = false, features = ["std", "ring", "tls12"] }
@@ -41,22 +41,22 @@ sha2 = "0.10"
 thiserror.workspace = true
 tokio = { workspace = true, features = ["process", "io-util"] }
 uuid = { version = "1", features = ["v4", "serde"] }
-webdock-core = { path = "../core" }
-webdock-access = { path = "../access" }
-webdock-ids = { path = "../ids" }
-webdock-identity = { path = "../identity" }
-webdock-browser-session = { path = "../browser-session" }
-webdock-oauth = { path = "../oauth" }
-webdock-persistence = { path = "../persistence" }
-webdock-agent-protocol = { path = "../agent-protocol" }
-webdock-hosting = { path = "../hosting" }
+spitzli-core = { path = "../core" }
+spitzli-access = { path = "../access" }
+spitzli-ids = { path = "../ids" }
+spitzli-identity = { path = "../identity" }
+spitzli-browser-session = { path = "../browser-session" }
+spitzli-oauth = { path = "../oauth" }
+spitzli-persistence = { path = "../persistence" }
+spitzli-agent-protocol = { path = "../agent-protocol" }
+spitzli-hosting = { path = "../hosting" }
 axum.workspace = true
 percent-encoding = "2"
 
 [dev-dependencies]
 hyper-util = { version = "0.1", features = ["server-auto", "http1", "tokio", "service"] }
-webdock-control-plane = { path = "../control-plane" }
-webdock-plugin-host = { path = "../plugin-host" }
+spitzli-control-plane = { path = "../control-plane" }
+spitzli-plugin-host = { path = "../plugin-host" }
 tempfile = "3"
 url.workspace = true
 futures-util = "0.3"

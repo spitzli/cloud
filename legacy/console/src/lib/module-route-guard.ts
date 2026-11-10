@@ -1,5 +1,5 @@
-import { moduleForPath } from "@webdock/module-sdk/selection";
-import type { ModuleView } from "@webdock/module-sdk";
+import { moduleForPath } from "@spitzli/module-sdk/selection";
+import type { ModuleView } from "@spitzli/module-sdk";
 export async function guardModuleRoute(
   request: Request,
   readSession: () => Promise<{

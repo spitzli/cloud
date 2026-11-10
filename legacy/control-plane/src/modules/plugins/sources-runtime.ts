@@ -3,7 +3,7 @@ import { isDeepStrictEqual } from "node:util";
 import {
   pinnedHTTPTransport,
   type HTTPTransport,
-} from "@webdock/core/plugin-http";
+} from "@spitzli/core/plugin-http";
 import {
   parseSourceManifest,
   PluginSourceError,

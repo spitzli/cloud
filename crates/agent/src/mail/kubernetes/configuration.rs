@@ -7,7 +7,7 @@ use crate::mail::{
     },
     tls,
 };
-use webdock_agent_protocol::mail_configuration::{ConfigurationClaim, ConfigurationProof};
+use spitzli_agent_protocol::mail_configuration::{ConfigurationClaim, ConfigurationProof};
 #[async_trait::async_trait]
 impl Inspector for KubernetesMailRuntime {
     async fn inspect_configuration(
@@ -19,7 +19,7 @@ impl Inspector for KubernetesMailRuntime {
         configuration::guard(claim, authority).await?;
         let mut view = inspection_claim(claim)?;
         if let Some(expected) = expected_runtime_id {
-            view.checkpoint = Some(webdock_agent_protocol::mail::MailCheckpoint {
+            view.checkpoint = Some(spitzli_agent_protocol::mail::MailCheckpoint {
                 lease: claim.lease.clone(),
                 runtime_id: expected.into(),
                 material_sha256: claim.spec.target.management_sha256.clone(),

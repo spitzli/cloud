@@ -6,7 +6,7 @@ import { X509Certificate } from "node:crypto";
 import { pathToFileURL } from "node:url";
 export const TARGET = Object.freeze({
   name: "db-webdock-operator",
-  namespace: "webdock-databases",
+  namespace: "spitzli-databases",
   connectionID: "8032eaca-fddf-4c95-8d12-1b29e2b2dc8e",
   host: "db-103217546630533120.pg.webdock.dev",
   port: 32000,

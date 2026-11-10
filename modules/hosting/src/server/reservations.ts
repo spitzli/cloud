@@ -5,7 +5,7 @@ import {
   hostingDimensions,
   resourceID,
   type HostingActor,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { limits, totals } from "./allowances";
 import { z } from "zod";
 export type Dependencies = {
@@ -127,7 +127,7 @@ export function createHostingReservations(dependencies: Dependencies) {
       projectID: string;
       clusterID: string;
       provider: string;
-      demand: import("@webdock/hosting-contracts").HostingAllowances;
+      demand: import("@spitzli/hosting-contracts").HostingAllowances;
       subscriptionRevision: number;
     },
   ) {

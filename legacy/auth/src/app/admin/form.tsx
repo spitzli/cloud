@@ -1,6 +1,6 @@
 "use client";
 import { authMessage } from "@/lib/i18n-feedback";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 
 import { useActionState } from "react";
 import type { PlatformSettings } from "@/lib/platform";

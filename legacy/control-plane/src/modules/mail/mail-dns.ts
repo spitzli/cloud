@@ -1,1 +1,1 @@
-export * from "@webdock/module-mail/server/mail-dns";
+export * from "@spitzli/module-mail/server/mail-dns";

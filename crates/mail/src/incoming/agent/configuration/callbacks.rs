@@ -114,7 +114,7 @@ impl IncomingAgent {
             .await?;
         let event_key = key(&data);
         let fingerprint =
-            webdock_agent_protocol::mail::fingerprint(&data).map_err(|_| Error::Invalid)?;
+            spitzli_agent_protocol::mail::fingerprint(&data).map_err(|_| Error::Invalid)?;
         if let Some(previous)=one(&tx,"SELECT callback_sha256 FROM webdock_mail.native_configuration_checkpoint WHERE operation_id=$1 AND event_key=$2",vec![record.operation.clone().into(),event_key.clone().into()]).await?{
             if field::<String>(&previous,"callback_sha256")?!=fingerprint{return Err(Error::Conflict);}
             tx.commit().await.map_err(|_|Error::Unavailable)?;return Ok(());
@@ -202,7 +202,7 @@ impl IncomingAgent {
                 return Err(Error::Conflict);
             }
         }
-        let hash = webdock_agent_protocol::mail::fingerprint(&data).map_err(|_| Error::Invalid)?;
+        let hash = spitzli_agent_protocol::mail::fingerprint(&data).map_err(|_| Error::Invalid)?;
         if let Some(previous) = field::<Option<String>>(&record.row, "receipt_sha256")? {
             if previous != hash {
                 return Err(Error::Conflict);

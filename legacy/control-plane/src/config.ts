@@ -1,5 +1,5 @@
 import { publicInstallation } from "./installation";
-import type { ModuleView } from "@webdock/module-sdk";
+import type { ModuleView } from "@spitzli/module-sdk";
 export type ApiConfig = {
   production: boolean;
   modules?: ModuleView;

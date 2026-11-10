@@ -1,18 +1,18 @@
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use sha2::{Digest, Sha256};
+use spitzli_agent_control::{ControlPlane, LocalBinding};
+use spitzli_agent_protocol::{self as wire, agent_control_client::AgentControlClient};
 use std::sync::Arc;
 use tonic::transport::{Endpoint, Server};
-use webdock_agent_control::{ControlPlane, LocalBinding};
-use webdock_agent_protocol::{self as wire, agent_control_client::AgentControlClient};
 struct NegotiationBackend(std::sync::Mutex<Vec<u32>>);
 #[tonic::async_trait]
-impl webdock_agent_control::PluginRuntimeBackend for NegotiationBackend {
+impl spitzli_agent_control::PluginRuntimeBackend for NegotiationBackend {
     fn supported_spec_version(&self) -> u32 {
         2
     }
     async fn poll(
         &self,
-        _: &webdock_hosting::AgentIdentity,
+        _: &spitzli_hosting::AgentIdentity,
         max: u32,
     ) -> Result<Option<wire::plugin::PluginRuntimeClaim>, tonic::Status> {
         self.0.lock().unwrap().push(max);
@@ -20,7 +20,7 @@ impl webdock_agent_control::PluginRuntimeBackend for NegotiationBackend {
     }
     async fn guard(
         &self,
-        _: &webdock_hosting::AgentIdentity,
+        _: &spitzli_hosting::AgentIdentity,
         _: &wire::plugin::PluginRuntimeSpec,
         _: &wire::plugin::PluginRuntimeLease,
     ) -> Result<bool, tonic::Status> {
@@ -28,7 +28,7 @@ impl webdock_agent_control::PluginRuntimeBackend for NegotiationBackend {
     }
     async fn checkpoint(
         &self,
-        _: &webdock_hosting::AgentIdentity,
+        _: &spitzli_hosting::AgentIdentity,
         _: &wire::plugin::PluginRuntimeSpec,
         _: &wire::plugin::PluginRuntimeLease,
         _: &wire::plugin::PluginRuntimeCheckpoint,
@@ -37,7 +37,7 @@ impl webdock_agent_control::PluginRuntimeBackend for NegotiationBackend {
     }
     async fn complete(
         &self,
-        _: &webdock_hosting::AgentIdentity,
+        _: &spitzli_hosting::AgentIdentity,
         _: &wire::plugin::PluginRuntimeSpec,
         _: &wire::plugin::PluginRuntimeLease,
         _: &wire::plugin::PluginRuntimeCompletion,
@@ -68,9 +68,9 @@ async fn real_transport_enrollment_generation_revocation_and_connectivity_heartb
     let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
     let auth = db("AUTH_DATABASE_URL").await;
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &std::env::var("AUTH_DATABASE_URL").unwrap(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -93,7 +93,7 @@ async fn real_transport_enrollment_generation_revocation_and_connectivity_heartb
         "runtime must never revoke or replace its own enrollment"
     );
     let hosting = Arc::new(
-        webdock_hosting::HostingService::new(
+        spitzli_hosting::HostingService::new(
             db("DATABASE_URL").await,
             auth.clone(),
             db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
@@ -391,7 +391,7 @@ async fn real_transport_enrollment_generation_revocation_and_connectivity_heartb
         control
             .serve_mtls(
                 listener,
-                webdock_plugin_runtime::MutualTls {
+                spitzli_plugin_runtime::MutualTls {
                     identity: tonic::transport::Identity::from_pem(
                         server_cert.pem(),
                         server_key.serialize_pem(),

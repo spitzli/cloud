@@ -2,7 +2,7 @@
 // Dates crossing this boundary are ISO strings; native sessions and credentials are excluded.
 export type ChangeResult = { message: string };
 export type NativeMailView = {
-  service: import("@webdock/mail-core").MailService;
+  service: import("@spitzli/mail-core").MailService;
   mailboxesAvailable?: boolean;
   sendingAvailable?: boolean;
   canActivate: boolean;
@@ -120,7 +120,7 @@ export type AccessView = {
 export type Allowances = Record<
   "storageBytes" | "mailMessages" | "transferBytes" | "websites" | "editors",
   number | null
-> & { hosting?: import("@webdock/hosting-contracts").HostingAllowances };
+> & { hosting?: import("@spitzli/hosting-contracts").HostingAllowances };
 export type Plan = {
   id: string;
   name: string;

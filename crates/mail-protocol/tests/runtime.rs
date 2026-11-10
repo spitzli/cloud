@@ -1,5 +1,9 @@
 use ed25519_dalek::SigningKey;
 use serde_json::{Value, json};
+use spitzli_mail_protocol::{
+    runtime::{Authority, Handler, PeerIdentity, Runtime, UnixSocket},
+    *,
+};
 use std::{
     collections::HashSet,
     os::unix::fs::PermissionsExt,
@@ -8,10 +12,6 @@ use std::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
     },
     time::{SystemTime, UNIX_EPOCH},
-};
-use webdock_mail_protocol::{
-    runtime::{Authority, Handler, PeerIdentity, Runtime, UnixSocket},
-    *,
 };
 struct Live {
     active: AtomicBool,
@@ -139,7 +139,7 @@ async fn private_stream_checks_bounds_integrity_live_authority_and_durable_attem
     let server = tokio::spawn(runtime.serve_unix(socket, async {
         let _ = shutdown.await;
     }));
-    let channel = webdock_plugin_runtime::unix_channel(&path).await.unwrap();
+    let channel = spitzli_plugin_runtime::unix_channel(&path).await.unwrap();
     let mut client = wire::mail_runtime_client::MailRuntimeClient::new(channel);
     assert_eq!(
         client

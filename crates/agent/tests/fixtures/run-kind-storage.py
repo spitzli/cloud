@@ -38,7 +38,7 @@ def docker(*words, check=True):
     return subprocess.run(engine + list(words), check=check, capture_output=True)
 
 target = 'native_database' if args.domain else ('database_runtime' if args.database else 'legacy')
-package = 'webdock-agent-control' if args.domain else 'webdock-agent'
+package = 'spitzli-agent-control' if args.domain else 'spitzli-agent'
 built = subprocess.run(['cargo', 'test', '-p', package, '--test', target, '--no-run', '--message-format=json'], check=True, capture_output=True, text=True)
 executables = [row['executable'] for line in built.stdout.splitlines() if (row := json.loads(line)).get('reason') == 'compiler-artifact' and row.get('target', {}).get('name') == target and row.get('executable')]
 assert len(executables) == 1

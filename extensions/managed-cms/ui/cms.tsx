@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { CMSApp } from "@webdock/cms-ui/client";
-import { createBridgeTransport } from "@webdock/cms-bridge/client";
+import { CMSApp } from "@spitzli/cms-ui/client";
+import { createBridgeTransport } from "@spitzli/cms-bridge/client";
 import type { ManagedAppProvisioning } from "@spitzli/plugin-sdk/contracts";
 import { discoverCMS, type CMSSite } from "./discovery";
-import "@webdock/cms-ui/styles.css";
+import "@spitzli/cms-ui/styles.css";
 import "./cms.css";
 
 type Call=(name:string,input?:unknown)=>Promise<any>;

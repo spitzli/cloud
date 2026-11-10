@@ -1,10 +1,10 @@
-import { ModuleProvider } from "@webdock/module-sdk/react";
+import { ModuleProvider } from "@spitzli/module-sdk/react";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createElement as h } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { PathnameContext, SearchParamsContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime';
-import { I18nProvider } from '@webdock/i18n/react';
+import { I18nProvider } from '@spitzli/i18n/react';
 import { MailNavigation } from '../src/components/mail/mail-navigation';
 import { Navigation, TenantNavigation } from '../src/components/navigation';
 import { AreaNavigation } from '../src/components/area-navigation';

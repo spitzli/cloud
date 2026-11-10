@@ -17,4 +17,4 @@ python3 permissions.py --namespace apps --namespace production > webdock-rbac.js
 kubectl apply -f webdock-rbac.json
 ```
 
-Only include namespaces explicitly enabled in Webdock. Run these commands as the cluster owner after reviewing the generated document. It creates `webdock-agent` ServiceAccount and scoped bindings; it does not create application namespaces or change their existing policies. Supply your supported, renewing service-account authentication in the installer kubeconfig; a manually generated short-lived token stops working at expiry. Do not substitute a cluster-admin kubeconfig for missing credential provisioning.
+Only include namespaces explicitly enabled in Webdock. Run these commands as the cluster owner after reviewing the generated document. It creates `spitzli-agent` ServiceAccount and scoped bindings; it does not create application namespaces or change their existing policies. Supply your supported, renewing service-account authentication in the installer kubeconfig; a manually generated short-lived token stops working at expiry. Do not substitute a cluster-admin kubeconfig for missing credential provisioning.

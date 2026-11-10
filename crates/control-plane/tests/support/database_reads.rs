@@ -8,10 +8,10 @@ use axum::{
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use tower::ServiceExt;
-use webdock_oauth::{
+use spitzli_oauth::{
     AuthorizationOutcome, AuthorizationRequest, ClientAuthentication, CodeExchange, OAuthService,
 };
+use tower::ServiceExt;
 
 /// Nonsecret targets from the actual installation and registered native OAuth client.
 pub struct Targets<'a> {
@@ -250,7 +250,7 @@ pub async fn qualify(
         let tools = discovery["result"]["tools"]
             .as_array()
             .expect("real read-token discovery");
-        for (_, name) in webdock_databases::DATABASE_READ_TOOLS {
+        for (_, name) in spitzli_databases::DATABASE_READ_TOOLS {
             assert!(tools.iter().any(|tool| tool["name"] == *name));
         }
         reads += read_matrix(app, &t, &bearer).await;
@@ -341,14 +341,14 @@ pub fn owned_fixture() -> OwnedFixture {
         assert_eq!(metadata.mode() & 0o777, 0o700);
     }
     let pin =
-        webdock_control_plane::config::read_private_file(&candidate.join("pin.json")).unwrap();
+        spitzli_control_plane::config::read_private_file(&candidate.join("pin.json")).unwrap();
     assert_eq!(
         hex::encode(Sha256::digest(&pin)),
         std::env::var("WEBDOCK_DATABASE_READ_COMPONENT_PIN").unwrap()
     );
     let pin: Value = serde_json::from_slice(&pin).unwrap();
     assert_eq!(pin["owner"], owner);
-    let input = webdock_control_plane::config::read_private_file(&path).unwrap();
+    let input = spitzli_control_plane::config::read_private_file(&path).unwrap();
     let input: OwnedFixture = serde_json::from_slice(&input).unwrap();
     assert!(input.container.len() == 64 && input.container.bytes().all(|b| b.is_ascii_hexdigit()));
     assert_eq!(input.url.host_str(), Some("127.0.0.1"));
@@ -356,7 +356,7 @@ pub fn owned_fixture() -> OwnedFixture {
     assert_eq!(input.url.username(), "postgres");
     assert!(input.url.password().is_some() && input.url.query().is_none());
     assert_eq!(input.url.port().map(u64::from), pin["port"].as_u64());
-    webdock_persistence::roles::validate_passwords(&input.passwords).unwrap();
+    spitzli_persistence::roles::validate_passwords(&input.passwords).unwrap();
     let inspected=Command::new("docker").args(["--host","unix:///var/run/docker.sock","inspect","--type","container","--format",r#"{"id":{{json .Id}},"image":{{json .Image}},"name":{{json .Name}},"owner":{{json (index .Config.Labels "webdock.pg-review-owner")}},"mounts":{{json .Mounts}},"ports":{{json .NetworkSettings.Ports}}}"#,&input.container]).output().unwrap();
     assert!(
         inspected.status.success(),
@@ -385,11 +385,11 @@ pub struct Foundation<'a> {
     pub app: &'a Router,
     pub auth: &'a sea_orm::DatabaseConnection,
     pub owner: &'a sea_orm::DatabaseConnection,
-    pub identity: &'a std::sync::Arc<webdock_identity::IdentityService>,
+    pub identity: &'a std::sync::Arc<spitzli_identity::IdentityService>,
     pub oauth: &'a std::sync::Arc<OAuthService>,
-    pub browser: &'a std::sync::Arc<webdock_browser_session::BrowserSessions>,
-    pub databases: &'a std::sync::Arc<webdock_control_plane::databases::DatabaseEndpoints>,
-    pub registry: &'a std::sync::Arc<webdock_registry::RegistryService>,
+    pub browser: &'a std::sync::Arc<spitzli_browser_session::BrowserSessions>,
+    pub databases: &'a std::sync::Arc<spitzli_control_plane::databases::DatabaseEndpoints>,
+    pub registry: &'a std::sync::Arc<spitzli_registry::RegistryService>,
     pub native: &'a str,
     pub console: &'a str,
     pub private_directory: &'a std::path::Path,
@@ -432,8 +432,8 @@ pub fn console_database_rows(body: &Value) -> Option<&Vec<Value>> {
 }
 /// Invoked only after the existing fixture completes actual password/TOTP and Console PKCE.
 pub async fn foundation(c: Foundation<'_>) {
+    use spitzli_oauth::{ClientAuthMethod, ClientPurpose, ClientRegistration};
     use std::{collections::HashMap, fs::OpenOptions, io::Write, os::unix::fs::OpenOptionsExt};
-    use webdock_oauth::{ClientAuthMethod, ClientPurpose, ClientRegistration};
     assert!(enabled());
     console_post(
         c.app,
@@ -494,8 +494,8 @@ pub async fn foundation(c: Foundation<'_>) {
         client_secret: registered.client_secret,
         method: ClientAuthMethod::ClientSecretPost,
     };
-    let app = webdock_control_plane::http::build_app_with_domains(
-        webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+    let app = spitzli_control_plane::http::build_app_with_domains(
+        spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
             (
                 "WEBDOCK_AUTH_ORIGIN".into(),
                 "https://auth.example.test".into(),
@@ -515,13 +515,13 @@ pub async fn foundation(c: Foundation<'_>) {
         ]))
         .unwrap(),
         c.auth.clone(),
-        webdock_control_plane::http::Services {
+        spitzli_control_plane::http::Services {
             identity: Some(c.identity.clone()),
             oauth: Some(c.oauth.clone()),
             browser: Some(c.browser.clone()),
             databases: Some(c.databases.clone()),
             registry: Some(c.registry.clone()),
-            resource_client: Some(webdock_control_plane::resource_auth::ResourceClientConfig {
+            resource_client: Some(spitzli_control_plane::resource_auth::ResourceClientConfig {
                 client_id: registered.client_id,
                 secret: secret_path.clone(),
             }),
@@ -623,7 +623,7 @@ async fn qualify_available(
         assert_eq!(status, StatusCode::OK);
         let tools = discovery["result"]["tools"].as_array().unwrap();
         assert_eq!(tools.len(), 7);
-        for (_, name) in webdock_databases::DATABASE_READ_TOOLS {
+        for (_, name) in spitzli_databases::DATABASE_READ_TOOLS {
             assert!(tools.iter().any(|v| v["name"] == *name));
         }
         for (tool, args, path) in [

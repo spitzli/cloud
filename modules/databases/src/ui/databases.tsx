@@ -1,11 +1,11 @@
 "use client";
 import * as React from "react";
 import type { ComponentProps } from "react";
-import { resourceScope as hostingUIScope } from "@webdock/console-kit/resource-scope";
+import { resourceScope as hostingUIScope } from "@spitzli/console-kit/resource-scope";
 import { useActionState, useState } from "react";
 import Link from "next/link";
-import { useI18n } from "@webdock/i18n/react";
-import type { DatabasePlan } from "@webdock/hosting-contracts";
+import { useI18n } from "@spitzli/i18n/react";
+import type { DatabasePlan } from "@spitzli/hosting-contracts";
 import type { DatabaseOrderState } from "../ui-types";
 import { useDatabaseActions } from "./actions";
 export type DatabaseCatalogEntry = {

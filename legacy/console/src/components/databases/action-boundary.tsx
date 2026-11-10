@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, type ReactNode } from "react";
-import { DatabaseActionsProvider } from "@webdock/module-databases/ui/actions";
+import { DatabaseActionsProvider } from "@spitzli/module-databases/ui/actions";
 import {
   prepareDatabaseOffer,
   acceptDatabaseOffer,

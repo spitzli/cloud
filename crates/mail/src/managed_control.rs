@@ -11,14 +11,14 @@ use crate::{
 use sea_orm::{ConnectionTrait, DatabaseTransaction, DbBackend, Statement};
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::sync::Arc;
-use webdock_mail_protocol::{
+use spitzli_mail_protocol::{
     LeaseClaims,
     native_control::{Control, ControlError},
     sha256, valid_digest,
 };
-use webdock_plugin_host::{HostService, MailRuntimeMode};
-use webdock_plugin_runtime::PeerIdentity;
+use spitzli_plugin_host::{HostService, MailRuntimeMode};
+use spitzli_plugin_runtime::PeerIdentity;
+use std::sync::Arc;
 pub const EXECUTOR: &str = "managed-mail-v1";
 pub const STORE_ID: &str = "mail:platform:v1";
 #[derive(Deserialize)]
@@ -69,10 +69,10 @@ impl ManagedControl {
     }
     pub fn service(
         self: Arc<Self>,
-    ) -> webdock_mail_protocol::wire::native_mail_control_server::NativeMailControlServer<
-        webdock_mail_protocol::native_control::ControlServer,
+    ) -> spitzli_mail_protocol::wire::native_mail_control_server::NativeMailControlServer<
+        spitzli_mail_protocol::native_control::ControlServer,
     > {
-        webdock_mail_protocol::native_control::ControlServer::service(self)
+        spitzli_mail_protocol::native_control::ControlServer::service(self)
     }
     async fn execute(
         &self,
@@ -308,7 +308,7 @@ impl ManagedControl {
         }
         let source = &proof["source"];
         let customer = text(source, "customerID")?;
-        let compiled = webdock_mail_message::compile_action(input.input, text(source, "domain")?)
+        let compiled = spitzli_mail_message::compile_action(input.input, text(source, "domain")?)
             .map_err(|_| Error::Invalid)?;
         let envelope: Envelope =
             serde_json::from_value(compiled.envelope).map_err(|_| Error::Invalid)?;
@@ -523,7 +523,7 @@ impl ManagedControl {
         if !valid_digest(digest)
             || !valid_digest(&preparation.metadata_sha256)
             || !valid_digest(&preparation.mime_sha256)
-            || !(1..=webdock_mail_protocol::MAX_MIME_BYTES).contains(&preparation.mime_bytes)
+            || !(1..=spitzli_mail_protocol::MAX_MIME_BYTES).contains(&preparation.mime_bytes)
         {
             return Err(Error::Invalid);
         }
@@ -668,10 +668,10 @@ fn error(e: Error) -> ControlError {
         _ => ControlError::unavailable(),
     }
 }
-fn host_error(e: webdock_plugin_host::PluginError) -> ControlError {
+fn host_error(e: spitzli_plugin_host::PluginError) -> ControlError {
     match e.code {
-        webdock_plugin_host::ErrorCode::PermissionDenied => ControlError::denied(),
-        webdock_plugin_host::ErrorCode::InvalidInput => ControlError::invalid(),
+        spitzli_plugin_host::ErrorCode::PermissionDenied => ControlError::denied(),
+        spitzli_plugin_host::ErrorCode::InvalidInput => ControlError::invalid(),
         _ => ControlError::unavailable(),
     }
 }

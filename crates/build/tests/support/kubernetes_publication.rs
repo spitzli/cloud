@@ -1,9 +1,9 @@
 //! Fresh service publication handoff in owned PostgreSQL; no external registry or runtime I/O.
 use super::build_kubernetes_admission::{Repository, oci_envelope};
 use super::*;
+use spitzli_build::BuildService;
 use std::collections::BTreeMap;
 use std::os::unix::fs::PermissionsExt;
-use webdock_build::BuildService;
 
 async fn state(f: &Fixture, build: &str) -> Value {
     f.owner
@@ -42,9 +42,9 @@ async fn kubernetes_publication_stages_fresh_operation_before_build_success_and_
             db("DATABASE_URL").await,
             db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
-            Arc::new(webdock_persistence::IdAllocator::new(
+            Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )),
             f.service.clone(),
             "registry.invalid".into(),
@@ -93,7 +93,7 @@ async fn kubernetes_publication_stages_fresh_operation_before_build_success_and_
         service.record_kubernetes_job(&worker, build, generation, "owned-publication-job").await.unwrap();
         let directory = tempfile::tempdir().unwrap();
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-        let store = webdock_build::artifact::ArtifactStore::open(directory.path().into(), webdock_build::artifact::MAX_OUTPUT * 2).unwrap();
+        let store = spitzli_build::artifact::ArtifactStore::open(directory.path().into(), spitzli_build::artifact::MAX_OUTPUT * 2).unwrap();
         let artifact = store.put(&f.cid, build, generation, &oci_envelope()).unwrap();
         let completed = service.complete_build(&worker, build, generation, Some(&artifact), "owned publication build output", None).await.unwrap();
         assert_eq!(completed["status"], "artifact-ready");

@@ -4,7 +4,7 @@ import { act, createElement as h, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Window } from "happy-dom";
-import { I18nProvider } from "@webdock/i18n/react";
+import { I18nProvider } from "@spitzli/i18n/react";
 import { SetupSourceFields } from "../src/components/hosting/setup-source-fields";
 import { SetupReview } from "../src/components/hosting/setup-review";
 import { defaultSetupConfiguration } from "../src/lib/project-setup-view";
@@ -12,7 +12,7 @@ import type {
   SetupOptions,
   SetupView,
   SetupConfiguration,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 const options: SetupOptions = {
   enabled: true,
   project: {

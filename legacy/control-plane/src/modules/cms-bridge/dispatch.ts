@@ -5,8 +5,8 @@ import { canvasList, canvasPage, writeCanvas } from "./canvas-bridge";
 import { websiteContent, saveWebsiteContent } from "./demo-content";
 import { shopAccess, shopRequest } from "./studio-shop";
 import { portalCall } from "../portal/request-context";
-import { createCMSDispatch } from "@webdock/module-cms/server/dispatch";
-export { cmsShapes } from "@webdock/module-cms/server/dispatch";
+import { createCMSDispatch } from "@spitzli/module-cms/server/dispatch";
+export { cmsShapes } from "@spitzli/module-cms/server/dispatch";
 export const { dispatchCMS } = createCMSDispatch({
   requireCMS: () => requireInstalledOperation("cms.access", []),
   demoAccess,

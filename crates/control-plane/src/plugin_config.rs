@@ -1,10 +1,10 @@
 //! Operator-owned native plugin routing. URLs and private keys never come from action payloads.
 use serde::Deserialize;
+use spitzli_plugin_runtime::{PinnedMutualTls, wire::plugin_runtime_client::PluginRuntimeClient};
 use std::{
     collections::BTreeMap,
     path::{Path, PathBuf},
 };
-use webdock_plugin_runtime::{PinnedMutualTls, wire::plugin_runtime_client::PluginRuntimeClient};
 pub type ConfigurationError = Box<dyn std::error::Error + Send + Sync>;
 pub fn installation_secret() -> Result<String, ConfigurationError> {
     std::env::var("WEBDOCK_NATIVE_PLUGIN_ENCRYPTION_KEY")
@@ -100,7 +100,7 @@ pub struct RuntimeConnection {
 #[derive(Clone)]
 pub struct RuntimeConnections {
     path: PathBuf,
-    managed: Option<std::sync::Arc<webdock_plugin_host::ManagedBindings>>,
+    managed: Option<std::sync::Arc<spitzli_plugin_host::ManagedBindings>>,
 }
 impl PluginConfig {
     pub fn load(path: &Path) -> Result<Self, ConfigurationError> {
@@ -158,7 +158,7 @@ impl RuntimeConnections {
     }
     pub fn with_managed(
         mut self,
-        managed: std::sync::Arc<webdock_plugin_host::ManagedBindings>,
+        managed: std::sync::Arc<spitzli_plugin_host::ManagedBindings>,
     ) -> Self {
         self.managed = Some(managed);
         self
@@ -220,14 +220,14 @@ impl RuntimeConnection {
     ) -> Result<
         (
             PluginRuntimeClient<tonic::transport::Channel>,
-            webdock_plugin_runtime::PeerIdentity,
+            spitzli_plugin_runtime::PeerIdentity,
         ),
         ConfigurationError,
     > {
         match &self.transport {
             RuntimeTransport::Unix { path } => Ok((
-                webdock_plugin_runtime::connect_unix(path).await?,
-                webdock_plugin_runtime::PeerIdentity::Unix {
+                spitzli_plugin_runtime::connect_unix(path).await?,
+                spitzli_plugin_runtime::PeerIdentity::Unix {
                     uid: rustix::process::geteuid().as_raw(),
                 },
             )),
@@ -239,7 +239,7 @@ impl RuntimeConnection {
                 authority,
                 server_certificate_sha256,
             } => {
-                let (channel, peer) = webdock_plugin_runtime::pinned_mtls_authenticated(
+                let (channel, peer) = spitzli_plugin_runtime::pinned_mtls_authenticated(
                     origin.clone(),
                     domain.clone(),
                     PinnedMutualTls {
@@ -264,7 +264,7 @@ impl RuntimeConnection {
         &self,
     ) -> Result<PluginRuntimeClient<tonic::transport::Channel>, ConfigurationError> {
         match &self.transport {
-            RuntimeTransport::Unix { path } => webdock_plugin_runtime::connect_unix(path).await,
+            RuntimeTransport::Unix { path } => spitzli_plugin_runtime::connect_unix(path).await,
             RuntimeTransport::MutualTls {
                 origin,
                 domain,
@@ -273,7 +273,7 @@ impl RuntimeConnection {
                 authority,
                 server_certificate_sha256,
             } => {
-                webdock_plugin_runtime::connect_pinned_mtls(
+                spitzli_plugin_runtime::connect_pinned_mtls(
                     origin.clone(),
                     domain.clone(),
                     PinnedMutualTls {
@@ -289,7 +289,7 @@ impl RuntimeConnection {
     }
 }
 impl ControlListener {
-    pub fn tls(&self) -> Result<Option<webdock_plugin_runtime::MutualTls>, ConfigurationError> {
+    pub fn tls(&self) -> Result<Option<spitzli_plugin_runtime::MutualTls>, ConfigurationError> {
         match self {
             Self::Unix { .. } => Ok(None),
             Self::MutualTls {
@@ -297,7 +297,7 @@ impl ControlListener {
                 private_key,
                 authority,
                 ..
-            } => Ok(Some(webdock_plugin_runtime::MutualTls {
+            } => Ok(Some(spitzli_plugin_runtime::MutualTls {
                 identity: tonic::transport::Identity::from_pem(
                     pem(certificate)?,
                     pem(private_key)?,
@@ -311,14 +311,14 @@ impl ControlListener {
 /// Private listeners reuse the same native identity/OAuth/browser policy as HTTP Core without
 /// constructing public account routes or performing bootstrap/enrollment writes.
 pub struct AuthorityServices {
-    pub identity: std::sync::Arc<webdock_identity::IdentityService>,
-    pub oauth: std::sync::Arc<webdock_oauth::OAuthService>,
-    pub browser: Option<std::sync::Arc<webdock_browser_session::BrowserSessions>>,
+    pub identity: std::sync::Arc<spitzli_identity::IdentityService>,
+    pub oauth: std::sync::Arc<spitzli_oauth::OAuthService>,
+    pub browser: Option<std::sync::Arc<spitzli_browser_session::BrowserSessions>>,
 }
 pub async fn authority_services(
     auth: sea_orm::DatabaseConnection,
-    ids: std::sync::Arc<webdock_persistence::IdAllocator>,
-    config: &webdock_core::config::PlatformConfig,
+    ids: std::sync::Arc<spitzli_persistence::IdAllocator>,
+    config: &spitzli_core::config::PlatformConfig,
 ) -> Result<AuthorityServices, ConfigurationError> {
     use std::sync::Arc;
     let compatibility =
@@ -327,16 +327,16 @@ pub async fn authority_services(
         .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
         .map_err(|_| "Missing identity secret")?;
     let keys = || {
-        webdock_identity::SecretKeys::new(
+        spitzli_identity::SecretKeys::new(
             std::collections::BTreeMap::from([(1, secret.clone())]),
             1,
             Some(secret.clone()),
         )
     };
     let identity = Arc::new(
-        webdock_identity::IdentityService::new(
+        spitzli_identity::IdentityService::new(
             auth.clone(),
-            webdock_identity::CookiePolicy::new(
+            spitzli_identity::CookiePolicy::new(
                 config.auth_origin.starts_with("https://"),
                 secret.clone(),
             )?,
@@ -345,12 +345,12 @@ pub async fn authority_services(
         .with_allocator(ids.clone())
         .with_account_origin(url::Url::parse(&config.auth_origin)?)?,
     );
-    let oauth = Arc::new(webdock_oauth::OAuthService::new(
+    let oauth = Arc::new(spitzli_oauth::OAuthService::new(
         auth.clone(),
         identity.clone(),
         ids,
         Arc::new(keys()?),
-        webdock_oauth::OAuthConfig::new(
+        spitzli_oauth::OAuthConfig::new(
             &compatibility.oauth_issuer,
             &std::env::var("WEBDOCK_MCP_RESOURCE")
                 .unwrap_or_else(|_| format!("{}/api/mcp", config.studio_origin)),
@@ -364,14 +364,14 @@ pub async fn authority_services(
             .map_err(|_| "Missing first-party client secret")?;
         let cookie = std::env::var("WEBDOCK_SSO_COOKIE_SECRET")
             .map_err(|_| "Missing first-party cookie secret")?;
-        let options = webdock_browser_session::BrowserConfig::new(
+        let options = spitzli_browser_session::BrowserConfig::new(
             config.console_origin(),
             &compatibility.oauth_issuer,
             client,
             secret,
         )?
         .with_additional_origins(std::slice::from_ref(&config.studio_origin))?;
-        Some(Arc::new(webdock_browser_session::BrowserSessions::new(
+        Some(Arc::new(spitzli_browser_session::BrowserSessions::new(
             auth,
             identity.clone(),
             oauth.clone(),

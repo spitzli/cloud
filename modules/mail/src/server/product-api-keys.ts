@@ -1,12 +1,12 @@
 import type { MailProductStore } from "./provider-ports";
 import { createHash, randomBytes } from "node:crypto";
-import type { MailActor, Permission } from "@webdock/mail-contracts";
-import { parseID } from "@webdock/mail-contracts/validation";
+import type { MailActor, Permission } from "@spitzli/mail-contracts";
+import { parseID } from "@spitzli/mail-contracts/validation";
 import { mailUnavailable, MailError } from "./product-access";
 type Dependencies = {
-  authDatabase: import("@webdock/core/identity").DatabaseReader;
+  authDatabase: import("@spitzli/core/identity").DatabaseReader;
   withMailDatabase: <T>(
-    actor: import("@webdock/mail-contracts").MailActor,
+    actor: import("@spitzli/mail-contracts").MailActor,
     run: () => Promise<T>,
   ) => Promise<T>;
   database: MailProductStore["database"];
@@ -81,7 +81,7 @@ export function createMailApiKeys(dependencies: Dependencies) {
     );
   }
   async function createMailKeyInTransaction(
-    db: import("@webdock/core/identity").DatabaseReader,
+    db: import("@spitzli/core/identity").DatabaseReader,
     actor: MailActor,
     input: { name: string; permission: Permission; domainID?: string },
   ): Promise<{ id: string; key: string; prefix: string }> {

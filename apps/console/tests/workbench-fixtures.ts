@@ -1,7 +1,7 @@
 // HTTP fixtures only for the isolated browser acceptance server.
 import type { IncomingMessage } from "node:http";
 import { z } from "zod";
-import { commandSchema } from "@webdock/hosting-contracts";
+import { commandSchema } from "@spitzli/hosting-contracts";
 import { appSchema } from "../src/hosting-contracts";
 import {
   installationSchema,

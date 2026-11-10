@@ -1,4 +1,4 @@
-import { gitRootDirectory } from "@webdock/hosting-contracts";
+import { gitRootDirectory } from "@spitzli/hosting-contracts";
 type Fetch = (
   input: RequestInfo | URL,
   init?: RequestInit,
@@ -9,15 +9,15 @@ import type {
   GitSource,
   GitHubWebhook,
   GitHubProvider,
-} from "@webdock/hosting-provider-contracts/github";
+} from "@spitzli/hosting-provider-contracts/github";
 export type {
   GitHubConfig,
   GitRepositoryBinding,
   GitSource,
   GitHubWebhook,
-} from "@webdock/hosting-provider-contracts/github";
+} from "@spitzli/hosting-provider-contracts/github";
 import { createHash, createHmac, sign, timingSafeEqual } from "node:crypto";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 const denied = () =>
   new HostingError(
     403,

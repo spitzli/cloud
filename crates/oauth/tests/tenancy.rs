@@ -1,7 +1,7 @@
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement};
+use spitzli_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
+use spitzli_oauth::*;
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
-use webdock_oauth::*;
 fn url(key: &str) -> String {
     let raw = std::env::var(key).unwrap();
     let u = url::Url::parse(&raw).unwrap();
@@ -27,9 +27,9 @@ async fn public_client_grants_follow_live_tenant_membership_and_explicit_revocat
         .await
         .unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),

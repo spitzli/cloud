@@ -5,7 +5,7 @@ import { database } from "../../db/runtime";
 import { getTenant } from "../access/tenants";
 import { requireAccessOperator } from "../access/access-management";
 import { getPlatformSettings } from "../platform/platform";
-import { createNativeService } from "@webdock/module-mail/server/native-service";
+import { createNativeService } from "@spitzli/module-mail/server/native-service";
 export const { getTenantMailService, manageTenantMailService } =
   createNativeService({
     identity: selectedIdentityDirectory,
@@ -17,4 +17,4 @@ export const { getTenantMailService, manageTenantMailService } =
     getPlatformSettings,
     env: process.env,
   });
-export { MailServiceError } from "@webdock/module-mail/server/native-service";
+export { MailServiceError } from "@spitzli/module-mail/server/native-service";

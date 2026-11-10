@@ -9,16 +9,16 @@ pub(super) struct Context<'a> {
     pub app: &'a Router,
     pub owner: &'a DatabaseConnection,
     pub auth: &'a DatabaseConnection,
-    pub oauth: &'a Arc<webdock_oauth::OAuthService>,
+    pub oauth: &'a Arc<spitzli_oauth::OAuthService>,
     pub secrets: &'a Value,
-    pub keys: &'a webdock_identity::SecretKeys,
-    pub ids: &'a webdock_persistence::IdAllocator,
+    pub keys: &'a spitzli_identity::SecretKeys,
+    pub ids: &'a spitzli_persistence::IdAllocator,
     pub business: &'a DatabaseConnection,
     pub native: &'a str,
     pub console: &'a str,
-    pub identity: &'a Arc<webdock_identity::IdentityService>,
-    pub access: &'a Arc<webdock_access::AccessService>,
-    pub browser: &'a webdock_browser_session::BrowserSessions,
+    pub identity: &'a Arc<spitzli_identity::IdentityService>,
+    pub access: &'a Arc<spitzli_access::AccessService>,
+    pub browser: &'a spitzli_browser_session::BrowserSessions,
 }
 pub(super) async fn check_initial_mail_conflict(
     owner: &DatabaseConnection,
@@ -31,14 +31,14 @@ pub(super) async fn check_initial_mail_conflict(
     sql(owner,"INSERT INTO webdock_auth.platform_settings(id,settings) VALUES(true,'{\"mailEnabled\":false,\"retainedSetting\":7}')",vec![]).await;
     let output = directory.join("conflicting-initial-setting.json");
     assert!(matches!(
-        webdock_control_plane::bootstrap::bootstrap_operator(
+        spitzli_control_plane::bootstrap::bootstrap_operator(
             environment,
             &target(offline),
             config,
             &output
         )
         .await,
-        Err(webdock_control_plane::bootstrap::BootstrapError::Existing)
+        Err(spitzli_control_plane::bootstrap::BootstrapError::Existing)
     ));
     assert!(!output.exists());
     assert_eq!(scalar(owner,"SELECT count(*)::bigint AS n FROM webdock_auth.platform_settings WHERE settings='{\"mailEnabled\":false,\"retainedSetting\":7}'::jsonb").await,1);
@@ -84,14 +84,14 @@ pub(super) async fn check_bootstrap_replay(
         std::fs::write(config, serde_json::to_vec(&altered).unwrap()).unwrap();
         let output = directory.join(format!("replay-{enabled}.json"));
         assert!(matches!(
-            webdock_control_plane::bootstrap::bootstrap_operator(
+            spitzli_control_plane::bootstrap::bootstrap_operator(
                 &environment,
                 &target(offline),
                 config,
                 &output
             )
             .await,
-            Err(webdock_control_plane::bootstrap::BootstrapError::Existing)
+            Err(spitzli_control_plane::bootstrap::BootstrapError::Existing)
         ));
         assert!(!output.exists());
         assert_eq!(scalar(owner,"SELECT count(*)::bigint AS n FROM webdock_auth.platform_settings WHERE settings->'mailEnabled'='true'::jsonb").await,1);
@@ -161,14 +161,14 @@ async fn assert_denied(c: &Context<'_>, path: &str, session: &str, body: Value) 
     let reply = request(c.app, CONSOLE, "POST", path, session, body).await;
     if reply.status == StatusCode::SERVICE_UNAVAILABLE {
         let category = match c.browser.resolve_authority(CONSOLE, session).await {
-            Err(webdock_browser_session::Error::OAuth(webdock_oauth::Error::InvalidClient)) => {
+            Err(spitzli_browser_session::Error::OAuth(spitzli_oauth::Error::InvalidClient)) => {
                 "invalid-client"
             }
-            Err(webdock_browser_session::Error::OAuth(webdock_oauth::Error::AccessDenied)) => {
+            Err(spitzli_browser_session::Error::OAuth(spitzli_oauth::Error::AccessDenied)) => {
                 "access-denied"
             }
-            Err(webdock_browser_session::Error::Unauthorized) => "unauthorized",
-            Err(webdock_browser_session::Error::Database(_)) => "database",
+            Err(spitzli_browser_session::Error::Unauthorized) => "unauthorized",
+            Err(spitzli_browser_session::Error::Database(_)) => "database",
             Err(_) => "other-error",
             Ok(None) => "no-current-proof",
             Ok(Some(_)) => "browser-valid-domain-error",
@@ -207,7 +207,7 @@ async fn token_revocation_fences_commit(c: &Context<'_>, customer: &str, path: &
         .unwrap();
     let tokens: Value = serde_json::from_str(&c.keys.decrypt(&encrypted).unwrap()).unwrap();
     let raw_token = tokens["access_token"].as_str().unwrap();
-    let hash = webdock_oauth::legacy_token_hash(raw_token);
+    let hash = spitzli_oauth::legacy_token_hash(raw_token);
     let held = c.owner.begin().await.unwrap();
     held.query_one_raw(Statement::from_sql_and_values(
         DbBackend::Postgres,
@@ -307,14 +307,14 @@ async fn configured_authority_faults_remain_unavailable(c: &Context<'_>, path: &
         (actual_client, "owned-incorrect-protected-client-secret-123"),
         (&missing_client, actual_secret),
     ] {
-        let keys = webdock_identity::SecretKeys::new(
+        let keys = spitzli_identity::SecretKeys::new(
             BTreeMap::from([(1, SECRET.to_owned())]),
             1,
             Some(SECRET.to_owned()),
         )
         .unwrap();
         let misconfigured = Arc::new(
-            webdock_browser_session::BrowserSessions::new(
+            spitzli_browser_session::BrowserSessions::new(
                 c.auth.clone(),
                 Arc::clone(c.identity),
                 Arc::clone(c.oauth),
@@ -322,7 +322,7 @@ async fn configured_authority_faults_remain_unavailable(c: &Context<'_>, path: &
                 c.secrets["environment"]["WEBDOCK_SSO_COOKIE_SECRET"]
                     .as_str()
                     .unwrap(),
-                webdock_browser_session::BrowserConfig::new(
+                spitzli_browser_session::BrowserConfig::new(
                     CONSOLE,
                     &format!("{AUTH}/api/auth"),
                     client.to_owned(),
@@ -334,12 +334,12 @@ async fn configured_authority_faults_remain_unavailable(c: &Context<'_>, path: &
         );
         assert!(matches!(
             misconfigured.resolve_authority(CONSOLE, c.console).await,
-            Err(webdock_browser_session::Error::OAuth(
-                webdock_oauth::Error::InvalidClient
+            Err(spitzli_browser_session::Error::OAuth(
+                spitzli_oauth::Error::InvalidClient
             ))
         ));
         let app = build_app_with_domains(
-            webdock_core::config::PlatformConfig::from_map(&HashMap::from([
+            spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
                 ("WEBDOCK_AUTH_ORIGIN".into(), AUTH.into()),
                 ("WEBDOCK_STUDIO_ORIGIN".into(), STUDIO.into()),
                 ("WEBDOCK_CONSOLE_ORIGIN".into(), CONSOLE.into()),
@@ -654,7 +654,7 @@ pub(super) async fn check(c: Context<'_>) {
         .await
         .unwrap()
         .unwrap();
-    let receipt_tx = webdock_identity::RlsSigner::new(SECRET, "webdock_auth_runtime")
+    let receipt_tx = spitzli_identity::RlsSigner::new(SECRET, "webdock_auth_runtime")
         .unwrap()
         .begin(c.business, &actor)
         .await
@@ -666,7 +666,7 @@ pub(super) async fn check(c: Context<'_>) {
             .is_err()
     );
     receipt_tx.rollback().await.unwrap();
-    let mismatch = webdock_identity::RlsSigner::new(SECRET, "webdock_auth_runtime")
+    let mismatch = spitzli_identity::RlsSigner::new(SECRET, "webdock_auth_runtime")
         .unwrap()
         .begin(c.business, &actor)
         .await
@@ -716,7 +716,7 @@ pub(super) async fn check(c: Context<'_>) {
         .await
         .unwrap()
         .unwrap();
-    let paid_guard = webdock_identity::RlsSigner::new(SECRET, "webdock_auth_runtime")
+    let paid_guard = spitzli_identity::RlsSigner::new(SECRET, "webdock_auth_runtime")
         .unwrap()
         .begin(c.business, &actor)
         .await
@@ -816,8 +816,8 @@ pub(super) async fn check(c: Context<'_>) {
     .await;
     eprintln!("native_allowance_phase mapping-revocation-complete");
     for mode in [
-        webdock_access::PreviewMode::ReadOnly,
-        webdock_access::PreviewMode::Owner,
+        spitzli_access::PreviewMode::ReadOnly,
+        spitzli_access::PreviewMode::Owner,
     ] {
         let principal = c
             .identity

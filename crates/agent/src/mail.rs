@@ -5,8 +5,8 @@ pub mod docker;
 #[cfg(feature = "kubernetes")]
 pub mod kubernetes;
 use serde::Serialize;
-use webdock_agent_protocol::mail::{MailCheckpoint, MailClaim, MailProof};
-use webdock_supervisor::{ExecutionError, Result};
+use spitzli_agent_protocol::mail::{MailCheckpoint, MailClaim, MailProof};
+use spitzli_supervisor::{ExecutionError, Result};
 
 #[derive(Clone, Serialize)]
 pub struct MailCapabilities {

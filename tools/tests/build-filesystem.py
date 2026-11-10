@@ -27,7 +27,7 @@ def main():
     image = json.loads(docker("image", "inspect", IMAGE))[0]
     assert image["Config"]["Labels"].get("dev.webdock.test") == "rust-storage-fixture"
     compile_result = subprocess.run([
-        "cargo", "test", "--locked", "-p", "webdock-agent", "--no-default-features",
+        "cargo", "test", "--locked", "-p", "spitzli-agent", "--no-default-features",
         "--test", "build_storage", "--test", "storage", "--test", "database_storage",
         "--no-run", "--message-format=json",
     ], cwd=ROOT, text=True, capture_output=True, timeout=420)

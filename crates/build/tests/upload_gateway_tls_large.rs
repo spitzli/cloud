@@ -9,6 +9,15 @@ use axum::{
 use futures_util::StreamExt;
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_build::{
+    artifact::{Archive, MAX_OUTPUT},
+    container_runner::{ContainerBuildRequest, Strategy},
+    execution::Limits,
+    kubernetes_transfer::{
+        AttemptTransfer, MAX_TRANSFER_RESULT, MAX_TRANSFER_SOURCE, TransferClient, TransferPolicy,
+    },
+    kubernetes_upload::{AttemptUploadGateway, router},
+};
 use std::{
     collections::BTreeMap,
     fs::File,
@@ -20,15 +29,6 @@ use std::{
         atomic::{AtomicU64, Ordering},
     },
     time::{Duration, Instant},
-};
-use webdock_build::{
-    artifact::{Archive, MAX_OUTPUT},
-    container_runner::{ContainerBuildRequest, Strategy},
-    execution::Limits,
-    kubernetes_transfer::{
-        AttemptTransfer, MAX_TRANSFER_RESULT, MAX_TRANSFER_SOURCE, TransferClient, TransferPolicy,
-    },
-    kubernetes_upload::{AttemptUploadGateway, router},
 };
 const ORIGIN: &str = "https://167.86.75.144:19444";
 const FS_BYTES: u64 = 1024 * 1024 * 1024;
@@ -305,7 +305,7 @@ async fn actual_large_tls_transfer() {
         } else {
             let bytes = gateway.read(&attempt, &uid).unwrap();
             let verified =
-                webdock_build::kubernetes_transfer::verify_result(&attempt, &uid, &bytes).unwrap();
+                spitzli_build::kubernetes_transfer::verify_result(&attempt, &uid, &bytes).unwrap();
             assert_eq!(verified.artifact.len() as u64, image_size);
             drop(verified);
             drop(bytes);

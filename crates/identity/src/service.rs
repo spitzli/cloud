@@ -5,7 +5,7 @@ mod native_session;
 #[path = "native_session_management.rs"]
 mod native_session_management;
 struct NativeSessionBackend {
-    pool: webdock_persistence::postgres::Pool,
+    pool: spitzli_persistence::postgres::Pool,
     management: bool,
 }
 use crate::{
@@ -97,13 +97,13 @@ pub struct IdentityService {
     pub(crate) neon_gate: tokio::sync::OnceCell<bool>,
     pub(crate) db: DatabaseConnection,
     native_sessions: Option<NativeSessionBackend>,
-    pub(crate) native_recovery: Option<webdock_persistence::postgres::Pool>,
-    pub(crate) native_login: Option<webdock_persistence::postgres::Pool>,
+    pub(crate) native_recovery: Option<spitzli_persistence::postgres::Pool>,
+    pub(crate) native_login: Option<spitzli_persistence::postgres::Pool>,
     pub(crate) cookies: CookiePolicy,
     pub(crate) password_workers: Arc<Semaphore>,
     pub(crate) keys: Option<SecretKeys>,
     pub(crate) webauthn: Option<webauthn_rs::Webauthn>,
-    pub(crate) allocator: Option<Arc<webdock_persistence::IdAllocator>>,
+    pub(crate) allocator: Option<Arc<spitzli_persistence::IdAllocator>>,
     pub(crate) account_origin: Option<url::Url>,
     pub(crate) delivery: Arc<dyn crate::Delivery>,
 }
@@ -125,7 +125,7 @@ impl IdentityService {
             delivery: Arc::new(crate::UnavailableDelivery),
         }
     }
-    pub fn with_native_session_reads(mut self, pool: webdock_persistence::postgres::Pool) -> Self {
+    pub fn with_native_session_reads(mut self, pool: spitzli_persistence::postgres::Pool) -> Self {
         self.native_sessions = Some(NativeSessionBackend {
             pool,
             management: false,
@@ -134,7 +134,7 @@ impl IdentityService {
     }
     pub fn with_native_session_management(
         mut self,
-        pool: webdock_persistence::postgres::Pool,
+        pool: spitzli_persistence::postgres::Pool,
     ) -> Self {
         self.native_sessions = Some(NativeSessionBackend {
             pool,
@@ -142,7 +142,7 @@ impl IdentityService {
         });
         self
     }
-    pub(crate) fn native_management_pool(&self) -> Option<&webdock_persistence::postgres::Pool> {
+    pub(crate) fn native_management_pool(&self) -> Option<&spitzli_persistence::postgres::Pool> {
         self.native_sessions
             .as_ref()
             .filter(|backend| backend.management)
@@ -152,16 +152,16 @@ impl IdentityService {
     /// Keep canonical share locks until the caller commits or rolls back this transaction.
     pub async fn authenticate_session_native_in<'a>(
         &self,
-        tx: webdock_persistence::postgres::Transaction<'a>,
+        tx: spitzli_persistence::postgres::Transaction<'a>,
         subject: &str,
         session: &str,
     ) -> Result<(
-        webdock_persistence::postgres::Transaction<'a>,
+        spitzli_persistence::postgres::Transaction<'a>,
         Option<Principal>,
     )> {
         native_session::revalidate(tx, subject, session).await
     }
-    pub fn with_allocator(mut self, allocator: Arc<webdock_persistence::IdAllocator>) -> Self {
+    pub fn with_allocator(mut self, allocator: Arc<spitzli_persistence::IdAllocator>) -> Self {
         self.allocator = Some(allocator);
         self
     }

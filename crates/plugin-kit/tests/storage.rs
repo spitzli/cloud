@@ -5,7 +5,7 @@ async fn plaintext_storage_rejects_remote_and_host_overrides_before_connecting()
         "postgresql://u:p@localhost/db?host=remote.invalid",
         "postgresql://u:p@localhost/db?hostaddr=192.0.2.1",
     ] {
-        let error = webdock_plugin_kit::postgres::connect(url, None)
+        let error = spitzli_plugin_kit::postgres::connect(url, None)
             .await
             .err()
             .unwrap();
@@ -15,7 +15,7 @@ async fn plaintext_storage_rejects_remote_and_host_overrides_before_connecting()
 #[tokio::test]
 async fn invalid_or_missing_tls_trust_fails_without_plaintext_fallback() {
     for ca in [&b""[..], &b"not a CA"[..]] {
-        let error = webdock_plugin_kit::postgres::connect(
+        let error = spitzli_plugin_kit::postgres::connect(
             "postgresql://secret:secret@remote.invalid/db?sslmode=disable",
             Some(ca),
         )

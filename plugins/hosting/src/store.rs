@@ -60,7 +60,7 @@ pub struct Store(Client);
 impl Store {
     pub async fn connect(url: &str) -> Result<Self, Error> {
         Ok(Self(
-            webdock_plugin_kit::storage(url, "hosting", MIGRATIONS).await?,
+            spitzli_plugin_kit::storage(url, "hosting", MIGRATIONS).await?,
         ))
     }
     pub async fn insert(&self, a: &App) -> Result<(), Error> {

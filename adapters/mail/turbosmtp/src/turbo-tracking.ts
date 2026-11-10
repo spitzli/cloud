@@ -12,14 +12,14 @@ export type {
   TrackingDomain,
   TrackingInfo,
   TrackingSettings,
-} from "@webdock/module-mail/server/tracking-provider";
+} from "@spitzli/module-mail/server/tracking-provider";
 import type {
   TrackingTool,
   TrackingDomain,
   TrackingInfo,
   TrackingSettings,
   MailTrackingProvider,
-} from "@webdock/module-mail/server/tracking-provider";
+} from "@spitzli/module-mail/server/tracking-provider";
 const fail = (): never => {
   throw new TrackingProviderError();
 };

@@ -1,4 +1,4 @@
-import {msgid} from '@webdock/i18n';
+import {msgid} from '@spitzli/i18n';
 import type { Field, GlobalConfig } from 'payload';
 import { faqs } from '../lib/content';
 import { authenticated } from './access';

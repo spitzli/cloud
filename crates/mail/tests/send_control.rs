@@ -1,6 +1,6 @@
+use spitzli_mail::send_control::{HttpSendControl, SendControl};
 use std::{sync::Arc, time::Duration};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use webdock_mail::send_control::{HttpSendControl, SendControl};
 #[tokio::test]
 async fn confidential_control_uses_tls_fixed_path_no_retry_and_redacted_errors() {
     let cert = rcgen::generate_simple_self_signed(vec!["localhost".into()]).unwrap();

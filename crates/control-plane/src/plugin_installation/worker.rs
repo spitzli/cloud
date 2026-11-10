@@ -1,20 +1,20 @@
 //! Separately supervised initial-install orchestration. Privileged storage/issuer inputs stay here.
 use super::*;
 use sea_orm::{ConnectionTrait, DbBackend, Statement};
+use spitzli_agent_protocol::plugin::{
+    PluginRuntimeEgress, PluginRuntimeHostAlias, PluginRuntimeMaterial,
+};
+use spitzli_plugin_host::provisioning::{
+    storage::{MetadataProvisioner, StoragePlan},
+    tls::issue_runtime_identity,
+};
+use spitzli_plugin_host::{InstallClaim, InstallWork, PreparedInstallation};
+use spitzli_plugin_host::{PeerEnrollment, RuntimeBinding};
 use std::time::Duration;
 use std::{
     collections::BTreeMap,
     path::{Path as FilePath, PathBuf},
 };
-use webdock_agent_protocol::plugin::{
-    PluginRuntimeEgress, PluginRuntimeHostAlias, PluginRuntimeMaterial,
-};
-use webdock_plugin_host::provisioning::{
-    storage::{MetadataProvisioner, StoragePlan},
-    tls::issue_runtime_identity,
-};
-use webdock_plugin_host::{InstallClaim, InstallWork, PreparedInstallation};
-use webdock_plugin_host::{PeerEnrollment, RuntimeBinding};
 type Error = crate::plugin_config::ConfigurationError;
 
 #[derive(Deserialize)]
@@ -36,7 +36,7 @@ struct StorageTarget {
 struct TargetPolicy {
     /// Explicit operator-approved binary destinations; never derived from action input.
     #[serde(default)]
-    storage: BTreeMap<String, BTreeMap<String, webdock_plugin_http::storage::StorageBinding>>,
+    storage: BTreeMap<String, BTreeMap<String, spitzli_plugin_http::storage::StorageBinding>>,
     runtime_domain: String,
     runtime_port: u16,
     entry_point: String,
@@ -147,7 +147,7 @@ fn runtime_tls_configuration(policy: &TargetPolicy) -> Result<Value, Error> {
           "certificate":"/run/webdock/runtime/runtime.crt", "privateKey":"/run/webdock/runtime/runtime.key",
           "authority":"/run/webdock/runtime/core-ca.crt","serverCertificateSha256":policy.core.server_certificate_sha256}
     });
-    let transport: webdock_plugin_kit::transport::RuntimeTransport =
+    let transport: spitzli_plugin_kit::transport::RuntimeTransport =
         serde_json::from_value(value.clone())?;
     transport.validate()?;
     Ok(value)
@@ -169,7 +169,7 @@ fn guarded_origin(value: &str) -> Result<url::Url, Error> {
 /// Observe the same restricted platform connection used by the worker; no cached/configured ID.
 pub async fn platform_storage_identity(
     database: &sea_orm::DatabaseConnection,
-) -> Result<webdock_plugin_host::provisioning::storage::ClusterIdentity, Error> {
+) -> Result<spitzli_plugin_host::provisioning::storage::ClusterIdentity, Error> {
     let row = database.query_one_raw(Statement::from_string(
         DbBackend::Postgres,
         "SELECT system_identifier::pg_catalog.text AS identity FROM pg_catalog.pg_control_system()",
@@ -178,7 +178,7 @@ pub async fn platform_storage_identity(
     let value = row
         .try_get("", "identity")
         .map_err(|_| "Platform database identity unavailable")?;
-    Ok(webdock_plugin_host::provisioning::storage::ClusterIdentity::parse(value)?)
+    Ok(spitzli_plugin_host::provisioning::storage::ClusterIdentity::parse(value)?)
 }
 
 async fn verify_storage_platform(
@@ -374,7 +374,7 @@ impl InstallationWorker {
                 MetadataProvisioner::connect(&target.admin_url, Some(ca.as_bytes())).await?;
             let platform = platform_storage_identity(&self.platform_database).await?;
             if let Err(error) = provisioner.require_separate_cluster(&platform).await {
-                if error == webdock_plugin_host::provisioning::ProvisioningError::Ownership {
+                if error == spitzli_plugin_host::provisioning::ProvisioningError::Ownership {
                     return Err("Plugin storage must be separate from platform PostgreSQL".into());
                 }
                 return Err(error.into());
@@ -523,7 +523,7 @@ impl InstallationWorker {
 }
 
 fn failure_condition(error: &(dyn std::error::Error + Send + Sync + 'static)) -> &'static str {
-    use webdock_plugin_host::provisioning::ProvisioningError;
+    use spitzli_plugin_host::provisioning::ProvisioningError;
     if let Some(error) = error.downcast_ref::<ProvisioningError>() {
         return match error {
             ProvisioningError::Trust => "private_provisioning_trust_rejected",
@@ -543,7 +543,7 @@ fn failure_condition(error: &(dyn std::error::Error + Send + Sync + 'static)) ->
         };
     }
     if error
-        .downcast_ref::<webdock_agent_protocol::plugin::PluginRuntimeError>()
+        .downcast_ref::<spitzli_agent_protocol::plugin::PluginRuntimeError>()
         .is_some()
     {
         return "runtime_spec_invalid";
@@ -567,7 +567,7 @@ fn failure_condition(error: &(dyn std::error::Error + Send + Sync + 'static)) ->
 }
 
 fn validate_storage_bindings(
-    storage: &BTreeMap<String, BTreeMap<String, webdock_plugin_http::storage::StorageBinding>>,
+    storage: &BTreeMap<String, BTreeMap<String, spitzli_plugin_http::storage::StorageBinding>>,
 ) -> Result<(), Error> {
     if storage.len() > 256 {
         return Err("Too many project storage bindings".into());
@@ -594,7 +594,7 @@ fn validate_storage_bindings(
                 binding.origin.trim_end_matches('/'),
                 binding.path_prefix
             );
-            webdock_plugin_http::storage::bind_storage(
+            spitzli_plugin_http::storage::bind_storage(
                 "GET",
                 &object,
                 BTreeMap::new(),
@@ -625,9 +625,9 @@ async fn discover<P, F, G>(
     plugin: &str,
     generation: u64,
     mut guard: F,
-) -> Result<webdock_plugin_host::RuntimeDescription, PluginError>
+) -> Result<spitzli_plugin_host::RuntimeDescription, PluginError>
 where
-    P: webdock_plugin_host::StateProbe,
+    P: spitzli_plugin_host::StateProbe,
     F: FnMut() -> G,
     G: std::future::Future<Output = Result<bool, PluginError>>,
 {
@@ -753,12 +753,12 @@ mod tests {
         allowed: Arc<AtomicBool>,
     }
     #[tonic::async_trait]
-    impl webdock_plugin_host::StateProbe for Probe {
+    impl spitzli_plugin_host::StateProbe for Probe {
         async fn describe(
             &self,
             plugin: &str,
             generation: u64,
-        ) -> Result<webdock_plugin_host::RuntimeDescription, PluginError> {
+        ) -> Result<spitzli_plugin_host::RuntimeDescription, PluginError> {
             let call = self.calls.fetch_add(1, Ordering::SeqCst);
             if self.denied {
                 return Err(PluginError::denied());
@@ -772,13 +772,13 @@ mod tests {
             if self.revoke_on_success {
                 self.allowed.store(false, Ordering::SeqCst);
             }
-            Ok(webdock_plugin_host::RuntimeDescription {
+            Ok(spitzli_plugin_host::RuntimeDescription {
                 manifest: b"owned bytes".to_vec(),
                 plugin_id: plugin.into(),
                 version: "0.1.0".into(),
                 generation,
                 protocol_version: 1,
-                peer: webdock_plugin_runtime::PeerIdentity::Unix { uid: 0 },
+                peer: spitzli_plugin_runtime::PeerIdentity::Unix { uid: 0 },
             })
         }
     }

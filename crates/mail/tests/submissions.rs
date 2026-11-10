@@ -3,12 +3,12 @@ use sea_orm::{
     ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement, TransactionTrait,
 };
 use serde_json::json;
-use std::sync::Arc;
-use webdock_mail::{
+use spitzli_mail::{
     MailDependencies,
     outbox::*,
     submissions::{QueueCommand, Submissions},
 };
+use std::sync::Arc;
 const KEY: &str = "mail-submissions-fixture-context-at-least32";
 async fn role(key: &str, name: &str, owner: &url::Url) -> DatabaseConnection {
     let mut url = url::Url::parse(&std::env::var(key).unwrap()).unwrap();
@@ -34,12 +34,12 @@ async fn native_queue_settles_budget_exactly_once_and_preserves_unknown_payloads
         .unwrap();
     url.set_path(&format!("/{name}"));
     let result=std::panic::AssertUnwindSafe(async{
-        let owner=Database::connect(url.as_str()).await.unwrap();webdock_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
+        let owner=Database::connect(url.as_str()).await.unwrap();spitzli_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
         let seed=owner.begin().await.unwrap();seed.execute_unprepared("SELECT set_config('webdock.organization_allocation','{\"customer_id\":\"123\",\"organization_id\":\"124\"}',true)").await.unwrap();seed.execute_unprepared("INSERT INTO webdock_admin.customers(id,name) VALUES('123','Queue fixture')").await.unwrap();seed.commit().await.unwrap();
         owner.execute_unprepared("INSERT INTO webdock_auth.plugin_installation(id,kind,state,desired_state,version) VALUES('mail','builtin','enabled','enabled','fixture'); INSERT INTO webdock_auth.platform_settings(id,settings) VALUES(true,'{\"mailEnabled\":true}')").await.unwrap();
         let token=format!("wd_mail_{}","t".repeat(43));owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_mail.api_key(id,customer_id,label,token_hash,key_suffix,created_by) VALUES('456','123','fixture',$1,'tttt','fixture')",[hex::encode(Sha256::digest(&token)).into()])).await.unwrap();
         let auth=role("AUTH_DATABASE_URL",&name,&url).await;let business=role("DATABASE_URL",&name,&url).await;let worker=role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;
-        let identity=Arc::new(webdock_identity::IdentityService::new(auth.clone(),webdock_identity::CookiePolicy::new(false,"fixture-session-key-at-least32-characters").unwrap()));let ids=Arc::new(webdock_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,webdock_ids::Identity::platform(0,2).unwrap()));
+        let identity=Arc::new(spitzli_identity::IdentityService::new(auth.clone(),spitzli_identity::CookiePolicy::new(false,"fixture-session-key-at-least32-characters").unwrap()));let ids=Arc::new(spitzli_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,spitzli_ids::Identity::platform(0,2).unwrap()));
         let service=Submissions::new(MailDependencies{auth,business,worker,identity,browser:None,ids},KEY,true).await.unwrap();
         owner.execute_unprepared("INSERT INTO webdock_mail.month_usage(customer_id,period_start,reserved,accepted) VALUES('123',date_trunc('month',now() AT TIME ZONE 'UTC')::date,3,0)").await.unwrap();
         for (id,state)in [("789","queued"),("790","staging"),("791","queued")]{

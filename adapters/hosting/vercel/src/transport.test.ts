@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createVercelJSONTransport } from "./transport";
-import { HostingProviderError } from "@webdock/hosting-provider-contracts";
+import { HostingProviderError } from "@spitzli/hosting-provider-contracts";
 test("Vercel transport pins origin/team and never forwards redirects", async () => {
   let calls = 0;
   const transport = createVercelJSONTransport(async (input, init) => {

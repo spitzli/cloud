@@ -2,7 +2,7 @@
 import { constants } from "node:fs";
 import { open, unlink } from "node:fs/promises";
 import { Pool, type PoolClient } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import {
   OperatorSetupError,
   type InitialOperatorInput,

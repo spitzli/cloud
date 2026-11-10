@@ -2,13 +2,13 @@ import { configureFullInstallation } from "./full-installation";
 configureFullInstallation();
 import { validateClerkWorkerConfiguration } from "./modules/auth/clerk-configuration";
 import { validateWorkerModules } from "./installation";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 process.env.WEBDOCK_PROCESS_ROLE = "worker";
 import {
   readJobQueueConfiguration,
   startCoreJobWorkers,
   type JobDomain,
-} from "@webdock/core/jobs";
+} from "@spitzli/core/jobs";
 const jobQueueConfiguration = readJobQueueConfiguration();
 
 import { claim, complete, fail, renew, schedule, type JobName } from "./jobs";

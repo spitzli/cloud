@@ -8,7 +8,7 @@ import {
 } from "node:crypto";
 import { z } from "zod";
 import { parsePluginManifest } from "@spitzli/plugin-sdk/contracts";
-import type { PluginImport } from "@webdock/api-client/plugin-sources";
+import type { PluginImport } from "@spitzli/api-client/plugin-sources";
 
 export const sourceLimit = 32 * 1024 * 1024;
 export const chunkLimit = 65536;

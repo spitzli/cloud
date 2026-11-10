@@ -1,7 +1,7 @@
 //! Pure, unlinked Part B contract. No service/worker/SQL/agent admission wiring.
 use chrono::{DateTime, Utc};
 use serde_json::{Value, json};
-use webdock_databases::ManagedCommand;
+use spitzli_databases::ManagedCommand;
 
 #[path = "../src/restore_intent.rs"]
 mod restore_intent;

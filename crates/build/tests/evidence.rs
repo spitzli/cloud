@@ -1,11 +1,11 @@
 use ed25519_dalek::SigningKey;
 use serde_json::json;
 use sha2::{Digest, Sha256};
-use std::{collections::BTreeMap, os::unix::fs::PermissionsExt};
-use webdock_build::{
+use spitzli_build::{
     artifact::{Archive, ArtifactStore, MAX_OUTPUT},
     evidence::{BuildEvidence, MachineIdentity, assemble, validate},
 };
+use std::{collections::BTreeMap, os::unix::fs::PermissionsExt};
 fn legacy() -> Vec<u8> {
     let config = b"{}".to_vec();
     let hash = hex::encode(Sha256::digest(&config));
@@ -207,13 +207,13 @@ fn escaped_source_filenames_cannot_construct_an_unreadable_inventory() {
     }
     let archive = Archive::from_files(files).unwrap();
     let source = archive.encode().unwrap();
-    Archive::read(&source, webdock_build::artifact::MAX_SOURCE).unwrap();
+    Archive::read(&source, spitzli_build::artifact::MAX_SOURCE).unwrap();
     let guest = archive
         .guest_request(b"{}".to_vec())
         .unwrap()
         .encode()
         .unwrap();
-    Archive::read(&guest, webdock_build::artifact::MAX_SOURCE).unwrap();
+    Archive::read(&guest, spitzli_build::artifact::MAX_SOURCE).unwrap();
     assert!(
         matches!(assemble(&legacy(),&source,&input(),None),Err(error) if error.code=="artifact_inventory_limit"),
         "Oversized inventory must be rejected before returning a bundle"
@@ -340,15 +340,15 @@ fn frontend_bundle_binds_exact_output_and_source_configuration_in_format_two() {
     assert_eq!(saved.format_version().unwrap(), 2);
     assert!(saved.storage_key().ends_with(".e2.tar"));
     let retained =
-        webdock_build::frontend::retained(&store, &saved, &build, Some(&key.verifying_key()))
+        spitzli_build::frontend::retained(&store, &saved, &build, Some(&key.verifying_key()))
             .unwrap();
     assert_eq!(retained.files()["index.html"], b"<p>retained frontend</p>");
     let mut other = build.clone();
     other.project_id = "301".into();
-    assert!(webdock_build::frontend::retained(&store, &saved, &other, None).is_err());
+    assert!(spitzli_build::frontend::retained(&store, &saved, &other, None).is_err());
     other = build.clone();
     other.source_commit = "c".repeat(40);
-    assert!(webdock_build::frontend::retained(&store, &saved, &other, None).is_err());
+    assert!(spitzli_build::frontend::retained(&store, &saved, &other, None).is_err());
     assert_eq!(
         store
             .load(

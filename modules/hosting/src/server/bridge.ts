@@ -1,14 +1,14 @@
-import type { DatabaseServices } from "@webdock/database-contracts/runtime-ports";
+import type { DatabaseServices } from "@spitzli/database-contracts/runtime-ports";
 import type { HostingPorts } from "./ports";
 import { z } from "zod";
-import { gitOAuthCommandSchema } from "@webdock/hosting-contracts/git-oauth";
+import { gitOAuthCommandSchema } from "@spitzli/hosting-contracts/git-oauth";
 import {
   commandSchema,
   resourceID,
   HostingError,
   hostingError,
   type HostingActor,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export type Dependencies = {
   introspectToken(
     accessToken: string,

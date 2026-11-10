@@ -1,13 +1,13 @@
 #![cfg(feature = "local-registry-test")]
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
+use spitzli_build::{
+    artifact::{Archive, ArtifactStore, MAX_OUTPUT},
+    publisher::{PublicationGuard, RegistryCredential, RegistryPublisher},
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::atomic::{AtomicBool, Ordering},
-};
-use webdock_build::{
-    artifact::{Archive, ArtifactStore, MAX_OUTPUT},
-    publisher::{PublicationGuard, RegistryCredential, RegistryPublisher},
 };
 
 #[derive(Deserialize)]
@@ -37,7 +37,7 @@ fn fixture() -> Fixture {
 fn source() -> (
     tempfile::TempDir,
     ArtifactStore,
-    webdock_build::artifact::StoredArtifact,
+    spitzli_build::artifact::StoredArtifact,
 ) {
     let dir = tempfile::tempdir().unwrap();
     std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
@@ -50,7 +50,7 @@ fn source() -> (
     let artifact = store.put("100", "200", 1, &bytes).unwrap();
     (dir, store, artifact)
 }
-fn newer_artifact(store: &ArtifactStore) -> webdock_build::artifact::StoredArtifact {
+fn newer_artifact(store: &ArtifactStore) -> spitzli_build::artifact::StoredArtifact {
     use serde_json::json;
     use std::collections::BTreeMap;
     let config =
@@ -80,11 +80,11 @@ fn newer_artifact(store: &ArtifactStore) -> webdock_build::artifact::StoredArtif
 struct Guard(AtomicBool);
 #[async_trait::async_trait]
 impl PublicationGuard for Guard {
-    async fn check(&self) -> webdock_build::Result<()> {
+    async fn check(&self) -> spitzli_build::Result<()> {
         if self.0.load(Ordering::SeqCst) {
             Ok(())
         } else {
-            Err(webdock_build::Error {
+            Err(spitzli_build::Error {
                 code: "lease_revoked",
                 logs: String::new(),
             })
@@ -94,8 +94,8 @@ impl PublicationGuard for Guard {
 async fn verify_pull(
     config: &Fixture,
     store: &ArtifactStore,
-    artifact: &webdock_build::artifact::StoredArtifact,
-    newer: &webdock_build::artifact::StoredArtifact,
+    artifact: &spitzli_build::artifact::StoredArtifact,
+    newer: &spitzli_build::artifact::StoredArtifact,
 ) {
     let client = reqwest::Client::builder()
         .no_proxy()

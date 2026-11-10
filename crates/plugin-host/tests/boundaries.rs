@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_plugin_host::{data::validate_write, http::validate_path};
+use spitzli_plugin_host::{data::validate_write, http::validate_path};
 #[test]
 fn document_boundary_rejects_unscoped_or_invalid_writes() {
     assert!(validate_write(json!({"key":"notes.v1","value":null,"expectedRevision":null,"idempotencyKey":"request-1"})).is_ok());
@@ -38,12 +38,12 @@ fn retained_node_receipt_hashes_match_locale_numbers_and_key_order() {
         serde_json::from_str(include_str!("node-canonical.json")).unwrap();
     for fixture in fixtures.as_array().unwrap() {
         let canonical =
-            webdock_plugin_host::data::javascript_json(&fixture["input"], true).unwrap();
+            spitzli_plugin_host::data::javascript_json(&fixture["input"], true).unwrap();
         assert_eq!(canonical, fixture["canonical"].as_str().unwrap());
         assert_eq!(hex::encode(Sha256::digest(canonical)), fixture["sha256"]);
     }
     assert_eq!(
-        webdock_plugin_host::data::javascript_json(&serde_json::from_str("-0").unwrap(), false)
+        spitzli_plugin_host::data::javascript_json(&serde_json::from_str("-0").unwrap(), false)
             .unwrap(),
         "0"
     );

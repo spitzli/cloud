@@ -1,1 +1,1 @@
-export * from "@webdock/console-kit/list-controls";
+export * from "@spitzli/console-kit/list-controls";

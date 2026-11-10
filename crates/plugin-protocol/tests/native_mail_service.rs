@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_plugin_protocol::Manifest;
+use spitzli_plugin_protocol::Manifest;
 #[test]
 fn native_mail_service_is_explicit_and_availability_checked() {
     let mut v: serde_json::Value =

@@ -1,5 +1,5 @@
 use super::*;
-use webdock_plugin_protocol::ErrorCode;
+use spitzli_plugin_protocol::ErrorCode;
 
 // Pause an actual claim after discovery/auth but before it acquires the job row lock.
 // This uses the existing enrollment boundary rather than adding a production test hook.
@@ -9,12 +9,12 @@ struct ClaimCheckpoint {
     resume: tokio::sync::Notify,
 }
 #[async_trait::async_trait]
-impl webdock_plugin_host::RuntimeBindings for ClaimCheckpoint {
+impl spitzli_plugin_host::RuntimeBindings for ClaimCheckpoint {
     async fn runtime(
         &self,
         plugin: &str,
-    ) -> webdock_plugin_protocol::Result<Option<webdock_plugin_host::RuntimeBinding>> {
-        let binding = webdock_plugin_host::RuntimeBindings::runtime(&self.file, plugin).await?;
+    ) -> spitzli_plugin_protocol::Result<Option<spitzli_plugin_host::RuntimeBinding>> {
+        let binding = spitzli_plugin_host::RuntimeBindings::runtime(&self.file, plugin).await?;
         self.entered.notify_one();
         self.resume.notified().await;
         Ok(binding)
@@ -47,9 +47,9 @@ async fn final_stale_discovery_cannot_claim_exhausted_or_cancel_requested_work()
                 f.database.role("webdock_auth_runtime").await,
                 f.database.role("webdock_worker_runtime").await,
                 "owned-plugin-jobs-rls-secret-32bytes".into(),
-                Arc::new(webdock_persistence::IdAllocator::new(
+                Arc::new(spitzli_persistence::IdAllocator::new(
                     f.database.role("webdock_auth_runtime").await,
-                    webdock_ids::Identity::platform(0, 3).unwrap(),
+                    spitzli_ids::Identity::platform(0, 3).unwrap(),
                 )),
                 checkpoint.clone(),
                 ed25519_dalek::SigningKey::from_bytes(&[19; 32]),
@@ -336,7 +336,7 @@ async fn configuration_case(configuration: Value, schema: Value) {
     assert!(f.owner.execute_unprepared("UPDATE webdock_auth.plugin_invocation SET session_context=session_context||jsonb_build_object('extraAuthority',repeat('x',16384))").await.is_err(),"authority/context overhead must retain its original bound");
     if configuration["data"].is_string() {
         sql(&f.owner,"UPDATE webdock_auth.plugin_configuration SET configuration=jsonb_build_object('data',repeat('x',65536))",vec![]).await;
-        let attempted=f.host.admit_with_authority(&f.actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":"start","input":{},"idempotencyKey":"oversize-config"})).unwrap(),true,&webdock_browser_session::StoredAuthority::LocalSession{}).await;
+        let attempted=f.host.admit_with_authority(&f.actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":"start","input":{},"idempotencyKey":"oversize-config"})).unwrap(),true,&spitzli_browser_session::StoredAuthority::LocalSession{}).await;
         assert_eq!(attempted.err().unwrap().code, ErrorCode::InvalidInput);
     }
 }

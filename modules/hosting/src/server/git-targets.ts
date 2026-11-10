@@ -3,7 +3,7 @@ import {
   HostingError,
   type HostingActor,
   type GitDeploymentCommand,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 export type Dependencies = {
   authorizeHosting: ReturnType<

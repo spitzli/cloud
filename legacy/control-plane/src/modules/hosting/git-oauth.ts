@@ -1,4 +1,4 @@
-import { createHostingGitOauth } from "@webdock/module-hosting/server/git-oauth";
+import { createHostingGitOauth } from "@spitzli/module-hosting/server/git-oauth";
 import { withHostingDatabase } from "../../db/database-context";
 import { encryptMailSecret, decryptMailSecret } from "../platform/platform";
 import { authorizeHosting } from "./authorization";

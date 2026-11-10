@@ -80,7 +80,7 @@ End-to-end verified: the GitHub callback linked `NewtTheWolf` to the existing ad
 - Webdock name, orange palette, existing light/dark wordmarks and favicon, English/German home copy and About page. The companion-app promotion is disabled because its stock copy falsely promises one-click runtime installation.
 - **External docs URL remains `https://docs.webdock.dev/`**, as explicitly selected by the owner. Header and footer links verified in the browser. Plugin pages and navigation are added under `docs/developers/`; they are not yet published by the connected `main`-branch Mintlify deployment.
 - Public configuration snapshot: `infra/registry/webdock-configuration.json`; kind schema is referenced rather than duplicated. OAuth secrets and runtime secrets are excluded. Apply through authenticated admin APIs/MCP, preserving unrelated settings.
-- Registry MCP `webdock-registry` is authenticated with all 40 available scopes under the existing admin account; the unrelated `tabularium` connection still targets registry.tabularis.dev.
+- Registry MCP `spitzli-registry` is authenticated with all 40 available scopes under the existing admin account; the unrelated `tabularium` connection still targets registry.tabularis.dev.
 
 ### Runtime validation finding
 

@@ -11,8 +11,8 @@ use tower::ServiceExt;
 
 #[tokio::test]
 async fn database_metadata_bearer_routes_never_bridge_a_browser_cookie() {
-    let app = webdock_control_plane::http::build_app(
-        webdock_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
+    let app = spitzli_control_plane::http::build_app(
+        spitzli_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
         DatabaseConnection::default(),
     );
     for path in [
@@ -46,8 +46,8 @@ async fn database_metadata_bearer_routes_never_bridge_a_browser_cookie() {
 
 #[tokio::test]
 async fn database_bearer_reads_preserve_host_and_origin_boundaries() {
-    let app = webdock_control_plane::http::build_app(
-        webdock_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
+    let app = spitzli_control_plane::http::build_app(
+        spitzli_core::config::PlatformConfig::from_map(&HashMap::new()).unwrap(),
         DatabaseConnection::default(),
     );
     for (host, origin, status) in [
@@ -160,7 +160,7 @@ async fn resource_rest_json_carrier_keeps_page_at_root_without_console_envelope(
 #[test]
 fn oauth_native_token_response_is_typed_and_uses_standard_root_fields() {
     // Pure serialization only: this constant is not an issued token or authority.
-    let response = webdock_oauth::TokenResponse {
+    let response = spitzli_oauth::TokenResponse {
         access_token: "unissued-wire-test".into(),
         token_type: "Bearer".into(),
         expires_in: 300,
@@ -172,10 +172,10 @@ fn oauth_native_token_response_is_typed_and_uses_standard_root_fields() {
     assert!(wire.get("data").is_none());
     assert_eq!(wire["token_type"], "Bearer");
     assert_eq!(wire["expires_in"], 300);
-    let decoded: webdock_oauth::TokenResponse = serde_json::from_value(wire).unwrap();
+    let decoded: spitzli_oauth::TokenResponse = serde_json::from_value(wire).unwrap();
     assert_eq!(decoded.scope, "openid hosting:read");
-    let outcome=webdock_oauth::AuthorizationOutcome::Redirect("https://client.example.test/callback?code=unissued-code&iss=https%3A%2F%2Fauth.example.test%2Fapi%2Fauth".into());
-    let webdock_oauth::AuthorizationOutcome::Redirect(location) = outcome else {
+    let outcome=spitzli_oauth::AuthorizationOutcome::Redirect("https://client.example.test/callback?code=unissued-code&iss=https%3A%2F%2Fauth.example.test%2Fapi%2Fauth".into());
+    let spitzli_oauth::AuthorizationOutcome::Redirect(location) = outcome else {
         panic!("typed redirect")
     };
     let url = url::Url::parse(&location).unwrap();

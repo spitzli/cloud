@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { getTenantMailboxes } from "@/lib/mailboxes";
 import { Webmail } from "@/components/mail/webmail";
 import "./style.css";

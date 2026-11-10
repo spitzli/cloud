@@ -10,10 +10,10 @@
       },
     },
     "adapters/databases/postgres": {
-      "name": "@webdock/adapter-database-postgres",
+      "name": "@spitzli/adapter-database-postgres",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/database-runtime": "*",
+        "@spitzli/database-runtime": "*",
         "drizzle-orm": "1.0.0-rc.4",
         "pg": "8.16.3",
       },
@@ -22,30 +22,30 @@
       },
     },
     "adapters/hosting/github": {
-      "name": "@webdock/adapter-hosting-github",
+      "name": "@spitzli/adapter-hosting-github",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/hosting-contracts": "*",
-        "@webdock/hosting-provider-contracts": "*",
+        "@spitzli/hosting-contracts": "*",
+        "@spitzli/hosting-provider-contracts": "*",
       },
     },
     "adapters/hosting/vercel": {
-      "name": "@webdock/adapter-hosting-vercel",
+      "name": "@spitzli/adapter-hosting-vercel",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/hosting-provider-contracts": "*",
+        "@spitzli/hosting-provider-contracts": "*",
       },
     },
     "adapters/mail/turbosmtp": {
-      "name": "@webdock/adapter-mail-turbosmtp",
+      "name": "@spitzli/adapter-mail-turbosmtp",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/mail-contracts": "*",
-        "@webdock/module-mail": "*",
+        "@spitzli/mail-contracts": "*",
+        "@spitzli/module-mail": "*",
       },
     },
     "adapters/plugins/tabularium": {
-      "name": "@webdock/adapter-plugin-tabularium",
+      "name": "@spitzli/adapter-plugin-tabularium",
       "version": "0.1.0",
       "dependencies": {
         "@spitzli/plugin-sdk": "*",
@@ -53,26 +53,26 @@
       },
     },
     "adapters/storage/vercel": {
-      "name": "@webdock/adapter-storage-vercel",
+      "name": "@spitzli/adapter-storage-vercel",
       "version": "0.1.0",
       "dependencies": {
         "@vercel/blob": "2.3.1",
-        "@webdock/module-storage": "*",
+        "@spitzli/module-storage": "*",
       },
     },
     "apps/cms-instance": {
-      "name": "@webdock/cms-instance",
+      "name": "@spitzli/cms-instance",
       "version": "0.1.0",
       "dependencies": {
         "@payloadcms/db-postgres": "4.0.0-canary.37",
         "@payloadcms/next": "4.0.0-canary.37",
         "@payloadcms/storage-s3": "4.0.0-canary.37",
-        "@webdock/cms-bridge": "*",
-        "@webdock/cms-ui": "*",
-        "@webdock/database-runtime": "*",
-        "@webdock/i18n": "*",
-        "@webdock/instance-kit": "*",
-        "@webdock/payload-sso": "*",
+        "@spitzli/cms-bridge": "*",
+        "@spitzli/cms-ui": "*",
+        "@spitzli/database-runtime": "*",
+        "@spitzli/i18n": "*",
+        "@spitzli/instance-kit": "*",
+        "@spitzli/payload-sso": "*",
         "graphql": "16.14.2",
         "next": "16.3.8",
         "payload": "4.0.0-canary.37",
@@ -90,7 +90,7 @@
       },
     },
     "apps/console": {
-      "name": "@webdock/console",
+      "name": "@spitzli/console",
       "version": "0.1.0",
       "dependencies": {
         "@fontsource-variable/inter": "5.3.0",
@@ -99,10 +99,10 @@
         "@simplewebauthn/browser": "13.3.0",
         "@tanstack/react-query": "5.104.5",
         "@tanstack/react-router": "1.170.45",
-        "@webdock/database-contracts": "*",
-        "@webdock/hosting-contracts": "*",
-        "@webdock/i18n": "*",
-        "@webdock/module-databases": "*",
+        "@spitzli/database-contracts": "*",
+        "@spitzli/hosting-contracts": "*",
+        "@spitzli/i18n": "*",
+        "@spitzli/module-databases": "*",
         "buffer": "6.0.3",
         "dompurify": "3.4.16",
         "qrcode.react": "4.2.0",
@@ -130,38 +130,38 @@
       },
     },
     "apps/database-gateway": {
-      "name": "@webdock/database-gateway",
+      "name": "@spitzli/database-gateway",
       "version": "0.1.0",
       "devDependencies": {
         "@types/node": "^24",
         "@types/ws": "8.18.2",
-        "@webdock/database-contracts": "*",
-        "@webdock/integration-tabularis-web": "*",
+        "@spitzli/database-contracts": "*",
+        "@spitzli/integration-tabularis-web": "*",
         "typescript": "^5",
         "ws": "8.22.0",
       },
     },
     "apps/realtime-sealer": {
-      "name": "@webdock/realtime-sealer",
+      "name": "@spitzli/realtime-sealer",
       "version": "0.1.0",
       "dependencies": {
         "@neon/realtime": "0.1.2",
       },
     },
     "apps/website": {
-      "name": "@webdock/web",
+      "name": "@spitzli/web",
       "version": "0.1.0",
       "dependencies": {
         "@payloadcms/db-postgres": "4.0.0-canary.37",
         "@payloadcms/email-nodemailer": "4.0.0-canary.37",
         "@payloadcms/next": "4.0.0-canary.37",
         "@payloadcms/ui": "4.0.0-canary.37",
-        "@webdock/cms-bridge": "*",
-        "@webdock/cms-ui": "*",
-        "@webdock/database-runtime": "*",
-        "@webdock/i18n": "*",
-        "@webdock/instance-kit": "*",
-        "@webdock/payload-sso": "*",
+        "@spitzli/cms-bridge": "*",
+        "@spitzli/cms-ui": "*",
+        "@spitzli/database-runtime": "*",
+        "@spitzli/i18n": "*",
+        "@spitzli/instance-kit": "*",
+        "@spitzli/payload-sso": "*",
         "graphql": "16.14.2",
         "next": "16.3.8",
         "nodemailer": "10.0.13",
@@ -184,51 +184,51 @@
       },
     },
     "extensions/managed-cms": {
-      "name": "@webdock/extension-managed-cms",
+      "name": "@spitzli/extension-managed-cms",
       "version": "0.1.0-alpha.1",
       "dependencies": {
         "@spitzli/plugin-sdk": "*",
-        "@webdock/cms-bridge": "*",
-        "@webdock/cms-ui": "*",
+        "@spitzli/cms-bridge": "*",
+        "@spitzli/cms-ui": "*",
         "react": "19.2.8",
         "react-dom": "19.2.8",
         "zod": "4.6.5",
       },
     },
     "integrations/tabularis-web": {
-      "name": "@webdock/integration-tabularis-web",
+      "name": "@spitzli/integration-tabularis-web",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/database-contracts": "*",
-        "@webdock/module-databases": "*",
+        "@spitzli/database-contracts": "*",
+        "@spitzli/module-databases": "*",
         "zod": "4.6.5",
       },
     },
     "modules/cms": {
-      "name": "@webdock/module-cms",
+      "name": "@spitzli/module-cms",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/core": "*",
-        "@webdock/i18n": "*",
-        "@webdock/module-sdk": "*",
-        "@webdock/page-builder": "*",
-        "@webdock/platform-db": "*",
+        "@spitzli/core": "*",
+        "@spitzli/i18n": "*",
+        "@spitzli/module-sdk": "*",
+        "@spitzli/page-builder": "*",
+        "@spitzli/platform-db": "*",
         "drizzle-orm": "1.0.0-rc.4",
         "zod": "4.6.5",
       },
     },
     "modules/databases": {
-      "name": "@webdock/module-databases",
+      "name": "@spitzli/module-databases",
       "version": "0.1.0",
       "dependencies": {
         "@tabularis/web-ui": "file:../../vendor/tabularis-web-ui-fdd6c0a6-startup.tgz",
-        "@webdock/console-kit": "*",
-        "@webdock/core": "*",
-        "@webdock/database-contracts": "*",
-        "@webdock/database-runtime": "*",
-        "@webdock/hosting-contracts": "*",
-        "@webdock/i18n": "*",
-        "@webdock/module-sdk": "*",
+        "@spitzli/console-kit": "*",
+        "@spitzli/core": "*",
+        "@spitzli/database-contracts": "*",
+        "@spitzli/database-runtime": "*",
+        "@spitzli/hosting-contracts": "*",
+        "@spitzli/i18n": "*",
+        "@spitzli/module-sdk": "*",
         "zod": "4.6.5",
       },
       "peerDependencies": {
@@ -237,19 +237,19 @@
       },
     },
     "modules/hosting": {
-      "name": "@webdock/module-hosting",
+      "name": "@spitzli/module-hosting",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/console-kit": "*",
-        "@webdock/core": "*",
-        "@webdock/database-contracts": "*",
-        "@webdock/database-runtime": "*",
-        "@webdock/hosting-contracts": "*",
-        "@webdock/hosting-provider-contracts": "*",
-        "@webdock/i18n": "*",
-        "@webdock/mail-contracts": "*",
-        "@webdock/module-sdk": "*",
-        "@webdock/search": "*",
+        "@spitzli/console-kit": "*",
+        "@spitzli/core": "*",
+        "@spitzli/database-contracts": "*",
+        "@spitzli/database-runtime": "*",
+        "@spitzli/hosting-contracts": "*",
+        "@spitzli/hosting-provider-contracts": "*",
+        "@spitzli/i18n": "*",
+        "@spitzli/mail-contracts": "*",
+        "@spitzli/module-sdk": "*",
+        "@spitzli/search": "*",
         "ipaddr.js": "2.3.0",
         "pg": "8.16.3",
         "zod": "4.6.5",
@@ -260,15 +260,15 @@
       },
     },
     "modules/mail": {
-      "name": "@webdock/module-mail",
+      "name": "@spitzli/module-mail",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/core": "*",
-        "@webdock/database-runtime": "*",
-        "@webdock/hosting-contracts": "*",
-        "@webdock/i18n": "*",
-        "@webdock/mail-contracts": "*",
-        "@webdock/module-sdk": "*",
+        "@spitzli/core": "*",
+        "@spitzli/database-runtime": "*",
+        "@spitzli/hosting-contracts": "*",
+        "@spitzli/i18n": "*",
+        "@spitzli/mail-contracts": "*",
+        "@spitzli/module-sdk": "*",
         "dompurify": "^3.4.16",
         "ipaddr.js": "2.3.0",
         "pg": "8.16.3",
@@ -280,12 +280,12 @@
       },
     },
     "modules/storage": {
-      "name": "@webdock/module-storage",
+      "name": "@spitzli/module-storage",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/core": "*",
-        "@webdock/i18n": "*",
-        "@webdock/module-sdk": "*",
+        "@spitzli/core": "*",
+        "@spitzli/i18n": "*",
+        "@spitzli/module-sdk": "*",
       },
       "devDependencies": {
         "@types/pg": "^8",
@@ -295,71 +295,71 @@
       },
     },
     "packages/api-client": {
-      "name": "@webdock/api-client",
+      "name": "@spitzli/api-client",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/core": "*",
-        "@webdock/database-contracts": "*",
-        "@webdock/hosting-contracts": "*",
-        "@webdock/mail-contracts": "*",
-        "@webdock/mail-core": "*",
-        "@webdock/module-cms": "*",
+        "@spitzli/core": "*",
+        "@spitzli/database-contracts": "*",
+        "@spitzli/hosting-contracts": "*",
+        "@spitzli/mail-contracts": "*",
+        "@spitzli/mail-core": "*",
+        "@spitzli/module-cms": "*",
       },
     },
     "packages/auth-better-auth": {
-      "name": "@webdock/auth-better-auth",
+      "name": "@spitzli/auth-better-auth",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/core": "*",
+        "@spitzli/core": "*",
         "better-auth": "1.7.7",
         "better-call": "1.4.0",
       },
     },
     "packages/auth-clerk": {
-      "name": "@webdock/auth-clerk",
+      "name": "@spitzli/auth-clerk",
       "version": "0.1.0",
       "dependencies": {
         "@clerk/backend": "3.24.0",
-        "@webdock/auth-configuration": "*",
-        "@webdock/core": "*",
+        "@spitzli/auth-configuration": "*",
+        "@spitzli/core": "*",
       },
     },
     "packages/auth-configuration": {
-      "name": "@webdock/auth-configuration",
+      "name": "@spitzli/auth-configuration",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/auth-better-auth": "*",
-        "@webdock/auth-clerk": "*",
-        "@webdock/core": "*",
+        "@spitzli/auth-better-auth": "*",
+        "@spitzli/auth-clerk": "*",
+        "@spitzli/core": "*",
       },
     },
     "packages/cms-bridge": {
-      "name": "@webdock/cms-bridge",
+      "name": "@spitzli/cms-bridge",
       "version": "0.1.0",
       "peerDependencies": {
-        "@webdock/payload-sso": "*",
+        "@spitzli/payload-sso": "*",
         "payload": "4.0.0-canary.37",
       },
     },
     "packages/cms-ui": {
-      "name": "@webdock/cms-ui",
+      "name": "@spitzli/cms-ui",
       "version": "0.1.0",
       "devDependencies": {
         "happy-dom": "20.14.5",
       },
       "peerDependencies": {
-        "@webdock/i18n": "*",
+        "@spitzli/i18n": "*",
         "next": ">=16",
         "payload": "4.0.0-canary.37",
         "react": ">=19",
       },
     },
     "packages/console-kit": {
-      "name": "@webdock/console-kit",
+      "name": "@spitzli/console-kit",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/i18n": "*",
-        "@webdock/search": "*",
+        "@spitzli/i18n": "*",
+        "@spitzli/search": "*",
       },
       "peerDependencies": {
         "next": ">=16",
@@ -367,11 +367,11 @@
       },
     },
     "packages/core": {
-      "name": "@webdock/core",
+      "name": "@spitzli/core",
       "version": "0.1.0",
       "dependencies": {
         "@spitzli/plugin-sdk": "*",
-        "@webdock/platform-db": "*",
+        "@spitzli/platform-db": "*",
         "bullmq": "6.3.16",
         "drizzle-orm": "1.0.0-rc.4",
         "ioredis": "6.0.0",
@@ -382,15 +382,15 @@
       },
     },
     "packages/database-contracts": {
-      "name": "@webdock/database-contracts",
+      "name": "@spitzli/database-contracts",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/hosting-contracts": "*",
+        "@spitzli/hosting-contracts": "*",
         "zod": "4.6.5",
       },
     },
     "packages/database-runtime": {
-      "name": "@webdock/database-runtime",
+      "name": "@spitzli/database-runtime",
       "version": "0.1.0",
       "dependencies": {
         "pg": "8.16.3",
@@ -400,12 +400,12 @@
       },
     },
     "packages/hosting-contracts": {
-      "name": "@webdock/hosting-contracts",
+      "name": "@spitzli/hosting-contracts",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/adapter-hosting-vercel": "*",
-        "@webdock/database-runtime": "*",
-        "@webdock/i18n": "*",
+        "@spitzli/adapter-hosting-vercel": "*",
+        "@spitzli/database-runtime": "*",
+        "@spitzli/i18n": "*",
         "zod": "4.6.5",
       },
       "devDependencies": {
@@ -416,11 +416,11 @@
       },
     },
     "packages/hosting-provider-contracts": {
-      "name": "@webdock/hosting-provider-contracts",
+      "name": "@spitzli/hosting-provider-contracts",
       "version": "0.1.0",
     },
     "packages/i18n": {
-      "name": "@webdock/i18n",
+      "name": "@spitzli/i18n",
       "version": "0.1.0",
       "peerDependencies": {
         "next": "^16.3.8",
@@ -428,31 +428,31 @@
       },
     },
     "packages/instance-kit": {
-      "name": "@webdock/instance-kit",
+      "name": "@spitzli/instance-kit",
       "version": "0.1.0",
       "peerDependencies": {
         "payload": "4.0.0-canary.37",
       },
     },
     "packages/lead-bookings": {
-      "name": "@webdock/lead-bookings",
+      "name": "@spitzli/lead-bookings",
       "version": "0.1.0",
       "peerDependencies": {
         "payload": "4.0.0-canary.37",
       },
     },
     "packages/mail-contracts": {
-      "name": "@webdock/mail-contracts",
+      "name": "@spitzli/mail-contracts",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/core": "*",
+        "@spitzli/core": "*",
       },
     },
     "packages/mail-core": {
-      "name": "@webdock/mail-core",
+      "name": "@spitzli/mail-core",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/module-mail": "*",
+        "@spitzli/module-mail": "*",
         "pg": "8.16.3",
       },
       "devDependencies": {
@@ -460,7 +460,7 @@
       },
     },
     "packages/module-sdk": {
-      "name": "@webdock/module-sdk",
+      "name": "@spitzli/module-sdk",
       "version": "0.1.0",
       "dependencies": {
         "@spitzli/plugin-sdk": "*",
@@ -474,7 +474,7 @@
       },
     },
     "packages/oauth-session": {
-      "name": "@webdock/oauth-session",
+      "name": "@spitzli/oauth-session",
       "version": "0.1.0",
       "dependencies": {
         "iron-session": "^8.0.4",
@@ -482,7 +482,7 @@
       },
     },
     "packages/page-builder": {
-      "name": "@webdock/page-builder",
+      "name": "@spitzli/page-builder",
       "version": "0.1.0",
       "peerDependencies": {
         "payload": "4.0.0-canary.37",
@@ -490,17 +490,17 @@
       },
     },
     "packages/payload-sso": {
-      "name": "@webdock/payload-sso",
+      "name": "@spitzli/payload-sso",
       "version": "0.1.0",
       "dependencies": {
-        "@webdock/oauth-session": "*",
+        "@spitzli/oauth-session": "*",
       },
       "peerDependencies": {
         "payload": "4.0.0-canary.37",
       },
     },
     "packages/platform-db": {
-      "name": "@webdock/platform-db",
+      "name": "@spitzli/platform-db",
       "version": "0.1.0",
       "dependencies": {
         "drizzle-orm": "1.0.0-rc.4",
@@ -515,7 +515,6 @@
       "version": "0.1.0",
       "bin": {
         "spitzli-cloud": "src/cli.js",
-        "webdock": "src/cli.js",
       },
       "dependencies": {
         "@spitzli/plugin-sdk": "0.1.0",
@@ -534,11 +533,11 @@
       },
     },
     "packages/search": {
-      "name": "@webdock/search",
+      "name": "@spitzli/search",
       "version": "0.1.0",
       "dependencies": {
         "@orama/orama": "3.1.18",
-        "@webdock/i18n": "*",
+        "@spitzli/i18n": "*",
       },
       "peerDependencies": {
         "next": "^16.3.8",
@@ -546,7 +545,7 @@
       },
     },
     "packages/snowflake": {
-      "name": "@webdock/snowflake",
+      "name": "@spitzli/snowflake",
       "version": "0.1.0",
     },
   },
@@ -1212,89 +1211,89 @@
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@6.1.2", "", { "dependencies": { "@rolldown/pluginutils": "^1.0.1" }, "peerDependencies": { "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0", "babel-plugin-react-compiler": "^1.0.0", "oxc-transform-react": "^0.152.0", "vite": "^8.0.0" }, "optionalPeers": ["@rolldown/plugin-babel", "babel-plugin-react-compiler", "oxc-transform-react"] }, "sha512-fhJNGUdscQa4HkI0xFxwonWyhnVReCPDbXI7FH7jmzpnVCrFQI7PRrhWecO263610vOrs9tr2Y4xcf8uAdFxbw=="],
 
-    "@webdock/adapter-database-postgres": ["@webdock/adapter-database-postgres@workspace:adapters/databases/postgres"],
+    "@spitzli/adapter-database-postgres": ["@spitzli/adapter-database-postgres@workspace:adapters/databases/postgres"],
 
-    "@webdock/adapter-hosting-github": ["@webdock/adapter-hosting-github@workspace:adapters/hosting/github"],
+    "@spitzli/adapter-hosting-github": ["@spitzli/adapter-hosting-github@workspace:adapters/hosting/github"],
 
-    "@webdock/adapter-hosting-vercel": ["@webdock/adapter-hosting-vercel@workspace:adapters/hosting/vercel"],
+    "@spitzli/adapter-hosting-vercel": ["@spitzli/adapter-hosting-vercel@workspace:adapters/hosting/vercel"],
 
-    "@webdock/adapter-mail-turbosmtp": ["@webdock/adapter-mail-turbosmtp@workspace:adapters/mail/turbosmtp"],
+    "@spitzli/adapter-mail-turbosmtp": ["@spitzli/adapter-mail-turbosmtp@workspace:adapters/mail/turbosmtp"],
 
-    "@webdock/adapter-plugin-tabularium": ["@webdock/adapter-plugin-tabularium@workspace:adapters/plugins/tabularium"],
+    "@spitzli/adapter-plugin-tabularium": ["@spitzli/adapter-plugin-tabularium@workspace:adapters/plugins/tabularium"],
 
-    "@webdock/adapter-storage-vercel": ["@webdock/adapter-storage-vercel@workspace:adapters/storage/vercel"],
+    "@spitzli/adapter-storage-vercel": ["@spitzli/adapter-storage-vercel@workspace:adapters/storage/vercel"],
 
-    "@webdock/api-client": ["@webdock/api-client@workspace:packages/api-client"],
+    "@spitzli/api-client": ["@spitzli/api-client@workspace:packages/api-client"],
 
-    "@webdock/auth-better-auth": ["@webdock/auth-better-auth@workspace:packages/auth-better-auth"],
+    "@spitzli/auth-better-auth": ["@spitzli/auth-better-auth@workspace:packages/auth-better-auth"],
 
-    "@webdock/auth-clerk": ["@webdock/auth-clerk@workspace:packages/auth-clerk"],
+    "@spitzli/auth-clerk": ["@spitzli/auth-clerk@workspace:packages/auth-clerk"],
 
-    "@webdock/auth-configuration": ["@webdock/auth-configuration@workspace:packages/auth-configuration"],
+    "@spitzli/auth-configuration": ["@spitzli/auth-configuration@workspace:packages/auth-configuration"],
 
-    "@webdock/cms-bridge": ["@webdock/cms-bridge@workspace:packages/cms-bridge"],
+    "@spitzli/cms-bridge": ["@spitzli/cms-bridge@workspace:packages/cms-bridge"],
 
-    "@webdock/cms-instance": ["@webdock/cms-instance@workspace:apps/cms-instance"],
+    "@spitzli/cms-instance": ["@spitzli/cms-instance@workspace:apps/cms-instance"],
 
-    "@webdock/cms-ui": ["@webdock/cms-ui@workspace:packages/cms-ui"],
+    "@spitzli/cms-ui": ["@spitzli/cms-ui@workspace:packages/cms-ui"],
 
-    "@webdock/console": ["@webdock/console@workspace:apps/console"],
+    "@spitzli/console": ["@spitzli/console@workspace:apps/console"],
 
-    "@webdock/console-kit": ["@webdock/console-kit@workspace:packages/console-kit"],
+    "@spitzli/console-kit": ["@spitzli/console-kit@workspace:packages/console-kit"],
 
-    "@webdock/core": ["@webdock/core@workspace:packages/core"],
+    "@spitzli/core": ["@spitzli/core@workspace:packages/core"],
 
-    "@webdock/database-contracts": ["@webdock/database-contracts@workspace:packages/database-contracts"],
+    "@spitzli/database-contracts": ["@spitzli/database-contracts@workspace:packages/database-contracts"],
 
-    "@webdock/database-gateway": ["@webdock/database-gateway@workspace:apps/database-gateway"],
+    "@spitzli/database-gateway": ["@spitzli/database-gateway@workspace:apps/database-gateway"],
 
-    "@webdock/database-runtime": ["@webdock/database-runtime@workspace:packages/database-runtime"],
+    "@spitzli/database-runtime": ["@spitzli/database-runtime@workspace:packages/database-runtime"],
 
-    "@webdock/extension-managed-cms": ["@webdock/extension-managed-cms@workspace:extensions/managed-cms"],
+    "@spitzli/extension-managed-cms": ["@spitzli/extension-managed-cms@workspace:extensions/managed-cms"],
 
-    "@webdock/hosting-contracts": ["@webdock/hosting-contracts@workspace:packages/hosting-contracts"],
+    "@spitzli/hosting-contracts": ["@spitzli/hosting-contracts@workspace:packages/hosting-contracts"],
 
-    "@webdock/hosting-provider-contracts": ["@webdock/hosting-provider-contracts@workspace:packages/hosting-provider-contracts"],
+    "@spitzli/hosting-provider-contracts": ["@spitzli/hosting-provider-contracts@workspace:packages/hosting-provider-contracts"],
 
-    "@webdock/i18n": ["@webdock/i18n@workspace:packages/i18n"],
+    "@spitzli/i18n": ["@spitzli/i18n@workspace:packages/i18n"],
 
-    "@webdock/instance-kit": ["@webdock/instance-kit@workspace:packages/instance-kit"],
+    "@spitzli/instance-kit": ["@spitzli/instance-kit@workspace:packages/instance-kit"],
 
-    "@webdock/integration-tabularis-web": ["@webdock/integration-tabularis-web@workspace:integrations/tabularis-web"],
+    "@spitzli/integration-tabularis-web": ["@spitzli/integration-tabularis-web@workspace:integrations/tabularis-web"],
 
-    "@webdock/lead-bookings": ["@webdock/lead-bookings@workspace:packages/lead-bookings"],
+    "@spitzli/lead-bookings": ["@spitzli/lead-bookings@workspace:packages/lead-bookings"],
 
-    "@webdock/mail-contracts": ["@webdock/mail-contracts@workspace:packages/mail-contracts"],
+    "@spitzli/mail-contracts": ["@spitzli/mail-contracts@workspace:packages/mail-contracts"],
 
-    "@webdock/mail-core": ["@webdock/mail-core@workspace:packages/mail-core"],
+    "@spitzli/mail-core": ["@spitzli/mail-core@workspace:packages/mail-core"],
 
-    "@webdock/module-cms": ["@webdock/module-cms@workspace:modules/cms"],
+    "@spitzli/module-cms": ["@spitzli/module-cms@workspace:modules/cms"],
 
-    "@webdock/module-databases": ["@webdock/module-databases@workspace:modules/databases"],
+    "@spitzli/module-databases": ["@spitzli/module-databases@workspace:modules/databases"],
 
-    "@webdock/module-hosting": ["@webdock/module-hosting@workspace:modules/hosting"],
+    "@spitzli/module-hosting": ["@spitzli/module-hosting@workspace:modules/hosting"],
 
-    "@webdock/module-mail": ["@webdock/module-mail@workspace:modules/mail"],
+    "@spitzli/module-mail": ["@spitzli/module-mail@workspace:modules/mail"],
 
-    "@webdock/module-sdk": ["@webdock/module-sdk@workspace:packages/module-sdk"],
+    "@spitzli/module-sdk": ["@spitzli/module-sdk@workspace:packages/module-sdk"],
 
-    "@webdock/module-storage": ["@webdock/module-storage@workspace:modules/storage"],
+    "@spitzli/module-storage": ["@spitzli/module-storage@workspace:modules/storage"],
 
-    "@webdock/oauth-session": ["@webdock/oauth-session@workspace:packages/oauth-session"],
+    "@spitzli/oauth-session": ["@spitzli/oauth-session@workspace:packages/oauth-session"],
 
-    "@webdock/page-builder": ["@webdock/page-builder@workspace:packages/page-builder"],
+    "@spitzli/page-builder": ["@spitzli/page-builder@workspace:packages/page-builder"],
 
-    "@webdock/payload-sso": ["@webdock/payload-sso@workspace:packages/payload-sso"],
+    "@spitzli/payload-sso": ["@spitzli/payload-sso@workspace:packages/payload-sso"],
 
-    "@webdock/platform-db": ["@webdock/platform-db@workspace:packages/platform-db"],
+    "@spitzli/platform-db": ["@spitzli/platform-db@workspace:packages/platform-db"],
 
-    "@webdock/realtime-sealer": ["@webdock/realtime-sealer@workspace:apps/realtime-sealer"],
+    "@spitzli/realtime-sealer": ["@spitzli/realtime-sealer@workspace:apps/realtime-sealer"],
 
-    "@webdock/search": ["@webdock/search@workspace:packages/search"],
+    "@spitzli/search": ["@spitzli/search@workspace:packages/search"],
 
-    "@webdock/snowflake": ["@webdock/snowflake@workspace:packages/snowflake"],
+    "@spitzli/snowflake": ["@spitzli/snowflake@workspace:packages/snowflake"],
 
-    "@webdock/web": ["@webdock/web@workspace:apps/website"],
+    "@spitzli/web": ["@spitzli/web@workspace:apps/website"],
 
     "@xyflow/react": ["@xyflow/react@12.12.0", "", { "dependencies": { "@xyflow/system": "0.0.83", "classcat": "^5.0.3", "zustand": "^4.4.0" }, "peerDependencies": { "@types/react": ">=17", "@types/react-dom": ">=17", "react": ">=17", "react-dom": ">=17" }, "optionalPeers": ["@types/react", "@types/react-dom"] }, "sha512-74oXI0Rgm1Eu33cHQAd74J6oVgCH9mbFyTVQbsGgp2kmWwh0HdtBr2VP04z8mbPD+M/xO69nqG5dDEt7/EN2rQ=="],
 
@@ -2386,9 +2385,9 @@
 
     "@unrs/resolver-binding-wasm32-wasi/@emnapi/runtime": ["@emnapi/runtime@1.10.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA=="],
 
-    "@webdock/console/@types/node": ["@types/node@24.19.2", "", { "dependencies": { "undici-types": ">=7.24.0 <7.24.7" } }, "sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ=="],
+    "@spitzli/console/@types/node": ["@types/node@24.19.2", "", { "dependencies": { "undici-types": ">=7.24.0 <7.24.7" } }, "sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ=="],
 
-    "@webdock/database-gateway/@types/node": ["@types/node@24.19.2", "", { "dependencies": { "undici-types": ">=7.24.0 <7.24.7" } }, "sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ=="],
+    "@spitzli/database-gateway/@types/node": ["@types/node@24.19.2", "", { "dependencies": { "undici-types": ">=7.24.0 <7.24.7" } }, "sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ=="],
 
     "anymatch/picomatch": ["picomatch@2.3.2", "", {}, "sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA=="],
 
@@ -2544,9 +2543,9 @@
 
     "@typescript-eslint/typescript-estree/minimatch/brace-expansion": ["brace-expansion@5.0.12", "", { "dependencies": { "balanced-match": "^4.0.2" } }, "sha512-YovQ3rzhaLMIrDjNDMkNS01tea93qhEhG5xy8f6+R0l+dw3Ki+5sCoIoI942iuLZTHWogWktgwVDhU09iNEimQ=="],
 
-    "@webdock/console/@types/node/undici-types": ["undici-types@7.24.6", "", {}, "sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg=="],
+    "@spitzli/console/@types/node/undici-types": ["undici-types@7.24.6", "", {}, "sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg=="],
 
-    "@webdock/database-gateway/@types/node/undici-types": ["undici-types@7.24.6", "", {}, "sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg=="],
+    "@spitzli/database-gateway/@types/node/undici-types": ["undici-types@7.24.6", "", {}, "sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg=="],
 
     "buffer-image-size/@types/node/undici-types": ["undici-types@7.24.6", "", {}, "sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg=="],
 

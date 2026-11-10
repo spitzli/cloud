@@ -1,18 +1,18 @@
 //! Local HTTP provider stand-in only; no provider resource, credential or real mail.
 use serde_json::json;
+use spitzli_mail::transport::{Platform, Route, Sender};
+use spitzli_mail_runtime::{
+    message::prepare_action_message,
+    outbox::{PayloadFormat, SendLease},
+};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpListener,
 };
-use webdock_mail::transport::{Platform, Route, Sender};
-use webdock_mail_runtime::{
-    message::prepare_action_message,
-    outbox::{PayloadFormat, SendLease},
-};
 #[tokio::test]
 async fn one_http_attempt_preserves_rejection_and_unknown_classifier() {
     let input = json!({"resource_id":"resource","from":"hello","to":"to@example.test","subject":"owned","text":"body"});
-    let compiled = webdock_mail_message::compile_action(input, "example.test").unwrap();
+    let compiled = spitzli_mail_message::compile_action(input, "example.test").unwrap();
     let message = compiled.request.compile_action().unwrap();
     let prepared = prepare_action_message(&message.raw, &message.sender, &message.to).unwrap();
     let job = SendLease {
@@ -21,7 +21,7 @@ async fn one_http_attempt_preserves_rejection_and_unknown_classifier() {
         source_id: format!("action:{}", "a".repeat(64)),
         payload_ref: uuid::Uuid::new_v4().to_string(),
         payload_bytes: compiled.payload.len() as i32,
-        request_hash: webdock_mail_protocol::sha256(&compiled.payload),
+        request_hash: spitzli_mail_protocol::sha256(&compiled.payload),
         payload_format: PayloadFormat::Request,
         source_context: json!({}),
         route: json!({}),

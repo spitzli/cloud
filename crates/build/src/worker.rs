@@ -770,7 +770,7 @@ pub struct WorkerConfig {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct ArtifactStorage {
-    storage: webdock_object_storage::S3Config,
+    storage: spitzli_object_storage::S3Config,
     credential_file: PathBuf,
 }
 fn store_limit() -> u64 {
@@ -911,7 +911,7 @@ impl WorkerConfig {
                     .map_err(|_| error("invalid_artifact_credentials"))?;
             let upload =
                 self.artifact_upload_store.as_deref() == Some(artifact_store.storage.id.as_str());
-            let store = webdock_object_storage::Store::s3(artifact_store.storage, credentials)
+            let store = spitzli_object_storage::Store::s3(artifact_store.storage, credentials)
                 .map_err(|_| error("invalid_artifact_configuration"))?;
             worker =
                 worker.with_artifact_store(crate::remote::RemoteArtifacts::new(store), upload)?;
@@ -1368,7 +1368,7 @@ impl PublicationContext<'_> {
             let artifact = if record["remoteStorage"].is_null() {
                 self.store.load(key, digest, size, image_digest)?
             } else {
-                let remote: webdock_object_storage::ObjectReceipt =
+                let remote: spitzli_object_storage::ObjectReceipt =
                     serde_json::from_value(record["remoteStorage"].clone())
                         .map_err(|_| error("invalid_artifact"))?;
                 let backend = self

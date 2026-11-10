@@ -15,8 +15,8 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
+use spitzli_core::features::OperationKind;
 use std::{convert::Infallible, sync::Arc, time::Duration};
-use webdock_core::features::OperationKind;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -36,7 +36,7 @@ fn unavailable() -> ApiFailure {
 }
 fn cursor(value: Option<&str>) -> Result<String, ApiFailure> {
     let value = value.unwrap_or("0");
-    if value != "0" && webdock_build::contracts::id(value).is_err() {
+    if value != "0" && spitzli_build::contracts::id(value).is_err() {
         return Err(reject(
             StatusCode::BAD_REQUEST,
             "invalid_input",
@@ -77,7 +77,7 @@ async fn page(
     })?;
     state.build.as_ref().ok_or_else(unavailable)?.execute_with_authority(&actor.principal,&actor.authority,
         json!({"action":"git.builds.logs","projectID":project,"buildID":build,"after":after,"limit":25}),
-        webdock_build::BuildCeiling{read:true,write:false}).await.map_err(|e|reject(StatusCode::from_u16(e.status()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),e.code,"Build logs are unavailable."))
+        spitzli_build::BuildCeiling{read:true,write:false}).await.map_err(|e|reject(StatusCode::from_u16(e.status()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),e.code,"Build logs are unavailable."))
 }
 async fn history(
     State(state): State<Arc<ServiceState>>,

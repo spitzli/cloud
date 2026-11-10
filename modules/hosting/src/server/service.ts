@@ -1,7 +1,7 @@
-import type { DatabaseServices } from "@webdock/database-contracts/runtime-ports";
+import type { DatabaseServices } from "@spitzli/database-contracts/runtime-ports";
 import type { HostingPorts } from "./ports";
-import { msgid } from "@webdock/i18n";
-import { searchPage } from "@webdock/search";
+import { msgid } from "@spitzli/i18n";
+import { searchPage } from "@spitzli/search";
 import type { VercelRuntime } from "./byok-vercel";
 import {
   commandSchema,
@@ -11,7 +11,7 @@ import {
   readActions,
   type HostingActor,
   type ClusterObservation,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { limits, usage } from "./allowances";
 export type Dependencies = {
   readProjectOverview: ReturnType<
@@ -746,7 +746,7 @@ export function createHostingService(dependencies: Dependencies) {
             );
             const snapshot = access.row.inventory;
             const resource = snapshot?.resources.find(
-              (r: import("@webdock/hosting-contracts").InventoryResource) =>
+              (r: import("@spitzli/hosting-contracts").InventoryResource) =>
                 r.uid === op.desired.resource.uid,
             );
             if (

@@ -1,5 +1,5 @@
-import { createHostingDatabases } from "@webdock/module-databases/server/databases";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { createHostingDatabases } from "@spitzli/module-databases/server/databases";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { assertDatabaseMaintenanceAllowed } from "./database-protection";
 import { migrationMaintenance } from "./database-migration-maintenance";
 import { databaseMaintenance } from "./database-maintenance";

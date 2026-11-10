@@ -1,14 +1,14 @@
 //! Reviewed artifacts and resource-scoped mounts. No request supplies a host path.
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use spitzli_plugin_protocol::Manifest;
+use spitzli_supervisor::*;
 use std::{
     collections::BTreeMap,
     io::Read,
     os::unix::fs::{FileTypeExt, MetadataExt, OpenOptionsExt},
     path::{Path, PathBuf},
 };
-use webdock_plugin_protocol::Manifest;
-use webdock_supervisor::*;
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RuntimePolicyConfig {
@@ -99,8 +99,8 @@ impl RuntimePolicy {
                     .installation
                     .bytes()
                     .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
-                || webdock_core::id::RecordId::parse(&grant.project_id).is_err()
-                || webdock_core::id::RecordId::parse(&grant.resource_id).is_err()
+                || spitzli_core::id::RecordId::parse(&grant.project_id).is_err()
+                || spitzli_core::id::RecordId::parse(&grant.resource_id).is_err()
                 || !keys.insert((
                     &grant.installation,
                     &grant.project_id,

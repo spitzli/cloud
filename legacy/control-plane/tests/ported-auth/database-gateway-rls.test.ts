@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import pg from "pg";
-import { withDatabaseScope } from "@webdock/database-runtime";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import { withDatabaseScope } from "@spitzli/database-runtime";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
 test(
   "strict database roles preserve launch exchange, runtime profile, inspection and revocation",

@@ -7,11 +7,11 @@ use sea_orm::{
 };
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_browser_session::BrowserSessions;
+use spitzli_identity::{IdentityService, Principal, RlsSigner};
+use spitzli_persistence::IdAllocator;
+use spitzli_secrets::SecretCipher;
 use std::sync::Arc;
-use webdock_browser_session::BrowserSessions;
-use webdock_identity::{IdentityService, Principal, RlsSigner};
-use webdock_persistence::IdAllocator;
-use webdock_secrets::SecretCipher;
 mod agent;
 mod authority;
 mod backups;
@@ -63,7 +63,7 @@ impl DatabaseService {
             (&auth, "webdock_auth_bootstrap"),
             (&worker, "webdock_worker_runtime"),
         ] {
-            webdock_persistence::connection::verify_runtime_role(pool, role)
+            spitzli_persistence::connection::verify_runtime_role(pool, role)
                 .await
                 .map_err(|_| unavailable())?;
         }
@@ -98,7 +98,7 @@ impl DatabaseService {
         authority: &StoredAuthority,
     ) -> Result<(DatabaseTransaction, Principal)> {
         let auth = self.auth.begin().await?;
-        let principal = webdock_browser_session::revalidate_stored_authority(
+        let principal = spitzli_browser_session::revalidate_stored_authority(
             &self.identity,
             &auth,
             self.browser.as_deref(),

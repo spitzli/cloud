@@ -5,19 +5,19 @@ use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_agent_protocol::database::*;
+use spitzli_databases::{DatabaseService, StoredAuthority};
+use spitzli_identity::{Principal, RlsSigner};
+use spitzli_registry::RegistryService;
 use std::sync::Arc;
-use webdock_agent_protocol::database::*;
-use webdock_databases::{DatabaseService, StoredAuthority};
-use webdock_identity::{Principal, RlsSigner};
-use webdock_registry::RegistryService;
 struct Fixture {
     owner: DatabaseConnection,
     service: DatabaseService,
-    hosting: webdock_hosting::HostingService,
+    hosting: spitzli_hosting::HostingService,
     registry: RegistryService,
     registry_db: DatabaseConnection,
     actor: Principal,
-    ids: Arc<webdock_persistence::IdAllocator>,
+    ids: Arc<spitzli_persistence::IdAllocator>,
     cluster: String,
     customer: String,
     project: String,
@@ -43,9 +43,9 @@ impl Fixture {
         let business = connect("DATABASE_URL").await.unwrap();
         let worker = connect("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await.unwrap();
         let ids = Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 &std::env::var("AUTH_DATABASE_URL").unwrap(),
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )
             .await
             .unwrap(),
@@ -75,7 +75,7 @@ impl Fixture {
         let credential_hash = hex::encode(Sha256::digest(&agent_key));
         exec(&owner,"INSERT INTO webdock_auth.hosting_agent(cluster_id,credential_hash,generation,last_sequence,last_seen,observation) VALUES($1,$2,1,0,now(),$3)",vec![cluster.clone().into(),credential_hash.into(),observation.into()]).await;
         exec(&owner,"INSERT INTO webdock_auth.hosting_database_pool(cluster_id,node,pool_id,capacity_bytes) VALUES($1,'fixture-node',$2::uuid,34359738368)",vec![cluster.clone().into(),pool.into()]).await;
-        let hosting = webdock_hosting::HostingService::new(
+        let hosting = spitzli_hosting::HostingService::new(
             business.clone(),
             auth.clone(),
             worker.clone(),
@@ -98,7 +98,7 @@ impl Fixture {
         )
         .await
         .unwrap()
-        .with_management(webdock_databases::ManagementConfig {
+        .with_management(spitzli_databases::ManagementConfig {
             cluster_id: Some(cluster.clone()),
             endpoint_domain: Some("fixture.invalid".into()),
             public_ordering: false,
@@ -131,7 +131,7 @@ impl Fixture {
             application_password: URL_SAFE_NO_PAD.encode([17u8; 32]),
             migration_password: URL_SAFE_NO_PAD.encode([19u8; 32]),
         };
-        let sealed = webdock_secrets::SecretCipher::new(&secret)
+        let sealed = spitzli_secrets::SecretCipher::new(&secret)
             .unwrap()
             .seal(&credentials, &format!("database:{database}:1"))
             .unwrap();
@@ -387,9 +387,9 @@ async fn live_registry_archive_obeys_actual_native_backup_observation() {
         .await
         .unwrap();
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &std::env::var("AUTH_DATABASE_URL").unwrap(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),

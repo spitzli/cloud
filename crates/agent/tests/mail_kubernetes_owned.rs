@@ -21,6 +21,15 @@ use kube::{
     config::{KubeConfigOptions, Kubeconfig},
 };
 use serde_json::{Value, json};
+use spitzli_agent::{
+    mail::{
+        MailAuthority, MailRuntime,
+        kubernetes::{KubernetesMailConfig, KubernetesMailRuntime},
+    },
+    storage::{StorageClient, StorageConfig, StoragePacket, StoragePool},
+};
+use spitzli_agent_protocol::mail::*;
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{
     collections::BTreeMap,
     os::unix::fs::PermissionsExt,
@@ -32,15 +41,6 @@ use std::{
     time::Duration,
 };
 use tokio::sync::Mutex;
-use webdock_agent::{
-    mail::{
-        MailAuthority, MailRuntime,
-        kubernetes::{KubernetesMailConfig, KubernetesMailRuntime},
-    },
-    storage::{StorageClient, StorageConfig, StoragePacket, StoragePool},
-};
-use webdock_agent_protocol::mail::*;
-use webdock_supervisor::{ExecutionError, Result};
 struct Authority {
     allowed: AtomicBool,
     accept: AtomicBool,
@@ -127,7 +127,7 @@ async fn owned_mail_kubernetes_configuration() {
 }
 async fn run_fixture(configuration_case: bool) {
     let _ = tracing_subscriber::fmt()
-        .with_env_filter("webdock_agent::mail::kubernetes=debug")
+        .with_env_filter("spitzli_agent::mail::kubernetes=debug")
         .try_init();
     assert_eq!(
         std::env::var("WEBDOCK_MAIL_KIND_TEST").as_deref(),
@@ -183,7 +183,7 @@ async fn run_fixture(configuration_case: bool) {
     let server_socket = socket.clone();
     let (stop, shutdown) = tokio::sync::oneshot::channel();
     let helper = tokio::spawn(async move {
-        webdock_agent::storage::serve(&storage_path, &server_socket, async {
+        spitzli_agent::storage::serve(&storage_path, &server_socket, async {
             let _ = shutdown.await;
         })
         .await

@@ -1,5 +1,5 @@
 import { introspectToken } from "../auth/introspection";
-import { createHostingBridge } from "@webdock/module-hosting/server/bridge";
+import { createHostingBridge } from "@spitzli/module-hosting/server/bridge";
 import { requireHostingCommand } from "../../installation";
 import { vercelSettings } from "../integrations/vercel-settings";
 import { displayDatabaseCredentials } from "./database-credentials";

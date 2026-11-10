@@ -1,4 +1,4 @@
-use webdock_agent::registry::{RegistryConfig, RegistryCredential};
+use spitzli_agent::registry::{RegistryConfig, RegistryCredential};
 fn configuration() -> serde_json::Value {
     serde_json::json!({"version":1,"euStorageEvidence":"Precise country/EU placement unverified; best-effort geography accepted.","projects":{"2":{"repository":"registry.example/tenant-1/project-2","pullSecret":"registry-project-2","readOnly":true,"credentialScopeEvidence":"read-only repository-scoped robot"}}})
 }

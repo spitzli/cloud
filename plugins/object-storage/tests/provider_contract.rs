@@ -1,6 +1,6 @@
 #![cfg(feature = "providers")]
-use webdock_object_storage_plugin::model::Binding;
-use webdock_object_storage_plugin::sdk::{BackendConfig, Control, application_policy};
+use spitzli_object_storage_plugin::model::Binding;
+use spitzli_object_storage_plugin::sdk::{BackendConfig, Control, application_policy};
 #[tokio::test]
 async fn endpoints_and_credentials_are_explicit_and_minio_is_loopback_only() {
     for endpoint in [

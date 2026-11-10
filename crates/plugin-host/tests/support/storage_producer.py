@@ -45,7 +45,7 @@ def main():
             port = docker("port", name, "5432/tcp").rsplit(":", 1)[1]
             config = {"database": f"postgresql://fixture:{password}@127.0.0.1:{port}/gateway_fixture",
                       "backend": str(ROOT / "plugins/object-storage/fixtures/.private/backend.json")}
-            result = subprocess.run([str(ROOT / "target/debug/webdock-storage-producer-fixture")], input=json.dumps(config), text=True, cwd=ROOT)
+            result = subprocess.run([str(ROOT / "target/debug/spitzli-storage-producer-fixture")], input=json.dumps(config), text=True, cwd=ROOT)
             if result.returncode:
                 raise RuntimeError("owned producer gateway acceptance failed")
         finally:

@@ -7,20 +7,20 @@ use crate::{
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::{
-    sync::Arc,
-    time::{Duration, SystemTime, UNIX_EPOCH},
-};
-use webdock_mail_protocol::{
+use spitzli_mail_protocol::{
     sha256, valid_digest, verify_lease,
     wire::{LeaseProof, mail_authority_client::MailAuthorityClient},
 };
-use webdock_mail_runtime::{
+use spitzli_mail_runtime::{
     ControlError, SendControl,
     dispatch::DispatchTransport,
     message::{DispatchMessage, PreparedMessage},
     outbox::{Receipt, SendLease},
     provider_transport::{ProviderBinding, SendAuthorization, metadata_bytes},
+};
+use std::{
+    sync::Arc,
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 #[derive(Deserialize)]
@@ -28,7 +28,7 @@ use webdock_mail_runtime::{
 pub struct DeliveryConfiguration {
     pub native_lease_issuer_public_key_hex: String,
     pub provider_binding: Option<ProviderBinding>,
-    pub gateway_peers: Vec<webdock_plugin_runtime::CorePeer>,
+    pub gateway_peers: Vec<spitzli_plugin_runtime::CorePeer>,
     pub native_accounts: Vec<NativeAccount>,
 }
 #[derive(Deserialize)]
@@ -82,10 +82,10 @@ impl Policy {
         for a in &accounts {
             a.transport.validate()?;
             if !customers.insert(a.customer_id.clone())
-                || !webdock_mail_runtime::proof::valid_id(&a.customer_id)
+                || !spitzli_mail_runtime::proof::valid_id(&a.customer_id)
                 || a.account_id
                     .as_ref()
-                    .is_some_and(|id| !webdock_mail_runtime::proof::valid_id(id))
+                    .is_some_and(|id| !spitzli_mail_runtime::proof::valid_id(id))
                 || [
                     Some(a.transport_revision),
                     Some(a.binding_revision),
@@ -136,7 +136,7 @@ impl Policy {
         if let Some(source) = job.source_id.strip_prefix("action:") {
             let Some(project) = job.source_context["projectID"]
                 .as_str()
-                .filter(|p| webdock_mail_runtime::proof::valid_id(p))
+                .filter(|p| spitzli_mail_runtime::proof::valid_id(p))
             else {
                 return Ok(false);
             };
@@ -161,7 +161,7 @@ impl Policy {
         Ok(job
             .source_id
             .strip_prefix("key:")
-            .is_some_and(webdock_mail_runtime::proof::valid_id)
+            .is_some_and(spitzli_mail_runtime::proof::valid_id)
             && self.accounts.iter().any(|a| {
                 a.customer_id == job.customer_id
                     && job.route["transportRevision"] == a.transport_revision
@@ -254,7 +254,7 @@ impl SendControl for FencedControl {
                 .await?;
             let customer = customer["customerID"]
                 .as_str()
-                .filter(|s| webdock_mail_runtime::proof::valid_id(s))
+                .filter(|s| spitzli_mail_runtime::proof::valid_id(s))
                 .ok_or_else(ControlError::unavailable)?;
             let _guard = self
                 .policy

@@ -30,9 +30,9 @@ Unit ownership must never change between customers/projects. Runtime-selected cl
 ## Workload implementation evidence
 
 - RED: `apply_accepts_exactly_one_numeric_owner` failed on the customer input before implementation.
-- `cargo test --locked -p webdock-plugin-host --lib`: 12 passed.
+- `cargo test --locked -p spitzli-plugin-host --lib`: 12 passed.
 - Disposable PostgreSQL 18, native bootstrap/journal through 0040 and restricted runtime roles: four new customer workload tests passed, including concurrent customer/project budget admission and project owner-change rejection. Three existing project workload/limits/domain regressions passed.
-- Focused command for the new database tests: `cargo test --locked -p webdock-plugin-host --test customer_workloads customer_ -- --include-ignored --skip shared:: --test-threads=1`. The imported shared fixture includes its own tests; the explicit skip prevents running them here.
+- Focused command for the new database tests: `cargo test --locked -p spitzli-plugin-host --test customer_workloads customer_ -- --include-ignored --skip shared:: --test-threads=1`. The imported shared fixture includes its own tests; the explicit skip prevents running them here.
 - Fixture environment names: `WEBDOCK_TEST_MIGRATION_DATABASE_URL`, `AUTH_DATABASE_URL`, `DATABASE_URL`, `WEBDOCK_PLUGIN_WORKER_DATABASE_URL`, `DATABASE_RLS_SECRET`. The checks used separately owned disposable containers and removed them afterward; Auth's running fixture was not changed.
 - Notices browser regression failed before nullable-project support; notices and plans browser checks pass after it. Root owns the domains regression.
 - The implementer observed the parent's intentionally red zero-replica regression. Root fixed it: stopped workloads require the controller's observed generation and zero running/ready/available/updated/current/terminating replicas. All three agent workload unit tests and the real k3s apply/prune/metrics/scale-to-zero/remove test pass.

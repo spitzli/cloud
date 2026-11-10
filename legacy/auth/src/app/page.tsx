@@ -1,4 +1,4 @@
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import Link from "next/link";
 import { AuthPanel } from "@/components/auth-forms";
 

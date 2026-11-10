@@ -35,7 +35,7 @@ CP_CARRY_SOURCE='11d5ab79cb87e88e305408cf30e3c2f45dec4456f1f7b093d2596dd5ef7b075
 CP_CARRY_MANIFEST_SHA='5f32e3ed0aee2c6d2e989957f5ca2126c8b71242158244f335d472f2780537c8'
 CP_CARRY_PROOF_SHA='3f43dbc05c5780467b2915083f88ea122d8b5894b100bf945fe4b7afdb1810f6'
 CP_CARRY_ASSESSMENT_SHA='29771c420ad640e981aeed75957129a904ba8bc1132e4323bb2287cccf84e591'
-CP_COMPILE_COMMAND=['cargo','test','--locked','-p','webdock-control-plane','--lib','--bins','--tests','--no-run','--message-format=json','--jobs','3']
+CP_COMPILE_COMMAND=['cargo','test','--locked','-p','spitzli-control-plane','--lib','--bins','--tests','--no-run','--message-format=json','--jobs','3']
 CP_CARRY_ALLOWED={'crates/plugin-host/tests/support/local_postgres.rs','tools/plugin-ci/core_quality.py','tools/plugin-ci/core_native_pg.py','tools/plugin-ci/test_core_quality.py','tools/plugin-ci/test_core_native_pg.py','tools/plugin-ci/CORE-QUALITY.md'}
 
 
@@ -142,10 +142,10 @@ def prepare(archive,digest,output,review_ref,reuse_evidence=None,reuse_archive=N
 
 def plan(mode):
     focused=[
-        {'id':'waitlist-access','args':['cargo','test','--locked','-p','webdock-access','--lib','waitlist'],'requiredTests':['public_input_cannot_set_status_or_skip_consent','public_contact_names_reject_controls_before_database_intake']},
-        {'id':'waitlist-http','args':['cargo','test','--locked','-p','webdock-control-plane','--lib','waitlist'],'requiredTests':['public_intake_requires_json_with_explicit_consent_and_no_admission_fields','waitlist_writes_reject_foreign_or_missing_browser_origins','public_intake_bounds_untrusted_request_bodies_before_service_access']},
+        {'id':'waitlist-access','args':['cargo','test','--locked','-p','spitzli-access','--lib','waitlist'],'requiredTests':['public_input_cannot_set_status_or_skip_consent','public_contact_names_reject_controls_before_database_intake']},
+        {'id':'waitlist-http','args':['cargo','test','--locked','-p','spitzli-control-plane','--lib','waitlist'],'requiredTests':['public_intake_requires_json_with_explicit_consent_and_no_admission_fields','waitlist_writes_reject_foreign_or_missing_browser_origins','public_intake_bounds_untrusted_request_bodies_before_service_access']},
         {'id':'compute-process','args':['cargo','test','--manifest-path','plugins/lumaserv-compute/Cargo.toml','--locked','--test','process'],'requiredTests':['standalone_private_rpc_scoped_https_redaction_and_revocation']},
-        {'id':'hosting-repository-projection','args':['cargo','test','--locked','-p','webdock-build','--lib','repository_projection_exposes_the_authoritative_binding_not_metadata_ids'],'requiredTests':['repository_projection_exposes_the_authoritative_binding_not_metadata_ids']},
+        {'id':'hosting-repository-projection','args':['cargo','test','--locked','-p','spitzli-build','--lib','repository_projection_exposes_the_authoritative_binding_not_metadata_ids'],'requiredTests':['repository_projection_exposes_the_authoritative_binding_not_metadata_ids']},
     ]
     if mode=='focused':return focused
     if mode=='consumer':return [{'id':'compute-console-consumer','args':['bun','--no-env-file','test','plugins/lumaserv-compute/tests/ui.test.ts'],'testFormat':'bun','requiredTests':['the exact compute subprocess panel conforms to the current Console contract']}]
@@ -157,7 +157,7 @@ def plan(mode):
         {'id':'root-build','args':['npm','run','build'],'requiredTests':None},
         {'id':'compose-distribution','args':['python3','tools/release/check-compose.py'],'requiredTests':None},
         {'id':'helm-distribution','args':['python3','tools/release/check-charts.py'],'requiredTests':None},
-        {'id':'native-probes','args':['cargo','test','--locked','-p','webdock-control-plane','--test','probes'],'requiredTests':[]},
+        {'id':'native-probes','args':['cargo','test','--locked','-p','spitzli-control-plane','--test','probes'],'requiredTests':[]},
     ]
 
 

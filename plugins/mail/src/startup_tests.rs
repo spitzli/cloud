@@ -1,3 +1,4 @@
+use spitzli_plugin_runtime::{HostClient, UnixSocket, wire};
 use std::{
     os::unix::fs::MetadataExt,
     path::PathBuf,
@@ -9,7 +10,6 @@ use std::{
 };
 use tokio::sync::{mpsc, oneshot};
 use tonic::{Request, Response, Status};
-use webdock_plugin_runtime::{HostClient, UnixSocket, wire};
 
 #[derive(Clone)]
 struct Host {
@@ -390,7 +390,7 @@ async fn shutdown_prevents_resume_when_callback_grants_during_real_graceful_drai
     ));
     f.attempt().await;
     let mut draining_client = wire::plugin_host_client::PluginHostClient::new(
-        webdock_plugin_runtime::unix_channel(path).await.unwrap(),
+        spitzli_plugin_runtime::unix_channel(path).await.unwrap(),
     );
     let request = tokio::spawn(async move {
         draining_client
@@ -440,14 +440,14 @@ async fn shutdown_prevents_resume_when_callback_grants_during_real_graceful_drai
 async fn initially_offline_callback_preserves_discovery_then_resumes_when_available() {
     struct NoActions;
     #[tonic::async_trait]
-    impl webdock_plugin_runtime::ActionHandler for NoActions {
+    impl spitzli_plugin_runtime::ActionHandler for NoActions {
         async fn invoke(
             &self,
-            _: &webdock_plugin_protocol::InvocationClaims,
+            _: &spitzli_plugin_protocol::InvocationClaims,
             _: &str,
             _: serde_json::Value,
             _: serde_json::Value,
-        ) -> Result<serde_json::Value, webdock_plugin_protocol::PluginError> {
+        ) -> Result<serde_json::Value, spitzli_plugin_protocol::PluginError> {
             panic!("discovery must not invoke a product action");
         }
     }
@@ -457,23 +457,23 @@ async fn initially_offline_callback_preserves_discovery_then_resumes_when_availa
     let core_path = f.directory.join("core.sock");
     assert!(!core_path.exists());
     let path = f.directory.join("plugin.sock");
-    let transport = webdock_plugin_kit::transport::RuntimeTransport {
+    let transport = spitzli_plugin_kit::transport::RuntimeTransport {
         listen: Some(path.clone()),
         core: Some(core_path.clone()),
         ..Default::default()
     };
     let client = transport.core_client_lazy().await.unwrap();
-    let authority = webdock_plugin_runtime::RemoteAuthority::new(
+    let authority = spitzli_plugin_runtime::RemoteAuthority::new(
         client.clone(),
         "mail".into(),
         2,
-        vec![webdock_plugin_runtime::CorePeer::Unix {
+        vec![spitzli_plugin_runtime::CorePeer::Unix {
             uid: std::fs::metadata(&f.directory).unwrap().uid(),
         }],
     )
     .unwrap();
-    let runtime = webdock_plugin_runtime::Runtime::new(
-        webdock_plugin_protocol::Manifest::parse(include_bytes!("../manifest.json")).unwrap(),
+    let runtime = spitzli_plugin_runtime::Runtime::new(
+        spitzli_plugin_protocol::Manifest::parse(include_bytes!("../manifest.json")).unwrap(),
         2,
         ed25519_dalek::SigningKey::from_bytes(&[71; 32]).verifying_key(),
         Arc::new(authority),
@@ -502,7 +502,7 @@ async fn initially_offline_callback_preserves_discovery_then_resumes_when_availa
             std::future::ready(Ok::<(), ()>(()))
         },
     ));
-    let mut probe = webdock_plugin_runtime::connect_unix(path).await.unwrap();
+    let mut probe = spitzli_plugin_runtime::connect_unix(path).await.unwrap();
     let health = probe
         .health(wire::HealthRequest {})
         .await
@@ -683,59 +683,59 @@ fn lifetime_diagnostics_are_exact_flag_static_enums_only() {
 }
 struct LifetimeDeniedControl(AtomicUsize);
 #[tonic::async_trait]
-impl webdock_mail_runtime::SendControl for LifetimeDeniedControl {
+impl spitzli_mail_runtime::SendControl for LifetimeDeniedControl {
     async fn call(
         &self,
         _: serde_json::Value,
-    ) -> Result<serde_json::Value, webdock_mail_runtime::ControlError> {
+    ) -> Result<serde_json::Value, spitzli_mail_runtime::ControlError> {
         self.0.fetch_add(1, Ordering::SeqCst);
-        Err(webdock_mail_runtime::ControlError { status: 403 })
+        Err(spitzli_mail_runtime::ControlError { status: 403 })
     }
 }
 struct LifetimeDeniedPayloads;
 #[tonic::async_trait]
-impl webdock_mail_runtime::PrivatePayloadStore for LifetimeDeniedPayloads {
+impl spitzli_mail_runtime::PrivatePayloadStore for LifetimeDeniedPayloads {
     async fn put(
         &self,
         _: &str,
         _: &str,
         _: &[u8],
-    ) -> webdock_mail_runtime::Result<webdock_mail_runtime::SavedPayload> {
+    ) -> spitzli_mail_runtime::Result<spitzli_mail_runtime::SavedPayload> {
         panic!("lifetime calibration must never write a payload")
     }
-    async fn get(&self, _: &str, _: &str) -> webdock_mail_runtime::Result<Vec<u8>> {
+    async fn get(&self, _: &str, _: &str) -> spitzli_mail_runtime::Result<Vec<u8>> {
         panic!("lifetime calibration must never read a payload")
     }
-    async fn remove(&self, _: &str, _: &str) -> webdock_mail_runtime::Result<()> {
+    async fn remove(&self, _: &str, _: &str) -> spitzli_mail_runtime::Result<()> {
         panic!("lifetime calibration must never remove a payload")
     }
 }
 struct LifetimeDeniedTransport;
 #[tonic::async_trait]
-impl webdock_mail_runtime::dispatch::DispatchTransport for LifetimeDeniedTransport {
-    fn can_submit(&self, _: &webdock_mail_runtime::outbox::SendLease) -> bool {
+impl spitzli_mail_runtime::dispatch::DispatchTransport for LifetimeDeniedTransport {
+    fn can_submit(&self, _: &spitzli_mail_runtime::outbox::SendLease) -> bool {
         panic!("lifetime calibration must never prepare a provider send")
     }
     async fn submit(
         &self,
-        _: &webdock_mail_runtime::outbox::SendLease,
+        _: &spitzli_mail_runtime::outbox::SendLease,
         _: &serde_json::Value,
-        _: &webdock_mail_runtime::message::DispatchMessage,
-        _: &webdock_mail_runtime::message::PreparedMessage,
-    ) -> webdock_mail_runtime::outbox::Receipt {
+        _: &spitzli_mail_runtime::message::DispatchMessage,
+        _: &spitzli_mail_runtime::message::PreparedMessage,
+    ) -> spitzli_mail_runtime::outbox::Receipt {
         panic!("lifetime calibration must never send to a provider")
     }
 }
 struct LifetimeDeniedActions;
 #[tonic::async_trait]
-impl webdock_plugin_runtime::ActionHandler for LifetimeDeniedActions {
+impl spitzli_plugin_runtime::ActionHandler for LifetimeDeniedActions {
     async fn invoke(
         &self,
-        _: &webdock_plugin_protocol::InvocationClaims,
+        _: &spitzli_plugin_protocol::InvocationClaims,
         _: &str,
         _: serde_json::Value,
         _: serde_json::Value,
-    ) -> Result<serde_json::Value, webdock_plugin_protocol::PluginError> {
+    ) -> Result<serde_json::Value, spitzli_plugin_protocol::PluginError> {
         panic!("lifetime calibration must never invoke a customer action")
     }
 }
@@ -774,23 +774,23 @@ struct LifetimeTls {
 }
 impl LifetimeTls {
     async fn channel(&self, role: &str) -> tonic::transport::Channel {
-        let material = webdock_plugin_runtime::PinnedMutualTls {
-            certificate: webdock_plugin_kit::read_file(
+        let material = spitzli_plugin_runtime::PinnedMutualTls {
+            certificate: spitzli_plugin_kit::read_file(
                 &self.root.join(format!("{role}.crt")),
                 false,
             )
             .unwrap(),
-            private_key: webdock_plugin_kit::read_file(
+            private_key: spitzli_plugin_kit::read_file(
                 &self.root.join(format!("{role}.key")),
                 true,
             )
             .unwrap(),
-            authority: webdock_plugin_kit::read_file(&self.root.join("ca.crt"), false).unwrap(),
+            authority: spitzli_plugin_kit::read_file(&self.root.join("ca.crt"), false).unwrap(),
             server_certificate_sha256: self.pin.clone(),
         };
         let connected = tokio::time::timeout(
             Duration::from_secs(3),
-            webdock_plugin_runtime::pinned_mtls_authenticated(
+            spitzli_plugin_runtime::pinned_mtls_authenticated(
                 self.origin.clone(),
                 "localhost".into(),
                 material,
@@ -811,7 +811,7 @@ impl LifetimeTls {
             assert!(description.is_ok(), "local Core Describe denied");
             assert_eq!(
                 description.unwrap().into_inner().manifest_json,
-                webdock_plugin_protocol::Manifest::parse(include_bytes!("../manifest.json"))
+                spitzli_plugin_protocol::Manifest::parse(include_bytes!("../manifest.json"))
                     .unwrap()
                     .as_bytes()
             );
@@ -834,9 +834,9 @@ impl LifetimeTls {
 
 #[tokio::test]
 async fn actual_delivery_listener_survives_gateway_401_and_authorization_transition() {
+    use spitzli_plugin_runtime::{CorePeer, MutualTls, RemoteAuthority, Runtime};
     use std::os::unix::fs::PermissionsExt;
     use tower::ServiceExt;
-    use webdock_plugin_runtime::{CorePeer, MutualTls, RemoteAuthority, Runtime};
     let mut f = Fixture::new().await;
     let mut ca_params = rcgen::CertificateParams::new(Vec::<String>::new()).unwrap();
     ca_params
@@ -864,7 +864,7 @@ async fn actual_delivery_listener_survives_gateway_401_and_authorization_transit
         ];
         let key = rcgen::KeyPair::generate().unwrap();
         let cert = params.signed_by(&key, &issuer).unwrap();
-        pins.insert(role, webdock_mail_protocol::sha256(cert.der()));
+        pins.insert(role, spitzli_mail_protocol::sha256(cert.der()));
         for (suffix, bytes) in [
             ("crt", cert.pem().into_bytes()),
             ("key", key.serialize_pem().into_bytes()),
@@ -894,7 +894,7 @@ async fn actual_delivery_listener_survives_gateway_401_and_authorization_transit
     )
     .unwrap();
     let runtime = Runtime::new(
-        webdock_plugin_protocol::Manifest::parse(include_bytes!("../manifest.json")).unwrap(),
+        spitzli_plugin_protocol::Manifest::parse(include_bytes!("../manifest.json")).unwrap(),
         2,
         ed25519_dalek::SigningKey::from_bytes(&[71; 32]).verifying_key(),
         Arc::new(authority),
@@ -903,8 +903,8 @@ async fn actual_delivery_listener_survives_gateway_401_and_authorization_transit
     .unwrap();
     let control = Arc::new(LifetimeDeniedControl(AtomicUsize::new(0)));
     let payloads = Arc::new(LifetimeDeniedPayloads);
-    let router = webdock_mail::listener::native_routes(
-        webdock_mail_runtime::send_api::SendApi::new(control.clone(), payloads.clone()).router(),
+    let router = spitzli_mail::listener::native_routes(
+        spitzli_mail_runtime::send_api::SendApi::new(control.clone(), payloads.clone()).router(),
         vec![CorePeer::MutualTls {
             certificate_sha256: pins["gateway"].clone(),
         }],
@@ -928,7 +928,7 @@ async fn actual_delivery_listener_survives_gateway_401_and_authorization_transit
             stop: Some(stop),
             task: tokio::spawn(super::serve_delivery(
                 |drain| async move {
-                    Ok(webdock_mail::listener::serve_mtls(
+                    Ok(spitzli_mail::listener::serve_mtls(
                         runtime,
                         router,
                         listener,

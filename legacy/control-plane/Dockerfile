@@ -1,7 +1,7 @@
 # Runtime is pinned; the release pipeline must also record the resolved image digest.
 FROM oven/bun:1.4.3 AS runtime
 WORKDIR /app
-# Build context must be prepared with bun install --frozen-lockfile + bun run --filter @webdock/api build.
+# Build context must be prepared with bun install --frozen-lockfile + bun run --filter @spitzli/api build.
 # Copy only the API artifact, installed dependencies and workspace packages.
 COPY --chown=bun:bun node_modules ./node_modules
 COPY --chown=bun:bun packages ./packages

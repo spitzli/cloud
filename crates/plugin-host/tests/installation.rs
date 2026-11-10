@@ -6,15 +6,15 @@ use std::{collections::BTreeMap, process::Command};
 #[path = "support/catalog_fixture.rs"]
 mod catalog_fixture;
 use serde_json::json;
-use std::sync::Arc;
-use webdock_agent_protocol::plugin::*;
-use webdock_browser_session::StoredAuthority;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::catalog::Catalog;
-use webdock_plugin_host::{
+use spitzli_agent_protocol::plugin::*;
+use spitzli_browser_session::StoredAuthority;
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::catalog::Catalog;
+use spitzli_plugin_host::{
     FileBindings, HostService, InstallRequest, ManagedBindings, PeerEnrollment,
     PreparedInstallation, RuntimeBinding, RuntimeDescription,
 };
+use std::sync::Arc;
 fn docker() -> Command {
     let mut command = Command::new("docker");
     command.args(["--host", "unix:///var/run/docker.sock"]);
@@ -82,7 +82,7 @@ impl Fixture {
             ))
             .unwrap()
         };
-        let passwords = webdock_persistence::roles::LOGIN_ROLES
+        let passwords = spitzli_persistence::roles::LOGIN_ROLES
             .iter()
             .copied()
             .chain(["webdock_offline_migrate"])
@@ -109,14 +109,14 @@ impl Fixture {
         })
         .await
         .expect("owned PostgreSQL connection readiness");
-        webdock_persistence::roles::provision_roles(
+        spitzli_persistence::roles::provision_roles(
             &db,
             fixture.url.path().trim_start_matches('/'),
             &fixture.passwords,
         )
         .await
         .unwrap();
-        webdock_persistence::migrations::bootstrap(
+        spitzli_persistence::migrations::bootstrap(
             &db,
             fixture.url.path().trim_start_matches('/'),
             "owned-install-rls-secret-at-least32",
@@ -230,9 +230,9 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
         .unwrap(),
     );
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             fixture.url.as_str(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -421,7 +421,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
             )
             .await
             .expect_err("unpromoted managed installations must reject availability commands");
-        assert_eq!(error.code, webdock_plugin_protocol::ErrorCode::Conflict);
+        assert_eq!(error.code, spitzli_plugin_protocol::ErrorCode::Conflict);
     }
     let after = host
         .installed_with_authority(&principal, &authority)
@@ -602,7 +602,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
             .unwrap()
             .is_some()
     );
-    use webdock_plugin_host::RuntimeBindings;
+    use spitzli_plugin_host::RuntimeBindings;
     std::fs::write(
         directory.path().join("missing.json"),
         serde_json::to_vec(&json!({"runtimes":{"postgres":binding}})).unwrap(),
@@ -619,16 +619,16 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
         "candidate must not have normal callback authority"
     );
     // Use the real opaque enrollment identity; the backend must independently recheck it.
-    let hosting = webdock_hosting::HostingService::new(
+    let hosting = spitzli_hosting::HostingService::new(
         business,
         auth,
         worker,
         "owned-install-rls-secret-at-least32".into(),
         "owned-install-environment-key-at-least32".into(),
         Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 fixture.url.as_str(),
-                webdock_ids::Identity::platform(0, 3).unwrap(),
+                spitzli_ids::Identity::platform(0, 3).unwrap(),
             )
             .await
             .unwrap(),
@@ -807,7 +807,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
             version: "0.1.0".into(),
             generation: 1,
             protocol_version: 1,
-            peer: webdock_plugin_runtime::PeerIdentity::Unix {
+            peer: spitzli_plugin_runtime::PeerIdentity::Unix {
                 uid: rustix::process::geteuid().as_raw(),
             },
         };
@@ -817,7 +817,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
             "protocol" => invalid_proof.protocol_version = 2,
             "bytes" => invalid_proof.manifest.push(b' '),
             _ => {
-                invalid_proof.peer = webdock_plugin_runtime::PeerIdentity::Unix {
+                invalid_proof.peer = spitzli_plugin_runtime::PeerIdentity::Unix {
                     uid: rustix::process::geteuid().as_raw() + 1,
                 }
             }
@@ -835,7 +835,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
         version: "0.1.0".into(),
         generation: 1,
         protocol_version: 1,
-        peer: webdock_plugin_runtime::PeerIdentity::Unix {
+        peer: spitzli_plugin_runtime::PeerIdentity::Unix {
             uid: rustix::process::geteuid().as_raw(),
         },
     };
@@ -878,7 +878,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
         version: "0.1.0".into(),
         generation: 1,
         protocol_version: 1,
-        peer: webdock_plugin_runtime::PeerIdentity::Unix {
+        peer: spitzli_plugin_runtime::PeerIdentity::Unix {
             uid: rustix::process::geteuid().as_raw(),
         },
     };
@@ -967,12 +967,12 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
     sql(&owner,r#"UPDATE webdock_auth.hosting_agent SET observation='{"capabilities":{"pluginRuntimeVersion":2}}'::jsonb"#,vec![]).await;
     struct NoProbe;
     #[tonic::async_trait]
-    impl webdock_plugin_host::StateProbe for NoProbe {
+    impl spitzli_plugin_host::StateProbe for NoProbe {
         async fn describe(
             &self,
             _: &str,
             _: u64,
-        ) -> webdock_plugin_protocol::Result<RuntimeDescription> {
+        ) -> spitzli_plugin_protocol::Result<RuntimeDescription> {
             panic!("disable never probes")
         }
     }
@@ -989,7 +989,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
         .into_iter()
         .find(|r| r.version == "0.2.0")
         .unwrap();
-    let update = webdock_plugin_host::UpdateRequest {
+    let update = spitzli_plugin_host::UpdateRequest {
         version: "0.2.0".into(),
         review_sha256: descriptor.targets[0].review_sha256.clone(),
         expected_revision: installed[0]["revision"].as_str().unwrap().into(),
@@ -1033,7 +1033,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
             &principal,
             &authority,
             "postgres",
-            webdock_plugin_host::UpdateRequest {
+            spitzli_plugin_host::UpdateRequest {
                 version: forward_only.version,
                 review_sha256: forward_only.targets[0].review_sha256.clone(),
                 expected_revision: update.expected_revision.clone(),
@@ -1044,7 +1044,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
         .await
         .err()
         .expect("reader2..2 must reject retained schema1 before reserving schema2");
-    assert_eq!(rejection.code, webdock_plugin_protocol::ErrorCode::Conflict);
+    assert_eq!(rejection.code, spitzli_plugin_protocol::ErrorCode::Conflict);
     for (query, expected) in counters.into_iter().zip(before) {
         assert_eq!(
             scalar(&owner, query).await,
@@ -1282,7 +1282,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
         .into_iter()
         .find(|r| r.version == "0.1.0")
         .unwrap();
-    let rollback = webdock_plugin_host::RollbackRequest {
+    let rollback = spitzli_plugin_host::RollbackRequest {
         release_generation: "1".into(),
         review_sha256: first.targets[0].review_sha256.clone(),
         expected_revision: installed[0]["revision"].as_str().unwrap().into(),
@@ -1372,7 +1372,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
             &principal,
             &authority,
             "postgres",
-            webdock_plugin_host::UpdateRequest {
+            spitzli_plugin_host::UpdateRequest {
                 version: "0.2.0".into(),
                 review_sha256: compatible.targets[0].review_sha256.clone(),
                 expected_revision: installed[0]["revision"].as_str().unwrap().into(),
@@ -1484,7 +1484,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
             .await
             .unwrap()
             .status,
-        webdock_plugin_host::OperationStatus::Failed
+        spitzli_plugin_host::OperationStatus::Failed
     );
     let installed = host
         .installed_with_authority(&principal, &authority)
@@ -1518,7 +1518,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
             &principal,
             &authority,
             "postgres",
-            webdock_plugin_host::UpdateRequest {
+            spitzli_plugin_host::UpdateRequest {
                 version: "0.3.0".into(),
                 review_sha256: advanced.targets[0].review_sha256.clone(),
                 expected_revision: installed[0]["revision"].as_str().unwrap().into(),
@@ -1566,7 +1566,7 @@ async fn restricted_install_replay_fencing_promotion_and_retained_retry() {
             .await
             .unwrap()
             .status,
-        webdock_plugin_host::OperationStatus::Blocked
+        spitzli_plugin_host::OperationStatus::Blocked
     );
     let history = host
         .release_history_with_authority(&principal, &authority, "postgres")
@@ -1592,22 +1592,22 @@ fn generation_checkpoint(generation: u64) -> PluginRuntimeCheckpoint {
         route_uid: uid("route"),
     }
 }
-fn generation_proof(work: &webdock_plugin_host::InstallWork, version: &str) -> RuntimeDescription {
+fn generation_proof(work: &spitzli_plugin_host::InstallWork, version: &str) -> RuntimeDescription {
     RuntimeDescription {
         manifest: work.manifest_bytes.as_bytes().to_vec(),
         plugin_id: work.plugin_id.clone(),
         version: version.into(),
         generation: work.runtime_generation,
         protocol_version: 1,
-        peer: webdock_plugin_runtime::PeerIdentity::Unix {
+        peer: spitzli_plugin_runtime::PeerIdentity::Unix {
             uid: rustix::process::geteuid().as_raw(),
         },
     }
 }
 async fn prepare_generation(
     host: &HostService,
-    claim: &webdock_plugin_host::InstallClaim,
-    work: &webdock_plugin_host::InstallWork,
+    claim: &spitzli_plugin_host::InstallClaim,
+    work: &spitzli_plugin_host::InstallWork,
     template: &PluginRuntimeSpec,
     binding: &RuntimeBinding,
 ) -> (PluginRuntimeSpec, RuntimeBinding) {
@@ -1738,9 +1738,9 @@ async fn initial_callback_recovery_fences_old_claims_and_requires_stop_before_ap
         .unwrap(),
     );
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             fixture.url.as_str(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
@@ -1861,16 +1861,16 @@ async fn initial_callback_recovery_fences_old_claims_and_requires_stop_before_ap
     )
     .await
     .unwrap();
-    let hosting = webdock_hosting::HostingService::new(
+    let hosting = spitzli_hosting::HostingService::new(
         business,
         auth,
         worker,
         "owned-install-rls-secret-at-least32".into(),
         "owned-install-environment-key-at-least32".into(),
         Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 fixture.url.as_str(),
-                webdock_ids::Identity::platform(0, 3).unwrap(),
+                spitzli_ids::Identity::platform(0, 3).unwrap(),
             )
             .await
             .unwrap(),
@@ -1900,7 +1900,7 @@ async fn initial_callback_recovery_fences_old_claims_and_requires_stop_before_ap
         .installed_with_authority(&principal, &authority)
         .await
         .unwrap();
-    let request = webdock_plugin_host::UpdateRequest {
+    let request = spitzli_plugin_host::UpdateRequest {
         version: "0.1.0".into(),
         review_sha256: corrected.descriptors()[0].targets[0].review_sha256.clone(),
         expected_revision: installed[0]["revision"].as_str().unwrap().into(),
@@ -2005,6 +2005,6 @@ async fn initial_callback_recovery_fences_old_claims_and_requires_stop_before_ap
             .await
             .unwrap()
             .status,
-        webdock_plugin_host::OperationStatus::Failed
+        spitzli_plugin_host::OperationStatus::Failed
     );
 }

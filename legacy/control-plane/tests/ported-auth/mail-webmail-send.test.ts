@@ -10,9 +10,9 @@ import { transaction } from "../../src/modules/hosting/db";
 import { mailboxSchemaSQL } from "../../src/modules/mail/mailbox-schema";
 import { mailSendSchemaSQL } from "../../src/modules/mail/mail-send-schema";
 import { mailBudgetSchemaSQL } from "../../src/modules/mail/mail-budget";
-import { nativeMailSchemaSQL } from "@webdock/mail-core/schema";
-import { outboxSchemaSQL } from "@webdock/mail-core/outbox";
-import { sealSecret } from "@webdock/mail-core/secrets";
+import { nativeMailSchemaSQL } from "@spitzli/mail-core/schema";
+import { outboxSchemaSQL } from "@spitzli/mail-core/outbox";
+import { sealSecret } from "@spitzli/mail-core/secrets";
 import {
   launchWebmail,
   exchangeWebmail,

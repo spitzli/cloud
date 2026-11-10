@@ -1,5 +1,5 @@
 import { z } from "zod";
-import {msgid} from "@webdock/i18n";
+import {msgid} from "@spitzli/i18n";
 
 export const buildID = z.string().regex(/^[1-9][0-9]{0,18}$/).refine((value) => /^[1-9][0-9]{0,18}$/.test(value) && BigInt(value) <= 9223372036854775807n);
 export const logCursor = z.union([z.literal("0"), buildID]);

@@ -5,8 +5,8 @@ import type {
   IdentityDirectory,
   LocalIdentity,
   SessionIdentity,
-} from "@webdock/core/identity";
-import type { HostingActor } from "@webdock/hosting-contracts";
+} from "@spitzli/core/identity";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 import { createHostingAuthorization } from "../src/server/authorization.ts";
 import { createHostingBridge } from "../src/server/bridge.ts";
 const actor: HostingActor = {
@@ -250,11 +250,11 @@ test("shared Hosting bridge keeps module admission ahead of provider bindings an
 });
 
 import { assertSetupProducts } from "../src/server/setup-admission.ts";
-import { createRegistry } from "@webdock/module-sdk";
+import { createRegistry } from "@spitzli/module-sdk";
 import { hostingManifest } from "../src/manifest.ts";
-import { mailManifest } from "@webdock/module-mail/manifest";
-import { databasesManifest } from "@webdock/module-databases/manifest";
-import type { SetupConfiguration } from "@webdock/hosting-contracts";
+import { mailManifest } from "@spitzli/module-mail/manifest";
+import { databasesManifest } from "@spitzli/module-databases/manifest";
+import type { SetupConfiguration } from "@spitzli/hosting-contracts";
 test("setup admission cannot hide disabled Database or Mail products inside Hosting commands", () => {
   const database = {
     mode: "new",

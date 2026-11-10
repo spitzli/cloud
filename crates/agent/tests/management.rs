@@ -1,4 +1,12 @@
 mod support;
+use spitzli_agent::{
+    config::{AgentConfig, ControlEndpoint, RuntimeConfiguration},
+    management::{
+        Daemon, wire,
+        wire::agent_control_server::{AgentControl, AgentControlServer},
+    },
+};
+use spitzli_supervisor::*;
 use std::{
     collections::VecDeque,
     os::unix::fs::PermissionsExt,
@@ -9,14 +17,6 @@ use std::{
 };
 use tokio_stream::wrappers::UnixListenerStream;
 use tonic::{Request, Response, Status};
-use webdock_agent::{
-    config::{AgentConfig, ControlEndpoint, RuntimeConfiguration},
-    management::{
-        Daemon, wire,
-        wire::agent_control_server::{AgentControl, AgentControlServer},
-    },
-};
-use webdock_supervisor::*;
 struct Core {
     commands: Mutex<VecDeque<wire::Command>>,
     receipts: Mutex<Vec<wire::Receipt>>,
@@ -34,16 +34,16 @@ impl Core {
             return Err(Status::permission_denied("revoked"));
         }
         let cert = self.certificate.lock().unwrap();
-        let peer = webdock_agent_protocol::transport_identity(
+        let peer = spitzli_agent_protocol::transport_identity(
             request,
             timestamp().map_err(|_| Status::unavailable("clock"))?,
         )?;
         let valid = match (cert.as_ref(), peer) {
-            (Some(expected), webdock_agent_protocol::TransportIdentity::MutualTls(actual)) => {
+            (Some(expected), spitzli_agent_protocol::TransportIdentity::MutualTls(actual)) => {
                 use sha2::{Digest, Sha256};
                 actual.sha256 == format!("{:x}", Sha256::digest(expected))
             }
-            (None, webdock_agent_protocol::TransportIdentity::Unix { uid, .. }) => {
+            (None, spitzli_agent_protocol::TransportIdentity::Unix { uid, .. }) => {
                 uid == rustix::process::geteuid().as_raw()
             }
             _ => false,
@@ -175,11 +175,11 @@ impl wire::mail_control_server::MailControl for DelayedMail {
 }
 struct MailEffect(Arc<AtomicBool>);
 #[async_trait::async_trait]
-impl webdock_agent::mail::MailRuntime for MailEffect {
+impl spitzli_agent::mail::MailRuntime for MailEffect {
     async fn execute(
         &self,
         _: &wire::mail::MailClaim,
-        _: &dyn webdock_agent::mail::MailAuthority,
+        _: &dyn spitzli_agent::mail::MailAuthority,
     ) -> Result<wire::mail::MailProof> {
         self.0.store(true, Ordering::SeqCst);
         Err(ExecutionError::Runtime)
@@ -521,7 +521,7 @@ async fn outbound_mtls_rotates_certificates_and_stops_after_live_enrollment_revo
     core.revoked.store(true, Ordering::SeqCst);
     assert!(matches!(
         daemon.cycle().await,
-        Err(webdock_agent::management::AgentError::Revoked)
+        Err(spitzli_agent::management::AgentError::Revoked)
     ));
     drop(daemon);
     assert!(Daemon::with_adapter(config.clone(), Arc::new(Controlled)).is_err());
@@ -542,7 +542,7 @@ async fn outbound_mtls_rotates_certificates_and_stops_after_live_enrollment_revo
 }
 #[test]
 fn cli_is_runnable_and_documents_explicit_configuration() {
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_webdock-agent"))
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_spitzli-agent"))
         .arg("--help")
         .output()
         .unwrap();
@@ -743,7 +743,7 @@ async fn lost_terminal_completion_ack_replays_durable_outbox_before_poll_without
         assert_eq!(receipts[4].operation_id, "next-operation");
     }
     assert!(
-        webdock_agent::outbox::ReceiptOutbox::open(dir.path().join("receipt-outbox.json"))
+        spitzli_agent::outbox::ReceiptOutbox::open(dir.path().join("receipt-outbox.json"))
             .unwrap()
             .pending()
             .unwrap()
@@ -860,7 +860,7 @@ async fn delayed_mail_guard_reply_cannot_authorize_runtime_after_lease_expiry() 
     );
     assert!(matches!(
         result,
-        Err(webdock_agent::management::AgentError::Execution(
+        Err(spitzli_agent::management::AgentError::Execution(
             ExecutionError::Expired
         ))
     ));

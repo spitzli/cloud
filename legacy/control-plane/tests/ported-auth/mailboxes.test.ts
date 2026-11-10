@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { auth } from "../../src/modules/auth/auth";
 import { database } from "../../src/db/runtime";
-import { nativeMailSchemaSQL } from "@webdock/mail-core/schema";
+import { nativeMailSchemaSQL } from "@spitzli/mail-core/schema";
 import { mailboxSchemaSQL } from "../../src/modules/mail/mailbox-schema";
 import { executeMailboxes } from "../../src/modules/mail/mailboxes";
 import {
@@ -17,7 +17,7 @@ import {
   inspectWebmail,
   revokeWebmail,
 } from "../../src/modules/mail/mail-sessions";
-import { sealSecret } from "@webdock/mail-core/secrets";
+import { sealSecret } from "@spitzli/mail-core/secrets";
 import {
   reserveWebmailWrite,
   finishWebmailWrite,

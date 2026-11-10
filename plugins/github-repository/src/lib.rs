@@ -2,10 +2,10 @@
 use reqwest::{Client, Method, StatusCode};
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::{collections::HashMap, time::Duration};
-use webdock_repository_protocol::{
+use spitzli_repository_protocol::{
     self as protocol, ErrorCode, LeaseClaims, PluginError, Result, runtime::Handler,
 };
+use std::{collections::HashMap, time::Duration};
 fn denied() -> PluginError {
     PluginError::denied()
 }
@@ -107,7 +107,7 @@ impl GithubProvider {
             .redirect(reqwest::redirect::Policy::none())
             .timeout(Duration::from_secs(30))
             .connect_timeout(Duration::from_secs(5))
-            .user_agent("webdock-github-repository/1")
+            .user_agent("spitzli-github-repository/1")
             .build()
             .map_err(|_| unavailable())?;
         Ok(Self {

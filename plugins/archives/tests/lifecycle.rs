@@ -1,11 +1,11 @@
 use serde_json::json;
-use webdock_archives::{
+use spitzli_archives::{
     diagnostics::Diagnostics,
     model::{Archive, Kind, State},
 };
-use webdock_plugin_protocol::storage::{StorageAuthorization, StorageDirection};
+use spitzli_plugin_protocol::storage::{StorageAuthorization, StorageDirection};
 fn archive() -> Archive {
-    Archive { id:uuid::Uuid::parse_str("11111111-1111-4111-8111-111111111111").unwrap(), customer:"123".into(),project:"124".into(),kind:Kind::Diagnostics,state:State::Ready,epoch:uuid::Uuid::new_v4().to_string(),expires_at:2000,source_binding:None,core_source:None,failure:None,job:Some("job-example".into()),receipt:Some(webdock_object_storage::ObjectReceipt {backend_id:"owned".into(),binding:"a".repeat(64),object_key:"archives/123/124/11111111-1111-4111-8111-111111111111/22222222-2222-4222-8222-222222222222".into(),size_bytes:42,sha256:"b".repeat(64)}),diagnostics:Some(Diagnostics::parse(json!({"version":1,"state":"finished","builds":[],"checks":[]})).unwrap()) }
+    Archive { id:uuid::Uuid::parse_str("11111111-1111-4111-8111-111111111111").unwrap(), customer:"123".into(),project:"124".into(),kind:Kind::Diagnostics,state:State::Ready,epoch:uuid::Uuid::new_v4().to_string(),expires_at:2000,source_binding:None,core_source:None,failure:None,job:Some("job-example".into()),receipt:Some(spitzli_object_storage::ObjectReceipt {backend_id:"owned".into(),binding:"a".repeat(64),object_key:"archives/123/124/11111111-1111-4111-8111-111111111111/22222222-2222-4222-8222-222222222222".into(),size_bytes:42,sha256:"b".repeat(64)}),diagnostics:Some(Diagnostics::parse(json!({"version":1,"state":"finished","builds":[],"checks":[]})).unwrap()) }
 }
 fn auth(r: &Archive) -> StorageAuthorization {
     StorageAuthorization {

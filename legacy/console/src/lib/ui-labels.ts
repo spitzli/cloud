@@ -1,4 +1,4 @@
-import { msgid } from '@webdock/i18n';
+import { msgid } from '@spitzli/i18n';
 // Presentation only. Stored enums and action identifiers are unchanged.
 const statuses: Record<string,string> = {
  running:msgid("In progress"), stopped:msgid("Stopped"), "needs-reconciliation":msgid("Review required"),

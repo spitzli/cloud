@@ -1,2 +1,2 @@
 // Compatibility export; provider implementation lives in the adapter workspace.
-export * from "@webdock/adapter-mail-turbosmtp/accounts";
+export * from "@spitzli/adapter-mail-turbosmtp/accounts";

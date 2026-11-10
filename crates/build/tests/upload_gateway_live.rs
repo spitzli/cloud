@@ -4,6 +4,13 @@
 use futures_util::{StreamExt, stream};
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_build::{
+    artifact::{Archive, validate_oci},
+    container_runner::{ContainerBuildRequest, Strategy},
+    execution::Limits,
+    kubernetes_transfer::{AttemptTransfer, ResultIdentity},
+    kubernetes_upload::{AttemptUploadGateway, router},
+};
 use std::{
     collections::BTreeMap,
     fs::File,
@@ -17,13 +24,6 @@ use std::{
     process::Command,
     sync::Arc,
     time::{Duration, Instant},
-};
-use webdock_build::{
-    artifact::{Archive, validate_oci},
-    container_runner::{ContainerBuildRequest, Strategy},
-    execution::Limits,
-    kubernetes_transfer::{AttemptTransfer, ResultIdentity},
-    kubernetes_upload::{AttemptUploadGateway, router},
 };
 
 const CAPACITY: u64 = 2 * 1024 * 1024;
@@ -105,10 +105,10 @@ fn result(attempt: &AttemptTransfer, uid: &str, log: &str) -> Vec<u8> {
     .encode()
     .unwrap()
 }
-fn open(root: &Path) -> webdock_build::Result<Arc<AttemptUploadGateway>> {
+fn open(root: &Path) -> spitzli_build::Result<Arc<AttemptUploadGateway>> {
     AttemptUploadGateway::open(root, CAPACITY, ORIGIN, MAX_BYTES, 1)
 }
-fn safe_error<T>(result: webdock_build::Result<T>) -> &'static str {
+fn safe_error<T>(result: spitzli_build::Result<T>) -> &'static str {
     match result {
         Err(e) => {
             assert!(e.logs.is_empty());
@@ -388,7 +388,7 @@ async fn real_tmpfs_and_native_http_upload_gate() {
         "upload_filesystem_changed"
     );
     let unread = stream::poll_fn(
-        |_| -> std::task::Poll<Option<webdock_build::Result<Vec<u8>>>> {
+        |_| -> std::task::Poll<Option<spitzli_build::Result<Vec<u8>>>> {
             panic!("replacement body polled")
         },
     );

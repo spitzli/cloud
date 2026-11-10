@@ -1,1 +1,1 @@
-export * from "@webdock/adapter-mail-turbosmtp/verification";
+export * from "@spitzli/adapter-mail-turbosmtp/verification";

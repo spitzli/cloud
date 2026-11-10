@@ -1,13 +1,13 @@
 import Link from "next/link";
 import {redirect} from "next/navigation";
-import {formatResource} from "@webdock/hosting-contracts";
+import {formatResource} from "@spitzli/hosting-contracts";
 import { HostingAllowanceFields,HostingAllowanceList } from "@/components/hosting/allowances";
-import { normalizeHostingAllowances } from "@webdock/hosting-contracts";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { normalizeHostingAllowances } from "@spitzli/hosting-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { HostingForm } from "@/components/hosting/form";
 import { HostingTable } from "@/components/hosting/table";
-import type { HostingClusterView } from "@webdock/hosting-contracts";
+import type { HostingClusterView } from "@spitzli/hosting-contracts";
 export default async function Cluster({
   params,
 }: {

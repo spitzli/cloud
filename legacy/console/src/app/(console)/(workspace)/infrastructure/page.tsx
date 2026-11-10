@@ -1,7 +1,7 @@
 import {requireRegistryOperator} from "@/lib/registry-page";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { HostingForm } from "@/components/hosting/form";
 import { HostingTable } from "@/components/hosting/table";
@@ -9,7 +9,7 @@ import { Pagination, ListControls } from "@/components/list-controls";
 import type {
   HostingPage,
   HostingClusterView,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export default async function Infrastructure({
   searchParams,
 }: {

@@ -1,7 +1,7 @@
 "use client";
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 import { authLabel } from "@/lib/i18n-labels";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 import { useActionState, useState, type ReactNode } from "react";
 import type { getPlans, getTenantPlan } from "@/lib/plans";
 import type { getTenantStorage } from "@/lib/storage-usage";

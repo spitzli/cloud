@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import type { DatabaseView } from "@webdock/hosting-contracts";
+import type { DatabaseView } from "@spitzli/hosting-contracts";
 import { hostingPageCall } from "./hosting-client";
 import { getHostingProject } from "./hosting-project";
 

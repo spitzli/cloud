@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test";
 import type { Pool } from "pg";
-import type { ClerkExternalEvidence } from "@webdock/auth-clerk";
+import type { ClerkExternalEvidence } from "@spitzli/auth-clerk";
 import {
   createClerkSessionBridge,
   allowedClerkProjection,

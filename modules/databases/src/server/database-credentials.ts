@@ -1,5 +1,5 @@
 import type { DatabaseRuntimePorts } from "./ports";
-import { HostingError, type HostingActor } from "@webdock/hosting-contracts";
+import { HostingError, type HostingActor } from "@spitzli/hosting-contracts";
 export type Dependencies = {
   withHostingDatabase: DatabaseRuntimePorts["withHostingDatabase"];
   transaction: DatabaseRuntimePorts["transaction"];

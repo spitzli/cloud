@@ -5,7 +5,7 @@ use crate::{
 };
 use sea_orm::{ConnectionTrait, DatabaseTransaction, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
-use webdock_identity::Principal;
+use spitzli_identity::Principal;
 impl AccessService {
     pub async fn manage_access(
         &self,

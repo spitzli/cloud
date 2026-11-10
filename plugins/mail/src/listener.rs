@@ -6,8 +6,8 @@ use axum::{
     middleware::{self, Next},
     response::Response,
 };
+use spitzli_plugin_runtime::{CorePeer, MutualTls, Runtime, UnixSocket};
 use std::{future::Future, sync::Arc, time::Duration};
-use webdock_plugin_runtime::{CorePeer, MutualTls, Runtime, UnixSocket};
 
 pub fn native_routes(router: Router, peers: Vec<CorePeer>) -> Router {
     let peers = Arc::new(peers);
@@ -16,7 +16,7 @@ pub fn native_routes(router: Router, peers: Vec<CorePeer>) -> Router {
         async move {
             let mut probe = tonic::Request::new(());
             *probe.extensions_mut() = request.extensions().clone();
-            let allowed = webdock_plugin_runtime::authenticated_peer(&probe)
+            let allowed = spitzli_plugin_runtime::authenticated_peer(&probe)
                 .is_ok_and(|peer| peers.iter().any(|p| p.permits(&peer)));
             if !allowed {
                 return Response::builder()

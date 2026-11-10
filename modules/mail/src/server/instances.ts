@@ -1,4 +1,4 @@
-import { activeIdentity, type IdentityDirectory } from "@webdock/core/identity";
+import { activeIdentity, type IdentityDirectory } from "@spitzli/core/identity";
 import { randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import { reserveMailCapacity, completeMailCapacity, MailCapacityError } from "./capacity.ts";

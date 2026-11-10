@@ -1,6 +1,6 @@
 import type {IncomingMessage,ServerResponse} from 'node:http';
 import {z} from 'zod';
-import {hookMessageDigest} from '@webdock/mail-core/submission-proof';
+import {hookMessageDigest} from '@spitzli/mail-core/submission-proof';
 import type {MailControl} from './server.ts';
 const address=z.object({address:z.string().max(254)});
 const hook=z.object({context:z.object({stage:z.literal('data'),sasl:z.object({login:z.string().max(320)}),queue:z.object({id:z.string().regex(/^[a-f0-9]{1,32}$/)})}),envelope:z.object({from:address,to:z.array(address).min(1).max(100)}),message:z.object({headers:z.array(z.tuple([z.string().max(256),z.string().max(131072)])).max(1000),contents:z.string(),size:z.number().int().positive().max(26214400)})});

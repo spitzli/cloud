@@ -1,5 +1,5 @@
 import {registerPluginTools} from '../modules/plugins/exposure';
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
   registerHostingTools,
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
         return challenge(403, "webdock:read webdock:write");
       const server = access
         ? createRegistryMCP(access.actor, canWrite)
-        : new McpServer({ name: "webdock-hosting", version: "1.0.0" });
+        : new McpServer({ name: "spitzli-hosting", version: "1.0.0" });
       if (hosting)
         registerHostingTools(
           server,

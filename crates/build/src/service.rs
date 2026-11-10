@@ -7,11 +7,11 @@ use sea_orm::{
 };
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_hosting::HostingService;
+use spitzli_identity::{Principal, RlsSigner};
+use spitzli_persistence::IdAllocator;
 use std::sync::Arc;
 use subtle::ConstantTimeEq;
-use webdock_hosting::HostingService;
-use webdock_identity::{Principal, RlsSigner};
-use webdock_persistence::IdAllocator;
 #[derive(Clone)]
 pub struct RepositoryRef<'a> {
     pub(crate) authority: RepositoryContext<'a>,
@@ -31,12 +31,12 @@ pub(crate) enum RepositoryContext<'a> {
         tx: &'a DatabaseTransaction,
     },
     PluginJob {
-        proof: Box<webdock_plugin_host::ExportJob>,
+        proof: Box<spitzli_plugin_host::ExportJob>,
     },
     Session {
         principal: &'a Principal,
         tx: &'a DatabaseTransaction,
-        authority: Option<&'a webdock_browser_session::StoredAuthority>,
+        authority: Option<&'a spitzli_browser_session::StoredAuthority>,
     },
     Build {
         worker: &'a WorkerIdentity,
@@ -140,7 +140,7 @@ fn field<'a>(value: &'a Value, key: &str) -> Result<&'a str> {
         .as_str()
         .ok_or_else(|| error("invalid_stored_build"))
 }
-fn hosting(e: webdock_hosting::HostingError) -> crate::Error {
+fn hosting(e: spitzli_hosting::HostingError) -> crate::Error {
     let _ = e;
     error("hosting_publication_unavailable")
 }
@@ -157,7 +157,7 @@ impl BuildService {
             (&db, "webdock_auth_runtime"),
             (&worker, "webdock_worker_runtime"),
         ] {
-            webdock_persistence::connection::verify_runtime_role(connection, role)
+            spitzli_persistence::connection::verify_runtime_role(connection, role)
                 .await
                 .map_err(|_| error("invalid_database_role"))?;
         }
@@ -345,7 +345,7 @@ impl BuildService {
     pub async fn execute_with_authority(
         &self,
         principal: &Principal,
-        authority: &webdock_browser_session::StoredAuthority,
+        authority: &spitzli_browser_session::StoredAuthority,
         input: Value,
         ceiling: crate::BuildCeiling,
     ) -> Result<Value> {
@@ -363,7 +363,7 @@ impl BuildService {
         &self,
         principal: &Principal,
         input: Value,
-        authority: Option<&webdock_browser_session::StoredAuthority>,
+        authority: Option<&spitzli_browser_session::StoredAuthority>,
     ) -> Result<Value> {
         if matches!(
             input["action"].as_str(),
@@ -1507,7 +1507,7 @@ impl BuildService {
         revision: i32,
         key: &str,
         rollback: bool,
-        authority: Option<&webdock_browser_session::StoredAuthority>,
+        authority: Option<&spitzli_browser_session::StoredAuthority>,
     ) -> Result<Value> {
         let release=rows(tx,"SELECT to_jsonb(r)||jsonb_build_object('build_id',a.build_id) AS value FROM webdock_auth.git_release r JOIN webdock_auth.git_artifact a ON a.id=r.artifact_id AND a.retained WHERE r.id=$1 AND r.project_id=$2 FOR UPDATE OF r",vec![id.into(),project.into()]).await?.pop().ok_or_else(||error("release_unavailable"))?;
         Self::guard_kubernetes_publication(tx, &release).await?;

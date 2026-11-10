@@ -1,12 +1,12 @@
 import type { MailProductStore } from "./provider-ports";
-import type { DatabaseReader } from "@webdock/core/identity";
+import type { DatabaseReader } from "@spitzli/core/identity";
 import {
   createCipheriv,
   createDecipheriv,
   createHash,
   randomBytes,
 } from "node:crypto";
-import type { EmailRequest } from "@webdock/mail-contracts";
+import type { EmailRequest } from "@spitzli/mail-contracts";
 type Dependencies = {
   contentSecret(): string | undefined;
   database: MailProductStore["database"];

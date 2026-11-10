@@ -1,7 +1,7 @@
 import type { MailProductStore } from "./provider-ports";
 import type { MailFetch as Fetch } from "./provider-ports";
-import type { MailActor, EventType } from "@webdock/mail-contracts";
-import { parseAddress, parseID } from "@webdock/mail-contracts/validation";
+import type { MailActor, EventType } from "@spitzli/mail-contracts";
+import { parseAddress, parseID } from "@spitzli/mail-contracts/validation";
 import { MailError, mailUnavailable } from "./product-access";
 type Dependencies = {
   discardExpiredUncertainContent: ReturnType<

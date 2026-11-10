@@ -3,9 +3,9 @@ use super::{
     client::{Account, Client, Domain, Listener, Rows},
 };
 use serde_json::{Value, json};
+use spitzli_agent_protocol::mail::MailClaim;
+use spitzli_supervisor::{ExecutionError, Result};
 use std::collections::HashMap;
-use webdock_agent_protocol::mail::MailClaim;
-use webdock_supervisor::{ExecutionError, Result};
 pub(super) async fn configure_certificate(
     claim: &MailClaim,
     authority: &dyn MailAuthority,

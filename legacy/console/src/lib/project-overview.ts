@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import type { ProjectOverview } from "@webdock/hosting-contracts";
+import type { ProjectOverview } from "@spitzli/hosting-contracts";
 import { hostingPageCall } from "./hosting-client";
 
 export const getProjectOverview = cache((projectID: string) =>

@@ -65,7 +65,7 @@ impl ServiceBindingReference {
     }
     pub fn validate(&self) -> Result<()> {
         let (id, revision, credential) = self.identity();
-        if webdock_core::id::RecordId::parse(id).is_err()
+        if spitzli_core::id::RecordId::parse(id).is_err()
             || revision == 0
             || revision > 9007199254740991
             || credential == 0
@@ -79,7 +79,7 @@ impl ServiceBindingReference {
                 ca_sha256,
                 ..
             } => {
-                if webdock_core::id::RecordId::parse(backend_id).is_err()
+                if spitzli_core::id::RecordId::parse(backend_id).is_err()
                     || !valid_sha256(ca_sha256)
                 {
                     return Err(ExecutionError::Invalid("database binding reference"));

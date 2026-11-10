@@ -7,17 +7,17 @@ use sea_orm::{
 };
 use serde_json::json;
 use sha2::{Digest, Sha256};
-use std::sync::Arc;
-use webdock_agent_protocol::mail::*;
-use webdock_browser_session::StoredAuthority;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_mail::{
+use spitzli_agent_protocol::mail::*;
+use spitzli_browser_session::StoredAuthority;
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_mail::{
     MailDependencies,
     incoming::{
         IncomingConfig, NativeIncoming, ServiceCommand, ServiceState,
         agent::{IncomingAgent, MailAgentConfig},
     },
 };
+use std::sync::Arc;
 const KEY: &str = "owned-incoming-agent-context-key-atleast32";
 const IMAGE: &str = "registry.example.test/stalwart@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 async fn sql(db: &impl ConnectionTrait, query: &str, values: Vec<sea_orm::Value>) {
@@ -84,8 +84,8 @@ enum Case {
 async fn late_authority(
     owner: &DatabaseConnection,
     service: Arc<IncomingAgent>,
-    hosting: Arc<webdock_hosting::HostingService>,
-    agent: webdock_hosting::AgentIdentity,
+    hosting: Arc<spitzli_hosting::HostingService>,
+    agent: spitzli_hosting::AgentIdentity,
     claim: MailClaim,
     case: Case,
 ) {
@@ -190,12 +190,12 @@ async fn late_authority(
     let outcome = result.unwrap().unwrap();
     if case == Case::CapacityDeadline {
         assert!(
-            matches!(outcome, Err(webdock_mail::incoming::Error::Conflict)),
+            matches!(outcome, Err(spitzli_mail::incoming::Error::Conflict)),
             "expired capacity projection committed readiness"
         );
     } else if case == Case::GuardDeadline {
         assert!(
-            matches!(outcome, Err(webdock_mail::incoming::Error::Conflict)),
+            matches!(outcome, Err(spitzli_mail::incoming::Error::Conflict)),
             "expired guard was allowed after blocked authentication"
         );
     } else {
@@ -232,8 +232,8 @@ async fn late_authority(
 async fn ordered_claim(
     owner: &DatabaseConnection,
     service: Arc<IncomingAgent>,
-    hosting: Arc<webdock_hosting::HostingService>,
-    agent: webdock_hosting::AgentIdentity,
+    hosting: Arc<spitzli_hosting::HostingService>,
+    agent: spitzli_hosting::AgentIdentity,
 ) -> MailClaim {
     let admin = owner.begin().await.unwrap();
     sql(
@@ -289,8 +289,8 @@ async fn ordered_claim(
 async fn storage_failure(
     owner: &DatabaseConnection,
     service: &IncomingAgent,
-    hosting: &webdock_hosting::HostingService,
-    agent: &webdock_hosting::AgentIdentity,
+    hosting: &spitzli_hosting::HostingService,
+    agent: &spitzli_hosting::AgentIdentity,
     claim: &MailClaim,
 ) {
     sql(
@@ -342,7 +342,7 @@ async fn fixture(case: Case) {
     url.set_path(&format!("/{name}"));
     let owner = Database::connect(url.as_str()).await.unwrap();
     let result=std::panic::AssertUnwindSafe(async{
-        webdock_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
+        spitzli_persistence::migrations::bootstrap(&owner,&name,KEY).await.unwrap();
         sql(&owner,"INSERT INTO webdock_auth.\"user\"(id,name,email,\"emailVerified\",role,\"twoFactorEnabled\",\"mustChangePassword\") VALUES('1001','Operator','operator@example.invalid',true,'operator',true,false)",vec![]).await;
         sql(&owner,"INSERT INTO webdock_auth.session(id,token,\"userId\",\"expiresAt\",\"updatedAt\") VALUES('operator-session','operator-token','1001',now()+interval '1 hour',now())",vec![]).await;
         let tx=owner.begin().await.unwrap();
@@ -358,8 +358,8 @@ async fn fixture(case: Case) {
         let cookie=format!("{}={}",cookies.name(),cookies.sign("operator-token").unwrap());
         let identity=Arc::new(IdentityService::new(auth.clone(),cookies));
         let principal=identity.authenticate_cookie(&cookie).await.unwrap().unwrap();
-        let ids=Arc::new(webdock_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,webdock_ids::Identity::platform(0,2).unwrap()));
-        let hosting=Arc::new(webdock_hosting::HostingService::new(business.clone(),auth.clone(),worker.clone(),KEY.into(),"incoming-platform-encryption-key-atleast32".into(),ids.clone()).await.unwrap());
+        let ids=Arc::new(spitzli_persistence::IdAllocator::new(role("DATABASE_URL",&name,&url).await,spitzli_ids::Identity::platform(0,2).unwrap()));
+        let hosting=Arc::new(spitzli_hosting::HostingService::new(business.clone(),auth.clone(),worker.clone(),KEY.into(),"incoming-platform-encryption-key-atleast32".into(),ids.clone()).await.unwrap());
         let incoming=Arc::new(NativeIncoming::new(MailDependencies{auth:auth.clone(),business:business.clone(),worker:worker.clone(),identity:identity.clone(),browser:None,ids},IncomingConfig{enabled:true,mailboxes_enabled:true,sending_enabled:true,managed_cluster:"200".into(),rls_secret:KEY.into()}).await.unwrap());
         let service=Arc::new(IncomingAgent::new(incoming.clone(),MailAgentConfig{image:IMAGE.into(),hostname_suffix:"example.test".into(),encryption_key:STANDARD.encode([37u8;32])}).unwrap());
         let agent=hosting.authenticate_agent("200",&credential).await.unwrap();

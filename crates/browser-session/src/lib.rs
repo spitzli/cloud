@@ -16,9 +16,9 @@ pub enum Error {
     #[error("Browser persistence is unavailable.")]
     Database(#[from] sea_orm::DbErr),
     #[error("Account authority is unavailable.")]
-    Identity(#[from] webdock_identity::IdentityError),
+    Identity(#[from] spitzli_identity::IdentityError),
     #[error("Sign-in authority is unavailable.")]
-    OAuth(#[from] webdock_oauth::Error),
+    OAuth(#[from] spitzli_oauth::Error),
 }
 pub type Result<T> = std::result::Result<T, Error>;
 /// Server configuration contains a confidential client credential; never log or serialize it.
@@ -82,11 +82,11 @@ impl BrowserConfig {
             .find(|o| o.origin().ascii_serialization() == value)
             .ok_or(Error::InvalidInput)
     }
-    pub(crate) fn credentials(&self) -> webdock_oauth::ClientAuthentication {
-        webdock_oauth::ClientAuthentication {
+    pub(crate) fn credentials(&self) -> spitzli_oauth::ClientAuthentication {
+        spitzli_oauth::ClientAuthentication {
             client_id: self.client_id.clone(),
             client_secret: Some(self.client_secret.clone()),
-            method: webdock_oauth::ClientAuthMethod::ClientSecretPost,
+            method: spitzli_oauth::ClientAuthMethod::ClientSecretPost,
         }
     }
 }
@@ -209,7 +209,7 @@ pub struct BrowserAuthority {
     pub customer_scope: Option<String>,
 }
 pub struct BrowserAuthentication {
-    pub principal: webdock_identity::Principal,
+    pub principal: spitzli_identity::Principal,
     pub authority: BrowserAuthority,
 }
 
@@ -227,7 +227,7 @@ pub enum StoredAuthority {
     },
 }
 impl StoredAuthority {
-    pub fn local_session(principal: &webdock_identity::Principal) -> Self {
+    pub fn local_session(principal: &spitzli_identity::Principal) -> Self {
         match principal.customer_scope() {
             Some(scope) => Self::CustomerSession {
                 customer_scope: scope.into(),
@@ -251,13 +251,13 @@ impl StoredAuthority {
 /// The caller retains `auth_transaction` while committing its domain operation. The stored
 /// subject/session and proof must come from server-owned rows, not unauthenticated input.
 pub async fn revalidate_stored_authority(
-    identity: &webdock_identity::IdentityService,
+    identity: &spitzli_identity::IdentityService,
     auth_transaction: &sea_orm::DatabaseTransaction,
     browser_sessions: Option<&BrowserSessions>,
     subject: &str,
     session_id: &str,
     authority: &StoredAuthority,
-) -> Result<webdock_identity::Principal> {
+) -> Result<spitzli_identity::Principal> {
     let mut principal = identity
         .authenticate_session_in(auth_transaction, subject, session_id)
         .await?
@@ -289,15 +289,15 @@ pub async fn revalidate_stored_authority(
 /// Native trusted server-owned proof. Consume and retain the returned checked transaction.
 /// First-party browser validation precedes canonical reads to keep client→identity lock order.
 pub async fn revalidate_stored_authority_native_in<'a>(
-    identity: &webdock_identity::IdentityService,
-    auth_transaction: webdock_persistence::postgres::Transaction<'a>,
+    identity: &spitzli_identity::IdentityService,
+    auth_transaction: spitzli_persistence::postgres::Transaction<'a>,
     browser_sessions: Option<&BrowserSessions>,
     subject: &str,
     session_id: &str,
     authority: &StoredAuthority,
 ) -> Result<(
-    webdock_persistence::postgres::Transaction<'a>,
-    webdock_identity::Principal,
+    spitzli_persistence::postgres::Transaction<'a>,
+    spitzli_identity::Principal,
 )> {
     tokio::time::timeout(std::time::Duration::from_secs(30), async move {
         let (tx, principal) = if let StoredAuthority::FirstPartyBrowser { browser } = authority {

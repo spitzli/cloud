@@ -1,0 +1,6 @@
+apiVersion: v2
+name: spitzli-databases
+version: 0.1.0
+appVersion: '0.1.0'
+description: Opt-in native database gateway with an explicitly pinned Tabularis runtime
+type: application

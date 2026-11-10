@@ -1,5 +1,5 @@
 import type { MailProductStore } from "./provider-ports";
-import type { MailActor } from "@webdock/mail-contracts";
+import type { MailActor } from "@spitzli/mail-contracts";
 export function createMailConnections(
   dependencies: Pick<
     MailProductStore,

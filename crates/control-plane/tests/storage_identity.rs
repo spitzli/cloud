@@ -1,6 +1,6 @@
 //! A fresh supported native bootstrap, never the live acceptance database.
 use sea_orm::{ConnectionTrait, DbBackend, Statement};
-use webdock_plugin_host::provisioning::storage::MetadataProvisioner;
+use spitzli_plugin_host::provisioning::storage::MetadataProvisioner;
 #[expect(
     dead_code,
     reason = "Shared TLS fixture also supports other runtime startup tests."
@@ -12,17 +12,17 @@ mod fixture;
 async fn one_cluster_on_different_tcp_interfaces_is_never_separate_storage() {
     let f = fixture::Fixture::start().await;
     let interfaces = interfaces(&f);
-    let passwords = webdock_persistence::roles::LOGIN_ROLES
+    let passwords = spitzli_persistence::roles::LOGIN_ROLES
         .iter()
         .copied()
         .chain(["webdock_offline_migrate"])
         .map(|role| (role.to_owned(), "c".repeat(64)))
         .collect();
     let owner = connect(&f.admin_url, &f.ca).await;
-    webdock_persistence::roles::provision_roles(&owner, "postgres", &passwords)
+    spitzli_persistence::roles::provision_roles(&owner, "postgres", &passwords)
         .await
         .unwrap();
-    webdock_persistence::migrations::bootstrap(
+    spitzli_persistence::migrations::bootstrap(
         &owner,
         "postgres",
         "owned-cluster-identity-context-key-32bytes",
@@ -47,7 +47,7 @@ async fn one_cluster_on_different_tcp_interfaces_is_never_separate_storage() {
         "actual distinct server listen interfaces reproduce the previous bypass"
     );
     let identity =
-        webdock_control_plane::plugins::installation::worker::platform_storage_identity(&platform)
+        spitzli_control_plane::plugins::installation::worker::platform_storage_identity(&platform)
             .await
             .unwrap();
     assert!(a.require_separate_cluster(&identity).await.is_err());
@@ -75,7 +75,7 @@ async fn one_cluster_on_different_tcp_interfaces_is_never_separate_storage() {
         .await
         .unwrap();
     assert!(
-        webdock_control_plane::plugins::installation::worker::platform_storage_identity(&platform)
+        spitzli_control_plane::plugins::installation::worker::platform_storage_identity(&platform)
             .await
             .is_err(),
         "missing control-data access fails closed"

@@ -1,5 +1,5 @@
 import "server-only";
-import { integrationCookies } from "@webdock/api-client";
+import { integrationCookies } from "@spitzli/api-client";
 import { headers } from "next/headers";
 import { browserAuthConfiguration } from "./browser-auth-config";
 export async function browserRequestCredentials(): Promise<{

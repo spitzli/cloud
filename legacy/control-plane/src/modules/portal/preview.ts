@@ -3,7 +3,7 @@ import {
   preferenceFromCookie,
   resolveLocale,
   translator,
-} from "@webdock/i18n";
+} from "@spitzli/i18n";
 export async function tenantPreview(
   request: Request,
   action: string,

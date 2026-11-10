@@ -1,5 +1,5 @@
 //! Retained storage is inspected, never repaired or provisioned by lifecycle operations.
-use webdock_plugin_host::provisioning::{
+use spitzli_plugin_host::provisioning::{
     ProvisioningError,
     storage::{MetadataProvisioner, StoragePlan},
 };
@@ -47,7 +47,7 @@ async fn retained_returns_existing_login_under_enforced_read_only_session() {
         .unwrap();
     let plan = plan(&f, &"a".repeat(64));
     let initial = provisioner.provision(&plan).await.unwrap();
-    let app = webdock_plugin_kit::postgres::connect(&initial.url, Some(f.ca.as_bytes()))
+    let app = spitzli_plugin_kit::postgres::connect(&initial.url, Some(f.ca.as_bytes()))
         .await
         .unwrap();
     app.batch_execute("CREATE TABLE retained(value integer); INSERT INTO retained VALUES(73)")
@@ -66,7 +66,7 @@ async fn retained_returns_existing_login_under_enforced_read_only_session() {
     );
     assert_eq!(retained.database(), plan.database());
     assert_eq!(retained.role(), plan.role());
-    let reconnected = webdock_plugin_kit::postgres::connect(&retained.url, Some(f.ca.as_bytes()))
+    let reconnected = spitzli_plugin_kit::postgres::connect(&retained.url, Some(f.ca.as_bytes()))
         .await
         .unwrap();
     assert_eq!(

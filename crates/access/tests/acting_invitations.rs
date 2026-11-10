@@ -1,12 +1,12 @@
 //! Invitation delivery uses the authority admitted to its outbox job, never restored operator rights.
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
+use spitzli_access::{AccessConfig, AccessService, MemberRole, PreviewMode, TenantCommand};
+use spitzli_identity::{
+    CookiePolicy, Delivery, DeliveryError, DeliveryRequest, IdentityService, RlsSigner, SecretKeys,
+};
 use std::{
     collections::BTreeMap,
     sync::{Arc, Mutex},
-};
-use webdock_access::{AccessConfig, AccessService, MemberRole, PreviewMode, TenantCommand};
-use webdock_identity::{
-    CookiePolicy, Delivery, DeliveryError, DeliveryRequest, IdentityService, RlsSigner, SecretKeys,
 };
 
 #[derive(Default)]
@@ -67,7 +67,7 @@ async fn invitation_dispatch_binds_live_customer_owner_scope() {
 async fn exercise(offline: url::Url, name: String) {
     let owner = Database::connect(offline.as_str()).await.unwrap();
     let rls_secret = std::env::var("DATABASE_RLS_SECRET").unwrap();
-    webdock_persistence::migrations::bootstrap(&owner, &name, &rls_secret)
+    spitzli_persistence::migrations::bootstrap(&owner, &name, &rls_secret)
         .await
         .unwrap();
     let mut auth_url = guarded("AUTH_DATABASE_URL");
@@ -77,9 +77,9 @@ async fn exercise(offline: url::Url, name: String) {
     let auth = Database::connect(auth_url.as_str()).await.unwrap();
     let business = Database::connect(business_url.as_str()).await.unwrap();
     let ids = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             auth_url.as_str(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),

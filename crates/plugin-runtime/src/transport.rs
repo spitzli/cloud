@@ -206,6 +206,6 @@ pub(crate) async fn mtls_channel(
 }
 fn client(channel: Channel) -> PluginRuntimeClient<Channel> {
     PluginRuntimeClient::new(channel)
-        .max_decoding_message_size(webdock_plugin_protocol::MANIFEST_BYTES + 1024)
+        .max_decoding_message_size(spitzli_plugin_protocol::MANIFEST_BYTES + 1024)
         .max_encoding_message_size(128 * 1024)
 }

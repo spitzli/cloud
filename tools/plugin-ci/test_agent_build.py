@@ -102,7 +102,7 @@ class FixtureOnlyEvidence(unittest.TestCase):
             (output/'checkpoint.json').write_text(json.dumps({'reusedSoftwareProof':reused}))
             (output/'legacy-attachment-test').write_bytes(b'fixture')
             self.assertEqual(build.validate_transcripts(output,'fixture-only')['full-agent-tests.log']['passed'],137)
-            (output/'webdock-agent').write_bytes(b'unrequested release')
+            (output/'spitzli-agent').write_bytes(b'unrequested release')
             with self.assertRaises(ValueError):build.validate_transcripts(output,'fixture-only')
 
 if __name__=='__main__':unittest.main()

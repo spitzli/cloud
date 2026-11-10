@@ -3,7 +3,7 @@ import type {
   IdentityDirectory,
   SessionAuthenticator,
   SessionReference,
-} from "@webdock/core/identity";
+} from "@spitzli/core/identity";
 type TrustedSession = {
   reference: SessionReference;
   cookie: string;

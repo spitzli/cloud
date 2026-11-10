@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/adapter-mail-turbosmtp",
+  "name": "@spitzli/adapter-mail-turbosmtp",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,8 +11,8 @@
     "./verification": "./src/provider-account.ts"
   },
   "dependencies": {
-    "@webdock/mail-contracts": "*",
-    "@webdock/module-mail": "*"
+    "@spitzli/mail-contracts": "*",
+    "@spitzli/module-mail": "*"
   },
   "license": "Apache-2.0"
 }

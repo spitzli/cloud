@@ -1,4 +1,4 @@
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 import { currentConsolePrincipal } from "../auth/principal";
 import { legacyClerkMemberships } from "../auth/clerk-provider";
 import {
@@ -6,7 +6,7 @@ import {
   withStoredConsolePrincipal,
 } from "../auth/principal";
 import { revalidateStoredConsoleIdentity } from "../auth/clerk-provider";
-import { createDatabaseService } from "@webdock/module-databases/server/service";
+import { createDatabaseService } from "@spitzli/module-databases/server/service";
 import { authorizeHosting } from "../hosting/authorization";
 import { audit as hostingAudit } from "../hosting/db";
 import { encryptMailSecret, decryptMailSecret } from "../platform/platform";

@@ -4,7 +4,7 @@ import { test, expect } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { createHash, randomBytes } from "node:crypto";
 import { Pool } from "pg";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { currentConsolePrincipal, withConsolePrincipal } from "../src/modules/auth/principal";
 import { createDatabases } from "../src/db/client";
 const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
@@ -357,8 +357,8 @@ const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       const compatibility = Bun.spawnSync([process.execPath, "--no-env-file", "-e", `
         import { mock } from "bun:test";
         import assert from "node:assert/strict";
-        import { withDatabaseScope } from "@webdock/database-runtime";
-        import { betterAuthIdentity } from "@webdock/auth-better-auth";
+        import { withDatabaseScope } from "@spitzli/database-runtime";
+        import { betterAuthIdentity } from "@spitzli/auth-better-auth";
         const subject = ${JSON.stringify(user)}, sessionID = ${JSON.stringify(legacyID)}, customerID = ${JSON.stringify(customer)};
         const principal = await import("./src/modules/auth/principal");
         mock.module("./src/modules/auth/principal", () => ({ ...principal, selectedIdentityDirectory: {

@@ -1,1 +1,1 @@
-export * from "@webdock/api-client/contracts";
+export * from "@spitzli/api-client/contracts";

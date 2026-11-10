@@ -1,5 +1,5 @@
 use ed25519_dalek::SigningKey;
-use webdock_mail_protocol::*;
+use spitzli_mail_protocol::*;
 fn claims() -> LeaseClaims {
     LeaseClaims {
         v: 1,

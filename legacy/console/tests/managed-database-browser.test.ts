@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { I18nProvider } from "@webdock/i18n/react";
+import { I18nProvider } from "@spitzli/i18n/react";
 import { ManagedDatabaseRows } from "../src/components/databases/managed-rows";
 
 test("managed databases are visible without manual bindings and link ready authorized databases to Tabularis", () => {

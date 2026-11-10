@@ -9,8 +9,8 @@ use axum::{
     response::{IntoResponse, Redirect, Response},
     routing::{get, post},
 };
+use spitzli_browser_session::{BrowserRedirect, BrowserSessions, Error};
 use std::{collections::HashMap, sync::Arc};
-use webdock_browser_session::{BrowserRedirect, BrowserSessions, Error};
 
 pub fn routes() -> Router<Arc<ServiceState>> {
     Router::new()

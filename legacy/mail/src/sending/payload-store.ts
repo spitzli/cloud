@@ -2,7 +2,7 @@ import {open,unlink,statfs,link} from 'node:fs/promises';
 import {constants} from 'node:fs';
 import {isAbsolute,join} from 'node:path';
 import {randomUUID} from 'node:crypto';
-import {sealSecret,openSecret} from '@webdock/mail-core/secrets';
+import {sealSecret,openSecret} from '@spitzli/mail-core/secrets';
 const LIMIT=25*1024*1024,SEALED_LIMIT=48*1024*1024;
 /** The directory must be a dedicated private retained volume, owned by the Mail service. */
 export class PrivatePayloadStore{

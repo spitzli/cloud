@@ -11,11 +11,11 @@ use axum::{
 use base64::{Engine, engine::general_purpose::STANDARD};
 use serde::Deserialize;
 use serde_json::json;
-use std::{collections::BTreeMap, sync::Arc};
-use webdock_oauth::{
+use spitzli_oauth::{
     AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientAuthentication,
     CodeExchange, Error, LogoutOutcome, LogoutRequest, OAuthService, RefreshExchange,
 };
+use std::{collections::BTreeMap, sync::Arc};
 
 #[derive(Debug)]
 struct Fields {

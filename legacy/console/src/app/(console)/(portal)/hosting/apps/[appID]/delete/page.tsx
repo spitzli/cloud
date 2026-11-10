@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { hostingPageCall } from "@/lib/hosting-client";
 import { HostingForm } from "@/components/hosting/form";
 export default async function DeleteApplication({

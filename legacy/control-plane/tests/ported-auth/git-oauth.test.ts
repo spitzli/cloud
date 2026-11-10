@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { gitOAuthCommandSchema } from "@webdock/hosting-contracts/git-oauth";
-import { commandSchema } from "@webdock/hosting-contracts";
+import { gitOAuthCommandSchema } from "@spitzli/hosting-contracts/git-oauth";
+import { commandSchema } from "@spitzli/hosting-contracts";
 import { gitOAuthSettings } from "../../src/modules/hosting/git-oauth";
 
 test("Git OAuth is confined to the trusted interactive bridge", () => {

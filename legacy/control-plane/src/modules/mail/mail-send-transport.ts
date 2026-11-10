@@ -5,7 +5,7 @@ import { getPlatformSettings, decryptMailSecret } from "../platform/platform";
 import { byokPolicy } from "../hosting/byok";
 import { mailProvider } from "../platform/platform";
 import { TurboSMTPClient } from "./turbosmtp";
-import { createNativeSendTransport } from "@webdock/module-mail/server/native-send-transport";
+import { createNativeSendTransport } from "@spitzli/module-mail/server/native-send-transport";
 export const { configureNativeTransport, nativeRelay } =
   createNativeSendTransport({
     transaction,

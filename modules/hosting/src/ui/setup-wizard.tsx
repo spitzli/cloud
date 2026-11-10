@@ -11,15 +11,15 @@ import {
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import { useUnsavedChanges } from "@webdock/console-kit/use-unsaved-changes";
-import { msgid } from "@webdock/i18n";
-import { useI18n } from "@webdock/i18n/react";
+import { useUnsavedChanges } from "@spitzli/console-kit/use-unsaved-changes";
+import { msgid } from "@spitzli/i18n";
+import { useI18n } from "@spitzli/i18n/react";
 import type {
   SetupConfiguration,
   SetupOptions,
   SetupView,
   SetupInspection,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { SetupActionState } from "../ui-types";
 import { canConfirmSetup, defaultSetupConfiguration } from "./setup-view";
 import { SetupSourceFields } from "./setup-source-fields";

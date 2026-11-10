@@ -1,8 +1,8 @@
 //! Private operator-configured transports shared by product executables.
 use crate::{Error, read_file};
 use serde::Deserialize;
+use spitzli_plugin_runtime::{HostClient, MutualTls, PinnedMutualTls};
 use std::{net::SocketAddr, path::PathBuf};
-use webdock_plugin_runtime::{HostClient, MutualTls, PinnedMutualTls};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -78,8 +78,8 @@ impl RuntimeTransport {
     async fn core_client_with_mode(&self, lazy: bool) -> Result<HostClient, Error> {
         self.validate()?;
         let channel = match (&self.core, &self.core_tls) {
-            (Some(path), None) if lazy => webdock_plugin_runtime::unix_channel_lazy(path)?,
-            (Some(path), None) => webdock_plugin_runtime::unix_channel(path.clone()).await?,
+            (Some(path), None) if lazy => spitzli_plugin_runtime::unix_channel_lazy(path)?,
+            (Some(path), None) => spitzli_plugin_runtime::unix_channel(path.clone()).await?,
             (None, Some(tls)) => {
                 let material = PinnedMutualTls {
                     certificate: read_file(&tls.certificate, false)?,
@@ -88,14 +88,14 @@ impl RuntimeTransport {
                     server_certificate_sha256: tls.server_certificate_sha256.clone(),
                 };
                 if lazy {
-                    webdock_plugin_runtime::pinned_mtls_channel_lazy(
+                    spitzli_plugin_runtime::pinned_mtls_channel_lazy(
                         tls.origin.clone(),
                         tls.domain.clone(),
                         material,
                     )
                     .await?
                 } else {
-                    webdock_plugin_runtime::pinned_mtls_channel(
+                    spitzli_plugin_runtime::pinned_mtls_channel(
                         tls.origin.clone(),
                         tls.domain.clone(),
                         material,

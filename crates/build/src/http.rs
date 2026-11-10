@@ -20,7 +20,7 @@ struct Artifact {
     size_bytes: u64,
     image_digest: String,
     #[serde(default)]
-    remote_storage: Option<webdock_object_storage::ObjectReceipt>,
+    remote_storage: Option<spitzli_object_storage::ObjectReceipt>,
 }
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -80,7 +80,7 @@ struct KubernetesStorageIssue {
     #[serde(rename = "buildID")]
     build_id: String,
     generation: i32,
-    action: webdock_agent_protocol::build_storage::BuildStorageAction,
+    action: spitzli_agent_protocol::build_storage::BuildStorageAction,
 }
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -88,7 +88,7 @@ struct KubernetesVolumeBinding {
     #[serde(rename = "buildID")]
     build_id: String,
     generation: i32,
-    handle: webdock_agent_protocol::build_storage::BuildVolumeHandle,
+    handle: spitzli_agent_protocol::build_storage::BuildVolumeHandle,
 }
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

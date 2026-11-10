@@ -5,6 +5,7 @@ use base64::{Engine, engine::general_purpose::STANDARD};
 use fs2::FileExt;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{
     fs::{File, OpenOptions},
     io::Write,
@@ -13,11 +14,10 @@ use std::{
     process::{Command, Stdio},
     time::{Duration, Instant},
 };
-use webdock_supervisor::{ExecutionError, Result};
 
 const SET_NAMESPACE: &str = "webdock-recovery-set-v1";
 const CAPSULE_NAMESPACE: &str = "webdock-recovery-capsule-v1";
-pub use webdock_agent_protocol::recovery::custody::{
+pub use spitzli_agent_protocol::recovery::custody::{
     AdmittedRecoverySet, ColdRecoveryCapsule, SignedDocument,
 };
 #[derive(Clone, Debug)]
@@ -326,7 +326,7 @@ impl ReplayJournal {
         verified: &VerifiedColdRecovery,
         receipt: &serde_json::Value,
     ) -> Result<()> {
-        if webdock_supervisor::timestamp().map_err(|_| ExecutionError::Runtime)? as i64
+        if spitzli_supervisor::timestamp().map_err(|_| ExecutionError::Runtime)? as i64
             >= verified.expires_at
         {
             return Err(ExecutionError::Expired);

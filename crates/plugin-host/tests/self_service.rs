@@ -3,7 +3,7 @@
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use webdock_identity::{CookiePolicy, IdentityService, Principal, RlsSigner};
+use spitzli_identity::{CookiePolicy, IdentityService, Principal, RlsSigner};
 
 async fn db(key: &str) -> DatabaseConnection {
     let value = std::env::var(key).expect("explicit local fixture URL");
@@ -362,8 +362,8 @@ async fn self_service_tables_enforce_rls() {
     f.cleanup().await;
 }
 
-use webdock_plugin_host::{AdmissionInput, FileBindings, HostService};
-use webdock_plugin_runtime::PeerIdentity;
+use spitzli_plugin_host::{AdmissionInput, FileBindings, HostService};
+use spitzli_plugin_runtime::PeerIdentity;
 
 impl Fixture {
     pub async fn host(&self) -> std::sync::Arc<HostService> {
@@ -372,9 +372,9 @@ impl Fixture {
                 db("DATABASE_URL").await,
                 db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
                 std::env::var("DATABASE_RLS_SECRET").unwrap(),
-                std::sync::Arc::new(webdock_persistence::IdAllocator::new(
+                std::sync::Arc::new(spitzli_persistence::IdAllocator::new(
                     db("DATABASE_URL").await,
-                    webdock_ids::Identity::platform(0, 2).unwrap(),
+                    spitzli_ids::Identity::platform(0, 2).unwrap(),
                 )),
                 std::sync::Arc::new(FileBindings::new(
                     self.bindings.path().join("bindings.json"),
@@ -713,7 +713,7 @@ async fn operator_policy_api() {
         .set_feature_mode(op, None, &f.plugin, "create-notes", "everyone", "1")
         .await
         .unwrap_err();
-    assert_eq!(stale.code, webdock_plugin_protocol::ErrorCode::Conflict);
+    assert_eq!(stale.code, spitzli_plugin_protocol::ErrorCode::Conflict);
     // unknown_feature_rejected
     assert!(
         host.set_feature_mode(op, None, &f.plugin, "missing", "everyone", "2")
@@ -1024,7 +1024,7 @@ async fn plans_limit_creates_workloads_and_projects() {
     let host = f.host().await;
     let meter = format!("{}.note", f.plugin);
     let input = |limits: Value| {
-        serde_json::from_value::<webdock_plugin_host::PlanInput>(
+        serde_json::from_value::<spitzli_plugin_host::PlanInput>(
             json!({"name": format!("{}-plan", f.nonce), "limits": limits}),
         )
         .unwrap()
@@ -1075,7 +1075,7 @@ async fn plans_limit_creates_workloads_and_projects() {
             .any(|m| m["id"] == meter.as_str() && m["label"] == "Note")
     );
     let assign = |overrides: Value| {
-        serde_json::from_value::<webdock_plugin_host::CustomerPlanInput>(
+        serde_json::from_value::<spitzli_plugin_host::CustomerPlanInput>(
             json!({"planId": plan, "overrides": overrides}),
         )
         .unwrap()
@@ -1425,17 +1425,17 @@ async fn units_route_only_their_domains_and_verified_ones() {
     f.cleanup().await;
 }
 
-struct Mails(std::sync::Mutex<Vec<webdock_identity::DeliveryRequest>>);
+struct Mails(std::sync::Mutex<Vec<spitzli_identity::DeliveryRequest>>);
 #[async_trait::async_trait]
-impl webdock_identity::Delivery for Mails {
+impl spitzli_identity::Delivery for Mails {
     async fn deliver(
         &self,
-        request: &webdock_identity::DeliveryRequest,
-    ) -> Result<(), webdock_identity::DeliveryError> {
+        request: &spitzli_identity::DeliveryRequest,
+    ) -> Result<(), spitzli_identity::DeliveryError> {
         // Account mail accepts record ids only (they become its idempotency keys).
         if !(1..=19).contains(&request.id.len()) || !request.id.bytes().all(|b| b.is_ascii_digit())
         {
-            return Err(webdock_identity::DeliveryError::Unavailable);
+            return Err(spitzli_identity::DeliveryError::Unavailable);
         }
         self.0.lock().unwrap().push(request.clone());
         Ok(())
@@ -1546,7 +1546,7 @@ async fn reports_open_and_resolve_notices_mailed_once() {
             .lock()
             .unwrap()
             .iter()
-            .all(|m| m.kind == webdock_identity::DeliveryKind::Notice)
+            .all(|m| m.kind == spitzli_identity::DeliveryKind::Notice)
     );
     assert_eq!(
         host.dispatch_notifications(&mails, "http://127.0.0.1:1/")

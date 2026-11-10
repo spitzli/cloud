@@ -1,18 +1,18 @@
 use serde_json::{Value, json};
-use std::{
-    os::unix::fs::PermissionsExt,
-    sync::{
-        Arc, Mutex,
-        atomic::{AtomicBool, AtomicUsize, Ordering},
-    },
-};
-use webdock_mail::{
+use spitzli_mail::{
     dispatch::{DispatchTransport, dispatch_one},
     message::{DispatchMessage, PreparedMessage, SendRequest},
     outbox::{PayloadFormat, Receipt, SendLease},
     payload::PrivatePayloadStore,
     provider_transport::{ProviderBinding, ProviderTransport, RoutingTransport},
     send_control::{ControlError, SendControl},
+};
+use std::{
+    os::unix::fs::PermissionsExt,
+    sync::{
+        Arc, Mutex,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
+    },
 };
 
 struct Control {

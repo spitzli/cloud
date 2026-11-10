@@ -4,10 +4,10 @@ import type { ComponentProps } from "react";
 import { hostingUIScope } from "./scope";
 import { useActionState, useState } from "react";
 import Link from "next/link";
-import { useUnsavedChanges } from "@webdock/console-kit/use-unsaved-changes";
-import { useI18n } from "@webdock/i18n/react";
+import { useUnsavedChanges } from "@spitzli/console-kit/use-unsaved-changes";
+import { useI18n } from "@spitzli/i18n/react";
 import type { HostingFormState } from "../ui-types";
-import type { HostingCommand } from "@webdock/hosting-contracts";
+import type { HostingCommand } from "@spitzli/hosting-contracts";
 import {
   HostingSaveContext,
   HostingPendingContext,

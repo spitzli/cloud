@@ -10,12 +10,12 @@ use crate::{
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_plugin_protocol::storage::{
+    Attachment, StorageAuthorization, StorageDirection, StoragePlan,
+};
 use std::{os::unix::fs::MetadataExt, path::PathBuf, sync::Arc};
 use tokio::sync::Semaphore;
 use uuid::Uuid;
-use webdock_plugin_protocol::storage::{
-    Attachment, StorageAuthorization, StorageDirection, StoragePlan,
-};
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Create {
@@ -71,17 +71,17 @@ impl Engine {
         customer: &str,
         project: &str,
         input: Value,
-        core_source: Option<webdock_export_protocol::SourceRef>,
+        core_source: Option<spitzli_export_protocol::SourceRef>,
     ) -> Result<Value> {
         let c: Create =
             serde_json::from_value(input.clone()).map_err(|_| "Invalid archive request")?;
         if let Some(source) = &core_source {
             source.validate()?;
             let expected = match c.kind {
-                Kind::Postgres => webdock_export_protocol::SourceKind::Postgres,
-                Kind::Project => webdock_export_protocol::SourceKind::Project,
-                Kind::Report => webdock_export_protocol::SourceKind::Report,
-                Kind::BuildLog => webdock_export_protocol::SourceKind::BuildLog,
+                Kind::Postgres => spitzli_export_protocol::SourceKind::Postgres,
+                Kind::Project => spitzli_export_protocol::SourceKind::Project,
+                Kind::Report => spitzli_export_protocol::SourceKind::Report,
+                Kind::BuildLog => spitzli_export_protocol::SourceKind::BuildLog,
                 Kind::Diagnostics => return Err("Invalid source kind"),
             };
             if source.kind != expected || c.source_id.as_deref() != Some(source.id.as_str()) {
@@ -160,7 +160,7 @@ impl Engine {
         customer: &str,
         project: &str,
         id: Uuid,
-    ) -> Result<Option<webdock_export_protocol::SourceRef>> {
+    ) -> Result<Option<spitzli_export_protocol::SourceRef>> {
         let archive = self.owned(customer, project, id).await?;
         Ok(archive.source()?.cloned())
     }

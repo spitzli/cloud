@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { readAuthProtocolSelection } from "@webdock/auth-configuration/protocols";
+import { readAuthProtocolSelection } from "@spitzli/auth-configuration/protocols";
 import { createAuthProtocolMounts } from "../src/protocols/auth-startup";
 import { readConfig } from "../src/config";
 const clerk = JSON.stringify({provider:"clerk",issuer:"https://identity.example",authorizedParties:["https://console.example"],audience:"console"});

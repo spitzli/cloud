@@ -1,7 +1,7 @@
 import { databaseURL } from "../src/db/client";
 import {applyApiMigrations} from "./lib/apply-migrations";
 import { Pool } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 const raw = process.env.DATABASE_URL_UNPOOLED;
 if (!raw) throw Error("Explicit offline migration URL required");
 const url = databaseURL(raw),

@@ -47,7 +47,7 @@ does not complete a build. Deterministic preparation/limit failures use the dura
 FAILED-completion outbox; ambiguous remote transfers remain retry/reconciliation
 work.
 
-`webdock_build::frontend::retained` is a private library consumer: callers supply a
+`spitzli_build::frontend::retained` is a private library consumer: callers supply a
 Core-authorized exact receipt, expected complete build scope and optional external
 signer pin. It validates before returning an in-memory file archive. It accepts no
 file path or URL selector and creates no customer-facing download route. Existing
@@ -70,7 +70,7 @@ RUSTUP_TOOLCHAIN=1.94.0 CC_x86_64_unknown_linux_musl=clang \
 
 WEBDOCK_FRONTEND_VM_TEST=1 \
   WEBDOCK_FRONTEND_VM_ROOT="$PWD/.runtime-test/build-vm-frontend-OWNED" \
-  cargo +1.94.0 test --offline --locked --release -p webdock-build \
+  cargo +1.94.0 test --offline --locked --release -p spitzli-build \
   --no-default-features --test frontend_vm -- --include-ignored --nocapture
 ```
 

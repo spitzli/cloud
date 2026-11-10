@@ -1,5 +1,5 @@
 import { IntentLink } from '@/components/intent-link';
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import type { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {

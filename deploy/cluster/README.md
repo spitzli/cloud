@@ -9,7 +9,7 @@ pieces from `deploy/dev/k3s`.
   host to resolve to the cluster and port 80 to reach Traefik.
 - CloudNativePG for dedicated PostgreSQL.
 - metrics-server, so usage shows what units actually use.
-- The Webdock agent (`deploy/helm/webdock-agent`), enrolled with Core.
+- The Webdock agent (`deploy/helm/spitzli-agent`), enrolled with Core.
 
 Each plugin's runtime binding names its cluster (`workloadCluster`) and the domains its units may route
 without a customer verifying them (`routeDomains`, e.g. `apps.example.eu`). Customers' own domains need

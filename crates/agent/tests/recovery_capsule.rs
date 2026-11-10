@@ -1,12 +1,12 @@
 //! Cryptographic/local replay tests only; not a substitute for real Core policy admission.
 #![cfg(feature = "docker")]
+use spitzli_agent::recovery::capsule::*;
+use spitzli_agent_protocol::recovery::RecoveryProfile;
 use std::{
     os::unix::fs::PermissionsExt,
     path::{Path, PathBuf},
     process::{Command, Stdio},
 };
-use webdock_agent::recovery::capsule::*;
-use webdock_agent_protocol::recovery::RecoveryProfile;
 fn write(path: &Path, value: &[u8]) {
     std::fs::write(path, value).unwrap();
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).unwrap();

@@ -66,7 +66,7 @@ Implement these contracts in Task 1; later tasks must consume the same definitio
 ```ts
 type PluginID = string; // existing slug rules; built-in/core IDs are reserved
 type Revision = string; // non-negative decimal bigint encoded as a string
-type Capability = import('@webdock/plugin-sdk/contracts').Capability;
+type Capability = import('@spitzli/plugin-sdk/contracts').Capability;
 type Availability = 'enabled' | 'draining' | 'disabled';
 type Intent = 'read' | 'write' | 'provision' | 'continue';
 type SessionActor = { subject: string; sessionID: string };
@@ -111,7 +111,7 @@ type VerifiedPluginRelease = {
 **Interfaces:** Produce `initializePluginState(selection: unknown, mode: 'fresh' | 'legacy'): Promise<void>`, `readInstalledPlugins(): Promise<InstalledPlugin[]>`, `requestPluginState(actor: OperatorActor, id: PluginID, desired: Availability, mutation: Mutation): Promise<OperationRef>`. Database access must receive existing authenticated/scoped context, never create a fake operator.
 
 - [ ] Add restricted-role tests: duplicate bootstrap is a no-op or explicit conflict without overwrite; legacy missing configuration preserves six enabled modules; fresh explicit selection disables omitted products; tenant cannot read secrets or mutate installations; forged worker scope fails; concurrent same-revision mutations yield one success; repeated key/same payload yields the same operation and changed payload yields 409.
-- [ ] Create isolated fixtures using the repository fixture scripts, then run the new RLS test through `npm run test:rls -w @webdock/api`; confirm a relevant failure. Never aim the fixture runner at a customer database.
+- [ ] Create isolated fixtures using the repository fixture scripts, then run the new RLS test through `npm run test:rls -w @spitzli/api`; confirm a relevant failure. Never aim the fixture runner at a customer database.
 - [ ] Add `plugin_installations`, `plugin_releases`, `plugin_operations`, `plugin_grants`, `plugin_documents`, `plugin_job_executions` and `plugin_participants` using existing schema/ID/journal conventions. Persist desired/actual availability, exact verified release, current/candidate/previous runtime generation, approvals, redacted config/secret refs and recoverable operation checkpoints. Unique active lifecycle operation per installation; revisions and idempotency are enforced transactionally. Job slots/leases and per-document mutation receipts follow the spec.
 - [ ] Define RLS for installation administration, read-only public projection, narrow controller/agent purposes and document access. Bind document keys to plugin installation, customer and project; prohibit caller-supplied scope escalation. Table owners and offline migrators stay separate from runtime roles. Extend readiness to verify required policies, not just table existence.
 - [ ] Implement explicit bootstrap/import under a singleton migration lock. Keep immutable baseline artifacts stable; add journaled migrations instead of rewriting deployed baseline checksums. API startup fails with a useful setup message if initialization is missing.
@@ -129,7 +129,7 @@ type VerifiedPluginRelease = {
 - [ ] Run new tests through the existing integration/RLS runners and observe the expected failures.
 - [ ] Implement shared admission/exclusive transition fencing and durable intent creation per the spec. Convert all affected ports/callers coherently; security-relevant checks cannot remain synchronous cached callbacks. Keep continuation authority distinct from fresh provision authority and reuse existing idempotency/outbox/operation journals for actual side effects.
 - [ ] Mount all owned built-in routes at startup, moving availability checks to requests/services. Retain process-domain ownership checks. Replace `config.modules` and environment reads as authorization sources; public DTOs remain metadata, not authority. Reuse shutdown inventory through a callable preflight returning structured blockers without deleting anything.
-- [ ] Run `npm run test:modules`, affected API integration/RLS tests and `npm run check -w @webdock/api` to PASS. An API process losing database access must not keep authorizing from its last snapshot.
+- [ ] Run `npm run test:modules`, affected API integration/RLS tests and `npm run check -w @spitzli/api` to PASS. An API process losing database access must not keep authorizing from its last snapshot.
 
 ## Task 4: Make workers dynamic and expose operator controls
 
@@ -191,7 +191,7 @@ This task supplies the base authenticated gateway, document API and grants. DX1â
 
 ## Task 8: Run restricted plugin containers through Kubernetes
 
-**Files:** Create `agents/kubernetes/plugin_{client,executor}.py`, `test_plugin_executor.py`, `test_plugin_client.py`; modify `agents/kubernetes/{daemon,observer,permissions}.py` and relevant enrollment/capability contracts; create `deploy/plugins/runtime/` policy templates and extend `deploy/helm/webdock-agent` only for explicit plugin support.
+**Files:** Create `agents/kubernetes/plugin_{client,executor}.py`, `test_plugin_executor.py`, `test_plugin_client.py`; modify `agents/kubernetes/{daemon,observer,permissions}.py` and relevant enrollment/capability contracts; create `deploy/plugins/runtime/` policy templates and extend `deploy/helm/spitzli-agent` only for explicit plugin support.
 
 **Interfaces:** Agent packet includes protocol version, cluster ID, installation/plugin ID, operation ID, agent/runtime generations, lease token, validated image digest, bounded resource settings and a host-selected namespace. `validate_plugin_packet(packet)` rejects extra privileged fields; `reconcile_plugin(packet, checkpoint)` returns readiness/observation proof tied to the same generation.
 
@@ -256,7 +256,7 @@ Completion also requires DX9's packed-CLI/SDK empty-directory proof and actual h
 - [ ] Drain/deactivate Y while work is in flight; prove new invocations fail and accepted work converges. Reactivate and recover data. Complete a compatible update, reject an unhealthy candidate, verify rollback, uninstall/reinstall with retained data and fresh grant approval. Host digests/start times and X availability stay unchanged throughout.
 - [ ] Interrupt each controller/agent lifecycle phase and restart; prove durable recovery, exclusive job ownership and rejection of stale completion. Stop Tabularium and verify installed plugins keep working while new installations show a useful failure.
 - [ ] Exercise tampered manifest/descriptor, wrong signer, yanked version, wrong image digest, private-destination redirect, malicious iframe message, expired/revoked token, removed membership, DB outage, unsupported protocol and retained Mail shutdown blocker. These must fail before unauthorized effects.
-- [ ] Run `npm run test:modules`, `npm run test:unit -w @webdock/api`, the registered integration/RLS suites with isolated fixtures, `npm run check -w @webdock/api`, `npm run test -w @webdock/admin`, `npm run check -w @webdock/admin`, the Python agent tests, distribution checks and API/Console builds. Use existing network-blocked suites; live fixture integration is explicitly separated.
+- [ ] Run `npm run test:modules`, `npm run test:unit -w @spitzli/api`, the registered integration/RLS suites with isolated fixtures, `npm run check -w @spitzli/api`, `npm run test -w @spitzli/admin`, `npm run check -w @spitzli/admin`, the Python agent tests, distribution checks and API/Console builds. Use existing network-blocked suites; live fixture integration is explicitly separated.
 - [ ] Record exact commands, outcomes, source/image versions and limitations without credentials. Remove only fixtures owned by this task. Do not claim skipped checks passed, production rollout, safe arbitrary third-party execution or completed extraction of all six built-ins.
 - [ ] Review the final diff for authorization bypasses and retained-data risks; resolve findings. Hand off the tested code, operational runbook, remaining deployment inputs and verification record.
 

@@ -52,7 +52,7 @@ def submission_network_policy(profile,labels,addresses):
         address=ipaddress.ip_address(value)
         if not address.is_global:raise ValueError('Unsafe relay address')
         networks.append({'ipBlock':{'cidr':str(address)+('/32' if address.version==4 else '/128')}})
-    gateway={'namespaceSelector':{'matchLabels':{'kubernetes.io/metadata.name':'webdock-mail-gateway'}},'podSelector':{'matchLabels':{'app':'mail-gateway'}}}
+    gateway={'namespaceSelector':{'matchLabels':{'kubernetes.io/metadata.name':'spitzli-mail-gateway'}},'podSelector':{'matchLabels':{'app':'mail-gateway'}}}
     return {'apiVersion':'networking.k8s.io/v1','kind':'NetworkPolicy','metadata':{'name':'webdock-mail-submission','namespace':'wd-mail-'+profile['customerID'],'labels':labels},'spec':{
         'podSelector':{'matchLabels':{'webdock.dev/mail-customer-id':profile['customerID']}},'policyTypes':['Ingress','Egress'],
         'ingress':[{'from':[gateway],'ports':[{'protocol':'TCP','port':2465}]}],
@@ -84,7 +84,7 @@ def configure_submission(client,profile,guard):
         '@type':'User','name':'wd-submit','domainId':domain['id'],'description':marker,'roles':{'@type':'User'},
         'permissions':{'@type':'Replace','enabledPermissions':{'authenticate':True,'emailSend':True},'disabledPermissions':{}},
         'credentials':{'0':{'@type':'Password','secret':profile['password']}},'quotas':{'maxDiskQuota':1048576},'encryptionAtRest':{'@type':'Disabled'},'memberGroupIds':{}})
-    url='http://mail-gateway.webdock-mail-gateway.svc.cluster.local:3139/internal/smtp/'+profile['customerID']
+    url='http://mail-gateway.spitzli-mail-gateway.svc.cluster.local:3139/internal/smtp/'+profile['customerID']
     hook=ensure('MtaHook',call('x:MtaHook/get',{'ids':None})['list'],lambda row:row.get('url')==url,{
         'url':url,'enable':{'else':"authenticated_as == '"+profile['username']+"'"},'stages':{'data':True},'tempFailOnError':True,'timeout':10000,'maxResponseSize':4096,'allowInvalidCerts':False,
         'httpAuth':{'@type':'Bearer','bearerToken':{'@type':'Value','secret':profile['hookToken']}},'httpHeaders':{}})
@@ -140,7 +140,7 @@ def execute_submission(client,packet,deployment,service,guard):
     observed=get('networkpolicy',policy['metadata']['name'],policy['metadata']['namespace'])
     if not observed or observed['spec']!=policy['spec']:raise ValueError('Mail egress policy was not confirmed')
     policies=json.loads(kubectl('-n',policy['metadata']['namespace'],'get','networkpolicies','-o','json'))['items']
-    allowed={'webdock-deny','webdock-internal','webdock-dns','webdock-ingress','webdock-mail-gateway','webdock-mail-submission'}
+    allowed={'webdock-deny','webdock-internal','webdock-dns','webdock-ingress','spitzli-mail-gateway','webdock-mail-submission'}
     for item in policies:
         name=item['metadata']['name'];spec=item['spec']
         if name not in allowed:raise ValueError('Unexpected Mail network policy')
@@ -148,7 +148,7 @@ def execute_submission(client,packet,deployment,service,guard):
         if name=='webdock-dns':
             expected=[{'to':[{'namespaceSelector':{'matchLabels':{'kubernetes.io/metadata.name':'kube-system'}},'podSelector':{'matchLabels':{'k8s-app':'kube-dns'}}}],'ports':[{'protocol':'UDP','port':53},{'protocol':'TCP','port':53}]}]
             if spec.get('egress')!=expected:raise ValueError('Mail DNS policy changed')
-        if name in ('webdock-ingress','webdock-mail-gateway') and spec.get('egress'):raise ValueError('Unrestricted Mail gateway egress')
+        if name in ('webdock-ingress','spitzli-mail-gateway') and spec.get('egress'):raise ValueError('Unrestricted Mail gateway egress')
     resources=configure_submission(client,profile,guard)
     namespace=service['metadata']['namespace'];name=deployment['metadata']['name']
     current=get('deployment',name,namespace);check_owner(current,owner)
@@ -168,7 +168,7 @@ def execute_submission(client,packet,deployment,service,guard):
         time.sleep(.5)
     fingerprint=verify_submission_listener(client,profile)
     # Prove egress isolation against a live, controlled service, not an arbitrary closed Internet port.
-    gateway=get('service','mail-gateway','webdock-mail-gateway')
+    gateway=get('service','mail-gateway','spitzli-mail-gateway')
     if not gateway or gateway['metadata'].get('labels',{}).get('security.webdock.dev/managed-by')!='webdock':raise ValueError('Mail gateway ownership is unavailable')
     address=str(ipaddress.ip_address(gateway['spec']['clusterIP']))
     if not ipaddress.ip_address(address).is_private:raise ValueError('Invalid Mail gateway address')

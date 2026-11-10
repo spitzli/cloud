@@ -46,7 +46,7 @@ for modules in [
     {'configVersion': 1, 'modules': {'mail': {'enabled': False, 'secret': 'no'}}},
 ]:
     render(chart, {**platform, 'modules': modules}, False)
-agent = 'deploy/helm/webdock-agent'
+agent = 'deploy/helm/spitzli-agent'
 assert 'kind: Deployment' not in render(agent, {})
 values = {'enabled': True, 'image': image, 'existingSecret': 'enrollment', 'existingClaim': 'agent-state', 'namespaces': ['customer-app']}
 result = render(agent, values)
@@ -56,7 +56,7 @@ render(agent, {**values, 'image': 'image:latest'}, False)
 print('Platform and agent render/schema assertions passed')
 
 # Optional gateway stays separate and never creates database servers or credentials.
-database_chart='deploy/helm/webdock-databases'
+database_chart='deploy/helm/spitzli-databases'
 assert 'kind: Deployment' not in render(database_chart,{})
 database_values={'enabled':True,'image':image,'existingSecret':'gateway-config'}
 gateway=render(database_chart,database_values)

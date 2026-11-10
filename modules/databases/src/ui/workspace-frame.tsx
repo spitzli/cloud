@@ -3,7 +3,7 @@ import * as React from "react";
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useI18n } from "@webdock/i18n/react";
+import { useI18n } from "@spitzli/i18n/react";
 
 /** Keep the editor mounted while changing its available screen space. */
 export function DatabaseWorkspaceFrame({

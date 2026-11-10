@@ -1,5 +1,5 @@
 import { pluginOperationAuthority } from "./plugin-provisioning-store";
-import { createHostingDatabaseAgent } from "@webdock/module-databases/server/database-agent";
+import { createHostingDatabaseAgent } from "@spitzli/module-databases/server/database-agent";
 import { verifyAgent } from "./clusters";
 import { transaction, clusterLock } from "./db";
 import { authorizeHosting } from "./authorization";

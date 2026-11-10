@@ -4,14 +4,14 @@
 mod fixture;
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
 use serde_json::{Value, json};
-use std::sync::Arc;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_plugin_host::{
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_plugin_host::{
     AdmissionInput, FileBindings, HostService,
     storage::{StorageCaller, StorageGateway},
 };
-use webdock_plugin_protocol::storage::StoragePlan;
-use webdock_plugin_runtime::PeerIdentity;
+use spitzli_plugin_protocol::storage::StoragePlan;
+use spitzli_plugin_runtime::PeerIdentity;
+use std::sync::Arc;
 fn peer() -> PeerIdentity {
     PeerIdentity::Unix {
         uid: rustix::process::geteuid().as_raw(),
@@ -74,7 +74,7 @@ fn input(action: &str, resource: &str) -> AdmissionInput {
     serde_json::from_value(json!({"pluginID":"job-fixture","projectID":"124","action":action,"input":{"resource_id":resource},"idempotencyKey":uuid::Uuid::new_v4().to_string()})).unwrap()
 }
 async fn ticket(f: &fixture::JobFixture) -> String {
-    let authority = webdock_browser_session::StoredAuthority::local_session(&f.actor);
+    let authority = spitzli_browser_session::StoredAuthority::local_session(&f.actor);
     let a = f
         .host
         .admit_with_authority(
@@ -89,7 +89,7 @@ async fn ticket(f: &fixture::JobFixture) -> String {
 }
 async fn retain(
     f: &fixture::JobFixture,
-    a: webdock_plugin_host::AdmittedInvocation,
+    a: spitzli_plugin_host::AdmittedInvocation,
     api_hash: Option<String>,
 ) -> String {
     let direction = if a.claims.action == "upload" {
@@ -119,7 +119,7 @@ async fn retain(
 fn caller(f: &fixture::JobFixture) -> StorageCaller {
     StorageCaller::browser(
         &f.actor,
-        webdock_browser_session::StoredAuthority::local_session(&f.actor),
+        spitzli_browser_session::StoredAuthority::local_session(&f.actor),
         true,
     )
 }
@@ -145,13 +145,13 @@ async fn transfer_uses_live_subject_resource_snapshot_and_source_session_after_j
     tx.commit().await.unwrap();
     let foreign = StorageCaller::browser(
         &foreign,
-        webdock_browser_session::StoredAuthority::local_session(&foreign),
+        spitzli_browser_session::StoredAuthority::local_session(&foreign),
         true,
     );
     assert!(f.host.storage_access(&id, "GET", &foreign).await.is_err());
     let foreign_workspace = StorageCaller::workspace(
         &f.actor,
-        webdock_browser_session::StoredAuthority::local_session(&f.actor),
+        spitzli_browser_session::StoredAuthority::local_session(&f.actor),
         true,
         "999".into(),
     );
@@ -180,7 +180,7 @@ async fn transfer_uses_live_subject_resource_snapshot_and_source_session_after_j
                 &f.actor,
                 input("upload", "resource-one"),
                 false,
-                &webdock_browser_session::StoredAuthority::local_session(&f.actor)
+                &spitzli_browser_session::StoredAuthority::local_session(&f.actor)
             )
             .await
             .is_err()
@@ -266,20 +266,20 @@ struct PrivateProducer {
     plan: StoragePlan,
 }
 #[async_trait::async_trait]
-impl webdock_plugin_runtime::ActionHandler for PrivateProducer {
+impl spitzli_plugin_runtime::ActionHandler for PrivateProducer {
     async fn invoke(
         &self,
-        _: &webdock_plugin_protocol::InvocationClaims,
+        _: &spitzli_plugin_protocol::InvocationClaims,
         _: &str,
         _: Value,
         _: Value,
-    ) -> webdock_plugin_protocol::Result<Value> {
+    ) -> spitzli_plugin_protocol::Result<Value> {
         Ok(serde_json::to_value(&self.plan).unwrap())
     }
     async fn authorize_storage(
         &self,
-        authorization: &webdock_plugin_protocol::storage::StorageAuthorization,
-    ) -> webdock_plugin_protocol::Result<()> {
+        authorization: &spitzli_plugin_protocol::storage::StorageAuthorization,
+    ) -> spitzli_plugin_protocol::Result<()> {
         use std::sync::atomic::Ordering;
         if self.active.load(Ordering::SeqCst)
             && authorization.resource_id == "resource-one"
@@ -288,7 +288,7 @@ impl webdock_plugin_runtime::ActionHandler for PrivateProducer {
         {
             Ok(())
         } else {
-            Err(webdock_plugin_protocol::PluginError::denied())
+            Err(spitzli_plugin_protocol::PluginError::denied())
         }
     }
 }
@@ -307,16 +307,16 @@ async fn core_intercepts_private_plan_and_private_runtime_deactivation_denies_co
         http::{Request, StatusCode},
     };
     use http_body_util::BodyExt;
-    use std::sync::atomic::Ordering;
-    use tokio::io::{AsyncReadExt, AsyncWriteExt};
-    use tower::ServiceExt;
-    use webdock_control_plane::{
+    use spitzli_control_plane::{
         http::{Services, build_app_with_domains},
         plugin_config::RuntimeConnections,
         plugins::PluginEndpoints,
     };
-    use webdock_plugin_protocol::Manifest;
-    use webdock_plugin_runtime::{Runtime, UnixSocket};
+    use spitzli_plugin_protocol::Manifest;
+    use spitzli_plugin_runtime::{Runtime, UnixSocket};
+    use std::sync::atomic::Ordering;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    use tower::ServiceExt;
     let mut f = setup().await;
     // This controlled provider serves only this fixture's exact private bytes.
     let bytes = vec![29u8; 3 * 1024 * 1024 + 9];
@@ -391,8 +391,8 @@ async fn core_intercepts_private_plan_and_private_runtime_deactivation_denies_co
         .unwrap()
         .unwrap();
     tx.commit().await.unwrap();
-    let actor = webdock_control_plane::auth::AuthenticatedActor {
-        authority: webdock_browser_session::StoredAuthority::local_session(&principal),
+    let actor = spitzli_control_plane::auth::AuthenticatedActor {
+        authority: spitzli_browser_session::StoredAuthority::local_session(&principal),
         principal,
     };
     let descriptor = endpoint
@@ -404,7 +404,7 @@ async fn core_intercepts_private_plan_and_private_runtime_deactivation_denies_co
     assert!(!public.contains(&origin));
     assert!(descriptor["id"].is_string());
     let app = build_app_with_domains(
-        webdock_core::config::PlatformConfig::from_map(&Default::default()).unwrap(),
+        spitzli_core::config::PlatformConfig::from_map(&Default::default()).unwrap(),
         f.auth.clone(),
         Services {
             identity: Some(f.identity.clone()),
@@ -469,7 +469,7 @@ async fn original_workspace_token_revocation_is_checked_even_for_a_live_browser_
     let f = setup().await;
     let hash = "d".repeat(64);
     sql(&f.owner,"INSERT INTO webdock_auth.api_token(id,customer_id,session_id,user_id,name,token_hash,can_write,expires_at) VALUES('444','123','session','operator','Owned test',$1,true,now()+interval '1 hour')",vec![hash.clone().into()]).await;
-    let authority = webdock_browser_session::StoredAuthority::local_session(&f.actor);
+    let authority = spitzli_browser_session::StoredAuthority::local_session(&f.actor);
     let a = f
         .host
         .admit_with_authority(
@@ -501,14 +501,14 @@ async fn original_mcp_grant_is_rechecked_after_ticket_issuance_instead_of_becomi
 {
     use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
     use sha2::{Digest, Sha256};
-    use webdock_oauth::{
+    use spitzli_oauth::{
         AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientAuthentication,
         ClientPurpose, ClientRegistration, CodeExchange, OAuthConfig, OAuthService,
     };
     let mut f = setup().await;
     let secret = "owned-storage-oauth-key-material-32bytes".to_owned();
     let keys = Arc::new(
-        webdock_identity::SecretKeys::new(
+        spitzli_identity::SecretKeys::new(
             std::collections::BTreeMap::from([(0, secret.clone())]),
             0,
             Some(secret),
@@ -519,9 +519,9 @@ async fn original_mcp_grant_is_rechecked_after_ticket_issuance_instead_of_becomi
         f.auth.clone(),
         f.identity.clone(),
         Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 f.database.url.as_str(),
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )
             .await
             .unwrap(),
@@ -679,7 +679,7 @@ async fn upload_claim_is_atomic_and_cancellation_never_makes_a_ticket_reusable()
             &f.actor,
             input("upload", "resource-one"),
             true,
-            &webdock_browser_session::StoredAuthority::local_session(&f.actor),
+            &spitzli_browser_session::StoredAuthority::local_session(&f.actor),
         )
         .await
         .unwrap();
@@ -697,8 +697,8 @@ async fn upload_claim_is_atomic_and_cancellation_never_makes_a_ticket_reusable()
     let access = f.host.storage_access(&id, "PUT", &caller).await.unwrap();
     struct Live;
     #[async_trait::async_trait]
-    impl webdock_plugin_host::storage::StorageAuthority for Live {
-        async fn check(&self) -> webdock_plugin_protocol::Result<()> {
+    impl spitzli_plugin_host::storage::StorageAuthority for Live {
+        async fn check(&self) -> spitzli_plugin_protocol::Result<()> {
             Ok(())
         }
     }
@@ -707,7 +707,7 @@ async fn upload_claim_is_atomic_and_cancellation_never_makes_a_ticket_reusable()
         gateway
             .stage(
                 &access.plan,
-                futures_util::stream::pending::<webdock_plugin_protocol::Result<Vec<u8>>>(),
+                futures_util::stream::pending::<spitzli_plugin_protocol::Result<Vec<u8>>>(),
                 Arc::new(Live),
             )
             .await

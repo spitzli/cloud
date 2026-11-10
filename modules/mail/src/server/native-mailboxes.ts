@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { MailServiceError } from "./instances";
-import { resourceID } from "@webdock/hosting-contracts";
+import { resourceID } from "@spitzli/hosting-contracts";
 import { type Connection } from "./native-ports";
 import { mailUnavailable, type MailActor } from "./native-access";
 import { normalizeMailDomain } from "./tenant-mail";

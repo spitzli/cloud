@@ -1,9 +1,9 @@
 //! Real source consent and installed repository policy; no provider HTTP or Kubernetes calls.
 use super::*;
 use hmac::{Hmac, Mac};
+use spitzli_build::{GithubWebhookVerifier, RepositoryAdmission};
+use spitzli_repository_protocol as protocol;
 use std::os::unix::fs::PermissionsExt;
-use webdock_build::{GithubWebhookVerifier, RepositoryAdmission};
-use webdock_repository_protocol as protocol;
 
 struct HeadHandler {
     head: std::sync::Mutex<String>,
@@ -116,18 +116,18 @@ async fn github_webhook_receipts_bind_live_source_policy_and_deduplicate_pushes(
         .unwrap();
         std::fs::write(&binding_path,json!({"runtimes":{plugin.clone():{"descriptor":descriptor,"publisherKeyId":"fixture","publisherPublicKeyHex":hex::encode(publisher.verifying_key().as_bytes()),"registryUrl":"https://registry.invalid","transport":{"kind":"unix","path":runtime_path}}}}).to_string()).unwrap();
         std::fs::set_permissions(&binding_path, std::fs::Permissions::from_mode(0o600)).unwrap();
-        let ids = Arc::new(webdock_persistence::IdAllocator::new(
+        let ids = Arc::new(spitzli_persistence::IdAllocator::new(
             db("DATABASE_URL").await,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         ));
         let secret = std::env::var("DATABASE_RLS_SECRET").unwrap();
         let host = Arc::new(
-            webdock_plugin_host::HostService::new(
+            spitzli_plugin_host::HostService::new(
                 db("DATABASE_URL").await,
                 db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
                 secret.clone(),
                 ids.clone(),
-                Arc::new(webdock_plugin_host::FileBindings::new(host_path)),
+                Arc::new(spitzli_plugin_host::FileBindings::new(host_path)),
                 ed25519_dalek::SigningKey::from_bytes(&[37; 32]),
             )
             .await
@@ -139,7 +139,7 @@ async fn github_webhook_receipts_bind_live_source_policy_and_deduplicate_pushes(
                 secret.clone(),
                 host,
                 ed25519_dalek::SigningKey::from_bytes(&[39; 32]),
-                Arc::new(webdock_build::FileRepositoryBindings::new(binding_path)),
+                Arc::new(spitzli_build::FileRepositoryBindings::new(binding_path)),
             )
             .await
             .unwrap(),
@@ -191,7 +191,7 @@ async fn github_webhook_receipts_bind_live_source_policy_and_deduplicate_pushes(
                 .await
                 .unwrap()
         }));
-        let service = webdock_build::BuildService::new(
+        let service = spitzli_build::BuildService::new(
             db("DATABASE_URL").await,
             db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
             secret,
@@ -201,7 +201,7 @@ async fn github_webhook_receipts_bind_live_source_policy_and_deduplicate_pushes(
         )
         .await
         .unwrap()
-        .with_repository_provider(Arc::new(webdock_build::PluginRepositoryProvider::new(
+        .with_repository_provider(Arc::new(spitzli_build::PluginRepositoryProvider::new(
             gate.clone(),
         )));
         let mut draft = spec();

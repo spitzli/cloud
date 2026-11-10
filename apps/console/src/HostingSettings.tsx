@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FieldError, useLiveValidation } from "./live-validation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useBlocker } from "@tanstack/react-router";
-import { resourceInput } from "@webdock/hosting-contracts";
+import { resourceInput } from "@spitzli/hosting-contracts";
 import {
   appSchema,
   checkArguments,

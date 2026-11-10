@@ -29,7 +29,7 @@ import {
   finishSubmission,
   submissionStatus,
 } from "./mail-submissions";
-import { createNativeGateway } from "@webdock/module-mail/server/native-gateway";
+import { createNativeGateway } from "@spitzli/module-mail/server/native-gateway";
 export const { mailGateway } = createNativeGateway({
   readHostingJSON,
   requireHostingEnvironment,

@@ -122,9 +122,9 @@ test('CLI finalizes exact assets and refuses zero digest without publishing or l
 });
 test('standalone dependencies reject parent paths, mutable Git branches and mixed SDK revisions', async () => {
   const { validateSDKDependencies } = await import('./release.mjs');
-  const sdk = { name: 'webdock-plugin-protocol', source: 'git+https://github.com/spitzli/cloud-plugin-sdk?rev=' + 'b'.repeat(40) };
+  const sdk = { name: 'spitzli-plugin-protocol', source: 'git+https://github.com/spitzli/cloud-plugin-sdk?rev=' + 'b'.repeat(40) };
   assert.doesNotThrow(() => validateSDKDependencies([sdk]));
   for (const source of [null, 'git+https://github.com/spitzli/cloud-plugin-sdk?branch=main'])
     assert.throws(() => validateSDKDependencies([{ ...sdk, source }]));
-  assert.throws(() => validateSDKDependencies([sdk, { ...sdk, name: 'webdock-plugin-runtime', source: sdk.source.replace('b'.repeat(40), 'c'.repeat(40)) }]));
+  assert.throws(() => validateSDKDependencies([sdk, { ...sdk, name: 'spitzli-plugin-runtime', source: sdk.source.replace('b'.repeat(40), 'c'.repeat(40)) }]));
 });

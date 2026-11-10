@@ -214,7 +214,7 @@ test("mail tests refuse a remote or production database", () => {
 - [ ] `assertMailTestDatabase(url: string): void` im Helper implementieren: Host localhost/127.0.0.1, DB exakt `webdock_admin_test`, `AUTH_TEST_MAIL=true`, keine Produktionsenv. Fixtures erzeugen eindeutige Kunden/Benutzer und räumen nur eigene Zeilen auf. Connection-/Messagefixtures kommen nach dem Schema in T02 hinzu; bis dahin werden keine noch nicht existierenden Produktdienste importiert. `setNow` steuert dieselbe injizierte Uhr für Idempotenz, Dispatch und Retention.
 - [ ] `test:mail` als expliziten Runner für `tests/mail-product-*.test.ts` plus vorhandene Mail-/Turbo-Tests anlegen. Node-Test-Import benötigt `tsx`, Integration läuft mit `--test-concurrency=1`; die gezielten Race-Tests starten ihre konkurrierenden Operationen selbst.
 - [ ] Die in Spec Abschnitt 12 genannten Providerfragen mit vorhandenen sanitized Belegen oder einem dafür freigegebenen Testkonto beantworten. Mindestens Consumer-Auth, Accountidentität, Callback-Ebene, Referenz-Echo, MID-Format, Statusaliases und Zähleinheit festhalten. Nicht durch diesen Plan autorisierter echter Versand ist kein Testsuite-Schritt.
-- [ ] Run: `npm run test:mail -w @webdock/auth`. Erwartung nach Integration der neuen Files: bestehende 21 reine Adaptertests und alle verfügbaren lokalen Integrationstests grün. Die bisher fehlende Datenbank als Umgebungsursache dokumentieren, nicht als Produktfehler verschleiern.
+- [ ] Run: `npm run test:mail -w @spitzli/auth`. Erwartung nach Integration der neuen Files: bestehende 21 reine Adaptertests und alle verfügbaren lokalen Integrationstests grün. Die bisher fehlende Datenbank als Umgebungsursache dokumentieren, nicht als Produktfehler verschleiern.
 - [ ] Commit ausschließlich Fixture-/Testinfrastruktur mit `test(mail): establish isolated provider and tenant fixtures`.
 
 **Abnahme:** Automatisierte Tests können ohne produktive Credentials laufen. Ungelöste Providerfragen sind konkrete Releaseblocker in der Nachweismatrix, keine erfundenen Antworten.
@@ -259,7 +259,7 @@ WHERE provider_mid IS NOT NULL;
 - [ ] Schema durch versionierte Migration mit Checksumme und explizitem Zielreport anwenden; keine Migration beim Appstart/build. Additive Backfills zunächst ohne Provideraufruf; Rollback löscht keine Mailtabellen.
 - [ ] Vertragsvalidierung inklusive IDs, Eventnamen, Limits und Fehler-DTOs schreiben. `api_keys.domain_id` darf bei Löschung nicht durch `SET NULL` entschränkt werden; Domain-Tombstones verwenden.
 - [ ] Indizes für Listen, Fälligkeit, Lease und Unique-Event/Delivery-Dedupe mit `EXPLAIN` an repräsentativen Fixtures prüfen. Runtime-Datenbankrolle darf neue DML ausführen, kein DDL.
-- [ ] Run: `node --env-file=.env.test.local --import tsx --test tests/mail-product-schema.test.ts` in `apps/auth`; danach `npm run check -w @webdock/auth` und `npm run check -w @webdock/admin`.
+- [ ] Run: `node --env-file=.env.test.local --import tsx --test tests/mail-product-schema.test.ts` in `apps/auth`; danach `npm run check -w @spitzli/auth` und `npm run check -w @spitzli/admin`.
 - [ ] Commit: `feat(mail): add tenant-scoped mail contracts and schema`.
 
 **Abnahme:** Wiederholbare additive Migration; keine Datenverschiebung oder neue externe Ressource.
@@ -688,7 +688,7 @@ export const POST = mailEndpoint("sending_access", async (request, actor) => {
 - [ ] Full-Key nur eigene Ressourcen; einzelne Suppression-Adresse sicher URL-dekodieren/normalisieren, keine internen Pfad-Traversals. Für Scheduleänderungen erwartete Revision als `If-Match` übertragen; fehlende Revision 428, veraltete 409.
 - [ ] OpenAPI 3.1 mit Request-/Responsebeispielen, Pagination, Raten-/Größenlimits, 202-Batch und Signature-Headers erstellen. Scalar lokal/versioniert einbinden; Remote-CDN-„latest“ vermeiden. „Try it“ wird erst bei ausdrücklich eingegebenem Testkey aktiv, keine Secrets serverseitig in Docs einsetzen.
 - [ ] Tests über tatsächliche Routeexports ausführen. Testmatrix mit leerem/malformiertem JSON, Chunked Body über Limit, ungültigen Accept-/Content-Type-Kombinationen, falschen Keys und doppelten Sends.
-- [ ] Run: neue API-/OpenAPItests; `npm run check -w @webdock/auth`, gezielter ESLint über neue Files.
+- [ ] Run: neue API-/OpenAPItests; `npm run check -w @spitzli/auth`, gezielter ESLint über neue Files.
 - [ ] Commit: `feat(mail): publish versioned email API and OpenAPI reference`.
 
 **Abnahme:** Jede im Quickstart verwendbare APIoperation funktioniert gegen die isolierte Integrationstestumgebung.
@@ -755,8 +755,8 @@ curl https://auth.webdock.dev/api/mail/v1/emails \
 ```
 
 - [ ] Codebeispieltests parsen die tatsächlichen Strings; alle referenzierten Felder/Routen müssen in OpenAPI stehen. Keyplatzhalter werden nicht beim SSR durch echte Tenantsecrets ersetzt.
-- [ ] Seitensuche/Cmd-K aus explizit freigegebenen Seiteneinträgen aufbauen; vorhandenes `@webdock/search` für diese kleine lokale Liste wiederverwenden. Keine Nachrichtentexte, fremden Tenants, Keys oder Logs in den Index aufnehmen.
-- [ ] Labels/Errorcodes mit `@webdock/i18n` übersetzen: `npm run extract -w @webdock/i18n`, Kataloge bearbeiten, `npm run compile -w @webdock/i18n`, `npm run catalog:check -w @webdock/i18n`. Keine englischen Reststrings in deutscher Oberfläche.
+- [ ] Seitensuche/Cmd-K aus explizit freigegebenen Seiteneinträgen aufbauen; vorhandenes `@spitzli/search` für diese kleine lokale Liste wiederverwenden. Keine Nachrichtentexte, fremden Tenants, Keys oder Logs in den Index aufnehmen.
+- [ ] Labels/Errorcodes mit `@spitzli/i18n` übersetzen: `npm run extract -w @spitzli/i18n`, Kataloge bearbeiten, `npm run compile -w @spitzli/i18n`, `npm run catalog:check -w @spitzli/i18n`. Keine englischen Reststrings in deutscher Oberfläche.
 - [ ] Browserprüfung über T3 mit 360/768/1280/1440 CSS-Pixeln, hellem/dunklem Theme, langen Domain-/Betreffwerten, leeren/gefüllten Listen, Ladefehlern, Keyboardnavigation und Copy-Actions. Keine Tests, die nur CSS-Klassen spiegeln.
 - [ ] Run: Admin-Console-/i18n-Tests und beide Typechecks/Lints; Dokumentationsbeispiel-Vertragscheck.
 - [ ] Commit: `feat(mail): complete domains analytics operations and developer console`.
@@ -889,16 +889,16 @@ test("cleanup never releases an unresolved send for a retry", async () => {
 - [ ] Gesamttest auf dem finalen Branch durchführen:
 
 ```sh
-npm run test:mail -w @webdock/auth
-npm run test -w @webdock/auth
-npm run test -w @webdock/admin
-npm run check -w @webdock/auth
-npm run check -w @webdock/admin
-npm run lint -w @webdock/auth
-npm run lint -w @webdock/admin
-npm run catalog:check -w @webdock/i18n
-npm run build -w @webdock/auth
-npm run build -w @webdock/admin
+npm run test:mail -w @spitzli/auth
+npm run test -w @spitzli/auth
+npm run test -w @spitzli/admin
+npm run check -w @spitzli/auth
+npm run check -w @spitzli/admin
+npm run lint -w @spitzli/auth
+npm run lint -w @spitzli/admin
+npm run catalog:check -w @spitzli/i18n
+npm run build -w @spitzli/auth
+npm run build -w @spitzli/admin
 ```
 
 - [ ] App-spezifische Test-/Buildenv vorher bestätigen; keine produktiven Providercredentials in Tests. Build führt keine Migration aus. Bestehende Auth-/Hosting-/Storagefehler getrennt erfassen, nicht die Mailprüfung grün deklarieren, wenn erforderliche Checks scheitern.

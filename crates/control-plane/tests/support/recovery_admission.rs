@@ -82,7 +82,7 @@ pub(super) async fn fixture() -> Fixture {
     ))
     .unwrap();
     url.set_password(Some(&password)).unwrap();
-    let passwords = webdock_persistence::roles::LOGIN_ROLES
+    let passwords = spitzli_persistence::roles::LOGIN_ROLES
         .iter()
         .copied()
         .chain(["webdock_offline_migrate"])
@@ -112,14 +112,14 @@ pub(super) async fn fixture() -> Fixture {
     })
     .await
     .unwrap();
-    webdock_persistence::roles::provision_roles(
+    spitzli_persistence::roles::provision_roles(
         &owner,
         "webdock_operator_test",
         &fixture.passwords,
     )
     .await
     .unwrap();
-    webdock_persistence::migrations::bootstrap(&owner, "webdock_operator_test", SECRET)
+    spitzli_persistence::migrations::bootstrap(&owner, "webdock_operator_test", SECRET)
         .await
         .unwrap();
     owner.close().await.unwrap();
@@ -186,11 +186,11 @@ fn directory(path: &Path) {
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700)).unwrap();
 }
 pub(super) fn with_signer(
-    hosting: Arc<webdock_hosting::HostingService>,
+    hosting: Arc<spitzli_hosting::HostingService>,
     path: &Path,
-    identity: &Arc<webdock_identity::IdentityService>,
-    browser: &Arc<webdock_browser_session::BrowserSessions>,
-) -> Arc<webdock_hosting::HostingService> {
+    identity: &Arc<spitzli_identity::IdentityService>,
+    browser: &Arc<spitzli_browser_session::BrowserSessions>,
+) -> Arc<spitzli_hosting::HostingService> {
     if !enabled() {
         return hosting;
     }
@@ -208,7 +208,7 @@ pub(super) fn with_signer(
         hosting
             .with_session_authority(identity.clone(), Some(browser.clone()))
             .with_recovery_signer(
-                webdock_hosting::RecoverySigner::new(key, path.to_path_buf()).unwrap(),
+                spitzli_hosting::RecoverySigner::new(key, path.to_path_buf()).unwrap(),
             ),
     )
 }
@@ -310,7 +310,7 @@ pub(super) async fn check(
     app: &Router,
     console: &str,
     fixture: &Fixture,
-    hosting: &Arc<webdock_hosting::HostingService>,
+    hosting: &Arc<spitzli_hosting::HostingService>,
     (auth, owner): (&DatabaseConnection, &DatabaseConnection),
     path: &Path,
     mail_dependencies: Option<mail_component::FoundationDependencies>,
@@ -373,7 +373,7 @@ pub(super) async fn check(
         reviewed_enrollment["runtimeProfile"] = json!("local-recovery-fixture-v1");
     }
     private(&enrollment_input, &reviewed_enrollment);
-    webdock_control_plane::plugin_bootstrap::enroll_agent(
+    spitzli_control_plane::plugin_bootstrap::enroll_agent(
         &HashMap::from([("DATABASE_URL_UNPOOLED".into(), offline.as_str().into())]),
         &target(&offline),
         &enrollment_input,
@@ -400,10 +400,10 @@ pub(super) async fn check(
         None
     };
     let control_path = path.join("control.sock");
-    let control = webdock_agent_control::ControlPlane::new(
+    let control = spitzli_agent_control::ControlPlane::new(
         auth.clone(),
         hosting.clone(),
-        Some(webdock_agent_control::LocalBinding {
+        Some(spitzli_agent_control::LocalBinding {
             installation: "owned-recovery".into(),
             agent_id: "native-agent".into(),
             uid: 0,
@@ -413,14 +413,14 @@ pub(super) async fn check(
     .unwrap();
     let control = if let Some(mail) = &mail_foundation {
         control.with_plugin_runtime(Arc::new(
-            webdock_control_plane::plugins::installation::AgentBackend {
+            spitzli_control_plane::plugins::installation::AgentBackend {
                 host: mail.core.plugins.host.clone(),
             },
         ))
     } else {
         control
     };
-    let socket = webdock_plugin_runtime::UnixSocket::bind(&control_path).unwrap();
+    let socket = spitzli_plugin_runtime::UnixSocket::bind(&control_path).unwrap();
     phase(RecoveryPhase::ControlSocketBound);
     let (stop_rpc, shutdown) = tokio::sync::oneshot::channel();
     let authority_state = Arc::new(app_component::ControlState::default());
@@ -452,7 +452,7 @@ pub(super) async fn check(
         &json!({"root":pool,"node":std::env::var("HOSTNAME").unwrap(),"clusterID":cluster,"poolID":uuid::Uuid::new_v4(),"capacityBytes":if mail_component::enabled(){8589934592u64}else{1073741824u64},"reserveBytes":if mail_component::enabled(){268435456u64}else{67108864}}),
     );
     assert!(
-        Command::new("/usr/local/bin/webdock-storage")
+        Command::new("/usr/local/bin/spitzli-storage")
             .arg("--config")
             .arg(&storage_config)
             .arg("initialize")
@@ -463,7 +463,7 @@ pub(super) async fn check(
     phase(RecoveryPhase::StorageInitialized);
     let storage_socket = path.join("storage.sock");
     let mut helper = spawn(
-        "/usr/local/bin/webdock-storage",
+        "/usr/local/bin/spitzli-storage",
         &[
             "--config".as_ref(),
             storage_config.as_os_str(),
@@ -487,7 +487,7 @@ pub(super) async fn check(
     }
     private(&config, &agent_config);
     let mut agent = spawn(
-        "/usr/local/bin/webdock-agent",
+        "/usr/local/bin/spitzli-agent",
         &["--config".as_ref(), config.as_os_str(), "run".as_ref()],
         path,
         "agent-first",
@@ -1326,7 +1326,7 @@ fn recovery_fixture_all_legacy_outgoing_commands_use_real_contract() {
         fixture_prepare_command("456"),
         fixture_deploy_command("789", image),
     ] {
-        if webdock_hosting::contracts::parse_command(command.clone()).is_err() {
+        if spitzli_hosting::contracts::parse_command(command.clone()).is_err() {
             invalid.push(command["action"].as_str().unwrap().to_owned());
         }
     }
@@ -1359,7 +1359,7 @@ fn recovery_fixture_draft_denial_rejects_parser_auth_and_transport_failures() {
     let command = fixture_draft_policy_command("123", "789");
     assert_eq!(command["profile"], "ntfy-sqlite-offline-v1");
     // Recovery dispatch uses its existing private serde DTO, not the legacy parser.
-    assert!(webdock_hosting::contracts::parse_command(command).is_err());
+    assert!(spitzli_hosting::contracts::parse_command(command).is_err());
 }
 
 #[test]

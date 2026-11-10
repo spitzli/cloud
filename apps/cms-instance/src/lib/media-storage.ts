@@ -1,10 +1,10 @@
 import { createHash } from "node:crypto";
 import pg from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { s3Storage } from "@payloadcms/storage-s3";
 import type { StorageAdapter } from "payload";
 import type { CMSConfig } from "./config.ts";
-import { MEDIA_BYTES } from "@webdock/cms-bridge/types";
+import { MEDIA_BYTES } from "@spitzli/cms-bridge/types";
 
 export interface MediaBinding {
   version: 1;

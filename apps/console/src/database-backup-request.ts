@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { z } from "zod";
-import { databaseCommandSchema } from "@webdock/hosting-contracts";
+import { databaseCommandSchema } from "@spitzli/hosting-contracts";
 import { ApiError } from "./api";
 import { useApi } from "./context";
 import type { BackupRequestMemory } from "./database-backup-intents";

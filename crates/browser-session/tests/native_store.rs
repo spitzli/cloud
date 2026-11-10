@@ -5,17 +5,17 @@ use fixture::AUTH_SECRET;
 use sea_orm::{
     ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement, TransactionTrait,
 };
-use std::{collections::BTreeMap, sync::Arc, time::Duration};
-use webdock_browser_session::{BrowserConfig, BrowserSessions};
-use webdock_identity::{CookiePolicy, IdentityService, SecretKeys};
-use webdock_oauth::{
+use spitzli_browser_session::{BrowserConfig, BrowserSessions};
+use spitzli_identity::{CookiePolicy, IdentityService, SecretKeys};
+use spitzli_oauth::{
     AuthorizationOutcome, AuthorizationRequest, ClientAuthMethod, ClientPurpose,
     ClientRegistration, OAuthConfig, OAuthService,
 };
-use webdock_persistence::{
+use spitzli_persistence::{
     IdAllocator,
     postgres::{Limits, Pool},
 };
+use std::{collections::BTreeMap, sync::Arc, time::Duration};
 const ORIGIN: &str = "https://console.example.test";
 fn cookie(value: &str) -> String {
     value.split(';').next().unwrap().into()
@@ -59,7 +59,7 @@ impl Setup {
         let ids = Arc::new(
             IdAllocator::connect_native(
                 &f.bootstrap_url,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
                 "webdock_auth_bootstrap",
                 false,
             )
@@ -659,13 +659,13 @@ async fn native_browser_authority_preserves_real_signed_cookie_and_stored_proof(
     assert_eq!(checked.principal.user_id, actual.principal.user_id);
     let mut connection = pool.acquire().await.unwrap();
     let tx = connection.transaction().await.unwrap();
-    let (tx, principal) = webdock_browser_session::revalidate_stored_authority_native_in(
+    let (tx, principal) = spitzli_browser_session::revalidate_stored_authority_native_in(
         &identity,
         tx,
         Some(&reader),
         &actual.principal.user_id,
         &actual.principal.session_id,
-        &webdock_browser_session::StoredAuthority::FirstPartyBrowser {
+        &spitzli_browser_session::StoredAuthority::FirstPartyBrowser {
             browser: actual.authority,
         },
     )
@@ -777,7 +777,7 @@ async fn native_browser_authority_rejects_wrong_proof_and_changed_token_permissi
 #[tokio::test]
 #[ignore = "owned PG18; native caller-owned browser proof retains client/identity/token/sidecar fences"]
 async fn native_browser_authority_retains_fences_and_scoped_stored_proof() {
-    use webdock_browser_session::{StoredAuthority, revalidate_stored_authority_native_in};
+    use spitzli_browser_session::{StoredAuthority, revalidate_stored_authority_native_in};
     let s = Setup::start().await;
     let signed = s.signed_cookie().await;
     let (reader, pool, identity) = s.native_reader().await;
@@ -973,7 +973,7 @@ async fn native_browser_authority_cancel_and_timeout_release_connection() {
 #[tokio::test]
 #[ignore = "owned PG18; operator promotion/preview and customer/read-only ceilings"]
 async fn native_browser_authority_preserves_preview_and_customer_scope_ceilings() {
-    use webdock_browser_session::{StoredAuthority, revalidate_stored_authority_native_in};
+    use spitzli_browser_session::{StoredAuthority, revalidate_stored_authority_native_in};
     let s = Setup::start().await;
     let signed = s.signed_cookie().await;
     let (reader, pool, identity) = s.native_reader().await;
@@ -1057,7 +1057,7 @@ async fn native_browser_authority_preserves_preview_and_customer_scope_ceilings(
 #[tokio::test]
 #[ignore = "owned PG18; bounded retained-cookie bridge uses native reference proof"]
 async fn native_browser_authority_keeps_bounded_legacy_cookie_bridge() {
-    use webdock_browser_session::LegacyCookies;
+    use spitzli_browser_session::LegacyCookies;
     let s = Setup::start().await;
     let _signed = s.signed_cookie().await;
     let (reader, _, _) = s.native_reader().await;

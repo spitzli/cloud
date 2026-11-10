@@ -4,8 +4,8 @@ import {
   HostingError,
   type HostingActor,
   type DatabaseCommand,
-} from "@webdock/hosting-contracts";
-import type { Connection } from "@webdock/hosting-contracts/runtime-ports";
+} from "@spitzli/hosting-contracts";
+import type { Connection } from "@spitzli/hosting-contracts/runtime-ports";
 export type Dependencies = {
   assertDatabaseMaintenanceAllowed: ReturnType<
     typeof import("./database-protection").createHostingDatabaseProtection

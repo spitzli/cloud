@@ -14,7 +14,7 @@ fn snapshot(scope: &InvocationScope, row: &Value) -> Result<(SourceRef, Vec<u8>)
     if scope.plugin_id != "archives"
         || row["customer_id"] != scope.customer_id
         || row["project_id"] != scope.project_id
-        || !webdock_export_protocol::decimal(id)
+        || !spitzli_export_protocol::decimal(id)
         || !matches!(row["status"].as_str(), Some("succeeded" | "failed"))
         || row["generation"].as_i64().is_none_or(|n| n < 1)
         || hash.len() != 64
@@ -22,7 +22,7 @@ fn snapshot(scope: &InvocationScope, row: &Value) -> Result<(SourceRef, Vec<u8>)
             .bytes()
             .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
         || chrono::DateTime::parse_from_rfc3339(finished).is_err()
-        || logs.len() > webdock_export_protocol::MAX_BUILD_LOG_BYTES
+        || logs.len() > spitzli_export_protocol::MAX_BUILD_LOG_BYTES
         || row["source_enabled"] != true
         || row["connection_state"] != "active"
     {
@@ -85,7 +85,7 @@ impl BuildService {
         tx: &DatabaseTransaction,
         id: &str,
     ) -> Result<Value> {
-        if !webdock_export_protocol::decimal(id) {
+        if !spitzli_export_protocol::decimal(id) {
             return Err(error("invalid_build"));
         }
         Self::export_log_access(scope, tx).await?;

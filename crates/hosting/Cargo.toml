@@ -1,5 +1,5 @@
 [package]
-name = "webdock-hosting"
+name = "spitzli-hosting"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -11,13 +11,13 @@ docker-test = []
 [dependencies]
 tempfile = "3"
 rustix = { version="1",features=["process"] }
-webdock-agent-protocol = { path = "../agent-protocol" }
-webdock-oauth = { path = "../oauth" }
-webdock-browser-session={path="../browser-session"}
-webdock-core = { path = "../core" }
-webdock-identity = { path = "../identity" }
-webdock-persistence = { path = "../persistence" }
-webdock-supervisor = { path = "../supervisor", default-features = false }
+spitzli-agent-protocol = { path = "../agent-protocol" }
+spitzli-oauth = { path = "../oauth" }
+spitzli-browser-session={path="../browser-session"}
+spitzli-core = { path = "../core" }
+spitzli-identity = { path = "../identity" }
+spitzli-persistence = { path = "../persistence" }
+spitzli-supervisor = { path = "../supervisor", default-features = false }
 sea-orm.workspace = true
 serde.workspace = true
 serde_json = { workspace = true, features = ["preserve_order"] }
@@ -42,32 +42,32 @@ unicode-normalization = "0.1"
 
 [dev-dependencies]
 uuid = { version = "1", features = ["v4"] }
-webdock-object-storage = { path = "../object-storage", features = ["local-test"] }
-webdock-access={path="../access"}
-webdock-registry={path="../registry"}
-webdock-control-plane={path="../control-plane"}
+spitzli-object-storage = { path = "../object-storage", features = ["local-test"] }
+spitzli-access={path="../access"}
+spitzli-registry={path="../registry"}
+spitzli-control-plane={path="../control-plane"}
 tower={version="0.5",features=["util"]}
 http-body-util="0.1"
 ed25519-dalek="2"
-webdock-repository-protocol={path="../repository-protocol"}
-webdock-plugin-host={path="../plugin-host"}
+spitzli-repository-protocol={path="../repository-protocol"}
+spitzli-plugin-host={path="../plugin-host"}
 axum.workspace = true
-webdock-build = { path = "../build", features = ["local-registry-test", "kubernetes-job"] }
+spitzli-build = { path = "../build", features = ["local-registry-test", "kubernetes-job"] }
 kube = { version = "4.2.0", default-features = false, features = ["client", "config", "rustls-tls", "ring"] }
 k8s-openapi = { version = "0.28", features = ["v1_32"] }
 flate2 = "1"
 tar = "0.4"
 libc = "0.2"
-webdock-agent-control = { path = "../agent-control" }
-webdock-agent-protocol = { path = "../agent-protocol" }
-webdock-plugin-runtime = { path = "../plugin-runtime" }
+spitzli-agent-control = { path = "../agent-control" }
+spitzli-agent-protocol = { path = "../agent-protocol" }
+spitzli-plugin-runtime = { path = "../plugin-runtime" }
 tempfile = "3"
 rustix = { version = "1", features = ["process"] }
 tonic = { version = "0.14.6", features = ["transport", "tls-ring"] }
 tokio-stream = { version = "0.1", features = ["net"] }
-webdock-agent = { path = "../agent", default-features = false, features = ["docker"] }
+spitzli-agent = { path = "../agent", default-features = false, features = ["docker"] }
 bollard = "0.21"
-webdock-ids = { path = "../ids" }
+spitzli-ids = { path = "../ids" }
 
 [lints]
 workspace = true

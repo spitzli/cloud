@@ -1,8 +1,8 @@
 //! Private persisted authority codec only. No authentication, grant or lease behavior.
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use webdock_browser_session::StoredAuthority;
-use webdock_oauth::McpAuthority;
+use spitzli_browser_session::StoredAuthority;
+use spitzli_oauth::McpAuthority;
 pub enum DatabaseAuthority {
     BrowserStored(StoredAuthority),
     Mcp(Box<McpAuthority>),

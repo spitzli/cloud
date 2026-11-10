@@ -1,8 +1,8 @@
 use super::executor::*;
 use super::*;
 use kube::api::AttachParams;
+use spitzli_agent_protocol::database::DatabaseClaim;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWriteExt};
-use webdock_agent_protocol::database::DatabaseClaim;
 pub(super) struct SqlStatements {
     pub roles: String,
     pub create: String,

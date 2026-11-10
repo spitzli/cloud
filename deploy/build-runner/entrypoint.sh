@@ -13,7 +13,7 @@ printf '%s\n' \
  | sha256sum -c - >/dev/null
 # Fresh bounded mounts per execution; do not adopt state from another attempt.
 mkdir /workspace/runtime /workspace/tmp /cache/buildkit /cache/railpack /cache/railpack/mise
-proxy_url=$(/usr/local/bin/webdock-build-runner proxy-url --tools /etc/webdock-build/tools.json)
+proxy_url=$(/usr/local/bin/spitzli-build-runner proxy-url --tools /etc/webdock-build/tools.json)
 printf '%s\n' "$proxy_url" >/workspace/runtime/package-proxy-url
 cp /usr/local/bin/webdock-mise-wrapper /cache/railpack/mise/mise-2026.9.15
 chmod 0700 /cache/railpack/mise/mise-2026.9.15
@@ -64,7 +64,7 @@ if [ "$ready" != true ]; then
     echo 'buildkit_startup_failed' >&2
     exit 1
 fi
-/usr/local/bin/webdock-build-runner "$@" &
+/usr/local/bin/spitzli-build-runner "$@" &
 runner_pid=$!
 set +e
 wait "$runner_pid"
@@ -74,7 +74,7 @@ runner_pid=
 # The handoff is an immutable exact-file mount, scoped only to this attempt.
 if [ -f /handoff/attempt.json ]; then
     set +e
-    /usr/local/bin/webdock-build-runner upload --config /handoff/attempt.json \
+    /usr/local/bin/spitzli-build-runner upload --config /handoff/attempt.json \
         --policy /etc/webdock-build/transfer-policy.json --output-dir /workspace/output
     upload_status=$?
     set -e

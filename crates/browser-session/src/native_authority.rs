@@ -2,10 +2,10 @@
 use super::{BrowserSessions, ReferenceRecord, string};
 use crate::{BrowserAuthentication, BrowserAuthority, Error, Result};
 use serde_json::Value;
+use spitzli_identity::Principal;
+use spitzli_persistence::postgres::Transaction;
 use std::time::Duration;
 use tokio_postgres::types::Type;
-use webdock_identity::Principal;
-use webdock_persistence::postgres::Transaction;
 const BUDGET: Duration = Duration::from_secs(30);
 async fn record(
     tx: &Transaction<'_>,

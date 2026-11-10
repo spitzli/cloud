@@ -1,7 +1,7 @@
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
+use spitzli_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
+use spitzli_oauth::*;
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_identity::{CookiePolicy, IdentityService, PasswordAuthentication, SecretKeys};
-use webdock_oauth::*;
 fn guarded(key: &str) -> String {
     let raw = std::env::var(key).unwrap();
     let url = url::Url::parse(&raw).unwrap();
@@ -32,7 +32,7 @@ async fn mcp_identity_before_access<T>(
     subject: &str,
     token_hash: &str,
     new_expiry: Option<i64>,
-    verify: impl std::future::Future<Output = webdock_oauth::Result<T>>,
+    verify: impl std::future::Future<Output = spitzli_oauth::Result<T>>,
 ) -> T {
     let identity = db.begin().await.unwrap();
     identity
@@ -118,9 +118,9 @@ async fn real_oidc_pkce_consent_refresh_and_mcp_authority() {
         .unwrap();
     let db = Database::connect(auth_url.clone()).await.unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),

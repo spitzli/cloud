@@ -5,9 +5,9 @@ use kube::{
     api::{DeleteParams, Patch, PatchParams, PostParams, Preconditions},
 };
 use serde_json::{Value, json};
+use spitzli_supervisor::{AutoscalingObservation, Command, LeaseGuard, ObservedState};
+use spitzli_supervisor::{ExecutionError, Result, RuntimeSpec};
 use std::time::Duration;
-use webdock_supervisor::{AutoscalingObservation, Command, LeaseGuard, ObservedState};
-use webdock_supervisor::{ExecutionError, Result, RuntimeSpec};
 
 fn api_error(_: kube::Error) -> ExecutionError {
     ExecutionError::Runtime

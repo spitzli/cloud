@@ -1,1 +1,1 @@
-export * from "@webdock/module-hosting/server/registry-access";
+export * from "@spitzli/module-hosting/server/registry-access";

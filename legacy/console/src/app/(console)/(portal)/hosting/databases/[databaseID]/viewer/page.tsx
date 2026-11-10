@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getStudioSession } from "@/lib/studio-client";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { getManagedDatabasePage } from "@/lib/managed-database-page";
 import { DatabaseWorkbench } from "@/components/databases/workbench";
 import { DatabaseWorkspaceFrame } from "@/components/databases/workspace-frame";

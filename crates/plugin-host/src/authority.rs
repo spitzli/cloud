@@ -15,13 +15,13 @@ use sea_orm::{
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use std::sync::Arc;
-use webdock_identity::{Principal, RlsSigner};
-use webdock_persistence::IdAllocator;
-use webdock_plugin_protocol::{
+use spitzli_identity::{Principal, RlsSigner};
+use spitzli_persistence::IdAllocator;
+use spitzli_plugin_protocol::{
     InvocationClaims, Manifest, PluginError, Result, validate_value, verify_invocation,
 };
-use webdock_plugin_runtime::{InvocationAuthority, PeerIdentity};
+use spitzli_plugin_runtime::{InvocationAuthority, PeerIdentity};
+use std::sync::Arc;
 
 pub const MAIL_ACTION_INPUT_BYTES: usize = 128 * 1024;
 // These reads enumerate beyond an already attached database and retain the
@@ -157,7 +157,7 @@ impl HostService {
             (&db, "webdock_auth_runtime"),
             (&worker, "webdock_worker_runtime"),
         ] {
-            webdock_persistence::connection::verify_runtime_role(connection, expected)
+            spitzli_persistence::connection::verify_runtime_role(connection, expected)
                 .await
                 .map_err(|_| invalid("Restricted plugin database roles required"))?;
         }
@@ -183,14 +183,14 @@ impl HostService {
     pub async fn with_session_authority(
         mut self,
         auth: DatabaseConnection,
-        identity: Arc<webdock_identity::IdentityService>,
-        browser: Option<Arc<webdock_browser_session::BrowserSessions>>,
+        identity: Arc<spitzli_identity::IdentityService>,
+        browser: Option<Arc<spitzli_browser_session::BrowserSessions>>,
     ) -> Result<Self> {
         self.session_authority =
             Some(crate::session_authority::SessionAuthority::new(auth, identity, browser).await?);
         Ok(self)
     }
-    pub fn with_mcp_authority(mut self, oauth: Arc<webdock_oauth::OAuthService>) -> Result<Self> {
+    pub fn with_mcp_authority(mut self, oauth: Arc<spitzli_oauth::OAuthService>) -> Result<Self> {
         self.session_authority
             .as_mut()
             .ok_or_else(|| invalid("Session verifier is required"))?
@@ -398,7 +398,7 @@ impl HostService {
         actor: &Principal,
         input: AdmissionInput,
         can_write: bool,
-        authority: &webdock_browser_session::StoredAuthority,
+        authority: &spitzli_browser_session::StoredAuthority,
     ) -> Result<AdmittedInvocation> {
         self.admit_authority(
             actor,
@@ -415,7 +415,7 @@ impl HostService {
         actor: &Principal,
         input: AdmissionInput,
         can_write: bool,
-        authority: &webdock_oauth::McpAuthority,
+        authority: &spitzli_oauth::McpAuthority,
     ) -> Result<AdmittedInvocation> {
         self.admit_authority(
             actor,
@@ -1366,7 +1366,7 @@ impl HostService {
         &self,
         actor: &Principal,
         project: &str,
-        authority: &webdock_browser_session::StoredAuthority,
+        authority: &spitzli_browser_session::StoredAuthority,
     ) -> Result<Vec<PluginView>> {
         self.project_plugins_reference(
             actor,
@@ -1381,7 +1381,7 @@ impl HostService {
         &self,
         actor: &Principal,
         project: &str,
-        authority: &webdock_oauth::McpAuthority,
+        authority: &spitzli_oauth::McpAuthority,
     ) -> Result<Vec<PluginView>> {
         self.project_plugins_reference(
             actor,
@@ -1514,7 +1514,7 @@ impl HostService {
     pub async fn mcp_plugins(
         &self,
         actor: &Principal,
-        authority: &webdock_oauth::McpAuthority,
+        authority: &spitzli_oauth::McpAuthority,
     ) -> Result<Vec<PluginView>> {
         let reference = AuthorityReference::Mcp {
             authority: authority.clone(),

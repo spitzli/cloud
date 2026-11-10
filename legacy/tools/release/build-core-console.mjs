@@ -42,7 +42,7 @@ export async function assembleCoreConsole(destination) {
   config.include=['next-env.d.ts','src/app/**/*.ts','src/app/**/*.tsx','src/proxy.ts','.next/types/**/*.ts'];
   await writeFile(join(destination,'tsconfig.json'),JSON.stringify(config,null,2)+'\n');
   const manifest=JSON.parse(await readFile(join(source,'package.json'),'utf8'));
-  manifest.name='@webdock/core-admin';
+  manifest.name='@spitzli/core-admin';
   for(const name of Object.keys(manifest.dependencies)) if(/^@webdock\/(?:module-(?!sdk)|hosting-|database-contracts|mail-|payload-|page-builder)/.test(name)) delete manifest.dependencies[name];
   await writeFile(join(destination,'package.json'),JSON.stringify(manifest,null,2)+'\n');
   await writeFile(join(destination,'next.config.ts'),`import base from ${JSON.stringify(join(source,'next.config.ts'))};

@@ -6072,7 +6072,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-agent-protocol"
+name = "spitzli-agent-protocol"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -6090,7 +6090,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-browser-session"
+name = "spitzli-browser-session"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -6108,13 +6108,13 @@ dependencies = [
  "tokio",
  "tokio-postgres",
  "url",
- "webdock-identity",
- "webdock-oauth",
- "webdock-persistence",
+ "spitzli-identity",
+ "spitzli-oauth",
+ "spitzli-persistence",
 ]
 
 [[package]]
-name = "webdock-core"
+name = "spitzli-core"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -6124,7 +6124,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-export-protocol"
+name = "spitzli-export-protocol"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
@@ -6141,7 +6141,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-hosting"
+name = "spitzli-hosting"
 version = "0.1.0"
 dependencies = [
  "aes-gcm",
@@ -6167,17 +6167,17 @@ dependencies = [
  "tokio",
  "unicode-normalization",
  "url",
- "webdock-agent-protocol",
- "webdock-browser-session",
- "webdock-core",
- "webdock-identity",
- "webdock-oauth",
- "webdock-persistence",
- "webdock-supervisor",
+ "spitzli-agent-protocol",
+ "spitzli-browser-session",
+ "spitzli-core",
+ "spitzli-identity",
+ "spitzli-oauth",
+ "spitzli-persistence",
+ "spitzli-supervisor",
 ]
 
 [[package]]
-name = "webdock-identity"
+name = "spitzli-identity"
 version = "0.1.0"
 dependencies = [
  "async-trait",
@@ -6205,11 +6205,11 @@ dependencies = [
  "uuid",
  "webauthn-rs",
  "webauthn-rs-core",
- "webdock-persistence",
+ "spitzli-persistence",
 ]
 
 [[package]]
-name = "webdock-ids"
+name = "spitzli-ids"
 version = "0.1.0"
 dependencies = [
  "maylily",
@@ -6218,7 +6218,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-oauth"
+name = "spitzli-oauth"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
@@ -6235,12 +6235,12 @@ dependencies = [
  "tokio",
  "tokio-postgres",
  "url",
- "webdock-identity",
- "webdock-persistence",
+ "spitzli-identity",
+ "spitzli-persistence",
 ]
 
 [[package]]
-name = "webdock-object-storage-plugin"
+name = "spitzli-object-storage-plugin"
 version = "0.1.0"
 dependencies = [
  "async-trait",
@@ -6260,13 +6260,13 @@ dependencies = [
  "tonic",
  "url",
  "uuid",
- "webdock-plugin-kit",
- "webdock-plugin-protocol",
- "webdock-plugin-runtime",
+ "spitzli-plugin-kit",
+ "spitzli-plugin-protocol",
+ "spitzli-plugin-runtime",
 ]
 
 [[package]]
-name = "webdock-persistence"
+name = "spitzli-persistence"
 version = "0.1.0"
 dependencies = [
  "deadpool-postgres",
@@ -6283,12 +6283,12 @@ dependencies = [
  "tokio-postgres",
  "tokio-postgres-rustls",
  "url",
- "webdock-ids",
+ "spitzli-ids",
  "webpki-roots",
 ]
 
 [[package]]
-name = "webdock-plugin-host"
+name = "spitzli-plugin-host"
 version = "0.1.0"
 dependencies = [
  "async-trait",
@@ -6313,23 +6313,23 @@ dependencies = [
  "tonic",
  "url",
  "uuid",
- "webdock-agent-protocol",
- "webdock-browser-session",
- "webdock-export-protocol",
- "webdock-hosting",
- "webdock-identity",
- "webdock-oauth",
- "webdock-persistence",
- "webdock-plugin-http",
- "webdock-plugin-kit",
- "webdock-plugin-protocol",
- "webdock-plugin-runtime",
- "webdock-secrets",
+ "spitzli-agent-protocol",
+ "spitzli-browser-session",
+ "spitzli-export-protocol",
+ "spitzli-hosting",
+ "spitzli-identity",
+ "spitzli-oauth",
+ "spitzli-persistence",
+ "spitzli-plugin-http",
+ "spitzli-plugin-kit",
+ "spitzli-plugin-protocol",
+ "spitzli-plugin-runtime",
+ "spitzli-secrets",
  "x509-parser 0.18.1",
 ]
 
 [[package]]
-name = "webdock-plugin-http"
+name = "spitzli-plugin-http"
 version = "0.1.0"
 dependencies = [
  "futures-util",
@@ -6340,7 +6340,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-plugin-kit"
+name = "spitzli-plugin-kit"
 version = "0.1.0"
 dependencies = [
  "aes-gcm",
@@ -6357,12 +6357,12 @@ dependencies = [
  "tonic",
  "url",
  "uuid",
- "webdock-plugin-protocol",
- "webdock-plugin-runtime",
+ "spitzli-plugin-protocol",
+ "spitzli-plugin-runtime",
 ]
 
 [[package]]
-name = "webdock-plugin-protocol"
+name = "spitzli-plugin-protocol"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
@@ -6379,7 +6379,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-plugin-runtime"
+name = "spitzli-plugin-runtime"
 version = "0.1.0"
 dependencies = [
  "ed25519-dalek",
@@ -6400,12 +6400,12 @@ dependencies = [
  "tonic-prost-build",
  "tower",
  "url",
- "webdock-plugin-protocol",
+ "spitzli-plugin-protocol",
  "x509-parser 0.18.1",
 ]
 
 [[package]]
-name = "webdock-secrets"
+name = "spitzli-secrets"
 version = "0.1.0"
 dependencies = [
  "aes-gcm",
@@ -6418,7 +6418,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-storage-producer-fixture"
+name = "spitzli-storage-producer-fixture"
 version = "0.0.0"
 dependencies = [
  "async-trait",
@@ -6430,15 +6430,15 @@ dependencies = [
  "tempfile",
  "tokio",
  "uuid",
- "webdock-object-storage-plugin",
- "webdock-plugin-host",
- "webdock-plugin-http",
- "webdock-plugin-kit",
- "webdock-plugin-protocol",
+ "spitzli-object-storage-plugin",
+ "spitzli-plugin-host",
+ "spitzli-plugin-http",
+ "spitzli-plugin-kit",
+ "spitzli-plugin-protocol",
 ]
 
 [[package]]
-name = "webdock-supervisor"
+name = "spitzli-supervisor"
 version = "0.1.0"
 dependencies = [
  "async-trait",
@@ -6450,7 +6450,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "tracing",
- "webdock-core",
+ "spitzli-core",
  "x509-parser 0.18.1",
 ]
 

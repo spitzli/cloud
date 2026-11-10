@@ -4,8 +4,8 @@ use axum::{
     body::Body,
     http::{HeaderValue, Method},
 };
+use spitzli_plugin_host::storage::{StorageAccess, StorageAuthority, StorageCaller};
 use tokio_stream::StreamExt;
-use webdock_plugin_host::storage::{StorageAccess, StorageAuthority, StorageCaller};
 
 #[derive(Clone, Copy)]
 enum Lane {
@@ -131,7 +131,7 @@ impl LiveTransfer {
             serde_json::to_vec(&access.authorization).map_err(|_| PluginError::denied())?;
         let active = tokio::time::timeout(
             std::time::Duration::from_secs(1),
-            client.authorize_storage(webdock_plugin_runtime::wire::StorageAuthorizationRequest {
+            client.authorize_storage(spitzli_plugin_runtime::wire::StorageAuthorizationRequest {
                 authorization_json,
             }),
         )
@@ -230,11 +230,11 @@ async fn data(state: Arc<ServiceState>, id: String, request: Request, lane: Lane
             let receipt = gateway
                 .upload(&access.plan, target, staged)
                 .await
-                .map_err(|_| failure(webdock_plugin_host::storage::upload_uncertain()))?;
+                .map_err(|_| failure(spitzli_plugin_host::storage::upload_uncertain()))?;
             authority
                 .check()
                 .await
-                .map_err(|_| failure(webdock_plugin_host::storage::upload_uncertain()))?;
+                .map_err(|_| failure(spitzli_plugin_host::storage::upload_uncertain()))?;
             endpoint
                 .host
                 .finish_storage_upload(
@@ -242,10 +242,10 @@ async fn data(state: Arc<ServiceState>, id: String, request: Request, lane: Lane
                     &authority
                         .caller()
                         .await
-                        .map_err(|_| failure(webdock_plugin_host::storage::upload_uncertain()))?,
+                        .map_err(|_| failure(spitzli_plugin_host::storage::upload_uncertain()))?,
                 )
                 .await
-                .map_err(|_| failure(webdock_plugin_host::storage::upload_uncertain()))?;
+                .map_err(|_| failure(spitzli_plugin_host::storage::upload_uncertain()))?;
             Ok(Json(receipt).into_response())
         } else {
             let staged = gateway
@@ -280,7 +280,7 @@ async fn data(state: Arc<ServiceState>, id: String, request: Request, lane: Lane
 }
 
 fn stream_response(
-    staged: webdock_plugin_host::storage::StagedTransfer,
+    staged: spitzli_plugin_host::storage::StagedTransfer,
     authority: Arc<dyn StorageAuthority>,
 ) -> Response {
     let (sender, receiver) = tokio::sync::mpsc::channel::<Result<Vec<u8>, PluginError>>(1);
@@ -317,9 +317,9 @@ mod tests {
 #[cfg(test)]
 mod delivery_tests {
     use super::*;
+    use spitzli_plugin_host::storage::StorageGateway;
+    use spitzli_plugin_protocol::storage::StoragePlan;
     use std::sync::atomic::{AtomicBool, Ordering};
-    use webdock_plugin_host::storage::StorageGateway;
-    use webdock_plugin_protocol::storage::StoragePlan;
     struct Live(AtomicBool);
     #[async_trait::async_trait]
     impl StorageAuthority for Live {

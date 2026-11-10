@@ -44,7 +44,7 @@ Build and run:
 
 ```sh
 cargo build --manifest-path Cargo.toml --locked --release
-target/release/webdock-lumaserv-compute /absolute/private/config.json
+target/release/spitzli-lumaserv-compute /absolute/private/config.json
 ```
 
 The private configuration contains `manifest` (an absolute file path), `issuerPublicKeyHex`, `generation`, `projects`, `listen`, `core` and `corePeers`. `projects` maps existing Webdock project decimal IDs to distinct provider project UUIDs. The plugin chooses this mapping from the signed invocation's project; action input cannot choose a provider project, origin, credential or binding.

@@ -5,15 +5,15 @@
 mod support;
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_mail::{
+    jmap::{EmailQuery, JmapClient, MailAddress, MailAttachment, MailDraft, ManagementClient},
+    smtp::{SmtpOptions, submit},
+};
 use std::{
     process::Stdio,
     time::{Duration, Instant},
 };
 use support::{Engine, PASSWORD, basic};
-use webdock_mail::{
-    jmap::{EmailQuery, JmapClient, MailAddress, MailAttachment, MailDraft, ManagementClient},
-    smtp::{SmtpOptions, submit},
-};
 #[tokio::test]
 #[ignore = "requires local Docker and the pinned Community Edition engine image"]
 async fn real_engine_draft_attachment_private_smtp_and_account_isolation() {
@@ -119,9 +119,9 @@ async fn real_engine_draft_attachment_private_smtp_and_account_isolation() {
         Duration::from_secs(15),
     )
     .unwrap();
-    let prepared = webdock_mail::message::prepare_message(
+    let prepared = spitzli_mail::message::prepare_message(
         &exported.raw,
-        &webdock_mail::message::Sender {
+        &spitzli_mail::message::Sender {
             email: exported.sender.email,
             name: exported.sender.name,
         },

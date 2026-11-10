@@ -11,6 +11,10 @@ pub use pinned_tls::{
     pinned_mtls_channel_lazy,
 };
 use serde_json::Value;
+use spitzli_plugin_protocol::{
+    DOCUMENT_BYTES, ErrorCode, FRAME_BYTES, InvocationClaims, MANIFEST_BYTES, Manifest,
+    PluginError, validate_value, verify_invocation,
+};
 use std::{
     pin::Pin,
     sync::Arc,
@@ -22,10 +26,6 @@ use tonic::transport::server::{TcpConnectInfo, TlsConnectInfo, UdsConnectInfo};
 use tonic::{Request, Response, Status};
 pub use transport::{
     MutualTls, UnixSocket, connect_mtls, connect_unix, unix_channel, unix_channel_lazy,
-};
-use webdock_plugin_protocol::{
-    DOCUMENT_BYTES, ErrorCode, FRAME_BYTES, InvocationClaims, MANIFEST_BYTES, Manifest,
-    PluginError, validate_value, verify_invocation,
 };
 // Compatibility exception for the preserved30k-character Mail action input. Select only
 // from verified invocation claims; ordinary actions and every job retain FRAME_BYTES.
@@ -98,7 +98,7 @@ pub trait ActionHandler: Send + Sync + 'static {
     /// pending lifecycle and resource_epoch; do not reuse a presign result as authority.
     async fn authorize_storage(
         &self,
-        _authorization: &webdock_plugin_protocol::storage::StorageAuthorization,
+        _authorization: &spitzli_plugin_protocol::storage::StorageAuthorization,
     ) -> Result<(), PluginError> {
         Err(PluginError::denied())
     }
@@ -354,7 +354,7 @@ fn status(error: PluginError) -> Status {
     };
     // Handler diagnostics may contain provider secrets; only stable codes and customer-facing
     // messages (`public_message`) cross the boundary.
-    if let Some(message) = webdock_plugin_protocol::public_message(error.code, &error.message) {
+    if let Some(message) = spitzli_plugin_protocol::public_message(error.code, &error.message) {
         return Status::new(code, message);
     }
     Status::new(
@@ -491,7 +491,7 @@ impl PluginRuntime for Runtime {
         .await
         .map_err(|_| Status::deadline_exceeded("Authority deadline exceeded"))?
         .map_err(status)?;
-        webdock_plugin_protocol::storage::validate_storage_result(action, &input, &result, now()?)
+        spitzli_plugin_protocol::storage::validate_storage_result(action, &input, &result, now()?)
             .map_err(|_| Status::internal("Invalid plugin result"))?;
         let output_json =
             serde_json::to_vec(&result).map_err(|_| Status::internal("Invalid plugin result"))?;

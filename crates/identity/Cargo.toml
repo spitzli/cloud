@@ -1,5 +1,5 @@
 [package]
-name = "webdock-identity"
+name = "spitzli-identity"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -31,11 +31,11 @@ webauthn-rs = { version = "=0.5.5", features = ["danger-allow-state-serialisatio
 webauthn-rs-core = "=0.5.5"
 uuid = { version = "1", features = ["v5"] }
 serde_cbor = { package = "serde_cbor_2", version = "0.13" }
-webdock-persistence = { path = "../persistence" }
+spitzli-persistence = { path = "../persistence" }
 
 [dev-dependencies]
 uuid = { version = "1", features = ["v4"] }
-webdock-ids = { path = "../ids" }
+spitzli-ids = { path = "../ids" }
 webauthn-authenticator-rs = { version = "=0.5.5", features = ["softpasskey"] }
 
 [lints]

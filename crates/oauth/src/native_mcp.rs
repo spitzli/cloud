@@ -6,9 +6,9 @@ use crate::service::{
 };
 use crate::{ClientAuthentication, Error, OAuthService, Result, legacy_token_hash};
 use serde_json::{Value, json};
+use spitzli_identity::Principal;
+use spitzli_persistence::postgres::Transaction;
 use std::time::Duration;
-use webdock_identity::Principal;
-use webdock_persistence::postgres::Transaction;
 const BUDGET: Duration = Duration::from_secs(30);
 fn fingerprint(r: &TokenRecord) -> Result<String> {
     hash_record(json!([

@@ -32,7 +32,7 @@ if [ "${WEBDOCK_RELEASE_DATABASES:-false}" = true ]; then
   for target in database-gateway tabularis-runtime; do
     docker buildx build --platform "$platform" --file "deploy/docker/$target.Dockerfile"       --build-arg "TABULARIS_IMAGE=$TABULARIS_IMAGE" --build-arg "TABULARIS_SOURCE_COMMIT=$tabularis_commit"       --provenance=mode=max --sbom=true --output "type=oci,compression=gzip,force-compression=true,dest=$out/$target.oci.tar" .
   done
-  helm package deploy/helm/webdock-databases --version "$version" --app-version "$version" --destination "$out"
+  helm package deploy/helm/spitzli-databases --version "$version" --app-version "$version" --destination "$out"
 fi
 if [ "${WEBDOCK_RELEASE_CMS:-false}" = true ]; then
   for target in cms-instance managed-cms; do
@@ -44,7 +44,7 @@ if [ "${WEBDOCK_RELEASE_CMS:-false}" = true ]; then
   done
 fi
 helm package deploy/helm/webdock --version "$version" --app-version "$version" --destination "$out"
-helm package deploy/helm/webdock-agent --version "$version" --app-version "$version" --destination "$out"
+helm package deploy/helm/spitzli-agent --version "$version" --app-version "$version" --destination "$out"
 bun tools/release/verify-architecture.mjs "$out" "$platform" "$revision"
 if [ "${WEBDOCK_RELEASE_CMS:-false}" = true ]; then
   bun run - "$out" "${WEBDOCK_RELEASE_REGISTRY:-ghcr.io/spitzli/webdock}" <<'JS'

@@ -143,10 +143,10 @@ The input is an absolute owned single-link regular file, mode0600. Its v1 fields
   build inputs, fixture/browser sources, approved chart and product dependencies. Keep
   operational plan-checkbox progress separate from build inputs. Handovers, private
   generated files and env/kubeconfig paths are refused.
-- `review.binaries`: executable name → `{path,sha256}` for `webdock-migrate`,
-  `webdock-bootstrap-operator`, `webdock-enroll-agent`, `webdock-bootstrap-plugins`,
-  `webdock-control-plane`, `webdock-plugin-control`, `webdock-plugin-controller`,
-  `webdock-agent-control`, `webdock-agent`, `bun`, `docker-buildx`. Root supplies eleven reviewed public ELF copies;
+- `review.binaries`: executable name → `{path,sha256}` for `spitzli-migrate`,
+  `spitzli-bootstrap-operator`, `spitzli-enroll-agent`, `spitzli-bootstrap-plugins`,
+  `spitzli-control-plane`, `spitzli-plugin-control`, `spitzli-plugin-controller`,
+  `spitzli-agent-control`, `spitzli-agent`, `bun`, `docker-buildx`. Root supplies eleven reviewed public ELF copies;
   the helpers do not compile them. The agent must include the Kubernetes/plugin-runtime
   and Workloads capabilities required by the approved chart.
   Historical nine-binary snapshots remain readable by cleanup; new execution stages

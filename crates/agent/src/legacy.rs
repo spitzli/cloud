@@ -24,8 +24,8 @@ use kube::{
     api::{ListParams, LogParams, PostParams},
     core::ObjectMeta,
 };
+use spitzli_supervisor::*;
 use std::{collections::BTreeMap, time::Duration};
-use webdock_supervisor::*;
 pub fn namespace(spec: &RuntimeSpec) -> String {
     format!("wd-{}", spec.project_id)
 }

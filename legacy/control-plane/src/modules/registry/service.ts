@@ -1,4 +1,4 @@
-import { readAuthProviderConfiguration } from "@webdock/auth-configuration";
+import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 import { signedDatabaseScope } from "../../db/signed-scope";
 import { retainedRegistryInventory } from "./extensions";
 import { readCachedView } from "../../cache";
@@ -8,11 +8,11 @@ import {
   currentDatabaseScope,
   withDatabaseScope,
   verifiedPostgresConfig,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { createRegistryService } from "@webdock/core/registry/service";
-export { RegistryError } from "@webdock/core/registry/errors";
-export type { RegistryIdentity } from "@webdock/core/registry/ports";
+import { createRegistryService } from "@spitzli/core/registry/service";
+export { RegistryError } from "@spitzli/core/registry/errors";
+export type { RegistryIdentity } from "@spitzli/core/registry/ports";
 export async function createRegistry() {
   const raw = process.env.REGISTRY_DATABASE_URL;
   if (!raw) throw Error("Registry database role is required");
@@ -68,14 +68,14 @@ export async function createRegistry() {
     ...service,
     // Kept for source compatibility; CMS registration is no longer an active API.
     writeInstance: async (
-      _actor: import("@webdock/core/registry/ports").RegistryIdentity,
+      _actor: import("@spitzli/core/registry/ports").RegistryIdentity,
       _key: string | null,
       _input: unknown,
       _confirmed: boolean,
     ): Promise<
-      typeof import("@webdock/platform-db/schema/registry").cmsInstances.$inferSelect
+      typeof import("@spitzli/platform-db/schema/registry").cmsInstances.$inferSelect
     > => {
-      throw new (await import("@webdock/core/registry/errors")).RegistryError(
+      throw new (await import("@spitzli/core/registry/errors")).RegistryError(
         "CMS registration is unavailable.",
         404,
       );

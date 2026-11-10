@@ -43,7 +43,7 @@ if p['action']=='start':
  save('trust.json',{'version':1,'target':p['target'],'publicKey':p['publicKey']})
  r=subprocess.run([str(work/'helper'),'--config',str(work/'pool.json'),'--builds','initialize'],capture_output=True,timeout=30);assert r.returncode==0,'pool initialize failed'
  ca=base64.b64decode(k('config','view','--raw','-o','json')['clusters'][0]['cluster']['certificate-authority-data'])
- token=k('create','token','webdock-build-storage-node','-n','webdock-build-storage-system','--duration=2h')
+ token=k('create','token','spitzli-build-storage-node','-n','webdock-build-storage-system','--duration=2h')
  save('client.json',{'apiVersion':'v1','kind':'Config','clusters':[{'name':'owned-node','cluster':{'server':'https://10.83.0.1:6443','certificate-authority-data':base64.b64encode(ca).decode()}}],'users':[{'name':'node','user':{'token':token}}],'contexts':[{'name':'owned-node','context':{'cluster':'owned-node','user':'node','namespace':'webdock-build-qualification'}}],'current-context':'owned-node'})
  ns=k('get','namespace','webdock-build-qualification','-o','json');quota=k('get','resourcequota','-n','webdock-build-qualification','-o','json')['items'];assert len(quota)==1
  save('prior.json',{'namespaceUID':ns['metadata']['uid'],'annotation':ns['metadata'].get('annotations',{}).get('webdock.dev/storage-profile'),'quota':quota[0]})
@@ -110,7 +110,7 @@ print(subprocess.check_output(['/usr/local/bin/k3s','kubectl','get','validatinga
         # Replace this one owned policy with its observed UID/version; never merge stale last-applied metadata.
         current=json.loads(json.dumps(p['priorPolicy']));current['spec']=pv['spec']
         subprocess.run([*SSH,HOST,"/usr/local/bin/k3s kubectl replace -f -"],input=json.dumps(current),text=True,check=True,stdout=subprocess.DEVNULL,timeout=30)
-        binaries={name:(ROOT/"target/x86_64-unknown-linux-musl/release"/binary).read_bytes() for name,binary in [("node","webdock-build-storage-node"),("helper","webdock-storage")]}
+        binaries={name:(ROOT/"target/x86_64-unknown-linux-musl/release"/binary).read_bytes() for name,binary in [("node","spitzli-build-storage-node"),("helper","spitzli-storage")]}
         import base64
         p.update(binaries={n:base64.b64encode(b).decode() for n,b in binaries.items()},hashes={n:hashlib.sha256(b).hexdigest() for n,b in binaries.items()})
     else:p=json.loads((state/"storage-owner.json").read_text())

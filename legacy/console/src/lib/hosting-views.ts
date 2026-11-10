@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { byokPolicySchema, HostingClusterView, InventoryResource } from "@webdock/hosting-contracts";
+import type { byokPolicySchema, HostingClusterView, InventoryResource } from "@spitzli/hosting-contracts";
 
 export type OwnInfrastructurePolicy = z.infer<typeof byokPolicySchema> & { revision: number };
 export type OwnInfrastructureView = {

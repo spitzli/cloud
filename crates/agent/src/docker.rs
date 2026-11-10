@@ -1,5 +1,6 @@
 use bollard::{Docker, errors::Error as DockerError, models::*, query_parameters::*};
 use futures_util::TryStreamExt;
+use spitzli_supervisor::*;
 use std::{
     collections::{BTreeMap, HashMap},
     net::Ipv4Addr,
@@ -7,7 +8,6 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use webdock_supervisor::*;
 mod completed;
 const HASH: &str = "webdock.dev/spec-sha256";
 const GENERATION: &str = "webdock.dev/generation";

@@ -1,4 +1,4 @@
-import { createHostingGitTargets } from "@webdock/module-hosting/server/git-targets";
+import { createHostingGitTargets } from "@spitzli/module-hosting/server/git-targets";
 import { authorizeHosting } from "./authorization";
 import { transaction, audit } from "./db";
 import {

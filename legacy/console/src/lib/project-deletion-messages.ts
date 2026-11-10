@@ -1,4 +1,4 @@
-import {msgid} from '@webdock/i18n';
+import {msgid} from '@spitzli/i18n';
 // Public lifecycle feedback used by API and UI.
 export const deletionMessages = [
  msgid("Back to project"),

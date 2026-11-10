@@ -7,6 +7,25 @@ use sea_orm::{
 };
 use serde_json::json;
 use sha2::{Digest, Sha256};
+use spitzli_agent::{
+    config::{AgentConfig, ControlEndpoint, RuntimeConfiguration},
+    management::Daemon,
+};
+use spitzli_agent_control::{ControlPlane, LocalBinding};
+use spitzli_agent_protocol::agent_control_client::AgentControlClient;
+use spitzli_agent_protocol::{
+    self as wire,
+    mail_control_server::{MailControl, MailControlServer},
+};
+use spitzli_browser_session::StoredAuthority;
+use spitzli_identity::{CookiePolicy, IdentityService};
+use spitzli_mail::{
+    MailDependencies,
+    incoming::{
+        IncomingConfig, NativeIncoming, ServiceCommand, ServiceState,
+        agent::{IncomingAgent, MailAgentConfig},
+    },
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -15,25 +34,6 @@ use std::{
     },
 };
 use tonic::{Request, Response, Status};
-use webdock_agent::{
-    config::{AgentConfig, ControlEndpoint, RuntimeConfiguration},
-    management::Daemon,
-};
-use webdock_agent_control::{ControlPlane, LocalBinding};
-use webdock_agent_protocol::agent_control_client::AgentControlClient;
-use webdock_agent_protocol::{
-    self as wire,
-    mail_control_server::{MailControl, MailControlServer},
-};
-use webdock_browser_session::StoredAuthority;
-use webdock_identity::{CookiePolicy, IdentityService};
-use webdock_mail::{
-    MailDependencies,
-    incoming::{
-        IncomingConfig, NativeIncoming, ServiceCommand, ServiceState,
-        agent::{IncomingAgent, MailAgentConfig},
-    },
-};
 
 const KEY: &str = "owned-native-mail-control-fixture-key-atleast32";
 #[path = "support/native_mail_browser.rs"]
@@ -136,7 +136,7 @@ async fn disabled_hosting_policy(
     image: &str,
 ) {
     use prost::Message;
-    let command:webdock_supervisor::Command=serde_json::from_value(json!({
+    let command:spitzli_supervisor::Command=serde_json::from_value(json!({
         "operationId":"901","generation":1,"leaseUntil":chrono::Utc::now().timestamp()+120,
         "authorization":"owned-fixture-reference","action":"stop",
         "spec":{"version":1,"installation":installation,"projectId":"123","resourceId":"456","revision":1,
@@ -310,7 +310,7 @@ async fn fixture(scenario: Scenario) {
         Ok("1")
     );
     let image = std::env::var("WEBDOCK_MAIL_RUNTIME_IMAGE").unwrap();
-    assert!(webdock_supervisor::image_digest(&image));
+    assert!(spitzli_supervisor::image_digest(&image));
     let mut url =
         url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
@@ -355,7 +355,7 @@ async fn run(
 ) {
     let configure = matches!(scenario, Scenario::BrowserConfiguration);
     let owner = Database::connect(url.as_str()).await.unwrap();
-    webdock_persistence::migrations::bootstrap(&owner, name, KEY)
+    spitzli_persistence::migrations::bootstrap(&owner, name, KEY)
         .await
         .unwrap();
     sql(&owner,"INSERT INTO webdock_auth.\"user\"(id,name,email,\"emailVerified\",role,\"twoFactorEnabled\",\"mustChangePassword\") VALUES('1001','Operator','operator@example.invalid',true,'operator',true,false)",vec![]).await;
@@ -394,12 +394,12 @@ async fn run(
         .await
         .unwrap()
         .unwrap();
-    let ids = Arc::new(webdock_persistence::IdAllocator::new(
+    let ids = Arc::new(spitzli_persistence::IdAllocator::new(
         role("DATABASE_URL", name, url).await,
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     ));
     let hosting = Arc::new(
-        webdock_hosting::HostingService::new(
+        spitzli_hosting::HostingService::new(
             business.clone(),
             auth.clone(),
             worker.clone(),
@@ -545,7 +545,7 @@ async fn run(
         incoming.manage_service(&principal,&StoredAuthority::LocalSession {},"123",ServiceCommand::Activate{revision:"0".into()}).await.unwrap();
         assert!(daemon.cycle().await.unwrap());
         assert_eq!(lost.checkpoints.lock().unwrap().len(),1);
-        assert!(webdock_agent::outbox::MailOutbox::open(dir.path().join("mail-outbox.json")).unwrap().pending().unwrap().is_some());
+        assert!(spitzli_agent::outbox::MailOutbox::open(dir.path().join("mail-outbox.json")).unwrap().pending().unwrap().is_some());
         drop(daemon);
         let mut daemon=Daemon::open(config.clone()).await.unwrap();daemon.connect().await.unwrap();
         assert_eq!(lost.checkpoints.lock().unwrap().len(),2);
@@ -574,12 +574,12 @@ async fn run(
         assert!(daemon.cycle().await.unwrap());
         assert_eq!(incoming.service(&principal,&StoredAuthority::LocalSession {},"123").await.unwrap().service.state,ServiceState::Ready);
         let after=owner.query_one_raw(Statement::from_string(DbBackend::Postgres,"SELECT encrypted_credentials,smtp_certificate_sha256 FROM webdock_mail.instance WHERE customer_id='123'")).await.unwrap().unwrap();
-        let cipher=webdock_mail::secrets::MailCipher::new(&STANDARD.encode([43u8;32])).unwrap();
+        let cipher=spitzli_mail::secrets::MailCipher::new(&STANDARD.encode([43u8;32])).unwrap();
         assert!(cipher.open::<serde_json::Value>(&credentials,"instance:123").unwrap()==cipher.open::<serde_json::Value>(&after.try_get::<String>("","encrypted_credentials").unwrap(),"instance:123").unwrap(),"retained credentials changed");
         assert_eq!(after.try_get::<String>("","smtp_certificate_sha256").unwrap(),certificate);
-        assert!(webdock_agent::outbox::MailOutbox::open(dir.path().join("mail-outbox.json")).unwrap().pending().unwrap().is_none());
+        assert!(spitzli_agent::outbox::MailOutbox::open(dir.path().join("mail-outbox.json")).unwrap().pending().unwrap().is_none());
         sql(&owner,"UPDATE webdock_auth.agent_transport_enrollment SET revoked=true WHERE installation=$1",vec![installation.into()]).await;
-        assert!(matches!(daemon.cycle().await,Err(webdock_agent::management::AgentError::Revoked)));
+        assert!(matches!(daemon.cycle().await,Err(spitzli_agent::management::AgentError::Revoked)));
         assert_eq!(docker.inspect_container(&base,None::<InspectContainerOptions>).await.unwrap().state.unwrap().running,Some(true));
         drop(daemon);
         sql(&owner,"UPDATE webdock_auth.hosting_agent SET generation=2,last_sequence=0 WHERE cluster_id='200'",vec![]).await;

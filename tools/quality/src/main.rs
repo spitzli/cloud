@@ -1,11 +1,11 @@
-use std::{
-    path::{Path, PathBuf},
-    process::ExitCode,
-};
-use webdock_quality::{
+use spitzli_quality::{
     architecture, migrations,
     runner::{self, Scope},
     serde_contracts,
+};
+use std::{
+    path::{Path, PathBuf},
+    process::ExitCode,
 };
 
 fn source_findings(root: &Path) -> Result<Vec<String>, String> {

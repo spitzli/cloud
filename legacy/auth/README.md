@@ -22,7 +22,7 @@ Use Node 24 and install from the monorepo root. Each command requires the intend
 
 Credentials and recovery material are not committed. Initial operator credentials live in the local ignored `.env.bootstrap` (mode 600). Do not share or commit that file. Existing website passwords are not copied to this service.
 
-Relying apps use `@webdock/payload-sso` or a pinned vendored copy. The new management app is SSO-only whenever configured. Existing websites initially keep an explicit temporary legacy-compatible rollout; set `WEBDOCK_SSO_ENFORCE=true` only after account mapping and human enrollment. This disables local Payload password/recovery/JWT authentication while retaining fields/history. A site with legacy compatibility is not a completed SSO-only cutover.
+Relying apps use `@spitzli/payload-sso` or a pinned vendored copy. The new management app is SSO-only whenever configured. Existing websites initially keep an explicit temporary legacy-compatible rollout; set `WEBDOCK_SSO_ENFORCE=true` only after account mapping and human enrollment. This disables local Payload password/recovery/JWT authentication while retaining fields/history. A site with legacy compatibility is not a completed SSO-only cutover.
 
 Auth/admin production credentials are not provisioned to Vercel previews; automatic Git deployment is main-only until isolated preview identity resources are configured. Public website rendering has no dependency on a central login session. No customer-facing panel, automatic CMS provisioner or impersonation UI is shipped here.
 

@@ -37,10 +37,10 @@ Do not add configuration/credential dumps for startup diagnostics. `/healthz`,
 ## Verification
 
 ```sh
-cargo test --locked -p webdock-control-plane --test native_runtime
-cargo test --locked -p webdock-control-plane --lib --tests
-cargo test --locked -p webdock-control-plane --test native_runtime_postgres -- --ignored
-cargo clippy --locked -p webdock-control-plane --all-targets -- -D warnings
+cargo test --locked -p spitzli-control-plane --test native_runtime
+cargo test --locked -p spitzli-control-plane --lib --tests
+cargo test --locked -p spitzli-control-plane --test native_runtime_postgres -- --ignored
+cargo clippy --locked -p spitzli-control-plane --all-targets -- -D warnings
 ```
 
 The PostgreSQL test provisions its own local PostgreSQL 18 container and restricted

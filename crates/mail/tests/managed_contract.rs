@@ -1,5 +1,5 @@
 use serde_json::json;
-use webdock_mail::managed_control::{Command, EXECUTOR, STORE_ID};
+use spitzli_mail::managed_control::{Command, EXECUTOR, STORE_ID};
 #[test]
 fn action_control_rejects_redundant_authority() {
     let valid = json!({"action":"send.admitAction","submission":{"invocationToken":"opaque","input":{},"payloadRef":uuid::Uuid::new_v4().to_string(),"privatePolicySha256":"a".repeat(64)}});

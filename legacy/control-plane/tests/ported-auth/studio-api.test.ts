@@ -14,7 +14,7 @@ import {
 import { currentClaims } from "../../src/modules/auth/authorization";
 import { handleStudioRequest } from "../../src/modules/portal/studio-api";
 import { tenantPreviewSchemaSQL } from "../../src/modules/access/tenant-preview-schema";
-import { nativeMailSchemaSQL } from "@webdock/mail-core/schema";
+import { nativeMailSchemaSQL } from "@spitzli/mail-core/schema";
 afterEach(restoreMocks);
 
 const databaseURL = new URL(process.env.DATABASE_URL!);
@@ -695,7 +695,7 @@ test("Studio and hosting introspection outages cannot masquerade as expired brow
     else process.env.WEBDOCK_STUDIO_CLIENT_ID = previousClientID;
   });
   const { hostingIdentity } = await import("../../src/modules/hosting/bridge");
-  const { HostingError } = await import("@webdock/hosting-contracts");
+  const { HostingError } = await import("@spitzli/hosting-contracts");
   for (const [upstream, expected] of [
     [429, 429],
     [500, 503],

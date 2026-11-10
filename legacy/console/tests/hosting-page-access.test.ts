@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import { withHostingPageAccess, HostingSessionRequiredError } from "../src/lib/hosting-page-access";
 const digest = (error: unknown) =>
   error instanceof Error && "digest" in error ? String(error.digest) : "";

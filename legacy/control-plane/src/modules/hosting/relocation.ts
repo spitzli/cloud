@@ -1,4 +1,4 @@
-import { createHostingRelocation } from "@webdock/module-hosting/server/relocation";
+import { createHostingRelocation } from "@spitzli/module-hosting/server/relocation";
 import { authorizeHosting } from "./authorization";
 import { transaction, planLock, clusterLock, audit } from "./db";
 import { clusterView } from "./clusters";

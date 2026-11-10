@@ -7,12 +7,12 @@ A browser-only React, TypeScript, Vite and Tailwind package. The build produces 
 From the repository root with Bun (the only JavaScript runtime and package manager here):
 
 ```sh
-bun run --filter @webdock/console dev
-bun run --filter @webdock/console lint
-bun run --filter @webdock/console typecheck
-bun run --filter @webdock/console build
-bun run --filter @webdock/console test
-bun run --filter @webdock/console test:browser
+bun run --filter @spitzli/console dev
+bun run --filter @spitzli/console lint
+bun run --filter @spitzli/console typecheck
+bun run --filter @spitzli/console build
+bun run --filter @spitzli/console test
+bun run --filter @spitzli/console test:browser
 ```
 
 Scripts call `bun --bun` so ESLint, TypeScript and Vite run on Bun even though their launchers declare Node. Unit tests run with `bun test --isolate`: each test file gets a fresh global object, because the DOM tests install happy-dom globals (including `navigator`, which Bun predefines without `languages`).
@@ -80,7 +80,7 @@ This package is an implementation slice, not the completed Console migration. Ac
 
 The same build serves the canonical Auth origin when `/console-config.json` returns `surface: "account"`, its own `apiOrigin`/`authOrigin`, and `consoleOrigin`. Account security, password/reset, authenticator QR/recovery, passkeys, sessions, consent and logout run there. Console uses `sso: true` to navigate through `/api/sso/login`; it never performs a sibling-origin passkey ceremony. The account bundle is loaded separately from Console.
 
-For local real tests, use Auth `http://localhost:3125` (WebAuthn RP `localhost`), Console `http://127.0.0.1:3121`, Studio3120 and Core3130. The explicit fixture helper `cargo run -p webdock-control-plane --example account_browser_fixture` requires the owned restricted local fixture variables; it only replaces its own previously recorded test account/client and writes credentials into a private ignored file. `bun crates/control-plane/tests/start-account-browser.mjs` starts the owned Core process using those values without printing them. Run Vite on Console3121 and Auth3125, then `bun apps/console/tests/account-browser.mjs` from the repository root. The browser test uses real Core/DB services and a virtual WebAuthn authenticator, not fake API responses; no mail is sent. Never point these helpers at a retained customer database.
+For local real tests, use Auth `http://localhost:3125` (WebAuthn RP `localhost`), Console `http://127.0.0.1:3121`, Studio3120 and Core3130. The explicit fixture helper `cargo run -p spitzli-control-plane --example account_browser_fixture` requires the owned restricted local fixture variables; it only replaces its own previously recorded test account/client and writes credentials into a private ignored file. `bun crates/control-plane/tests/start-account-browser.mjs` starts the owned Core process using those values without printing them. Run Vite on Console3121 and Auth3125, then `bun apps/console/tests/account-browser.mjs` from the repository root. The browser test uses real Core/DB services and a virtual WebAuthn authenticator, not fake API responses; no mail is sent. Never point these helpers at a retained customer database.
 
 Set `WEBDOCK_ACCOUNT_FIXTURE=account-browser-session-isolation.json` consistently for the fixture helper, Core starter and browser test to use an independent account profile. The basename is validated; private credentials and cookie output stay profile-specific. This avoids resetting the default account when database acceptance fixtures reference it. Reset is transactional: a dependent-resource refusal leaves the recorded account/client/projection intact. The helper's `--repair` mode is restricted to its exact recorded local fixture and restores only missing matching setup records; it is not customer recovery tooling.
 
@@ -131,7 +131,7 @@ Recorded service state, requested direction, and mailbox requested/applied confi
 
 Run `bun tests/mail-browser.mjs` from this directory for the documented controlled HTTP browser check. It owns the same test preview port (3121) as `test:browser`, so run them sequentially. This verifies UI behavior only; it is not a live Mail or production delivery test. Mounted and contract regressions are included in `bun run test`.
 
-The separate real acceptance harness is `cargo test -p webdock-agent-control --test native_mail native_console_drives_incoming_mail_activation_and_retained_suspension -- --ignored --nocapture`. It requires the explicitly owned restricted PostgreSQL fixture environment, the already available reviewed `WEBDOCK_MAIL_RUNTIME_IMAGE` digest, both `WEBDOCK_MAIL_NATIVE_DOCKER_TEST=1` and `WEBDOCK_MAIL_BROWSER_TEST=1`, Node24, Chromium and a built Console. It creates a fresh database and isolated engine, serves actual Core HTTP on an ephemeral loopback port, runs the enrolled daemon, and removes only its owned resources afterward. The browser descriptor is private and temporary; no API responses are mocked. Optional `WEBDOCK_MAIL_BROWSER_SCREENSHOT_DIR` captures synthetic fixture screenshots outside tracked source. The actual run on2026-10-20 passed31.69s: explicit activation, agent-confirmed readiness, retained suspension/resume, exact revision-bound requests and responsive navigation. Its synthetic native session is separate from the real SSO acceptance above.
+The separate real acceptance harness is `cargo test -p spitzli-agent-control --test native_mail native_console_drives_incoming_mail_activation_and_retained_suspension -- --ignored --nocapture`. It requires the explicitly owned restricted PostgreSQL fixture environment, the already available reviewed `WEBDOCK_MAIL_RUNTIME_IMAGE` digest, both `WEBDOCK_MAIL_NATIVE_DOCKER_TEST=1` and `WEBDOCK_MAIL_BROWSER_TEST=1`, Node24, Chromium and a built Console. It creates a fresh database and isolated engine, serves actual Core HTTP on an ephemeral loopback port, runs the enrolled daemon, and removes only its owned resources afterward. The browser descriptor is private and temporary; no API responses are mocked. Optional `WEBDOCK_MAIL_BROWSER_SCREENSHOT_DIR` captures synthetic fixture screenshots outside tracked source. The actual run on2026-10-20 passed31.69s: explicit activation, agent-confirmed readiness, retained suspension/resume, exact revision-bound requests and responsive navigation. Its synthetic native session is separate from the real SSO acceptance above.
 
 
 ### Mail configuration requests

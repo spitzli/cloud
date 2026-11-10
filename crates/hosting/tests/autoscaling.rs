@@ -1,5 +1,5 @@
 use serde_json::{Value, json};
-use webdock_hosting::contracts::{
+use spitzli_hosting::contracts::{
     admit_autoscaling, app_demand, apply_scaling_action, resolve_spec,
 };
 

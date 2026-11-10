@@ -1,4 +1,4 @@
-import type { MailDomainProvider } from "@webdock/module-mail/server/provider-ports";
+import type { MailDomainProvider } from "@spitzli/module-mail/server/provider-ports";
 import type { Fetch } from "./http";
 import { domainToASCII } from "node:url";
 import { TurboSMTPError, type TurboSMTPAuth } from "./turbosmtp";

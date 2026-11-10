@@ -1,6 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
-import type { HostingAppView } from '@webdock/hosting-contracts';
+import type { HostingAppView } from '@spitzli/hosting-contracts';
 import { hostingPageCall } from './hosting-client';
 
 export type HostingApplication = HostingAppView & {operator:boolean; canManage:boolean; canRequestLogs:boolean; subscriptionRevision:number};

@@ -10,9 +10,9 @@ use bollard::{Docker, errors::Error as DockerError, models::*, query_parameters:
 use futures_util::TryStreamExt;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
+use spitzli_agent_protocol::mail::*;
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{collections::HashMap, net::Ipv4Addr, os::unix::fs::FileTypeExt, time::Duration};
-use webdock_agent_protocol::mail::*;
-use webdock_supervisor::{ExecutionError, Result};
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct DockerMailConfig {
@@ -27,7 +27,7 @@ impl DockerMailConfig {
                 .installation
                 .bytes()
                 .all(|v| v.is_ascii_lowercase() || v.is_ascii_digit() || v == b'-')
-            || !webdock_supervisor::image_digest(&self.image)
+            || !spitzli_supervisor::image_digest(&self.image)
         {
             return Err(ExecutionError::Invalid("Mail Docker configuration"));
         }

@@ -13,7 +13,7 @@ pub async fn independent_pool(
         .await
         .map_err(|_| "Independent runtime pool unavailable")?;
     let db = sea_orm::SqlxPostgresConnector::from_sqlx_postgres_pool(pool);
-    webdock_persistence::connection::verify_runtime_role(&db, expected)
+    spitzli_persistence::connection::verify_runtime_role(&db, expected)
         .await
         .map_err(|_| "Restricted independent runtime role required")?;
     Ok(db)
@@ -23,7 +23,7 @@ pub async fn require_runtime_role(
     db: &DatabaseConnection,
     expected: &str,
 ) -> crate::runtime::Result<()> {
-    webdock_persistence::connection::verify_runtime_role(db, expected)
+    spitzli_persistence::connection::verify_runtime_role(db, expected)
         .await
         .map_err(|_| crate::runtime::Error::Message("Restricted database role required".into()))
 }
@@ -34,7 +34,7 @@ pub async fn connect_runtime(
     production: bool,
 ) -> crate::runtime::Result<DatabaseConnection> {
     let url =
-        webdock_persistence::connection::ConnectionUrl::parse(url, production).map_err(|_| {
+        spitzli_persistence::connection::ConnectionUrl::parse(url, production).map_err(|_| {
             crate::runtime::Error::Message("Invalid PostgreSQL connection policy".into())
         })?;
     let mut options = ConnectOptions::new(url.as_str());

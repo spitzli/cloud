@@ -1,12 +1,12 @@
 //! Interrupted setup against an in-process JMAP boundary; no mail or external services.
 use serde_json::{Value, json};
+use spitzli_mail::engine;
+use spitzli_plugin_protocol::PluginError;
 use std::{
     collections::BTreeMap,
     sync::{Arc, Mutex},
 };
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use webdock_mail::engine;
-use webdock_plugin_protocol::PluginError;
 
 #[derive(Default)]
 struct State {

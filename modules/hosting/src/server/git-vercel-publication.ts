@@ -1,6 +1,6 @@
 import type { HostingPorts } from "./ports";
 import type { Fetch } from "./ports";
-import { HostingError, gitHealthPath } from "@webdock/hosting-contracts";
+import { HostingError, gitHealthPath } from "@spitzli/hosting-contracts";
 import type { GitVercelCredential } from "./git-vercel";
 export type Dependencies = {
   vercelJSON: ReturnType<

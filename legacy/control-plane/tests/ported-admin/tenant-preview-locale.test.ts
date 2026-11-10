@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { tenantPreview } from "../../src/modules/portal/preview";
-import * as i18n from "@webdock/i18n";
+import * as i18n from "@spitzli/i18n";
 const origin = "https://studio.example.test";
 type Service = (operation: string, args?: unknown[]) => Promise<unknown>;
 function handler(studioCall: Service) {

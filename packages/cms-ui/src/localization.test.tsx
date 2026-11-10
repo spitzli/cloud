@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {CMSApp} from './client';
-import {I18nProvider} from '@webdock/i18n/react';
+import {I18nProvider} from '@spitzli/i18n/react';
 const props={siteName:'Customer-authored site name',siteURL:'https://site.example',accountURL:'https://auth.example/account',accessURL:'https://auth.example/people'};
 test('CMS can render without any outer i18n provider and preserves customer copy',()=>{
  const html=renderToStaticMarkup(<CMSApp {...props}/>);

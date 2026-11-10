@@ -42,7 +42,7 @@ class BuildControllerChart(unittest.TestCase):
         self.assertEqual(pod['securityContext']['runAsUser'],65532)
         main=pod['containers'][0];self.assertEqual(main['resources']['requests']['memory'],'6Gi');self.assertEqual(main['resources']['limits']['memory'],'6Gi');self.assertEqual(main['resources']['limits']['cpu'],'2')
         self.assertNotIn('envFrom',main);self.assertNotIn('swap',json.dumps(pod).lower())
-        self.assertEqual(main['command'],['/usr/local/bin/webdock-kubernetes-build-worker'])
+        self.assertEqual(main['command'],['/usr/local/bin/spitzli-kubernetes-build-worker'])
         for c in pod['containers']+pod['initContainers']:
             self.assertFalse(c['securityContext']['allowPrivilegeEscalation']);self.assertTrue(c['securityContext']['readOnlyRootFilesystem']);self.assertEqual(c['securityContext']['capabilities']['drop'],['ALL'])
         root=pod['initContainers'][0];self.assertEqual(root['securityContext']['capabilities']['add'],['CHOWN']);self.assertEqual(root['securityContext']['runAsUser'],0)

@@ -1,4 +1,4 @@
-import { createHostingServiceBindings } from "@webdock/module-hosting/server/service-bindings";
+import { createHostingServiceBindings } from "@spitzli/module-hosting/server/service-bindings";
 import { applicationCapabilities } from "./setup-capabilities";
 import {
   mailBindingMaterial,

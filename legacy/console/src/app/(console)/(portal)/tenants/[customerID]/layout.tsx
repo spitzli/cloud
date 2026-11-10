@@ -3,7 +3,7 @@ import { getStudioSession } from "@/lib/studio-client";
 import { getTenant } from "@/lib/tenants";
 import { AccessError } from "@/lib/access-management";
 import { notFound, redirect } from 'next/navigation';
-import { getRequestI18n } from '@webdock/i18n/next';
+import { getRequestI18n } from '@spitzli/i18n/next';
 import { WorkspaceContext } from '@/components/workspace-context';
 export default async function TenantLayout({
   children,

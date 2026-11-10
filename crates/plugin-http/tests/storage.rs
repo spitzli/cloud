@@ -1,5 +1,5 @@
+use spitzli_plugin_http::storage::{StorageBinding, bind_storage, bind_storage_loopback_test};
 use std::{collections::BTreeMap, net::IpAddr};
-use webdock_plugin_http::storage::{StorageBinding, bind_storage, bind_storage_loopback_test};
 fn binding() -> StorageBinding {
     StorageBinding {
         origin: "https://storage.invalid".into(),

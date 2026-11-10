@@ -14,9 +14,9 @@ import {
   type ClusterObservation,
   hostingDimensions,
   normalizeHostingAllowances,
-} from "@webdock/hosting-contracts";
-import type { Connection } from "@webdock/hosting-contracts/runtime-ports";
-import { allocationTotals as totals } from "@webdock/hosting-contracts/capacity-totals";
+} from "@spitzli/hosting-contracts";
+import type { Connection } from "@spitzli/hosting-contracts/runtime-ports";
+import { allocationTotals as totals } from "@spitzli/hosting-contracts/capacity-totals";
 export type Dependencies = {
   nativeClusterDemand: DatabaseRuntimePorts["nativeClusterDemand"];
   clusterCapacityDemand: DatabaseRuntimePorts["clusterCapacityDemand"];

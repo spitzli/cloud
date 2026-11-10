@@ -173,8 +173,8 @@ async function createFixture() {
 export async function withMailProductFixture<T>(
   run: (
     fixture: Awaited<ReturnType<typeof createFixture>> & {
-      actorA: import("@webdock/mail-contracts").MailActor;
-      actorB: import("@webdock/mail-contracts").MailActor;
+      actorA: import("@spitzli/mail-contracts").MailActor;
+      actorB: import("@spitzli/mail-contracts").MailActor;
       domainA: { id: string; name: string };
     },
   ) => Promise<T>,

@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { databaseCommand, type DatabaseLaunch } from "@webdock/database-contracts";
-import { HostingError } from "@webdock/hosting-contracts";
+import { databaseCommand, type DatabaseLaunch } from "@spitzli/database-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import { databaseCall } from "./database-client";
 
 export async function saveDatabase(_state: { error?: string; message?: string }, form: FormData): Promise<{ error?: string; message?: string }> {

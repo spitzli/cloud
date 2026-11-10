@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { randomBytes, createHmac } from "node:crypto";
 import pg from "pg";
-import { ScopedPool, withDatabaseScope } from "@webdock/database-runtime";
+import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
 
 // Explicit opt-in: uses only synthetic rows in the disposable local restore.
 const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;

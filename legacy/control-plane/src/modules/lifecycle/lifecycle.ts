@@ -1,7 +1,7 @@
-import { requireOAuthCapability } from "@webdock/auth-configuration/protocols";
-import { activeIdentity } from "@webdock/core/identity";
+import { requireOAuthCapability } from "@spitzli/auth-configuration/protocols";
+import { activeIdentity } from "@spitzli/core/identity";
 import {currentConsolePrincipal, selectedIdentityDirectory} from "../auth/principal";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { createHash } from "node:crypto";
 import { database, authDatabase } from "../../db/runtime";
 import { currentMCPClaims, mcpResource } from "../auth/mcp";

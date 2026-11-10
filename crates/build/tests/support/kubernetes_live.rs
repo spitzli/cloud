@@ -10,16 +10,7 @@ use kube::{
     api::{ListParams, LogParams, PostParams},
 };
 use serde::Deserialize;
-use std::{
-    collections::BTreeSet,
-    io::Read,
-    os::unix::fs::{MetadataExt, OpenOptionsExt, PermissionsExt},
-    path::{Path, PathBuf},
-    process::Command,
-    sync::Mutex,
-    time::{Duration, Instant},
-};
-use webdock_build::{
+use spitzli_build::{
     BuildService, RepositoryProvider, RepositoryRef, VerifiedCommit,
     artifact::{Archive, ArtifactStore, MAX_OUTPUT, validate_oci},
     execution::GuestRequest,
@@ -31,6 +22,15 @@ use webdock_build::{
     kubernetes_staging::KubernetesStagingTransfer,
     kubernetes_transfer::TransferPolicy,
     worker::ControlClient,
+};
+use std::{
+    collections::BTreeSet,
+    io::Read,
+    os::unix::fs::{MetadataExt, OpenOptionsExt, PermissionsExt},
+    path::{Path, PathBuf},
+    process::Command,
+    sync::Mutex,
+    time::{Duration, Instant},
 };
 
 const NS: &str = "webdock-build-qualification";
@@ -186,7 +186,7 @@ impl RepositoryProvider for LocalGit {
         &self,
         repository: &RepositoryRef<'_>,
         reference: &str,
-    ) -> webdock_build::Result<VerifiedCommit> {
+    ) -> spitzli_build::Result<VerifiedCommit> {
         assert_eq!(repository.customer_id, self.customer);
         assert_eq!(repository.project_id, self.project);
         assert_eq!(reference, "main");
@@ -204,7 +204,7 @@ impl RepositoryProvider for LocalGit {
         &self,
         repository: &RepositoryRef<'_>,
         commit: &str,
-    ) -> webdock_build::Result<Vec<u8>> {
+    ) -> spitzli_build::Result<Vec<u8>> {
         assert_eq!(repository.customer_id, self.customer);
         assert_eq!(repository.project_id, self.project);
         VerifiedCommit::new(commit.into())?;
@@ -289,7 +289,7 @@ async fn row(owner: &DatabaseConnection, build: &str) -> Value {
 
 pub(super) async fn retained_log_pages(
     service: &BuildService,
-    principal: &webdock_identity::Principal,
+    principal: &spitzli_identity::Principal,
     project: &str,
     build: &str,
 ) -> Value {
@@ -693,7 +693,7 @@ fn kubernetes_live_verify_retained_railpack_evidence() {
 async fn drive(
     dispatcher: &mut KubernetesBuildDispatcher,
     service: &BuildService,
-    worker: &webdock_build::WorkerIdentity,
+    worker: &spitzli_build::WorkerIdentity,
     cluster: &str,
     owner: &DatabaseConnection,
     build: &str,
@@ -743,15 +743,15 @@ async fn drive(
 async fn kubernetes_live_configuration_preflight() {
     let inputs = live_inputs();
     let _ =
-        webdock_object_storage::Store::s3_with_ca(inputs.storage, inputs.credentials, &inputs.ca)
+        spitzli_object_storage::Store::s3_with_ca(inputs.storage, inputs.credentials, &inputs.ca)
             .unwrap();
 }
 
 struct LiveInputs {
     config: LiveConfig,
     kube_config: kube::Config,
-    storage: webdock_object_storage::S3Config,
-    credentials: webdock_object_storage::Credentials,
+    storage: spitzli_object_storage::S3Config,
+    credentials: spitzli_object_storage::Credentials,
     ca: Vec<u8>,
     policy: TransferPolicy,
 }
@@ -763,14 +763,14 @@ fn live_inputs() -> LiveInputs {
     assert!((30..=1800).contains(&config.timeout_seconds));
     assert_eq!(config.api_endpoint, "https://127.0.0.1:16443");
     assert_eq!(config.kube_context, "owned-build-live");
-    let kube_config = webdock_build::kubernetes_worker::pinned_kubernetes_config(
+    let kube_config = spitzli_build::kubernetes_worker::pinned_kubernetes_config(
         &private_read(&config.build_kubeconfig, 128 * 1024),
         &config.kube_context,
         &config.api_endpoint,
         &config.build_ca_sha256,
     )
     .unwrap();
-    let storage: webdock_object_storage::S3Config =
+    let storage: spitzli_object_storage::S3Config =
         serde_json::from_slice(&private_read(&config.s3_config, 16384)).unwrap();
     assert_eq!(storage.endpoint, "https://167.86.75.144:19443");
     assert_eq!(storage.namespace, "worker-staging");
@@ -794,7 +794,7 @@ fn live_inputs() -> LiveInputs {
         policy.certificate_authority_pem.as_deref(),
         Some(std::str::from_utf8(&ca).unwrap())
     );
-    webdock_build::kubernetes_transfer::TransferClient::new(policy.clone()).unwrap();
+    spitzli_build::kubernetes_transfer::TransferClient::new(policy.clone()).unwrap();
     LiveInputs {
         config,
         kube_config,
@@ -846,9 +846,9 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
             db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             std::env::var("BETTER_AUTH_SECRET").unwrap(),
-            Arc::new(webdock_persistence::IdAllocator::new(
+            Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )),
         )
         .await
@@ -859,9 +859,9 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
             db("DATABASE_URL").await,
             db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
-            Arc::new(webdock_persistence::IdAllocator::new(
+            Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )),
             hosting,
             "registry.invalid".into(),
@@ -922,7 +922,7 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
         executor.runtime_fingerprint(),
         cluster["storage_runtime_fingerprint"]
     );
-    let gateway = webdock_build::kubernetes_upload::AttemptUploadGateway::open(
+    let gateway = spitzli_build::kubernetes_upload::AttemptUploadGateway::open(
         inputs.config.upload_gateway_root.as_ref().unwrap(),
         1073741824,
         "https://167.86.75.144:19444",
@@ -932,7 +932,7 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
     .unwrap();
     let transfer = Arc::new(
         KubernetesStagingTransfer::new_with_upload_gateway(
-            webdock_object_storage::Store::s3_with_ca(
+            spitzli_object_storage::Store::s3_with_ca(
                 inputs.storage,
                 inputs.credentials,
                 &inputs.ca,
@@ -960,7 +960,7 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
         .unwrap()
         .try_into()
         .unwrap();
-    let storage = webdock_build::build_storage::KubernetesBuildStorage::new(
+    let storage = spitzli_build::build_storage::KubernetesBuildStorage::new(
         client.clone(),
         NS.into(),
         "webdock-build-storage-requests".into(),
@@ -971,7 +971,7 @@ async fn kubernetes_live_reconcile_retained_native_fixture() {
     .unwrap();
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let address = listener.local_addr().unwrap();
-    let router = webdock_build::http::worker_router(service.clone());
+    let router = spitzli_build::http::worker_router(service.clone());
     let server = tokio::spawn(async move { axum::serve(listener, router).await.unwrap() });
     let control = ControlClient::loopback_test(&format!("http://{address}"), token).unwrap();
     let mut dispatcher = KubernetesBuildDispatcher::new(
@@ -1089,9 +1089,9 @@ async fn run_live_acceptance(railpack_build: bool) {
             db("DATABASE_URL").await,
             db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
-            Arc::new(webdock_persistence::IdAllocator::new(
+            Arc::new(spitzli_persistence::IdAllocator::new(
                 db("DATABASE_URL").await,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )),
             fixture.service.clone(),
             "registry.invalid".into(),
@@ -1143,7 +1143,7 @@ async fn run_live_acceptance(railpack_build: bool) {
     let response_client = observation_client.clone();
     let diagnostic_fixture = fixture.clone();
     let router =
-        webdock_build::http::worker_router(service.clone()).layer(axum::middleware::from_fn(
+        spitzli_build::http::worker_router(service.clone()).layer(axum::middleware::from_fn(
             move |request: axum::extract::Request, next: axum::middleware::Next| {
                 let directory = error_directory.clone();
                 let client = response_client.clone();
@@ -1206,7 +1206,7 @@ async fn run_live_acceptance(railpack_build: bool) {
         .unwrap(),
     );
     let upload_gateway = config.upload_gateway_root.as_ref().map(|root| {
-        webdock_build::kubernetes_upload::AttemptUploadGateway::open(
+        spitzli_build::kubernetes_upload::AttemptUploadGateway::open(
             root,
             1073741824,
             "https://167.86.75.144:19444",
@@ -1220,7 +1220,7 @@ async fn run_live_acceptance(railpack_build: bool) {
             .await
             .unwrap();
         let diagnostics = directory.clone();
-        let router=webdock_build::kubernetes_upload::router(gateway).layer(axum::middleware::from_fn(move |request:axum::extract::Request,next:axum::middleware::Next|{
+        let router=spitzli_build::kubernetes_upload::router(gateway).layer(axum::middleware::from_fn(move |request:axum::extract::Request,next:axum::middleware::Next|{
             let diagnostics=diagnostics.clone();
             async move {
                 use tokio_stream::StreamExt;
@@ -1240,7 +1240,7 @@ async fn run_live_acceptance(railpack_build: bool) {
         None
     };
     let staging_store =
-        webdock_object_storage::Store::s3_with_ca(storage, credentials, &ca).unwrap();
+        spitzli_object_storage::Store::s3_with_ca(storage, credentials, &ca).unwrap();
     let transfer = Arc::new(if let Some(gateway) = upload_gateway {
         KubernetesStagingTransfer::new_with_upload_gateway(
             staging_store,
@@ -1299,13 +1299,13 @@ async fn run_live_acceptance(railpack_build: bool) {
             output.status.success(),
             "owned node fixture setup failed; retain private storage custody"
         );
-        let target: webdock_agent_protocol::build_storage::BuildStorageTarget =
+        let target: spitzli_agent_protocol::build_storage::BuildStorageTarget =
             serde_json::from_slice(&output.stdout).unwrap();
         service
             .configure_kubernetes_storage(
                 &fixture.principal,
                 &cluster,
-                Some(webdock_build::KubernetesStoragePolicy {
+                Some(spitzli_build::KubernetesStoragePolicy {
                     node: target.node.clone(),
                     pool_id: target.pool_id.clone(),
                     volume_bytes: 27 * 1024 * 1024 * 1024,
@@ -1315,7 +1315,7 @@ async fn run_live_acceptance(railpack_build: bool) {
             .await
             .unwrap();
         Some(
-            webdock_build::build_storage::KubernetesBuildStorage::new(
+            spitzli_build::build_storage::KubernetesBuildStorage::new(
                 client.clone(),
                 NS.into(),
                 "webdock-build-storage-requests".into(),

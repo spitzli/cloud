@@ -1,7 +1,7 @@
 use super::binding::validate_certificate;
 use super::*;
 use crate::DatabaseExportSubject;
-use webdock_export_protocol::{SourceKind, SourceRef, wire::DatabaseMaterial};
+use spitzli_export_protocol::{SourceKind, SourceRef, wire::DatabaseMaterial};
 impl DatabaseService {
     async fn export_snapshot_in(
         &self,
@@ -9,7 +9,7 @@ impl DatabaseService {
         actor: &DatabaseExportSubject<'_>,
         id: &str,
     ) -> Result<Value> {
-        if !webdock_export_protocol::decimal(id) {
+        if !spitzli_export_protocol::decimal(id) {
             return Err(invalid());
         }
         self.installed_scoped(tx, false).await?;
@@ -42,7 +42,7 @@ impl DatabaseService {
         Ok(d)
     }
     fn export_reference(actor: &DatabaseExportSubject<'_>, d: &Value) -> Result<SourceRef> {
-        let binding = webdock_export_protocol::fingerprint(&json!([
+        let binding = spitzli_export_protocol::fingerprint(&json!([
             actor.customer,
             actor.project,
             d["id"],
@@ -95,7 +95,7 @@ impl DatabaseService {
                 &format!("database:{}:{revision}", reference.id),
             )
             .map_err(|_| unavailable())?;
-        let password = webdock_export_protocol::readonly_password(
+        let password = spitzli_export_protocol::readonly_password(
             &reference.id,
             &credentials.application_password,
         )

@@ -1,10 +1,10 @@
 use super::*;
-use std::sync::atomic::{AtomicBool, Ordering};
-use webdock_control_plane::{plugin_config::RuntimeConnections, plugins::PluginEndpoints};
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
-use webdock_plugin_runtime::{
+use spitzli_control_plane::{plugin_config::RuntimeConnections, plugins::PluginEndpoints};
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest, PluginError};
+use spitzli_plugin_runtime::{
     ActionHandler, CorePeer, HostClient, JobHandler, RemoteAuthority, Runtime, UnixSocket, wire,
 };
+use std::sync::atomic::{AtomicBool, Ordering};
 
 struct Task(tokio::task::JoinHandle<()>);
 impl Drop for Task {
@@ -104,7 +104,7 @@ pub async fn verify_saturation() {
             .await
             .unwrap();
     }));
-    let client = webdock_plugin_runtime::connect_unix(&path).await.unwrap();
+    let client = spitzli_plugin_runtime::connect_unix(&path).await.unwrap();
     let blocker = f
         .host
         .jobs_enqueue(
@@ -264,7 +264,7 @@ pub async fn verify() {
             .await
             .unwrap();
     }));
-    let mut client = webdock_plugin_runtime::connect_unix(&runtime_path)
+    let mut client = spitzli_plugin_runtime::connect_unix(&runtime_path)
         .await
         .unwrap();
     let connections = f.directory.path().join("connections.json");
@@ -287,7 +287,7 @@ pub async fn verify() {
     // The initial admission pins input; issue the correct pinned parent below instead.
     assert!(reply.is_err());
     f.host.revoke_issued(&parent.token).await.unwrap();
-    let parent=f.host.admit_with_authority(&f.actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":"start","input":{"name":"work","payload":{},"idempotencyKey":"rpc-enqueue"},"idempotencyKey":"rpc-parent-pinned"})).unwrap(),true,&webdock_browser_session::StoredAuthority::LocalSession{}).await.unwrap();
+    let parent=f.host.admit_with_authority(&f.actor,serde_json::from_value::<AdmissionInput>(json!({"pluginID":"job-fixture","projectID":"124","action":"start","input":{"name":"work","payload":{},"idempotencyKey":"rpc-enqueue"},"idempotencyKey":"rpc-parent-pinned"})).unwrap(),true,&spitzli_browser_session::StoredAuthority::LocalSession{}).await.unwrap();
     let reply = client
         .invoke(wire::InvokeRequest {
             invocation_token: parent.token.clone(),

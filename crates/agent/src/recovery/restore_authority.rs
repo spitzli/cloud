@@ -1,7 +1,7 @@
 //! Live restore effects retain live Core authority; cold capsules use their explicit local deadline.
 use super::{RecoveryAuthority, RecoveryClaim};
 use crate::storage::StorageGuard;
-use webdock_supervisor::Result;
+use spitzli_supervisor::Result;
 pub(super) async fn before_effect(
     online: Option<(&RecoveryClaim, &dyn RecoveryAuthority)>,
     guard: &StorageGuard,
@@ -26,7 +26,7 @@ mod tests {
             if self.0.load(Ordering::SeqCst) {
                 Ok(())
             } else {
-                Err(webdock_supervisor::ExecutionError::Denied)
+                Err(spitzli_supervisor::ExecutionError::Denied)
             }
         }
     }

@@ -2,10 +2,10 @@
 use super::BrowserSessions;
 use crate::{Error, Flow, Result};
 use sea_orm::{ConnectionTrait, DbBackend, Statement, TransactionTrait};
+use spitzli_persistence::postgres::Connection;
 use std::time::Duration;
 use subtle::ConstantTimeEq;
 use tokio_postgres::types::Type;
-use webdock_persistence::postgres::Connection;
 const BUDGET: Duration = Duration::from_secs(30);
 pub(super) struct NewBrowserSession {
     pub reference: String,

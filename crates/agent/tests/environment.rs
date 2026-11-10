@@ -6,8 +6,8 @@ use kube::{
     api::{DeleteParams, PostParams},
     config::{KubeConfigOptions, Kubeconfig},
 };
+use spitzli_supervisor::*;
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_supervisor::*;
 struct Authority;
 #[async_trait::async_trait]
 impl Authorizer for Authority {
@@ -38,8 +38,8 @@ async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets
         % 1_000_000_000_000
         + 1000;
     let mut spec = support::spec();
-    spec.project_id = webdock_core::id::RecordId::parse(&numeric.to_string()).unwrap();
-    spec.resource_id = webdock_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
+    spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
+    spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
     spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
     spec.arguments=vec!["sh".into(),"-c".into(),"printf '%s\\n' \"$FIXTURE_TOKEN\"; printf %s \"$FIXTURE_TOKEN\" >/tmp/index.html; exec httpd -f -p 8080 -h /tmp".into()];
     let allowance = ResourceAllowance {
@@ -53,11 +53,11 @@ async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets
     };
     spec.hosting_binding = Some(HostingBinding {
         public_route: None,
-        cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
+        cluster_id: spitzli_core::id::RecordId::parse("789").unwrap(),
         quota: allowance.clone(),
         final_quota: allowance,
     });
-    let namespace = webdock_agent::legacy::namespace(&spec);
+    let namespace = spitzli_agent::legacy::namespace(&spec);
     let task_client = client.clone();
     let task_namespace = namespace.clone();
     let result = tokio::spawn(async move {
@@ -99,7 +99,7 @@ async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets
                         .unwrap_or_default(),
                 }),
             });
-            let observed = webdock_agent::legacy::reconcile(
+            let observed = spitzli_agent::legacy::reconcile(
                 task_client.clone(),
                 &command,
                 &LeaseGuard::new(command.clone(), Arc::new(Authority)),
@@ -117,13 +117,13 @@ async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets
             expected = observed.runtime_id;
             if replicas > 0 {
                 assert_eq!(
-                    webdock_agent::legacy::logs(task_client.clone(), &spec, 10)
+                    spitzli_agent::legacy::logs(task_client.clone(), &spec, 10)
                         .await
                         .unwrap(),
                     format!("{}\n", value.unwrap_or(""))
                 );
             }
-            let secret_name = format!("{}-env-{revision}", webdock_agent::legacy::name(&spec));
+            let secret_name = format!("{}-env-{revision}", spitzli_agent::legacy::name(&spec));
             if let Some(value) = value {
                 let secret = secrets.get(&secret_name).await.unwrap();
                 assert_eq!(secret.immutable, Some(true));
@@ -132,8 +132,8 @@ async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets
             if revision == 1 {
                 let other = Secret {
                     metadata: kube::core::ObjectMeta {
-                        name: Some(format!("{}-services-1", webdock_agent::legacy::name(&spec))),
-                        labels: Some(webdock_agent::legacy::owner_labels(&spec, true).unwrap()),
+                        name: Some(format!("{}-services-1", spitzli_agent::legacy::name(&spec))),
+                        labels: Some(spitzli_agent::legacy::owner_labels(&spec, true).unwrap()),
                         ..Default::default()
                     },
                     string_data: Some(BTreeMap::from([("ca".into(), "fixture-ca".into())])),
@@ -148,7 +148,7 @@ async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets
                     secrets
                         .get_opt(&format!(
                             "{}-env-{}",
-                            webdock_agent::legacy::name(&spec),
+                            spitzli_agent::legacy::name(&spec),
                             revision - 1
                         ))
                         .await
@@ -158,7 +158,7 @@ async fn immutable_environment_rotates_clears_and_preserves_other_scoped_secrets
                 secrets
                     .get(&format!(
                         "{}-services-1",
-                        webdock_agent::legacy::name(&spec)
+                        spitzli_agent::legacy::name(&spec)
                     ))
                     .await
                     .unwrap();

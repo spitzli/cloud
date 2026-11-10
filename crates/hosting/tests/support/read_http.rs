@@ -5,10 +5,10 @@ use axum::{
     http::{Request, StatusCode},
 };
 use http_body_util::BodyExt;
+use spitzli_control_plane::http::{Services, build_app_with_domains};
+use spitzli_core::config::PlatformConfig;
 use std::collections::HashMap;
 use tower::ServiceExt;
-use webdock_control_plane::http::{Services, build_app_with_domains};
-use webdock_core::config::PlatformConfig;
 
 async fn app(fixture: &Fixture, enabled: bool) -> (Router, String) {
     let cookies = CookiePolicy::new(false, "fixture-hosting-cookie-key-at-least-32-bytes").unwrap();

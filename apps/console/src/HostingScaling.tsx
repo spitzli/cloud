@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { commandSchema } from "@webdock/hosting-contracts";
+import { commandSchema } from "@spitzli/hosting-contracts";
 import { type HostingApp, operationPolling, scalingReadSchema } from "./hosting-contracts";
 import { useHostingAction } from "./hosting-client";
 import { useApi } from "./context";

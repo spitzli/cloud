@@ -6,8 +6,8 @@
 // admin password; give production an internal entry point (or run the plugin in the cluster).
 use serde::{Deserialize, de::DeserializeOwned};
 use serde_json::{Value, json};
+pub use spitzli_plugin_kit::workloads::{HostWorkloads, Workloads};
 use std::{collections::HashMap, time::Duration};
-pub use webdock_plugin_kit::workloads::{HostWorkloads, Workloads};
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

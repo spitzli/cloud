@@ -1,4 +1,4 @@
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 export function inspectRepositoryFiles(files: Record<string, string>) {
   const entries = Object.entries(files);
   if (

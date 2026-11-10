@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import {
   currentDatabaseScope,
   withDatabaseScope,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import * as identities from "../src/modules/plugins/sources-identity";
 const dispatcherFile = new URL(
   "../src/modules/plugins/sources-dispatch.ts",

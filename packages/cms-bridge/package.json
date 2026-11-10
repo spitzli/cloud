@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/cms-bridge",
+  "name": "@spitzli/cms-bridge",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
   },
   "peerDependencies": {
     "payload": "4.0.0-canary.37",
-    "@webdock/payload-sso": "*"
+    "@spitzli/payload-sso": "*"
   },
   "license": "Apache-2.0"
 }

@@ -1,1 +1,1 @@
-export * from "@webdock/console-kit/workspace-context";
+export * from "@spitzli/console-kit/workspace-context";

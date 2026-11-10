@@ -1,13 +1,13 @@
 //! One genuine owned source component. Faults affect replies only, never authority/state rows.
 use super::*;
+use spitzli_agent_protocol::{
+    self as wire, agent_control_server::AgentControl, recovery_control_server::RecoveryControl,
+};
 use std::sync::{
     Mutex as StdMutex,
     atomic::{AtomicBool, AtomicUsize, Ordering},
 };
 use tonic::{Request as RpcRequest, Response, Status};
-use webdock_agent_protocol::{
-    self as wire, agent_control_server::AgentControl, recovery_control_server::RecoveryControl,
-};
 #[derive(Default)]
 pub(super) struct ControlState {
     agent_pid: AtomicUsize,
@@ -209,7 +209,7 @@ fn pending_outbox_summary(path: &Path) -> Value {
     if let Err(error) = std::fs::symlink_metadata(path) {
         return json!({"status":if error.kind()==io::ErrorKind::NotFound {"missing"}else{"unavailable"}});
     }
-    match webdock_agent::outbox::RecoveryOutbox::open(path).and_then(|outbox| outbox.pending()) {
+    match spitzli_agent::outbox::RecoveryOutbox::open(path).and_then(|outbox| outbox.pending()) {
         Ok(None) => json!({"pending":false}),
         Ok(Some(delivery)) => match delivery.callback {
             Some(wire::recovery_delivery::Callback::Checkpoint(checkpoint)) => {
@@ -305,7 +305,7 @@ fn pending_outbox_projection_is_read_only_and_omits_claims_and_tokens() {
             },
         )),
     };
-    let mut outbox = webdock_agent::outbox::RecoveryOutbox::open(&path).unwrap();
+    let mut outbox = spitzli_agent::outbox::RecoveryOutbox::open(&path).unwrap();
     outbox.put(&delivery).unwrap();
     let before = std::fs::read(&path).unwrap();
     let summary = pending_outbox_summary(&path);
@@ -355,7 +355,7 @@ fn causal_projection_never_emits_arbitrary_rpc_or_database_fields() {
 /// Actual function on the genuine product-created draft and authenticated enrollment.
 /// No old function replacement or authority/state row writes are used.
 pub(super) async fn normal_guard_lock_compatibility(
-    hosting: &webdock_hosting::HostingService,
+    hosting: &spitzli_hosting::HostingService,
     cluster: &str,
     enrollment: &Value,
     app: &str,
@@ -453,7 +453,7 @@ impl ControlState {
 }
 #[derive(Clone)]
 struct Endpoint {
-    core: webdock_agent_control::ControlPlane,
+    core: spitzli_agent_control::ControlPlane,
     state: Arc<ControlState>,
 }
 #[tonic::async_trait]
@@ -629,8 +629,8 @@ impl AgentControl for Endpoint {
     }
 }
 pub(super) async fn serve(
-    core: webdock_agent_control::ControlPlane,
-    mut socket: webdock_plugin_runtime::UnixSocket,
+    core: spitzli_agent_control::ControlPlane,
+    mut socket: spitzli_plugin_runtime::UnixSocket,
     state: Arc<ControlState>,
     shutdown: impl std::future::Future<Output = ()> + Send + 'static,
 ) {
@@ -663,7 +663,7 @@ pub(super) async fn serve(
 }
 
 pub(super) struct Context<'a> {
-    pub hosting: &'a webdock_hosting::HostingService,
+    pub hosting: &'a spitzli_hosting::HostingService,
     pub enrollment: &'a Value,
     pub app: &'a Router,
     pub console: &'a str,
@@ -939,12 +939,12 @@ async fn actual_native_history_probes(
     let mut unique = std::collections::BTreeSet::new();
     for id in ids {
         let id = id.as_str().unwrap();
-        assert!(webdock_core::id::RecordId::parse(id).is_ok());
-        let parts = webdock_ids::Layout::PLATFORM
+        assert!(spitzli_core::id::RecordId::parse(id).is_ok());
+        let parts = spitzli_ids::Layout::PLATFORM
             .decode(id.parse().unwrap())
             .unwrap();
         assert!(
-            webdock_ids::Identity::platform(parts.identity.machine(), parts.identity.generator())
+            spitzli_ids::Identity::platform(parts.identity.machine(), parts.identity.generator())
                 .is_ok(),
             "source history used a reserved legacy ID identity"
         );
@@ -1011,7 +1011,7 @@ fn actual_authority_hosting_commands_match_product_contracts() {
         source_update("123", 1, "authority-fenced-update"),
         source_update("123", 1, "authority-normal-unknown"),
     ] {
-        webdock_hosting::contracts::parse_command(command).unwrap();
+        spitzli_hosting::contracts::parse_command(command).unwrap();
     }
 }
 fn checkpoint(
@@ -1304,9 +1304,9 @@ pub(super) async fn wait_trusted_helper(
     helper: &mut tokio::process::Child,
     path: &Path,
     socket: &Path,
-    expected: &webdock_agent::storage::recovery_pool::RecoveryPoolIdentity,
+    expected: &spitzli_agent::storage::recovery_pool::RecoveryPoolIdentity,
 ) {
-    let client = webdock_agent::storage::StorageClient::new(socket.to_path_buf());
+    let client = spitzli_agent::storage::StorageClient::new(socket.to_path_buf());
     tokio::time::timeout(Duration::from_secs(40), async {
         loop {
             assert!(
@@ -1345,7 +1345,7 @@ pub(super) async fn wait_trusted_helper(
     );
 }
 pub(super) fn cli_validate(path: &Path) {
-    let result = Command::new("/usr/local/bin/webdock-agent")
+    let result = Command::new("/usr/local/bin/spitzli-agent")
         .arg("--config")
         .arg(path)
         .arg("validate")
@@ -1440,7 +1440,7 @@ pub(super) async fn install_profile(c: &mut Context<'_>) -> InstalledProfile {
     cli_validate(c.agent_config_path);
     let before=row(c.owner,"SELECT to_jsonb(last_sequence) AS value FROM webdock_auth.hosting_agent WHERE cluster_id=$1",vec![c.cluster.into()]).await.as_i64().unwrap();
     *c.agent = spawn(
-        "/usr/local/bin/webdock-agent",
+        "/usr/local/bin/spitzli-agent",
         &[
             "--config".as_ref(),
             c.agent_config_path.as_os_str(),
@@ -1470,7 +1470,7 @@ pub(super) async fn install_profile(c: &mut Context<'_>) -> InstalledProfile {
         operator["keyCustodyID"]
     );
     eprintln!("recovery_component first_profile_cli_heartbeat=true");
-    let expected_pool: webdock_agent::storage::recovery_pool::RecoveryPoolIdentity =
+    let expected_pool: spitzli_agent::storage::recovery_pool::RecoveryPoolIdentity =
         serde_json::from_value(native["profiles"][0]["storageIdentity"].clone()).unwrap();
     // Install the existing dedicated helper trust from actual advertised profile/pool custody.
     stop(c.agent).await;
@@ -1495,7 +1495,7 @@ pub(super) async fn install_profile(c: &mut Context<'_>) -> InstalledProfile {
     private(&recovery, &recovery_config);
     private(c.agent_config_path, c.agent_config);
     *c.helper = spawn(
-        "/usr/local/bin/webdock-storage",
+        "/usr/local/bin/spitzli-storage",
         &[
             "--config".as_ref(),
             c.storage_config.as_os_str(),
@@ -1515,7 +1515,7 @@ pub(super) async fn install_profile(c: &mut Context<'_>) -> InstalledProfile {
     record_socket_directory(&peer, "after");
     cli_validate(c.agent_config_path);
     *c.agent = spawn(
-        "/usr/local/bin/webdock-agent",
+        "/usr/local/bin/spitzli-agent",
         &[
             "--config".as_ref(),
             c.agent_config_path.as_os_str(),
@@ -1607,7 +1607,7 @@ pub(super) async fn check(mut c: Context<'_>) {
     let identity = stopped.identity.as_ref().unwrap();
     assert_eq!(claim.spec.operation_id, accepted["operationID"]);
     assert_eq!(claim.spec.source["appID"], c.source);
-    let channel = webdock_plugin_runtime::unix_channel(c.control_path)
+    let channel = spitzli_plugin_runtime::unix_channel(c.control_path)
         .await
         .unwrap();
     let mut client = wire::recovery_control_client::RecoveryControlClient::new(channel);
@@ -1730,7 +1730,7 @@ pub(super) async fn check(mut c: Context<'_>) {
     c.state.release_replay_allowed.store(true, Ordering::SeqCst);
     cli_validate(c.agent_config_path);
     *c.agent = spawn(
-        "/usr/local/bin/webdock-agent",
+        "/usr/local/bin/spitzli-agent",
         &[
             "--config".as_ref(),
             c.agent_config_path.as_os_str(),
@@ -1791,7 +1791,7 @@ pub(super) async fn check(mut c: Context<'_>) {
     c.state.release_replay_allowed.store(true, Ordering::SeqCst);
     cli_validate(c.agent_config_path);
     *c.agent = spawn(
-        "/usr/local/bin/webdock-agent",
+        "/usr/local/bin/spitzli-agent",
         &[
             "--config".as_ref(),
             c.agent_config_path.as_os_str(),

@@ -1,6 +1,6 @@
 use serde_json::json;
+use spitzli_archives::diagnostics::Diagnostics;
 use std::io::Read;
-use webdock_archives::diagnostics::Diagnostics;
 
 fn sample() -> serde_json::Value {
     json!({"version":1,"state":"finished","builds":[{"id":"123","outcome":"succeeded","duration_ms":12,"output_bytes":42}],"checks":[{"component":"storage","outcome":"healthy","duration_ms":3}]})

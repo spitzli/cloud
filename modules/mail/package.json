@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/module-mail",
+  "name": "@spitzli/module-mail",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,15 +12,15 @@
     "./ui/types": "./src/ui/types.ts"
   },
   "dependencies": {
-    "@webdock/module-sdk": "*",
+    "@spitzli/module-sdk": "*",
     "pg": "8.16.3",
-    "@webdock/mail-contracts": "*",
-    "@webdock/core": "*",
+    "@spitzli/mail-contracts": "*",
+    "@spitzli/core": "*",
     "ipaddr.js": "2.3.0",
     "zod": "4.6.5",
-    "@webdock/hosting-contracts": "*",
-    "@webdock/database-runtime": "*",
-    "@webdock/i18n": "*",
+    "@spitzli/hosting-contracts": "*",
+    "@spitzli/database-runtime": "*",
+    "@spitzli/i18n": "*",
     "dompurify": "^3.4.16"
   },
   "peerDependencies": {

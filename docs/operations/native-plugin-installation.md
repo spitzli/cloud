@@ -42,7 +42,7 @@ Kernel input (`kernel-input.json`; placeholders must be replaced with reviewed v
 The callback origin has no trailing slash. Its DNS name becomes the Core certificate name.
 
 ```sh
-cargo run --locked -p webdock-control-plane --bin webdock-bootstrap-plugins -- \
+cargo run --locked -p spitzli-control-plane --bin spitzli-bootstrap-plugins -- \
   --target "$EXACT_PLATFORM_TARGET" \
   --config /srv/webdock-private/kernel-input.json \
   --output /srv/webdock-private/kernel
@@ -67,7 +67,7 @@ Enroll the reviewed cluster/agent using a separate input. Remote enrollment requ
 ```
 
 ```sh
-cargo run --locked -p webdock-control-plane --bin webdock-enroll-agent -- \
+cargo run --locked -p spitzli-control-plane --bin spitzli-enroll-agent -- \
   --target "$EXACT_PLATFORM_TARGET" \
   --config /srv/webdock-private/enrollment-input.json \
   --output /srv/webdock-private/enrollment.json
@@ -187,11 +187,11 @@ Extend the agent's reviewed private configuration, retaining its explicit Kubern
 Start independently supervised processes with the normal restricted Core environments described in the [Core README](../../crates/control-plane/README.md), plus the retained installation key. Give only the installation controller access to `worker.json` and the runtime issuer private key.
 
 ```sh
-cargo run --locked -p webdock-control-plane --bin webdock-plugin-control -- --config /srv/webdock-private/kernel/plugin-config.json
-cargo run --locked -p webdock-control-plane --bin webdock-agent-control -- --config /srv/webdock-private/agent-control.json
-cargo run --locked -p webdock-control-plane --bin webdock-plugin-controller -- --config /srv/webdock-private/kernel/plugin-config.json --installation-config /srv/webdock-private/worker.json
-cargo run --locked -p webdock-agent -- --config /srv/webdock-agent-private/agent.json validate
-cargo run --locked -p webdock-agent -- --config /srv/webdock-agent-private/agent.json run
+cargo run --locked -p spitzli-control-plane --bin spitzli-plugin-control -- --config /srv/webdock-private/kernel/plugin-config.json
+cargo run --locked -p spitzli-control-plane --bin spitzli-agent-control -- --config /srv/webdock-private/agent-control.json
+cargo run --locked -p spitzli-control-plane --bin spitzli-plugin-controller -- --config /srv/webdock-private/kernel/plugin-config.json --installation-config /srv/webdock-private/worker.json
+cargo run --locked -p spitzli-agent -- --config /srv/webdock-agent-private/agent.json validate
+cargo run --locked -p spitzli-agent -- --config /srv/webdock-agent-private/agent.json run
 ```
 
 Without `--installation-config`, the controller handles existing availability work only. `--once` performs one bounded controller iteration, not a complete installation. Keep native Mail opt-ins absent unless independently requested; this flow provisions no mail.

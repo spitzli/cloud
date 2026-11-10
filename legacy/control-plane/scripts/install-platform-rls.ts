@@ -3,7 +3,7 @@ import { databaseURL } from "../src/db/client";
 import { readFileSync, statSync } from "node:fs";
 import { parseEnv } from "node:util";
 import pg from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import {installPlatformPolicies} from "./lib/install-policies";
 
 const file = process.argv[2];

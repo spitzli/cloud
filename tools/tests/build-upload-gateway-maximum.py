@@ -214,7 +214,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--evidence',type=Path,default=ROOT/'docs/verification/2026-10-30-build-upload-maximum-memory.json');args=parser.parse_args()
     available=int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:')))*1024
     if available<8*1024**3:raise RuntimeError('at_least_8GiB_available_required')
-    built=subprocess.run(['cargo','test','-p','webdock-build','--features','worker,kubernetes-job','--test','upload_gateway_maximum','--no-run','--message-format=json'],cwd=ROOT,capture_output=True,text=True,timeout=120)
+    built=subprocess.run(['cargo','test','-p','spitzli-build','--features','worker,kubernetes-job','--test','upload_gateway_maximum','--no-run','--message-format=json'],cwd=ROOT,capture_output=True,text=True,timeout=120)
     if built.returncode:raise RuntimeError('maximum_fixture_compile_failed')
     binaries=[row['executable'] for row in map(json.loads,built.stdout.splitlines()) if row.get('reason')=='compiler-artifact' and row.get('target',{}).get('name')=='upload_gateway_maximum' and row.get('executable')]
     assert len(binaries)==1

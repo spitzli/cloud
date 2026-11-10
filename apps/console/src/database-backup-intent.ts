@@ -1,4 +1,4 @@
-import type { DatabaseCommand } from "@webdock/hosting-contracts";
+import type { DatabaseCommand } from "@spitzli/hosting-contracts";
 type ManualBackup = Extract<DatabaseCommand, { databaseID: string; revision: number; idempotencyKey: string }> & { action: "databases.backup" };
 export type BackupMutation = Extract<DatabaseCommand, { action: "databases.backupDestinations.register" | "databases.backupPolicies.grant" | "databases.backupPolicies.update" | "databases.backupPolicies.revoke" }> | ManualBackup;
 export type PublicBackupCommand = Exclude<BackupMutation, { action: "databases.backupDestinations.register" }>;

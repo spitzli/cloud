@@ -6,14 +6,14 @@ import {
   requireNativeSending,
 } from "./mail-native-keys";
 import { nativeRelay } from "./mail-send-transport";
-import { createNativeSubmissions } from "@webdock/module-mail/server/native-submissions";
+import { createNativeSubmissions } from "@spitzli/module-mail/server/native-submissions";
 export {
   sendEnvelope,
   admissionSchema,
   submissionPolicySchema,
   prepareWebmailSendSchema,
   stageWebmailSendSchema,
-} from "@webdock/module-mail/server/native-submissions";
+} from "@spitzli/module-mail/server/native-submissions";
 export const {
   preflightSubmission,
   admitSubmission,

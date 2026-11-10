@@ -4,8 +4,8 @@ import { lazy, Suspense, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { databaseCommand, publicBinding } from "@webdock/database-contracts";
-import { useI18n } from "@webdock/i18n/react";
+import { databaseCommand, publicBinding } from "@spitzli/database-contracts";
+import { useI18n } from "@spitzli/i18n/react";
 import { useApi, useSession } from "./context";
 import { Failure, Loading } from "./common";
 import { ManagedDatabases } from "./ManagedDatabases";
@@ -16,7 +16,7 @@ const Workbench = lazy(async () => {
   // The retained workspace's geometry reader expects the standard browser Buffer shim.
   const { Buffer } = await import("buffer/");
   Object.assign(globalThis, { Buffer });
-  const module = await import("@webdock/module-databases/ui/workbench");
+  const module = await import("@spitzli/module-databases/ui/workbench");
   return { default: module.DatabaseWorkbenchWithActions };
 });
 const directorySchema = z.object({

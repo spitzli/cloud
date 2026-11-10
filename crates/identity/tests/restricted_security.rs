@@ -1,10 +1,10 @@
 //! Uses the parent's retained-schema/RLS disposable fixture; never resets it.
 use sea_orm::{ConnectionTrait, Database, DbBackend, Statement};
 use sha2::{Digest, Sha256};
-use std::collections::BTreeMap;
-use webdock_identity::{
+use spitzli_identity::{
     CookiePolicy, IdentityService, PasswordAuthentication, RlsSigner, SecretKeys,
 };
+use std::collections::BTreeMap;
 fn guarded(name: &str) -> String {
     let raw = std::env::var(name).expect("explicit disposable fixture configuration");
     let url = url::Url::parse(&raw).unwrap();
@@ -92,9 +92,9 @@ async fn bootstrap_authentication_works_without_widening_business_role_permissio
         .with_passkeys(url::Url::parse("https://localhost:3125").unwrap())
         .unwrap()
         .with_allocator(std::sync::Arc::new(
-            webdock_persistence::IdAllocator::connect(
+            spitzli_persistence::IdAllocator::connect(
                 &auth_url,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )
             .await
             .unwrap(),

@@ -7,11 +7,11 @@ use crate::{
     neon_client::NeonLogin,
 };
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement, TransactionTrait};
-use std::{collections::BTreeMap, sync::Arc};
-use webdock_persistence::{
+use spitzli_persistence::{
     IdAllocator,
     postgres::{Limits, Pool},
 };
+use std::{collections::BTreeMap, sync::Arc};
 const ISSUER: &str = "https://owned.neonauth.eu.neon.tech/neondb/auth";
 const SUBJECT: &str = "00000000-0000-4000-8000-000000000001";
 const SESSION: &str = "00000000-0000-4000-8000-000000000002";
@@ -84,7 +84,7 @@ async fn service(f: &fixture::Fixture) -> IdentityService {
     .with_allocator(Arc::new(
         IdAllocator::connect_native(
             &f.bootstrap_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
             "webdock_auth_bootstrap",
             false,
         )

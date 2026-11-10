@@ -1,8 +1,8 @@
 #[path = "support/native_pg.rs"]
 mod fixture;
+use spitzli_ids::{Identity, Layout};
+use spitzli_persistence::IdAllocator;
 use std::{collections::HashSet, sync::Arc};
-use webdock_ids::{Identity, Layout};
-use webdock_persistence::IdAllocator;
 
 #[tokio::test]
 #[ignore = "owned local PostgreSQL18"]
@@ -42,7 +42,7 @@ async fn native_ids_are_durable_across_concurrency_restart_and_business_rollback
             .unwrap();
     let next = restarted.allocate_at(time).await.unwrap();
     assert!(!ids.contains(&next));
-    let business = webdock_persistence::postgres::Pool::connect(
+    let business = spitzli_persistence::postgres::Pool::connect(
         &f.runtime_url,
         "webdock_auth_runtime",
         false,
@@ -94,8 +94,8 @@ async fn native_ids_are_durable_across_concurrency_restart_and_business_rollback
     assert!(
         matches!(
             restarted.allocate_at(time).await,
-            Err(webdock_persistence::Error::Native(
-                webdock_persistence::postgres::Error::Authority
+            Err(spitzli_persistence::Error::Native(
+                spitzli_persistence::postgres::Error::Authority
             ))
         ),
         "the fused generator-row query must enforce the same live-role predicate"

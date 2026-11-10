@@ -1,10 +1,10 @@
 import type { MailProductStore } from "./provider-ports";
-import type { MailActor } from "@webdock/mail-contracts";
+import type { MailActor } from "@spitzli/mail-contracts";
 import {
   parsePageQuery,
   parseID,
   parseAddress,
-} from "@webdock/mail-contracts/validation";
+} from "@spitzli/mail-contracts/validation";
 import { createHash } from "node:crypto";
 import { MailError, mailUnavailable } from "./product-access";
 export type MailListKind =

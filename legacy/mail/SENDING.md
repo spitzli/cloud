@@ -7,7 +7,7 @@ remain blocked until their Stalwart submission policy/relay configuration is rea
 Run the offline Auth native-Mail migration, configure Auth's `MAIL_API_ORIGIN`, and provide
 the API process with `WEBDOCK_AUTH_ORIGIN`, a separate `MAIL_SEND_WORKER_SECRET` (distinct from the browser gateway secret), the existing
 `MAIL_ENCRYPTION_KEY`, and a dedicated private retained `MAIL_PAYLOAD_DIRECTORY`. Start
-with `npm run api --workspace=@webdock/mail`. The same process runs the durable worker.
+with `npm run api --workspace=@spitzli/mail`. The same process runs the durable worker.
 Do not use ephemeral storage or the public CMS blobstore. `Dockerfile.api` builds from
 the repository root. Keep the feature flag false until infrastructure and accounts are ready.
 

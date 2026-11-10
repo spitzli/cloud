@@ -17,7 +17,7 @@ export default defineConfig({
   // First-party plugin UIs live in plugins/<id>/ui and share the Console's React and SDK.
   resolve: {
     alias: {
-      '@webdock/plugin-ui': fileURLToPath(new URL('./src/plugins/sdk.ts', import.meta.url)),
+      '@spitzli/plugin-ui': fileURLToPath(new URL('./src/plugins/sdk.ts', import.meta.url)),
       '@plugins': fileURLToPath(new URL('../../plugins', import.meta.url)),
     },
     dedupe: ['react', 'react-dom', '@tanstack/react-query', 'zod'],

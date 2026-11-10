@@ -77,7 +77,7 @@ that already reached an external service may still have taken effect.
 
 ## Controller and availability
 
-Run the existing `webdock-plugin-controller --config /absolute/private/plugin-config.json`
+Run the existing `spitzli-plugin-controller --config /absolute/private/plugin-config.json`
 with the normal restricted native database environment. It advances jobs alongside
 availability and installation operations. `--once` advances one controller pass and
 waits for its bounded job attempt. No extra queue service or privileged database login

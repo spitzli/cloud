@@ -1,4 +1,4 @@
-import { createHostingEnvironment } from "@webdock/module-hosting/server/environment";
+import { createHostingEnvironment } from "@spitzli/module-hosting/server/environment";
 import { encryptMailSecret, decryptMailSecret } from "../platform/platform";
 export const {
   patchEnvironment,

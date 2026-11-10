@@ -18,7 +18,7 @@ async fn receive(State(state): State<Arc<ServiceState>>, request: Request) -> Re
         state
             .config
             .features
-            .require("hosting", webdock_core::features::OperationKind::Read)
+            .require("hosting", spitzli_core::features::OperationKind::Read)
             .map_err(|_| {
                 reject(
                     StatusCode::SERVICE_UNAVAILABLE,
@@ -60,7 +60,7 @@ async fn receive(State(state): State<Arc<ServiceState>>, request: Request) -> Re
             let event = header("x-github-event")?;
             (signature, delivery, event)
         };
-        let bytes = to_bytes(request.into_body(), webdock_build::MAX_GITHUB_WEBHOOK_BODY)
+        let bytes = to_bytes(request.into_body(), spitzli_build::MAX_GITHUB_WEBHOOK_BODY)
             .await
             .map_err(|_| {
                 reject(
@@ -78,7 +78,7 @@ async fn receive(State(state): State<Arc<ServiceState>>, request: Request) -> Re
                 state
                     .config
                     .features
-                    .require("hosting", webdock_core::features::OperationKind::Provision)
+                    .require("hosting", spitzli_core::features::OperationKind::Provision)
                     .is_ok(),
             )
             .await

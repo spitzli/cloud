@@ -1,5 +1,5 @@
 import { randomUUID, createHash, timingSafeEqual } from "node:crypto";
-import type { MailActor } from "@webdock/mail-contracts";
+import type { MailActor } from "@spitzli/mail-contracts";
 import { mailUnavailable, MailError } from "./product-access";
 import type {
   MailCredentialMaster,

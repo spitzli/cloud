@@ -44,7 +44,7 @@ RUN --mount=type=cache,id=spitzli-core-quality-bookworm-1-98-1-registry,target=/
     python3 /harness/core_quality.py run --mode full --output /results/out --checkpoint /checkpoint/checkpoint.json
 FROM source AS consumer
 RUN --mount=type=cache,id=spitzli-core-quality-bun-1-4-3,target=/home/quality/.bun/install/cache,uid=1001,gid=1001,sharing=locked \
-    bun install --frozen-lockfile --ignore-scripts --filter @webdock/console
+    bun install --frozen-lockfile --ignore-scripts --filter @spitzli/console
 RUN python3 /harness/core_quality.py run --mode consumer --output /results/out --checkpoint /checkpoint/checkpoint.json
 FROM scratch AS consumer-artifact
 COPY --from=consumer /results/out/ /
@@ -71,7 +71,7 @@ FROM owned-database AS migration
 RUN python3 /harness/core_local_fixtures.py --mode migration --output /results/out --checkpoint /checkpoint/checkpoint.json
 FROM owned-database AS website
 RUN --mount=type=cache,id=spitzli-core-quality-bun-1-4-3,target=/home/quality/.bun/install/cache,uid=1001,gid=1001,sharing=locked \
-    bun install --frozen-lockfile --ignore-scripts --filter @webdock/web
+    bun install --frozen-lockfile --ignore-scripts --filter @spitzli/web
 RUN python3 /harness/core_local_fixtures.py --mode website --output /results/out --checkpoint /checkpoint/checkpoint.json
 FROM scratch AS migration-artifact
 COPY --from=migration /results/out/ /

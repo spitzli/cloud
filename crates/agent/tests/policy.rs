@@ -1,7 +1,7 @@
 #![cfg(all(feature = "docker", feature = "kubernetes"))]
 mod support;
+use spitzli_agent::{docker::container_config, kubernetes::helm_values};
 use support::spec;
-use webdock_agent::{docker::container_config, kubernetes::helm_values};
 #[test]
 fn docker_is_nonprivileged_bounded_and_has_no_host_mounts_or_ports() {
     let config = container_config(&spec(), 1).unwrap();

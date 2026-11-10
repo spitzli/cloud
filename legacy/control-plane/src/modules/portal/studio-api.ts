@@ -20,7 +20,7 @@ import {
   requireInstalledOperation,
   publicInstallation,
 } from "../../installation";
-import { ModuleError } from "@webdock/module-sdk";
+import { ModuleError } from "@spitzli/module-sdk";
 import {
   currentConsolePrincipal,
   withConsolePrincipal,
@@ -35,7 +35,7 @@ import { ZodError } from "zod";
 
 import { registryService } from "../registry/context";
 import { RegistryError } from "../registry/service";
-import { currentDatabaseScope } from "@webdock/database-runtime";
+import { currentDatabaseScope } from "@spitzli/database-runtime";
 type Shape = ((value: unknown) => boolean)[];
 let contribution: { shapes: Record<string, Shape>; dispatch: (operation: string, args: unknown[], headers: Headers, userID: string) => Promise<unknown>; publicError: (error: unknown) => { kind: string; message: string; status: number } | undefined } | undefined;
 export function configureStudioProducts(value: NonNullable<typeof contribution>) { contribution = value; }
@@ -54,7 +54,7 @@ import {
 import { APIError, serializeSignedCookie } from "better-call";
 
 import { database, authDatabase } from "../../db/runtime";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import {
   currentTenantPreview,
   startTenantPreview,

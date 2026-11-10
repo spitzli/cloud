@@ -1,8 +1,8 @@
 "use client";
-import {StorageConnections} from "@webdock/module-storage/ui/connections";
-import {msgid} from '@webdock/i18n';
+import {StorageConnections} from "@spitzli/module-storage/ui/connections";
+import {msgid} from '@spitzli/i18n';
 import {uiLabel} from "@/lib/ui-labels";
-import { useI18n } from '@webdock/i18n/react';
+import { useI18n } from '@spitzli/i18n/react';
 
 import { useActionState, useState, type ReactNode } from "react";
 import type { getPlans, getTenantPlan } from "@/lib/plans";

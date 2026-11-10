@@ -1,6 +1,6 @@
 use super::*;
 use sea_orm::TransactionTrait;
-use webdock_browser_session::revalidate_stored_authority;
+use spitzli_browser_session::revalidate_stored_authority;
 
 /// Identity locks remain live, but customer/domain locks exist only on the worker transaction.
 pub(super) struct ActorGuard {
@@ -12,10 +12,10 @@ impl ActorGuard {
         self.auth.commit().await.map_err(|_| Error::Unavailable)
     }
 }
-pub(super) fn denied(error: &webdock_browser_session::Error) -> bool {
-    use webdock_browser_session::Error as BrowserError;
-    use webdock_identity::IdentityError;
-    use webdock_oauth::Error as OAuthError;
+pub(super) fn denied(error: &spitzli_browser_session::Error) -> bool {
+    use spitzli_browser_session::Error as BrowserError;
+    use spitzli_identity::IdentityError;
+    use spitzli_oauth::Error as OAuthError;
     matches!(
         error,
         BrowserError::Unauthorized

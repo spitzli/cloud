@@ -1,7 +1,7 @@
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { getCMS } from "../../../../../lib/cms.ts";
-import { MEDIA_BYTES } from "@webdock/cms-bridge/types";
+import { MEDIA_BYTES } from "@spitzli/cms-bridge/types";
 import { createLocalReq } from "payload";
 import { loadCMSConfig } from "../../../../../lib/config.ts";
 import {

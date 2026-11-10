@@ -1,5 +1,5 @@
+use spitzli_persistence::roles::{LOGIN_ROLES, OFFLINE_ROLE, validate_passwords};
 use std::collections::BTreeMap;
-use webdock_persistence::roles::{LOGIN_ROLES, OFFLINE_ROLE, validate_passwords};
 #[test]
 fn role_setup_accepts_only_complete_fixed_names_and_private_password_values() {
     assert!(validate_passwords(&BTreeMap::new()).is_err());
@@ -24,11 +24,11 @@ fn role_setup_accepts_only_complete_fixed_names_and_private_password_values() {
 #[ignore = "requires explicit WEBDOCK_BOOTSTRAP_DOCKER_TEST=1 and local Docker Engine"]
 async fn empty_postgres_bootstrap_creates_roles_without_changing_existing_credentials() {
     use sea_orm::{ConnectOptions, ConnectionTrait, Database, DbBackend, Statement};
-    use std::process::Command;
-    use webdock_persistence::{
+    use spitzli_persistence::{
         migrations::{bootstrap, native_schema_ready, verify_bootstrap_baseline},
         roles::provision_roles,
     };
+    use std::process::Command;
     assert_eq!(
         std::env::var("WEBDOCK_BOOTSTRAP_DOCKER_TEST").as_deref(),
         Ok("1")

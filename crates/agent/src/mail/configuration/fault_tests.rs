@@ -1,11 +1,11 @@
 use super::*;
 use crate::mail::client::Client;
+use spitzli_agent_protocol::mail::{MailLease, MailResources};
 use std::sync::{
     Arc, Mutex,
     atomic::{AtomicBool, AtomicUsize, Ordering},
 };
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use webdock_agent_protocol::mail::{MailLease, MailResources};
 struct Authority {
     allowed: AtomicBool,
     revoke_handoff: AtomicBool,

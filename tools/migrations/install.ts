@@ -2,7 +2,7 @@
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { Pool } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { applyApiMigrations } from "../../legacy/control-plane/scripts/lib/apply-migrations";
 import { installPlatformPolicies } from "../../legacy/control-plane/scripts/lib/install-policies";
 import { migrationConfig, runtimeRoles, ownerRoles } from "./config";

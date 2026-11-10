@@ -8,7 +8,7 @@ import {z} from 'zod';
 import {symmetricDecrypt,symmetricEncrypt,verifyPassword} from 'better-auth/crypto';
 import {createOTP} from '@better-auth/utils/otp';
 import {createClerkClient} from '@clerk/backend';
-import {verifiedPostgresConfig} from '@webdock/database-runtime';
+import {verifiedPostgresConfig} from '@spitzli/database-runtime';
 import {migrationConfig} from './config';
 
 type Target={subject:string;email:string;issuer:string;externalSubject:string};

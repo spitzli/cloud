@@ -1,5 +1,5 @@
 [package]
-name = "webdock-oauth"
+name = "spitzli-oauth"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -7,8 +7,8 @@ license.workspace = true
 publish = false
 
 [dependencies]
-webdock-identity = { path = "../identity" }
-webdock-persistence = { path = "../persistence" }
+spitzli-identity = { path = "../identity" }
+spitzli-persistence = { path = "../persistence" }
 sea-orm.workspace = true
 tokio-postgres = { version = "0.7", features = ["with-serde_json-1", "with-chrono-0_4"] }
 serde.workspace = true
@@ -27,7 +27,7 @@ getrandom = "0.2"
 [dev-dependencies]
 uuid = { version = "1", features = ["v4"] }
 oauth2 = { version = "=5.0.0", default-features = false }
-webdock-ids = { path = "../ids" }
+spitzli-ids = { path = "../ids" }
 totp-rs = { version = "=6.0.0", features = ["otpauth"] }
 
 [lints]

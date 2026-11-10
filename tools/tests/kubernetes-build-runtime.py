@@ -223,7 +223,7 @@ def acceptance(oci, ownership=None, kubeconfig=None, *, publish_only=False, heal
         log_path = evidence / "acceptance.log"
         with log_path.open("xb") as log:
             os.chmod(log_path, 0o600)
-            process = subprocess.Popen(["cargo", "test", "--locked", "-p", "webdock-agent", "--no-default-features",
+            process = subprocess.Popen(["cargo", "test", "--locked", "-p", "spitzli-agent", "--no-default-features",
                 "--features", "kubernetes", "--test", "kubernetes_build_runtime", "--", "--ignored", "--exact",
                 test_name, "--nocapture"],
                 cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)

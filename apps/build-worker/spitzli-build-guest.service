@@ -1,0 +1,17 @@
+[Unit]
+Description=One disposable Webdock build
+After=network-online.target buildkit.service
+Wants=network-online.target buildkit.service
+ConditionPathExists=/dev/disk/by-id/virtio-webdock-input
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/spitzli-build-worker
+ExecStart=/usr/bin/python3 /opt/spitzli-build-worker/guest.py
+ExecStopPost=/sbin/poweroff -f
+StandardOutput=null
+StandardError=null
+TimeoutStartSec=1900
+
+[Install]
+WantedBy=multi-user.target

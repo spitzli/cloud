@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getStudioSession } from "@/lib/studio-client";
-import { getRequestI18n } from "@webdock/i18n/next";
-import type { DatabaseBinding } from "@webdock/database-contracts";
+import { getRequestI18n } from "@spitzli/i18n/next";
+import type { DatabaseBinding } from "@spitzli/database-contracts";
 import { databaseCall } from "@/lib/database-client";
 import { withHostingPageAccess } from "@/lib/hosting-page-access";
 import { DatabaseWorkbench } from "@/components/databases/workbench";

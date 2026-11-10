@@ -125,7 +125,7 @@ files=['daemon.py','executor.py','observer.py','storage.py','storage_client.py',
 hashes={name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in files if (root/name).is_file()}
 mounts=json.loads(subprocess.run(['findmnt','--json','--list','-o','TARGET,FSTYPE,SIZE,AVAIL','--bytes'],check=True,capture_output=True,text=True,timeout=10).stdout)
 mounts={'filesystems':[m for m in mounts['filesystems'] if m['target']=='/' or m['target']==config['root'] or m['target'].startswith(config['root']+'/')]}
-services={name:subprocess.run(['systemctl','is-active',name],capture_output=True,text=True,timeout=10).stdout.strip() for name in ['k3s','webdock-storage','webdock-hosting-agent']}
+services={name:subprocess.run(['systemctl','is-active',name],capture_output=True,text=True,timeout=10).stdout.strip() for name in ['k3s','spitzli-storage','webdock-hosting-agent']}
 print(json.dumps({'storage':{k:config[k] for k in ['node','clusterID','poolID','capacityBytes','reserveBytes']},'journalPoolID':journal['poolID'],'volumes':volumes,'filesystemAvailableBytes':st.f_bavail*st.f_frsize,'agentSourceSHA256':hashes,'services':services,'mounts':mounts}))
 '''
 

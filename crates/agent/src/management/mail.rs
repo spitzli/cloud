@@ -109,7 +109,7 @@ impl RemoteAuthority {
 }
 #[async_trait::async_trait]
 impl MailAuthority for RemoteAuthority {
-    async fn guard(&self, claim: &MailClaim) -> webdock_supervisor::Result<()> {
+    async fn guard(&self, claim: &MailClaim) -> spitzli_supervisor::Result<()> {
         claim
             .validate(chrono::Utc::now())
             .map_err(|_| ExecutionError::Expired)?;
@@ -149,7 +149,7 @@ impl MailAuthority for RemoteAuthority {
         &self,
         claim: &MailClaim,
         checkpoint: MailCheckpoint,
-    ) -> webdock_supervisor::Result<()> {
+    ) -> spitzli_supervisor::Result<()> {
         MailAuthority::guard(self, claim).await?;
         checkpoint
             .validate()

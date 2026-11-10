@@ -1,7 +1,7 @@
 [Unit]
 Description=Webdock database filesystem helper
 After=local-fs.target
-Before=webdock-agent.service
+Before=spitzli-agent.service
 
 [Service]
 Type=simple
@@ -10,7 +10,7 @@ Group=root
 UMask=0077
 RuntimeDirectory=webdock-database-storage
 RuntimeDirectoryMode=0700
-ExecStart=/usr/local/bin/webdock-storage --database --config /etc/webdock/database-storage.json serve --socket /run/webdock-database-storage/storage.sock
+ExecStart=/usr/local/bin/spitzli-storage --database --config /etc/webdock/database-storage.json serve --socket /run/webdock-database-storage/storage.sock
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=yes

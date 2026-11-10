@@ -1,11 +1,11 @@
 import { WorkspaceContext } from "@/components/workspace-context";
 import { AreaNavigation } from "@/components/area-navigation";
 import { randomUUID } from "node:crypto";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import {
   formatResource,
   type HostingClusterView,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { hostingPageCall } from "@/lib/hosting-client";
 import {
   DatabasePlanForm,

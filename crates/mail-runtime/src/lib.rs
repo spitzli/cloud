@@ -10,13 +10,13 @@ pub mod send_api;
 pub mod send_control;
 pub mod smtp;
 pub mod outbox {
-    pub use webdock_mail_protocol::outbox::*;
+    pub use spitzli_mail_protocol::outbox::*;
 }
 pub mod sending {
-    pub use webdock_mail_protocol::outbox::Preparation;
+    pub use spitzli_mail_protocol::outbox::Preparation;
 }
 pub mod submissions {
-    pub use webdock_mail_protocol::outbox::CleanupItem;
+    pub use spitzli_mail_protocol::outbox::CleanupItem;
 }
 pub use payload::{PrivatePayloadStore as FilesystemPayloadStore, SavedPayload};
 pub use send_control::{ControlError, SendControl};
@@ -32,8 +32,8 @@ pub enum Error {
     Unavailable,
 }
 pub type Result<T> = std::result::Result<T, Error>;
-impl From<webdock_mail_message::Error> for Error {
-    fn from(_: webdock_mail_message::Error) -> Self {
+impl From<spitzli_mail_message::Error> for Error {
+    fn from(_: spitzli_mail_message::Error) -> Self {
         Self::Invalid
     }
 }

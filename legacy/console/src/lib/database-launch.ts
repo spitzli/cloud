@@ -1,4 +1,4 @@
-import type { DatabaseLaunch } from "@webdock/database-contracts";
+import type { DatabaseLaunch } from "@spitzli/database-contracts";
 
 type LaunchResult = { launch?: Pick<DatabaseLaunch, "code" | "gatewayOrigin">; error?: string };
 

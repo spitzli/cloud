@@ -232,7 +232,7 @@ pub fn resolve_spec(mut value: Value) -> Result<Value> {
 fn validate_health_host(value: &Value) -> Result<()> {
     if value.get("healthHost").is_some_and(|host| {
         host.as_str()
-            .is_none_or(|host| !webdock_supervisor::valid_health_host(host))
+            .is_none_or(|host| !spitzli_supervisor::valid_health_host(host))
     }) {
         return Err(error(400, "Invalid probe Host authority."));
     }

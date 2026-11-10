@@ -1,8 +1,8 @@
 //! Managed Object Storage native runtime with private durable metadata.
 use serde::Deserialize;
+use spitzli_plugin_kit::transport::{CoreTls, ListenTls, RuntimeTransport};
+use spitzli_plugin_runtime::{self as runtime};
 use std::{path::PathBuf, process::ExitCode, sync::Arc};
-use webdock_plugin_kit::transport::{CoreTls, ListenTls, RuntimeTransport};
-use webdock_plugin_runtime::{self as runtime};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
 #[derive(Deserialize)]
@@ -19,7 +19,7 @@ struct Configuration {
     storage_url: String,
     storage_ca: Option<PathBuf>,
     secret_key_hex: String,
-    backend: webdock_object_storage_plugin::sdk::BackendConfig,
+    backend: spitzli_object_storage_plugin::sdk::BackendConfig,
 }
 async fn run() -> Result<(), Error> {
     let mut args = std::env::args_os().skip(1);
@@ -28,7 +28,7 @@ async fn run() -> Result<(), Error> {
         return Err("unexpected argument".into());
     }
     let config: Configuration =
-        serde_json::from_slice(&webdock_plugin_kit::read_file(&path, true)?)?;
+        serde_json::from_slice(&spitzli_plugin_kit::read_file(&path, true)?)?;
     let transport = RuntimeTransport {
         listen: config.listen,
         core: config.core,
@@ -36,24 +36,24 @@ async fn run() -> Result<(), Error> {
         core_tls: config.core_tls,
     };
     transport.validate()?;
-    let manifest = webdock_plugin_protocol::Manifest::parse(&webdock_plugin_kit::read_file(
+    let manifest = spitzli_plugin_protocol::Manifest::parse(&spitzli_plugin_kit::read_file(
         &config.manifest,
         false,
     )?)?;
-    webdock_object_storage_plugin::validate_manifest(&manifest)?;
+    spitzli_object_storage_plugin::validate_manifest(&manifest)?;
     let ca = config
         .storage_ca
         .as_ref()
-        .map(|path| webdock_plugin_kit::read_file(path, false))
+        .map(|path| spitzli_plugin_kit::read_file(path, false))
         .transpose()?;
     let store =
-        webdock_object_storage_plugin::store::Store::connect(&config.storage_url, ca.as_deref())
+        spitzli_object_storage_plugin::store::Store::connect(&config.storage_url, ca.as_deref())
             .await?;
-    let provider = webdock_object_storage_plugin::sdk::Control::new(config.backend).await?;
+    let provider = spitzli_object_storage_plugin::sdk::Control::new(config.backend).await?;
     let client = transport.core_client().await?;
-    let plugin = Arc::new(webdock_object_storage_plugin::engine::Engine::new(
+    let plugin = Arc::new(spitzli_object_storage_plugin::engine::Engine::new(
         store,
-        webdock_plugin_kit::seal::Sealer::new(&config.secret_key_hex)?,
+        spitzli_plugin_kit::seal::Sealer::new(&config.secret_key_hex)?,
         Arc::new(provider),
     ));
     let key: [u8; 32] = hex::decode(config.issuer_public_key_hex)?
@@ -70,7 +70,7 @@ async fn run() -> Result<(), Error> {
         config.generation,
         ed25519_dalek::VerifyingKey::from_bytes(&key)?,
         Arc::new(authority),
-        Arc::new(webdock_object_storage_plugin::Handler(plugin)),
+        Arc::new(spitzli_object_storage_plugin::Handler(plugin)),
     )?;
     let shutdown = async {
         let _ = tokio::signal::ctrl_c().await;

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createBridgeTransport } from "@webdock/cms-bridge/client";
-import { MEDIA_BYTES } from "@webdock/cms-bridge/types";
+import { createBridgeTransport } from "@spitzli/cms-bridge/client";
+import { MEDIA_BYTES } from "@spitzli/cms-bridge/types";
 
 test("large multipart keeps its media classification before Request body consumption", async () => {
   let began = false;

@@ -4,8 +4,8 @@
 //! applies them and reports back. Calls authenticate the plugin runtime itself, not an invocation,
 //! because provisioning outlasts one.
 use super::*;
-use webdock_plugin_protocol::WORKLOAD_KINDS;
-use webdock_plugin_runtime::PeerIdentity;
+use spitzli_plugin_protocol::WORKLOAD_KINDS;
+use spitzli_plugin_runtime::PeerIdentity;
 
 const MAX_OBJECTS: usize = 32;
 const MAX_BYTES: usize = 256 * 1024;
@@ -105,7 +105,7 @@ fn safe_pod(spec: &Value) -> Result<()> {
     }
     Ok(())
 }
-use webdock_plugin_protocol::{MIB, MILLI, quantity};
+use spitzli_plugin_protocol::{MIB, MILLI, quantity};
 /// Memory (limit) and CPU (request, or the limit Kubernetes would default it to) one container or
 /// one CloudNativePG instance takes. Both must be stated.
 fn resources(resources: &Value) -> Result<(u64, u64)> {

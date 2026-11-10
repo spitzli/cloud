@@ -19,9 +19,9 @@ pub enum RegistryError {
     #[error("registry database operation failed")]
     Database(sea_orm::DbErr),
     #[error("ID allocation is unavailable")]
-    Allocation(#[from] webdock_persistence::Error),
+    Allocation(#[from] spitzli_persistence::Error),
     #[error("identity context is unavailable")]
-    Identity(#[from] webdock_identity::IdentityError),
+    Identity(#[from] spitzli_identity::IdentityError),
 }
 impl RegistryError {
     pub fn status(&self) -> u16 {

@@ -22,7 +22,7 @@ test("custom mail pagination resets while empty search clears the query", () => 
   form.set("mailPage", "3");
   assert.equal(searchFormURL("/mail", form, "mailPage"), "/mail");
 });
-import { fieldValueFromURL } from "@webdock/search/url";
+import { fieldValueFromURL } from "@spitzli/search/url";
 test("older results cannot overwrite newer edits after focus leaves the field", () => {
   assert.equal(fieldValueFromURL("abc", "", "abcd"), undefined);
   assert.equal(fieldValueFromURL("active", "active", "archived"), undefined);

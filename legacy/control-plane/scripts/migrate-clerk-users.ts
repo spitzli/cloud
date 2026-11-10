@@ -3,7 +3,7 @@ import { z } from "zod";
 import { readFile } from "node:fs/promises";
 import { createClerkClient, type ClerkClient } from "@clerk/backend";
 import { Pool, type PoolClient } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 const id = z.string().regex(/^[1-9][0-9]{0,18}$/);
 export const migrationManifest = z
   .object({

@@ -23,6 +23,9 @@ use config::{
     TargetConfiguration,
 };
 use serde_json::{Value, json};
+use spitzli_agent_protocol::recovery::{RecoveryAction, RecoveryClaim, RecoveryProfile};
+use spitzli_object_storage::ObjectReceipt;
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{
     path::PathBuf,
     sync::{
@@ -31,9 +34,6 @@ use std::{
     },
     time::Duration,
 };
-use webdock_agent_protocol::recovery::{RecoveryAction, RecoveryClaim, RecoveryProfile};
-use webdock_object_storage::ObjectReceipt;
-use webdock_supervisor::{ExecutionError, Result};
 
 async fn traced_reservation_rpc<T>(
     work: impl std::future::Future<Output = Result<T>>,
@@ -593,7 +593,7 @@ impl NativeRecoveryExecutor {
                     c.lease.expires_at,
                     &reservation,
                     ApplicationStagingOrigin::OnlineRestore {
-                        operation_id: webdock_core::id::RecordId::parse(&c.spec.operation_id)
+                        operation_id: spitzli_core::id::RecordId::parse(&c.spec.operation_id)
                             .map_err(|_| ExecutionError::Ownership)?,
                         generation: c.lease.generation,
                         target_nonce: target.nonce.clone(),
@@ -677,7 +677,7 @@ impl NativeRecoveryExecutor {
                 &reservation,
                 ApplicationStagingOrigin::OperatorCapsule {
                     target_nonce: verified.nonce.clone(),
-                    admitted_set_id: webdock_core::id::RecordId::parse(&verified.set.set_id)
+                    admitted_set_id: spitzli_core::id::RecordId::parse(&verified.set.set_id)
                         .map_err(|_| ExecutionError::Ownership)?,
                 },
                 None,
@@ -797,7 +797,7 @@ impl NativeRecoveryExecutor {
         &self,
         c: &RecoveryClaim,
         a: &dyn RecoveryAuthority,
-        runtime: &webdock_supervisor::RuntimeSpec,
+        runtime: &spitzli_supervisor::RuntimeSpec,
         stopped: &docker::StoppedApplication,
         session: &AppSourceSession,
         cancelled: Arc<AtomicBool>,
@@ -891,7 +891,7 @@ impl NativeRecoveryExecutor {
                     grant_sha256: reservation.grant_sha256.clone(),
                 }),
                 staging_origin: None,
-                operation_id: webdock_core::id::RecordId::parse(&c.spec.operation_id)
+                operation_id: spitzli_core::id::RecordId::parse(&c.spec.operation_id)
                     .map_err(|_| ExecutionError::Ownership)?,
                 generation: c.lease.generation,
                 source,
@@ -1150,7 +1150,7 @@ impl NativeRecoveryExecutor {
                     return Err(ExecutionError::Ownership);
                 }
                 (
-                    webdock_core::id::RecordId::parse(
+                    spitzli_core::id::RecordId::parse(
                         proof["operationID"]
                             .as_str()
                             .ok_or(ExecutionError::Ownership)?,

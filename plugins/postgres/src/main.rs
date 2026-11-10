@@ -1,8 +1,8 @@
 //! PostgreSQL plugin runtime over private Unix sockets, with its own storage database.
 use serde::Deserialize;
+use spitzli_plugin_kit::transport::{CoreTls, ListenTls, RuntimeTransport};
+use spitzli_plugin_runtime::{self as runtime};
 use std::{path::PathBuf, process::ExitCode, sync::Arc};
-use webdock_plugin_kit::transport::{CoreTls, ListenTls, RuntimeTransport};
-use webdock_plugin_runtime::{self as runtime};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
 #[derive(Deserialize)]
@@ -19,8 +19,8 @@ struct Configuration {
     storage_url: String,
     storage_ca: Option<PathBuf>,
     secret_key_hex: String,
-    shared_servers: Vec<webdock_postgres::shared::SharedServer>,
-    dedicated: Option<webdock_postgres::dedicated::DedicatedConfig>,
+    shared_servers: Vec<spitzli_postgres::shared::SharedServer>,
+    dedicated: Option<spitzli_postgres::dedicated::DedicatedConfig>,
 }
 async fn run() -> Result<(), Error> {
     let mut args = std::env::args_os().skip(1);
@@ -29,7 +29,7 @@ async fn run() -> Result<(), Error> {
         return Err("unexpected argument".into());
     }
     let config: Configuration =
-        serde_json::from_slice(&webdock_plugin_kit::read_file(&path, true)?)?;
+        serde_json::from_slice(&spitzli_plugin_kit::read_file(&path, true)?)?;
     let transport = RuntimeTransport {
         listen: config.listen,
         core: config.core,
@@ -37,39 +37,39 @@ async fn run() -> Result<(), Error> {
         core_tls: config.core_tls,
     };
     transport.validate()?;
-    let manifest = webdock_plugin_protocol::Manifest::parse(&webdock_plugin_kit::read_file(
+    let manifest = spitzli_plugin_protocol::Manifest::parse(&spitzli_plugin_kit::read_file(
         &config.manifest,
         false,
     )?)?;
-    webdock_postgres::validate_manifest(&manifest)?;
+    spitzli_postgres::validate_manifest(&manifest)?;
     for server in &config.shared_servers {
-        webdock_plugin_kit::loopback(&server.admin_url)?;
+        spitzli_plugin_kit::loopback(&server.admin_url)?;
     }
     let store = match config.storage_ca {
         Some(path) => {
-            webdock_postgres::store::Store::connect_tls(
+            spitzli_postgres::store::Store::connect_tls(
                 &config.storage_url,
-                &webdock_plugin_kit::read_file(&path, false)?,
+                &spitzli_plugin_kit::read_file(&path, false)?,
             )
             .await?
         }
-        None => webdock_postgres::store::Store::connect(&config.storage_url).await?,
+        None => spitzli_postgres::store::Store::connect(&config.storage_url).await?,
     };
     for server in &config.shared_servers {
         server.harden().await?;
     }
     let client = transport.core_client().await?;
     let placement = config.dedicated.map(|dedicated| {
-        let workloads = webdock_postgres::dedicated::HostWorkloads {
+        let workloads = spitzli_postgres::dedicated::HostWorkloads {
             client: client.clone(),
             plugin: manifest.id().into(),
             generation: config.generation,
         };
-        webdock_postgres::dedicated::Placement::new(Box::new(workloads), dedicated)
+        spitzli_postgres::dedicated::Placement::new(Box::new(workloads), dedicated)
     });
-    let plugin = webdock_postgres::Plugin::new(
+    let plugin = spitzli_postgres::Plugin::new(
         store,
-        webdock_postgres::seal::Sealer::new(&config.secret_key_hex)?,
+        spitzli_postgres::seal::Sealer::new(&config.secret_key_hex)?,
         config.shared_servers,
         placement,
     );
@@ -88,7 +88,7 @@ async fn run() -> Result<(), Error> {
         config.generation,
         ed25519_dalek::VerifyingKey::from_bytes(&key)?,
         Arc::new(authority),
-        Arc::new(webdock_postgres::Handler(plugin)),
+        Arc::new(spitzli_postgres::Handler(plugin)),
     )?;
     let shutdown = async {
         let _ = tokio::signal::ctrl_c().await;

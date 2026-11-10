@@ -4,6 +4,15 @@ use async_trait::async_trait;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use futures_util::{Stream, StreamExt};
 use sha2::{Digest, Sha256};
+use spitzli_plugin_http::storage::{
+    StorageBinding, StorageTarget, bind_storage, bind_storage_loopback_test, send_storage,
+};
+use spitzli_plugin_protocol::{
+    PluginError, Result,
+    storage::{
+        MAX_TRANSFER_BYTES, StorageDirection, StoragePlan, StorageReceipt, TRANSFER_CHUNK_BYTES,
+    },
+};
 use std::{
     future::Future,
     os::unix::fs::{MetadataExt, OpenOptionsExt},
@@ -17,15 +26,6 @@ use std::{
 use tokio::{
     io::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt},
     sync::{OwnedSemaphorePermit, Semaphore},
-};
-use webdock_plugin_http::storage::{
-    StorageBinding, StorageTarget, bind_storage, bind_storage_loopback_test, send_storage,
-};
-use webdock_plugin_protocol::{
-    PluginError, Result,
-    storage::{
-        MAX_TRANSFER_BYTES, StorageDirection, StoragePlan, StorageReceipt, TRANSFER_CHUNK_BYTES,
-    },
 };
 
 #[async_trait]
@@ -434,7 +434,7 @@ pub use crate::authority::storage_admission::{StorageAccess, StorageCaller};
 
 pub fn upload_uncertain() -> PluginError {
     PluginError::new(
-        webdock_plugin_protocol::ErrorCode::Unavailable,
+        spitzli_plugin_protocol::ErrorCode::Unavailable,
         "Storage upload outcome is uncertain; inspect the object before retrying",
     )
 }

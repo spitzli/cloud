@@ -2,19 +2,19 @@
 use futures_util::FutureExt;
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
 use serde_json::{Value, json};
-use std::{os::unix::fs::PermissionsExt, path::Path, sync::Arc};
-use webdock_mail::{
+use spitzli_mail::{
     MailDependencies,
     outbox::{PayloadLease, Receipt, SendLease},
     sending::{Admission, Preparation, SendCommand, Sending, SendingConfig},
     submissions::{QueueCommand, Submissions},
 };
-use webdock_mail_protocol::{
+use spitzli_mail_protocol::{
     sha256,
     wire::{LeaseProof, mail_authority_client::MailAuthorityClient},
 };
-use webdock_plugin_host::{FileBindings, HostService};
-use webdock_plugin_runtime::UnixSocket;
+use spitzli_plugin_host::{FileBindings, HostService};
+use spitzli_plugin_runtime::UnixSocket;
+use std::{os::unix::fs::PermissionsExt, path::Path, sync::Arc};
 mod support;
 use support::sending::{KEY, PLUGIN, bindings, role, seed, sql};
 
@@ -108,7 +108,7 @@ async fn callback_client(
             .unwrap();
         drop(socket);
     });
-    let channel = webdock_plugin_runtime::unix_channel(path).await.unwrap();
+    let channel = spitzli_plugin_runtime::unix_channel(path).await.unwrap();
     (MailAuthorityClient::new(channel), stop, server)
 }
 async fn deny_plain_callback(sending: Arc<Sending>, token: &str) {
@@ -181,20 +181,20 @@ async fn installed_policy_and_authenticated_callbacks_fence_every_external_attem
 }
 async fn run(url: &url::Url, name: &str) {
     let owner = Database::connect(url.as_str()).await.unwrap();
-    webdock_persistence::migrations::bootstrap(&owner, name, KEY)
+    spitzli_persistence::migrations::bootstrap(&owner, name, KEY)
         .await
         .unwrap();
     seed(&owner).await;
     let auth = role("AUTH_DATABASE_URL", url).await;
     let business = role("DATABASE_URL", url).await;
     let worker = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
-    let ids = Arc::new(webdock_persistence::IdAllocator::new(
+    let ids = Arc::new(spitzli_persistence::IdAllocator::new(
         business.clone(),
-        webdock_ids::Identity::platform(0, 2).unwrap(),
+        spitzli_ids::Identity::platform(0, 2).unwrap(),
     ));
-    let identity = Arc::new(webdock_identity::IdentityService::new(
+    let identity = Arc::new(spitzli_identity::IdentityService::new(
         auth.clone(),
-        webdock_identity::CookiePolicy::new(false, "fixture-session-key-at-least32-characters")
+        spitzli_identity::CookiePolicy::new(false, "fixture-session-key-at-least32-characters")
             .unwrap(),
     ));
     let dependencies = MailDependencies {
@@ -222,7 +222,7 @@ async fn run(url: &url::Url, name: &str) {
         .await
         .unwrap(),
     );
-    let policy = Arc::new(webdock_control_plane::mail::MailProviderPolicy::new(host));
+    let policy = Arc::new(spitzli_control_plane::mail::MailProviderPolicy::new(host));
     let sending = Arc::new(
         Sending::new(dependencies.clone(), configuration(), policy.clone())
             .await
@@ -509,7 +509,7 @@ async fn draining_and_legacy_routes(
     );
 }
 
-async fn webmail_command(sending: &Sending, command: Value) -> webdock_mail::Result<Value> {
+async fn webmail_command(sending: &Sending, command: Value) -> spitzli_mail::Result<Value> {
     sending
         .execute_webmail(serde_json::from_value(command).unwrap())
         .await
@@ -552,18 +552,18 @@ async fn queued_draft(
     assert_eq!(job.id, staged["id"]);
     assert!(matches!(
         job.payload_format,
-        webdock_mail::outbox::PayloadFormat::Mime
+        spitzli_mail::outbox::PayloadFormat::Mime
     ));
     job
 }
 async fn incoming_webmail(
     owner: &DatabaseConnection,
     dependencies: MailDependencies,
-    policy: Arc<webdock_control_plane::mail::MailProviderPolicy>,
+    policy: Arc<spitzli_control_plane::mail::MailProviderPolicy>,
     queue: &Submissions,
 ) {
     use base64::{Engine, engine::general_purpose::STANDARD};
-    use webdock_mail::{
+    use spitzli_mail::{
         secrets::MailCipher,
         webmail::{WebmailConfig, WebmailService},
     };
@@ -596,7 +596,7 @@ async fn incoming_webmail(
         .unwrap(),
     );
     let cookies =
-        webdock_identity::CookiePolicy::new(false, "fixture-session-key-at-least32-characters")
+        spitzli_identity::CookiePolicy::new(false, "fixture-session-key-at-least32-characters")
             .unwrap();
     let cookie = format!(
         "{}={}",
@@ -612,7 +612,7 @@ async fn incoming_webmail(
     let launch = service
         .launch(
             &alice,
-            &webdock_browser_session::StoredAuthority::LocalSession {},
+            &spitzli_browser_session::StoredAuthority::LocalSession {},
             "123",
             "303",
         )
@@ -620,7 +620,7 @@ async fn incoming_webmail(
         .unwrap();
     let scope = service.exchange(&launch.code).await.unwrap();
     let mut config = configuration();
-    config.incoming = Some(webdock_mail::sending::IncomingConfig {
+    config.incoming = Some(spitzli_mail::sending::IncomingConfig {
         managed_cluster: "200".into(),
         hostname_suffix: "example.test".into(),
         encryption_key: key,

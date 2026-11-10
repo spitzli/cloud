@@ -1,4 +1,4 @@
-import type { DatabaseBackupPolicyView, DatabaseBackupStatus } from "@webdock/hosting-contracts";
+import type { DatabaseBackupPolicyView, DatabaseBackupStatus } from "@spitzli/hosting-contracts";
 
 type Policy = DatabaseBackupPolicyView["policy"];
 export interface BackupObservationTarget { policyID: string; revision: number; revocation: boolean }

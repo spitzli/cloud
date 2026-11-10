@@ -1,6 +1,6 @@
 [package]
-name = "webdock-agent"
-default-run = "webdock-agent"
+name = "spitzli-agent"
+default-run = "spitzli-agent"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.94"
@@ -9,22 +9,22 @@ license = "Apache-2.0"
 [features]
 default = ["docker", "kubernetes"]
 docker = ["dep:bollard", "dep:reqwest", "dep:futures-util", "dep:rustls", "dep:tokio-rustls", "dep:rcgen", "dep:rustls-pemfile"]
-local-recovery-fixture = ["webdock-object-storage/local-test"]
+local-recovery-fixture = ["spitzli-object-storage/local-test"]
 kubernetes = ["dep:reqwest", "dep:tokio-rustls", "dep:rcgen", "dep:kube", "dep:k8s-openapi", "dep:rust_decimal", "dep:serde-saphyr", "dep:ipnet", "dep:oci-spec", "dep:futures-util", "dep:humantime", "dep:tokio-postgres", "dep:tokio-postgres-rustls", "dep:rustls", "dep:rustls-pemfile"]
 
 [dependencies]
-webdock-object-storage={path="../object-storage"}
-webdock-mail-runtime={path="../mail-runtime"}
-webdock-plugin-kit={path="../plugin-kit"}
+spitzli-object-storage={path="../object-storage"}
+spitzli-mail-runtime={path="../mail-runtime"}
+spitzli-plugin-kit={path="../plugin-kit"}
 url="2"
 tar="0.4"
 axum="0.8"
 hyper={version="1",features=["server","http1"]}
 hyper-util={version="0.1",features=["server","tokio","service"]}
-webdock-export-protocol={path="../export-protocol"}
-webdock-supervisor = { path = "../supervisor" }
-webdock-core = { path = "../core" }
-webdock-agent-protocol = { path = "../agent-protocol" }
+spitzli-export-protocol={path="../export-protocol"}
+spitzli-supervisor = { path = "../supervisor" }
+spitzli-core = { path = "../core" }
+spitzli-agent-protocol = { path = "../agent-protocol" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "net", "io-util", "time", "sync", "signal"] }
@@ -40,7 +40,7 @@ sha2 = "0.10"
 tempfile = "3"
 tracing = "0.1"
 
-webdock-plugin-protocol = { path = "../plugin-protocol" }
+spitzli-plugin-protocol = { path = "../plugin-protocol" }
 tonic = { version = "0.14.6", features = ["transport", "tls-ring"] }
 tonic-prost = "0.14.6"
 prost = "0.14"
@@ -71,7 +71,7 @@ rustls = { version = "0.23", default-features = false, features = ["ring", "std"
 rustls-pemfile = { version = "2", optional = true }
 
 [dev-dependencies]
-webdock-build = { path = "../build", default-features = false, features = ["local-registry-test"] }
+spitzli-build = { path = "../build", default-features = false, features = ["local-registry-test"] }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
 rcgen = "0.14"
 tokio-stream = { version = "0.1", features = ["net"] }
@@ -82,6 +82,6 @@ serde-saphyr = "0.0.29"
 workspace = true
 
 [[bin]]
-name = "webdock-build-storage-node"
-path = "src/bin/webdock-build-storage-node.rs"
+name = "spitzli-build-storage-node"
+path = "src/bin/spitzli-build-storage-node.rs"
 required-features = ["kubernetes"]

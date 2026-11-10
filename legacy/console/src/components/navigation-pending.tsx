@@ -1,1 +1,1 @@
-export * from "@webdock/console-kit/navigation-pending";
+export * from "@spitzli/console-kit/navigation-pending";

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { databaseViewSchema } from "@webdock/hosting-contracts";
+import { databaseViewSchema } from "@spitzli/hosting-contracts";
 import type { BackupMutation, BackupReceipt, KnownBackupPolicy, ReceiptExpectation } from "./database-backup-intent";
 const id = databaseViewSchema.shape.id;
 const destination = z.object({ destinationID: id }).strict();

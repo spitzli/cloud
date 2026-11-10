@@ -7,7 +7,7 @@ import {
   resolveAppSpec,
   type HostingActor,
   type HostingCommand,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { totals } from "./allowances";
 export type Dependencies = {
   authorizeHosting: ReturnType<

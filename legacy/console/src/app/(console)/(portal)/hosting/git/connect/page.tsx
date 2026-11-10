@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import { hostingCall } from "@/lib/hosting-client";
-import { readGitFlowCookie } from "@webdock/api-client/flow-cookies";
+import { readGitFlowCookie } from "@spitzli/api-client/flow-cookies";
 
 export default async function GitConnection({
   searchParams,

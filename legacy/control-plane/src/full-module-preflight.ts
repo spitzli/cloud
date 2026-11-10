@@ -1,6 +1,6 @@
 import { assertModuleCanDisable } from "./module-preflight-check";
-import { withDatabaseScope } from "@webdock/database-runtime";
-import { assertMailCanDisable } from "@webdock/module-mail/server/lifecycle";
+import { withDatabaseScope } from "@spitzli/database-runtime";
+import { assertMailCanDisable } from "@spitzli/module-mail/server/lifecycle";
 import { modulePreflightChecks } from "./db/module-preflight-tables";
 import { installationRegistry } from "./installation";
 /** Startup-only check: resource data and encryption keys are never modified. */

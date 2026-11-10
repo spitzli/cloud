@@ -1,4 +1,4 @@
-use webdock_plugin_host::{MailRuntimeMode, MailRuntimeProof};
+use spitzli_plugin_host::{MailRuntimeMode, MailRuntimeProof};
 #[test]
 fn native_runtime_modes_separate_new_work_from_bookkeeping() {
     assert!(MailRuntimeMode::Admission.permits("enabled"));
@@ -28,7 +28,7 @@ fn native_mail_service_is_not_advertised_to_other_plugins() {
         serde_json::json!([{"name":"native-mail-control","version":1}]);
     manifest["services"]["optional"] = serde_json::json!([]);
     let raw = manifest.to_string();
-    let hash = webdock_plugin_protocol::release::sha256(raw.as_bytes());
+    let hash = spitzli_plugin_protocol::release::sha256(raw.as_bytes());
     let segments = release["jws"]
         .as_str()
         .unwrap()
@@ -52,7 +52,7 @@ fn native_mail_service_is_not_advertised_to_other_plugins() {
         )
     ));
     assert!(
-        webdock_plugin_host::Catalog::from_bytes(&serde_json::to_vec(&catalog).unwrap()).is_err(),
+        spitzli_plugin_host::Catalog::from_bytes(&serde_json::to_vec(&catalog).unwrap()).is_err(),
         "fixed Mail control is usable only by enrolled Mail"
     );
 }

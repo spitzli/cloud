@@ -118,7 +118,7 @@ impl RemoteAuthority {
 }
 #[async_trait::async_trait]
 impl PluginRuntimeAuthority for RemoteAuthority {
-    async fn guard(&self, claim: &PluginRuntimeClaim) -> webdock_supervisor::Result<()> {
+    async fn guard(&self, claim: &PluginRuntimeClaim) -> spitzli_supervisor::Result<()> {
         claim
             .validate(timestamp()?)
             .map_err(|_| ExecutionError::Expired)?;
@@ -164,7 +164,7 @@ impl PluginRuntimeAuthority for RemoteAuthority {
         &self,
         claim: &PluginRuntimeClaim,
         checkpoint: PluginRuntimeCheckpoint,
-    ) -> webdock_supervisor::Result<()> {
+    ) -> spitzli_supervisor::Result<()> {
         PluginRuntimeAuthority::guard(self, claim).await?;
         checkpoint
             .validate()

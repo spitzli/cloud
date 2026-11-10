@@ -1,11 +1,11 @@
 import * as React from "react";
 import Link from "next/link";
 import { randomUUID } from "node:crypto";
-import { getRequestI18n } from "@webdock/i18n/next";
+import { getRequestI18n } from "@spitzli/i18n/next";
 import type {
   SetupOptions,
   ServiceBindingView,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { ConnectService } from "./service-bindings";
 import type { HostingUIServices } from "./services";
 export function createApplicationServicesView(

@@ -1,8 +1,8 @@
 #![cfg(feature = "kubernetes")]
 mod support;
 use serde_json::json;
-use webdock_agent::kubernetes::autoscaling::{manifest, verify};
-use webdock_supervisor::AutoscalingPolicy;
+use spitzli_agent::kubernetes::autoscaling::{manifest, verify};
+use spitzli_supervisor::AutoscalingPolicy;
 
 #[test]
 fn hpa_is_bounded_and_tied_to_exact_owned_deployment() {
@@ -58,7 +58,7 @@ struct LocalAuthority;
 fn fixed_and_stopped_values_remain_compatible_with_pre_scaling_charts() {
     let mut spec = support::spec();
     assert!(
-        webdock_agent::kubernetes::helm_values(&spec, 1, false)
+        spitzli_agent::kubernetes::helm_values(&spec, 1, false)
             .unwrap()
             .get("autoscaling")
             .is_none()
@@ -69,28 +69,28 @@ fn fixed_and_stopped_values_remain_compatible_with_pre_scaling_charts() {
         target_cpu_utilization_percent: 70,
     });
     assert!(
-        webdock_agent::kubernetes::helm_values(&spec, 1, false)
+        spitzli_agent::kubernetes::helm_values(&spec, 1, false)
             .unwrap()
             .get("autoscaling")
             .is_some()
     );
     assert!(
-        webdock_agent::kubernetes::helm_values(&spec, 1, true)
+        spitzli_agent::kubernetes::helm_values(&spec, 1, true)
             .unwrap()
             .get("autoscaling")
             .is_none()
     );
 }
 #[async_trait::async_trait]
-impl webdock_supervisor::Authorizer for LocalAuthority {
+impl spitzli_supervisor::Authorizer for LocalAuthority {
     async fn authorize(
         &self,
-        command: &webdock_supervisor::Command,
-    ) -> webdock_supervisor::Result<()> {
+        command: &spitzli_supervisor::Command,
+    ) -> spitzli_supervisor::Result<()> {
         if command.spec.installation.starts_with("test-auto-") {
             Ok(())
         } else {
-            Err(webdock_supervisor::ExecutionError::Denied)
+            Err(spitzli_supervisor::ExecutionError::Denied)
         }
     }
 }
@@ -124,12 +124,12 @@ async fn acceptance(retained: bool, short: bool) {
         api::{DeleteParams, ListParams},
         config::{KubeConfigOptions, Kubeconfig},
     };
-    use std::{path::PathBuf, sync::Arc, time::Duration};
-    use webdock_agent::{
+    use spitzli_agent::{
         kubernetes::{ApprovedChart, KubernetesAdapter},
         policy::{RuntimePolicy, RuntimePolicyConfig},
     };
-    use webdock_supervisor::*;
+    use spitzli_supervisor::*;
+    use std::{path::PathBuf, sync::Arc, time::Duration};
     let path = PathBuf::from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap());
     let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("kind-webdock-rust-"));
@@ -158,7 +158,7 @@ async fn acceptance(retained: bool, short: bool) {
     );
     spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
     if retained {
-        spec.project_id = webdock_core::id::RecordId::parse(&format!(
+        spec.project_id = spitzli_core::id::RecordId::parse(&format!(
             "{}",
             uuid::Uuid::new_v4().as_u128() % 1_000_000_000_000_000 + 1
         ))
@@ -174,13 +174,13 @@ async fn acceptance(retained: bool, short: bool) {
         };
         spec.hosting_binding = Some(HostingBinding {
             public_route: None,
-            cluster_id: webdock_core::id::RecordId::parse("789").unwrap(),
+            cluster_id: spitzli_core::id::RecordId::parse("789").unwrap(),
             quota: allowance.clone(),
             final_quota: allowance,
         });
     }
     let (namespace, workload_name, _) =
-        webdock_agent::kubernetes::autoscaling::identity(&spec).unwrap();
+        spitzli_agent::kubernetes::autoscaling::identity(&spec).unwrap();
     spec.cpu_millicores = 100;
     spec.memory_bytes = 67108864;
     spec.autoscaling = Some(AutoscalingPolicy {

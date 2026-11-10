@@ -4,8 +4,8 @@ import {
   createDatabaseService,
   type DatabaseServiceDependencies,
 } from "./service";
-import type { DatabaseReader } from "@webdock/core/identity";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { DatabaseReader } from "@spitzli/core/identity";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 const actor: HostingActor = {
   subject: "local-user",
   sessionID: "local-session",

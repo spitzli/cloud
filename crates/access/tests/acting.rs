@@ -1,8 +1,8 @@
 //! Customers list and create projects in their own workspace, against the retained local fixture.
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement};
+use spitzli_access::*;
+use spitzli_identity::{CookiePolicy, IdentityService, RlsSigner, SecretKeys};
 use std::{collections::BTreeMap, sync::Arc};
-use webdock_access::*;
-use webdock_identity::{CookiePolicy, IdentityService, RlsSigner, SecretKeys};
 
 fn guarded(key: &str) -> String {
     let raw = std::env::var(key).unwrap();
@@ -41,9 +41,9 @@ async fn customer_acting_scope_is_owner_only_and_session_bound() {
     let auth_url = guarded("AUTH_DATABASE_URL");
     let auth = Database::connect(auth_url.clone()).await.unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             &auth_url,
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),

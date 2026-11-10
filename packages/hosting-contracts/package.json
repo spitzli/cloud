@@ -1,5 +1,5 @@
 {
-  "name": "@webdock/hosting-contracts",
+  "name": "@spitzli/hosting-contracts",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "zod": "4.6.5",
-    "@webdock/i18n": "*",
-    "@webdock/adapter-hosting-vercel": "*",
-    "@webdock/database-runtime": "*"
+    "@spitzli/i18n": "*",
+    "@spitzli/adapter-hosting-vercel": "*",
+    "@spitzli/database-runtime": "*"
   },
   "scripts": {
     "test": "bun test ./src"

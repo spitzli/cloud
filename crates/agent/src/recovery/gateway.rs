@@ -9,10 +9,10 @@ use axum::{
     routing::any,
 };
 use serde::Deserialize;
+use spitzli_supervisor::{ExecutionError, Result};
 use std::{path::PathBuf, sync::Arc, time::Duration};
 use tokio::net::TcpListener;
 use tokio_rustls::{TlsAcceptor, rustls};
-use webdock_supervisor::{ExecutionError, Result};
 
 #[derive(Clone, Copy, Deserialize)]
 #[serde(rename_all = "lowercase")]

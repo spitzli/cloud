@@ -4,6 +4,11 @@ use axum::{
 };
 use http_body_util::BodyExt;
 use serde_json::{Value, json};
+use spitzli_mail::{
+    payload::PrivatePayloadStore,
+    send_api::SendApi,
+    send_control::{ControlError, SendControl},
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::{
@@ -12,11 +17,6 @@ use std::{
     },
 };
 use tower::ServiceExt;
-use webdock_mail::{
-    payload::PrivatePayloadStore,
-    send_api::SendApi,
-    send_control::{ControlError, SendControl},
-};
 const INTERNAL: &str = "owned-webmail-ingress-secret-at-least32";
 struct Control {
     calls: Mutex<Vec<Value>>,
@@ -152,7 +152,7 @@ async fn smtp_hook_authenticates_first_and_binds_observed_digest_and_single_proo
     assert_eq!(call["submission"]["id"], "789");
     assert_eq!(call["submission"]["proof"], proof);
     assert_eq!(call["submission"]["queueID"], "a12");
-    let canonical = webdock_mail::proof::hook_digest(
+    let canonical = spitzli_mail::proof::hook_digest(
         &headers
             .into_iter()
             .map(|(a, b)| (a.into(), b.into()))

@@ -3,13 +3,13 @@
 //! Dedicated instances go to a stand-in for Core's `plugin.workloads`; they run on the local k3s
 //! in the live dev stack.
 use serde_json::{Value, json};
-use std::sync::{Arc, Mutex};
-use tokio_postgres::NoTls;
-use webdock_plugin_protocol::{ErrorCode, InvocationClaims, Manifest};
-use webdock_plugin_runtime::ActionHandler;
-use webdock_postgres::{
+use spitzli_plugin_protocol::{ErrorCode, InvocationClaims, Manifest};
+use spitzli_plugin_runtime::ActionHandler;
+use spitzli_postgres::{
     Handler, Plugin, dedicated, seal::Sealer, shared::SharedServer, store::Store,
 };
+use std::sync::{Arc, Mutex};
+use tokio_postgres::NoTls;
 
 /// What Core holds for the units: the objects of the last apply and what the agent reported.
 #[derive(Default)]
@@ -26,7 +26,7 @@ impl dedicated::Workloads for Core {
         &self,
         method: &str,
         input: Value,
-    ) -> Result<Value, webdock_plugin_protocol::PluginError> {
+    ) -> Result<Value, spitzli_plugin_protocol::PluginError> {
         let mut units = self.0.lock().unwrap();
         let unit = input["unit"].as_str().unwrap().to_owned();
         Ok(match method {
@@ -127,7 +127,7 @@ impl Fixture {
         project: &str,
         action: &str,
         input: Value,
-    ) -> Result<Value, webdock_plugin_protocol::PluginError> {
+    ) -> Result<Value, spitzli_plugin_protocol::PluginError> {
         let claims = InvocationClaims {
             job: None,
             v: 1,
@@ -168,7 +168,7 @@ fn id(created: &Value) -> Value {
 #[test]
 fn shipped_manifest_is_the_reviewed_contract() {
     let manifest = Manifest::parse(include_bytes!("../manifest.json")).unwrap();
-    webdock_postgres::validate_manifest(&manifest).unwrap();
+    spitzli_postgres::validate_manifest(&manifest).unwrap();
 }
 
 #[tokio::test]

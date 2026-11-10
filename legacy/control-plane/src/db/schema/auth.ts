@@ -1,2 +1,2 @@
 /** Compatibility export; schema mappings remain unchanged. */
-export * from "@webdock/platform-db/schema/auth";
+export * from "@spitzli/platform-db/schema/auth";

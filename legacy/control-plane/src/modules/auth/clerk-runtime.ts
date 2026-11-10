@@ -1,7 +1,7 @@
-import { requireOAuthCapability } from "@webdock/auth-configuration/protocols";
-import { selectAuthPlugin } from "@webdock/auth-configuration/selection";
-import { betterAuthIdentity } from "@webdock/auth-better-auth";
-import { signCompatibilitySession } from "@webdock/auth-better-auth/compatibility";
+import { requireOAuthCapability } from "@spitzli/auth-configuration/protocols";
+import { selectAuthPlugin } from "@spitzli/auth-configuration/selection";
+import { betterAuthIdentity } from "@spitzli/auth-better-auth";
+import { signCompatibilitySession } from "@spitzli/auth-better-auth/compatibility";
 import { authDatabase, workerDatabase } from "../../db/runtime";
 import { createClerkMappings } from "./clerk-mappings";
 import { createClerkSessionBridge } from "./clerk-bridge";
@@ -12,8 +12,8 @@ export const browserAuthProvider = configuration.provider;
 export async function getClerkBrowserAdapter() {
   if (configuration.provider !== "clerk")
     throw Error("Clerk is not the selected browser provider");
-  const { createPlugin } = await import("@webdock/auth-clerk/plugin");
-  const { createClerkBackend } = await import("@webdock/auth-clerk/sdk");
+  const { createPlugin } = await import("@spitzli/auth-clerk/plugin");
+  const { createClerkBackend } = await import("@spitzli/auth-clerk/sdk");
   return createPlugin({
     config: configuration,
     backend: createClerkBackend(

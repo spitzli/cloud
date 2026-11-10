@@ -1,12 +1,12 @@
 'use client';
 
-import {useModuleView} from '@webdock/module-sdk/react';
-import {moduleForPath} from '@webdock/module-sdk/selection';
+import {useModuleView} from '@spitzli/module-sdk/react';
+import {moduleForPath} from '@spitzli/module-sdk/selection';
 import { ConsoleIcon, type ConsoleIconName } from './console-icon';
 import { NavigationPending } from "./navigation-pending";
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useI18n } from '@webdock/i18n/react';
+import { useI18n } from '@spitzli/i18n/react';
 import { areaSelected } from '@/lib/workspace-navigation';
 
 export type AreaLink = { href: string; label: string; exact?: boolean; activePaths?: string[]; nested?: boolean; icon?: ConsoleIconName };

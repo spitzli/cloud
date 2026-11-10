@@ -1,1 +1,1 @@
-export * from "@webdock/core/registry/query";
+export * from "@spitzli/core/registry/query";

@@ -1,0 +1,26 @@
+[Unit]
+Description=Webdock isolated build worker
+After=network-online.target
+
+[Service]
+Type=simple
+User=webdock-builder
+Group=webdock-builder
+SupplementaryGroups=kvm
+ExecStart=/usr/bin/python3 /opt/spitzli-build-worker/worker.py --config /etc/spitzli-build-worker/config.json
+Restart=on-failure
+RestartSec=10
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/spitzli-build-worker
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+MemoryMax=20G
+TasksMax=256
+CPUQuota=800%
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

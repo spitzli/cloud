@@ -1,13 +1,13 @@
 use async_trait::async_trait;
 use futures_util::stream;
+use spitzli_plugin_host::storage::{StorageAuthority, StorageGateway};
+use spitzli_plugin_protocol::{
+    PluginError, Result,
+    storage::{Attachment, StorageDirection, StoragePlan},
+};
 use std::sync::{
     Arc,
     atomic::{AtomicBool, Ordering},
-};
-use webdock_plugin_host::storage::{StorageAuthority, StorageGateway};
-use webdock_plugin_protocol::{
-    PluginError, Result,
-    storage::{Attachment, StorageDirection, StoragePlan},
 };
 struct Live(AtomicBool);
 #[async_trait]
@@ -118,8 +118,8 @@ async fn serve_once(
     });
     (origin, task)
 }
-fn binding(origin: &str) -> webdock_plugin_http::storage::StorageBinding {
-    webdock_plugin_http::storage::StorageBinding {
+fn binding(origin: &str) -> spitzli_plugin_http::storage::StorageBinding {
+    spitzli_plugin_http::storage::StorageBinding {
         origin: origin.into(),
         addresses: vec!["127.0.0.1".parse().unwrap()],
         ca: None,

@@ -83,7 +83,7 @@ impl Fixture {
         ))
         .unwrap();
         url.set_password(Some(&password)).unwrap();
-        let passwords = webdock_persistence::roles::LOGIN_ROLES
+        let passwords = spitzli_persistence::roles::LOGIN_ROLES
             .iter()
             .copied()
             .chain(["webdock_offline_migrate"])
@@ -113,14 +113,14 @@ impl Fixture {
         })
         .await
         .unwrap();
-        webdock_persistence::roles::provision_roles(
+        spitzli_persistence::roles::provision_roles(
             &owner,
             "webdock_operator_test",
             &fixture.passwords,
         )
         .await
         .unwrap();
-        webdock_persistence::migrations::bootstrap(&owner, "webdock_operator_test", SECRET)
+        spitzli_persistence::migrations::bootstrap(&owner, "webdock_operator_test", SECRET)
             .await
             .unwrap();
         owner.close().await.unwrap();
@@ -140,7 +140,7 @@ impl Fixture {
         let mut url = self.url.clone();
         url.set_path(&format!("/{name}"));
         let db = connect(url.as_str()).await.unwrap();
-        webdock_persistence::migrations::bootstrap(&db, name, SECRET)
+        spitzli_persistence::migrations::bootstrap(&db, name, SECRET)
             .await
             .unwrap();
         db
@@ -188,7 +188,7 @@ async fn command(
 ) -> std::process::Output {
     tokio::time::timeout(
         Duration::from_secs(45),
-        tokio::process::Command::new(env!("CARGO_BIN_EXE_webdock-bootstrap-operator"))
+        tokio::process::Command::new(env!("CARGO_BIN_EXE_spitzli-bootstrap-operator"))
             .env_clear()
             .env("DATABASE_URL_UNPOOLED", url.as_str())
             .env("WEBDOCK_AUTH_SECRET", SECRET)
@@ -259,7 +259,7 @@ async fn offline_bootstrap_is_atomic_private_usable_and_duplicate_safe() {
     ] {
         sql(&db, statement, vec![]).await;
         assert!(
-            webdock_control_plane::db::require_runtime_role(&db, "webdock_auth_bootstrap")
+            spitzli_control_plane::db::require_runtime_role(&db, "webdock_auth_bootstrap")
                 .await
                 .is_err()
         );
@@ -438,17 +438,17 @@ async fn usable(fixture: &Fixture, owner: &DatabaseConnection, secrets: &Value) 
     .await
     .unwrap();
     let allocator = Arc::new(
-        webdock_persistence::IdAllocator::connect(
+        spitzli_persistence::IdAllocator::connect(
             fixture
                 .role("webdock_auth_runtime", "webdock_operator_test")
                 .as_str(),
-            webdock_ids::Identity::platform(0, 2).unwrap(),
+            spitzli_ids::Identity::platform(0, 2).unwrap(),
         )
         .await
         .unwrap(),
     );
     let keys = || {
-        webdock_identity::SecretKeys::new(
+        spitzli_identity::SecretKeys::new(
             BTreeMap::from([(1, SECRET.into())]),
             1,
             Some(SECRET.into()),
@@ -456,19 +456,19 @@ async fn usable(fixture: &Fixture, owner: &DatabaseConnection, secrets: &Value) 
         .unwrap()
     };
     let identity = Arc::new(
-        webdock_identity::IdentityService::new(
+        spitzli_identity::IdentityService::new(
             auth.clone(),
-            webdock_identity::CookiePolicy::new(true, SECRET).unwrap(),
+            spitzli_identity::CookiePolicy::new(true, SECRET).unwrap(),
         )
         .with_secret_keys(keys())
         .with_allocator(allocator.clone()),
     );
-    let registry = webdock_registry::RegistryService::new(
+    let registry = spitzli_registry::RegistryService::new(
         registry_db.clone(),
-        webdock_identity::RlsSigner::new(SECRET, "webdock_registry_runtime").unwrap(),
+        spitzli_identity::RlsSigner::new(SECRET, "webdock_registry_runtime").unwrap(),
     )
     .with_allocator(allocator.clone());
-    let webdock_identity::PasswordAuthentication::SetupRequired {
+    let spitzli_identity::PasswordAuthentication::SetupRequired {
         session: Some(limited),
         ..
     } = identity
@@ -542,19 +542,19 @@ async fn usable(fixture: &Fixture, owner: &DatabaseConnection, secrets: &Value) 
         .as_str()
         .unwrap()
         .to_owned();
-    let oauth = Arc::new(webdock_oauth::OAuthService::new(
+    let oauth = Arc::new(spitzli_oauth::OAuthService::new(
         auth.clone(),
         identity.clone(),
         allocator,
         Arc::new(keys()),
-        webdock_oauth::OAuthConfig::new(
+        spitzli_oauth::OAuthConfig::new(
             &format!("{AUTH}/api/auth"),
             &format!("{STUDIO}/api/mcp"),
             Some(client_id.clone()),
         )
         .unwrap(),
     ));
-    let browser = webdock_browser_session::BrowserSessions::new(
+    let browser = spitzli_browser_session::BrowserSessions::new(
         auth.clone(),
         identity.clone(),
         oauth.clone(),
@@ -562,7 +562,7 @@ async fn usable(fixture: &Fixture, owner: &DatabaseConnection, secrets: &Value) 
         secrets["environment"]["WEBDOCK_SSO_COOKIE_SECRET"]
             .as_str()
             .unwrap(),
-        webdock_browser_session::BrowserConfig::new(
+        spitzli_browser_session::BrowserConfig::new(
             CONSOLE,
             &format!("{AUTH}/api/auth"),
             client_id,
@@ -579,7 +579,7 @@ async fn usable(fixture: &Fixture, owner: &DatabaseConnection, secrets: &Value) 
         let query = location
             .query_pairs()
             .collect::<std::collections::HashMap<_, _>>();
-        let mut request = webdock_oauth::AuthorizationRequest::code(
+        let mut request = spitzli_oauth::AuthorizationRequest::code(
             query["client_id"].to_string(),
             query["redirect_uri"].to_string(),
             query["scope"].to_string(),
@@ -587,7 +587,7 @@ async fn usable(fixture: &Fixture, owner: &DatabaseConnection, secrets: &Value) 
         );
         request.state = Some(query["state"].to_string());
         request.nonce = Some(query["nonce"].to_string());
-        let webdock_oauth::AuthorizationOutcome::Redirect(callback) = oauth
+        let spitzli_oauth::AuthorizationOutcome::Redirect(callback) = oauth
             .authorize(cookie(&ready.set_cookie), request)
             .await
             .unwrap()

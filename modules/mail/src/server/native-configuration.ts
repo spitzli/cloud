@@ -4,7 +4,7 @@ import {
 } from "./native-submission-configuration";
 import { createPublicKey, randomBytes, randomUUID } from "node:crypto";
 import { z } from "zod";
-import { HostingError, resourceID } from "@webdock/hosting-contracts";
+import { HostingError, resourceID } from "@spitzli/hosting-contracts";
 import { openSecret, sealSecret } from "./secrets";
 import { type Agent } from "./native-ports";
 import { type Connection } from "./native-ports";

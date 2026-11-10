@@ -3,11 +3,11 @@ use crate::{invalid, unavailable};
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{collections::BTreeMap, path::Path};
-use webdock_plugin_protocol::{
+use spitzli_plugin_protocol::{
     Manifest, Result,
     release::{ReleaseInput, sha256, strict_json, verify_release},
 };
+use std::{collections::BTreeMap, path::Path};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

@@ -131,7 +131,7 @@ impl AgentInput {
                 }
                 let now = u64::try_from(x509_parser::time::ASN1Time::now().timestamp())
                     .map_err(|_| SetupError::Input)?;
-                let identity = webdock_agent_protocol::certificate_identity(&pem.contents, now)
+                let identity = spitzli_agent_protocol::certificate_identity(&pem.contents, now)
                     .map_err(|_| SetupError::Input)?;
                 let (_, leaf) = x509_parser::parse_x509_certificate(&pem.contents)
                     .map_err(|_| SetupError::Input)?;
@@ -384,7 +384,7 @@ mod tests {
         ca.is_ca = rcgen::IsCa::Ca(rcgen::BasicConstraints::Unconstrained);
         ca.key_usages = vec![rcgen::KeyUsagePurpose::KeyCertSign];
         let ca_pem = ca.self_signed(&ca_key).unwrap().pem();
-        let leaf = webdock_plugin_host::provisioning::tls::issue_runtime_identity(
+        let leaf = spitzli_plugin_host::provisioning::tls::issue_runtime_identity(
             &ca_pem,
             &ca_key.serialize_pem(),
             "agent.example.test",

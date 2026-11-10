@@ -1,7 +1,7 @@
 use serde_json::json;
-use webdock_echo_demo::{Echo, validate_manifest};
-use webdock_plugin_protocol::{InvocationClaims, Manifest};
-use webdock_plugin_runtime::ActionHandler;
+use spitzli_echo_demo::{Echo, validate_manifest};
+use spitzli_plugin_protocol::{InvocationClaims, Manifest};
+use spitzli_plugin_runtime::ActionHandler;
 
 fn claims(action: &str) -> InvocationClaims {
     serde_json::from_value(json!({
@@ -13,7 +13,7 @@ fn claims(action: &str) -> InvocationClaims {
 async fn call(
     action: &str,
     input: serde_json::Value,
-) -> Result<serde_json::Value, webdock_plugin_protocol::PluginError> {
+) -> Result<serde_json::Value, spitzli_plugin_protocol::PluginError> {
     Echo.invoke(&claims(action), "t", input, json!({})).await
 }
 #[tokio::test]

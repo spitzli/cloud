@@ -8,10 +8,10 @@ use kube::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::time::Duration;
-use webdock_agent_protocol::build_storage::{
+use spitzli_agent_protocol::build_storage::{
     BuildStorageReservation, BuildStorageTarget, BuildVolumeReply, SignedBuildStorageReservation,
 };
+use std::time::Duration;
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]

@@ -51,10 +51,10 @@ backend before the request is released and its response checked. These tests mak
 no provider network calls and accept no supplied production DSN.
 
 ```sh
-cargo test --locked -p webdock-identity --test native_sessions -- --include-ignored --nocapture --test-threads=1
-cargo test --locked -p webdock-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
-cargo test --locked -p webdock-identity -p webdock-control-plane -p webdock-databases -p webdock-provider-connections -p webdock-plugin-host --lib --tests
-cargo clippy --locked -p webdock-identity -p webdock-control-plane -p webdock-databases -p webdock-provider-connections -p webdock-plugin-host --all-targets -- -D warnings
+cargo test --locked -p spitzli-identity --test native_sessions -- --include-ignored --nocapture --test-threads=1
+cargo test --locked -p spitzli-control-plane --test native_runtime --test native_runtime_postgres -- --include-ignored --test-threads=1
+cargo test --locked -p spitzli-identity -p spitzli-control-plane -p spitzli-databases -p spitzli-provider-connections -p spitzli-plugin-host --lib --tests
+cargo clippy --locked -p spitzli-identity -p spitzli-control-plane -p spitzli-databases -p spitzli-provider-connections -p spitzli-plugin-host --all-targets -- -D warnings
 cargo fmt --all -- --check
 ```
 

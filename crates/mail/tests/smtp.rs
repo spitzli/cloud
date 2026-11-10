@@ -1,5 +1,6 @@
 #![cfg(feature = "test-support")]
 use sha2::{Digest, Sha256};
+use spitzli_mail::smtp::{SmtpOptions, submit};
 use std::{
     sync::{
         Arc,
@@ -12,7 +13,6 @@ use tokio::{
     net::TcpListener,
 };
 use tokio_rustls::{TlsAcceptor, rustls};
-use webdock_mail::smtp::{SmtpOptions, submit};
 #[derive(Clone, Copy)]
 enum Mode {
     Accept,

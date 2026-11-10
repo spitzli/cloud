@@ -1,4 +1,5 @@
 //! Compiles the proposed unlinked module against actual native storage types.
+use spitzli_agent::storage::{StorageGuard, StoragePacket, VolumeRecord, recovery};
 use std::{
     path::Path,
     sync::{
@@ -6,7 +7,6 @@ use std::{
         atomic::{AtomicBool, Ordering},
     },
 };
-use webdock_agent::storage::{StorageGuard, StoragePacket, VolumeRecord, recovery};
 
 fn packet(app: &str) -> StoragePacket {
     StoragePacket::new(
@@ -15,7 +15,7 @@ fn packet(app: &str) -> StoragePacket {
         "789",
         1,
         67108864,
-        webdock_supervisor::timestamp().unwrap() + 60,
+        spitzli_supervisor::timestamp().unwrap() + 60,
     )
     .unwrap()
 }

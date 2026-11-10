@@ -16,7 +16,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--sizes',default='64');parser.add_argument('--timeout',type=int,default=60);parser.add_argument('--evidence',type=Path,default=ROOT/'docs/verification/2026-10-30-build-upload-large-tls.json');args=parser.parse_args()
     assert all(int(size) in [64,200,256] for size in args.sizes.split(',')) and 1<=args.timeout<=300
     if int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:')))*1024<9*1024**3:raise RuntimeError('9GiB_available_required')
-    built=subprocess.run(['cargo','test','-p','webdock-build','--features','worker,kubernetes-job','--test','upload_gateway_tls_large','--no-run','--message-format=json'],cwd=ROOT,capture_output=True,text=True,timeout=150)
+    built=subprocess.run(['cargo','test','-p','spitzli-build','--features','worker,kubernetes-job','--test','upload_gateway_tls_large','--no-run','--message-format=json'],cwd=ROOT,capture_output=True,text=True,timeout=150)
     if built.returncode:
         for row in map(json.loads,built.stdout.splitlines()):
             if row.get('reason')=='compiler-message':print(row['message'].get('rendered',''))

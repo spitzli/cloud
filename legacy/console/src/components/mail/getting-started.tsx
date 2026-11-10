@@ -1,1 +1,1 @@
-export { MailGettingStarted } from "@webdock/module-mail/ui/getting-started";
+export { MailGettingStarted } from "@spitzli/module-mail/ui/getting-started";

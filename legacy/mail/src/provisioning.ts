@@ -1,7 +1,7 @@
 import type { Pool } from "pg";
 import { randomBytes } from "node:crypto";
-import { claimMailOperation, finishMailOperation } from "@webdock/mail-core";
-import { sealSecret, openSecret } from "@webdock/mail-core/secrets";
+import { claimMailOperation, finishMailOperation } from "@spitzli/mail-core";
+import { sealSecret, openSecret } from "@spitzli/mail-core/secrets";
 import type { DockerMailRuntime, InstanceCredentials } from "./runtime/docker.ts";
 
 export async function processMailOperation(pool: Pool, runtime: Pick<DockerMailRuntime, "provision" | "suspend">, hostID: string, key: string): Promise<boolean> {

@@ -1,8 +1,8 @@
 //! Protected export/diagnostic producer; no production activation is implicit.
 use serde::Deserialize;
+use spitzli_plugin_kit::transport::{CoreTls, ListenTls, RuntimeTransport};
+use spitzli_plugin_runtime::{self as runtime};
 use std::{path::PathBuf, process::ExitCode, sync::Arc};
-use webdock_plugin_kit::transport::{CoreTls, ListenTls, RuntimeTransport};
-use webdock_plugin_runtime::{self as runtime};
 type Error = Box<dyn std::error::Error + Send + Sync>;
 #[derive(Debug)]
 struct StartupFailure(&'static str);
@@ -26,20 +26,20 @@ struct Configuration {
     core_peers: Vec<runtime::CorePeer>,
     storage_url: String,
     storage_ca: Option<PathBuf>,
-    backend: webdock_archives::backend::BackendConfig,
+    backend: spitzli_archives::backend::BackendConfig,
     staging_directory: PathBuf,
     #[serde(default)]
-    database_sources: Vec<webdock_archives::producer::DatabaseSource>,
+    database_sources: Vec<spitzli_archives::producer::DatabaseSource>,
 }
 async fn run() -> Result<(), Error> {
-    webdock_archives::initialize_crypto();
+    spitzli_archives::initialize_crypto();
     let mut args = std::env::args_os().skip(1);
     let path = PathBuf::from(args.next().ok_or("configuration path required")?);
     if args.next().is_some() {
         return Err("unexpected argument".into());
     }
     let config: Configuration = serde_json::from_slice(
-        &webdock_plugin_kit::read_file(&path, true)
+        &spitzli_plugin_kit::read_file(&path, true)
             .map_err(|_| StartupFailure("configuration_file"))?,
     )
     .map_err(|_| StartupFailure("configuration"))?;
@@ -55,20 +55,20 @@ async fn run() -> Result<(), Error> {
     transport
         .validate()
         .map_err(|_| StartupFailure("transport_configuration"))?;
-    let manifest = webdock_plugin_protocol::Manifest::parse(&webdock_plugin_kit::read_file(
+    let manifest = spitzli_plugin_protocol::Manifest::parse(&spitzli_plugin_kit::read_file(
         &config.manifest,
         false,
     )?)?;
-    webdock_archives::validate_manifest(&manifest).map_err(|_| StartupFailure("manifest"))?;
+    spitzli_archives::validate_manifest(&manifest).map_err(|_| StartupFailure("manifest"))?;
     let ca = config
         .storage_ca
         .as_ref()
-        .map(|path| webdock_plugin_kit::read_file(path, false))
+        .map(|path| spitzli_plugin_kit::read_file(path, false))
         .transpose()?;
-    webdock_archives::prepare_staging(&config.staging_directory)
+    spitzli_archives::prepare_staging(&config.staging_directory)
         .map_err(|_| StartupFailure("staging"))?;
     let backend = Arc::new(
-        webdock_archives::backend::Backend::new(config.backend)
+        spitzli_archives::backend::Backend::new(config.backend)
             .await
             .map_err(|code| {
                 StartupFailure(match code {
@@ -85,7 +85,7 @@ async fn run() -> Result<(), Error> {
             })?,
     );
     let engine = Arc::new(
-        webdock_archives::Engine::connect(
+        spitzli_archives::Engine::connect(
             &config.storage_url,
             ca.as_deref(),
             backend,
@@ -99,7 +99,7 @@ async fn run() -> Result<(), Error> {
         .core_client()
         .await
         .map_err(|_| StartupFailure("core_tls"))?;
-    let plugin = Arc::new(webdock_archives::Handler {
+    let plugin = Arc::new(spitzli_archives::Handler {
         engine,
         host: client.clone(),
     });

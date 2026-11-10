@@ -1,4 +1,18 @@
 use super::*;
+use spitzli_agent::{
+    config::{AgentConfig, ControlEndpoint, RuntimeConfiguration},
+    management::Daemon,
+    outbox::ReceiptOutbox,
+};
+use spitzli_agent_control::{ControlPlane, LocalBinding};
+use spitzli_agent_protocol::{
+    self as wire,
+    agent_control_client::AgentControlClient,
+    agent_control_server::{AgentControl, AgentControlServer},
+};
+use spitzli_supervisor::{
+    Capabilities, Command, LeaseGuard, ObservedState, Phase, RuntimeAdapter, RuntimeSpec,
+};
 use std::{
     os::unix::fs::PermissionsExt,
     sync::atomic::{AtomicBool, AtomicUsize, Ordering},
@@ -6,20 +20,6 @@ use std::{
 use tonic::{
     Request, Response, Status,
     transport::{Endpoint, Server},
-};
-use webdock_agent::{
-    config::{AgentConfig, ControlEndpoint, RuntimeConfiguration},
-    management::Daemon,
-    outbox::ReceiptOutbox,
-};
-use webdock_agent_control::{ControlPlane, LocalBinding};
-use webdock_agent_protocol::{
-    self as wire,
-    agent_control_client::AgentControlClient,
-    agent_control_server::{AgentControl, AgentControlServer},
-};
-use webdock_supervisor::{
-    Capabilities, Command, LeaseGuard, ObservedState, Phase, RuntimeAdapter, RuntimeSpec,
 };
 
 struct AbortServer(tokio::task::AbortHandle);
@@ -44,29 +44,29 @@ impl RuntimeAdapter for Runtime {
         &self,
         command: &Command,
         guard: &LeaseGuard,
-    ) -> webdock_supervisor::Result<ObservedState> {
+    ) -> spitzli_supervisor::Result<ObservedState> {
         guard.check_for(command).await?;
         if self.fail.load(Ordering::SeqCst) {
-            return Err(webdock_supervisor::ExecutionError::Runtime);
+            return Err(spitzli_supervisor::ExecutionError::Runtime);
         }
         self.inspect(&command.spec).await
     }
-    async fn inspect(&self, spec: &RuntimeSpec) -> webdock_supervisor::Result<ObservedState> {
+    async fn inspect(&self, spec: &RuntimeSpec) -> spitzli_supervisor::Result<ObservedState> {
         Ok(ObservedState {
             autoscaling: None,
             resource_id: spec.resource_id.to_string(),
             revision: spec.revision,
             phase: Phase::Running,
             ready: true,
-            observed_at: webdock_supervisor::timestamp()?,
+            observed_at: spitzli_supervisor::timestamp()?,
             runtime_id: Some("custody-runtime".into()),
             conditions: vec![],
             storage: None,
         })
     }
-    async fn logs(&self, _spec: &RuntimeSpec, _tail: u32) -> webdock_supervisor::Result<String> {
+    async fn logs(&self, _spec: &RuntimeSpec, _tail: u32) -> spitzli_supervisor::Result<String> {
         if self.fail.load(Ordering::SeqCst) {
-            return Err(webdock_supervisor::ExecutionError::Runtime);
+            return Err(spitzli_supervisor::ExecutionError::Runtime);
         }
         Ok("owned-runtime-log".into())
     }
@@ -201,9 +201,9 @@ async fn scenario(f: Arc<Fixture>, case: Case) {
             db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             std::env::var("BETTER_AUTH_SECRET").unwrap(),
-            Arc::new(webdock_persistence::IdAllocator::new(
+            Arc::new(spitzli_persistence::IdAllocator::new(
                 db("AUTH_DATABASE_URL").await,
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )),
         )
         .await
@@ -582,7 +582,7 @@ async fn scenario(f: Arc<Fixture>, case: Case) {
         );
         assert!(matches!(
             daemon.connect().await,
-            Err(webdock_agent::management::AgentError::Revoked)
+            Err(spitzli_agent::management::AgentError::Revoked)
         ));
     };
     inner.await;

@@ -25,7 +25,7 @@ type OrgPermission = string;
 import type {
   HostingActor,
   SetupConfiguration,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import type { Connection } from "./authorization";
 
 export function createHostingPermissions(dependencies: {

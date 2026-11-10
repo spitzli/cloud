@@ -11,14 +11,14 @@ use axum::{
     routing::post,
 };
 use serde_json::json;
+use spitzli_provider_connections::{Command, Connections, Error};
 use std::sync::Arc;
-use webdock_provider_connections::{Command, Connections, Error};
 pub type NeonConnections = Connections;
 
 /// Preserve the existing HTTP connection-key priority in every private callback process.
 pub fn encryption_key(
     env: &std::collections::HashMap<String, String>,
-) -> Result<&str, webdock_core::ContractError> {
+) -> Result<&str, spitzli_core::ContractError> {
     [
         "WEBDOCK_HOSTING_ENCRYPTION_KEY",
         "BETTER_AUTH_SECRET",
@@ -26,7 +26,7 @@ pub fn encryption_key(
     ]
     .iter()
     .find_map(|key| env.get(*key).map(String::as_str))
-    .ok_or_else(|| webdock_core::ContractError("Missing Neon connection encryption key".into()))
+    .ok_or_else(|| spitzli_core::ContractError("Missing Neon connection encryption key".into()))
 }
 
 pub fn routes() -> Router<Arc<ServiceState>> {

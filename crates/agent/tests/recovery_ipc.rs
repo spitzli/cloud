@@ -1,7 +1,7 @@
 //! Owned kernel-credential IPC probe only; no fake Core admission or recovery-set success.
 #![cfg(feature = "docker")]
+use spitzli_agent::storage::{StorageClient, StorageKind, StoragePool};
 use std::{os::unix::fs::PermissionsExt, path::Path};
-use webdock_agent::storage::{StorageClient, StorageKind, StoragePool};
 fn write(path: &Path, value: &impl serde::Serialize) {
     std::fs::write(path, serde_json::to_vec(value).unwrap()).unwrap();
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).unwrap();
@@ -35,13 +35,13 @@ async fn disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denia
         } else if mode == "denied" {
             assert!(result.is_err());
         } else {
-            let packet = webdock_agent::storage::StoragePacket::new(
+            let packet = spitzli_agent::storage::StoragePacket::new(
                 "456",
                 "123",
                 "789",
                 1,
                 67108864,
-                webdock_supervisor::timestamp().unwrap() + 30,
+                spitzli_supervisor::timestamp().unwrap() + 30,
             )
             .unwrap();
             assert!(client.ensure(&packet).await.is_err());
@@ -89,7 +89,7 @@ async fn disposable_recovery_ipc_enforces_kernel_peer_and_preserves_legacy_denia
     let s = socket.clone();
     let t = trust.clone();
     let server = tokio::spawn(async move {
-        webdock_agent::storage::serve_kind_with_recovery(
+        spitzli_agent::storage::serve_kind_with_recovery(
             &c,
             &s,
             StorageKind::Apps,

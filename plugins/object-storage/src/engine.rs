@@ -5,9 +5,9 @@ use crate::{
 };
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use spitzli_plugin_kit::seal::Sealer;
 use std::{sync::Arc, time::Duration};
 use uuid::Uuid;
-use webdock_plugin_kit::seal::Sealer;
 type Result<T> = std::result::Result<T, &'static str>;
 pub struct Engine {
     pub(crate) store: Store,
@@ -57,9 +57,9 @@ impl Engine {
                 .map_err(|_| "Object metadata encoding failed");
         }
         if let Some(direction) = match action {
-            "objects.upload" => Some(webdock_plugin_protocol::storage::StorageDirection::Upload),
+            "objects.upload" => Some(spitzli_plugin_protocol::storage::StorageDirection::Upload),
             "objects.download" => {
-                Some(webdock_plugin_protocol::storage::StorageDirection::Download)
+                Some(spitzli_plugin_protocol::storage::StorageDirection::Download)
             }
             _ => None,
         } {

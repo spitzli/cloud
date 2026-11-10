@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { requestAPI } from "@webdock/api-client";
-import type { ModuleView } from "@webdock/module-sdk";
+import { requestAPI } from "@spitzli/api-client";
+import type { ModuleView } from "@spitzli/module-sdk";
 import { guardModuleRoute } from "./lib/module-route-guard";
 import { createBrowserProxy } from "./lib/browser-auth-proxy";
 export default createBrowserProxy(

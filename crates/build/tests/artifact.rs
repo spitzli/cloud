@@ -1,5 +1,5 @@
+use spitzli_build::artifact::{Archive, validate_oci};
 use std::collections::BTreeMap;
-use webdock_build::artifact::{Archive, validate_oci};
 fn archive(files: &[(&str, &[u8])]) -> Vec<u8> {
     let mut out = tar::Builder::new(Vec::new());
     for (path, bytes) in files {

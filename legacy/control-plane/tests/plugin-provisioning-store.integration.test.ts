@@ -1,7 +1,7 @@
 import { pluginScopeSQL } from "../src/modules/plugins/scope-rls";
 import { pluginTemplateSchemaSQL } from "../src/modules/hosting/plugin-template-schema";
 import { authorizePluginHTTPAction } from "../src/modules/plugins/website-http";
-import { authorizePluginAction } from "@webdock/core/plugin-runtime-policy";
+import { authorizePluginAction } from "@spitzli/core/plugin-runtime-policy";
 import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomBytes, randomUUID } from "node:crypto";

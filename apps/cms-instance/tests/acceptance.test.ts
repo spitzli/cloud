@@ -9,7 +9,7 @@ test(
   async () => {
     const { getCMS, handleNativeCMS } = await import("../src/lib/cms.ts");
     const { publishedPage } = await import("../src/lib/public.ts");
-    const { projectBridgeUser } = await import("@webdock/cms-bridge/auth");
+    const { projectBridgeUser } = await import("@spitzli/cms-bridge/auth");
     const { loadCMSConfig } = await import("../src/lib/config.ts");
     const config = loadCMSConfig();
     const payload = await getCMS();

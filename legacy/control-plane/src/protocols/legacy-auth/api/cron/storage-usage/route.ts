@@ -1,4 +1,4 @@
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { timingSafeEqual } from "node:crypto";
 import { refreshStorageBatch } from "../../../../../modules/platform/storage-usage";
 

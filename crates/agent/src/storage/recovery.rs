@@ -2,8 +2,8 @@
 //! The operation executor must validate durable policy/lease, stop all consumers and
 //! retain the source before calling these checks. No authority is inferred from a receipt.
 use super::{StorageGuard, StoragePacket, VolumeRecord, VolumeState};
+use spitzli_supervisor::{ExecutionError, Result};
 use std::path::{Component, Path};
-use webdock_supervisor::{ExecutionError, Result};
 
 pub const NTFY_PROFILE: &str = "ntfy-sqlite-offline-v1";
 pub const MAX_RECOVERY_BYTES: u64 = 64 * 1024 * 1024 * 1024;

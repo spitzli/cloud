@@ -87,11 +87,11 @@ def main():
             if result.returncode:
                 raise RuntimeError(f"{title} failed; private diagnostics retained at {directory}")
 
-        run("migration", ["cargo", "run", "--locked", "-p", "webdock-control-plane", "--bin", "webdock-migrate", "--", "--target", f"{address}/webdock_rls_test", "--initialize-empty", "--provision-roles-from", str(password_file)], 420)
+        run("migration", ["cargo", "run", "--locked", "-p", "spitzli-control-plane", "--bin", "spitzli-migrate", "--", "--target", f"{address}/webdock_rls_test", "--initialize-empty", "--provision-roles-from", str(password_file)], 420)
         # Existing Hosting fixtures exercise retained writers as well as native ID allocation.
         # Fresh schema-only bootstrap has no legacy Auth generator state; no customer data is seeded.
         docker("exec", custody, "psql", "-U", "postgres", "-d", "webdock_rls_test", "-v", "ON_ERROR_STOP=1", "-c", "INSERT INTO webdock_auth.snowflake_state(singleton) VALUES(true)")
-        run("acceptance", ["cargo", "test", "--locked", "-p", "webdock-databases", "--test", "persistence", "--", "--include-ignored", "--test-threads=1"], 360)
+        run("acceptance", ["cargo", "test", "--locked", "-p", "spitzli-databases", "--test", "persistence", "--", "--include-ignored", "--test-threads=1"], 360)
         print("Fresh native DB migration, existing database lifecycle and backup session/revocation authority checks passed.", flush=True)
     finally:
         (directory / "passwords.json").unlink(missing_ok=True)

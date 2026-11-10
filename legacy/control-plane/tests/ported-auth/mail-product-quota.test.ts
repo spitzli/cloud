@@ -65,7 +65,7 @@ test("last available recipient is reserved once, unknown retains it and settleme
 });
 test("native and product gateways share the last tenant recipient allowance", async () =>
   withMailProductFixture(async (f) => {
-    const { nativeMailSchemaSQL } = await import("@webdock/mail-core/schema");
+    const { nativeMailSchemaSQL } = await import("@spitzli/mail-core/schema");
     const { mailBudgetSchemaSQL, reserveMailBudget } =
       await import("../../src/modules/mail/mail-budget");
     const { withMailTransaction } =
@@ -130,8 +130,8 @@ test("native and product gateways share the last tenant recipient allowance", as
   }));
 test("incoming activation cannot change the route of pending product work", async () =>
   withMailProductFixture(async (f) => {
-    const { nativeMailSchemaSQL } = await import("@webdock/mail-core/schema");
-    const { requestMailService } = await import("@webdock/mail-core");
+    const { nativeMailSchemaSQL } = await import("@spitzli/mail-core/schema");
+    const { requestMailService } = await import("@spitzli/mail-core");
     await f.db.query(nativeMailSchemaSQL);
     const customer = f.actorA.customerID;
     const id = (

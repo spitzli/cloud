@@ -90,7 +90,7 @@ impl RestoreCaller<'_> {
                 "Discard the whole failed restore attempt and reauthorize.",
             ));
         }
-        let current = webdock_browser_session::revalidate_stored_authority(
+        let current = spitzli_browser_session::revalidate_stored_authority(
             &service.identity,
             self.authentication,
             service.browser.as_deref(),
@@ -987,8 +987,8 @@ mod tests {
     #[ignore = "fresh actual Native source factory plus coordinated 0056 release only"]
     async fn actual_native_source_prepares_direct_restore_retries_and_rolls_back() {
         use sea_orm::Database;
+        use spitzli_identity::{CookiePolicy, SecretKeys};
         use std::collections::BTreeMap;
-        use webdock_identity::{CookiePolicy, SecretKeys};
         #[derive(serde::Deserialize)]
         #[serde(rename_all = "camelCase", deny_unknown_fields)]
         struct Input {
@@ -1042,7 +1042,7 @@ mod tests {
         let ids = Arc::new(
             IdAllocator::connect(
                 local(&input.auth_url),
-                webdock_ids::Identity::platform(0, 2).unwrap(),
+                spitzli_ids::Identity::platform(0, 2).unwrap(),
             )
             .await
             .unwrap_or_else(|_| panic!("fixture allocator")),
@@ -1070,12 +1070,12 @@ mod tests {
             )
             .with_allocator(ids.clone()),
         );
-        let oauth = Arc::new(webdock_oauth::OAuthService::new(
+        let oauth = Arc::new(spitzli_oauth::OAuthService::new(
             auth.clone(),
             identity.clone(),
             ids.clone(),
             keys.clone(),
-            webdock_oauth::OAuthConfig::new(
+            spitzli_oauth::OAuthConfig::new(
                 &input.issuer,
                 &format!("{}/mcp", input.app_origin),
                 Some(input.client_id.clone()),
@@ -1089,7 +1089,7 @@ mod tests {
                 oauth,
                 keys,
                 &input.browser_cookie_secret,
-                webdock_browser_session::BrowserConfig::new(
+                spitzli_browser_session::BrowserConfig::new(
                     &input.app_origin,
                     &input.issuer,
                     input.client_id,

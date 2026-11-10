@@ -1,9 +1,9 @@
 import { and, eq, sql } from "drizzle-orm";
-import * as schema from "@webdock/platform-db/schema/registry";
-import { recordID } from "@webdock/core/registry/contracts";
+import * as schema from "@spitzli/platform-db/schema/registry";
+import { recordID } from "@spitzli/core/registry/contracts";
 import { instanceInput } from "./registry-contracts";
-import { RegistryError } from "@webdock/core/registry/errors";
-import type { RegistryCollectionExtension } from "@webdock/core/registry/ports";
+import { RegistryError } from "@spitzli/core/registry/errors";
+import type { RegistryCollectionExtension } from "@spitzli/core/registry/ports";
 
 /** Composed even when CMS is disabled: retained instances still block archiving. */
 export function createCmsRegistryExtension(
@@ -70,7 +70,7 @@ export function createCmsRegistryExtension(
 
 /** Retention is independent of whether the product is enabled. */
 export async function beforeArchiveCmsProject(
-  tx: import("@webdock/core/registry/ports").RegistryTransaction,
+  tx: import("@spitzli/core/registry/ports").RegistryTransaction,
   collection: string,
   key: string,
 ) {

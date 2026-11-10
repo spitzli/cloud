@@ -7,13 +7,13 @@ use sea_orm::{
     TransactionTrait, Value as SqlValue,
 };
 use serde_json::{Value, json};
-use std::{sync::Arc, time::Duration};
-use unicode_normalization::{UnicodeNormalization, char::is_combining_mark};
-use webdock_identity::{
+use spitzli_identity::{
     Delivery, DeliveryKind, DeliveryRequest, IdentityService, Principal, RlsSigner, SecretKeys,
     UnavailableDelivery,
 };
-use webdock_persistence::IdAllocator;
+use spitzli_persistence::IdAllocator;
+use std::{sync::Arc, time::Duration};
+use unicode_normalization::{UnicodeNormalization, char::is_combining_mark};
 
 const PROFILE: &str = "c.id,c.name,c.status,c.customer_type,c.first_name,c.last_name,c.company_name,c.contact_name,c.contact_email,c.phone,c.address_line1,c.address_line2,c.postal_code,c.city,c.region,c.country";
 pub struct AccessService {
@@ -38,7 +38,7 @@ impl AccessService {
     ) -> Result<Self> {
         let origin = &config.auth_origin;
         if (!config.allow_local_http && origin.scheme() != "https")
-            || webdock_identity::validate_account_origin(origin).is_err()
+            || spitzli_identity::validate_account_origin(origin).is_err()
         {
             return Err(Error::Configuration);
         }

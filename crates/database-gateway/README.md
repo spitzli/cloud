@@ -11,7 +11,7 @@ Managed PostgreSQL uses an isolated process and mode-0700 directory per session/
 Run with the environment described in `apps/database-gateway/.env.example`:
 
 ```sh
-cargo run -p webdock-database-gateway
+cargo run -p spitzli-database-gateway
 ```
 
 The executable does not load environment files implicitly. `TABULARIS_EXPECTED_COMMIT` must match the retained stamped runtime. Optional `WEBDOCK_DATABASE_RUNTIME_CA_FILE` supplies an operator-owned public CA bundle for private HTTPS/WSS runtime and Auth endpoints; the old `NODE_EXTRA_CA_CERTS` name is a bounded configuration alias. Hostname verification stays enabled. Managed PostgreSQL uses its separately authorized database CA, not this gateway trust bundle.

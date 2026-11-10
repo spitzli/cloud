@@ -9,9 +9,9 @@ use kube::{
 };
 pub use profile::{STAGE_SCRIPT, plugin_objects};
 use serde_json::{Value, json};
+use spitzli_agent_protocol::plugin::*;
+use spitzli_supervisor::{ExecutionError, Result, timestamp};
 use std::{future::Future, time::Duration};
-use webdock_agent_protocol::plugin::*;
-use webdock_supervisor::{ExecutionError, Result, timestamp};
 
 #[async_trait::async_trait]
 pub trait PluginRuntimeAuthority: Send + Sync {
@@ -495,12 +495,12 @@ fn profile_matches(actual: &Value, wanted: &Value, key: Option<&str>) -> bool {
             ) =>
         {
             let scale = if key == Some("cpu") {
-                webdock_plugin_protocol::MILLI
+                spitzli_plugin_protocol::MILLI
             } else {
                 (1, 1)
             };
-            let amount = webdock_plugin_protocol::quantity(actual, scale);
-            amount.is_some() && amount == webdock_plugin_protocol::quantity(wanted, scale)
+            let amount = spitzli_plugin_protocol::quantity(actual, scale);
+            amount.is_some() && amount == spitzli_plugin_protocol::quantity(wanted, scale)
         }
         _ => actual == wanted,
     }

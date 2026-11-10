@@ -1,5 +1,5 @@
 use ed25519_dalek::SigningKey;
-use webdock_repository_protocol::*;
+use spitzli_repository_protocol::*;
 #[test]
 fn repository_tokens_are_bound_and_cannot_be_session_invocations() {
     let key = SigningKey::from_bytes(&[19; 32]);
@@ -43,7 +43,7 @@ fn repository_tokens_are_bound_and_cannot_be_session_invocations() {
         .is_err()
     );
     assert!(
-        webdock_plugin_protocol::verify_invocation(
+        spitzli_plugin_protocol::verify_invocation(
             &token,
             &key.verifying_key(),
             "fixture-repository",

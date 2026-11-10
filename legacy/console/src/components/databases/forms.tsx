@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 import {
   AddDatabase as Add,
   DatabaseAccess as Access,
-} from "@webdock/module-databases/ui/forms";
+} from "@spitzli/module-databases/ui/forms";
 import { DatabaseActionBoundary } from "./action-boundary";
 export function AddDatabase(props: ComponentProps<typeof Add>) {
   return (

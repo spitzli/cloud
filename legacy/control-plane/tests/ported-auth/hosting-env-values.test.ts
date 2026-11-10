@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { environmentPatchSchema } from "@webdock/hosting-contracts";
+import { environmentPatchSchema } from "@spitzli/hosting-contracts";
 import {
   patchEnvironment,
   openEnvironment,
