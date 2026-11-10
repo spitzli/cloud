@@ -1,5 +1,5 @@
-import { ModuleError } from "@webdock/module-sdk";
-import type { SessionReference } from "@webdock/core/identity";
+import { ModuleError } from "@spitzli/module-sdk";
+import type { SessionReference } from "@spitzli/core/identity";
 type Identity = {
   headers: Headers;
   reference: SessionReference;

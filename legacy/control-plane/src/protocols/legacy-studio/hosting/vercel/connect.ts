@@ -1,7 +1,7 @@
 import { hostingCall as call } from "../../../../modules/portal/hosting";
 const hostingCall = async <T>(command: unknown): Promise<T> =>
   (await call(command)) as T;
-import { resourceID } from "@webdock/hosting-contracts";
+import { resourceID } from "@spitzli/hosting-contracts";
 export async function POST(request: Request) {
   const origin = process.env.WEBDOCK_STUDIO_ORIGIN;
   if (!origin || request.headers.get("origin") !== new URL(origin).origin)

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { Pool, PoolClient } from "pg";
-import { currentDatabaseScope } from "@webdock/database-runtime";
-import { dependencyBlockers } from "@webdock/module-sdk/plugins";
+import { currentDatabaseScope } from "@spitzli/database-runtime";
+import { dependencyBlockers } from "@spitzli/module-sdk/plugins";
 import type {
   InstalledPlugin,
   SessionActor,

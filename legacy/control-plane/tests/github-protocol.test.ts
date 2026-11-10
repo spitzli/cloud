@@ -29,7 +29,7 @@ test("Core and full mount one GitHub protocol, enforce live identity and preserv
         return principal();
       },
     }));
-    const { currentDatabaseScope } = await import("@webdock/database-runtime");
+    const { currentDatabaseScope } = await import("@spitzli/database-runtime");
     mock.module("./apps/control-plane/src/modules/integrations/operator", () => ({ currentRegistryActor: async () => {
       actorReads++;
       assert.equal(currentDatabaseScope()?.subject, "1001");

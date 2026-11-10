@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { Pool } from "pg";
-import { ScopedPool, withDatabaseScope } from "@webdock/database-runtime";
+import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
 import { schedule, claim, complete } from "../src/jobs";
 const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
 (fixtureFile ? test : test.skip)(

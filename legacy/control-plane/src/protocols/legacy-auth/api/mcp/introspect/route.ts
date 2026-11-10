@@ -1,4 +1,4 @@
-import { requireOAuthCapability } from "@webdock/auth-configuration/protocols";
+import { requireOAuthCapability } from "@spitzli/auth-configuration/protocols";
 import {
   currentMCPClaims,
   currentHostingMCPClaims,

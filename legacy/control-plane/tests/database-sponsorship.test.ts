@@ -3,7 +3,7 @@ import {
   databasePlanSchema,
   databasePlanAvailableTo,
   databaseCommandSchema,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 test("database provisioning sponsorship remains bound to its approved customer", () => {
   const plan = databasePlanSchema.parse({
     kind: "dedicated",

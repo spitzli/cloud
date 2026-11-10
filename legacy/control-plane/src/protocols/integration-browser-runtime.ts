@@ -1,5 +1,5 @@
-import { withDatabaseScope } from "@webdock/database-runtime";
-import { ModuleError } from "@webdock/module-sdk";
+import { withDatabaseScope } from "@spitzli/database-runtime";
+import { ModuleError } from "@spitzli/module-sdk";
 import type { ApiConfig } from "../config";
 import { consoleAuthConfiguration } from "../modules/auth/console-configuration";
 import {

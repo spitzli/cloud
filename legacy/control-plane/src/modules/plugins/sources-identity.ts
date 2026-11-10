@@ -2,7 +2,7 @@ import {
   currentDatabaseScope,
   withDatabaseScope,
   type DatabaseScope,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import type { ConsolePrincipal } from "../auth/clerk-identity";
 import type { StoredConsoleIdentity } from "../auth/clerk-provider";
 import { sourceFail } from "./sources-policy";

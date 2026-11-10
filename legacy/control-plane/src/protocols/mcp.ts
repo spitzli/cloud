@@ -1,6 +1,6 @@
 import Elysia from "elysia";
 import { HTTPError } from "../plugins/body";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import type { ApiConfig } from "../config";
 import type { Mount } from "../route-manifest";
 import { GET, POST } from "./mcp-handler";

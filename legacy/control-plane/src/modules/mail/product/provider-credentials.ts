@@ -1,4 +1,4 @@
-import { createMailCredentials } from "@webdock/module-mail/server/provider-credentials";
+import { createMailCredentials } from "@spitzli/module-mail/server/provider-credentials";
 import { mailDatabase as database, withMailTransaction } from "./store";
 import { assertMailAccess } from "./access";
 import {

@@ -6,7 +6,7 @@ test("OAuth client administration uses fresh provider role and MFA when Clerk is
     import { mock } from "bun:test";
     import assert from "node:assert/strict";
     let oauth, proof={operator:false,twoFactorEnabled:true};
-    mock.module("@webdock/auth-better-auth/runtime",()=>({createBetterAuthRuntime: options=>options()}));
+    mock.module("@spitzli/auth-better-auth/runtime",()=>({createBetterAuthRuntime: options=>options()}));
     mock.module("@better-auth/oauth-provider",()=>({oauthProvider: options=>{oauth=options;return {id:"oauth-provider"};}}));
     mock.module("./apps/control-plane/src/db/runtime",()=>({authDatabase:{query:async()=>({rows:[]})},database:{query:async()=>({rows:[]})}}));
     mock.module("./apps/control-plane/src/modules/auth/clerk-provider",()=>({legacyClerkMemberships:async()=>proof,linkedMembershipRole:async()=>null}));

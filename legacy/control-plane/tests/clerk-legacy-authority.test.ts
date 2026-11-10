@@ -42,7 +42,7 @@ for (const selected of [false, true]) {
       user.twoFactorEnabled = false;
       assert.equal((await legacyClerkMemberships("local_user")).twoFactorEnabled, false);
       assert.deepEqual(proof.roles, [{ organizationID: "local_org", customerID: "customer", role: "member", permissions: ["org:projects:manage"] }]);
-      const { withDatabaseScope } = await import("@webdock/database-runtime");
+      const { withDatabaseScope } = await import("@spitzli/database-runtime");
       const { selectedIdentityDirectory } = await import("./apps/control-plane/src/modules/auth/principal");
       const workerProof = { ...proof, sessionID: "local_session" };
       let revoked = false, banned = false;

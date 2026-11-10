@@ -1,7 +1,7 @@
-import { isWebsiteHTTPAction } from "@webdock/core/plugin-runtime-policy";
+import { isWebsiteHTTPAction } from "@spitzli/core/plugin-runtime-policy";
 import type { Capability, PluginManifest } from "@spitzli/plugin-sdk/contracts";
 import { PluginError } from "@spitzli/plugin-sdk/contracts";
-import type { HTTPBinding } from "@webdock/core/plugin-http";
+import type { HTTPBinding } from "@spitzli/core/plugin-http";
 
 type WebsiteScope = {
   subject: string;

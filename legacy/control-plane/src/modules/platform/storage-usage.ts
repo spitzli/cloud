@@ -1,21 +1,21 @@
 import { selectedIdentityDirectory } from "../auth/principal";
-import { createStorageUsage } from "@webdock/module-storage/server/usage";
+import { createStorageUsage } from "@spitzli/module-storage/server/usage";
 import {
   measureStorage,
   validateStoreToken,
-} from "@webdock/adapter-storage-vercel";
+} from "@spitzli/adapter-storage-vercel";
 import { withAuthenticatedDatabase } from "../../db/database-context";
 import { resolveSessionReference } from "../auth/principal";
 import { database } from "../../db/runtime";
 import { getTenant } from "../access/tenants";
 import { encryptMailSecret, decryptMailSecret } from "./platform";
 import { installationRegistry } from "../../installation";
-export { measureStorage } from "@webdock/adapter-storage-vercel";
+export { measureStorage } from "@spitzli/adapter-storage-vercel";
 export {
   StorageUsageError,
   storageUsageSchemaSQL,
   normalizeStoragePrefix,
-} from "@webdock/module-storage/server/usage";
+} from "@spitzli/module-storage/server/usage";
 export const { getTenantStorage, manageTenantStorage, refreshStorageBatch } =
   createStorageUsage({
     identity: selectedIdentityDirectory,

@@ -1,7 +1,7 @@
 import { hostingCall as call } from "../../../../modules/portal/hosting";
 const hostingCall = async <T>(command: unknown): Promise<T> =>
   (await call(command)) as T;
-import { commandSchema } from "@webdock/hosting-contracts";
+import { commandSchema } from "@spitzli/hosting-contracts";
 import { vercelCompletionURL } from "../../../../modules/integrations/vercel/vercel-oauth";
 export async function GET(request: Request) {
   const origin = process.env.WEBDOCK_STUDIO_ORIGIN!;

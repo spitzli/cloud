@@ -1,5 +1,5 @@
 import type { Pool } from "pg";
-import { createRegistry } from "@webdock/module-sdk";
+import { createRegistry } from "@spitzli/module-sdk";
 /** Offline-only initialization. Runtime startup must never import or invoke this. */
 export async function initializePluginState(
   db: Pick<Pool, "connect">,

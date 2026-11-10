@@ -1,5 +1,5 @@
 import type { MailKeyInput } from "./mail-keys";
-import { mailStudioShapes } from "@webdock/module-mail/server/product-studio-shapes";
+import { mailStudioShapes } from "@spitzli/module-mail/server/product-studio-shapes";
 const isObject = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === "object" && !Array.isArray(value);
 const isString = (value: unknown): value is string =>

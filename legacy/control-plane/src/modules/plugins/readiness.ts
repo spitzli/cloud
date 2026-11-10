@@ -1,7 +1,7 @@
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import type { Pool } from "pg";
 import { getTableConfig } from "drizzle-orm/pg-core";
-import * as schema from "@webdock/platform-db/schema/plugins";
+import * as schema from "@spitzli/platform-db/schema/plugins";
 import { verifySchema } from "../../db/readiness";
 import { readInstalledPlugins } from "./store";
 /** Live-control startup gate; never initializes or repairs the state store. */

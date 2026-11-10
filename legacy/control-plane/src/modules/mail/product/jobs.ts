@@ -1,4 +1,4 @@
-import { createMailJobs } from "@webdock/module-mail/server/product-jobs";
+import { createMailJobs } from "@spitzli/module-mail/server/product-jobs";
 import { requireMail } from "../../../installation";
 import { recoverTerminalQuotas } from "./quota";
 import { refreshBatchIdempotency } from "./idempotency";
@@ -10,7 +10,7 @@ import { processCallbackInbox } from "./callback-inbox";
 import { deliverDueWebhooks } from "./webhooks";
 import { pruneMailData } from "./retention";
 import { recordMailEvent } from "./events";
-export { mailJobs, type MailJob } from "@webdock/module-mail/server/product-jobs";
+export { mailJobs, type MailJob } from "@spitzli/module-mail/server/product-jobs";
 export const { runMailJob } = createMailJobs({
   requireMail,
   recoverTerminalQuotas,

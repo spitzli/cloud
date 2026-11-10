@@ -3,7 +3,7 @@ import type {
   DatabaseReader,
   IdentityDirectory,
   SessionReference,
-} from "@webdock/core/identity";
+} from "@spitzli/core/identity";
 import { createBrowserPrincipal } from "../src/modules/auth/browser-principal";
 function fixture(provider: "clerk" | "better-auth" = "clerk") {
   let reference: SessionReference | null = { subject: "123", sessionID: "456" };

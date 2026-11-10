@@ -1,1 +1,1 @@
-export * from "@webdock/module-mail/server/product-openapi";
+export * from "@spitzli/module-mail/server/product-openapi";

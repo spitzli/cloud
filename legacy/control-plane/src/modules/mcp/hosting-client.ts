@@ -1,4 +1,4 @@
-import { HostingError, type HostingCommand } from "@webdock/hosting-contracts";
+import { HostingError, type HostingCommand } from "@spitzli/hosting-contracts";
 import { hostingBridge } from "../hosting/bridge";
 export async function hostingTokenCall(token: string, command: HostingCommand) {
   const id = process.env.WEBDOCK_SSO_CLIENT_ID,

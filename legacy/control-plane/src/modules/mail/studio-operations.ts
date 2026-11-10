@@ -1,6 +1,6 @@
 import { dispatchMailStudio } from "./product/studio";
 import { MailError } from "./product/access";
-import { MailValidationError } from "@webdock/mail-contracts/validation";
+import { MailValidationError } from "@spitzli/mail-contracts/validation";
 import { getNativeSending, manageNativeSending } from "./mail-sending";
 import { getTenantMailboxes, manageTenantMailboxes } from "./mailboxes";
 import { launchTenantWebmail } from "./mail-sessions";
@@ -30,7 +30,7 @@ import {
   getTenantTracking,
   manageTenantTracking,
 } from "./mail-tracking";
-import { mailStudioShapes } from "@webdock/module-mail/server/product-studio-shapes";
+import { mailStudioShapes } from "@spitzli/module-mail/server/product-studio-shapes";
 import { requireAccessOperator } from "../access/access-management";
 import {
   getMailConnectionStatus,

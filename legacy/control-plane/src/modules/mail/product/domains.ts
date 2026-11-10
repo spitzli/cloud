@@ -1,4 +1,4 @@
-import { createMailDomains } from "@webdock/module-mail/server/product-domains";
+import { createMailDomains } from "@spitzli/module-mail/server/product-domains";
 import { requireMail } from "../../../installation";
 import { mailFetch } from "./deadline";
 import { mailDatabase as database, withMailTransaction } from "./store";

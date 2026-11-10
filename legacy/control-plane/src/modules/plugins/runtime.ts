@@ -12,7 +12,7 @@ import {
   currentDatabaseScope,
   withDatabaseScope,
   type DatabaseScope,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import {
   PluginError,
   parsePluginManifest,
@@ -23,20 +23,20 @@ import { verifyInvocation } from "@spitzli/plugin-sdk/server";
 import {
   authorizePluginAction,
   resolvePluginConfiguration,
-} from "@webdock/core/plugin-runtime-policy";
-import { createPluginData } from "@webdock/core/plugin-data";
+} from "@spitzli/core/plugin-runtime-policy";
+import { createPluginData } from "@spitzli/core/plugin-data";
 import {
   createPluginHTTP,
   pinnedHTTPTransport,
   type HTTPBinding,
-} from "@webdock/core/plugin-http";
+} from "@spitzli/core/plugin-http";
 import {
   createPluginApps,
   dispatchManagedApps,
   type ManagedAppsHandler,
   type ManagedAppsProvisioningHandler,
   type ManagedAppBinding,
-} from "@webdock/core/plugin-apps";
+} from "@spitzli/core/plugin-apps";
 import { createPluginSessionRunner } from "./invocation-session";
 import { revalidateStoredConsoleIdentity } from "../auth/clerk-provider";
 import { withConsolePrincipal, storedConsoleIdentity } from "../auth/principal";

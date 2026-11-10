@@ -11,11 +11,11 @@ import {
   type ActionsClaims,
 } from "./sources-actions";
 import { z } from "zod";
-import type { DatabaseScope } from "@webdock/database-runtime";
+import type { DatabaseScope } from "@spitzli/database-runtime";
 import type {
   PluginImport,
   PluginSourceView,
-} from "@webdock/api-client/plugin-sources";
+} from "@spitzli/api-client/plugin-sources";
 import {
   approveSourceManifest,
   chunkLimit,

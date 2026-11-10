@@ -1,7 +1,7 @@
 import { afterAll, expect, test } from "bun:test";
 import { Pool } from "pg";
 import { sql } from "drizzle-orm";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import { createDatabases } from "../src/db/client";
 import { assertTestDatabase } from "./helpers/database";
 const url = process.env.API_TEST_DATABASE_URL;

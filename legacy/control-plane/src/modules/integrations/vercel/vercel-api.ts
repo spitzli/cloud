@@ -1,1 +1,1 @@
-export * from "@webdock/hosting-contracts/vercel";
+export * from "@spitzli/hosting-contracts/vercel";

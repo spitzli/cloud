@@ -1,4 +1,4 @@
-import { createMailWebhooks } from "@webdock/module-mail/server/product-webhooks";
+import { createMailWebhooks } from "@spitzli/module-mail/server/product-webhooks";
 import { mailDatabase as database } from "./store";
 import { encryptMailSecret, decryptMailSecret } from "../../platform/platform";
 import { withMailTransaction } from "./store";

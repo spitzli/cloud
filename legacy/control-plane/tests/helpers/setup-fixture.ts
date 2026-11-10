@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import type { Pool } from "pg";
-import type { HostingActor } from "@webdock/hosting-contracts";
+import type { HostingActor } from "@spitzli/hosting-contracts";
 export async function createSetupFixture(db: Pool) {
   const base = BigInt(
     "96" + BigInt("0x" + randomBytes(5).toString("hex")).toString(),

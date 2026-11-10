@@ -1,7 +1,7 @@
 import {
   moduleForOperation,
   type ProductModule,
-} from "@webdock/module-sdk/selection";
+} from "@spitzli/module-sdk/selection";
 import { requireInstalledOperation } from "../../installation";
 export type PublicOperationError = {
   kind: string;

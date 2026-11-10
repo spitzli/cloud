@@ -1,1 +1,1 @@
-export * from "@webdock/module-mail/server/native-mailbox-schema";
+export * from "@spitzli/module-mail/server/native-mailbox-schema";

@@ -3,11 +3,11 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import {
   createHostingAuthorization,
   type Connection,
-} from "@webdock/module-hosting/server/authorization";
+} from "@spitzli/module-hosting/server/authorization";
 import {
   createHostingPermissions,
   gitActionPermission,
-} from "@webdock/module-hosting/server/permissions";
+} from "@spitzli/module-hosting/server/permissions";
 import type { ConsolePrincipal } from "../../../src/modules/auth/clerk-identity";
 const context = new AsyncLocalStorage<ConsolePrincipal>();
 const withStoredConsolePrincipal = <T>(

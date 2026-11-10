@@ -1,6 +1,6 @@
 import { currentConsolePrincipal } from "../auth/principal";
 import { consoleAuthConfiguration } from "../auth/console-configuration";
-import { currentDatabaseScope } from "@webdock/database-runtime";
+import { currentDatabaseScope } from "@spitzli/database-runtime";
 import { authDatabase } from "../../db/runtime";
 import { clerkProvider, liveMemberships } from "../auth/clerk-provider";
 import { isClerkOrganizationRole } from "../auth/organization-permissions";

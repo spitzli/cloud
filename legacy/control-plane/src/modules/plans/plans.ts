@@ -8,7 +8,7 @@ import {
   effectiveHostingAllowances,
   parseHostingFields,
   type HostingAllowances,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { createHash, randomBytes } from "node:crypto";
 import type { PoolClient } from "pg";
 import { database } from "../../db/runtime";

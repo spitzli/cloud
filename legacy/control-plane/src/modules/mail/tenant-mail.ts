@@ -1,4 +1,4 @@
-import { createTenantMail } from "@webdock/module-mail/server/tenant-mail";
+import { createTenantMail } from "@spitzli/module-mail/server/tenant-mail";
 import { resolveSessionReference } from "../auth/principal";
 import { requireMail } from "../../installation";
 import { withAuthenticatedDatabase } from "../../db/database-context";
@@ -16,7 +16,7 @@ export {
   mailSchemaSQL,
   normalizeMailDomain,
   type MailView,
-} from "@webdock/module-mail/server/tenant-mail";
+} from "@spitzli/module-mail/server/tenant-mail";
 const runtime = createTenantMail({
   database,
   withAuthenticatedDatabase,

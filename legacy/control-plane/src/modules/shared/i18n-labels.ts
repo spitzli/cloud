@@ -1,4 +1,4 @@
-import { msgid } from "@webdock/i18n";
+import { msgid } from "@spitzli/i18n";
 const labels: Readonly<Record<string, string>> = {
   operator: msgid("Platform operator"),
   owner: msgid("Owner"),

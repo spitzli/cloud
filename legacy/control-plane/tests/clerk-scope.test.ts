@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import {
   withDatabaseScope,
   currentDatabaseScope,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import {
   withConsolePrincipal,
   currentConsolePrincipal,

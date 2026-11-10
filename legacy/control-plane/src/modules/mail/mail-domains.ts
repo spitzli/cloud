@@ -1,5 +1,5 @@
 import { TurboDomainsClient, senderDomain } from "./turbo-domains";
-import { createTenantDomains } from "@webdock/module-mail/server/tenant-domains";
+import { createTenantDomains } from "@spitzli/module-mail/server/tenant-domains";
 import { resolveSessionReference } from "../auth/principal";
 import { requireMail } from "../../installation";
 import { withAuthenticatedDatabase } from "../../db/database-context";
@@ -10,7 +10,7 @@ export {
   MailDomainsError,
   senderDomainSchemaSQL,
   type TenantSenderDomain,
-} from "@webdock/module-mail/server/tenant-domains";
+} from "@spitzli/module-mail/server/tenant-domains";
 export const { getTenantSenderDomains, manageTenantSenderDomain } =
   createTenantDomains({
     resolveSessionReference,

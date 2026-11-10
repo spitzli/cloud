@@ -1,7 +1,7 @@
-import { readAuthProtocolSelection, type AuthProtocolSelection } from "@webdock/auth-configuration/protocols";
+import { readAuthProtocolSelection, type AuthProtocolSelection } from "@spitzli/auth-configuration/protocols";
 import type { ApiConfig } from "../config";
 import type { Mount } from "../route-manifest";
-export { readAuthProtocolSelection, type AuthProtocolSelection } from "@webdock/auth-configuration/protocols";
+export { readAuthProtocolSelection, type AuthProtocolSelection } from "@spitzli/auth-configuration/protocols";
 /** Better Auth remains the existing OAuth issuer only when explicitly selected. */
 export async function createAuthProtocolMounts(
   config: ApiConfig,

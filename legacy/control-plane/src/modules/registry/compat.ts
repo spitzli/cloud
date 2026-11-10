@@ -2,7 +2,7 @@ import type {
   Customer,
   Project,
   CmsInstance,
-} from "@webdock/api-client/registry";
+} from "@spitzli/api-client/registry";
 const serial = <T>(value: unknown): T => JSON.parse(JSON.stringify(value)) as T;
 export {
   recordID,

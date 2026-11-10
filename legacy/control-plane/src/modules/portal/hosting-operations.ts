@@ -4,7 +4,7 @@ import { githubView } from "../integrations/github/view";
 import { hostingCall } from "./hosting";
 import { requireAccessOperator } from "../access/access-management";
 import { currentRegistryActor } from "../integrations/operator";
-import { HostingError } from "@webdock/hosting-contracts";
+import { HostingError } from "@spitzli/hosting-contracts";
 import type { PublicOperationError } from "./product-operation";
 export async function dispatch(
   operation: string,

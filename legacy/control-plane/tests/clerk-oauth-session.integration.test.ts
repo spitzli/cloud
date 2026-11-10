@@ -282,7 +282,7 @@ test("selected Clerk keeps real Better Auth OAuth sessions while owning Hosting 
     assert.equal(token.scope, "hosting:read");
     const { selectedIdentityDirectory, resolveSessionReference } =
       await import("../src/modules/auth/principal");
-    const { withDatabaseScope } = await import("@webdock/database-runtime");
+    const { withDatabaseScope } = await import("@spitzli/database-runtime");
     const { legacyClerkMemberships } =
       await import("../src/modules/auth/clerk-provider");
     const native = await auth.api.getSession({ headers: customer.headers });

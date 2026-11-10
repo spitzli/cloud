@@ -1,4 +1,4 @@
-import { hostingCommandModule } from "@webdock/module-sdk/selection";
+import { hostingCommandModule } from "@spitzli/module-sdk/selection";
 import {
   installationRegistry,
   requireHostingCommand,
@@ -14,7 +14,7 @@ import {
   readActions,
   hostingError,
   type HostingCommand,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 export const hostingTools: Record<HostingCommand["action"], string> = {
   ...(Object.fromEntries(
     setupCommands.map((s) => [

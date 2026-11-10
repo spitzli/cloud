@@ -1,5 +1,5 @@
-import { withDatabaseScope } from "@webdock/database-runtime";
-import { HostingError, hostingError } from "@webdock/hosting-contracts";
+import { withDatabaseScope } from "@spitzli/database-runtime";
+import { HostingError, hostingError } from "@spitzli/hosting-contracts";
 import { parseGitHubWebhook } from "../../../../../../modules/hosting/git-github";
 import { receiveGitEvent } from "../../../../../../modules/hosting/git-deployments";
 import { requireHostingEnvironment } from "../../../../../../modules/hosting/http";

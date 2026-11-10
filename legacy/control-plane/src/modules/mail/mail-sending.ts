@@ -6,7 +6,7 @@ import { transaction } from "../hosting/db";
 import { authorizeMail } from "./mail-access";
 import { manageNativeMailKey, requireNativeSending } from "./mail-native-keys";
 import { configureNativeTransport } from "./mail-send-transport";
-import { createNativeSending } from "@webdock/module-mail/server/native-sending";
+import { createNativeSending } from "@spitzli/module-mail/server/native-sending";
 export const { getNativeSending, manageNativeSending } = createNativeSending({
   resolveSessionReference,
   withAuthenticatedDatabase,

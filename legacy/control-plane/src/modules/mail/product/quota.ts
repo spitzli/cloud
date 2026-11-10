@@ -1,4 +1,4 @@
-import { createMailQuota } from "@webdock/module-mail/server/product-quota";
+import { createMailQuota } from "@spitzli/module-mail/server/product-quota";
 import { mailDatabase as database, withMailTransaction } from "./store";
 import { assertMailAccess } from "./access";
 export const {

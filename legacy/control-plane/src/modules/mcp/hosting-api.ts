@@ -5,7 +5,7 @@ import {
   HostingError,
   hostingError,
   type HostingCommand,
-} from "@webdock/hosting-contracts";
+} from "@spitzli/hosting-contracts";
 import { readJSON } from "./registry-api";
 export async function handleHostingRequest(
   request: Request,

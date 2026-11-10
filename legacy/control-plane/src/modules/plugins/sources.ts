@@ -2,7 +2,7 @@ import {
   currentDatabaseScope,
   withDatabaseScope,
   type DatabaseScope,
-} from "@webdock/database-runtime";
+} from "@spitzli/database-runtime";
 import { database, workerDatabase } from "../../db/runtime";
 import { currentRegistryActor } from "../integrations/operator";
 import { RegistryError } from "../registry/service";

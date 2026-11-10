@@ -1,4 +1,4 @@
-import { createMailSending } from "@webdock/module-mail/server/product-sending";
+import { createMailSending } from "@spitzli/module-mail/server/product-sending";
 import { mailDatabase as database } from "./store";
 import { withMailTransaction } from "./store";
 import { assertMailAccess } from "./access";
