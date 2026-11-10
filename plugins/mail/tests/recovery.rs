@@ -1,11 +1,11 @@
 //! Private safety interlock tests. These do not manufacture Core backup authority.
 use std::sync::Arc;
 use uuid::Uuid;
-use webdock_mail::{
+use spitzli_mail::{
     payload::PgPrivatePayloadStore,
     store::{Domain, Store},
 };
-use webdock_mail_runtime::PrivatePayloadStore;
+use spitzli_mail_runtime::PrivatePayloadStore;
 
 async fn connect(url: &str) -> Store {
     match std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_CA") {
@@ -161,7 +161,7 @@ async fn private_snapshot_verify() {
     let key = std::fs::read_to_string(key_path).unwrap();
     let store = Arc::new(connect(&url).await);
     let ca = std::fs::read(std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_CA").unwrap()).unwrap();
-    let connection = webdock_plugin_kit::postgres::connect(&url, Some(&ca))
+    let connection = spitzli_plugin_kit::postgres::connect(&url, Some(&ca))
         .await
         .unwrap();
     let ownership = connection.query_one("SELECT current_user::text,pg_get_userbyid(datdba)::text,(SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()) FROM pg_database WHERE datname=current_database()", &[]).await.unwrap();

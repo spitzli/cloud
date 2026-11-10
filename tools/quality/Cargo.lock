@@ -416,7 +416,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "webdock-quality"
+name = "spitzli-quality"
 version = "0.1.0"
 dependencies = [
  "cargo_metadata",

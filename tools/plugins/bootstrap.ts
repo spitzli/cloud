@@ -1,6 +1,6 @@
 /** Explicit offline import. No API startup side effect and no credential defaults. */
 import { Pool } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { migrationConfig } from "../migrations/config";
 import { initializePluginState } from "../../legacy/control-plane/src/modules/plugins/bootstrap";
 const config = migrationConfig(process.env, process.argv[2]);

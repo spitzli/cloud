@@ -1,7 +1,7 @@
 // Read/status controls use the native SDK. Secret reveal remains an explicit synchronous API action.
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { Failure, Loading, ui, usePluginQuery, usePluginReveal, usePluginSubmission, usePluginStorage, usePluginScope, storageKeySchema, storageHashSchema, STORAGE_CONTENT_TYPES, type PluginUI, type ResourceProps, type CreateProps } from "@webdock/plugin-ui";
+import { Failure, Loading, ui, usePluginQuery, usePluginReveal, usePluginSubmission, usePluginStorage, usePluginScope, storageKeySchema, storageHashSchema, STORAGE_CONTENT_TYPES, type PluginUI, type ResourceProps, type CreateProps } from "@spitzli/plugin-ui";
 
 const viewSchema = z.object({
   bucket: z.string(), endpoint: z.string(), environment: z.string(), revision: z.number(), state: z.string(),

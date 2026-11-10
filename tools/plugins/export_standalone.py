@@ -288,7 +288,7 @@ def bind_runtime_version(target: Path, name: str):
     guards = {
         "github-repository": ('    let descriptor = verify_descriptor(&config.descriptor, &publisher)?;', 'descriptor.version'),
         "mail-relay": ('        .map_err(|_| "Invalid provider configuration")?;', 'config.version'),
-        "lumaserv-compute": ('    webdock_lumaserv_compute::validate_manifest(&manifest)?;', 'manifest.version()'),
+        "lumaserv-compute": ('    spitzli_lumaserv_compute::validate_manifest(&manifest)?;', 'manifest.version()'),
     }
     if name not in guards:
         return

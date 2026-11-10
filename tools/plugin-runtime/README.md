@@ -9,8 +9,8 @@ Render with explicit reviewed references; no secret values belong in arguments:
 
 ```sh
 python3 tools/plugin-runtime/render_control.py \
-  --image "$REVIEWED_BACKEND_IMAGE" --namespace webdock-core --prefix webdock \
-  --environment-secret webdock-plugin-runtime \
+  --image "$REVIEWED_BACKEND_IMAGE" --namespace spitzli-core --prefix webdock \
+  --environment-secret spitzli-plugin-runtime \
   --source-secret webdock-native-plugin-host \
   --issuer-secret webdock-native-plugin-issuer \
   --callback-source 10.89.0.1 --runtime-host 10.0.0.2

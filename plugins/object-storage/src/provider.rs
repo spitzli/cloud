@@ -17,7 +17,7 @@ pub trait Provider: Send + Sync {
     async fn presign(
         &self,
         _binding: &Binding,
-        _direction: webdock_plugin_protocol::storage::StorageDirection,
+        _direction: spitzli_plugin_protocol::storage::StorageDirection,
         _request: &crate::data::DataRequest,
     ) -> ProviderResult<crate::data::PresignedObject> {
         Err(ProviderError::Unavailable)

@@ -3,7 +3,7 @@
 
 #[tokio::test]
 async fn sdk_initialization_selects_a_provider_before_tonic_tls_configuration() {
-    use webdock_object_storage_plugin::sdk::{BackendConfig, Control};
+    use spitzli_object_storage_plugin::sdk::{BackendConfig, Control};
     assert!(rustls::crypto::CryptoProvider::get_default().is_none());
     // Client construction does no provider I/O; neither an AWS config loader nor a request is used.
     let config: BackendConfig = serde_json::from_value(serde_json::json!({

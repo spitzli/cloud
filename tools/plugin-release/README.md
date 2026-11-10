@@ -12,7 +12,7 @@ at `https://github.com/spitzli/cloud-plugin-sdk` with the same reviewed
 Copy the authoritative Rust validator from
 `tools/plugin-registry/manifest-validator` to `tools/manifest-validator`, rewrite
 its protocol crate dependency to that same Git revision, and commit its lock.
-The helper calls the current `webdock_plugin_protocol::Manifest::parse`; no
+The helper calls the current `spitzli_plugin_protocol::Manifest::parse`; no
 TypeScript-v1 or legacy universal-package validator substitutes for it.
 Add `/release/` to `.gitignore` and `.dockerignore`.
 
@@ -151,7 +151,7 @@ destination and are not simulated as success.
 The earlier owner qualification covered the existing BUILD host in Contabo EU2 on 2026-11-01,
 including a real Debian RUN and OCI build with the full process sandbox. Its
 current buildctl binary is
-`/opt/spitzli-plugin-ci/buildkit-v0.34.1/bin/buildctl`, SHA-256
+`/opt/webdock-plugin-ci/buildkit-v0.34.1/bin/buildctl`, SHA-256
 `8e64362dceba989827b23af567915feda10426ebd40611772318662e33bf2bfd`,
 and its socket is `unix:///run/user/1001/spitzli-buildkit.sock`. The daemon has
 8 GiB/4 CPU/1024-task bounds. These are the supplied qualification inputs, not

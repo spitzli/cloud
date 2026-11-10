@@ -1,6 +1,6 @@
 use serde_json::json;
-use webdock_object_storage_plugin::data::DataRequest;
-use webdock_plugin_protocol::storage::StorageDirection;
+use spitzli_object_storage_plugin::data::DataRequest;
+use spitzli_plugin_protocol::storage::StorageDirection;
 fn input() -> serde_json::Value {
     json!({"resource_id":uuid::Uuid::new_v4(),"key":"reports/proof.txt","exact_bytes":3,"expected_sha256":"a".repeat(64),"filename":"proof.txt","content_type":"text/plain","expires_at":1120})
 }

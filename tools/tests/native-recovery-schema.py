@@ -31,7 +31,7 @@ def main():
             url=f'postgresql://postgres:{passwords["POSTGRES_PASSWORD"]}@127.0.0.1:{port}/{database}?{query}'
             migration=next((ROOT/'crates/persistence/migrations').glob(f'{args.max_version:04d}_*.sql'))
             before=hashlib.sha256(migration.read_bytes()).hexdigest()
-            result=f.command([str(ROOT/'target/debug/webdock-migrate'),'--target',f'127.0.0.1:{port}/{database}','--initialize-empty','--provision-roles-from',str(role_file)],env={'WEBDOCK_MIGRATION_DATABASE_URL':url,'DATABASE_RLS_SECRET':secrets.token_hex(32)},timeout=180,allowed=True)
+            result=f.command([str(ROOT/'target/debug/spitzli-migrate'),'--target',f'127.0.0.1:{port}/{database}','--initialize-empty','--provision-roles-from',str(role_file)],env={'WEBDOCK_MIGRATION_DATABASE_URL':url,'DATABASE_RLS_SECRET':secrets.token_hex(32)},timeout=180,allowed=True)
             if result.returncode:
                 # This binary emits only static migration diagnostics; schema failures
                 # contain no account/role passwords, URLs or message bodies.
@@ -71,7 +71,7 @@ def main():
                 assert f.sql(container,"SELECT count(*) FROM webdock_auth.hosting_recovery_source_event;",database).strip()==b'0'
             if args.inventory_bind_regression:
                 worker_url=f'postgresql://webdock_worker_runtime:{role_passwords["webdock_worker_runtime"]}@127.0.0.1:{port}/{database}?{query}'
-                result=f.command(['cargo','test','--offline','--locked','-p','webdock-hosting','--lib','service::recovery::review_sql_tests::inventory_actual_sql_binding_reaches_the_authority_gate_with_four_values','--','--ignored','--exact'],env={'WEBDOCK_RECOVERY_SQL_TEST_URL':worker_url},timeout=240,allowed=True)
+                result=f.command(['cargo','test','--offline','--locked','-p','spitzli-hosting','--lib','service::recovery::review_sql_tests::inventory_actual_sql_binding_reaches_the_authority_gate_with_four_values','--','--ignored','--exact'],env={'WEBDOCK_RECOVERY_SQL_TEST_URL':worker_url},timeout=240,allowed=True)
                 # Only static assertion/result metadata is public; no database URL or role secrets.
                 print('Inventory actual SQL binding regression exit='+str(result.returncode)+'; selectedOneTest='+str(b'running 1 test' in result.stdout))
                 assert b'running 1 test' in result.stdout, 'inventory_sql_test_not_selected'

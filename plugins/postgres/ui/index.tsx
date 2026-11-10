@@ -1,7 +1,7 @@
 // Console UI of the PostgreSQL plugin. Bundled by the Console; every call goes through the plugin action API.
 import { useState } from "react";
 import { z } from "zod";
-import { Failure, Loading, ui, usePluginMutation, usePluginQuery, usePluginReveal, type PluginUI, type ResourceProps } from "@webdock/plugin-ui";
+import { Failure, Loading, ui, usePluginMutation, usePluginQuery, usePluginReveal, type PluginUI, type ResourceProps } from "@spitzli/plugin-ui";
 
 const viewSchema = z.object({
   offering: z.enum(["shared", "dedicated"]),

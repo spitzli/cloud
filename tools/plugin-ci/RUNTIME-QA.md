@@ -74,7 +74,7 @@ passing readiness result.
 
 The accepted agent is still SHA
 `785cb77477644b1cba3fd4622809d20d810a12de6d7e3c2485d00d1fe6123a39` at
-`/home/spitzli-plugin-ci/agent-candidates/bound-69a30142-artifact/webdock-agent`.
+`/home/spitzli-plugin-ci/agent-candidates/bound-69a30142-artifact/spitzli-agent`.
 A recompile produced `9e553b6ef53e7cfb05e4b83c6db00673627834154ebdd0c7cca5cee70f65de47`:
 only `.strtab` and `.note.gnu.build-id` differ; every other ELF section including
 `.text/.rodata/.data/.dynsym`, compiler provenance and package inventory matches.
@@ -140,7 +140,7 @@ remains nonpromotable pending diagnosis, reviewed correction and full live pass.
 
 Attempt2 protected38 UID/spec proofs matched BEFORE/DURING/AFTER exactlyfc7b.
 Independently reviewed checkpoint534b adds only seven subscriber setup lines:
-`off,webdock_agent::legacy=debug`, ANSI disabled, stderr, exclusive init. Existing
+`off,spitzli_agent::legacy=debug`, ANSI disabled, stderr, exclusive init. Existing
 legacy API diagnostics expose code/reason/source, with no headers, API message
 or Secret data. All4554 other source files remain identical.
 

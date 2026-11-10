@@ -12,7 +12,7 @@ import {
 import { execFileSync } from "node:child_process";
 import assert from "node:assert/strict";
 import { Pool } from "pg";
-import { withDatabaseScope } from "@webdock/database-runtime";
+import { withDatabaseScope } from "@spitzli/database-runtime";
 import {
   createPluginContext,
   verifyInvocation,

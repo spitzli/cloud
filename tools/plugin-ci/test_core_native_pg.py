@@ -23,9 +23,9 @@ class NativePostgresPlan(unittest.TestCase):
         for flag in ['--exact','--ignored','--nocapture','--test-threads=1']:self.assertIn(flag,args)
         self.assertFalse(any('include-ignored' in a or a=='cargo' for a in args))
     def test_recovery_support_module_is_verified_through_bootstrap_target(self):
-        package='path+file:///src/crates/control-plane#webdock-control-plane@0.1.0'
+        package='path+file:///src/crates/control-plane#spitzli-control-plane@0.1.0'
         def item(name,kind,source):return {'package_id':package,'manifest_path':'/src/crates/control-plane/Cargo.toml','target':{'name':name,'kind':[kind],'src_path':source},'profile':{'test':True},'executable':'/quality-target/debug/deps/'+name}
-        records=[item(name,'bin','/src/crates/control-plane/src/main.rs') for name in ['webdock-control-plane','webdock-plugin-controller','webdock-plugin-control','webdock-agent-control']]
+        records=[item(name,'bin','/src/crates/control-plane/src/main.rs') for name in ['spitzli-control-plane','spitzli-plugin-controller','spitzli-plugin-control','spitzli-agent-control']]
         bootstrap=item('bootstrap','test','/src/crates/control-plane/tests/bootstrap.rs')
         self.assertEqual(f.control_plane_artifacts([*records,bootstrap],package)['recoveryCompileTarget'],'bootstrap')
         for wrong in [{**bootstrap,'package_id':'path+file:///src/other#other@0.1.0'},{**bootstrap,'target':{**bootstrap['target'],'src_path':'/src/other/bootstrap.rs'}},{**bootstrap,'target':{**bootstrap['target'],'name':'recovery_mail_component'}}]:

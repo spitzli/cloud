@@ -61,11 +61,11 @@ export async function buildArtifacts(f) {
     const tag = `${host}/webdock/mail:${f.input.runID}-${version}`;
     await ownImage(f, tag, () => f.docker(['build', '--file', '-', '--tag', tag, context], { input: `FROM ${baseImage}\nLABEL org.opencontainers.image.version="${version}"\nLABEL webdock.native-mail="${f.input.runID}"\n` }));
     // No product process is run: hash the actual executable in the reviewed artifact.
-    const hasher = await f.ownContainer(`wd-mail-hash-${version}-${f.input.runID}`, ['--network', 'none', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--entrypoint', '/usr/bin/sha256sum', tag, '/usr/local/bin/webdock-mail']);
+    const hasher = await f.ownContainer(`wd-mail-hash-${version}-${f.input.runID}`, ['--network', 'none', '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--entrypoint', '/usr/bin/sha256sum', tag, '/usr/local/bin/spitzli-mail']);
     await f.wait(async () => !(await f.inspect(hasher.Id)).State.Running, 10000);
     assert.equal((await f.inspect(hasher.Id)).State.ExitCode, 0);
     const hashOutput = (await f.docker(['logs', hasher.Id])).output;
-    assert(/^[a-f0-9]{64}\s+\/usr\/local\/bin\/webdock-mail$/.test(hashOutput), 'artifact_binary_hash_unavailable');
+    assert(/^[a-f0-9]{64}\s+\/usr\/local\/bin\/spitzli-mail$/.test(hashOutput), 'artifact_binary_hash_unavailable');
     await f.docker(['push', tag]);
     const media = 'application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json, application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.v2+json';
     let response = await request(`/v2/webdock/mail/manifests/${f.input.runID}-${version}`, media), bytes = Buffer.from(await response.arrayBuffer()), digest = 'sha256:' + sha256(bytes), manifest = JSON.parse(bytes), indexDigest = null;

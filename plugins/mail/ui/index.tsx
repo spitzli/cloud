@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { SendForm, Outbox } from "./Send";
 import { z } from "zod";
-import { Failure, Loading, ui, usePluginMutation, usePluginQuery, usePluginReveal, type CreateProps, type PluginUI, type ResourceProps } from "@webdock/plugin-ui";
+import { Failure, Loading, ui, usePluginMutation, usePluginQuery, usePluginReveal, type CreateProps, type PluginUI, type ResourceProps } from "@spitzli/plugin-ui";
 
 const domainSchema = z.object({
   domain: z.string(),

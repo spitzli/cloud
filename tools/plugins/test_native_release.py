@@ -16,9 +16,9 @@ class NativeReleaseTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        metadata = {"name": "github-repository", "package": "webdock-github-repository", "sdkGit": "https://github.com/spitzli/cloud-plugin-sdk", "sdkRevision": "b" * 40, "entrypoint": "webdock-github-repository", "binaries": ["webdock-github-repository"], "release": {"mode": "oci-only", "version": "0.1.0", "protocol": "webdock.repository.v1", "runtimeBinding": "publisher-signed repository descriptor", "registryAdmission": "not-performed-specialized-protocol"}}
+        metadata = {"name": "github-repository", "package": "spitzli-github-repository", "sdkGit": "https://github.com/spitzli/cloud-plugin-sdk", "sdkRevision": "b" * 40, "entrypoint": "spitzli-github-repository", "binaries": ["spitzli-github-repository"], "release": {"mode": "oci-only", "version": "0.1.0", "protocol": "webdock.repository.v1", "runtimeBinding": "publisher-signed repository descriptor", "registryAdmission": "not-performed-specialized-protocol"}}
         (self.root / "standalone.json").write_text(json.dumps(metadata))
-        (self.root / "Cargo.toml").write_text('[package]\nname="webdock-github-repository"\nversion="0.1.0"\n[dependencies]\nwebdock-plugin-runtime={git="https://github.com/spitzli/cloud-plugin-sdk",rev="' + "b" * 40 + '"}\n')
+        (self.root / "Cargo.toml").write_text('[package]\nname="spitzli-github-repository"\nversion="0.1.0"\n[dependencies]\nspitzli-plugin-runtime={git="https://github.com/spitzli/cloud-plugin-sdk",rev="' + "b" * 40 + '"}\n')
         (self.root / "Cargo.lock").write_text("# reviewed test lock\n")
         (self.root / "rust-toolchain.toml").write_text('[toolchain]\nchannel="1.98.1"\n')
         (self.root / "Dockerfile").write_text(f"FROM rust:1.98.1@sha256:{DIGEST} AS build\nFROM debian:trixie-slim@sha256:{DIGEST}\n")

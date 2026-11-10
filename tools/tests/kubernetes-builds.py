@@ -60,7 +60,7 @@ def main(argv=None):
         preflight=directory/"live-preflight.log"
         with preflight.open("wb") as output:
             preflight.chmod(0o600)
-            result=subprocess.run(["cargo","test","--locked","-p","webdock-hosting","--test","postgres","kubernetes_live_configuration_preflight","--","--include-ignored","--test-threads=1"],cwd=ROOT,env={**os.environ,"WEBDOCK_KUBERNETES_LIVE_CONFIG":str(options.live_config)},stdout=output,stderr=subprocess.STDOUT,timeout=600)
+            result=subprocess.run(["cargo","test","--locked","-p","spitzli-hosting","--test","postgres","kubernetes_live_configuration_preflight","--","--include-ignored","--test-threads=1"],cwd=ROOT,env={**os.environ,"WEBDOCK_KUBERNETES_LIVE_CONFIG":str(options.live_config)},stdout=output,stderr=subprocess.STDOUT,timeout=600)
         assert result.returncode==0 and re.search(r"test result: ok\. 1 passed; 0 failed",preflight.read_text()), "live policy/TLS preflight failed; no PostgreSQL container created; private log: "+str(preflight)
     environment = {**os.environ, "DOCKER_HOST": "unix:///var/run/docker.sock", "POSTGRES_PASSWORD": administrator}
     environment.pop("DOCKER_CONTEXT", None)
@@ -151,7 +151,7 @@ def main(argv=None):
             if title in {"admission","publication","github-webhook","live-build"}:
                 assert re.search(r"test result: ok\. 1 passed; 0 failed", log.read_text()), "focused acceptance test did not run"
 
-        migrate = ["cargo", "run", "--locked", "-p", "webdock-control-plane", "--bin", "webdock-migrate", "--", "--target", f"{address}/webdock_rls_test"]
+        migrate = ["cargo", "run", "--locked", "-p", "spitzli-control-plane", "--bin", "spitzli-migrate", "--", "--target", f"{address}/webdock_rls_test"]
         run("bootstrap", [*migrate, "--initialize-empty", "--provision-roles-from", str(password_file)])
         run("repeat-upgrade", migrate)
 
@@ -171,15 +171,15 @@ def main(argv=None):
         # Retained fixture writers need their existing local ID checkpoint.
         sql("INSERT INTO webdock_auth.snowflake_state(singleton) VALUES(true)")
         if not options.live_only:
-            run("admission", ["cargo", "test", "--locked", "-p", "webdock-hosting", "--test", "postgres", "kubernetes_admission_reserves", "--", "--include-ignored", "--test-threads=1"])
-            run("volume-authority", ["cargo", "test", "--locked", "-p", "webdock-hosting", "--test", "postgres", "kubernetes_volume_authority_is_immutable", "--", "--include-ignored", "--test-threads=1"])
-            run("fair-retry", ["cargo", "test", "--locked", "-p", "webdock-hosting", "--test", "postgres", "kubernetes_fair_queue_and_retired_infrastructure_retry", "--", "--include-ignored", "--test-threads=1"])
-            run("github-webhook", ["cargo", "test", "--locked", "-p", "webdock-hosting", "--test", "postgres", "github_webhook_receipts_bind", "--", "--include-ignored", "--test-threads=1"])
-            run("publication", ["cargo", "test", "--locked", "-p", "webdock-hosting", "--test", "postgres", "kubernetes_publication_stages_fresh", "--", "--include-ignored", "--test-threads=1"])
+            run("admission", ["cargo", "test", "--locked", "-p", "spitzli-hosting", "--test", "postgres", "kubernetes_admission_reserves", "--", "--include-ignored", "--test-threads=1"])
+            run("volume-authority", ["cargo", "test", "--locked", "-p", "spitzli-hosting", "--test", "postgres", "kubernetes_volume_authority_is_immutable", "--", "--include-ignored", "--test-threads=1"])
+            run("fair-retry", ["cargo", "test", "--locked", "-p", "spitzli-hosting", "--test", "postgres", "kubernetes_fair_queue_and_retired_infrastructure_retry", "--", "--include-ignored", "--test-threads=1"])
+            run("github-webhook", ["cargo", "test", "--locked", "-p", "spitzli-hosting", "--test", "postgres", "github_webhook_receipts_bind", "--", "--include-ignored", "--test-threads=1"])
+            run("publication", ["cargo", "test", "--locked", "-p", "spitzli-hosting", "--test", "postgres", "kubernetes_publication_stages_fresh", "--", "--include-ignored", "--test-threads=1"])
         if live:
             live_started = True
             live_test = "kubernetes_live_railpack_retains" if options.railpack else "kubernetes_live_real_run"
-            run("live-build", ["cargo","test","--locked","-p","webdock-hosting","--test","postgres",live_test,"--","--include-ignored","--test-threads=1"],timeout=2*live["timeoutSeconds"]+360)
+            run("live-build", ["cargo","test","--locked","-p","spitzli-hosting","--test","postgres",live_test,"--","--include-ignored","--test-threads=1"],timeout=2*live["timeoutSeconds"]+360)
         checks=["compiled-bootstrap","repeat-upgrade","exact-journal-checksums","default-disabled","restricted-role-RLS"]
         if not options.live_only:
             checks += ["concurrent-capacity","uncertain-job-retention","UID-and-fingerprint-fences","immutable-request-snapshot","worker-router-authority","source-backend-selection","source-and-worker-revocation","redacted-durable-log-cursors","artifact-ready-completion-and-idempotency","cancelled-generation-rejection"]

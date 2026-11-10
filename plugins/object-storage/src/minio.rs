@@ -100,7 +100,7 @@ impl Minio {
         if !directory.is_dir() || directory.permissions().mode() & 0o077 != 0 {
             return Err("Private mc directory required");
         }
-        let config = webdock_plugin_kit::read_file(&c.config_dir.join("config.json"), true)
+        let config = spitzli_plugin_kit::read_file(&c.config_dir.join("config.json"), true)
             .map_err(|_| "Private mc config required")?;
         let config: Value = serde_json::from_slice(&config).map_err(|_| "Invalid mc config")?;
         let alias = &config["aliases"]["local"];
@@ -190,7 +190,7 @@ impl Minio {
             Some(format!(
                 "{}\n{}\n",
                 b.user,
-                webdock_plugin_kit::seal::password()
+                spitzli_plugin_kit::seal::password()
             )),
         )
         .await?;

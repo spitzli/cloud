@@ -14,12 +14,12 @@ class ExportCMS(unittest.TestCase):
             package = root / 'packages' / name
             (package / 'src').mkdir(parents=True)
             (package / 'src/index.ts').write_text('export const fixture = true;\n')
-            (package / 'package.json').write_text(json.dumps({'name':'@webdock/'+name,'version':'0.1.0','type':'module'}))
+            (package / 'package.json').write_text(json.dumps({'name':'@spitzli/'+name,'version':'0.1.0','type':'module'}))
         for relative in module.APPLICATIONS:
             package = root / relative
             (package / 'src').mkdir(parents=True)
             (package / 'src/index.ts').write_text('export const fixture = true;\n')
-            (package / 'package.json').write_text(json.dumps({'name':'@webdock/'+package.name,'version':'0.1.0','type':'module'}))
+            (package / 'package.json').write_text(json.dumps({'name':'@spitzli/'+package.name,'version':'0.1.0','type':'module'}))
         for name in module.ROOT_FILES:
             (root / name).write_text('Fixture license\n')
         (root / 'package.json').write_text(json.dumps({'patchedDependencies':{},'overrides':{}}))
@@ -69,7 +69,7 @@ class ExportCMS(unittest.TestCase):
     def test_unknown_workspace_dependency_and_existing_destination_reject(self):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td)/'source';root.mkdir();self.fixture(root)
-            package=root/'packages/cms-ui/package.json';pkg=json.loads(package.read_text());pkg['dependencies']={'@webdock/core':'*'};package.write_text(json.dumps(pkg))
+            package=root/'packages/cms-ui/package.json';pkg=json.loads(package.read_text());pkg['dependencies']={'@spitzli/core':'*'};package.write_text(json.dumps(pkg))
             with self.assertRaises(ValueError):module.export_cms(root,Path(td)/'export')
             existing=Path(td)/'existing';existing.mkdir()
             with self.assertRaises(ValueError):module.export_cms(root,existing)

@@ -33,7 +33,7 @@ pub fn arguments(
         _ => (None, default_root),
     };
     let scope =
-        scope.ok_or("Usage: webdock-quality [contracts|rust|frontend|all] [repository-root]")?;
+        scope.ok_or("Usage: spitzli-quality [contracts|rust|frontend|all] [repository-root]")?;
     let root = root
         .canonicalize()
         .map_err(|error| format!("Repository root unavailable: {error}"))?;
@@ -89,7 +89,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
             &[
                 "clippy",
                 "-p",
-                "webdock-agent",
+                "spitzli-agent",
                 "--all-targets",
                 "--no-default-features",
                 "--locked",
@@ -108,7 +108,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "clippy",
             "-p",
-            "webdock-build",
+            "spitzli-build",
             "--all-targets",
             "--no-default-features",
             "--features",
@@ -128,7 +128,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-object-storage",
+            "spitzli-object-storage",
             "--test",
             "transfers",
             "--features",
@@ -141,7 +141,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-build",
+            "spitzli-build",
             "--test",
             "artifact",
             "--test",
@@ -174,7 +174,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-agent-protocol",
+            "spitzli-agent-protocol",
             "--tests",
             "--locked",
         ],
@@ -184,7 +184,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-supervisor",
+            "spitzli-supervisor",
             "--test",
             "contracts",
             "--no-default-features",
@@ -199,7 +199,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-agent",
+            "spitzli-agent",
             "--test",
             "management",
             "--test",
@@ -218,7 +218,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-agent",
+            "spitzli-agent",
             "--test",
             "management",
             "--no-default-features",
@@ -233,7 +233,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-agent",
+            "spitzli-agent",
             "--test",
             "plugin_runtime",
             "--no-default-features",
@@ -248,7 +248,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-agent",
+            "spitzli-agent",
             "--test",
             "policy",
             "--all-features",
@@ -260,7 +260,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-control-plane",
+            "spitzli-control-plane",
             "--test",
             "http",
             "--test",
@@ -277,7 +277,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-plugin-protocol",
+            "spitzli-plugin-protocol",
             "--test",
             "contracts",
             "--test",
@@ -290,7 +290,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-plugin-runtime",
+            "spitzli-plugin-runtime",
             "--test",
             "transport",
             "--test",
@@ -307,11 +307,11 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-mail-runtime",
+            "spitzli-mail-runtime",
             "-p",
-            "webdock-mail-protocol",
+            "spitzli-mail-protocol",
             "-p",
-            "webdock-mail-message",
+            "spitzli-mail-message",
             "--tests",
             "--all-features",
             "--locked",
@@ -322,7 +322,7 @@ fn rust_checks(manifests: &[PathBuf]) -> Vec<Check> {
         &[
             "test",
             "-p",
-            "webdock-plugin-host",
+            "spitzli-plugin-host",
             "--test",
             "mail_outbox_catcher",
             "--test",
@@ -375,12 +375,13 @@ pub fn plan(scope: Scope, standalone_manifests: &[PathBuf]) -> Vec<Check> {
                 "--no-env-file",
                 "test",
                 "tools/tests/native-plugin-fixture.test.mjs",
+                "modules/mail/tests/retained-secrets.test.mjs",
             ],
         ));
         for script in ["lint", "typecheck", "test", "build", "test:browser"] {
             checks.push(Check::new(
                 "bun",
-                &["run", "--filter", "@webdock/console", script],
+                &["run", "--filter", "@spitzli/console", script],
             ));
         }
     }
@@ -446,13 +447,14 @@ mod tests {
                         "--no-env-file",
                         "test",
                         "tools/tests/native-plugin-fixture.test.mjs",
+                        "modules/mail/tests/retained-secrets.test.mjs",
                     ]
         }));
         let isolated = checks
             .iter()
             .filter(|check| {
                 check.args.first().is_some_and(|value| value == "clippy")
-                    && check.args.iter().any(|s| s == "webdock-agent")
+                    && check.args.iter().any(|s| s == "spitzli-agent")
             })
             .collect::<Vec<_>>();
         assert_eq!(isolated.len(), 3);
@@ -477,9 +479,9 @@ mod tests {
                 .all(|check| check.program == "bun")
         );
         for package in [
-            "webdock-agent-protocol",
-            "webdock-supervisor",
-            "webdock-agent",
+            "spitzli-agent-protocol",
+            "spitzli-supervisor",
+            "spitzli-agent",
         ] {
             let check = checks
                 .iter()
@@ -489,7 +491,7 @@ mod tests {
                 })
                 .expect("Protocol, supervisor and isolated daemon regressions must run in CI");
             assert!(!check.args.iter().any(|value| value == "--ignored"));
-            if package == "webdock-agent" {
+            if package == "spitzli-agent" {
                 assert!(
                     check
                         .args
@@ -500,7 +502,7 @@ mod tests {
                     assert!(check.args.iter().any(|value| value == suite));
                 }
             }
-            if package == "webdock-supervisor" {
+            if package == "spitzli-supervisor" {
                 assert!(check.args.iter().any(|value| value == "journal"));
             }
         }
@@ -526,7 +528,7 @@ mod tests {
         let agent = tests
             .iter()
             .copied()
-            .filter(|check| argument(check, "-p", "webdock-agent"))
+            .filter(|check| argument(check, "-p", "spitzli-agent"))
             .collect::<Vec<_>>();
         for suite in ["plugin_runtime", "management"] {
             let native = agent
@@ -585,7 +587,7 @@ mod tests {
 
         let protocol = tests
             .iter()
-            .find(|check| argument(check, "-p", "webdock-agent-protocol"))
+            .find(|check| argument(check, "-p", "spitzli-agent-protocol"))
             .unwrap();
         assert!(
             protocol.args.iter().any(|arg| arg == "--tests"),
@@ -595,7 +597,7 @@ mod tests {
             .iter()
             .copied()
             .filter(|check| {
-                argument(check, "-p", "webdock-plugin-protocol")
+                argument(check, "-p", "spitzli-plugin-protocol")
                     && argument(check, "--test", "release")
             })
             .collect::<Vec<_>>();
@@ -603,7 +605,7 @@ mod tests {
         assert!(argument(releases[0], "--test", "contracts"));
         let runtime = tests
             .iter()
-            .find(|check| argument(check, "-p", "webdock-plugin-runtime"))
+            .find(|check| argument(check, "-p", "spitzli-plugin-runtime"))
             .unwrap();
         for suite in ["transport", "jobs", "job_host", "runtime_authorization"] {
             assert!(
@@ -623,13 +625,13 @@ mod tests {
         let runtime = checks
             .iter()
             .find(|check| {
-                check.args.iter().any(|arg| arg == "webdock-mail-runtime")
+                check.args.iter().any(|arg| arg == "spitzli-mail-runtime")
                     && check.args.first().is_some_and(|arg| arg == "test")
             })
             .expect("Mail execution integration tests must run in quality");
         for required in [
-            "webdock-mail-protocol",
-            "webdock-mail-message",
+            "spitzli-mail-protocol",
+            "spitzli-mail-message",
             "--tests",
             "--all-features",
             "--locked",
@@ -640,7 +642,7 @@ mod tests {
             .iter()
             .find(|check| check.args.iter().any(|arg| arg == "mail_outbox_catcher"))
             .expect("The bounded SMTP fault helper must run in quality");
-        assert!(catcher.args.iter().any(|arg| arg == "webdock-plugin-host"));
+        assert!(catcher.args.iter().any(|arg| arg == "spitzli-plugin-host"));
         assert!(
             catcher
                 .args
@@ -659,8 +661,8 @@ mod tests {
     fn s3_and_artifact_regressions_run_without_live_storage() {
         let checks = plan(Scope::Rust, &[]);
         for (package, suite) in [
-            ("webdock-object-storage", "transfers"),
-            ("webdock-build", "remote_artifacts"),
+            ("spitzli-object-storage", "transfers"),
+            ("spitzli-build", "remote_artifacts"),
         ] {
             assert!(
                 checks.iter().any(|check| {

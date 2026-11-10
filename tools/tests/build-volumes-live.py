@@ -12,7 +12,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[2]
 HOST = "root@167.86.75.144"
 SSH = ["ssh", "-o", "ConnectTimeout=10", "-o", "IdentityAgent=none", "-o", "IdentitiesOnly=yes", "-i", str(Path.home()/".ssh/id_ed25519"), "-o", "BatchMode=yes"]
-IMAGE = "docker.io/library/webdock-build-runner@sha256:81a0228242287a8800d26dbecd68136593ed652590e62123c987e8876b197409"
+IMAGE = "docker.io/library/spitzli-build-runner@sha256:81a0228242287a8800d26dbecd68136593ed652590e62123c987e8876b197409"
 
 REMOTE = r'''
 import base64,hashlib,json,os,socket,subprocess,time
@@ -234,7 +234,7 @@ def main():
     for name,action,epoch in [("a-reserve","reserve",1),("a-retire","retire",2)]:packets[name]=signed("12","34","56",ids[0],action,epoch)
     for name,action,epoch in [("b-reserve","reserve",1),("b-inspect","inspect",1),("b-renew","reserve",2),("b-retire","retire",3)]:packets[name]=signed("13","35","57",ids[1],action,epoch)
     packets["foreign-scope"]=signed("99","34","56",ids[0],"reserve",2)
-    binaries={"node":ROOT/"target/x86_64-unknown-linux-musl/release/webdock-build-storage-node","helper":ROOT/"target/x86_64-unknown-linux-musl/release/webdock-storage"}
+    binaries={"node":ROOT/"target/x86_64-unknown-linux-musl/release/spitzli-build-storage-node","helper":ROOT/"target/x86_64-unknown-linux-musl/release/spitzli-storage"}
     payload={"run":run,"work":work,"poolID":pool,"target":target,"publicKey":key.public_key().public_bytes(Encoding.Raw,PublicFormat.Raw).hex(),"packets":packets,"volumeNames":[f"wd-bv-{build}-1-{vol}" for build,vol in zip(["56","57"],ids)],"binaryHashes":{name:hashlib.sha256(path.read_bytes()).hexdigest() for name,path in binaries.items()},"image":IMAGE}
     setup="import os,socket; from pathlib import Path; assert os.geteuid()==0 and socket.gethostname()=='webdock-build-eu-01' and Path('/etc/webdock-build-host').is_file(); Path("+repr(work)+").mkdir(mode=0o700,parents=True,exist_ok=False)"
     subprocess.run([*SSH,HOST,"python3 -"],input=setup,text=True,check=True,timeout=20)

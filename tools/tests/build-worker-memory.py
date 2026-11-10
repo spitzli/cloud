@@ -288,7 +288,7 @@ def main():
     args = parser.parse_args()
     available = admit_memory()
     docker('image', 'inspect', REGISTRY)
-    built = subprocess.run(['cargo', 'test', '-p', 'webdock-build', '--features', 'local-registry-test,kubernetes-job', '--test', 'worker_memory_overlap', '--no-run', '--message-format=json', '-j', '2'], cwd=ROOT, capture_output=True, text=True, timeout=120)
+    built = subprocess.run(['cargo', 'test', '-p', 'spitzli-build', '--features', 'local-registry-test,kubernetes-job', '--test', 'worker_memory_overlap', '--no-run', '--message-format=json', '-j', '2'], cwd=ROOT, capture_output=True, text=True, timeout=120)
     if built.returncode:
         raise RuntimeError('worker_memory_fixture_compile_failed')
     binaries = [row['executable'] for row in map(json.loads, built.stdout.splitlines()) if row.get('reason') == 'compiler-artifact' and row.get('target', {}).get('name') == 'worker_memory_overlap' and row.get('executable')]

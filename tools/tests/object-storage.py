@@ -106,7 +106,7 @@ def main(command=None, callback=None, registry=False):
                 callback(config, mc, access)
             else:
                 result = subprocess.run(command or [
-                    "cargo", "test", "--locked", "-p", "webdock-object-storage", "--features", "local-test",
+                    "cargo", "test", "--locked", "-p", "spitzli-object-storage", "--features", "local-test",
                     "--test", "transfers", "real_minio", "--", "--include-ignored",
                 ], cwd=ROOT, env=run_environment, timeout=900)
                 if result.returncode:

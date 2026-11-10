@@ -356,11 +356,11 @@ impl Provider for Control {
     async fn presign(
         &self,
         b: &Binding,
-        direction: webdock_plugin_protocol::storage::StorageDirection,
+        direction: spitzli_plugin_protocol::storage::StorageDirection,
         request: &crate::data::DataRequest,
     ) -> ProviderResult<crate::data::PresignedObject> {
         use base64::Engine;
-        use webdock_plugin_protocol::storage::StorageDirection;
+        use spitzli_plugin_protocol::storage::StorageDirection;
         request.validate(direction, now() as i64).map_err(unknown)?;
         if b.backend != self.backend || b.id != request.resource_id {
             return Err(ProviderError::Ownership);
@@ -1214,7 +1214,7 @@ mod tests {
     #[tokio::test]
     async fn full_object_checksum_cannot_be_downgraded_by_omitting_the_caller_hash() {
         use base64::Engine;
-        use webdock_plugin_protocol::storage::StorageDirection;
+        use spitzli_plugin_protocol::storage::StorageDirection;
         let hash = hex::encode([7u8; 32]);
         for (kind, expected, allowed) in [
             (Some("FULL_OBJECT"), None, false),

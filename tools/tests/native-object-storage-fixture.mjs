@@ -161,17 +161,17 @@ async function bootstrap(f) {
   const origins = { core: `http://127.0.0.1:${ports.core}`, console: `http://127.0.0.1:${ports.console}`, account: `http://localhost:${ports.account}`, studio: `http://localhost:${ports.console}` };
   const env = { NODE_ENV: 'development', PORT: String(ports.core), WEBDOCK_BIND_ADDRESS: '127.0.0.1', WEBDOCK_API_ORIGIN: origins.core, WEBDOCK_AUTH_ORIGIN: origins.account, WEBDOCK_STUDIO_ORIGIN: origins.studio, WEBDOCK_CONSOLE_ORIGIN: origins.console, WEBDOCK_AUTH_SECRET: random(), DATABASE_RLS_SECRET: random(), DATABASE_CA_CERT: platform.ca, WEBDOCK_FEATURES: JSON.stringify({ hosting: 'disabled', databases: 'disabled', mail: 'disabled' }), WEBDOCK_WORKLOADS_ENABLED: 'true' };
   const target = `127.0.0.1:${platform.port}/webdock_object_fixture`, binary = name => f.binary(name);
-  await f.command(binary('webdock-migrate'), ['--target', target, '--initialize-empty', '--provision-roles-from', f.path('roles.json')], { env: { ...env, WEBDOCK_MIGRATION_DATABASE_URL: dbURL('postgres') }, timeout: 180000 });
+  await f.command(binary('spitzli-migrate'), ['--target', target, '--initialize-empty', '--provision-roles-from', f.path('roles.json')], { env: { ...env, WEBDOCK_MIGRATION_DATABASE_URL: dbURL('postgres') }, timeout: 180000 });
   const offline = { ...env, DATABASE_URL_UNPOOLED: dbURL('webdock_offline_migrate') };
   await f.write('operator-input.json', { email: `object-${f.input.runID}@example.test`, name: 'Owned storage operator', password: 'Owned-' + random() + '!', authOrigin: origins.account, studioOrigin: origins.studio, consoleOrigin: origins.console });
-  await f.command(binary('webdock-bootstrap-operator'), ['--target', target, '--config', f.path('operator-input.json'), '--output', f.path('operator-output.json')], { env: offline });
+  await f.command(binary('spitzli-bootstrap-operator'), ['--target', target, '--config', f.path('operator-input.json'), '--output', f.path('operator-output.json')], { env: offline });
   const platformID = 'object-' + f.input.runID;
   await f.write('enrollment-input.json', { platformID, agentID: 'object-agent', name: 'Owned isolated storage fixture', country: 'de', region: 'eu', locationEvidence: 'Disposable local fixture only; no production location claim', transport: { kind: 'unix', uid: process.getuid() } });
-  await f.command(binary('webdock-enroll-agent'), ['--target', target, '--config', f.path('enrollment-input.json'), '--output', f.path('enrollment.json')], { env: offline });
+  await f.command(binary('spitzli-enroll-agent'), ['--target', target, '--config', f.path('enrollment-input.json'), '--output', f.path('enrollment.json')], { env: offline });
   await f.write('catalog.json', { version: 1, platformID, keys: [], targets: [], releases: [] });
   const callbackHost = 'core-' + f.input.runID + '.test';
   await f.write('kernel-input.json', { platformID, installationCatalog: f.path('catalog.json'), callbackOrigin: `https://${callbackHost}:${ports.callback}`, listenAddress: `0.0.0.0:${ports.callback}` });
-  await f.command(binary('webdock-bootstrap-plugins'), ['--target', target, '--config', f.path('kernel-input.json'), '--output', f.path('kernel')], { env: offline });
+  await f.command(binary('spitzli-bootstrap-plugins'), ['--target', target, '--config', f.path('kernel-input.json'), '--output', f.path('kernel')], { env: offline });
   const kernel = f.path('kernel'), config = await f.json(join(kernel, 'plugin-config.json'));
   await mkdir(f.path('staging'), { mode: 0o700 }); config.storage = { stagingDirectory: f.path('staging') }; await writePrivate(join(kernel, 'plugin-config.json'), config, true);
   Object.assign(env, (await f.json(f.path('operator-output.json'))).environment, { WEBDOCK_NATIVE_PLUGIN_CONFIG: join(kernel, 'plugin-config.json') });
@@ -195,10 +195,10 @@ async function start(f) {
   const callback = await f.inspect(f.report.callback.id); checkContainer(f.custody.entries.find(e => e.id === callback.Id), callback, f.input.runID);
   await f.startProcess('callback-exec', '/usr/bin/docker', ['--host', 'unix:///var/run/docker.sock', 'exec', ...Object.keys(callbackEnv).flatMap(key => ['--env', key]), callback.Id, '/bin/sh', '-ec', 'umask 077; mkdir -p /tmp/staging; chmod 700 /tmp/staging; exec /reviewed-plugin-control --config "$1"', 'sh', f.path('callback-plugin-config.json')], callbackEnv);
   for (const [name, program, args, processEnv] of [
-    ['core', 'webdock-control-plane', [], env],
-    ['agent-control', 'webdock-agent-control', ['--config', f.path('agent-control.json')], env],
-    ['controller', 'webdock-plugin-controller', ['--config', join(f.report.kernel, 'plugin-config.json'), '--installation-config', f.path('worker.json')], env],
-    ['agent', 'webdock-agent', ['--config', f.path('agent.json'), 'run'], {}],
+    ['core', 'spitzli-control-plane', [], env],
+    ['agent-control', 'spitzli-agent-control', ['--config', f.path('agent-control.json')], env],
+    ['controller', 'spitzli-plugin-controller', ['--config', join(f.report.kernel, 'plugin-config.json'), '--installation-config', f.path('worker.json')], env],
+    ['agent', 'spitzli-agent', ['--config', f.path('agent.json'), 'run'], {}],
   ]) await f.startProcess(name, binary(program), args, processEnv);
   await f.wait(async () => { try { return (await fetch(f.report.origins.core + '/readyz', { signal: AbortSignal.timeout(1000) })).ok; } catch { return false; } });
   f.report.coreReadyStatus = 200;
@@ -222,13 +222,13 @@ async function prepareTransports(f) {
   for (const key of ['WEBDOCK_DATABASE_URL', 'WEBDOCK_SESSION_DATABASE_URL', 'WEBDOCK_WORKER_DATABASE_URL', 'WEBDOCK_REGISTRY_DATABASE_URL']) { const url = new URL(env[key]); url.hostname = platform.ip; url.port = '5432'; env[key] = url.href; }
   env.WEBDOCK_NATIVE_PLUGIN_CONFIG = f.path('callback-plugin-config.json'); await f.write('callback-environment.json', env);
   const files = [f.path('callback-plugin-config.json'), f.path('catalog.json'), join(platform.directory, 'ca.crt'), ...['invocation.key', 'host-bindings.json', 'connections.json', 'core.crt', 'core.key', 'ca.crt'].map(name => join(kernel, name))];
-  const callback = await f.ownContainer('wd-object-callback-' + f.input.runID, ['--network', f.report.network.name, '--user', `${process.getuid()}:${process.getgid()}`, '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--tmpfs', '/tmp:rw,nosuid,nodev,size=32m,mode=1777', ...files.flatMap(path => ['--mount', `type=bind,source=${path},target=${path},readonly`]), '--mount', `type=bind,source=${f.binary('webdock-plugin-control')},target=/reviewed-plugin-control,readonly`, '--entrypoint', '/bin/sh', base, '-ec', 'exec sleep infinity']);
+  const callback = await f.ownContainer('wd-object-callback-' + f.input.runID, ['--network', f.report.network.name, '--user', `${process.getuid()}:${process.getgid()}`, '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--tmpfs', '/tmp:rw,nosuid,nodev,size=32m,mode=1777', ...files.flatMap(path => ['--mount', `type=bind,source=${path},target=${path},readonly`]), '--mount', `type=bind,source=${f.binary('spitzli-plugin-control')},target=/reviewed-plugin-control,readonly`, '--entrypoint', '/bin/sh', base, '-ec', 'exec sleep infinity']);
   await f.docker(['exec', callback.Id, '/reviewed-plugin-control', '--help']);
   f.report.callback = { id: callback.Id, ip: callback.NetworkSettings.Networks[f.report.network.name].IPAddress }; assert(privateIP(f.report.callback.ip)); await f.saveReport();
 }
 async function startCore(f) {
   const env = await f.json(f.path('core-environment.json'));
-  await f.startProcess('setup-core', f.binary('webdock-control-plane'), [], env);
+  await f.startProcess('setup-core', f.binary('spitzli-control-plane'), [], env);
   await f.wait(async () => { try { return (await fetch(f.report.origins.core + '/readyz', { signal: AbortSignal.timeout(1000) })).ok; } catch { return false; } });
   f.report.coreReadyStatus = 200;
 }
@@ -355,7 +355,7 @@ async function stopServices(f) {
 }
 async function pinBinaries(f) {
   await mkdir(f.path('binaries'), { mode: 0o700 }); const binaries = {};
-  for (const name of ['webdock-migrate', 'webdock-bootstrap-operator', 'webdock-enroll-agent', 'webdock-bootstrap-plugins', 'webdock-control-plane', 'webdock-plugin-control', 'webdock-plugin-controller', 'webdock-agent-control', 'webdock-agent']) {
+  for (const name of ['spitzli-migrate', 'spitzli-bootstrap-operator', 'spitzli-enroll-agent', 'spitzli-bootstrap-plugins', 'spitzli-control-plane', 'spitzli-plugin-control', 'spitzli-plugin-controller', 'spitzli-agent-control', 'spitzli-agent']) {
     const bytes = await readFile(join(ROOT, 'target/debug', name)); assert(bytes.subarray(0, 4).equals(Buffer.from([127, 69, 76, 70])));
     const path = await f.write('binaries/' + name, bytes); await chmod(path, 0o500); binaries[name] = { path, sha256: sha256(bytes) };
   }

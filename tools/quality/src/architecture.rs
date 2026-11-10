@@ -98,19 +98,19 @@ pub fn workspace_manifests(root: &Path) -> Result<Vec<PathBuf>> {
     Ok(manifests)
 }
 const SHARED: &[&str] = &[
-    "webdock-core",
-    "webdock-ids",
-    "webdock-agent-protocol",
-    "webdock-plugin-protocol",
-    "webdock-plugin-runtime",
-    "webdock-plugin-http",
-    "webdock-plugin-kit",
-    "webdock-repository-protocol",
-    "webdock-export-protocol",
-    "webdock-object-storage",
-    "webdock-mail-protocol",
-    "webdock-mail-message",
-    "webdock-mail-runtime",
+    "spitzli-core",
+    "spitzli-ids",
+    "spitzli-agent-protocol",
+    "spitzli-plugin-protocol",
+    "spitzli-plugin-runtime",
+    "spitzli-plugin-http",
+    "spitzli-plugin-kit",
+    "spitzli-repository-protocol",
+    "spitzli-export-protocol",
+    "spitzli-object-storage",
+    "spitzli-mail-protocol",
+    "spitzli-mail-message",
+    "spitzli-mail-runtime",
 ];
 fn zone(root: &Path, path: &Path, name: &str) -> Zone {
     // This vendor SDK is currently used only by the separately installed repository provider.

@@ -17,7 +17,7 @@ def render(chart, values):
 
 image = "registry.example/app@sha256:" + "a" * 64
 for enabled in [False, True]:
-    objects = render("deploy/helm/webdock-agent", {
+    objects = render("deploy/helm/spitzli-agent", {
         "enabled": True, "image": image, "existingSecret": "owned", "existingClaim": "owned",
         "namespaces": ["owned-apps"], "autoscalingEnabled": enabled,
     })

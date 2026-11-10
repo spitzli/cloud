@@ -5,8 +5,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use webdock_mail::engine;
-use webdock_plugin_protocol::PluginError;
+use spitzli_mail::engine;
+use spitzli_plugin_protocol::PluginError;
 
 #[derive(Default)]
 struct State {

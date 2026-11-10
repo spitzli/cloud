@@ -20,9 +20,9 @@ BINARY=Path('/results/native-compile/retirement-test')
 
 def compile_plan():
     return [
-        {'id':'retirement-policy-lib','args':['cargo','test','--locked','-p','webdock-plugin-host','--lib',POLICY_TEST,'--jobs','3','--','--exact','--nocapture','--test-threads=1'],'requiredTests':[POLICY_TEST]},
-        {'id':'resource-admission-compile','args':['cargo','test','--locked','-p','webdock-plugin-host','--test','resource_admission','--no-run','--message-format=json','--jobs','3']},
-        {'id':'control-plane-compile','args':['cargo','test','--locked','-p','webdock-control-plane','--lib','--bins','--tests','--no-run','--message-format=json','--jobs','3']},
+        {'id':'retirement-policy-lib','args':['cargo','test','--locked','-p','spitzli-plugin-host','--lib',POLICY_TEST,'--jobs','3','--','--exact','--nocapture','--test-threads=1'],'requiredTests':[POLICY_TEST]},
+        {'id':'resource-admission-compile','args':['cargo','test','--locked','-p','spitzli-plugin-host','--test','resource_admission','--no-run','--message-format=json','--jobs','3']},
+        {'id':'control-plane-compile','args':['cargo','test','--locked','-p','spitzli-control-plane','--lib','--bins','--tests','--no-run','--message-format=json','--jobs','3']},
     ]
 
 
@@ -48,7 +48,7 @@ def integration_artifact(raw):
 def control_plane_artifacts(items,package_id):
     own=[x for x in items if x.get('package_id')==package_id and x.get('manifest_path')=='/src/crates/control-plane/Cargo.toml']
     bins={x['target']['name'] for x in own if 'bin' in x['target'].get('kind',[])}
-    require({'webdock-control-plane','webdock-plugin-controller','webdock-plugin-control','webdock-agent-control'}<=bins,'Affected control-plane bins were not all compiled from the expected package')
+    require({'spitzli-control-plane','spitzli-plugin-controller','spitzli-plugin-control','spitzli-agent-control'}<=bins,'Affected control-plane bins were not all compiled from the expected package')
     bootstrap=[x for x in own if x['target'].get('name')=='bootstrap' and x['target'].get('src_path')=='/src/crates/control-plane/tests/bootstrap.rs' and 'test' in x['target'].get('kind',[]) and x.get('profile',{}).get('test')]
     require(len(bootstrap)==1,'Recovery fixture must be compiled through the exact control-plane bootstrap target')
     return {'affectedControlPlaneBinsCompiled':sorted(bins),'recoveryCompileTarget':'bootstrap','recoveryCompileSourcePath':bootstrap[0]['target']['src_path'],'controlPlanePackageID':package_id}
@@ -97,7 +97,7 @@ def compile_checks(output,checkpoint):
     require(integration.is_file() and not integration.is_symlink(),'Compiled integration executable missing')
     target=output/'retirement-test';shutil.copyfile(integration,target);target.chmod(0o555)
     cp=messages((output/'control-plane-compile.stdout').read_text())
-    manifest=tomllib.loads(Path('/src/crates/control-plane/Cargo.toml').read_text());require(manifest['package']['name']=='webdock-control-plane','Unexpected control-plane package manifest')
+    manifest=tomllib.loads(Path('/src/crates/control-plane/Cargo.toml').read_text());require(manifest['package']['name']=='spitzli-control-plane','Unexpected control-plane package manifest')
     package_id=subprocess.check_output(['cargo','pkgid','--locked','--manifest-path','/src/crates/control-plane/Cargo.toml'],text=True,timeout=60).strip()
     require(package_id.split('#')[0]=='path+file:///src/crates/control-plane','Unexpected control-plane Cargo package source')
     closure=control_plane_artifacts(cp,package_id);chain=recovery_module_chain()

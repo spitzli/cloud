@@ -2,7 +2,7 @@
 use std::{process::Command, time::Duration};
 use tokio_postgres::{Client, NoTls};
 use uuid::Uuid;
-use webdock_postgres::{
+use spitzli_postgres::{
     seal::Sealer,
     store::{Resource, Store},
 };

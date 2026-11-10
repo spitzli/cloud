@@ -78,7 +78,7 @@ def rewrite_workspace_packages(output: Path):
         for field in ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']:
             for name in package.get(field, {}):
                 value = package[field][name]
-                if name.startswith(('@webdock/', '@spitzli/')):
+                if name.startswith(('@spitzli/', '@spitzli/')):
                     if name not in names:
                         raise ValueError('Dependency outside CMS closure: ' + name)
                     package[field][name] = 'workspace:*'
@@ -103,7 +103,7 @@ USER 65532:65532
 EXPOSE 3443 3444
 CMD ["bun","runtime.js"]
 '''
-    return prefix + f'''RUN bun run --filter @webdock/cms-instance build
+    return prefix + f'''RUN bun run --filter @spitzli/cms-instance build
 RUN rm -rf apps/cms-instance/.next/standalone/node_modules/drizzle-kit apps/cms-instance/.next/standalone/node_modules/esbuild apps/cms-instance/.next/standalone/node_modules/@esbuild apps/cms-instance/.next/standalone/node_modules/payload/node_modules/esbuild apps/cms-instance/.next/standalone/node_modules/payload/node_modules/@esbuild apps/cms-instance/.next/standalone/node_modules/payload/node_modules/tsx
 FROM {BUN_IMAGE}
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1
@@ -148,9 +148,9 @@ def export_cms(source: Path, output: Path) -> dict:
                 'type': 'module', 'packageManager': 'bun@1.4.3', 'workspaces': package_paths(),
                 'scripts': {'build:sdk': 'bun run --filter @spitzli/plugin-sdk build',
                             'build:plugin': 'bun run build:sdk && bun extensions/managed-cms/build.ts',
-                            'build:instance': 'bun run --filter @webdock/cms-instance build',
+                            'build:instance': 'bun run --filter @spitzli/cms-instance build',
                             'build': 'bun run build:plugin && bun run build:instance',
-                            'check': 'bun run build:sdk && bun run --filter @webdock/extension-managed-cms check',
+                            'check': 'bun run build:sdk && bun run --filter @spitzli/extension-managed-cms check',
                             'test': 'bun run build:sdk && bun test --isolate ./extensions/managed-cms/tests ./apps/cms-instance/tests ./packages/cms-bridge/src ./packages/cms-ui/src'},
                 'devDependencies': {'typescript': '^5', '@types/bun': '^1.3.0', '@types/node': '^24', '@types/react': '^19', '@types/react-dom': '^19', '@types/pg': '^8.15.5', 'happy-dom': '20.14.5'},
                 'overrides': upstream.get('overrides', {}), 'patchedDependencies': patched, 'license': upstream.get('license', 'Apache-2.0')}

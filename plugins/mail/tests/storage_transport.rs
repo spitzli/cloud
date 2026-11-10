@@ -1,4 +1,4 @@
-use webdock_mail::store::Store;
+use spitzli_mail::store::Store;
 
 #[tokio::test]
 async fn plaintext_constructor_rejects_remote_and_driver_host_overrides() {

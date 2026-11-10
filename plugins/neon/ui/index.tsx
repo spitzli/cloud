@@ -1,7 +1,7 @@
 // Host-supplied UI ABI; the independent plugin owns all Neon presentation and action contracts.
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { z } from "zod";
-import { Failure, Loading, ui, useI18n, usePluginQuery, usePluginReveal, usePluginSubmission, type CreateProps, type PluginUI, type ResourceProps } from "@webdock/plugin-ui";
+import { Failure, Loading, ui, useI18n, usePluginQuery, usePluginReveal, usePluginSubmission, type CreateProps, type PluginUI, type ResourceProps } from "@spitzli/plugin-ui";
 
 const item = z.object({ id: z.string(), name: z.string() });
 const inventorySchema = z.object({

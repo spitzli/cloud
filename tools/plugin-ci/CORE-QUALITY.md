@@ -68,9 +68,9 @@ daemon/socket, privileged Pod, VM, global token or host-network exception.
 
 Focused coverage:
 
-- `cargo test --locked -p webdock-access --lib waitlist`: consent/admission-field
+- `cargo test --locked -p spitzli-access --lib waitlist`: consent/admission-field
   validation and rejection of C1/control characters before database access.
-- `cargo test --locked -p webdock-control-plane --lib waitlist`: actual local
+- `cargo test --locked -p spitzli-control-plane --lib waitlist`: actual local
   HTTP negative cases for JSON/consent/admission fields, origin and request size.
 - `cargo test --manifest-path plugins/lumaserv-compute/Cargo.toml --locked
   --test process`: real plugin child process/private RPC, locally generated
@@ -214,7 +214,7 @@ validated candidate changes only the existing identity->reqwest dependency edge;
 parent must apply it and coordinate all source changes before another freeze.
 
 The next focused plan additionally runs
-`cargo test --locked -p webdock-build --lib
+`cargo test --locked -p spitzli-build --lib
 repository_projection_exposes_the_authoritative_binding_not_metadata_ids` with
 default service features enabled. It proves returned repository identity comes
 from the authoritative binding rather than spoofable metadata. The original

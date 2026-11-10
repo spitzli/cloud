@@ -1,6 +1,6 @@
 use serde_json::{Value, json};
-use webdock_object_storage_plugin::validate_manifest;
-use webdock_plugin_protocol::Manifest;
+use spitzli_object_storage_plugin::validate_manifest;
+use spitzli_plugin_protocol::Manifest;
 #[test]
 fn every_implemented_operation_has_rest_and_mcp_parity_and_purge_retains_core_index() {
     let m = Manifest::parse(include_bytes!("../manifest.json")).unwrap();
@@ -70,7 +70,7 @@ fn storage_actions_require_native_service_and_describe_only_public_descriptors()
 
 #[test]
 fn public_output_schema_accepts_the_exported_descriptor_and_rejects_the_private_plan() {
-    use webdock_plugin_protocol::{
+    use spitzli_plugin_protocol::{
         storage::{StoragePlan, TransferDescriptor},
         validate_value,
     };

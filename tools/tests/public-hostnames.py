@@ -19,9 +19,9 @@ LABEL = 'dev.spitzli.public-hostname-fixture'
 
 def main():
     os.umask(0o077)
-    migrator = ROOT / 'target/debug/webdock-migrate'
+    migrator = ROOT / 'target/debug/spitzli-migrate'
     if not migrator.is_file():
-        raise SystemExit('Build first: cargo build --locked -p webdock-control-plane --bin webdock-migrate -j 2')
+        raise SystemExit('Build first: cargo build --locked -p spitzli-control-plane --bin spitzli-migrate -j 2')
     nonce = secrets.token_hex(12)
     directory = ROOT / '.runtime-test' / ('public-hostnames-' + nonce)
     directory.mkdir(mode=0o700, parents=True)

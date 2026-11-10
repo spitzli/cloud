@@ -77,11 +77,11 @@ feature profile. Specific new adversarial/unchanged-attachment tests and read
 regressions must appear as passed; a zero-test filtered run cannot qualify.
 Only after those checks pass is the release executable built.
 
-Outputs include `webdock-agent`, its SHA-256, complete test transcripts/counts,
+Outputs include `spitzli-agent`, its SHA-256, complete test transcripts/counts,
 compiler and builder-package provenance, frozen source identity and ELF proofs.
 The ABI checker rejects `GLIBC_PRIVATE`, requires Linux amd64, checks maximum
 required GLIBC **<=2.39**, and fails for missing shared libraries. It then runs
-only config-free `webdock-agent --help` as UID1001 on the actual BUILD Ubuntu24
+only config-free `spitzli-agent --help` as UID1001 on the actual BUILD Ubuntu24
 host (glibc2.39). The current CLI has no `--version`; no unrequested source
 feature was added. Checksum + frozen source ref are the version proof.
 

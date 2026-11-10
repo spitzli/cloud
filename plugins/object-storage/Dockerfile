@@ -9,11 +9,11 @@ WORKDIR /src
 COPY --from=source / /src
 RUN --mount=type=cache,target=/usr/local/cargo/registry --mount=type=cache,target=/src/plugins/object-storage/target \
     cargo build --manifest-path plugins/object-storage/Cargo.toml --locked --release -j 2 \
-    && cp plugins/object-storage/target/release/webdock-object-storage-plugin /webdock-object-storage-plugin
+    && cp plugins/object-storage/target/release/spitzli-object-storage-plugin /spitzli-object-storage-plugin
 
 FROM docker.io/library/debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad AS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/* \
     && test -s /etc/ssl/certs/ca-certificates.crt
-COPY --from=build /webdock-object-storage-plugin /usr/local/bin/webdock-object-storage-plugin
+COPY --from=build /spitzli-object-storage-plugin /usr/local/bin/spitzli-object-storage-plugin
 USER 65532:65532
-ENTRYPOINT ["/usr/local/bin/webdock-object-storage-plugin"]
+ENTRYPOINT ["/usr/local/bin/spitzli-object-storage-plugin"]

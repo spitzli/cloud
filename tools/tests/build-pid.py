@@ -11,7 +11,7 @@ import subprocess
 import threading
 import time
 
-IMAGE = "docker.io/library/webdock-build-runner@sha256:81a0228242287a8800d26dbecd68136593ed652590e62123c987e8876b197409"
+IMAGE = "docker.io/library/spitzli-build-runner@sha256:81a0228242287a8800d26dbecd68136593ed652590e62123c987e8876b197409"
 
 
 def kubectl(*args, value=None, timeout=15):

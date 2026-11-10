@@ -4,7 +4,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
-use webdock_plugin_protocol::storage::{
+use spitzli_plugin_protocol::storage::{
     Attachment, MAX_PLAN_SECONDS, MAX_TRANSFER_BYTES, StorageAuthorization, StorageDirection,
     StoragePlan,
 };

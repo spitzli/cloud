@@ -25,7 +25,7 @@
         "test",
         "--locked",
         "-p",
-        "webdock-access",
+        "spitzli-access",
         "--lib",
         "waitlist"
       ],
@@ -48,7 +48,7 @@
         "test",
         "--locked",
         "-p",
-        "webdock-control-plane",
+        "spitzli-control-plane",
         "--lib",
         "waitlist"
       ],
@@ -108,7 +108,7 @@
       "bytes": 773282280
     },
     {
-      "path": "/quality-target/debug/webdock-lumaserv-compute",
+      "path": "/quality-target/debug/spitzli-lumaserv-compute",
       "sha256": "4f45e95e3163edfd514540b27777db87a3923e14c6f22aa677b1cab77f29f08f",
       "bytes": 178150696
     }

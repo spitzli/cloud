@@ -1,6 +1,6 @@
 /** Run with Bun --no-env-file; owner custody is explicit and never a public HTTP fallback. */
 import { Pool } from "pg";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { readPrivateInput } from "./operator-config";
 import { inspectNeonEnrollmentRecovery, recoverNeonEnrollment, neonRecoveryConfig } from "./neon-enrollment-recovery";
 

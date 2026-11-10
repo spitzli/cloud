@@ -11,9 +11,9 @@ import {
   ScopedPool,
   withDatabaseScope,
   type DatabaseScope,
-} from "@webdock/database-runtime";
-import { createPluginData } from "@webdock/core/plugin-data";
-import { createPluginJobs, type JobScope } from "@webdock/core/plugin-jobs";
+} from "@spitzli/database-runtime";
+import { createPluginData } from "@spitzli/core/plugin-data";
+import { createPluginJobs, type JobScope } from "@spitzli/core/plugin-jobs";
 import {
   PluginError,
   parsePluginManifest,

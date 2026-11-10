@@ -5,8 +5,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 mod support;
-use webdock_object_storage_plugin::{engine::Engine, model::*, provider::Provider, store::Store};
-use webdock_plugin_kit::seal::Sealer;
+use spitzli_object_storage_plugin::{engine::Engine, model::*, provider::Provider, store::Store};
+use spitzli_plugin_kit::seal::Sealer;
 
 #[derive(Default)]
 struct Remote {
@@ -40,7 +40,7 @@ impl Provider for Controlled {
         &self,
         _: &Binding,
         key: &str,
-    ) -> ProviderResult<webdock_object_storage_plugin::data::ObjectMetadata> {
+    ) -> ProviderResult<spitzli_object_storage_plugin::data::ObjectMetadata> {
         let waiting = {
             let mut r = self.0.lock().unwrap();
             r.heads += 1;
@@ -50,7 +50,7 @@ impl Provider for Controlled {
             started.notify_one();
             wait.notified().await;
         }
-        Ok(webdock_object_storage_plugin::data::ObjectMetadata {
+        Ok(spitzli_object_storage_plugin::data::ObjectMetadata {
             key: key.into(),
             exact_bytes: 3,
             version_id: "null".into(),
@@ -69,10 +69,10 @@ impl Provider for Controlled {
     async fn presign(
         &self,
         _: &Binding,
-        _: webdock_plugin_protocol::storage::StorageDirection,
-        _: &webdock_object_storage_plugin::data::DataRequest,
-    ) -> ProviderResult<webdock_object_storage_plugin::data::PresignedObject> {
-        Ok(webdock_object_storage_plugin::data::PresignedObject {
+        _: spitzli_plugin_protocol::storage::StorageDirection,
+        _: &spitzli_object_storage_plugin::data::DataRequest,
+    ) -> ProviderResult<spitzli_object_storage_plugin::data::PresignedObject> {
+        Ok(spitzli_object_storage_plugin::data::PresignedObject {
             url: "http://127.0.0.1:9000/private?signature=private-plan".into(),
             headers: BTreeMap::new(),
         })
@@ -804,7 +804,7 @@ async fn postgres_server_restart_preserves_intent_sealed_credentials_and_replay(
         file.write_all(json!({"database":f.db.name,"request":request,"created":created,"key":key,"pending":pending}).to_string().as_bytes()).unwrap();
     } else {
         let proof: Value =
-            serde_json::from_slice(&webdock_plugin_kit::read_file(&path, true).unwrap()).unwrap();
+            serde_json::from_slice(&spitzli_plugin_kit::read_file(&path, true).unwrap()).unwrap();
         let url = support::database_url(proof["database"].as_str().unwrap());
         let store = Store::connect(&url, None).await.unwrap();
         let fence = store.lock().await.unwrap();
@@ -1298,7 +1298,7 @@ async fn data_plans_are_fresh_private_and_never_journaled() {
             .prepare_data(
                 "customer-a",
                 "project-a",
-                webdock_plugin_protocol::storage::StorageDirection::Upload,
+                spitzli_plugin_protocol::storage::StorageDirection::Upload,
                 input
             )
             .await
@@ -1310,7 +1310,7 @@ async fn data_plans_are_fresh_private_and_never_journaled() {
 #[ignore = "requires fixtures/postgres.py fresh owned PostgreSQL"]
 async fn private_epoch_revalidation_denies_deactivation_pending_reactivation_and_wrong_scope_without_fence()
  {
-    use webdock_plugin_protocol::storage::{StorageAuthorization, StorageDirection};
+    use spitzli_plugin_protocol::storage::{StorageAuthorization, StorageDirection};
     let f = Fixture::new().await;
     let id = f
         .engine
@@ -1457,7 +1457,7 @@ async fn reveal_is_the_only_secret_response_and_never_writes_operation_results()
 #[tokio::test]
 #[ignore = "requires fixtures/postgres.py fresh owned PostgreSQL"]
 async fn actual_deactivation_revokes_issued_plan_while_provider_is_suspended() {
-    use webdock_plugin_protocol::storage::{StorageAuthorization, StorageDirection};
+    use spitzli_plugin_protocol::storage::{StorageAuthorization, StorageDirection};
     let f = Fixture::new().await;
     let created = f
         .engine

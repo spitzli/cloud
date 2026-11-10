@@ -23,25 +23,25 @@ RUN --mount=type=cache,id=spitzli-agent-bookworm-dacc9e51f252-1-98-1-registry,ta
     set -eu; mkdir /out; \
     run_checked() { logfile="$1"; shift; if "$@" > "$logfile" 2>&1; then return 0; else tail -c 2097152 "$logfile" >&2; exit 1; fi; }; \
     if [ "$BUILD_MODE" = preflight ]; then \
-      run_checked /out/agent-lib-tests.log cargo test --target x86_64-unknown-linux-gnu --locked -p webdock-agent --no-default-features --features kubernetes --lib --jobs 3 -- --test-threads=3 --format pretty; \
+      run_checked /out/agent-lib-tests.log cargo test --target x86_64-unknown-linux-gnu --locked -p spitzli-agent --no-default-features --features kubernetes --lib --jobs 3 -- --test-threads=3 --format pretty; \
     elif [ "$BUILD_MODE" = fixture-refresh ] || [ "$BUILD_MODE" = fixture-only ]; then \
       cp /checkpoint/checkpoint.json /out/checkpoint.json; \
-      run_checked /out/integration-artifacts.json cargo test --target x86_64-unknown-linux-gnu --locked -p webdock-agent --no-default-features --features kubernetes --test legacy_attachment --no-run --message-format=json --jobs 3; \
+      run_checked /out/integration-artifacts.json cargo test --target x86_64-unknown-linux-gnu --locked -p spitzli-agent --no-default-features --features kubernetes --test legacy_attachment --no-run --message-format=json --jobs 3; \
       python3 /harness/agent_build.py export-integration --messages /out/integration-artifacts.json --output /out > /out/integration-build.json; \
     else \
       test "$BUILD_MODE" = final; \
-    run_checked /out/storage-attachment-tests.log cargo test --target x86_64-unknown-linux-gnu --locked -p webdock-agent --no-default-features --features kubernetes --lib --jobs 3 -- --test-threads=3 --format pretty; \
-    run_checked /out/management-tests.log cargo test --target x86_64-unknown-linux-gnu --locked -p webdock-agent --no-default-features --features kubernetes --test management --jobs 3 -- --test-threads=3 --format pretty; \
-    run_checked /out/full-agent-tests.log cargo test --target x86_64-unknown-linux-gnu --locked -p webdock-agent --no-default-features --features kubernetes --all-targets --jobs 3 -- --test-threads=3 --format pretty; \
-    run_checked /out/integration-artifacts.json cargo test --target x86_64-unknown-linux-gnu --locked -p webdock-agent --no-default-features --features kubernetes --test legacy_attachment --no-run --message-format=json --jobs 3; \
+    run_checked /out/storage-attachment-tests.log cargo test --target x86_64-unknown-linux-gnu --locked -p spitzli-agent --no-default-features --features kubernetes --lib --jobs 3 -- --test-threads=3 --format pretty; \
+    run_checked /out/management-tests.log cargo test --target x86_64-unknown-linux-gnu --locked -p spitzli-agent --no-default-features --features kubernetes --test management --jobs 3 -- --test-threads=3 --format pretty; \
+    run_checked /out/full-agent-tests.log cargo test --target x86_64-unknown-linux-gnu --locked -p spitzli-agent --no-default-features --features kubernetes --all-targets --jobs 3 -- --test-threads=3 --format pretty; \
+    run_checked /out/integration-artifacts.json cargo test --target x86_64-unknown-linux-gnu --locked -p spitzli-agent --no-default-features --features kubernetes --test legacy_attachment --no-run --message-format=json --jobs 3; \
     python3 /harness/agent_build.py export-integration --messages /out/integration-artifacts.json --output /out > /out/integration-build.json; \
     fi; \
     python3 /harness/agent_build.py validate-tests --mode "$BUILD_MODE" --output /out > /out/test-counts.json; \
     if [ "$BUILD_MODE" != fixture-only ]; then \
-    run_checked /out/release-build.log cargo build --target x86_64-unknown-linux-gnu --locked -p webdock-agent --no-default-features --features kubernetes --bin webdock-agent --release --jobs 3; \
-    install -m 0555 /agent-target/x86_64-unknown-linux-gnu/release/webdock-agent /out/webdock-agent; \
-    python3 /harness/agent_elf.py /out/webdock-agent --output /out/bookworm-elf-proof.json; \
-    (cd /out; sha256sum webdock-agent > webdock-agent.sha256); \
+    run_checked /out/release-build.log cargo build --target x86_64-unknown-linux-gnu --locked -p spitzli-agent --no-default-features --features kubernetes --bin spitzli-agent --release --jobs 3; \
+    install -m 0555 /agent-target/x86_64-unknown-linux-gnu/release/spitzli-agent /out/spitzli-agent; \
+    python3 /harness/agent_elf.py /out/spitzli-agent --output /out/bookworm-elf-proof.json; \
+    (cd /out; sha256sum spitzli-agent > spitzli-agent.sha256); \
     fi; \
     rustc --version --verbose > /out/rustc-version.txt; \
     helm version --short > /out/helm-version.txt; \

@@ -8,13 +8,13 @@ use aws_sdk_s3::{
 };
 use serde_json::{Value, json};
 use std::{os::unix::fs::PermissionsExt, path::PathBuf, sync::Arc};
-use webdock_object_storage_plugin::{
+use spitzli_object_storage_plugin::{
     engine::Engine,
     provider::Provider,
     sdk::{BackendConfig, Control},
     store::Store,
 };
-use webdock_plugin_kit::seal::Sealer;
+use spitzli_plugin_kit::seal::Sealer;
 mod support;
 
 fn client(endpoint: &str, key: &str, secret: &str) -> Client {
@@ -92,7 +92,7 @@ async fn transfer(plan: &Value, method: &str, body: &[u8]) -> Result<Value, Stri
 async fn presigned_data(e: &Engine, id: &str, bucket: &str, admin: &Client) -> Result<(), String> {
     use sha2::{Digest, Sha256};
     let hash = hex::encode(Sha256::digest(b"abc"));
-    let input = json!({"resource_id":id,"key":"data-plan-proof","exact_bytes":3,"expected_sha256":hash,"filename":"proof.txt","content_type":"text/plain","expires_at":webdock_object_storage_plugin::model::now()+120});
+    let input = json!({"resource_id":id,"key":"data-plan-proof","exact_bytes":3,"expected_sha256":hash,"filename":"proof.txt","content_type":"text/plain","expires_at":spitzli_object_storage_plugin::model::now()+120});
     let upload = call(e, "objects.upload", input.clone()).await?;
     let parsed = url::Url::parse(upload["url"].as_str().ok_or("private URL")?)
         .map_err(|_| "private URL parse")?;
@@ -599,7 +599,7 @@ async fn real_minio_lifecycle_isolation_versions_multipart_retention_and_exact_c
         std::env::var_os("WEBDOCK_OBJECT_STORAGE_MINIO_CONFIG")
             .expect("private local config path required"),
     );
-    let bytes = webdock_plugin_kit::read_file(&path, true).expect("private config");
+    let bytes = spitzli_plugin_kit::read_file(&path, true).expect("private config");
     let raw: Value = serde_json::from_slice(&bytes).expect("config JSON");
     assert_eq!(raw["kind"], "minio-local");
     let c: BackendConfig = serde_json::from_slice(&bytes).expect("explicit config");
@@ -613,7 +613,7 @@ async fn real_minio_lifecycle_isolation_versions_multipart_retention_and_exact_c
         .join(format!("acceptance-{}", uuid::Uuid::new_v4().simple()));
     std::fs::create_dir(&directory).unwrap();
     std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o700)).unwrap();
-    let encryption_key = hex::encode(webdock_plugin_kit::seal::random::<32>());
+    let encryption_key = hex::encode(spitzli_plugin_kit::seal::random::<32>());
     std::fs::write(directory.join("sealer-key"), &encryption_key).unwrap();
     std::fs::set_permissions(
         directory.join("sealer-key"),
@@ -693,16 +693,16 @@ async fn recover_exact_owned_fixture() {
         std::env::var_os("WEBDOCK_OBJECT_STORAGE_MINIO_CONFIG").expect("private config"),
     );
     assert_eq!(path.parent(), config.parent());
-    let bytes = webdock_plugin_kit::read_file(&config, true).unwrap();
+    let bytes = spitzli_plugin_kit::read_file(&config, true).unwrap();
     let c: BackendConfig = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(c.kind, "minio-local");
     let provider = Arc::new(Control::new(c).await.unwrap());
     let storage: Value = serde_json::from_slice(
-        &webdock_plugin_kit::read_file(&path.join("storage.json"), true).unwrap(),
+        &spitzli_plugin_kit::read_file(&path.join("storage.json"), true).unwrap(),
     )
     .unwrap();
     let url = storage["url"].as_str().unwrap();
-    let connection = webdock_plugin_kit::postgres::connect(url, None)
+    let connection = spitzli_plugin_kit::postgres::connect(url, None)
         .await
         .expect("private fixture metadata");
     let resources = connection
@@ -711,7 +711,7 @@ async fn recover_exact_owned_fixture() {
         .unwrap()
         .iter()
         .map(|row| {
-            serde_json::from_str::<webdock_object_storage_plugin::model::Resource>(
+            serde_json::from_str::<spitzli_object_storage_plugin::model::Resource>(
                 row.get::<_, &str>(0),
             )
             .unwrap()
@@ -733,11 +733,11 @@ async fn recover_exact_owned_fixture() {
                 let policy = PathBuf::from(raw["minio"]["configDir"].as_str().unwrap())
                     .join(format!("{}.policy.json", r.binding.id.simple()));
                 let saved: Value =
-                    serde_json::from_slice(&webdock_plugin_kit::read_file(&policy, true).unwrap())
+                    serde_json::from_slice(&spitzli_plugin_kit::read_file(&policy, true).unwrap())
                         .unwrap();
                 assert_eq!(
                     saved,
-                    webdock_object_storage_plugin::sdk::application_policy(&r.binding)
+                    spitzli_object_storage_plugin::sdk::application_policy(&r.binding)
                 );
                 provider.set_lifecycle(&r.binding, None).await.unwrap();
                 for key in provider.keys(&r.binding).await.unwrap() {
@@ -753,7 +753,7 @@ async fn recover_exact_owned_fixture() {
         .any(|r| r.provisioned && r.state != "deleted")
     {
         let key = String::from_utf8(
-            webdock_plugin_kit::read_file(&path.join("sealer-key"), true).unwrap(),
+            spitzli_plugin_kit::read_file(&path.join("sealer-key"), true).unwrap(),
         )
         .unwrap();
         let e = Engine::new(
@@ -805,7 +805,7 @@ async fn recover_exact_owned_fixture() {
 
 async fn bounded_fixture_purge(
     provider: &Control,
-    binding: &webdock_object_storage_plugin::model::Binding,
+    binding: &spitzli_object_storage_plugin::model::Binding,
 ) -> bool {
     for _ in 0..40 {
         if provider.purge(binding).await.unwrap() {

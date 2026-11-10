@@ -3,7 +3,7 @@ import {preservedConfigurationRevision} from "./update-policy";
 import { readFileSync, statSync } from "node:fs";
 import { Pool } from "pg";
 import { z } from "zod";
-import { verifiedPostgresConfig } from "@webdock/database-runtime";
+import { verifiedPostgresConfig } from "@spitzli/database-runtime";
 import { verifyRelease } from "../../adapters/plugins/tabularium/src/integrity";
 const file = process.argv[2],
   target = process.argv[3];
