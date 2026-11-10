@@ -32,12 +32,12 @@ pub fn native_control_configured(
 ) -> bool {
     configuration.is_some()
         && environment
-            .get("WEBDOCK_NATIVE_MAIL_SENDING_ENABLED")
+            .get("SPITZLI_NATIVE_MAIL_SENDING_ENABLED")
             .map(String::as_str)
             == Some("true")
         && spitzli_core::features::FeatureSet::from_json(
             environment
-                .get("WEBDOCK_FEATURES")
+                .get("SPITZLI_FEATURES")
                 .map(String::as_str)
                 .unwrap_or("{}"),
         )
@@ -147,7 +147,7 @@ pub enum InitializationError {
     IncomingAgentDisabled,
     #[error("Incoming Mail configuration requires explicitly enabled native mailboxes")]
     IncomingMailboxesDisabled,
-    #[error("WEBDOCK_NATIVE_MAIL_CONFIGURATION_ENABLED must be true or false")]
+    #[error("SPITZLI_NATIVE_MAIL_CONFIGURATION_ENABLED must be true or false")]
     InvalidConfigurationFlag,
     #[error("Incoming Mail initialization failed")]
     IncomingService,
@@ -158,7 +158,7 @@ pub fn incoming_configuration_enabled(
     environment: &std::collections::HashMap<String, String>,
 ) -> Result<bool, InitializationError> {
     match environment
-        .get("WEBDOCK_NATIVE_MAIL_CONFIGURATION_ENABLED")
+        .get("SPITZLI_NATIVE_MAIL_CONFIGURATION_ENABLED")
         .map(String::as_str)
     {
         None | Some("false") => return Ok(false),
@@ -167,15 +167,15 @@ pub fn incoming_configuration_enabled(
     }
     for (key, error) in [
         (
-            "WEBDOCK_NATIVE_MAIL_ENABLED",
+            "SPITZLI_NATIVE_MAIL_ENABLED",
             InitializationError::IncomingDisabled,
         ),
         (
-            "WEBDOCK_NATIVE_MAIL_AGENT_ENABLED",
+            "SPITZLI_NATIVE_MAIL_AGENT_ENABLED",
             InitializationError::IncomingAgentDisabled,
         ),
         (
-            "WEBDOCK_NATIVE_MAILBOXES_ENABLED",
+            "SPITZLI_NATIVE_MAILBOXES_ENABLED",
             InitializationError::IncomingMailboxesDisabled,
         ),
     ] {
@@ -199,14 +199,14 @@ fn incoming_agent_configuration(
     environment: &std::collections::HashMap<String, String>,
 ) -> Result<spitzli_mail::incoming::agent::MailAgentConfig, InitializationError> {
     if environment
-        .get("WEBDOCK_NATIVE_MAIL_ENABLED")
+        .get("SPITZLI_NATIVE_MAIL_ENABLED")
         .map(String::as_str)
         != Some("true")
     {
         return Err(InitializationError::IncomingDisabled);
     }
     if environment
-        .get("WEBDOCK_NATIVE_MAIL_AGENT_ENABLED")
+        .get("SPITZLI_NATIVE_MAIL_AGENT_ENABLED")
         .map(String::as_str)
         != Some("true")
     {
@@ -224,7 +224,7 @@ pub async fn initialize_incoming(
     environment: &std::collections::HashMap<String, String>,
 ) -> Result<Arc<NativeIncoming>, InitializationError> {
     if environment
-        .get("WEBDOCK_NATIVE_MAIL_ENABLED")
+        .get("SPITZLI_NATIVE_MAIL_ENABLED")
         .map(String::as_str)
         != Some("true")
     {
@@ -235,11 +235,11 @@ pub async fn initialize_incoming(
         spitzli_mail::incoming::IncomingConfig {
             enabled: true,
             mailboxes_enabled: environment
-                .get("WEBDOCK_NATIVE_MAILBOXES_ENABLED")
+                .get("SPITZLI_NATIVE_MAILBOXES_ENABLED")
                 .map(String::as_str)
                 == Some("true"),
             sending_enabled: environment
-                .get("WEBDOCK_NATIVE_MAIL_SENDING_ENABLED")
+                .get("SPITZLI_NATIVE_MAIL_SENDING_ENABLED")
                 .map(String::as_str)
                 == Some("true"),
             managed_cluster: incoming_value(environment, "MAIL_MANAGED_CLUSTER_ID")?,
@@ -280,7 +280,7 @@ pub async fn initialize_sender(
     let worker_secret = required("MAIL_SEND_WORKER_SECRET")?;
     GatewayCredentials::hash(&worker_secret).map_err(|_| InitializationError::Service)?;
     let incoming = if environment
-        .get("WEBDOCK_NATIVE_MAILBOXES_ENABLED")
+        .get("SPITZLI_NATIVE_MAILBOXES_ENABLED")
         .is_some_and(|value| value == "true")
     {
         Some(spitzli_mail::sending::IncomingConfig {
@@ -345,27 +345,27 @@ mod tests {
         let mut environment = std::collections::HashMap::new();
         assert!(!incoming_configuration_enabled(&environment).unwrap());
         for key in [
-            "WEBDOCK_NATIVE_MAIL_ENABLED",
-            "WEBDOCK_NATIVE_MAIL_AGENT_ENABLED",
-            "WEBDOCK_NATIVE_MAILBOXES_ENABLED",
+            "SPITZLI_NATIVE_MAIL_ENABLED",
+            "SPITZLI_NATIVE_MAIL_AGENT_ENABLED",
+            "SPITZLI_NATIVE_MAILBOXES_ENABLED",
         ] {
             environment.insert(key.to_owned(), "true".to_owned());
         }
         assert!(!incoming_configuration_enabled(&environment).unwrap());
         environment.insert(
-            "WEBDOCK_NATIVE_MAIL_CONFIGURATION_ENABLED".to_owned(),
+            "SPITZLI_NATIVE_MAIL_CONFIGURATION_ENABLED".to_owned(),
             "false".to_owned(),
         );
         assert!(!incoming_configuration_enabled(&environment).unwrap());
         environment.insert(
-            "WEBDOCK_NATIVE_MAIL_CONFIGURATION_ENABLED".to_owned(),
+            "SPITZLI_NATIVE_MAIL_CONFIGURATION_ENABLED".to_owned(),
             "true".to_owned(),
         );
         assert!(incoming_configuration_enabled(&environment).unwrap());
         for key in [
-            "WEBDOCK_NATIVE_MAIL_ENABLED",
-            "WEBDOCK_NATIVE_MAIL_AGENT_ENABLED",
-            "WEBDOCK_NATIVE_MAILBOXES_ENABLED",
+            "SPITZLI_NATIVE_MAIL_ENABLED",
+            "SPITZLI_NATIVE_MAIL_AGENT_ENABLED",
+            "SPITZLI_NATIVE_MAILBOXES_ENABLED",
         ] {
             let mut incomplete = environment.clone();
             incomplete.remove(key);
@@ -384,7 +384,7 @@ mod tests {
     fn incoming_configuration_rejects_malformed_opt_in_without_echoing_values() {
         for value in ["TRUE", "1", "", "private-misconfigured-value"] {
             let environment = std::collections::HashMap::from([(
-                "WEBDOCK_NATIVE_MAIL_CONFIGURATION_ENABLED".to_owned(),
+                "SPITZLI_NATIVE_MAIL_CONFIGURATION_ENABLED".to_owned(),
                 value.to_owned(),
             )]);
             let error = incoming_configuration_enabled(&environment).unwrap_err();
@@ -395,8 +395,8 @@ mod tests {
     fn incoming_executor_configuration_requires_both_gates_and_retained_names() {
         use std::collections::HashMap;
         let reviewed = HashMap::from([
-            ("WEBDOCK_NATIVE_MAIL_ENABLED".into(), "true".into()),
-            ("WEBDOCK_NATIVE_MAIL_AGENT_ENABLED".into(), "true".into()),
+            ("SPITZLI_NATIVE_MAIL_ENABLED".into(), "true".into()),
+            ("SPITZLI_NATIVE_MAIL_AGENT_ENABLED".into(), "true".into()),
             (
                 "MAIL_STALWART_IMAGE".into(),
                 "registry.example.test/mail@sha256:reviewed-by-domain".into(),
@@ -406,8 +406,8 @@ mod tests {
         ]);
         assert!(incoming_agent_configuration(&reviewed).is_ok());
         for missing in [
-            "WEBDOCK_NATIVE_MAIL_ENABLED",
-            "WEBDOCK_NATIVE_MAIL_AGENT_ENABLED",
+            "SPITZLI_NATIVE_MAIL_ENABLED",
+            "SPITZLI_NATIVE_MAIL_AGENT_ENABLED",
             "MAIL_STALWART_IMAGE",
             "MAIL_HOSTNAME_SUFFIX",
             "MAIL_ENCRYPTION_KEY",

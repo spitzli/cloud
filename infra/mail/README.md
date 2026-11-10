@@ -91,8 +91,8 @@ that a rebuild has the same digest as an earlier artifact. Verify it locally wit
 The acceptance test requires that explicit reviewed digest and never pulls an image:
 
 ```sh
-WEBDOCK_MAIL_RUNTIME_IMAGE=REGISTRY/IMAGE@sha256:DIGEST \
-WEBDOCK_MAIL_RUNTIME_DOCKER_TEST=1 \
+SPITZLI_MAIL_RUNTIME_IMAGE=REGISTRY/IMAGE@sha256:DIGEST \
+SPITZLI_MAIL_RUNTIME_DOCKER_TEST=1 \
 cargo test -p spitzli-agent --test mail_runtime --no-default-features \
   --features docker -- --ignored
 ```
@@ -197,7 +197,7 @@ Configuration is a separate opt-in on the existing enrolled UDS/mTLS channel.
 Set the agent's `mailConfigurationEnabled` to `true` only with a reviewed private
 `mailRuntime` configuration. It defaults to `false`; enabling it without a Mail
 runtime fails validation. Core separately requires
-`WEBDOCK_NATIVE_MAIL_CONFIGURATION_ENABLED=true`, the native Mail, Mail agent and
+`SPITZLI_NATIVE_MAIL_CONFIGURATION_ENABLED=true`, the native Mail, Mail agent and
 native mailbox flags, and the Mail feature gate. The optional configuration RPC
 and its durable callback outbox do not block Hosting, lifecycle execution or
 heartbeats when configuration is disabled or an older Core lacks that RPC.

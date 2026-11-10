@@ -18,9 +18,9 @@ test.after(() => database.end());
 test("Git OAuth flows bind tenant, actor and session and consume code/finish exactly once", async (t) => {
   await database.query(gitDeploymentSchemaSQL);
   const variables = {
-    WEBDOCK_GITHUB_CLIENT_ID: "Iv1.fixture",
-    WEBDOCK_GITHUB_APP_SLUG: "webdock-fixture",
-    WEBDOCK_GIT_STUDIO_ORIGIN: "https://studio.example",
+    SPITZLI_GITHUB_CLIENT_ID: "Iv1.fixture",
+    SPITZLI_GITHUB_APP_SLUG: "webdock-fixture",
+    SPITZLI_GIT_STUDIO_ORIGIN: "https://studio.example",
   };
   const previous = Object.fromEntries(
     Object.keys(variables).map((k) => [k, process.env[k]]),

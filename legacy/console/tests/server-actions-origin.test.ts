@@ -5,7 +5,7 @@ import { execFileSync } from "node:child_process";
 function allowedOrigins(origin?: string) {
   const env = { ...process.env };
   delete env.NEXT_PUBLIC_SERVER_URL;
-  delete env.WEBDOCK_CONSOLE_ORIGIN;
+  delete env.SPITZLI_CONSOLE_ORIGIN;
   if (origin) env.NEXT_PUBLIC_SERVER_URL = origin;
   return JSON.parse(execFileSync(process.execPath, ["-e",
     "import config from './next.config.ts'; console.log(JSON.stringify(config.experimental.serverActions.allowedOrigins ?? []))",

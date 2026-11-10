@@ -20,7 +20,7 @@ async fn main() {
         serde_json::from_slice(&std::fs::read(".runtime-test/account-browser.json").unwrap())
             .unwrap();
     let user = account["userID"].as_str().unwrap();
-    let owner = Database::connect(guard("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let owner = Database::connect(guard("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     let row=owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT id FROM webdock_auth.\"user\" WHERE id=$1 AND email=$2 AND name='Account browser fixture' AND role='operator' AND \"twoFactorEnabled\" AND \"emailVerified\" AND NOT \"mustChangePassword\"",[user.into(),account["email"].as_str().unwrap().into()])).await.unwrap();

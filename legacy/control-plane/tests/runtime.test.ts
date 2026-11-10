@@ -5,7 +5,7 @@ test("production rejects unsafe origins and incomplete configuration", () => {
   expect(() =>
     readConfig({
       NODE_ENV: "production",
-      WEBDOCK_API_ORIGIN: "http://api.webdock.dev",
+      SPITZLI_API_ORIGIN: "http://api.webdock.dev",
     }),
   ).toThrow();
 });
@@ -16,7 +16,7 @@ test("origin validation rejects credentials, paths, and non-loopback insecure UR
     "http://api.webdock.dev",
   ]) {
     expect(() =>
-      readConfig({ NODE_ENV: "test", WEBDOCK_API_ORIGIN: origin }),
+      readConfig({ NODE_ENV: "test", SPITZLI_API_ORIGIN: origin }),
     ).toThrow();
   }
 });

@@ -10,7 +10,7 @@ export function testEnvironment(
   Object.assign(env, {
     NODE_ENV: "development",
     AUTH_TEST_MAIL: "true",
-    WEBDOCK_MODULES: JSON.stringify({configVersion: 1, modules: Object.fromEntries(["mail", "hosting", "databases", "storage"].map(id => [id, {enabled: true}]))}),
+    SPITZLI_MODULES: JSON.stringify({configVersion: 1, modules: Object.fromEntries(["mail", "hosting", "databases", "storage"].map(id => [id, {enabled: true}]))}),
     BETTER_AUTH_URL: "http://localhost:3125",
     BETTER_AUTH_SECRET: randomBytes(32).toString("hex"),
     PAYLOAD_SECRET: randomBytes(32).toString("hex"),
@@ -25,11 +25,11 @@ export function testEnvironment(
       DATABASE_URL_UNPOOLED: source.API_TEST_DATABASE_URL,
     });
   }
-  if (source.WEBDOCK_JOBS_REDIS_URL) {
-    const redis = new URL(source.WEBDOCK_JOBS_REDIS_URL);
+  if (source.SPITZLI_JOBS_REDIS_URL) {
+    const redis = new URL(source.SPITZLI_JOBS_REDIS_URL);
     if (redis.protocol !== "redis:" || !["127.0.0.1", "localhost"].includes(redis.hostname) || redis.search || redis.hash)
       throw Error("Use a loopback Redis test fixture");
-    env.WEBDOCK_JOBS_REDIS_URL = redis.href;
+    env.SPITZLI_JOBS_REDIS_URL = redis.href;
   }
   return env;
 }
@@ -94,8 +94,8 @@ export function rlsEnvironment(
   Object.assign(env, {
     API_TEST_OWNER_URL: ownerURL,
     DATABASE_RLS_SECRET: fixture.contextSecret,
-    WEBDOCK_RLS_FIXTURE_FILE: source.WEBDOCK_RLS_FIXTURE_FILE,
-    WEBDOCK_API_DOMAINS: "auth,registry",
+    SPITZLI_RLS_FIXTURE_FILE: source.SPITZLI_RLS_FIXTURE_FILE,
+    SPITZLI_API_DOMAINS: "auth,registry",
   });
   return env;
 }

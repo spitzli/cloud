@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 import { z } from 'zod';
-const source = process.env.WEBDOCK_HOSTING_BROWSER_FIXTURE;
+const source = process.env.SPITZLI_HOSTING_BROWSER_FIXTURE;
 assert.ok(source, 'An owned native hosting fixture file is required');
 const fixture = z.object({
   origin: z.url(), cookie: z.object({ name: z.string().min(1), value: z.string().min(1) }),
@@ -92,16 +92,16 @@ try {
   await page.getByRole('link', { name: 'Settings', exact: true }).click();
   await page.getByRole('textbox', { name: 'CPU', exact: true }).fill(fixture.updateCPU ?? '0.2 cores');
   await page.getByRole('button', { name: 'Add variable', exact: true }).click();
-  await page.getByRole('textbox', { name: 'Variable name 1', exact: true }).fill('WEBDOCK_PROOF_TOKEN');
+  await page.getByRole('textbox', { name: 'Variable name 1', exact: true }).fill('SPITZLI_PROOF_TOKEN');
   await page.getByLabel('Value 1', { exact: true }).fill('browser-proof-value');
   const update = page.waitForRequest(request => new URL(request.url()).pathname === '/api/console/hosting' && request.postDataJSON().action === 'apps.update');
   await accepted('apps.update', () => page.getByRole('button', { name: 'Request update', exact: true }).click());
-  assert.deepEqual((await update).postDataJSON().environment, [{ name: 'WEBDOCK_PROOF_TOKEN', value: 'browser-proof-value' }]);
+  assert.deepEqual((await update).postDataJSON().environment, [{ name: 'SPITZLI_PROOF_TOKEN', value: 'browser-proof-value' }]);
   await completedOperation();
   // A fresh read returns the name only; the saved value stays hidden and is never re-sent.
   await page.getByRole('link', { name: 'Settings', exact: true }).click();
   await page.getByRole('textbox', { name: 'Variable name 1', exact: true }).waitFor();
-  assert.equal(await page.getByRole('textbox', { name: 'Variable name 1', exact: true }).inputValue(), 'WEBDOCK_PROOF_TOKEN');
+  assert.equal(await page.getByRole('textbox', { name: 'Variable name 1', exact: true }).inputValue(), 'SPITZLI_PROOF_TOKEN');
   await page.getByText('Saved value — hidden', { exact: true }).waitFor();
   assert.ok(!(await page.locator('body').textContent()).includes('browser-proof-value'), 'Saved environment value was rendered');
   // Create a second application from the Console, wait for the runtime, then delete it by plan.
@@ -131,7 +131,7 @@ try {
     await page.setViewportSize({ width, height: 900 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `Native hosting layout overflow at ${width}px`);
   }
-  const screenshotDir = process.env.WEBDOCK_HOSTING_BROWSER_SCREENSHOT_DIR;
+  const screenshotDir = process.env.SPITZLI_HOSTING_BROWSER_SCREENSHOT_DIR;
   if (screenshotDir) {
     mkdirSync(screenshotDir, { recursive: true, mode: 0o700 });
     await page.setViewportSize({ width: 1280, height: 900 });

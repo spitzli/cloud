@@ -160,9 +160,9 @@ async function bootstrap(f) {
   const dbURL = role => { const url = new URL(platform.url); url.username = role; if (role !== 'postgres') url.password = passwords[role]; url.searchParams.set('sslmode', 'verify-full'); url.searchParams.set('sslrootcert', join(platform.directory, 'ca.crt')); return url.href; };
   const ports = { core: 19740, console: 19741, account: 19742, callback: 19743 };
   const origins = { core: `http://127.0.0.1:${ports.core}`, console: `http://127.0.0.1:${ports.console}`, account: `http://localhost:${ports.account}`, studio: `http://localhost:${ports.console}` };
-  const env = { WEBDOCK_DATABASE_GATEWAY_ORIGIN: 'http://127.0.0.1:19740', NODE_ENV: 'development', PORT: String(ports.core), WEBDOCK_BIND_ADDRESS: '127.0.0.1', WEBDOCK_API_ORIGIN: origins.core, WEBDOCK_AUTH_ORIGIN: origins.account, WEBDOCK_STUDIO_ORIGIN: origins.studio, WEBDOCK_CONSOLE_ORIGIN: origins.console, WEBDOCK_AUTH_SECRET: random(), DATABASE_RLS_SECRET: random(), DATABASE_CA_CERT: platform.ca, WEBDOCK_FEATURES: JSON.stringify({ hosting: 'disabled', databases: 'disabled', mail: 'disabled' }), WEBDOCK_WORKLOADS_ENABLED: 'true' };
+  const env = { SPITZLI_DATABASE_GATEWAY_ORIGIN: 'http://127.0.0.1:19740', NODE_ENV: 'development', PORT: String(ports.core), SPITZLI_BIND_ADDRESS: '127.0.0.1', SPITZLI_API_ORIGIN: origins.core, SPITZLI_AUTH_ORIGIN: origins.account, SPITZLI_STUDIO_ORIGIN: origins.studio, SPITZLI_CONSOLE_ORIGIN: origins.console, SPITZLI_AUTH_SECRET: random(), DATABASE_RLS_SECRET: random(), DATABASE_CA_CERT: platform.ca, SPITZLI_FEATURES: JSON.stringify({ hosting: 'disabled', databases: 'disabled', mail: 'disabled' }), SPITZLI_WORKLOADS_ENABLED: 'true' };
   const target = `127.0.0.1:${platform.port}/webdock_object_fixture`, binary = name => f.binary(name);
-  await f.command(binary('spitzli-migrate'), ['--target', target, '--initialize-empty', '--provision-roles-from', f.path('roles.json')], { env: { ...env, WEBDOCK_MIGRATION_DATABASE_URL: dbURL('postgres') }, timeout: 180000 });
+  await f.command(binary('spitzli-migrate'), ['--target', target, '--initialize-empty', '--provision-roles-from', f.path('roles.json')], { env: { ...env, SPITZLI_MIGRATION_DATABASE_URL: dbURL('postgres') }, timeout: 180000 });
   const offline = { ...env, DATABASE_URL_UNPOOLED: dbURL('webdock_offline_migrate') };
   await f.write('operator-input.json', { email: `object-${f.input.runID}@example.test`, name: 'Owned archives operator', password: 'Owned-' + random() + '!', authOrigin: origins.account, studioOrigin: origins.studio, consoleOrigin: origins.console });
   await f.command(binary('spitzli-bootstrap-operator'), ['--target', target, '--config', f.path('operator-input.json'), '--output', f.path('operator-output.json')], { env: offline });
@@ -175,8 +175,8 @@ async function bootstrap(f) {
   await f.command(binary('spitzli-bootstrap-plugins'), ['--target', target, '--config', f.path('kernel-input.json'), '--output', f.path('kernel')], { env: offline });
   const kernel = f.path('kernel'), config = await f.json(join(kernel, 'plugin-config.json'));
   await mkdir(f.path('staging'), { mode: 0o700 }); config.exportSources = true; config.storage = { stagingDirectory: f.path('staging') }; await writePrivate(join(kernel, 'plugin-config.json'), config, true);
-  Object.assign(env, (await f.json(f.path('operator-output.json'))).environment, { WEBDOCK_NATIVE_PLUGIN_CONFIG: join(kernel, 'plugin-config.json') });
-  for (const [key, role] of [['WEBDOCK_DATABASE_URL', 'webdock_auth_bootstrap'], ['WEBDOCK_SESSION_DATABASE_URL', 'webdock_auth_runtime'], ['WEBDOCK_WORKER_DATABASE_URL', 'webdock_worker_runtime'], ['WEBDOCK_REGISTRY_DATABASE_URL', 'webdock_registry_runtime']]) env[key] = dbURL(role);
+  Object.assign(env, (await f.json(f.path('operator-output.json'))).environment, { SPITZLI_NATIVE_PLUGIN_CONFIG: join(kernel, 'plugin-config.json') });
+  for (const [key, role] of [['SPITZLI_DATABASE_URL', 'webdock_auth_bootstrap'], ['SPITZLI_SESSION_DATABASE_URL', 'webdock_auth_runtime'], ['SPITZLI_WORKER_DATABASE_URL', 'webdock_worker_runtime'], ['SPITZLI_REGISTRY_DATABASE_URL', 'webdock_registry_runtime']]) env[key] = dbURL(role);
   await f.write('core-environment.json', env);
   await f.write('worker.json', { storageTargets: [{ id: 'metadata', adminUrl: metadata.url, authority: join(metadata.directory, 'ca.crt'), runtimeHost: metadata.ip, runtimePort: 5432 }] });
   const socketDirectory = '/tmp/wdos-' + f.input.runID;
@@ -220,8 +220,8 @@ async function prepareTransports(f) {
   const kernel = f.report.kernel, config = await f.json(join(kernel, 'plugin-config.json'));
   config.storage = { stagingDirectory: '/tmp/staging' }; await f.write('callback-plugin-config.json', config);
   const env = await f.json(f.path('core-environment.json')), platform = await f.json(f.path('platform.json'));
-  for (const key of ['WEBDOCK_DATABASE_URL', 'WEBDOCK_SESSION_DATABASE_URL', 'WEBDOCK_WORKER_DATABASE_URL', 'WEBDOCK_REGISTRY_DATABASE_URL']) { const url = new URL(env[key]); url.hostname = platform.ip; url.port = '5432'; env[key] = url.href; }
-  env.WEBDOCK_NATIVE_PLUGIN_CONFIG = f.path('callback-plugin-config.json'); await f.write('callback-environment.json', env);
+  for (const key of ['SPITZLI_DATABASE_URL', 'SPITZLI_SESSION_DATABASE_URL', 'SPITZLI_WORKER_DATABASE_URL', 'SPITZLI_REGISTRY_DATABASE_URL']) { const url = new URL(env[key]); url.hostname = platform.ip; url.port = '5432'; env[key] = url.href; }
+  env.SPITZLI_NATIVE_PLUGIN_CONFIG = f.path('callback-plugin-config.json'); await f.write('callback-environment.json', env);
   const files = [f.path('callback-plugin-config.json'), f.path('catalog.json'), join(platform.directory, 'ca.crt'), ...['invocation.key', 'host-bindings.json', 'connections.json', 'core.crt', 'core.key', 'ca.crt'].map(name => join(kernel, name))];
   const callback = await f.ownContainer('wd-archives-callback-' + f.input.runID, ['--network', f.report.network.name, '--user', `${process.getuid()}:${process.getgid()}`, '--read-only', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--tmpfs', '/tmp:rw,nosuid,nodev,size=32m,mode=1777', ...files.flatMap(path => ['--mount', `type=bind,source=${path},target=${path},readonly`]), '--mount', `type=bind,source=${f.binary('spitzli-plugin-control')},target=/reviewed-plugin-control,readonly`, '--entrypoint', '/bin/sh', base, '-ec', 'exec sleep infinity']);
   await f.docker(['exec', callback.Id, '/reviewed-plugin-control', '--help']);
@@ -244,7 +244,7 @@ export async function stopProcess(f, item) {
 const MC='quay.io/minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727';
 async function mc(f,args,input,allowFailure=false){
   const values=Object.fromEntries((await readPrivate(join(ROOT,'.dev-local/minio.env'))).split('\n').filter(line=>line.includes('=')&&!line.startsWith('#')).map(line=>{const at=line.indexOf('=');return [line.slice(0,at),line.slice(at+1).trim().replace(/^["']|["']$/g,'')];}));
-  const origin=new URL('http://127.0.0.1:'+Number(process.env.WEBDOCK_DEV_S3_PORT??55900));origin.username=values.MINIO_ROOT_USER;origin.password=values.MINIO_ROOT_PASSWORD;
+  const origin=new URL('http://127.0.0.1:'+Number(process.env.SPITZLI_DEV_S3_PORT??55900));origin.username=values.MINIO_ROOT_USER;origin.password=values.MINIO_ROOT_PASSWORD;
   return f.docker(['run','--rm','--network','host','--env','MC_HOST_owned', '-i',MC,...args],{env:{MC_HOST_owned:origin.href},input,timeout:90000,allowFailure});
 }
 async function prepareMinio(f){
@@ -306,7 +306,7 @@ async function serveUI(f) {
   process.on('SIGTERM', stop); process.on('SIGINT', stop);
 }
 async function startUI(f) {
-  await f.startProcess('console', '/home/newt/.bun/bin/bun', ['--no-env-file', fileURLToPath(import.meta.url), 'serve-ui', f.input.runID], { WEBDOCK_DEV_API_ORIGIN: f.report.origins.core });
+  await f.startProcess('console', '/home/newt/.bun/bin/bun', ['--no-env-file', fileURLToPath(import.meta.url), 'serve-ui', f.input.runID], { SPITZLI_DEV_API_ORIGIN: f.report.origins.core });
   for (const origin of [f.report.origins.console, f.report.origins.account]) await f.wait(async () => { try { return (await fetch(origin + '/console-config.json', { signal: AbortSignal.timeout(1000) })).ok; } catch { return false; } }, 30000);
 }
 async function artifacts(f) {

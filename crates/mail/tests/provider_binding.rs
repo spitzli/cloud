@@ -8,7 +8,7 @@ const KEY: &str = "mail-provider-binding-local-context-at-least32";
 #[ignore = "creates and removes a unique owned local provider-binding database"]
 async fn transport_adoption_is_explicit_revisioned_and_read_only_to_the_scoped_worker() {
     let mut owner_url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert!(matches!(
         owner_url.host_str(),
         Some("localhost" | "127.0.0.1")
@@ -36,7 +36,7 @@ async fn transport_adoption_is_explicit_revisioned_and_read_only_to_the_scoped_w
         owner.execute_unprepared("INSERT INTO webdock_mail.provider_binding(customer_id,plugin_id,revision,transport_revision) VALUES('123','mail-relay-fixture',1,1)").await.unwrap();
         assert!(owner.execute_unprepared("UPDATE webdock_mail.provider_binding SET revoked_at=now() WHERE customer_id='123'").await.is_err());
         owner.execute_unprepared("UPDATE webdock_mail.provider_binding SET revision=revision+1,revoked_at=now() WHERE customer_id='123'").await.unwrap();
-        let mut worker_url=url::Url::parse(&std::env::var("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").unwrap()).unwrap();assert_eq!(worker_url.host_str(),owner_url.host_str());assert_eq!(worker_url.port(),owner_url.port());worker_url.set_path(owner_url.path());
+        let mut worker_url=url::Url::parse(&std::env::var("SPITZLI_PLUGIN_WORKER_DATABASE_URL").unwrap()).unwrap();assert_eq!(worker_url.host_str(),owner_url.host_str());assert_eq!(worker_url.port(),owner_url.port());worker_url.set_path(owner_url.path());
         let worker=Database::connect(worker_url.as_str()).await.unwrap();
         for purpose in [None,Some("mail-webmail-gateway"),Some("mail-send-gateway")]{
             let tx=worker.begin().await.unwrap();

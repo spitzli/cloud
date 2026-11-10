@@ -43,7 +43,7 @@ pub fn private(path: &Path, value: &Value) {
 impl Fixture {
     pub async fn start() -> Self {
         assert_eq!(
-            std::env::var("WEBDOCK_PLUGIN_SETUP_DOCKER_TEST").as_deref(),
+            std::env::var("SPITZLI_PLUGIN_SETUP_DOCKER_TEST").as_deref(),
             Ok("1")
         );
         let nonce = uuid::Uuid::new_v4().simple().to_string();

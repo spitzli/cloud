@@ -87,7 +87,7 @@ cargo test --manifest-path Cargo.toml
 # Disposable loopback PostgreSQL for plugin storage; SMTP and turboSMTP are in-test stand-ins.
 # Mailboxes test two isolated customer engines, cross-project reuse, retained suspend/resume and restart reconciliation
 # against real Stalwart CE on local dev k3s, applied by an in-test stand-in for Core:
-WEBDOCK_MAIL_PLUGIN_TEST_ADMIN_URL=postgres://… WEBDOCK_WORKLOAD_TEST_KUBECONFIG=$PWD/.dev-local/k3s/kubeconfig.yaml \
+SPITZLI_MAIL_PLUGIN_TEST_ADMIN_URL=postgres://… SPITZLI_WORKLOAD_TEST_KUBECONFIG=$PWD/.dev-local/k3s/kubeconfig.yaml \
   cargo test --manifest-path Cargo.toml -- --include-ignored
 ```
 

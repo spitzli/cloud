@@ -99,7 +99,7 @@ class OwnedBuilder:
         if known_id is None:
             self.record['containerID']=candidate;self.save()
         host=current['HostConfig']
-        snapshot={'ID':current['Id'],'Name':current['Name'],'ImageID':current['Image'],'ImageRef':current['Config']['Image'],'OwnerMarker':current['Config'].get('Env',[]).count('WEBDOCK_BACKEND_PACKAGE_OWNER='+self.record['nonce'])==1,'Mounts':[{key:mount.get(key) for key in ['Type','Name','Destination','RW']} for mount in current.get('Mounts',[])],'Budgets':{key:host.get(key) for key in ['Memory','MemorySwap','CpuPeriod','CpuQuota','Privileged']}}
+        snapshot={'ID':current['Id'],'Name':current['Name'],'ImageID':current['Image'],'ImageRef':current['Config']['Image'],'OwnerMarker':current['Config'].get('Env',[]).count('SPITZLI_BACKEND_PACKAGE_OWNER='+self.record['nonce'])==1,'Mounts':[{key:mount.get(key) for key in ['Type','Name','Destination','RW']} for mount in current.get('Mounts',[])],'Budgets':{key:host.get(key) for key in ['Memory','MemorySwap','CpuPeriod','CpuQuota','Privileged']}}
         if bound is None:
             self.record['container']=snapshot;self.save()
         elif bound!=snapshot:
@@ -131,7 +131,7 @@ class OwnedBuilder:
         self.record['creationIntent']=True;self.save()
         self.mutate('volume-create',['volume','create','--driver','local','--label',OWNER_LABEL+'='+self.record['nonce'],self.volume])
         self.observed_volume()
-        self.mutate('builder-create',['buildx','create','--name',self.builder,'--node',self.node,'--driver','docker-container','--driver-opt','image='+BUILDKIT,'--driver-opt','env.WEBDOCK_BACKEND_PACKAGE_OWNER='+self.record['nonce'],'--driver-opt','memory=8g,memory-swap=8g,cpu-period=100000,cpu-quota=400000',ENDPOINT])
+        self.mutate('builder-create',['buildx','create','--name',self.builder,'--node',self.node,'--driver','docker-container','--driver-opt','image='+BUILDKIT,'--driver-opt','env.SPITZLI_BACKEND_PACKAGE_OWNER='+self.record['nonce'],'--driver-opt','memory=8g,memory-swap=8g,cpu-period=100000,cpu-quota=400000',ENDPOINT])
         if not self.observed_builder():raise CleanupBlocked('Builder creation not observed')
         self.mutate('bootstrap',['buildx','inspect','--bootstrap',self.builder],timeout=180)
         current=self.observed_container()

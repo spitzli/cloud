@@ -62,7 +62,7 @@ class PrelaunchTests(unittest.TestCase):
     with patch.object(r,'ROOT',root),patch.object(r,'load_operator_fixture',side_effect=loader):
      namespace['ROOT']=root;namespace['load_operator_fixture']=r.load_operator_fixture
      exec(compile(ast.Module(body=body[first:last+1],type_ignores=[]),str(P(r.__file__)),'exec'),namespace)
-    preflight=base/'preflight.sh';self.assertEqual(stat.S_IMODE(preflight.stat().st_mode),0o555);self.assertIn('mail_fixed_clusterip_gate',preflight.read_text());self.assertEqual(len(created),1);self.assertEqual('WEBDOCK_RECOVERY_MAIL_INVOKE_PREFIX' in created[0][0],prefix);self.assertEqual(created[0][1]['env'].get('WEBDOCK_RECOVERY_MAIL_INVOKE_PREFIX'), '1' if prefix else None);self.assertEqual(created[0][1]['env'].get('WEBDOCK_RECOVERY_MAIL_PRELUDE'),'1' if prelude else None)
+    preflight=base/'preflight.sh';self.assertEqual(stat.S_IMODE(preflight.stat().st_mode),0o555);self.assertIn('mail_fixed_clusterip_gate',preflight.read_text());self.assertEqual(len(created),1);self.assertEqual('SPITZLI_RECOVERY_MAIL_INVOKE_PREFIX' in created[0][0],prefix);self.assertEqual(created[0][1]['env'].get('SPITZLI_RECOVERY_MAIL_INVOKE_PREFIX'), '1' if prefix else None);self.assertEqual(created[0][1]['env'].get('SPITZLI_RECOVERY_MAIL_PRELUDE'),'1' if prelude else None)
     server=[line for line in preflight.read_text().splitlines() if 'exec /usr/local/bin/k3s server ' in line]
     self.assertEqual(len(server),1)
     self.assertIn('--snapshotter=overlayfs',server[0])

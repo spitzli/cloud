@@ -21,7 +21,7 @@ fn role_setup_accepts_only_complete_fixed_names_and_private_password_values() {
 }
 
 #[tokio::test]
-#[ignore = "requires explicit WEBDOCK_BOOTSTRAP_DOCKER_TEST=1 and local Docker Engine"]
+#[ignore = "requires explicit SPITZLI_BOOTSTRAP_DOCKER_TEST=1 and local Docker Engine"]
 async fn empty_postgres_bootstrap_creates_roles_without_changing_existing_credentials() {
     use sea_orm::{ConnectOptions, ConnectionTrait, Database, DbBackend, Statement};
     use spitzli_persistence::{
@@ -30,7 +30,7 @@ async fn empty_postgres_bootstrap_creates_roles_without_changing_existing_creden
     };
     use std::process::Command;
     assert_eq!(
-        std::env::var("WEBDOCK_BOOTSTRAP_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_BOOTSTRAP_DOCKER_TEST").as_deref(),
         Ok("1")
     );
     fn docker() -> Command {

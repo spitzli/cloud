@@ -4,7 +4,7 @@
 
 **Goal:** Move actual canonical cookie/session authentication and the signed tenant-context boundary to direct PostgreSQL operations.
 
-**Architecture:** Add an explicit native session reader to the existing IdentityService, using native typed rows/parameters and the checked pool from PR85. Keep the canonical Principal and cookie/MFA/passkey contracts. Share signing payload generation between retained and native transactions. Core opts in with `WEBDOCK_SESSION_READ_BACKEND=tokio-postgres`; default remains `sea-orm` while other identity writes are ported.
+**Architecture:** Add an explicit native session reader to the existing IdentityService, using native typed rows/parameters and the checked pool from PR85. Keep the canonical Principal and cookie/MFA/passkey contracts. Share signing payload generation between retained and native transactions. Core opts in with `SPITZLI_SESSION_READ_BACKEND=tokio-postgres`; default remains `sea-orm` while other identity writes are ported.
 
 **Tech Stack:** Axum, tokio-postgres/Deadpool, existing PostgreSQL policy functions and HMAC signer.
 

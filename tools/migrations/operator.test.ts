@@ -27,16 +27,16 @@ const env = {
   DATABASE_URL_UNPOOLED:
     "postgresql://webdock_offline_migrate:private@127.0.0.1:5544/webdock",
   BETTER_AUTH_URL: "https://auth.example.test",
-  WEBDOCK_STUDIO_ORIGIN: "https://studio.example.test",
-  WEBDOCK_CONSOLE_ORIGIN: "https://console.example.test",
+  SPITZLI_STUDIO_ORIGIN: "https://studio.example.test",
+  SPITZLI_CONSOLE_ORIGIN: "https://console.example.test",
 };
 const profile = {
   email: "Owner@Example.test",
   name: "Initial operator",
   password: "private-initial-password",
   authOrigin: env.BETTER_AUTH_URL,
-  studioOrigin: env.WEBDOCK_STUDIO_ORIGIN,
-  consoleOrigin: env.WEBDOCK_CONSOLE_ORIGIN,
+  studioOrigin: env.SPITZLI_STUDIO_ORIGIN,
+  consoleOrigin: env.SPITZLI_CONSOLE_ORIGIN,
 };
 test("operator bootstrap requires exact target, dedicated offline role and matching canonical origins", () => {
   assert.equal(operatorConfig(env, "127.0.0.1:5544/webdock").local, true);
@@ -79,14 +79,14 @@ test("operator bootstrap requires exact target, dedicated offline role and match
   assert.throws(() =>
     operatorInput(
       profile,
-      { ...env, WEBDOCK_INITIAL_OPERATOR_PASSWORD: "other-password-long" },
+      { ...env, SPITZLI_INITIAL_OPERATOR_PASSWORD: "other-password-long" },
       true,
     ),
   );
   assert.equal(
     operatorInput(
       { ...profile, password: undefined },
-      { ...env, WEBDOCK_INITIAL_OPERATOR_PASSWORD: "private-env-password" },
+      { ...env, SPITZLI_INITIAL_OPERATOR_PASSWORD: "private-env-password" },
       true,
     ).password,
     "private-env-password",

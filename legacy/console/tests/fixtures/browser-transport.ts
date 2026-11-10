@@ -6,24 +6,24 @@ declare const Bun: {
   resolveSync(specifier: string, from: string): string;
 };
 const mode = process.argv[2];
-delete process.env.WEBDOCK_AUTH_PROVIDER;
-delete process.env.WEBDOCK_CONSOLE_AUTH_PROVIDER;
-delete process.env.WEBDOCK_CONSOLE_SERVICE_KEY;
-process.env.WEBDOCK_API_ORIGIN = "https://api.example.test";
+delete process.env.SPITZLI_AUTH_PROVIDER;
+delete process.env.SPITZLI_CONSOLE_AUTH_PROVIDER;
+delete process.env.SPITZLI_CONSOLE_SERVICE_KEY;
+process.env.SPITZLI_API_ORIGIN = "https://api.example.test";
 process.env.NEXT_PUBLIC_SERVER_URL = "https://console.example.test";
 if (mode === "adapter") {
-  process.env.WEBDOCK_AUTH_PROVIDER = JSON.stringify({
+  process.env.SPITZLI_AUTH_PROVIDER = JSON.stringify({
     provider: "clerk",
     issuer: "https://clerk.example.test",
     authorizedParties: ["https://console.example.test"],
     audience: "webdock",
   });
-  process.env.WEBDOCK_CONSOLE_SERVICE_KEY = "s".repeat(32);
+  process.env.SPITZLI_CONSOLE_SERVICE_KEY = "s".repeat(32);
   // Explicit selected Clerk uses the authenticated Console boundary.
-  process.env.WEBDOCK_CONSOLE_AUTH_PROVIDER = "clerk";
+  process.env.SPITZLI_CONSOLE_AUTH_PROVIDER = "clerk";
 } else if (mode === "console") {
-  process.env.WEBDOCK_CONSOLE_AUTH_PROVIDER = "clerk";
-  process.env.WEBDOCK_CONSOLE_SERVICE_KEY = "s".repeat(32);
+  process.env.SPITZLI_CONSOLE_AUTH_PROVIDER = "clerk";
+  process.env.SPITZLI_CONSOLE_SERVICE_KEY = "s".repeat(32);
 }
 // Stand-ins for the Next.js request scope and Clerk; replaced before the client module loads.
 const stubs: Record<string, string> = {

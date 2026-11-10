@@ -18,11 +18,11 @@ function fixtureURL(value: string | undefined) {
 }
 
 test("restricted offline owner repairs a dropped signup response with FORCE RLS and provider column-only SELECT", {
-  skip: process.env.WEBDOCK_TEST_NEON_RECOVERY !== "true",
+  skip: process.env.SPITZLI_TEST_NEON_RECOVERY !== "true",
   timeout: 30000,
 }, async () => {
-  const url = fixtureURL(process.env.WEBDOCK_TEST_NEON_RECOVERY_DATABASE_URL);
-  const bootstrapURL = fixtureURL(process.env.WEBDOCK_TEST_NEON_RECOVERY_BOOTSTRAP_DATABASE_URL);
+  const url = fixtureURL(process.env.SPITZLI_TEST_NEON_RECOVERY_DATABASE_URL);
+  const bootstrapURL = fixtureURL(process.env.SPITZLI_TEST_NEON_RECOVERY_BOOTSTRAP_DATABASE_URL);
   assert.equal(decodeURIComponent(url.username), "neondb_owner");
   assert.notEqual(bootstrapURL.username, url.username);
   assert.equal(bootstrapURL.host + bootstrapURL.pathname, url.host + url.pathname, "bootstrap must target the same owned fixture");

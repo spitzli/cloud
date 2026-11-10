@@ -7,8 +7,8 @@ use std::{
 };
 pub type ConfigurationError = Box<dyn std::error::Error + Send + Sync>;
 pub fn installation_secret() -> Result<String, ConfigurationError> {
-    std::env::var("WEBDOCK_NATIVE_PLUGIN_ENCRYPTION_KEY")
-        .or_else(|_| std::env::var("WEBDOCK_AUTH_SECRET"))
+    std::env::var("SPITZLI_NATIVE_PLUGIN_ENCRYPTION_KEY")
+        .or_else(|_| std::env::var("SPITZLI_AUTH_SECRET"))
         .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
         .map_err(|_| "Missing native installation encryption secret".into())
 }
@@ -323,7 +323,7 @@ pub async fn authority_services(
     use std::sync::Arc;
     let compatibility =
         crate::config::AuthCompatibility::from_map(&std::env::vars().collect(), config)?;
-    let secret = std::env::var("WEBDOCK_AUTH_SECRET")
+    let secret = std::env::var("SPITZLI_AUTH_SECRET")
         .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
         .map_err(|_| "Missing identity secret")?;
     let keys = || {
@@ -352,17 +352,17 @@ pub async fn authority_services(
         Arc::new(keys()?),
         spitzli_oauth::OAuthConfig::new(
             &compatibility.oauth_issuer,
-            &std::env::var("WEBDOCK_MCP_RESOURCE")
+            &std::env::var("SPITZLI_MCP_RESOURCE")
                 .unwrap_or_else(|_| format!("{}/api/mcp", config.studio_origin)),
-            std::env::var("WEBDOCK_STUDIO_CLIENT_ID")
-                .or_else(|_| std::env::var("WEBDOCK_SSO_CLIENT_ID"))
+            std::env::var("SPITZLI_STUDIO_CLIENT_ID")
+                .or_else(|_| std::env::var("SPITZLI_SSO_CLIENT_ID"))
                 .ok(),
         )?,
     ));
-    let browser = if let Ok(client) = std::env::var("WEBDOCK_SSO_CLIENT_ID") {
-        let secret = std::env::var("WEBDOCK_SSO_CLIENT_SECRET")
+    let browser = if let Ok(client) = std::env::var("SPITZLI_SSO_CLIENT_ID") {
+        let secret = std::env::var("SPITZLI_SSO_CLIENT_SECRET")
             .map_err(|_| "Missing first-party client secret")?;
-        let cookie = std::env::var("WEBDOCK_SSO_COOKIE_SECRET")
+        let cookie = std::env::var("SPITZLI_SSO_COOKIE_SECRET")
             .map_err(|_| "Missing first-party cookie secret")?;
         let options = spitzli_browser_session::BrowserConfig::new(
             config.console_origin(),

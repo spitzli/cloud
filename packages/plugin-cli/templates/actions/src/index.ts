@@ -8,14 +8,14 @@ function required(name:string):string {
 }
 
 const server=createActionServer({
- pluginID:required('WEBDOCK_PLUGIN_ID'),
- version:required('WEBDOCK_PLUGIN_VERSION'),
- generation:Number(required('WEBDOCK_PLUGIN_GENERATION')),
- hostURL:required('WEBDOCK_PLUGIN_HOST_URL'),
- runtimeToken:required('WEBDOCK_PLUGIN_RUNTIME_TOKEN'),
- publicKey:required('WEBDOCK_PLUGIN_PUBLIC_KEY'),
- cert:readFileSync(required('WEBDOCK_PLUGIN_TLS_CERT')),
- key:readFileSync(required('WEBDOCK_PLUGIN_TLS_KEY')),
+ pluginID:required('SPITZLI_PLUGIN_ID'),
+ version:required('SPITZLI_PLUGIN_VERSION'),
+ generation:Number(required('SPITZLI_PLUGIN_GENERATION')),
+ hostURL:required('SPITZLI_PLUGIN_HOST_URL'),
+ runtimeToken:required('SPITZLI_PLUGIN_RUNTIME_TOKEN'),
+ publicKey:required('SPITZLI_PLUGIN_PUBLIC_KEY'),
+ cert:readFileSync(required('SPITZLI_PLUGIN_TLS_CERT')),
+ key:readFileSync(required('SPITZLI_PLUGIN_TLS_KEY')),
 });
 server.listen(3443,'0.0.0.0');
 process.on('SIGTERM',()=>{

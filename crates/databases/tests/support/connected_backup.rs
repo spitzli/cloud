@@ -173,14 +173,14 @@ impl Harness {
     async fn open(phase: &str) -> Self {
         let config = read("/connected/config.json");
         let connect = |key: &str| std::env::var(key).unwrap();
-        let owner = Database::connect(connect("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+        let owner = Database::connect(connect("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
             .await
             .unwrap();
         let auth = Database::connect(connect("AUTH_DATABASE_URL"))
             .await
             .unwrap();
         let business = Database::connect(connect("DATABASE_URL")).await.unwrap();
-        let worker = Database::connect(connect("WEBDOCK_PLUGIN_WORKER_DATABASE_URL"))
+        let worker = Database::connect(connect("SPITZLI_PLUGIN_WORKER_DATABASE_URL"))
             .await
             .unwrap();
         let ids = Arc::new(
@@ -595,7 +595,7 @@ impl Harness {
             .await
             .unwrap();
         let worker =
-            Database::connect(std::env::var("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").unwrap())
+            Database::connect(std::env::var("SPITZLI_PLUGIN_WORKER_DATABASE_URL").unwrap())
                 .await
                 .unwrap();
         let ids = Arc::new(
@@ -655,11 +655,11 @@ impl Harness {
 #[ignore = "fresh connected fixture only; run qualification_connected.py"]
 async fn core_authenticated_grpc_native_backup_and_recovery() {
     assert_eq!(
-        std::env::var("WEBDOCK_CONNECTED_BACKUP_TEST").as_deref(),
+        std::env::var("SPITZLI_CONNECTED_BACKUP_TEST").as_deref(),
         Ok("yes")
     );
     assert_eq!(rustix::process::geteuid().as_raw(), 0);
-    let phase = std::env::var("WEBDOCK_CONNECTED_BACKUP_PHASE").unwrap();
+    let phase = std::env::var("SPITZLI_CONNECTED_BACKUP_PHASE").unwrap();
     let h = Harness::open(&phase).await;
     if phase == "backup" {
         backup(&h).await;

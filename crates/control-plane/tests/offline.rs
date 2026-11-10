@@ -14,7 +14,7 @@ fn migration_cli_rejects_overrides_and_never_prints_connection_credentials() {
         let output = Command::new(env!("CARGO_BIN_EXE_spitzli-migrate"))
             .env_clear()
             .env(
-                "WEBDOCK_MIGRATION_DATABASE_URL",
+                "SPITZLI_MIGRATION_DATABASE_URL",
                 format!(
                     "postgres://runtime:private-fixture-credential@127.0.0.1:1/webdock_test?{query}"
                 ),
@@ -54,21 +54,21 @@ fn agent_listener_rejects_unavailable_mail_configuration_before_connecting() {
         (
             r#"{"mail":"enabled"}"#,
             "true",
-            "Missing WEBDOCK_DATABASE_URL",
+            "Missing SPITZLI_DATABASE_URL",
         ),
         (
             r#"{"mail":"draining"}"#,
             "true",
-            "Missing WEBDOCK_DATABASE_URL",
+            "Missing SPITZLI_DATABASE_URL",
         ),
     ] {
         let output = Command::new(env!("CARGO_BIN_EXE_spitzli-agent-control"))
             .env_clear()
-            .env("WEBDOCK_FEATURES", features)
-            .env("WEBDOCK_NATIVE_MAIL_ENABLED", "true")
-            .env("WEBDOCK_NATIVE_MAIL_AGENT_ENABLED", agent)
-            .env("WEBDOCK_NATIVE_MAILBOXES_ENABLED", "true")
-            .env("WEBDOCK_NATIVE_MAIL_CONFIGURATION_ENABLED", "true")
+            .env("SPITZLI_FEATURES", features)
+            .env("SPITZLI_NATIVE_MAIL_ENABLED", "true")
+            .env("SPITZLI_NATIVE_MAIL_AGENT_ENABLED", agent)
+            .env("SPITZLI_NATIVE_MAILBOXES_ENABLED", "true")
+            .env("SPITZLI_NATIVE_MAIL_CONFIGURATION_ENABLED", "true")
             .arg("--config")
             .arg(listener.path())
             .output()

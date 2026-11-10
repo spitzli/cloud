@@ -111,7 +111,7 @@ fn fresh_claim(customer: String, image: String) -> MailClaim {
 #[ignore = "requires explicitly owned Kind node and one quota-backed10GiB allocation"]
 async fn owned_mail_kubernetes_lifecycle() {
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_KIND_CASE").as_deref(),
+        std::env::var("SPITZLI_MAIL_KIND_CASE").as_deref(),
         Ok("lifecycle")
     );
     run_fixture(false).await;
@@ -120,7 +120,7 @@ async fn owned_mail_kubernetes_lifecycle() {
 #[ignore = "requires explicit owned Kind configuration fixture"]
 async fn owned_mail_kubernetes_configuration() {
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_KIND_CASE").as_deref(),
+        std::env::var("SPITZLI_MAIL_KIND_CASE").as_deref(),
         Ok("configuration")
     );
     run_fixture(true).await;
@@ -130,14 +130,14 @@ async fn run_fixture(configuration_case: bool) {
         .with_env_filter("spitzli_agent::mail::kubernetes=debug")
         .try_init();
     assert_eq!(
-        std::env::var("WEBDOCK_MAIL_KIND_TEST").as_deref(),
+        std::env::var("SPITZLI_MAIL_KIND_TEST").as_deref(),
         Ok("yes")
     );
     assert_eq!(rustix::process::geteuid().as_raw(), 0);
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert_eq!(context, "kind-webdock-rust-native-3c8064");
     let config = Config::from_custom_kubeconfig(
-        Kubeconfig::read_from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap()).unwrap(),
+        Kubeconfig::read_from(std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap()).unwrap(),
         &KubeConfigOptions {
             context: Some(context.clone()),
             ..Default::default()
@@ -147,7 +147,7 @@ async fn run_fixture(configuration_case: bool) {
     .unwrap();
     assert!(!config.accept_invalid_certs);
     let client = Client::try_from(config).unwrap();
-    let base = PathBuf::from(std::env::var("WEBDOCK_MAIL_TEST_ROOT").unwrap());
+    let base = PathBuf::from(std::env::var("SPITZLI_MAIL_TEST_ROOT").unwrap());
     assert!(base.starts_with("/var/local/webdock-rust-tests"));
     let suffix = uuid::Uuid::new_v4().simple().to_string();
     let installation = format!("mailtest{}", &suffix[..12]);
@@ -195,7 +195,7 @@ async fn run_fixture(configuration_case: bool) {
         tokio::time::sleep(Duration::from_millis(10)).await;
     }
     let storage_client = StorageClient::new(socket);
-    let image = std::env::var("WEBDOCK_MAIL_RUNTIME_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_MAIL_RUNTIME_IMAGE").unwrap();
     let gateway = format!("wd-mail-gateway-{}", &suffix[..8]);
     let peer = format!("wd-mail-peer-{}", &suffix[..8]);
     let configuration:KubernetesMailConfig=serde_json::from_value(json!({"installation":installation,"node":node,"image":image,"gatewayNamespace":gateway,"retained":{}})).unwrap();
@@ -227,7 +227,7 @@ async fn run_fixture(configuration_case: bool) {
                     work_client.clone(),
                     work_gateway,
                     work_peer,
-                    std::env::var("WEBDOCK_MAIL_PROBE_IMAGE").unwrap(),
+                    std::env::var("SPITZLI_MAIL_PROBE_IMAGE").unwrap(),
                     work_installation.clone(),
                 )
                 .await,

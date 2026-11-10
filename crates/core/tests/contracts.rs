@@ -63,7 +63,7 @@ fn canonical_origins_reject_credentials_paths_and_untrusted_http() {
         "https://example.com/#x",
         "ftp://example.com",
     ] {
-        let env = HashMap::from([("WEBDOCK_API_ORIGIN".into(), invalid.into())]);
+        let env = HashMap::from([("SPITZLI_API_ORIGIN".into(), invalid.into())]);
         assert!(
             PlatformConfig::from_map(&env).is_err(),
             "accepted {invalid}"
@@ -80,7 +80,7 @@ fn retired_database_ordering_is_disabled_unless_explicitly_enabled() {
     );
     for (raw, enabled) in [("true", true), ("false", false)] {
         let config = PlatformConfig::from_map(&HashMap::from([(
-            "WEBDOCK_DATABASE_NEW_ORDERS_ENABLED".into(),
+            "SPITZLI_DATABASE_NEW_ORDERS_ENABLED".into(),
             raw.into(),
         )]))
         .unwrap();
@@ -89,7 +89,7 @@ fn retired_database_ordering_is_disabled_unless_explicitly_enabled() {
     for invalid in ["TRUE", "1", "", " true", "false "] {
         assert!(
             PlatformConfig::from_map(&HashMap::from([(
-                "WEBDOCK_DATABASE_NEW_ORDERS_ENABLED".into(),
+                "SPITZLI_DATABASE_NEW_ORDERS_ENABLED".into(),
                 invalid.into()
             )]))
             .is_err()
@@ -108,6 +108,6 @@ fn production_requires_explicit_secure_distinct_origins_and_valid_ports() {
             PlatformConfig::from_map(&HashMap::from([("PORT".into(), invalid.into())])).is_err()
         );
     }
-    let env = HashMap::from([("WEBDOCK_API_ORIGIN".into(), "http://localhost:3125".into())]);
+    let env = HashMap::from([("SPITZLI_API_ORIGIN".into(), "http://localhost:3125".into())]);
     assert!(PlatformConfig::from_map(&env).is_err());
 }

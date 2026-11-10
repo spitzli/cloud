@@ -11,10 +11,10 @@ use std::{collections::BTreeMap, path::PathBuf};
 #[ignore = "requires explicitly prepared, uniquely owned frontend VM"]
 fn real_frontend_guest_retains_files_and_fails_closed_on_unsafe_or_oversized_outputs() {
     assert_eq!(
-        std::env::var("WEBDOCK_FRONTEND_VM_TEST").as_deref(),
+        std::env::var("SPITZLI_FRONTEND_VM_TEST").as_deref(),
         Ok("1")
     );
-    let root = PathBuf::from(std::env::var_os("WEBDOCK_FRONTEND_VM_ROOT").expect("owned VM path"));
+    let root = PathBuf::from(std::env::var_os("SPITZLI_FRONTEND_VM_ROOT").expect("owned VM path"));
     assert!(root.is_absolute());
     assert!(
         root.canonicalize()

@@ -14,8 +14,8 @@ const runtime: ProductOperation = {
   },
 };
 test("core calls and disabled products do not load product implementations", async () => {
-  const previous = process.env.WEBDOCK_MODULES;
-  process.env.WEBDOCK_MODULES = JSON.stringify({
+  const previous = process.env.SPITZLI_MODULES;
+  process.env.SPITZLI_MODULES = JSON.stringify({
     configVersion: 1,
     modules: { mail: { enabled: false } },
   });
@@ -33,7 +33,7 @@ test("core calls and disabled products do not load product implementations", asy
       loadProductOperation("getTenantMail", ["12"], loader),
     ).rejects.toHaveProperty("code", "module_disabled");
     expect(loaded).toEqual([]);
-    process.env.WEBDOCK_MODULES = JSON.stringify({
+    process.env.SPITZLI_MODULES = JSON.stringify({
       configVersion: 1,
       modules: { mail: { enabled: true } },
     });
@@ -42,7 +42,7 @@ test("core calls and disabled products do not load product implementations", asy
     );
     expect(loaded).toEqual(["mail"]);
   } finally {
-    if (previous === undefined) delete process.env.WEBDOCK_MODULES;
-    else process.env.WEBDOCK_MODULES = previous;
+    if (previous === undefined) delete process.env.SPITZLI_MODULES;
+    else process.env.SPITZLI_MODULES = previous;
   }
 });

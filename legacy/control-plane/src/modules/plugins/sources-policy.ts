@@ -154,9 +154,9 @@ export function decodeSourceChunk(data: string): Buffer {
 }
 export function installerConfigured(env: NodeJS.ProcessEnv = process.env) {
   return (
-    !!env.WEBDOCK_PLUGIN_RUNTIME_FILE &&
-    !!env.WEBDOCK_PLUGIN_INSTALLER_TOKEN &&
-    env.WEBDOCK_PLUGIN_INSTALLER_TOKEN.length >= 32
+    !!env.SPITZLI_PLUGIN_RUNTIME_FILE &&
+    !!env.SPITZLI_PLUGIN_INSTALLER_TOKEN &&
+    env.SPITZLI_PLUGIN_INSTALLER_TOKEN.length >= 32
   );
 }
 export function installerAuthorized(
@@ -166,7 +166,7 @@ export function installerAuthorized(
   if (!installerConfigured(env) || !header || header.length > 8192)
     return false;
   const actual = Buffer.from(header),
-    expected = Buffer.from("Bearer " + env.WEBDOCK_PLUGIN_INSTALLER_TOKEN);
+    expected = Buffer.from("Bearer " + env.SPITZLI_PLUGIN_INSTALLER_TOKEN);
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 function secretKey(token: string) {

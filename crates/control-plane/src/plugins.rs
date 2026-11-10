@@ -127,7 +127,7 @@ impl InvokeTrace {
         tonic: Option<i32>,
         errno: Option<i32>,
     ) {
-        if Self::enabled(std::env::var_os("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref())
+        if Self::enabled(std::env::var_os("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref())
             && let Some(line) = self.line(stage, event, code, tonic, errno)
         {
             use std::io::Write;
@@ -974,10 +974,10 @@ impl PluginEndpoints {
             None => fallback,
         };
         let export_database = if config.export_sources {
-            let encryption = std::env::var("WEBDOCK_HOSTING_ENCRYPTION_KEY")
+            let encryption = std::env::var("SPITZLI_HOSTING_ENCRYPTION_KEY")
                 .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
-                .or_else(|_| std::env::var("WEBDOCK_AUTH_SECRET"))?;
-            let gateway = std::env::var("WEBDOCK_DATABASE_GATEWAY_ORIGIN")?;
+                .or_else(|_| std::env::var("SPITZLI_AUTH_SECRET"))?;
+            let gateway = std::env::var("SPITZLI_DATABASE_GATEWAY_ORIGIN")?;
             Some(Arc::new(
                 spitzli_databases::DatabaseService::new(
                     dependencies.business.clone(),

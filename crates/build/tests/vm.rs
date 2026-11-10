@@ -11,7 +11,7 @@ fn digest(path: &std::path::Path) -> String {
 #[test]
 #[ignore = "requires explicitly prepared disposable local VM"]
 fn real_isolated_oci_build_and_failure() {
-    assert_eq!(std::env::var("WEBDOCK_BUILD_VM_TEST").as_deref(), Ok("1"));
+    assert_eq!(std::env::var("SPITZLI_BUILD_VM_TEST").as_deref(), Ok("1"));
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../../.runtime-test/build-vm")
         .canonicalize()

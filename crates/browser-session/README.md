@@ -34,7 +34,7 @@ A first-party-only introspection method permits an existing operator browser ses
 
 `with_legacy(LegacyCookies::new(password_map, accept_until))` is optional and read-only. The configured deadline may be past (disabled) or at most eight hours ahead. Both the authenticated Fe26.2 envelope expiry and payload expiry must remain valid and bounded, version `~2` is required, and duplicate cookie names are rejected. Old flow cookies are capped at five minutes and still require the original PKCE/state/nonce; code replay is rejected by the provider.
 
-Old session cookies are introspected against the exact same first-party client. Their server references are bounded by the minimum of the original expiry, provider/session expiry and configured transition deadline. No new legacy seal is issued, no email linking occurs, and no transition resets the clock. Runtime configuration uses `WEBDOCK_SSO_LEGACY_ACCEPT_UNTIL` as Unix seconds and the retained `WEBDOCK_SSO_COOKIE_SECRET` under its original password ID1.
+Old session cookies are introspected against the exact same first-party client. Their server references are bounded by the minimum of the original expiry, provider/session expiry and configured transition deadline. No new legacy seal is issued, no email linking occurs, and no transition resets the clock. Runtime configuration uses `SPITZLI_SSO_LEGACY_ACCEPT_UNTIL` as Unix seconds and the retained `SPITZLI_SSO_COOKIE_SECRET` under its original password ID1.
 
 ## Verification
 

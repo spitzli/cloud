@@ -57,13 +57,13 @@ export function configureOAuthSession<User extends object>(options: OAuthSession
     if (!value) throw new Error(`Missing SSO configuration: ${name}`)
     return value
   }
-  const issuer = new URL(required(options.issuer ?? process.env.WEBDOCK_AUTH_ISSUER, 'WEBDOCK_AUTH_ISSUER'))
-  const app = new URL(required(options.appOrigin ?? process.env.WEBDOCK_SSO_APP_ORIGIN, 'WEBDOCK_SSO_APP_ORIGIN'))
-  const clientId = required(options.clientId ?? process.env.WEBDOCK_SSO_CLIENT_ID, 'WEBDOCK_SSO_CLIENT_ID')
-  const clientSecret = required(options.clientSecret ?? process.env.WEBDOCK_SSO_CLIENT_SECRET, 'WEBDOCK_SSO_CLIENT_SECRET')
-  const password = required(options.cookieSecret ?? process.env.WEBDOCK_SSO_COOKIE_SECRET, 'WEBDOCK_SSO_COOKIE_SECRET')
+  const issuer = new URL(required(options.issuer ?? process.env.SPITZLI_AUTH_ISSUER, 'SPITZLI_AUTH_ISSUER'))
+  const app = new URL(required(options.appOrigin ?? process.env.SPITZLI_SSO_APP_ORIGIN, 'SPITZLI_SSO_APP_ORIGIN'))
+  const clientId = required(options.clientId ?? process.env.SPITZLI_SSO_CLIENT_ID, 'SPITZLI_SSO_CLIENT_ID')
+  const clientSecret = required(options.clientSecret ?? process.env.SPITZLI_SSO_CLIENT_SECRET, 'SPITZLI_SSO_CLIENT_SECRET')
+  const password = required(options.cookieSecret ?? process.env.SPITZLI_SSO_COOKIE_SECRET, 'SPITZLI_SSO_COOKIE_SECRET')
   if (password.length < 32) throw new Error('SSO cookie secret must contain at least 32 characters')
-  const localHTTP = options.allowLocalHTTP ?? process.env.WEBDOCK_SSO_ALLOW_LOCAL_HTTP === 'true'
+  const localHTTP = options.allowLocalHTTP ?? process.env.SPITZLI_SSO_ALLOW_LOCAL_HTTP === 'true'
   if (localHTTP && (process.env.NODE_ENV === 'production'
     || [issuer, app].some(url => url.protocol !== 'http:' || !['localhost', '127.0.0.1'].includes(url.hostname)))) {
     throw new Error('Local HTTP SSO is restricted to non-production localhost and 127.0.0.1 origins')

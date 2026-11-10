@@ -13,10 +13,10 @@ SYSTEM={'kube-system','kube-public','kube-node-lease','spitzli-agent'}
 def allowed_namespace(namespace,allowed):
  return namespace in allowed and namespace not in SYSTEM and bool(re.fullmatch(r'[a-z0-9]([-a-z0-9]*[a-z0-9])?',namespace))
 def kubectl(*args,timeout=20):
- command=[os.environ.get('WEBDOCK_KUBECTL','kubectl')]
- if os.environ.get('WEBDOCK_KUBECTL_MODE')=='k3s':command+=['kubectl']
- if os.environ.get('WEBDOCK_KUBECTL_CACHE_DIR'):command+=['--cache-dir',os.environ['WEBDOCK_KUBECTL_CACHE_DIR']]
- if os.environ.get('WEBDOCK_KUBECONFIG'):command+=['--kubeconfig',os.environ['WEBDOCK_KUBECONFIG']]
+ command=[os.environ.get('SPITZLI_KUBECTL','kubectl')]
+ if os.environ.get('SPITZLI_KUBECTL_MODE')=='k3s':command+=['kubectl']
+ if os.environ.get('SPITZLI_KUBECTL_CACHE_DIR'):command+=['--cache-dir',os.environ['SPITZLI_KUBECTL_CACHE_DIR']]
+ if os.environ.get('SPITZLI_KUBECONFIG'):command+=['--kubeconfig',os.environ['SPITZLI_KUBECONFIG']]
  result=subprocess.run(command+list(args),capture_output=True,text=True,timeout=timeout,check=True)
  if len(result.stdout)>2_000_000:raise ValueError('response_too_large')
  return result.stdout

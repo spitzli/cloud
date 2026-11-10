@@ -25,7 +25,7 @@ test.after(async () => {
 
 test("lifecycle authenticates, binds its preview, isolates deletion and proves retries", async (t) => {
   await auth.$context;
-  process.env.WEBDOCK_STUDIO_CLIENT_ID = "123";
+  process.env.SPITZLI_STUDIO_CLIENT_ID = "123";
   let token = {
     active: true,
     sub: "operator",
@@ -290,7 +290,7 @@ test("lifecycle deletes only a bound website in the disposable PostgreSQL databa
     logoutPath: "/login",
     headers,
   });
-  process.env.WEBDOCK_STUDIO_CLIENT_ID = studio.clientID;
+  process.env.SPITZLI_STUDIO_CLIENT_ID = studio.clientID;
   const customer = (
     await database.query(
       "INSERT INTO webdock_admin.customers(id,name) VALUES(webdock_auth.next_snowflake(),'Lifecycle disposable tenant') RETURNING id",

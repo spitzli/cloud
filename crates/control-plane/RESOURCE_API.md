@@ -5,7 +5,7 @@ They accept bearer tokens for the retained Studio MCP resource, never browser
 cookies. The Console browser adapters remain separate. Do not replace the
 registered Studio issuer, audience or protocol URLs when moving the UI.
 
-Set `WEBDOCK_RESOURCE_CLIENT_ID` and `WEBDOCK_RESOURCE_CLIENT_SECRET_FILE` to an
+Set `SPITZLI_RESOURCE_CLIENT_ID` and `SPITZLI_RESOURCE_CLIENT_SECRET_FILE` to an
 existing confidential client authorized to introspect the MCP resource. The
 secret file uses the same private-file checks as other Core credentials. These
 settings work with no plugin installation or plugin control listener. Existing

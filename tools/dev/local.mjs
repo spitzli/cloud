@@ -8,17 +8,17 @@ import { join, relative, resolve } from "node:path";
 const root = resolve(import.meta.dirname, "../..");
 const state = join(root, ".dev-local");
 const compose = ["compose", "-f", join(root, "deploy/dev/compose.yaml")];
-const port = Number(process.env.WEBDOCK_DEV_POSTGRES_PORT ?? 55440);
+const port = Number(process.env.SPITZLI_DEV_POSTGRES_PORT ?? 55440);
 const target = `127.0.0.1:${port}/webdock`;
-// WEBDOCK_DEV_HTTPS=1 serves Console and account pages over HTTPS (some password managers refuse
+// SPITZLI_DEV_HTTPS=1 serves Console and account pages over HTTPS (some password managers refuse
 // passkeys on plain-HTTP localhost). Origins are recorded at bootstrap, so switching needs a reset.
-const https = process.env.WEBDOCK_DEV_HTTPS === "1";
+const https = process.env.SPITZLI_DEV_HTTPS === "1";
 const scheme = https ? "https" : "http";
 const origins = {
-  WEBDOCK_API_ORIGIN: "http://127.0.0.1:3130",
-  WEBDOCK_AUTH_ORIGIN: `${scheme}://localhost:3125`,
-  WEBDOCK_STUDIO_ORIGIN: `${scheme}://127.0.0.1:3120`,
-  WEBDOCK_CONSOLE_ORIGIN: `${scheme}://127.0.0.1:3121`,
+  SPITZLI_API_ORIGIN: "http://127.0.0.1:3130",
+  SPITZLI_AUTH_ORIGIN: `${scheme}://localhost:3125`,
+  SPITZLI_STUDIO_ORIGIN: `${scheme}://127.0.0.1:3120`,
+  SPITZLI_CONSOLE_ORIGIN: `${scheme}://127.0.0.1:3121`,
 };
 const roles = [
   "webdock_auth_bootstrap", "webdock_auth_runtime", "webdock_worker_runtime", "webdock_admin_runtime",
@@ -39,7 +39,7 @@ function tls() {
   try {
     execFileSync("mkcert", ["-cert-file", join(dir, "cert.pem"), "-key-file", join(dir, "key.pem"), "localhost", "127.0.0.1"], { stdio: "inherit" });
   } catch {
-    throw new Error("WEBDOCK_DEV_HTTPS=1 needs mkcert with its local CA installed: install mkcert, run `mkcert -install` once, then restart Tilt.");
+    throw new Error("SPITZLI_DEV_HTTPS=1 needs mkcert with its local CA installed: install mkcert, run `mkcert -install` once, then restart Tilt.");
   }
 }
 function secrets() {
@@ -81,7 +81,7 @@ function run(binary, args, env) {
 }
 
 function init(value) {
-  const admin = { WEBDOCK_MIGRATION_DATABASE_URL: url("postgres", value.postgres), DATABASE_RLS_SECRET: value.rls };
+  const admin = { SPITZLI_MIGRATION_DATABASE_URL: url("postgres", value.postgres), DATABASE_RLS_SECRET: value.rls };
   waitForDatabase();
   if (!initialized()) {
     // A fresh volume invalidates any operator output from a previous database.
@@ -98,10 +98,10 @@ function init(value) {
   }
   privateJSON("operator.json", {
     email: "operator@example.test", name: "Local operator", password: value.operatorPassword,
-    authOrigin: origins.WEBDOCK_AUTH_ORIGIN, studioOrigin: origins.WEBDOCK_STUDIO_ORIGIN, consoleOrigin: origins.WEBDOCK_CONSOLE_ORIGIN,
+    authOrigin: origins.SPITZLI_AUTH_ORIGIN, studioOrigin: origins.SPITZLI_STUDIO_ORIGIN, consoleOrigin: origins.SPITZLI_CONSOLE_ORIGIN,
   });
   run("spitzli-bootstrap-operator", ["--target", target, "--config", file("operator.json"), "--output", file("initial-secrets.json")], {
-    ...origins, WEBDOCK_AUTH_SECRET: value.auth, DATABASE_URL_UNPOOLED: url("webdock_offline_migrate", value.roles.webdock_offline_migrate),
+    ...origins, SPITZLI_AUTH_SECRET: value.auth, DATABASE_URL_UNPOOLED: url("webdock_offline_migrate", value.roles.webdock_offline_migrate),
   });
   writeFileSync(file("scheme"), scheme, { mode: 0o600 });
   console.log(`Local operator: operator@example.test / ${value.operatorPassword} (password change and MFA are required at first sign-in)`);
@@ -111,8 +111,8 @@ function init(value) {
 // Each runs natively from its own workspace (see the Tiltfile); the image in the local registry is
 // the release reference the Core pins.
 const plugins = join(state, "plugins");
-const registry = `127.0.0.1:${process.env.WEBDOCK_DEV_REGISTRY_PORT ?? 5005}`;
-const sharedPort = Number(process.env.WEBDOCK_DEV_SHARED_POSTGRES_PORT ?? 55441);
+const registry = `127.0.0.1:${process.env.SPITZLI_DEV_REGISTRY_PORT ?? 5005}`;
+const sharedPort = Number(process.env.SPITZLI_DEV_SHARED_POSTGRES_PORT ?? 55441);
 const demo = { customer: "900000000000000101", organization: "900000000000000102", project: "900000000000000103" };
 const pluginFile = (name) => join(plugins, name);
 const uid = process.getuid();
@@ -132,7 +132,7 @@ const PLUGINS = {
         adminUrl: `postgresql://postgres:${readEnv("shared-postgres.env").POSTGRES_PASSWORD}@127.0.0.1:${sharedPort}/postgres`, capacity: 50,
       }],
       // CloudNativePG on the local k3s, reached through Traefik's PostgreSQL entry point by TLS server name.
-      dedicated: { domain: "db.localhost", port: Number(process.env.WEBDOCK_DEV_K3S_POSTGRES_PORT ?? 55442), entryPoints: ["postgres"], issuer: "webdock-dev-ca" },
+      dedicated: { domain: "db.localhost", port: Number(process.env.SPITZLI_DEV_K3S_POSTGRES_PORT ?? 55442), entryPoints: ["postgres"], issuer: "webdock-dev-ca" },
     }),
   },
   // Every message goes to the local Mailpit catcher; nothing leaves this machine.
@@ -143,16 +143,16 @@ const PLUGINS = {
     policy: { "add-domains": "selected", "byok-turbosmtp": "selected", "create-mailboxes": "selected" },
     config: (secrets) => ({
       secretKeyHex: secrets.sealKey,
-      platformTransport: { kind: "smtp", host: "127.0.0.1", port: Number(process.env.WEBDOCK_DEV_SMTP_PORT ?? 55025) },
+      platformTransport: { kind: "smtp", host: "127.0.0.1", port: Number(process.env.SPITZLI_DEV_SMTP_PORT ?? 55025) },
       trustUnverifiedDomains: true,
       // One Stalwart CE server per project on the local k3s, egress denied; IMAP and submission through
       // Traefik by TLS server name, management over its own route on the HTTP entry point.
       mailboxes: {
         image: "docker.io/stalwartlabs/stalwart@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3",
         domain: "mail.localhost",
-        imapPort: Number(process.env.WEBDOCK_DEV_K3S_IMAPS_PORT ?? 55993),
-        submissionPort: Number(process.env.WEBDOCK_DEV_K3S_SUBMISSIONS_PORT ?? 55465),
-        admin: { origin: `http://127.0.0.1:${process.env.WEBDOCK_DEV_K3S_HTTP_PORT ?? 55480}`, domain: "mail-admin.localhost", entryPoints: ["web"] },
+        imapPort: Number(process.env.SPITZLI_DEV_K3S_IMAPS_PORT ?? 55993),
+        submissionPort: Number(process.env.SPITZLI_DEV_K3S_SUBMISSIONS_PORT ?? 55465),
+        admin: { origin: `http://127.0.0.1:${process.env.SPITZLI_DEV_K3S_HTTP_PORT ?? 55480}`, domain: "mail-admin.localhost", entryPoints: ["web"] },
         issuer: "webdock-dev-ca",
       },
     }),
@@ -165,7 +165,7 @@ const PLUGINS = {
     config: (secrets) => ({
       secretKeyHex: secrets.sealKey,
       // Apps run on the local k3s behind its Traefik, over HTTPS with certificates from the local CA.
-      placement: { domain: "apps.localhost", publicUrl: `https://{host}:${process.env.WEBDOCK_DEV_K3S_HTTPS_PORT ?? 55481}`, entryPoints: ["websecure"], issuer: "webdock-dev-ca" },
+      placement: { domain: "apps.localhost", publicUrl: `https://{host}:${process.env.SPITZLI_DEV_K3S_HTTPS_PORT ?? 55481}`, entryPoints: ["websecure"], issuer: "webdock-dev-ca" },
     }),
   },
 };
@@ -271,7 +271,7 @@ function kubeconfig() {
     catch { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000); }
   }
   if (!raw.includes("server:")) throw new Error("Local k3s did not write its kubeconfig");
-  const api = process.env.WEBDOCK_DEV_K3S_API_PORT ?? 56443;
+  const api = process.env.SPITZLI_DEV_K3S_API_PORT ?? 56443;
   writeFileSync(join(dir, "kubeconfig.yaml"), raw.replace("https://127.0.0.1:6443", `https://127.0.0.1:${api}`).replaceAll(": default", ": webdock-dev"), { mode: 0o600 });
 }
 
@@ -392,15 +392,15 @@ function runtimeEnv(value) {
   return {
     PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: "development", RUST_LOG: process.env.RUST_LOG ?? "info",
     ...bootstrap.environment, ...origins,
-    WEBDOCK_DATABASE_URL: url("webdock_auth_bootstrap", value.roles.webdock_auth_bootstrap),
-    WEBDOCK_SESSION_DATABASE_URL: url("webdock_auth_runtime", value.roles.webdock_auth_runtime),
-    WEBDOCK_REGISTRY_DATABASE_URL: url("webdock_registry_runtime", value.roles.webdock_registry_runtime),
-    WEBDOCK_WORKER_DATABASE_URL: url("webdock_worker_runtime", value.roles.webdock_worker_runtime),
-    WEBDOCK_AUTH_SECRET: value.auth, DATABASE_RLS_SECRET: value.rls,
-    WEBDOCK_FEATURES: process.env.WEBDOCK_DEV_FEATURES ?? "{}",
-    WEBDOCK_BIND_ADDRESS: "127.0.0.1", PORT: "3130",
-    WEBDOCK_ACCOUNT_SMTP: `127.0.0.1:${process.env.WEBDOCK_DEV_SMTP_PORT ?? 55025}`,
-    ...(existsSync(pluginFile("plugin-config.json")) ? { WEBDOCK_NATIVE_PLUGIN_CONFIG: pluginFile("plugin-config.json") } : {}),
+    SPITZLI_DATABASE_URL: url("webdock_auth_bootstrap", value.roles.webdock_auth_bootstrap),
+    SPITZLI_SESSION_DATABASE_URL: url("webdock_auth_runtime", value.roles.webdock_auth_runtime),
+    SPITZLI_REGISTRY_DATABASE_URL: url("webdock_registry_runtime", value.roles.webdock_registry_runtime),
+    SPITZLI_WORKER_DATABASE_URL: url("webdock_worker_runtime", value.roles.webdock_worker_runtime),
+    SPITZLI_AUTH_SECRET: value.auth, DATABASE_RLS_SECRET: value.rls,
+    SPITZLI_FEATURES: process.env.SPITZLI_DEV_FEATURES ?? "{}",
+    SPITZLI_BIND_ADDRESS: "127.0.0.1", PORT: "3130",
+    SPITZLI_ACCOUNT_SMTP: `127.0.0.1:${process.env.SPITZLI_DEV_SMTP_PORT ?? 55025}`,
+    ...(existsSync(pluginFile("plugin-config.json")) ? { SPITZLI_NATIVE_PLUGIN_CONFIG: pluginFile("plugin-config.json") } : {}),
   };
 }
 // Tilt execs the binaries directly with this file, so stopping Tilt never orphans a server.

@@ -216,26 +216,26 @@ test("source commands bound uploads and reject credential URLs and unsupported m
 test("worker authentication is exact, configured, and fails closed", () => {
   expect(policy).not.toBeNull();
   const env = {
-    WEBDOCK_PLUGIN_INSTALLER_TOKEN: "a".repeat(40),
-    WEBDOCK_PLUGIN_RUNTIME_FILE: "/runtime.json",
+    SPITZLI_PLUGIN_INSTALLER_TOKEN: "a".repeat(40),
+    SPITZLI_PLUGIN_RUNTIME_FILE: "/runtime.json",
   };
   expect(
     policy.installerAuthorized(
-      "Bearer " + env.WEBDOCK_PLUGIN_INSTALLER_TOKEN,
+      "Bearer " + env.SPITZLI_PLUGIN_INSTALLER_TOKEN,
       env,
     ),
   ).toBe(true);
   for (const auth of [
     null,
-    "bearer " + env.WEBDOCK_PLUGIN_INSTALLER_TOKEN,
+    "bearer " + env.SPITZLI_PLUGIN_INSTALLER_TOKEN,
     "Bearer wrong",
-    "Bearer " + env.WEBDOCK_PLUGIN_INSTALLER_TOKEN + " ",
+    "Bearer " + env.SPITZLI_PLUGIN_INSTALLER_TOKEN + " ",
   ])
     expect(policy.installerAuthorized(auth, env)).toBe(false);
   expect(
-    policy.installerAuthorized("Bearer " + env.WEBDOCK_PLUGIN_INSTALLER_TOKEN, {
+    policy.installerAuthorized("Bearer " + env.SPITZLI_PLUGIN_INSTALLER_TOKEN, {
       ...env,
-      WEBDOCK_PLUGIN_RUNTIME_FILE: "",
+      SPITZLI_PLUGIN_RUNTIME_FILE: "",
     }),
   ).toBe(false);
 });

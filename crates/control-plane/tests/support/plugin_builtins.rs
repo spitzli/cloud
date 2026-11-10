@@ -77,7 +77,7 @@ async fn request(
         .unwrap();
     let status = response.status();
     let headers = response.headers().clone();
-    if std::env::var("WEBDOCK_ALLOWANCE_TEST").as_deref() == Ok("1")
+    if std::env::var("SPITZLI_ALLOWANCE_TEST").as_deref() == Ok("1")
         && headers
             .get(header::LOCATION)
             .and_then(|v| v.to_str().ok())
@@ -166,7 +166,7 @@ fn fixture_runtime_keeps_services_live_while_a_private_cli_blocks() {
 #[ignore = "requires coordinated stable native migrations; owns/removes one PostgreSQL container"]
 async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialized_receipts() {
     assert_eq!(
-        std::env::var("WEBDOCK_BUILTIN_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_BUILTIN_DOCKER_TEST").as_deref(),
         Ok("1")
     );
     let fixture = if database_reads::enabled() {
@@ -211,7 +211,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
     }
     let config_file = directory.path().join("operator-input.json");
     input(&config_file);
-    if std::env::var("WEBDOCK_ALLOWANCE_TEST").as_deref() == Ok("1")
+    if std::env::var("SPITZLI_ALLOWANCE_TEST").as_deref() == Ok("1")
         || recovery_admission::enabled()
     {
         let mut reviewed: Value =
@@ -221,8 +221,8 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
     }
     let output_file = directory.path().join("operator-output.json");
     let offline = fixture.role("webdock_offline_migrate", "webdock_operator_test");
-    if std::env::var("WEBDOCK_NATIVE_TOKEN_LOCK_TEST").as_deref() == Ok("1")
-        || std::env::var("WEBDOCK_ALLOWANCE_TEST").as_deref() == Ok("1")
+    if std::env::var("SPITZLI_NATIVE_TOKEN_LOCK_TEST").as_deref() == Ok("1")
+        || std::env::var("SPITZLI_ALLOWANCE_TEST").as_deref() == Ok("1")
         || recovery_admission::enabled()
         || database_reads::enabled()
     {
@@ -230,12 +230,12 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
         // concurrent unrelated CLI rebuild cannot change the embedded schema.
         let environment = HashMap::from([
             ("DATABASE_URL_UNPOOLED".into(), offline.as_str().to_owned()),
-            ("WEBDOCK_AUTH_SECRET".into(), SECRET.to_owned()),
+            ("SPITZLI_AUTH_SECRET".into(), SECRET.to_owned()),
             ("BETTER_AUTH_URL".into(), AUTH.to_owned()),
-            ("WEBDOCK_STUDIO_ORIGIN".into(), STUDIO.to_owned()),
-            ("WEBDOCK_CONSOLE_ORIGIN".into(), CONSOLE.to_owned()),
+            ("SPITZLI_STUDIO_ORIGIN".into(), STUDIO.to_owned()),
+            ("SPITZLI_CONSOLE_ORIGIN".into(), CONSOLE.to_owned()),
         ]);
-        if std::env::var("WEBDOCK_ALLOWANCE_TEST").as_deref() == Ok("1") {
+        if std::env::var("SPITZLI_ALLOWANCE_TEST").as_deref() == Ok("1") {
             allowance_configuration::check_initial_mail_conflict(
                 &owner,
                 &environment,
@@ -260,15 +260,15 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
         let output = tokio::time::timeout(
             Duration::from_secs(45),
             tokio::process::Command::new(
-                std::env::var_os("WEBDOCK_BUILTIN_BOOTSTRAP_BINARY")
+                std::env::var_os("SPITZLI_BUILTIN_BOOTSTRAP_BINARY")
                     .expect("owned copied bootstrap binary"),
             )
             .env_clear()
             .env("DATABASE_URL_UNPOOLED", offline.as_str())
-            .env("WEBDOCK_AUTH_SECRET", SECRET)
+            .env("SPITZLI_AUTH_SECRET", SECRET)
             .env("BETTER_AUTH_URL", AUTH)
-            .env("WEBDOCK_STUDIO_ORIGIN", STUDIO)
-            .env("WEBDOCK_CONSOLE_ORIGIN", CONSOLE)
+            .env("SPITZLI_STUDIO_ORIGIN", STUDIO)
+            .env("SPITZLI_CONSOLE_ORIGIN", CONSOLE)
             .args(["--target", &target(&offline), "--config"])
             .arg(&config_file)
             .arg("--output")
@@ -284,7 +284,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
     }
     recovery_admission::phase(recovery_admission::RecoveryPhase::OfflineBootstrap);
     let secrets: Value = serde_json::from_slice(&std::fs::read(&output_file).unwrap()).unwrap();
-    if std::env::var("WEBDOCK_ALLOWANCE_TEST").as_deref() == Ok("1") {
+    if std::env::var("SPITZLI_ALLOWANCE_TEST").as_deref() == Ok("1") {
         allowance_configuration::check_bootstrap_replay(
             &owner,
             &offline,
@@ -355,14 +355,14 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
             identity.clone(),
             oauth.clone(),
             Arc::new(keys()),
-            secrets["environment"]["WEBDOCK_SSO_COOKIE_SECRET"]
+            secrets["environment"]["SPITZLI_SSO_COOKIE_SECRET"]
                 .as_str()
                 .unwrap(),
             spitzli_browser_session::BrowserConfig::new(
                 CONSOLE,
                 &format!("{AUTH}/api/auth"),
                 secrets["clientID"].as_str().unwrap().to_owned(),
-                secrets["environment"]["WEBDOCK_SSO_CLIENT_SECRET"]
+                secrets["environment"]["SPITZLI_SSO_CLIENT_SECRET"]
                     .as_str()
                     .unwrap()
                     .to_owned(),
@@ -457,10 +457,10 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
     let app = |features: &str, load_hosting: bool, load_databases: bool| {
         build_app_with_domains(
             spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
-                ("WEBDOCK_AUTH_ORIGIN".into(), AUTH.into()),
-                ("WEBDOCK_STUDIO_ORIGIN".into(), STUDIO.into()),
-                ("WEBDOCK_CONSOLE_ORIGIN".into(), CONSOLE.into()),
-                ("WEBDOCK_FEATURES".into(), features.into()),
+                ("SPITZLI_AUTH_ORIGIN".into(), AUTH.into()),
+                ("SPITZLI_STUDIO_ORIGIN".into(), STUDIO.into()),
+                ("SPITZLI_CONSOLE_ORIGIN".into(), CONSOLE.into()),
+                ("SPITZLI_FEATURES".into(), features.into()),
             ]))
             .unwrap(),
             auth.clone(),
@@ -624,7 +624,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
         return;
     }
 
-    if std::env::var("WEBDOCK_ALLOWANCE_TEST").as_deref() == Ok("1") {
+    if std::env::var("SPITZLI_ALLOWANCE_TEST").as_deref() == Ok("1") {
         allowance_configuration::check(allowance_configuration::Context {
             app: &router,
             owner: &owner,
@@ -746,7 +746,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
         0
     );
 
-    if std::env::var("WEBDOCK_NATIVE_TOKEN_LOCK_TEST").as_deref() == Ok("1") {
+    if std::env::var("SPITZLI_NATIVE_TOKEN_LOCK_TEST").as_deref() == Ok("1") {
         native_token_lock::check(native_token_lock::Context {
             app: &router,
             owner: &owner,
@@ -965,7 +965,7 @@ async fn fresh_builtin_setup_uses_real_operator_password_totp_pkce_and_serialize
             StatusCode::OK
         );
     }
-    if std::env::var("WEBDOCK_NATIVE_TOKEN_LOCK_TEST").as_deref() == Ok("1") {
+    if std::env::var("SPITZLI_NATIVE_TOKEN_LOCK_TEST").as_deref() == Ok("1") {
         native_token_lock::refresh_regression(&router, &owner, &native, &oauth).await;
     }
     let sign_out = request(

@@ -302,7 +302,7 @@ pub async fn qualify(
 
 /// Only the separately reviewed, fresh pinned Foundation component opts into this lane.
 pub fn enabled() -> bool {
-    std::env::var("WEBDOCK_DATABASE_READ_COMPONENT_TEST").as_deref() == Ok("1")
+    std::env::var("SPITZLI_DATABASE_READ_COMPONENT_TEST").as_deref() == Ok("1")
 }
 
 /// Private connection custody from the runner's one verified fresh PostgreSQL container.
@@ -317,7 +317,7 @@ pub struct OwnedFixture {
 pub fn owned_fixture() -> OwnedFixture {
     use std::{os::unix::fs::MetadataExt, path::PathBuf, process::Command};
     assert!(enabled());
-    let path = PathBuf::from(std::env::var_os("WEBDOCK_DATABASE_READ_COMPONENT_INPUT").unwrap());
+    let path = PathBuf::from(std::env::var_os("SPITZLI_DATABASE_READ_COMPONENT_INPUT").unwrap());
     assert!(path.is_absolute());
     for ancestor in path.ancestors() {
         assert!(!ancestor.is_symlink(), "component input symlink");
@@ -344,7 +344,7 @@ pub fn owned_fixture() -> OwnedFixture {
         spitzli_control_plane::config::read_private_file(&candidate.join("pin.json")).unwrap();
     assert_eq!(
         hex::encode(Sha256::digest(&pin)),
-        std::env::var("WEBDOCK_DATABASE_READ_COMPONENT_PIN").unwrap()
+        std::env::var("SPITZLI_DATABASE_READ_COMPONENT_PIN").unwrap()
     );
     let pin: Value = serde_json::from_slice(&pin).unwrap();
     assert_eq!(pin["owner"], owner);
@@ -497,19 +497,19 @@ pub async fn foundation(c: Foundation<'_>) {
     let app = spitzli_control_plane::http::build_app_with_domains(
         spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
             (
-                "WEBDOCK_AUTH_ORIGIN".into(),
+                "SPITZLI_AUTH_ORIGIN".into(),
                 "https://auth.example.test".into(),
             ),
             (
-                "WEBDOCK_STUDIO_ORIGIN".into(),
+                "SPITZLI_STUDIO_ORIGIN".into(),
                 "https://studio.example.test".into(),
             ),
             (
-                "WEBDOCK_CONSOLE_ORIGIN".into(),
+                "SPITZLI_CONSOLE_ORIGIN".into(),
                 "https://console.example.test".into(),
             ),
             (
-                "WEBDOCK_FEATURES".into(),
+                "SPITZLI_FEATURES".into(),
                 r#"{"databases":"enabled"}"#.into(),
             ),
         ]))
@@ -579,7 +579,7 @@ pub async fn foundation(c: Foundation<'_>) {
     evidence["nativeJournalAfter"] = journal;
     std::fs::remove_file(&secret_path).unwrap();
     let output = std::path::PathBuf::from(
-        std::env::var_os("WEBDOCK_DATABASE_READ_COMPONENT_INPUT").unwrap(),
+        std::env::var_os("SPITZLI_DATABASE_READ_COMPONENT_INPUT").unwrap(),
     )
     .parent()
     .unwrap()

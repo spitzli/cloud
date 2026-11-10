@@ -12,7 +12,7 @@ export async function activatePinnedPlugin(
   if (url.username !== "webdock_offline_migrate" || !env.DATABASE_CA_CERT)
     throw Error("Offline operator credentials and verified CA required");
   const config = JSON.parse(
-    readFileSync(env.WEBDOCK_PLUGIN_RUNTIME_FILE, "utf8"),
+    readFileSync(env.SPITZLI_PLUGIN_RUNTIME_FILE, "utf8"),
   );
   const b = config.runtimes[id];
   if (!b) throw Error("Runtime binding missing");

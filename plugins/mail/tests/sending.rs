@@ -1,4 +1,4 @@
-//! Real plugin storage on a disposable local PostgreSQL (`WEBDOCK_MAIL_PLUGIN_TEST_ADMIN_URL`, loopback),
+//! Real plugin storage on a disposable local PostgreSQL (`SPITZLI_MAIL_PLUGIN_TEST_ADMIN_URL`, loopback),
 //! an in-test SMTP catcher and an in-test turboSMTP stand-in. No message leaves this process.
 use serde_json::{Value, json};
 use spitzli_mail::{Dns, Handler, Plugin, Settings, seal::Sealer, store::Store, transport};
@@ -11,7 +11,7 @@ use tokio_postgres::NoTls;
 
 fn admin_url() -> url::Url {
     let url = url::Url::parse(
-        &std::env::var("WEBDOCK_MAIL_PLUGIN_TEST_ADMIN_URL").expect("disposable local server"),
+        &std::env::var("SPITZLI_MAIL_PLUGIN_TEST_ADMIN_URL").expect("disposable local server"),
     )
     .unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));

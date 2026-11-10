@@ -38,7 +38,7 @@ async fn result(worker: &DatabaseConnection, purpose: Option<&str>, claim: &str)
 #[ignore = "creates and removes one owned local database for continuation-fence migration"]
 async fn retained_jobs_authorized_scope_and_installation_lock_fence_disable() {
     let mut owner_url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert!(matches!(
         owner_url.host_str(),
         Some("localhost" | "127.0.0.1")
@@ -66,7 +66,7 @@ async fn retained_jobs_authorized_scope_and_installation_lock_fence_disable() {
         let claim=uuid::Uuid::new_v4().to_string();
         owner.execute_raw(Statement::from_sql_and_values(DbBackend::Postgres,"INSERT INTO webdock_auth.plugin_operation(id,plugin_id,actor_id,idempotency_key,payload,status,generation,claim_token,lease_until) VALUES('789','provider-fixture','fixture','fixture','{\"desired\":\"disabled\"}','running',7,$1::uuid,now()+interval '5 minutes')",[claim.clone().into()])).await.unwrap();
         owner.execute_unprepared("INSERT INTO webdock_mail.provider_binding(customer_id,plugin_id,revision,transport_revision) VALUES('123','provider-fixture',1,1)").await.unwrap();
-        let mut worker_url=url::Url::parse(&std::env::var("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").unwrap()).unwrap();
+        let mut worker_url=url::Url::parse(&std::env::var("SPITZLI_PLUGIN_WORKER_DATABASE_URL").unwrap()).unwrap();
         assert_eq!(worker_url.host_str(),owner_url.host_str());assert_eq!(worker_url.port(),owner_url.port());worker_url.set_path(owner_url.path());
         let worker=Database::connect(worker_url.as_str()).await.unwrap();
         for purpose in [None,Some("mail-send-gateway"),Some("plugin-admission")] {

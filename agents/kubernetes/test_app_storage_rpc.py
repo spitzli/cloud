@@ -20,7 +20,7 @@ class AppStorageReadRPCTests(unittest.TestCase):
         self.pool=self.root/'volumes';self.pool.mkdir(mode=0o700)
         self.config={'root':str(self.pool),'node':'storage-node','clusterID':'789','poolID':'9cd1dd12-6d6f-4478-96ae-d2cae036269a','capacityBytes':268435456,'reserveBytes':67108864}
         path=self.root/'config.json';path.write_text(json.dumps(self.config));path.chmod(0o600)
-        self.environment=patch.dict(os.environ,{'WEBDOCK_STORAGE_CONFIG':str(path)})
+        self.environment=patch.dict(os.environ,{'SPITZLI_STORAGE_CONFIG':str(path)})
         self.environment.start();self.addCleanup(self.environment.stop)
         # Only filesystem ownership is substituted for unprivileged test runners.
         self.private=patch('storage.private',side_effect=lambda p,directory=False:Path(p))

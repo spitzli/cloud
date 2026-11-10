@@ -40,8 +40,8 @@ jobs:
       - name: Validate and build without provider credentials
         env:
           RELEASE_VERSION: ${{ inputs.version }}
-          WEBDOCK_RELEASE_CMS: ${{ inputs.include_cms }}
-          WEBDOCK_RELEASE_DATABASES: ${{ inputs.include_databases }}
+          SPITZLI_RELEASE_CMS: ${{ inputs.include_cms }}
+          SPITZLI_RELEASE_DATABASES: ${{ inputs.include_databases }}
           TABULARIS_IMAGE: ${{ inputs.tabularis_image }}
         run: |
           bun install --frozen-lockfile

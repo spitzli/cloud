@@ -14,7 +14,7 @@ export const serviceSelectionSchema = z.discriminatedUnion("kind", [
       kind: z.literal("mail"),
       connectionID: resourceID,
       domainID: resourceID,
-      variable: environmentNameSchema.default("WEBDOCK_MAIL_API_KEY"),
+      variable: environmentNameSchema.default("SPITZLI_MAIL_API_KEY"),
     })
     .strict(),
 ]);

@@ -155,7 +155,7 @@ async fn restricted_core_connections_authority_replay_cleanup_and_provider_races
             json!({"projects":[{"id":"fixture-tree-123","name":"Fixture project","region_id":"aws-eu-central-1","connection_uri":"postgres://never-return-this"}]}),
         ).into_response()
     }
-    let owner = sea_orm::Database::connect(fixture_url("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let owner = sea_orm::Database::connect(fixture_url("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     let auth_url = fixture_url("AUTH_DATABASE_URL");

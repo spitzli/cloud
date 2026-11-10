@@ -436,22 +436,22 @@ test("reconciles an ambiguous check creation before any repeated write", async (
 
 test("default configuration accepts canonical App private key and legacy fallback", async () => {
   const keys = [
-    "WEBDOCK_GITHUB_APP_ID",
-    "WEBDOCK_GITHUB_APP_PRIVATE_KEY",
-    "WEBDOCK_GITHUB_PRIVATE_KEY",
+    "SPITZLI_GITHUB_APP_ID",
+    "SPITZLI_GITHUB_APP_PRIVATE_KEY",
+    "SPITZLI_GITHUB_PRIVATE_KEY",
   ] as const;
   const previous = keys.map((key) => process.env[key]);
   try {
-    process.env.WEBDOCK_GITHUB_APP_ID = config.appID;
-    process.env.WEBDOCK_GITHUB_APP_PRIVATE_KEY = privateKey;
-    process.env.WEBDOCK_GITHUB_PRIVATE_KEY =
+    process.env.SPITZLI_GITHUB_APP_ID = config.appID;
+    process.env.SPITZLI_GITHUB_APP_PRIVATE_KEY = privateKey;
+    process.env.SPITZLI_GITHUB_PRIVATE_KEY =
       "invalid legacy key must not override canonical";
     await createGitHubProvider(undefined, fake().fetcher).revalidateRepository(
       "9",
       "42",
     );
-    delete process.env.WEBDOCK_GITHUB_APP_PRIVATE_KEY;
-    process.env.WEBDOCK_GITHUB_PRIVATE_KEY = privateKey;
+    delete process.env.SPITZLI_GITHUB_APP_PRIVATE_KEY;
+    process.env.SPITZLI_GITHUB_PRIVATE_KEY = privateKey;
     await createGitHubProvider(undefined, fake().fetcher).revalidateRepository(
       "9",
       "42",

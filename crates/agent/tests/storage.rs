@@ -77,7 +77,7 @@ async fn disposable_filesystem_preserves_identity_enforces_bytes_and_serves_priv
         .try_init();
     use spitzli_agent::storage::{StorageClient, StoragePool};
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_STORAGE_TEST").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_STORAGE_TEST").as_deref(),
         Ok("yes")
     );
     assert!(std::path::Path::new("/.dockerenv").is_file());
@@ -234,7 +234,7 @@ async fn disposable_docker_volume_has_real_byte_limit_and_retains_data() {
     use spitzli_supervisor::*;
     use std::{os::unix::fs::PermissionsExt, sync::Arc};
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_STORAGE_TEST").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_STORAGE_TEST").as_deref(),
         Ok("yes")
     );
     assert!(std::path::Path::new("/.dockerenv").is_file());

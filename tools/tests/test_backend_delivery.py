@@ -16,7 +16,7 @@ class BackendDeliveryTests(unittest.TestCase):
         self.assertEqual(set(job['on']),{'push','workflow_dispatch'})
         self.assertEqual(job['permissions'],{'contents':'read'})
         self.assertIn('ubuntu-24.04',job['jobs']['quality']['runs-on'])
-        self.assertIn('WEBDOCK_CI_RUNNER',job['jobs']['quality']['runs-on'])
+        self.assertIn('SPITZLI_CI_RUNNER',job['jobs']['quality']['runs-on'])
         self.assertNotIn('secrets.',str(job))
         steps=job['jobs']['quality']['steps']
         self.assertTrue(any('bun run quality' in s.get('run','') for s in steps))
@@ -49,7 +49,7 @@ class BackendDeliveryTests(unittest.TestCase):
                     if 'uses' in step:self.assertRegex(step['uses'],r'^[\w./-]+@[a-f0-9]{40}$')
         source=(ROOT/'deploy/docker/backend.Dockerfile').read_text()
         self.assertNotIn('bun install',source);self.assertNotIn('console-build',source)
-        self.assertNotIn('WEBDOCK_UI_DIST',source)
+        self.assertNotIn('SPITZLI_UI_DIST',source)
         bases=re.findall(r'^FROM (\S+)',source,re.M)
         for base in bases:
             if base not in ['runtime','source-context','scratch','build-base']:self.assertRegex(base,r'@sha256:[a-f0-9]{64}$')

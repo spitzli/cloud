@@ -17,7 +17,7 @@ test("removed billing HTTP surfaces cannot be mounted in the core API", async ()
       (await app.handle(new Request(config.apiOrigin + path))).status,
     ).toBe(404);
   }
-  expect(() => readConfig({ WEBDOCK_API_DOMAINS: "billing" })).toThrow(
+  expect(() => readConfig({ SPITZLI_API_DOMAINS: "billing" })).toThrow(
     "Unknown API domain",
   );
 });

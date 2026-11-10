@@ -19,7 +19,7 @@ export async function oauthCompatibilityIdentity(
   if (scope?.kind !== "session" || !scope.memberships) return undefined;
   const proof = scope.memberships;
   const config = readAuthProviderConfiguration(
-    process.env.WEBDOCK_AUTH_PROVIDER,
+    process.env.SPITZLI_AUTH_PROVIDER,
   );
   const now = Date.now();
   if (

@@ -101,7 +101,7 @@ impl OperatorInput {
         {
             return Err(BootstrapError::Input);
         }
-        let env_password = environment.get("WEBDOCK_INITIAL_OPERATOR_PASSWORD");
+        let env_password = environment.get("SPITZLI_INITIAL_OPERATOR_PASSWORD");
         if self.password.is_some() && env_password.is_some() {
             return Err(BootstrapError::Input);
         }
@@ -124,14 +124,14 @@ impl OperatorInput {
             return Err(BootstrapError::Input);
         }
         let expected_auth = environment
-            .get("WEBDOCK_AUTH_ORIGIN")
+            .get("SPITZLI_AUTH_ORIGIN")
             .or_else(|| environment.get("BETTER_AUTH_URL"));
         if expected_auth != Some(&auth_origin)
             || environment
                 .get("BETTER_AUTH_URL")
                 .is_some_and(|v| v != &auth_origin)
-            || environment.get("WEBDOCK_STUDIO_ORIGIN") != Some(&studio_origin)
-            || environment.get("WEBDOCK_CONSOLE_ORIGIN") != Some(&console_origin)
+            || environment.get("SPITZLI_STUDIO_ORIGIN") != Some(&studio_origin)
+            || environment.get("SPITZLI_CONSOLE_ORIGIN") != Some(&console_origin)
         {
             return Err(BootstrapError::Input);
         }
@@ -464,18 +464,18 @@ async fn provision(
         .map_err(|_| BootstrapError::Database)?;
     let environment = BTreeMap::from([
         ("BETTER_AUTH_URL", input.auth_origin.clone()),
-        ("WEBDOCK_AUTH_ORIGIN", input.auth_origin.clone()),
+        ("SPITZLI_AUTH_ORIGIN", input.auth_origin.clone()),
         (
-            "WEBDOCK_AUTH_ISSUER",
+            "SPITZLI_AUTH_ISSUER",
             format!("{}/api/auth", input.auth_origin),
         ),
-        ("WEBDOCK_STUDIO_ORIGIN", input.studio_origin.clone()),
-        ("WEBDOCK_CONSOLE_ORIGIN", input.console_origin),
-        ("WEBDOCK_SSO_APP_ORIGIN", input.studio_origin),
-        ("WEBDOCK_SSO_CLIENT_ID", ids.client.clone()),
-        ("WEBDOCK_STUDIO_CLIENT_ID", ids.client.clone()),
-        ("WEBDOCK_SSO_CLIENT_SECRET", client_secret),
-        ("WEBDOCK_SSO_COOKIE_SECRET", token()?),
+        ("SPITZLI_STUDIO_ORIGIN", input.studio_origin.clone()),
+        ("SPITZLI_CONSOLE_ORIGIN", input.console_origin),
+        ("SPITZLI_SSO_APP_ORIGIN", input.studio_origin),
+        ("SPITZLI_SSO_CLIENT_ID", ids.client.clone()),
+        ("SPITZLI_STUDIO_CLIENT_ID", ids.client.clone()),
+        ("SPITZLI_SSO_CLIENT_SECRET", client_secret),
+        ("SPITZLI_SSO_COOKIE_SECRET", token()?),
     ]);
     Ok(Secrets {
         status: "verify-command-result",
@@ -522,7 +522,7 @@ pub async fn bootstrap_operator(
     let input: OperatorInput = serde_json::from_slice(&bytes).map_err(|_| BootstrapError::Input)?;
     let input = input.review(environment, local)?;
     let secret = environment
-        .get("WEBDOCK_AUTH_SECRET")
+        .get("SPITZLI_AUTH_SECRET")
         .ok_or(BootstrapError::Input)?;
     if secret.len() < 32 {
         return Err(BootstrapError::Input);
@@ -606,7 +606,7 @@ mod tests {
             signing_key_id: "127".into(),
             checksum: "a".repeat(64),
             environment: BTreeMap::from([(
-                "WEBDOCK_SSO_CLIENT_SECRET",
+                "SPITZLI_SSO_CLIENT_SECRET",
                 "owned-fixture-secret".into(),
             )]),
         }
@@ -619,11 +619,11 @@ mod tests {
         let environment = HashMap::from([
             ("BETTER_AUTH_URL".into(), "https://auth.example.test".into()),
             (
-                "WEBDOCK_STUDIO_ORIGIN".into(),
+                "SPITZLI_STUDIO_ORIGIN".into(),
                 "https://studio.example.test".into(),
             ),
             (
-                "WEBDOCK_CONSOLE_ORIGIN".into(),
+                "SPITZLI_CONSOLE_ORIGIN".into(),
                 "https://console.example.test".into(),
             ),
         ]);

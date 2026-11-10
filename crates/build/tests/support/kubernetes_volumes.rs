@@ -10,7 +10,7 @@ async fn kubernetes_volume_authority_is_immutable_fenced_and_required_before_ret
     let f = fixture.clone();
     let result=tokio::spawn(async move {
         f.configure("k3s").await;
-        let service=BuildService::new(db("DATABASE_URL").await,db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),
+        let service=BuildService::new(db("DATABASE_URL").await,db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),
             Arc::new(spitzli_persistence::IdAllocator::new(db("DATABASE_URL").await,spitzli_ids::Identity::platform(0,2).unwrap())),f.service.clone(),"registry.invalid".into()).await.unwrap()
             .with_repository_provider(Arc::new(super::build_kubernetes_admission::Repository));
         let mut draft=spec();draft.as_object_mut().unwrap().remove("image");draft.as_object_mut().unwrap().remove("template");

@@ -15,7 +15,7 @@ or production activation. Work inline and verify the connected change before PR.
 - [x] Implement native login, provider provenance and MFA modules. Reuse existing
   crypto, TOTP, cookie, allocator, provider policy and checked transaction helpers.
   Expose `with_native_password_login(Pool)` and explicit Core
-  `WEBDOCK_PASSWORD_LOGIN_BACKEND=tokio-postgres` (default `sea-orm`). Native IDs,
+  `SPITZLI_PASSWORD_LOGIN_BACKEND=tokio-postgres` (default `sea-orm`). Native IDs,
   reads and session management are dependencies; other capabilities are retained.
 - [x] Test current credential, bans, migration/provider policy and expiry after
   lock waits; rate limits, recovery codes, TOTP replay, cancellation and rollback.

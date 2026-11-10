@@ -3,8 +3,8 @@ use super::*;
 #[tokio::test]
 #[ignore = "owned TLS PostgreSQL; plugins/mail/tests/fixtures/mailbox-recovery.py"]
 async fn wrong_token_and_stale_epoch_cannot_release_custody() {
-    let url = std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_URL").unwrap();
-    let ca = std::fs::read(std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_CA").unwrap()).unwrap();
+    let url = std::env::var("SPITZLI_MAIL_RECOVERY_TEST_URL").unwrap();
+    let ca = std::fs::read(std::env::var("SPITZLI_MAIL_RECOVERY_TEST_CA").unwrap()).unwrap();
     let store = Store::connect_tls(&url, &ca).await.unwrap();
     let held = store.recovery_effect().await.unwrap();
     let token = held.token;

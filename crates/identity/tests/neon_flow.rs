@@ -41,7 +41,7 @@ async fn paced_signin(
 #[tokio::test]
 #[ignore = "requires owned Neon child fixture; creates synthetic account, never production"]
 async fn managed_first_factor_requires_mfa_and_revokes_native_and_rls_authority() {
-    let path = std::env::var("WEBDOCK_NEON_AUTH_TEST_FIXTURE").unwrap();
+    let path = std::env::var("SPITZLI_NEON_AUTH_TEST_FIXTURE").unwrap();
     let f: Fixture = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
     assert_eq!(f.branch_id, "br-round-star-b9gnbe89");
     let url = url::Url::parse(&f.owner_url).unwrap();
@@ -441,8 +441,8 @@ async fn managed_first_factor_requires_mfa_and_revokes_native_and_rls_authority(
             .unwrap()
             .is_none()
     );
-    if std::env::var("WEBDOCK_NEON_KEEP_SYNTHETIC_FIXTURE").as_deref() == Ok("true") {
-        let path = std::path::Path::new(&std::env::var("WEBDOCK_NEON_AUTH_TEST_FIXTURE").unwrap())
+    if std::env::var("SPITZLI_NEON_KEEP_SYNTHETIC_FIXTURE").as_deref() == Ok("true") {
+        let path = std::path::Path::new(&std::env::var("SPITZLI_NEON_AUTH_TEST_FIXTURE").unwrap())
             .parent()
             .unwrap()
             .join("owned-neon-browser-operator.private.json");
@@ -528,7 +528,7 @@ async fn managed_first_factor_requires_mfa_and_revokes_native_and_rls_authority(
 #[tokio::test]
 #[ignore = "owned child-only fixture administration for actual immutable image qualification"]
 async fn prepare_owned_image_operator_registry_mapping() {
-    let path = std::env::var("WEBDOCK_NEON_AUTH_TEST_FIXTURE").unwrap();
+    let path = std::env::var("SPITZLI_NEON_AUTH_TEST_FIXTURE").unwrap();
     let file = std::path::Path::new(&path);
     let f: Fixture = serde_json::from_slice(&std::fs::read(file).unwrap()).unwrap();
     assert_eq!(f.branch_id, "br-round-star-b9gnbe89");

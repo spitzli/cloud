@@ -24,7 +24,7 @@ class FileCapabilities(unittest.TestCase):
 class CaddySyntax(unittest.TestCase):
  def test_actual_caddy_adapter_accepts_generated_routes(self):
   import os,subprocess,tempfile
-  binary=Path(os.environ.get('WEBDOCK_CADDY_BINARY','/tmp/webdock-caddy-2.11.7/caddy'))
+  binary=Path(os.environ.get('SPITZLI_CADDY_BINARY','/tmp/webdock-caddy-2.11.7/caddy'))
   if not binary.exists():self.skipTest('Pinned Caddy binary required for actual adapter check')
   m=Gateway().module();hashed=subprocess.check_output([str(binary),'hash-password','--algorithm','bcrypt','--bcrypt-cost','4'],input=b'owned-test-only-not-a-service-secret\n').decode().strip()
   with tempfile.TemporaryDirectory() as root:

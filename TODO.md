@@ -206,7 +206,7 @@ No implementation, published offer, provider purchase or final entitlement decis
   installation ownership, exact repository permissions and reconnect/revocation.
   `plugins/github-repository/README.md` currently explicitly leaves OAuth onboarding
   pending. Configure the actual reachable project-scoped registry and repository
-  runtime before enabling `WEBDOCK_BUILD_REGISTRY_HOST`; never fabricate a
+  runtime before enabling `SPITZLI_BUILD_REGISTRY_HOST`; never fabricate a
   connection or use a global registry credential. Acceptance: a genuine customer
   connects their selected repository, builds one exact SHA, sees durable logs and
   deploys its digest; other customers' installations remain inaccessible.

@@ -189,7 +189,7 @@ export const settings: GlobalConfig = protectContent({
   ],
 });
 export function users(strategies: AuthStrategy[] = []): CollectionConfig {
-  process.env.WEBDOCK_SSO_ENFORCE = "true";
+  process.env.SPITZLI_SSO_ENFORCE = "true";
   return protectUsers(
     {
       slug: "users",

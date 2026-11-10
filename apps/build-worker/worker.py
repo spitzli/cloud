@@ -148,7 +148,7 @@ def guest_request(job):
         values=job.get('buildEnvironment',{})
         if not isinstance(values,dict) or len(values)>32:raise Rejected('invalid_environment')
         for key,value in values.items():
-            if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,127}',key) or key.startswith(('VERCEL_','AWS_','WEBDOCK_','DOCKER_','GIT_')) or key in ('PATH','HOME','NODE_OPTIONS','LD_PRELOAD','PYTHONPATH') or not isinstance(value,str) or '\0' in value or len(value)>4096:raise Rejected('invalid_environment')
+            if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,127}',key) or key.startswith(('VERCEL_','AWS_','SPITZLI_','DOCKER_','GIT_')) or key in ('PATH','HOME','NODE_OPTIONS','LD_PRELOAD','PYTHONPATH') or not isinstance(value,str) or '\0' in value or len(value)>4096:raise Rejected('invalid_environment')
         if len(json.dumps(values))>16000:raise Rejected('invalid_environment')
         result={'recipe':recipe,'rootDirectory':root,'buildEnvironment':values,'limits':limits}
         if recipe=='vercel':

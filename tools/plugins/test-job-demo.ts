@@ -9,10 +9,10 @@ import { createPluginJobs } from "@spitzli/core/plugin-jobs";
 import { createPluginContext } from "@spitzli/plugin-sdk/server";
 import { PluginError } from "@spitzli/plugin-sdk/contracts";
 const dir = resolve(process.argv[2] ?? "");
-const port = Number(process.env.WEBDOCK_TEST_REDIS_PORT);
+const port = Number(process.env.SPITZLI_TEST_REDIS_PORT);
 if (!process.argv[2] || !port)
   throw Error(
-    "Usage: WEBDOCK_TEST_REDIS_PORT=... bun tools/plugins/test-job-demo.ts <built-plugin-dir>",
+    "Usage: SPITZLI_TEST_REDIS_PORT=... bun tools/plugins/test-job-demo.ts <built-plugin-dir>",
   );
 const manifest = JSON.parse(
   await readFile(resolve(dir, "tabularium.json"), "utf8"),
@@ -98,8 +98,8 @@ const child = spawn(process.execPath, ["dist/index.js"], {
     ...process.env,
     PORT: "0",
     HOST: "127.0.0.1",
-    WEBDOCK_PLUGIN_HOST_URL: hostOrigin,
-    WEBDOCK_PLUGIN_RUNTIME_TOKEN: runtimeToken,
+    SPITZLI_PLUGIN_HOST_URL: hostOrigin,
+    SPITZLI_PLUGIN_RUNTIME_TOKEN: runtimeToken,
   },
   stdio: ["ignore", "pipe", "pipe"],
 });

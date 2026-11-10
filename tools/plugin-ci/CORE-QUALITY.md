@@ -79,7 +79,7 @@ Focused coverage:
 
 Required regression names and nonzero passed-test counts are checked. A zero
 filtered run cannot qualify. If the source test implements the optional
-`WEBDOCK_COMPUTE_PANEL_EVIDENCE` export, the exported actual output is independently
+`SPITZLI_COMPUTE_PANEL_EVIDENCE` export, the exported actual output is independently
 compared to the consumer fixture; absence is recorded without inventing output.
 The independently published sibling compute repository requires a separate
 frozen source archive for separate-repository proof; root closure does not
@@ -190,7 +190,7 @@ cache are needed there. Fixed PG tools include `createdb`.
 The runtime executes exactly
 `retired_postgres_stale_grants_cannot_create_but_retained_work_and_maintenance_survive`
 with `--ignored --exact --nocapture --test-threads=1` and
-`WEBDOCK_PLUGIN_TEST_LOCAL_POSTGRES=1`. Its test-only adapter creates and owns
+`SPITZLI_PLUGIN_TEST_LOCAL_POSTGRES=1`. Its test-only adapter creates and owns
 its own private cluster/database and accepts no supplied DSN. ELF/library proof,
 exact1-test success and disappearance of owned fixture roots are required. The
 harness does not enable arbitrary ignored/live tests or modify production roles.
@@ -198,7 +198,7 @@ harness does not enable arbitrary ignored/live tests or modify production roles.
 `recovery` is prepared for the owner-only0074 tool's actual PostgreSQL/fake-provider
 acceptance. The outer driver creates a fresh cluster and generated `_test` DB
 owned by fixture-only login `neondb_owner`, then invokes the exact opt-in test
-with `WEBDOCK_TEST_NEON_RECOVERY=true`. The supplied URL is generated internally
+with `SPITZLI_TEST_NEON_RECOVERY=true`. The supplied URL is generated internally
 for that loopback cluster; no external database/provider URL or credential is
 accepted. The recovery login starts NOSUPERUSER, NOBYPASSRLS, NOINHERIT, NOCREATEDB and
 NOCREATEROLE, owning no database or objects. A separate generated bootstrap

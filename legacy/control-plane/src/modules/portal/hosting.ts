@@ -61,8 +61,8 @@ export async function hostingCall(
         )
       : executeHostingBridgeCommand(actor, command);
   }
-  const id = process.env.WEBDOCK_SSO_CLIENT_ID,
-    secret = process.env.WEBDOCK_SSO_CLIENT_SECRET;
+  const id = process.env.SPITZLI_SSO_CLIENT_ID,
+    secret = process.env.SPITZLI_SSO_CLIENT_SECRET;
   if (!id || !secret)
     throw new HostingError(503, "Hosting authentication is unavailable.");
   const request = new Request(

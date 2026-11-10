@@ -217,7 +217,7 @@ class OperatorInputs:
         work();item['state']='created';self.persist()
     def prepare(self):
         values=dict(line.split('=',1) for line in private(ROOT/'.dev-local/minio.env',16384).decode().splitlines() if '=' in line)
-        port=int(os.environ.get('WEBDOCK_DEV_S3_PORT','55900'))
+        port=int(os.environ.get('SPITZLI_DEV_S3_PORT','55900'))
         if not 1024<=port<=65535:raise ValueError('existing MinIO port')
         self.endpoint=f'http://127.0.0.1:{port}'
         self.environment={**os.environ,'MC_HOST_fixture':f'http://{urllib.parse.quote(values["MINIO_ROOT_USER"],safe="")}:{urllib.parse.quote(values["MINIO_ROOT_PASSWORD"],safe="")}@127.0.0.1:{port}'}

@@ -40,7 +40,7 @@ async fn main() -> Result<(), Error> {
         )
         .init();
     let managed: Option<Arc<dyn ManagedRuntimes>> =
-        if std::env::var("WEBDOCK_DATABASE_MANAGED_RUNTIMES").as_deref() == Ok("true") {
+        if std::env::var("SPITZLI_DATABASE_MANAGED_RUNTIMES").as_deref() == Ok("true") {
             Some(Arc::new(ProcessManager::new(ProcessConfig {
                 executable: PathBuf::from(
                     std::env::var("TABULARIS_EXECUTABLE")
@@ -51,10 +51,10 @@ async fn main() -> Result<(), Error> {
                         .unwrap_or_else(|_| "/opt/tabularis/web".into()),
                 )),
                 temporary_directory: PathBuf::from(
-                    std::env::var("WEBDOCK_DATABASE_RUNTIME_DIRECTORY")
+                    std::env::var("SPITZLI_DATABASE_RUNTIME_DIRECTORY")
                         .unwrap_or_else(|_| "/tmp".into()),
                 ),
-                capacity: std::env::var("WEBDOCK_DATABASE_RUNTIME_CAPACITY")
+                capacity: std::env::var("SPITZLI_DATABASE_RUNTIME_CAPACITY")
                     .unwrap_or_else(|_| "8".into())
                     .parse()
                     .map_err(|_| "Invalid runtime capacity")?,
@@ -67,7 +67,7 @@ async fn main() -> Result<(), Error> {
     if expected.len() != 40 || !expected.bytes().all(|v| v.is_ascii_hexdigit()) {
         return Err("Expected runtime source commit must be a full Git SHA1".into());
     }
-    let ca_path = std::env::var("WEBDOCK_DATABASE_RUNTIME_CA_FILE")
+    let ca_path = std::env::var("SPITZLI_DATABASE_RUNTIME_CA_FILE")
         .or_else(|_| std::env::var("NODE_EXTRA_CA_CERTS"))
         .ok();
     let pem = if let Some(path) = ca_path {
@@ -83,12 +83,12 @@ async fn main() -> Result<(), Error> {
     let trust = spitzli_database_gateway::trust::Trust::from_pem(pem.as_deref())?;
     let gateway = Gateway::new_with_trust(
         Options {
-            public_origin: required("WEBDOCK_DATABASE_GATEWAY_ORIGIN")?,
-            allowed_origins: required("WEBDOCK_DATABASE_BROWSER_ORIGINS")?
+            public_origin: required("SPITZLI_DATABASE_GATEWAY_ORIGIN")?,
+            allowed_origins: required("SPITZLI_DATABASE_BROWSER_ORIGINS")?
                 .split(',')
                 .map(str::to_owned)
                 .collect(),
-            runtime_origins: std::env::var("WEBDOCK_DATABASE_RUNTIME_ORIGINS")
+            runtime_origins: std::env::var("SPITZLI_DATABASE_RUNTIME_ORIGINS")
                 .unwrap_or_default()
                 .split(',')
                 .filter(|v| !v.is_empty())
@@ -96,8 +96,8 @@ async fn main() -> Result<(), Error> {
                 .collect(),
             expected_commit: Some(expected),
             control: Arc::new(HttpControl::new_with_trust(
-                &required("WEBDOCK_AUTH_ORIGIN")?,
-                required("WEBDOCK_DATABASE_GATEWAY_SECRET")?,
+                &required("SPITZLI_AUTH_ORIGIN")?,
+                required("SPITZLI_DATABASE_GATEWAY_SECRET")?,
                 &trust,
             )?),
             managed,

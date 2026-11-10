@@ -9,7 +9,7 @@ export const getConsoleIdentity = cache(async () => {
   if (!identity.userId) return null;
   const token = await identity.getToken();
   if (!token) return null;
-  const serviceKey = process.env.WEBDOCK_CONSOLE_SERVICE_KEY;
+  const serviceKey = process.env.SPITZLI_CONSOLE_SERVICE_KEY;
   if (!serviceKey || serviceKey.length < 32)
     throw Error("Console delegation is not configured.");
   return { token, serviceKey };

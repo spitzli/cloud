@@ -7,8 +7,8 @@ const env = {
   DATABASE_URL_UNPOOLED:
     "postgresql://webdock_offline_migrate:private@127.0.0.1:5544/webdock",
   BETTER_AUTH_URL: "https://auth.example.test",
-  WEBDOCK_STUDIO_ORIGIN: "https://studio.example.test",
-  WEBDOCK_CONSOLE_ORIGIN: "https://console.example.test",
+  SPITZLI_STUDIO_ORIGIN: "https://studio.example.test",
+  SPITZLI_CONSOLE_ORIGIN: "https://console.example.test",
 };
 const profile = {
   name: "Initial operator",
@@ -280,7 +280,7 @@ test("setup validates configured origins before opening a listener", async () =>
   await assert.rejects(
     startOperatorSetup({
       ...options,
-      env: { ...env, WEBDOCK_CONSOLE_ORIGIN: env.WEBDOCK_STUDIO_ORIGIN },
+      env: { ...env, SPITZLI_CONSOLE_ORIGIN: env.SPITZLI_STUDIO_ORIGIN },
     }),
   );
 });

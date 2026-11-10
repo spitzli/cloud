@@ -24,7 +24,7 @@ export default buildConfig({
   collections: [protectUsers({
     slug: 'users',
   admin: { useAsTitle: 'email' },
-    auth: { maxLoginAttempts: 5, lockTime: 600000, strategies: sso ? [sso.strategy as AuthStrategy] : [], disableLocalStrategy: process.env.WEBDOCK_SSO_ENFORCE === 'true' ? { enableFields: true, optionalPassword: true } : undefined },
+    auth: { maxLoginAttempts: 5, lockTime: 600000, strategies: sso ? [sso.strategy as AuthStrategy] : [], disableLocalStrategy: process.env.SPITZLI_SSO_ENFORCE === 'true' ? { enableFields: true, optionalPassword: true } : undefined },
     hooks: sso?.hooks,
     access: {},
     fields: [authSubjectField, { name: 'name', type: 'text' }, { name: 'disabled', type: 'checkbox', defaultValue: false, access: { create: isOperator, update: isOperator } }],

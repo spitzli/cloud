@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   quality:
-    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != ''
+    if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != ''
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 45
     # One ephemeral target for workspace and standalone crates; keep full test assertions.
@@ -32,7 +32,7 @@ jobs:
       - name: Require reviewed Blacksmith execution
         shell: bash
         env:
-          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
         run: |
           set -euo pipefail
           case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac
@@ -69,12 +69,16 @@ jobs:
         run: |
           bun run --filter @spitzli/plugin-sdk build
           bun test packages/plugin-sdk/tests packages/plugin-cli/tests
+          cargo build --manifest-path tools/plugin-registry/manifest-validator/Cargo.toml --locked
+          bun --no-env-file test tools/plugin-release/release.test.mjs
+          python3 -m unittest discover -s tools/plugins -p 'test_native_release.py'
           python3 -m unittest discover -s tools/plugins -p 'test_export_*.py'
       - name: Install browser for isolated UI fixtures
         working-directory: apps/console
         run: bunx playwright install --with-deps chromium
-      - name: Verify private plugin deployment and catalog presentation policy
+      - name: Verify deployment, catalog and environment migration policies
         run: |
+          python3 -m unittest discover -s tools/migrations -p 'test_rename_environment.py'
           python3 -m unittest discover -s tools/plugin-runtime -p 'test_*.py'
           python3 -m unittest discover -s tools/plugin-release -p 'test_catalog_presentation.py'
       - name: Enforce native quality and local tests

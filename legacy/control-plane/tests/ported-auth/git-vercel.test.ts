@@ -142,14 +142,14 @@ test("BYOK credential resolution never falls back to platform credentials and re
 });
 test("platform credential requires a matching persisted tenant/project target binding", async () => {
   const old = {
-    token: process.env.WEBDOCK_GIT_VERCEL_TOKEN,
-    team: process.env.WEBDOCK_GIT_VERCEL_TEAM_ID,
-    config: process.env.WEBDOCK_GIT_VERCEL_CONFIGURATION_ID,
+    token: process.env.SPITZLI_GIT_VERCEL_TOKEN,
+    team: process.env.SPITZLI_GIT_VERCEL_TEAM_ID,
+    config: process.env.SPITZLI_GIT_VERCEL_CONFIGURATION_ID,
   };
   Object.assign(process.env, {
-    WEBDOCK_GIT_VERCEL_TOKEN: "platform-secret",
-    WEBDOCK_GIT_VERCEL_TEAM_ID: "team_platform",
-    WEBDOCK_GIT_VERCEL_CONFIGURATION_ID: "icfg_platform",
+    SPITZLI_GIT_VERCEL_TOKEN: "platform-secret",
+    SPITZLI_GIT_VERCEL_TEAM_ID: "team_platform",
+    SPITZLI_GIT_VERCEL_CONFIGURATION_ID: "icfg_platform",
   });
   try {
     const db = {
@@ -184,9 +184,9 @@ test("platform credential requires a matching persisted tenant/project target bi
     );
   } finally {
     for (const [key, value] of Object.entries({
-      WEBDOCK_GIT_VERCEL_TOKEN: old.token,
-      WEBDOCK_GIT_VERCEL_TEAM_ID: old.team,
-      WEBDOCK_GIT_VERCEL_CONFIGURATION_ID: old.config,
+      SPITZLI_GIT_VERCEL_TOKEN: old.token,
+      SPITZLI_GIT_VERCEL_TEAM_ID: old.team,
+      SPITZLI_GIT_VERCEL_CONFIGURATION_ID: old.config,
     })) {
       if (value === undefined) delete process.env[key];
       else process.env[key] = value;

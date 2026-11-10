@@ -109,7 +109,7 @@ async fn mcp_identity_before_access<T>(
 #[ignore = "requires owned retained-schema restricted PostgreSQL fixture"]
 async fn real_oidc_pkce_consent_refresh_and_mcp_authority() {
     let auth_url = guarded("AUTH_DATABASE_URL");
-    let offline = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let offline = Database::connect(guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     offline

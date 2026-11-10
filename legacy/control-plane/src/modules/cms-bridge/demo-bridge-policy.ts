@@ -7,9 +7,9 @@ export {
   cmsAllowedOrigins,
   type DemoBridge,
 } from "@spitzli/module-cms/server/demo-bridge-policy";
-export function demoBridges(raw = process.env.WEBDOCK_DEMO_BRIDGES || "{}") {
+export function demoBridges(raw = process.env.SPITZLI_DEMO_BRIDGES || "{}") {
   return parseBridges(
     raw,
-    cmsAllowedOrigins(process.env.WEBDOCK_CMS_ALLOWED_ORIGINS || "[]"),
+    cmsAllowedOrigins(process.env.SPITZLI_CMS_ALLOWED_ORIGINS || "[]"),
   );
 }

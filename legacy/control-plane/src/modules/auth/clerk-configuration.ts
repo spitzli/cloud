@@ -4,7 +4,7 @@ export function validateClerkWorkerConfiguration(
   domains: readonly string[],
   env: Record<string, string | undefined> = process.env,
 ): void {
-  const config = readAuthProviderConfiguration(env.WEBDOCK_AUTH_PROVIDER);
+  const config = readAuthProviderConfiguration(env.SPITZLI_AUTH_PROVIDER);
   if (
     domains.some((domain) => domain === "mail" || domain === "hosting") &&
     config.provider === "clerk" &&

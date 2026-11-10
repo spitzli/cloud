@@ -13,23 +13,23 @@ x-runtime: &runtime
 services:
   console:
     <<: *runtime
-    image: ${WEBDOCK_CONSOLE_CORE_IMAGE:?Set immutable Console core image}
+    image: ${SPITZLI_CONSOLE_CORE_IMAGE:?Set immutable Console core image}
     tmpfs: ['/tmp:rw,nosuid,size=64m,mode=1777', '/app/.core-build/console/.next/cache:rw,nosuid,size=128m,mode=1777']
     env_file: [./console.env]
     ports: ['127.0.0.1:3120:3120']
   auth:
     <<: *runtime
-    image: ${WEBDOCK_AUTH_IMAGE:?Set immutable Auth image}
+    image: ${SPITZLI_AUTH_IMAGE:?Set immutable Auth image}
     tmpfs: ['/tmp:rw,nosuid,size=64m,mode=1777', '/app/apps/auth/.next/cache:rw,nosuid,size=128m,mode=1777']
     env_file: [./auth.env]
     ports: ['127.0.0.1:3125:3125']
   api:
     <<: *runtime
-    image: ${WEBDOCK_API_CORE_IMAGE:?Set immutable API core image}
+    image: ${SPITZLI_API_CORE_IMAGE:?Set immutable API core image}
     env_file: [./api.env]
     environment:
-      WEBDOCK_API_DOMAINS: auth,portal,registry
-      WEBDOCK_MODULES: '{"configVersion":1,"modules":{}}'
+      SPITZLI_API_DOMAINS: auth,portal,registry
+      SPITZLI_MODULES: '{"configVersion":1,"modules":{}}'
     ports: ['127.0.0.1:3130:3130']
     healthcheck:
       test: [CMD, bun, -e, "if(!(await fetch('http://127.0.0.1:3130/readyz')).ok)process.exit(1)"]
@@ -39,8 +39,8 @@ services:
       start_period: 30s
   migrate:
     <<: *runtime
-    image: ${WEBDOCK_MIGRATE_IMAGE:?Set immutable migration image}
+    image: ${SPITZLI_MIGRATE_IMAGE:?Set immutable migration image}
     restart: 'no'
     profiles: [migration]
     env_file: [./migrator.env]
-    command: ['${WEBDOCK_MIGRATION_TARGET:?Set exact host:port/database}']
+    command: ['${SPITZLI_MIGRATION_TARGET:?Set exact host:port/database}']

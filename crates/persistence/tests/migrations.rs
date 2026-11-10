@@ -32,7 +32,7 @@ fn retained_history_is_adopted_only_with_exact_names_and_checksums() {
 #[ignore = "requires the owned retained-schema local fixture"]
 async fn offline_upgrade_uses_retained_journal_and_denies_runtime_roles() {
     use spitzli_persistence::migrations::{MigrationError, upgrade};
-    let owner = std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap();
+    let owner = std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap();
     let url = url::Url::parse(&owner).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
     assert_eq!(url.path(), "/webdock_rls_test");
@@ -61,7 +61,7 @@ async fn offline_upgrade_uses_retained_journal_and_denies_runtime_roles() {
 async fn fresh_native_bootstrap_has_complete_schema_and_rejects_reinitialization() {
     use sea_orm::{ConnectionTrait, Database, DbBackend, Statement, TransactionTrait};
     use spitzli_persistence::migrations::{bootstrap, upgrade, verify_bootstrap_baseline};
-    let raw = std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap();
+    let raw = std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap();
     let mut url = url::Url::parse(&raw).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
     assert_eq!(url.path(), "/webdock_rls_test");

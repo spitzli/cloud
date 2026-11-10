@@ -12,8 +12,8 @@ export async function runOperator(
 ) {
   if (!process.env.NODE_ENV)
     Object.assign(process.env, { NODE_ENV: "production" });
-  const subject = recordID.parse(process.env.WEBDOCK_OPERATOR_SUBJECT),
-    sessionID = recordID.parse(process.env.WEBDOCK_OPERATOR_SESSION_ID);
+  const subject = recordID.parse(process.env.SPITZLI_OPERATOR_SUBJECT),
+    sessionID = recordID.parse(process.env.SPITZLI_OPERATOR_SESSION_ID);
   const { databasePools } = await import("../../src/db/runtime");
   const { registryService, closeRegistry } =
     await import("../../src/modules/registry/context");

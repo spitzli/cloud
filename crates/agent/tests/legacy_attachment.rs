@@ -74,12 +74,12 @@ const TRUSTED_IMAGE: &str = "ghcr.io/spitzli/tabularium@sha256:4627facbbdf045716
 
 impl QualificationProfile {
     fn selected() -> Self {
-        match std::env::var("WEBDOCK_RETAINED_QUALIFICATION_PROFILE") {
+        match std::env::var("SPITZLI_RETAINED_QUALIFICATION_PROFILE") {
             Err(std::env::VarError::NotPresent) => Self::Build,
             Ok(value) if value == "build" => Self::Build,
             Ok(value) if value == "trusted-runtime-wd-eu-02" => {
                 assert_eq!(
-                    std::env::var("WEBDOCK_TRUSTED_RUNTIME_RETAINED_TEST").as_deref(),
+                    std::env::var("SPITZLI_TRUSTED_RUNTIME_RETAINED_TEST").as_deref(),
                     Ok("1")
                 );
                 Self::TrustedRuntimeWdEu02
@@ -424,7 +424,7 @@ impl Authorizer for Authority {
 #[ignore = "requires an explicitly owned pinned K3s profile, fresh local fixture path and cached immutable image"]
 async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_binding() {
     assert_eq!(
-        std::env::var("WEBDOCK_OWNED_K3S_RETAINED_TEST").as_deref(),
+        std::env::var("SPITZLI_OWNED_K3S_RETAINED_TEST").as_deref(),
         Ok("1")
     );
     // Only the retained adapter's sanitized API status diagnostics are enabled.
@@ -445,7 +445,7 @@ async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_bindin
         .to_string(),
         profile.pins().system
     );
-    let config_path = PathBuf::from(std::env::var("WEBDOCK_OWNED_K3S_CONFIG").unwrap());
+    let config_path = PathBuf::from(std::env::var("SPITZLI_OWNED_K3S_CONFIG").unwrap());
     assert_eq!(config_path, Path::new("/etc/rancher/k3s/k3s.yaml"));
     assert_eq!(config_path.canonicalize().unwrap(), config_path);
     let config_meta = std::fs::symlink_metadata(&config_path).unwrap();
@@ -453,10 +453,10 @@ async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_bindin
     assert_eq!(config_meta.uid(), 0);
     assert_eq!(config_meta.mode() & 0o077, 0);
     assert_eq!(config_meta.nlink(), 1);
-    let context = std::env::var("WEBDOCK_OWNED_K3S_CONTEXT").unwrap();
-    let root = PathBuf::from(std::env::var("WEBDOCK_OWNED_K3S_ROOT").unwrap());
+    let context = std::env::var("SPITZLI_OWNED_K3S_CONTEXT").unwrap();
+    let root = PathBuf::from(std::env::var("SPITZLI_OWNED_K3S_ROOT").unwrap());
     fixture_root(&root, profile);
-    let node_name = std::env::var("WEBDOCK_OWNED_K3S_NODE").unwrap();
+    let node_name = std::env::var("SPITZLI_OWNED_K3S_NODE").unwrap();
     assert_eq!(node_name, profile.pins().node);
     let config = Config::from_custom_kubeconfig(
         Kubeconfig::read_from(&config_path).unwrap(),
@@ -532,7 +532,7 @@ async fn owned_k3s_cross_node_update_preserves_data_env_and_rejects_raced_bindin
     spec.project_id = spitzli_core::id::RecordId::parse(&numeric.to_string()).unwrap();
     spec.resource_id = spitzli_core::id::RecordId::parse(&(numeric + 1).to_string()).unwrap();
     spec.revision = 4;
-    spec.image = std::env::var("WEBDOCK_OWNED_K3S_IMAGE").unwrap();
+    spec.image = std::env::var("SPITZLI_OWNED_K3S_IMAGE").unwrap();
     assert!(spitzli_supervisor::image_digest(&spec.image));
     if profile == QualificationProfile::TrustedRuntimeWdEu02 {
         assert_eq!(spec.image, TRUSTED_IMAGE);

@@ -5,7 +5,7 @@ import {randomBytes,createHmac,createHash} from 'node:crypto';
 import {join} from 'node:path';
 const file=process.argv[2];if(!file)throw Error('Pass the private local browser fixture file');
 const fixture=JSON.parse(readFileSync(file,'utf8'));
-const origins={auth:fixture.env.BETTER_AUTH_URL,console:fixture.env.WEBDOCK_CONSOLE_ORIGIN,studio:fixture.env.WEBDOCK_STUDIO_ORIGIN,api:fixture.env.WEBDOCK_API_ORIGIN};
+const origins={auth:fixture.env.BETTER_AUTH_URL,console:fixture.env.SPITZLI_CONSOLE_ORIGIN,studio:fixture.env.SPITZLI_STUDIO_ORIGIN,api:fixture.env.SPITZLI_API_ORIGIN};
 for(const value of Object.values(origins)){const u=new URL(value);assert.equal(u.protocol,'http:');assert.equal(u.hostname,'localhost');}
 assert.match(fixture.container,/^webdock-browser-[a-f0-9]+$/);
 const jar=new Map();

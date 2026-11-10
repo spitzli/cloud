@@ -15,9 +15,9 @@ Owner statements this design is built on (2026-10-21):
 - Databases: focus on PostgreSQL and the Tabularis web database browser. Tabularis web gets an official release today; wait with that part.
 - CMS is out of scope for now.
 
-This supersedes the "optional built-in features" paragraph of `2026-10-19-rust-platform-design.md` (hosting, databases, mail and storage as Core built-ins behind `WEBDOCK_FEATURES`). Everything else in that spec, in particular the gRPC execution boundary, host capabilities and the two plugin UI modes, still applies.
+This supersedes the "optional built-in features" paragraph of `2026-10-19-rust-platform-design.md` (hosting, databases, mail and storage as Core built-ins behind `SPITZLI_FEATURES`). Everything else in that spec, in particular the gRPC execution boundary, host capabilities and the two plugin UI modes, still applies.
 
-Webdock is in shadow mode. There is no backward compatibility with the current Core product tables, `WEBDOCK_FEATURES` product switches or built-in `plugin_installation` rows; local dev data may be reset.
+Webdock is in shadow mode. There is no backward compatibility with the current Core product tables, `SPITZLI_FEATURES` product switches or built-in `plugin_installation` rows; local dev data may be reset.
 
 ## Goals
 

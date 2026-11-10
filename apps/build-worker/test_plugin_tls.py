@@ -11,7 +11,7 @@ import unittest
 import plugin_installer as installer
 
 ROOT = Path(__file__).resolve().parents[2]
-NODE = os.environ.get('WEBDOCK_TEST_NODE') or shutil.which('node')
+NODE = os.environ.get('SPITZLI_TEST_NODE') or shutil.which('node')
 BUN = os.environ.get('BUN_BINARY') or shutil.which('bun') or 'bun'
 
 
@@ -22,7 +22,7 @@ class PluginTLSTests(unittest.TestCase):
             self.skipTest('Node and Bun are required for the real TLS regression')
         version = subprocess.check_output([NODE, '--version'], text=True).strip()
         if int(version.split('.')[0][1:]) < 24:
-            self.skipTest('Use Node 24+ or WEBDOCK_TEST_NODE for runtime TLS interoperability')
+            self.skipTest('Use Node 24+ or SPITZLI_TEST_NODE for runtime TLS interoperability')
         dns = 'pi-123.plugin-test.svc.cluster.local'
         certificate, key = installer.generate_runtime_tls(dns)
         other_ca, _ = installer.generate_runtime_tls(dns)

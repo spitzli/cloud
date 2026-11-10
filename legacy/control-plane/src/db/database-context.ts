@@ -38,7 +38,7 @@ export async function withAuthenticatedDatabase<T>(
   return withDatabaseScope(
     {
       kind: "session",
-      authProvider: readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider,
+      authProvider: readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider,
       subject: session.user.id,
       sessionID: session.sessionID,
       ...(memberships ? { memberships: { ...memberships, subject: session.user.id, sessionID: session.sessionID } } : {}),
@@ -72,7 +72,7 @@ export async function withHostingDatabase<T>(
   return withDatabaseScope(
     {
       kind: "session",
-      authProvider: readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider,
+      authProvider: readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider,
       subject: actor.subject,
       sessionID: actor.sessionID,
       ...(scope?.kind === "session" &&
@@ -110,7 +110,7 @@ export async function withMailDatabase<T>(
     return withDatabaseScope(
       {
         kind: "session",
-        authProvider: readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider,
+        authProvider: readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider,
         subject: principal.userID,
         sessionID: principal.sessionID,
         ...(memberships ? { memberships: { ...memberships, subject: principal.userID, sessionID: principal.sessionID } } : {}),

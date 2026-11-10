@@ -129,13 +129,13 @@ def runtime_resources(config, job, token, public_key, certificate, key):
     if navigation and (not all(runtime.get(field) for field in ('consoleOrigin', 'uiBaseDomain', 'ingressClass', 'ingressNamespace', 'ingressPodLabels'))
                        or bool(runtime.get('uiTLSSecret')) == bool(runtime.get('uiCertResolver'))):
         raise worker.Rejected('plugin_ui_setup_required')
-    identity = {'WEBDOCK_PLUGIN_ID': manifest['name'], 'WEBDOCK_PLUGIN_VERSION': manifest['version'],
-                'WEBDOCK_PLUGIN_GENERATION': '1', 'WEBDOCK_PLUGIN_HOST_URL': runtime['hostOrigin'],
-                'WEBDOCK_PLUGIN_RUNTIME_TOKEN': token, 'WEBDOCK_PLUGIN_PUBLIC_KEY': public_key,
-                'WEBDOCK_PLUGIN_CONFIGURATION': json.dumps(job.get('configuration', {})),
-                'WEBDOCK_PLUGIN_TLS_CERT': '/runtime-tls/tls.crt', 'WEBDOCK_PLUGIN_TLS_KEY': '/runtime-tls/tls.key'}
+    identity = {'SPITZLI_PLUGIN_ID': manifest['name'], 'SPITZLI_PLUGIN_VERSION': manifest['version'],
+                'SPITZLI_PLUGIN_GENERATION': '1', 'SPITZLI_PLUGIN_HOST_URL': runtime['hostOrigin'],
+                'SPITZLI_PLUGIN_RUNTIME_TOKEN': token, 'SPITZLI_PLUGIN_PUBLIC_KEY': public_key,
+                'SPITZLI_PLUGIN_CONFIGURATION': json.dumps(job.get('configuration', {})),
+                'SPITZLI_PLUGIN_TLS_CERT': '/runtime-tls/tls.crt', 'SPITZLI_PLUGIN_TLS_KEY': '/runtime-tls/tls.key'}
     if console is not None:
-        identity['WEBDOCK_PLUGIN_CONSOLE_ORIGIN'] = console
+        identity['SPITZLI_PLUGIN_CONSOLE_ORIGIN'] = console
     secret = resource('Secret', {'type': 'Opaque', 'stringData': identity}, suffix='-identity')
     tls = resource('Secret', {'type': 'kubernetes.io/tls', 'stringData': {'tls.crt': certificate, 'tls.key': key}}, suffix='-tls')
     security = {'allowPrivilegeEscalation': False, 'readOnlyRootFilesystem': True, 'capabilities': {'drop': ['ALL']}}

@@ -78,7 +78,7 @@ export function validateDockerfile(raw) {
 
 export function validateSDKDependencies(dependencies) {
   const sources = new Set();
-  for (const dependency of dependencies.filter(dep => dep.name.startsWith('webdock-'))) {
+  for (const dependency of dependencies.filter(dep => dep.name.startsWith('spitzli-') || dep.name.startsWith('webdock-'))) {
     requireValue(typeof dependency.source === 'string' && /\?rev=[a-f0-9]{40}(?:#|$)/.test(dependency.source), 'Every SDK crate must use a reviewed Git revision');
     sources.add(dependency.source.split('#')[0]);
   }

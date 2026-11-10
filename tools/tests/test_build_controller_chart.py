@@ -83,13 +83,13 @@ class BuildControllerChart(unittest.TestCase):
             token.chmod(0o640);self.assertNotEqual(run().returncode,0);token.chmod(0o600)
             link=token.parent/'extra-link';os.link(token,link);self.assertNotEqual(run().returncode,0);link.unlink()
             token.unlink();token.symlink_to(bootstrap/'bootstrap-token');self.assertNotEqual(run().returncode,0)
-    @unittest.skipUnless(os.environ.get('WEBDOCK_CADDY_BINARY'),'explicit qualified local Caddy binary required')
+    @unittest.skipUnless(os.environ.get('SPITZLI_CADDY_BINARY'),'explicit qualified local Caddy binary required')
     def test_actual_caddy_adapts_only_put_loopback_and_no_admin(self):
         c=configured();c['buildController']['tlsUpload']={'enabled':True,'image':'docker.io/library/caddy@sha256:'+'b'*64,'existingTLSSecret':'owned-upload-tls','host':'upload.example','sourceIPv4CIDRs':['10.84.0.0/16']}
         docs=self.render(c);config=next(d for d in docs if d['kind']=='ConfigMap')['data']['Caddyfile']
         with tempfile.TemporaryDirectory() as root:
             path=Path(root)/'Caddyfile';path.write_text(config)
-            result=subprocess.run([os.environ['WEBDOCK_CADDY_BINARY'],'adapt','--config',str(path),'--adapter','caddyfile'],capture_output=True,text=True)
+            result=subprocess.run([os.environ['SPITZLI_CADDY_BINARY'],'adapt','--config',str(path),'--adapter','caddyfile'],capture_output=True,text=True)
         self.assertEqual(result.returncode,0,result.stderr)
         adapted=json.loads(result.stdout);self.assertTrue(adapted['admin']['disabled'])
         self.assertEqual(set(adapted['apps']),{'http','tls'})

@@ -5,7 +5,7 @@ pub struct LocalRegistry {
 impl LocalRegistry {
     pub async fn start() -> Self {
         assert_eq!(
-            std::env::var("WEBDOCK_BUILD_REGISTRY_TEST").as_deref(),
+            std::env::var("SPITZLI_BUILD_REGISTRY_TEST").as_deref(),
             Ok("1")
         );
         let image =

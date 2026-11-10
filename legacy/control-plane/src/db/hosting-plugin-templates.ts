@@ -177,13 +177,13 @@ export function managedCMSTemplate(raw: unknown): {
               .digest("base64url"),
             secrets: (await import("../modules/platform/platform")).encryptMailSecret(
               {
-                WEBDOCK_AUTH_ISSUER: approved.authIssuer,
-                WEBDOCK_SSO_APP_ORIGIN: origin,
-                WEBDOCK_SSO_CLIENT_ID: ids.client,
-                WEBDOCK_SSO_CLIENT_SECRET: oauthSecret,
-                WEBDOCK_SSO_COOKIE_SECRET:
+                SPITZLI_AUTH_ISSUER: approved.authIssuer,
+                SPITZLI_SSO_APP_ORIGIN: origin,
+                SPITZLI_SSO_CLIENT_ID: ids.client,
+                SPITZLI_SSO_CLIENT_SECRET: oauthSecret,
+                SPITZLI_SSO_COOKIE_SECRET:
                   randomBytes(32).toString("base64url"),
-                WEBDOCK_SSO_ENFORCE: "true",
+                SPITZLI_SSO_ENFORCE: "true",
                 CMS_INSTANCE_ID: ids.instance,
                 CMS_PROJECT_ID: scope.projectID,
                 CMS_ORIGIN: origin,

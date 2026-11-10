@@ -52,8 +52,8 @@ async fn next_id(db: &DatabaseConnection) -> String {
 #[tokio::test]
 #[ignore = "requires explicitly owned local RLS fixture"]
 async fn durable_outbox_fences_reclaims_and_never_retries_unknown_handoffs() {
-    let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
-    let worker = db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await;
+    let owner = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
+    let worker = db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await;
     let customer = next_id(&owner).await;
     sql(
         &owner,

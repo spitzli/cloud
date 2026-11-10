@@ -4,7 +4,7 @@ import {parseEnv} from 'node:util';
 import pg from 'pg';
 import assert from 'node:assert/strict';
 const fixture=JSON.parse(await readFile('.runtime-test/database-management-browser.json','utf8'));
-const env=parseEnv(await readFile('.runtime-test/identity-restricted.env','utf8'));const url=new URL(env.WEBDOCK_TEST_MIGRATION_DATABASE_URL);assert.equal(url.hostname,'127.0.0.1');assert.equal(url.pathname,'/webdock_rls_test');assert.ok(!url.search&&!url.hash);
+const env=parseEnv(await readFile('.runtime-test/identity-restricted.env','utf8'));const url=new URL(env.SPITZLI_TEST_MIGRATION_DATABASE_URL);assert.equal(url.hostname,'127.0.0.1');assert.equal(url.pathname,'/webdock_rls_test');assert.ok(!url.search&&!url.hash);
 const owner=new pg.Client({connectionString:url.toString()});await owner.connect();
 const updated=await owner.query("UPDATE webdock_auth.hosting_agent a SET last_seen=now() FROM webdock_auth.hosting_cluster c WHERE a.cluster_id=c.id AND c.id=$1 AND c.name='Database management browser fixture' AND c.location_evidence='owned-synthetic-admission'",[fixture.clusterID]);assert.equal(updated.rowCount,1);
 const browser=await chromium.launch({headless:true});const context=await browser.newContext({viewport:{width:1440,height:1050},locale:'en-GB'});await context.addCookies(JSON.parse(await readFile('.runtime-test/account-browser-cookies.json','utf8')));const page=await context.newPage();page.setDefaultTimeout(15000);const failures=[];page.on('pageerror',e=>failures.push(e.message));

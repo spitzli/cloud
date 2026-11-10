@@ -177,7 +177,7 @@ pub struct Fixture {
 impl Fixture {
     pub async fn new() -> Self {
         let binary = PathBuf::from(
-            std::env::var_os("WEBDOCK_MAIL_RUNTIME_BINARY")
+            std::env::var_os("SPITZLI_MAIL_RUNTIME_BINARY")
                 .expect("explicit owned Mail executable required"),
         );
         assert!(

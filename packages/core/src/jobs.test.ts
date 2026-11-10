@@ -9,11 +9,11 @@ test("core jobs require explicit Redis and isolate their prefix", () => {
     "redis://localhost/not-a-db",
   ])
     assert.throws(() =>
-      readJobQueueConfiguration({ WEBDOCK_JOBS_REDIS_URL: url }),
+      readJobQueueConfiguration({ SPITZLI_JOBS_REDIS_URL: url }),
     );
   const config = readJobQueueConfiguration({
-    WEBDOCK_JOBS_REDIS_URL: "rediss://worker:secret@redis.example:6380/2",
-    WEBDOCK_JOBS_PREFIX: "webdock-test",
+    SPITZLI_JOBS_REDIS_URL: "rediss://worker:secret@redis.example:6380/2",
+    SPITZLI_JOBS_PREFIX: "webdock-test",
   });
   assert.equal(config.connection.host, "redis.example");
   assert.equal(config.connection.db, 2);

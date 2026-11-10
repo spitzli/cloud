@@ -198,7 +198,7 @@ async fn scenario(f: Arc<Fixture>, case: Case) {
         HostingService::new(
             unavailable_pool.clone(),
             db("AUTH_DATABASE_URL").await,
-            db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+            db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             std::env::var("BETTER_AUTH_SECRET").unwrap(),
             Arc::new(spitzli_persistence::IdAllocator::new(

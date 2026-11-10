@@ -8,7 +8,7 @@
 transactions: request reset, queue activation, dispatch delivery, complete reset.
 
 **Architecture:** Add an independent opt-in recovery pool capability on
-IdentityService and `WEBDOCK_ACCOUNT_RECOVERY_BACKEND=tokio-postgres` in Core,
+IdentityService and `SPITZLI_ACCOUNT_RECOVERY_BACKEND=tokio-postgres` in Core,
 defaulting to the retained implementation. Reuse the shared max4/min0 bootstrap
 pool, native allocator, cryptography, cookie policy and Delivery interface.
 No ORM adapter, new dependency, schema/grant changes or production activation.

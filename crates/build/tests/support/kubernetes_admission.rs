@@ -60,7 +60,7 @@ async fn kubernetes_admission_reserves_uncertain_jobs_and_fences_revoked_generat
         let service = Arc::new(
             BuildService::new(
                 db("DATABASE_URL").await,
-                db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+                db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
                 std::env::var("DATABASE_RLS_SECRET").unwrap(),
                 Arc::new(spitzli_persistence::IdAllocator::new(
                     db("DATABASE_URL").await,
@@ -405,7 +405,7 @@ async fn kubernetes_admission_reserves_uncertain_jobs_and_fences_revoked_generat
                 .len(),
             1
         );
-        let unsigned = db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await;
+        let unsigned = db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await;
         let row = unsigned
             .query_one_raw(Statement::from_string(
                 DbBackend::Postgres,

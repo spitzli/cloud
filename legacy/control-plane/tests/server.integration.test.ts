@@ -2,7 +2,7 @@ import { initializePluginState } from "../src/modules/plugins/bootstrap";
 import { test, expect } from "bun:test";
 import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "network server preserves Auth host cookies and serves a redacted frontend session",
   async () => {
@@ -58,11 +58,11 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
           AUTH_TEST_MAIL: "true",
           BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
           BETTER_AUTH_URL: authOrigin,
-          WEBDOCK_API_ORIGIN: apiOrigin,
-          WEBDOCK_STUDIO_ORIGIN: "http://localhost:3120",
-          WEBDOCK_API_DOMAINS: "auth",
-          WEBDOCK_INGRESS_SECRET: ingressSecret,
-          WEBDOCK_TRUSTED_PROXIES: "127.0.0.1/32",
+          SPITZLI_API_ORIGIN: apiOrigin,
+          SPITZLI_STUDIO_ORIGIN: "http://localhost:3120",
+          SPITZLI_API_DOMAINS: "auth",
+          SPITZLI_INGRESS_SECRET: ingressSecret,
+          SPITZLI_TRUSTED_PROXIES: "127.0.0.1/32",
           PORT: String(port),
         },
         stdout: "pipe",

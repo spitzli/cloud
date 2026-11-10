@@ -36,7 +36,7 @@ impl Drop for Fixture {
 impl Fixture {
     async fn start() -> Self {
         let name = format!("wd-install-task1-{}", uuid::Uuid::new_v4().simple());
-        let external = std::env::var("WEBDOCK_OWNED_INSTALLATION_TEST_URL").ok();
+        let external = std::env::var("SPITZLI_OWNED_INSTALLATION_TEST_URL").ok();
         let external_owned = external.is_some();
         let url = if let Some(raw) = external {
             let mut base = url::Url::parse(&raw).unwrap();

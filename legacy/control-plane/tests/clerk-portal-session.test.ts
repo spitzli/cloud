@@ -20,7 +20,7 @@ test("OAuth portal lookup binds freshly verified Clerk authority to its introspe
     proof=undefined;
     assert.equal(await lookup({sub:"local",sessionID:"session",role:"operator"}),null);
     assert.equal(queries,1);
-  `],{cwd:fileURLToPath(new URL("../../..",import.meta.url)),env:{...process.env,DATABASE_RLS_SECRET:"fixture-key-32-characters-long-test",WEBDOCK_AUTH_PROVIDER:JSON.stringify({provider:"clerk",issuer:"https://identity.example",authorizedParties:["https://console.example"],audience:"console"})},stdout:"pipe",stderr:"pipe"});
+  `],{cwd:fileURLToPath(new URL("../../..",import.meta.url)),env:{...process.env,DATABASE_RLS_SECRET:"fixture-key-32-characters-long-test",SPITZLI_AUTH_PROVIDER:JSON.stringify({provider:"clerk",issuer:"https://identity.example",authorizedParties:["https://console.example"],audience:"console"})},stdout:"pipe",stderr:"pipe"});
   expect(result.exitCode,new TextDecoder().decode(result.stderr)).toBe(0);
 });
 
@@ -44,6 +44,6 @@ test("authenticated database wrapper supplies fresh proof for a Clerk compatibil
       assert.equal(currentDatabaseScope().authProvider,"clerk");
     });
     assert.equal(proofReads,1);
-  `],{cwd:fileURLToPath(new URL("../../..",import.meta.url)),env:{...process.env,WEBDOCK_AUTH_PROVIDER:JSON.stringify({provider:"clerk",issuer:"https://identity.example",authorizedParties:["https://console.example"],audience:"console"})},stdout:"pipe",stderr:"pipe"});
+  `],{cwd:fileURLToPath(new URL("../../..",import.meta.url)),env:{...process.env,SPITZLI_AUTH_PROVIDER:JSON.stringify({provider:"clerk",issuer:"https://identity.example",authorizedParties:["https://console.example"],audience:"console"})},stdout:"pipe",stderr:"pipe"});
   expect(result.exitCode,new TextDecoder().decode(result.stderr)).toBe(0);
 });

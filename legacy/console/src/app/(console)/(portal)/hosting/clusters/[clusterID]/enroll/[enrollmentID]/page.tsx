@@ -14,7 +14,7 @@ export default async function Enrollment({
     `/hosting/clusters/${clusterID}`,
   );
   const endpoint = new URL(
-    process.env.WEBDOCK_AUTH_ISSUER || "https://auth.webdock.dev",
+    process.env.SPITZLI_AUTH_ISSUER || "https://auth.webdock.dev",
   ).origin;
   return (
     <section className="panel">

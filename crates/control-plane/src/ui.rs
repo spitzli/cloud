@@ -98,14 +98,14 @@ impl UiAssets {
         if self.connections.contains(&origin) {
             Ok(())
         } else {
-            Err("Add each browser gateway origin to WEBDOCK_UI_CONNECT_ORIGINS")
+            Err("Add each browser gateway origin to SPITZLI_UI_CONNECT_ORIGINS")
         }
     }
     pub fn from_map(
         env: &HashMap<String, String>,
         production: bool,
     ) -> Result<Option<Self>, &'static str> {
-        let Some(dist) = env.get("WEBDOCK_UI_DIST") else {
+        let Some(dist) = env.get("SPITZLI_UI_DIST") else {
             return Ok(None);
         };
         let list = |key: &str| -> Result<Vec<String>, &'static str> {
@@ -119,8 +119,8 @@ impl UiAssets {
         };
         Self::new(
             dist,
-            &list("WEBDOCK_UI_FRAME_ORIGINS")?,
-            &list("WEBDOCK_UI_CONNECT_ORIGINS")?,
+            &list("SPITZLI_UI_FRAME_ORIGINS")?,
+            &list("SPITZLI_UI_CONNECT_ORIGINS")?,
             production,
         )
         .map(Some)

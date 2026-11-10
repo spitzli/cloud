@@ -43,8 +43,8 @@ Kubernetes write it checks:
 
 It stages a checksum-rechecked root-only immutable test copy, checks ELF/shared
 libraries, and executes exactly the reviewed ignored test with BOTH
-`WEBDOCK_RETAINED_QUALIFICATION_PROFILE=trusted-runtime-wd-eu-02` and
-`WEBDOCK_TRUSTED_RUNTIME_RETAINED_TEST=1`. Other explicit variables bind the fixed
+`SPITZLI_RETAINED_QUALIFICATION_PROFILE=trusted-runtime-wd-eu-02` and
+`SPITZLI_TRUSTED_RUNTIME_RETAINED_TEST=1`. Other explicit variables bind the fixed
 Kubeconfig/context/node, fresh canonical UUID child under
 `/opt/webdock-agent-qualification/retained-attachment-fixture`, and cached image
 `ghcr.io/spitzli/tabularium@sha256:4627facbbdf045716949195b115c7ab5d823e8c2d810d8e3dda93eeaafd9e78f`.

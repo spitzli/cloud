@@ -2,7 +2,7 @@
 
 Install this template only in the operator-owned **private** repository configured in the installer. Do not put this workflow in the public Webdock repository. Private source is handed to one authenticated workflow run and retained as a build artifact for one day. No source credentials, installer token, registry credentials or GitHub App key enter the runner.
 
-Copy `plugin-build.yml` to `.github/workflows/plugin-build.yml`, and copy `plugin_build.py` plus the current `apps/build-worker/plugin_source.py` and `apps/build-worker/worker.py` into `trusted/`. Commit these trusted helpers together. Configure the repository variable `WEBDOCK_PLUGIN_CONTROL_URL` to the exact HTTPS API URL ending in `/v1/plugin-installer`. Restrict write access to this repository; updates to the workflow/helpers are trusted build-system changes.
+Copy `plugin-build.yml` to `.github/workflows/plugin-build.yml`, and copy `plugin_build.py` plus the current `apps/build-worker/plugin_source.py` and `apps/build-worker/worker.py` into `trusted/`. Commit these trusted helpers together. Configure the repository variable `SPITZLI_PLUGIN_CONTROL_URL` to the exact HTTPS API URL ending in `/v1/plugin-installer`. Restrict write access to this repository; updates to the workflow/helpers are trusted build-system changes.
 
 The GitHub App installation must include this private repository and allow Actions write and Contents read. The app-node publisher mints a token restricted to this repository and these permissions, resolves the workflow branch commit, uploads source, dispatches and binds the returned run ID. The API releases chunks only to GitHub OIDC for that exact private repository, workflow/ref/SHA, run, first attempt and nonce audience.
 

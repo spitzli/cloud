@@ -35,9 +35,9 @@ set -a
 source .runtime-test/identity-restricted.env
 set +a
 cargo test -p spitzli-build --no-default-features --test artifact --test contracts
-WEBDOCK_BUILD_VM_TEST=1 cargo test -p spitzli-build --no-default-features --release --test vm -- --include-ignored
-WEBDOCK_BUILD_REGISTRY_TEST=1 cargo test -p spitzli-build --all-features --test publisher -- --include-ignored
-WEBDOCK_BUILD_VM_TEST=1 WEBDOCK_BUILD_REGISTRY_TEST=1 cargo test -p spitzli-hosting --test postgres git_build_publication -- --include-ignored
+SPITZLI_BUILD_VM_TEST=1 cargo test -p spitzli-build --no-default-features --release --test vm -- --include-ignored
+SPITZLI_BUILD_REGISTRY_TEST=1 cargo test -p spitzli-build --all-features --test publisher -- --include-ignored
+SPITZLI_BUILD_VM_TEST=1 SPITZLI_BUILD_REGISTRY_TEST=1 cargo test -p spitzli-hosting --test postgres git_build_publication -- --include-ignored
 ```
 
 ## Remaining parity

@@ -326,7 +326,7 @@ export function createHostingDatabaseOrders(dependencies: Dependencies) {
         409,
         "No qualified database node and volume pool has sufficient capacity.",
       );
-    const suffix = dependencies.env.WEBDOCK_DATABASE_DOMAIN;
+    const suffix = dependencies.env.SPITZLI_DATABASE_DOMAIN;
     if (
       !suffix ||
       suffix.length > 220 ||
@@ -444,7 +444,7 @@ export function createHostingDatabaseOrders(dependencies: Dependencies) {
       );
     if (
       planRow.availability === "public" &&
-      dependencies.env.WEBDOCK_DATABASE_PUBLIC_ENABLED !== "true"
+      dependencies.env.SPITZLI_DATABASE_PUBLIC_ENABLED !== "true"
     )
       throw new HostingError(409, "Database ordering is not enabled.");
     const plan = databasePlanSchema.parse(planRow.plan);
@@ -469,7 +469,7 @@ export function createHostingDatabaseOrders(dependencies: Dependencies) {
       : null;
     const clusterID =
       source?.cluster_id ??
-      resourceID.parse(dependencies.env.WEBDOCK_DATABASE_CLUSTER_ID);
+      resourceID.parse(dependencies.env.SPITZLI_DATABASE_CLUSTER_ID);
     await dependencies.clusterLock(db, clusterID);
     await freshDatabaseCluster(db, clusterID);
     if (offer.snapshot.sourceDatabaseID)

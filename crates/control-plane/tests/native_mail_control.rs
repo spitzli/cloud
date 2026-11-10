@@ -7,14 +7,14 @@ fn required_native_service_is_unavailable_when_listener_feature_is_absent() {
         worker_id: "legacy".into(),
         worker_generation: 1,
     };
-    let mut env = HashMap::from([("WEBDOCK_NATIVE_MAIL_SENDING_ENABLED".into(), "true".into())]);
+    let mut env = HashMap::from([("SPITZLI_NATIVE_MAIL_SENDING_ENABLED".into(), "true".into())]);
     assert!(!native_control_configured(Some(&mail), &env));
-    env.insert("WEBDOCK_FEATURES".into(), r#"{"mail":"disabled"}"#.into());
+    env.insert("SPITZLI_FEATURES".into(), r#"{"mail":"disabled"}"#.into());
     assert!(!native_control_configured(Some(&mail), &env));
-    env.insert("WEBDOCK_FEATURES".into(), r#"{"mail":"enabled"}"#.into());
+    env.insert("SPITZLI_FEATURES".into(), r#"{"mail":"enabled"}"#.into());
     assert!(native_control_configured(Some(&mail), &env));
     assert!(!native_control_configured(None, &env));
-    env.insert("WEBDOCK_NATIVE_MAIL_SENDING_ENABLED".into(), "false".into());
+    env.insert("SPITZLI_NATIVE_MAIL_SENDING_ENABLED".into(), "false".into());
     assert!(!native_control_configured(Some(&mail), &env));
 }
 

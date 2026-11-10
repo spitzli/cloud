@@ -62,27 +62,27 @@ try {
   const passwords = Object.fromEntries(roles.map(role => [role, secret()]));
   const roleURL = (role, password = passwords[role]) => `postgresql://${role}:${password}@database:5432/${postgresEnv.POSTGRES_DB}`;
   const target = `database:5432/${postgresEnv.POSTGRES_DB}`;
-  const origins = { BETTER_AUTH_URL: 'https://auth.release.example.test', WEBDOCK_STUDIO_ORIGIN: 'https://studio.release.example.test',
-    WEBDOCK_CONSOLE_ORIGIN: 'https://console.release.example.test', WEBDOCK_API_ORIGIN: 'https://api.release.example.test' };
+  const origins = { BETTER_AUTH_URL: 'https://auth.release.example.test', SPITZLI_STUDIO_ORIGIN: 'https://studio.release.example.test',
+    SPITZLI_CONSOLE_ORIGIN: 'https://console.release.example.test', SPITZLI_API_ORIGIN: 'https://api.release.example.test' };
   const offline = { DATABASE_URL_UNPOOLED: roleURL('postgres', postgresEnv.POSTGRES_PASSWORD), DATABASE_CONTEXT_SECRET: secret(), DATABASE_CA_CERT: ca };
   phase = 'empty database migration';
-  runMigration('install', { ...offline, WEBDOCK_BOOTSTRAP_EMPTY_DATABASE: 'true', MIGRATION_ROLE_PASSWORDS: JSON.stringify(passwords) }, ['tools/migrations/install.ts', target]);
+  runMigration('install', { ...offline, SPITZLI_BOOTSTRAP_EMPTY_DATABASE: 'true', MIGRATION_ROLE_PASSWORDS: JSON.stringify(passwords) }, ['tools/migrations/install.ts', target]);
   offline.DATABASE_URL_UNPOOLED = roleURL('webdock_offline_migrate');
   phase = 'empty plugin initialization';
-  runMigration('plugins', { ...offline, WEBDOCK_MODULES: '{"configVersion":1,"modules":{}}' }, ['tools/plugins/bootstrap.ts', target, 'fresh']);
+  runMigration('plugins', { ...offline, SPITZLI_MODULES: '{"configVersion":1,"modules":{}}' }, ['tools/plugins/bootstrap.ts', target, 'fresh']);
   phase = 'initial operator';
   await writeFile(join(directory, 'operator-input.json'), JSON.stringify({ email: 'operator@example.test', name: 'Disposable release operator',
-    password: secret(), authOrigin: origins.BETTER_AUTH_URL, studioOrigin: origins.WEBDOCK_STUDIO_ORIGIN, consoleOrigin: origins.WEBDOCK_CONSOLE_ORIGIN }), { mode: 0o600 });
+    password: secret(), authOrigin: origins.BETTER_AUTH_URL, studioOrigin: origins.SPITZLI_STUDIO_ORIGIN, consoleOrigin: origins.SPITZLI_CONSOLE_ORIGIN }), { mode: 0o600 });
   runMigration('operator', { ...offline, ...origins }, ['tools/migrations/operator.ts', target, '/fixture/operator-input.json', '/fixture/operator-output.json']);
   const operator = JSON.parse(await readFile(join(directory, 'operator-output.json'), 'utf8'));
-  assert.ok(operator.operatorID && operator.clientID && operator.environment.WEBDOCK_SSO_CLIENT_SECRET);
+  assert.ok(operator.operatorID && operator.clientID && operator.environment.SPITZLI_SSO_CLIENT_SECRET);
   phase = 'core API production readiness';
   const runtime = { ...origins, ...operator.environment, NODE_ENV: 'production', DATABASE_URL: roleURL('webdock_auth_runtime'),
     AUTH_DATABASE_URL: roleURL('webdock_auth_bootstrap'), DATABASE_WORKER_URL: roleURL('webdock_worker_runtime'),
     REGISTRY_DATABASE_URL: roleURL('webdock_registry_runtime'), DATABASE_CA_CERT: ca, DATABASE_POOL_MAX: '2', REGISTRY_POOL_MAX: '2',
-    DATABASE_RLS_SECRET: offline.DATABASE_CONTEXT_SECRET, BETTER_AUTH_SECRET: secret(), WEBDOCK_AUTH_PROVIDER: '{"provider":"better-auth"}',
-    WEBDOCK_OAUTH_PROVIDER: 'better-auth', WEBDOCK_API_DOMAINS: 'auth,portal,registry', WEBDOCK_MODULES: '{"configVersion":1,"modules":{}}',
-    WEBDOCK_INGRESS_SECRET: secret(), WEBDOCK_TRUSTED_PROXIES: '127.0.0.1/32' };
+    DATABASE_RLS_SECRET: offline.DATABASE_CONTEXT_SECRET, BETTER_AUTH_SECRET: secret(), SPITZLI_AUTH_PROVIDER: '{"provider":"better-auth"}',
+    SPITZLI_OAUTH_PROVIDER: 'better-auth', SPITZLI_API_DOMAINS: 'auth,portal,registry', SPITZLI_MODULES: '{"configVersion":1,"modules":{}}',
+    SPITZLI_INGRESS_SECRET: secret(), SPITZLI_TRUSTED_PROXIES: '127.0.0.1/32' };
   const api = `${prefix}-api`;
   containers.push(api);
   docker(['run', '-d', ...ownedArgs(api), '--network', prefix, ...restrictions, ...environmentArgs(runtime), apiImage], runtime);
@@ -95,7 +95,7 @@ try {
     phase = `${name} image assets`;
     const container = `${prefix}-${name}`;
     containers.push(container);
-    const env = { ...origins, WEBDOCK_AUTH_PROVIDER: '{"provider":"better-auth"}' };
+    const env = { ...origins, SPITZLI_AUTH_PROVIDER: '{"provider":"better-auth"}' };
     docker(['run', '-d', ...ownedArgs(container), '--network', 'none', ...restrictions,
       '--tmpfs', `/app/${app}/.next/cache:rw,nosuid,size=128m,mode=1777`, ...environmentArgs(env), image], env);
     const code = `const fs=require('node:fs');const file=fs.readdirSync('/app/${app}/.next/static/chunks').find(f=>f.endsWith('.js'));if(!file)process.exit(1);fetch('http://127.0.0.1:${port}/_next/static/chunks/'+file).then(r=>{if(r.status!==200)process.exit(1)}).catch(()=>process.exit(1));`;

@@ -53,12 +53,12 @@ class DatabaseStorageRPCTests(unittest.TestCase):
 
     def test_socket_environment_cannot_redirect_or_expose_inline_secrets(self):
         secret='private-inline-secret-do-not-print'
-        status,output,request=self.invoke({'action':'database.capability','value':['node01']},environment={'WEBDOCK_STORAGE_SOCKET':'/tmp/'+secret})
+        status,output,request=self.invoke({'action':'database.capability','value':['node01']},environment={'SPITZLI_STORAGE_SOCKET':'/tmp/'+secret})
         self.assertNotEqual(status,0)
         self.assertEqual(json.loads(output),{'ok':False,'value':None})
         self.assertNotIn(secret.encode(),output)
         request.assert_not_called()
-        status,output,request=self.invoke({'action':'database.capability','value':['node01']},environment={'WEBDOCK_STORAGE_SOCKET':'/run/webdock-postgres-storage/control.sock'},response={'ready':True})
+        status,output,request=self.invoke({'action':'database.capability','value':['node01']},environment={'SPITZLI_STORAGE_SOCKET':'/run/webdock-postgres-storage/control.sock'},response={'ready':True})
         self.assertEqual(status,0)
         request.assert_called_once()
 

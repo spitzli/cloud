@@ -10,7 +10,7 @@ class RegistryError(Exception):pass
 
 def pull_configuration(packet,config=None):
     if config is None:
-        location=os.environ.get('WEBDOCK_REGISTRY_CONFIG')
+        location=os.environ.get('SPITZLI_REGISTRY_CONFIG')
         if not location:return None
         path=Path(location);info=path.lstat()
         if not stat.S_ISREG(info.st_mode) or info.st_uid!=0 or info.st_mode & 0o022:raise RegistryError('registry_setup_required')
@@ -35,7 +35,7 @@ def capability(kubectl,runner=None):
     import subprocess
     import time
     runner=runner or subprocess.run
-    location=os.environ.get('WEBDOCK_REGISTRY_CONFIG')
+    location=os.environ.get('SPITZLI_REGISTRY_CONFIG')
     if not location:return False
     try:
         path=Path(location);info=path.lstat()

@@ -115,7 +115,7 @@ def runtime_checks(output,checkpoint):
     roots_before=set(Path('/tmp').glob('webdock-owned-plugin-jobs-*'));require(not roots_before,'Native PG fixture stage must start without an old owned fixture root')
     output.mkdir(mode=0o700);tooling=core_tooling.verify(output)
     subprocess.run(['python3','/src/tools/plugin-ci/agent_elf.py',str(BINARY),'--output',str(output/'native-pg-elf-proof.json')],check=True,timeout=30,capture_output=True)
-    env={k:v for k,v in os.environ.items() if k in {'PATH','HOME','USER','LANG','CI','NODE_OPTIONS'}};env['WEBDOCK_PLUGIN_TEST_LOCAL_POSTGRES']='1';env['DOCKER_HOST']=core_tooling.NO_DAEMON
+    env={k:v for k,v in os.environ.items() if k in {'PATH','HOME','USER','LANG','CI','NODE_OPTIONS'}};env['SPITZLI_PLUGIN_TEST_LOCAL_POSTGRES']='1';env['DOCKER_HOST']=core_tooling.NO_DAEMON
     log=output/'retirement-pg18.log'
     with log.open('xb') as out:result=subprocess.run(runtime_plan(),env=env,stdout=out,stderr=subprocess.STDOUT,timeout=1800)
     log.chmod(0o600);raw=log.read_text(errors='replace');clean=set(Path('/tmp').glob('webdock-owned-plugin-jobs-*'))==roots_before

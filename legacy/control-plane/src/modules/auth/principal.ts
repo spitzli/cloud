@@ -3,7 +3,7 @@ import {
 } from "@spitzli/auth-better-auth";
 import { createPlugin as createBetterAuthPlugin } from "@spitzli/auth-better-auth/plugin";
 import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
-const browserAuthProvider = readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider;
+const browserAuthProvider = readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider;
 import { createBrowserPrincipal } from "./browser-principal";
 import { oauthCompatibilityIdentity } from "./oauth-compatibility";
 const local = createBetterAuthPlugin(async (headers) => {

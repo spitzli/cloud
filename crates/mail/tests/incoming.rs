@@ -29,7 +29,7 @@ fn app(
 ) -> Router {
     let config =
         spitzli_core::config::PlatformConfig::from_map(&std::collections::HashMap::from([(
-            "WEBDOCK_FEATURES".into(),
+            "SPITZLI_FEATURES".into(),
             json!({"mail":feature}).to_string(),
         )]))
         .unwrap();
@@ -123,7 +123,7 @@ fn incoming_commands_reject_ambiguous_payloads() {
 #[ignore = "creates and removes an owned local incoming Mail database"]
 async fn incoming_admission_retention_revision_and_live_grant_boundaries() {
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));
     assert_eq!(url.path(), "/webdock_rls_test");
     assert!(url.query().is_none());
@@ -156,7 +156,7 @@ async fn incoming_admission_retention_revision_and_live_grant_boundaries() {
         sql(&owner,"INSERT INTO webdock_auth.hosting_agent(cluster_id,credential_hash,generation,last_seen,observation) VALUES('200','fixture',1,now(),$1)",vec![json!({"version":"v1.36.5+k3s1","capabilities":{"nativeMail":{"version":1},"storageVersion":1}}).into()]).await;
         let auth=role("AUTH_DATABASE_URL",&name,&url).await;
         let business=role("DATABASE_URL",&name,&url).await;
-        let worker=role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;
+        let worker=role("SPITZLI_PLUGIN_WORKER_DATABASE_URL",&name,&url).await;
         let cookies=CookiePolicy::new(false,"incoming-cookie-fixture-key-at-least32").unwrap();
         let cookie = |token| format!("{}={}",cookies.name(),cookies.sign(token).unwrap());
         let operator_cookie=cookie("operator-token"); let admin_cookie=cookie("admin-token");let member_cookie=cookie("member-token");

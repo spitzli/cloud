@@ -50,3 +50,4 @@ __pycache__/
 
 # Regenerate legacy release artifacts; never commit bundled executables.
 /legacy/console/public/hosting-agent.zip
+/tools/plugin-registry/manifest-validator/target/

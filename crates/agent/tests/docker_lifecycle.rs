@@ -63,9 +63,9 @@ async fn exec(
     Ok(output)
 }
 #[tokio::test]
-#[ignore = "requires explicit WEBDOCK_DOCKER_TEST_IMAGE digest and local Engine"]
+#[ignore = "requires explicit SPITZLI_DOCKER_TEST_IMAGE digest and local Engine"]
 async fn isolated_docker_lifecycle_preserves_data_and_reconciles_without_duplicate_containers() {
-    let image = std::env::var("WEBDOCK_DOCKER_TEST_IMAGE")
+    let image = std::env::var("SPITZLI_DOCKER_TEST_IMAGE")
         .expect("set a reviewed public test image digest");
     let installation = format!("test-{}", &uuid::Uuid::new_v4().simple().to_string()[..12]);
     let mut spec = support::spec();
@@ -338,12 +338,12 @@ async fn isolated_docker_lifecycle_preserves_data_and_reconciles_without_duplica
 }
 
 #[tokio::test]
-#[ignore = "requires explicit disposable WEBDOCK_DOCKER_TEST_IMAGE and local Engine"]
+#[ignore = "requires explicit disposable SPITZLI_DOCKER_TEST_IMAGE and local Engine"]
 async fn scoped_secret_and_socket_mounts_use_reviewed_descriptor_and_nonroot_identity() {
     use sha2::{Digest, Sha256};
     use spitzli_agent::policy::{GrantKind, MountGrant, RuntimePolicy, RuntimePolicyConfig};
     use std::{io::Write, os::unix::fs::PermissionsExt};
-    let image = std::env::var("WEBDOCK_DOCKER_TEST_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_DOCKER_TEST_IMAGE").unwrap();
     let directory = tempfile::Builder::new()
         .permissions(std::fs::Permissions::from_mode(0o700))
         .tempdir()
@@ -494,7 +494,7 @@ async fn scoped_secret_and_socket_mounts_use_reviewed_descriptor_and_nonroot_ide
             config
                 .env
                 .unwrap()
-                .contains(&format!("WEBDOCK_PLUGIN_MANIFEST_SHA256={manifest_hash}"))
+                .contains(&format!("SPITZLI_PLUGIN_MANIFEST_SHA256={manifest_hash}"))
         );
         let revoked =
             DockerAdapter::connect("/var/run/docker.sock", c.spec.installation.clone(), None)
@@ -557,7 +557,7 @@ async fn scoped_secret_and_socket_mounts_use_reviewed_descriptor_and_nonroot_ide
 #[tokio::test]
 #[ignore = "requires explicit owned local Docker fixture image"]
 async fn hosted_environment_rotation_is_scoped_ephemeral_and_can_clear_values() {
-    let image = std::env::var("WEBDOCK_DOCKER_TEST_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_DOCKER_TEST_IMAGE").unwrap();
     let installation = format!("test-{}", &uuid::Uuid::new_v4().simple().to_string()[..12]);
     let mut spec = support::spec();
     spec.installation = installation.clone();

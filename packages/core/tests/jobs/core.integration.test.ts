@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { Queue } from "bullmq";
 import { startCoreJobWorkers } from "@spitzli/core/jobs";
-const port = Number(process.env.WEBDOCK_TEST_REDIS_PORT);
+const port = Number(process.env.SPITZLI_TEST_REDIS_PORT);
 test(
   "Core BullMQ workers register durable schedulers and keep domain ownership",
   { skip: !port, timeout: 15000 },

@@ -36,7 +36,7 @@ export async function prepareClerkBrowser({
 }) {
   if (
     env.NODE_ENV !== "development" ||
-    env.WEBDOCK_CONSOLE_ORIGIN !== "http://localhost:3460"
+    env.SPITZLI_CONSOLE_ORIGIN !== "http://localhost:3460"
   )
     throw Error(
       "Native Clerk fixture requires the owned development Console origin",
@@ -77,7 +77,7 @@ export async function prepareClerkBrowser({
     JSON.stringify({
       provider: "clerk",
       issuer,
-      authorizedParties: [env.WEBDOCK_CONSOLE_ORIGIN],
+      authorizedParties: [env.SPITZLI_CONSOLE_ORIGIN],
       tokenMode: "session",
       allowLocalHTTP: true,
     }),
@@ -94,13 +94,13 @@ export async function prepareClerkBrowser({
   if (mapped.rows.length !== 1)
     throw Error("Seeded fixture operator required for explicit Clerk mapping");
   Object.assign(env, {
-    WEBDOCK_AUTH_PROVIDER: JSON.stringify(config),
+    SPITZLI_AUTH_PROVIDER: JSON.stringify(config),
     CLERK_SECRET_KEY: secretKey,
     CLERK_PUBLISHABLE_KEY: publishableKey,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: publishableKey,
-    WEBDOCK_CONSOLE_SERVICE_KEY: randomBytes(48).toString("hex"),
-    WEBDOCK_OAUTH_PROVIDER: "disabled",
-    WEBDOCK_API_DOMAINS: "auth,portal,registry",
+    SPITZLI_CONSOLE_SERVICE_KEY: randomBytes(48).toString("hex"),
+    SPITZLI_OAUTH_PROVIDER: "disabled",
+    SPITZLI_API_DOMAINS: "auth,portal,registry",
   });
   delete env.BETTER_AUTH_SECRET;
   const metadata = {
@@ -108,7 +108,7 @@ export async function prepareClerkBrowser({
     issuer,
     userID,
     localOperatorID: secrets.operatorID,
-    consoleOrigin: env.WEBDOCK_CONSOLE_ORIGIN,
+    consoleOrigin: env.SPITZLI_CONSOLE_ORIGIN,
     tokenMode: "session",
     oauthProvider: "disabled",
     legacySecretPresent: false,

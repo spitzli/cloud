@@ -1,6 +1,6 @@
 # Native password and MFA login
 
-`WEBDOCK_PASSWORD_LOGIN_BACKEND=tokio-postgres` selects direct persistence for the
+`SPITZLI_PASSWORD_LOGIN_BACKEND=tokio-postgres` selects direct persistence for the
 owned password → optional MFA → canonical session flow. Core enables its required
 native allocator, session reads and session management using the existing shared
 max 4/min 0 bootstrap pool. Other capabilities, including native recovery, remain

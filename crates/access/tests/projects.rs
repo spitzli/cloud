@@ -37,7 +37,7 @@ async fn id(db: &DatabaseConnection) -> String {
 #[tokio::test]
 #[ignore = "requires owned retained-schema restricted fixture"]
 async fn customer_projects() {
-    let owner = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let owner = Database::connect(guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     let auth_url = guarded("AUTH_DATABASE_URL");

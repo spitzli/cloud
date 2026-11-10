@@ -96,7 +96,7 @@ impl spitzli_supervisor::Authorizer for LocalAuthority {
 }
 
 #[tokio::test]
-#[ignore = "owned local Kubernetes cluster with metrics; explicit WEBDOCK_KUBE_TEST_CONFIG/CONTEXT/IMAGE"]
+#[ignore = "owned local Kubernetes cluster with metrics; explicit SPITZLI_KUBE_TEST_CONFIG/CONTEXT/IMAGE"]
 async fn real_hpa_scales_both_directions_and_cannot_restart_stopped_app() {
     acceptance(false, false).await;
 }
@@ -130,11 +130,11 @@ async fn acceptance(retained: bool, short: bool) {
     };
     use spitzli_supervisor::*;
     use std::{path::PathBuf, sync::Arc, time::Duration};
-    let path = PathBuf::from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap());
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let path = PathBuf::from(std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap());
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("kind-webdock-rust-"));
     assert_eq!(
-        std::env::var("WEBDOCK_AGENT_AUTOSCALING_ENABLED").unwrap(),
+        std::env::var("SPITZLI_AGENT_AUTOSCALING_ENABLED").unwrap(),
         "true"
     );
     let config = Config::from_custom_kubeconfig(
@@ -156,7 +156,7 @@ async fn acceptance(retained: bool, short: bool) {
         "test-auto-{}",
         &uuid::Uuid::new_v4().simple().to_string()[..10]
     );
-    spec.image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
+    spec.image = std::env::var("SPITZLI_KUBE_TEST_IMAGE").unwrap();
     if retained {
         spec.project_id = spitzli_core::id::RecordId::parse(&format!(
             "{}",

@@ -32,7 +32,7 @@ impl StateProbeBoundary {
         value == Some(std::ffi::OsStr::new("1"))
     }
     fn enter(self) {
-        if Self::enabled(std::env::var_os("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref()) {
+        if Self::enabled(std::env::var_os("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref()) {
             eprintln!("plugin_state_probe stage={}", self.token());
         }
     }
@@ -52,7 +52,7 @@ impl StateProbeBoundary {
         )
     }
     fn failed(self, error: &(dyn std::error::Error + 'static)) {
-        if Self::enabled(std::env::var_os("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref()) {
+        if Self::enabled(std::env::var_os("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref()) {
             eprintln!("{}", self.failure_line(error));
         }
     }

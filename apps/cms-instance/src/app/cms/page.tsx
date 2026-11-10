@@ -17,7 +17,7 @@ export default async function Page() {
     );
   }
   const options = cmsOptions();
-  const issuer = process.env.WEBDOCK_AUTH_ISSUER ?? options.siteURL;
+  const issuer = process.env.SPITZLI_AUTH_ISSUER ?? options.siteURL;
   return (
     <CMSApp
       siteName={options.siteName}

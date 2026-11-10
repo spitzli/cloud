@@ -81,7 +81,7 @@ export function createHostingGitTargets(dependencies: Dependencies) {
           );
         teamID = connection.team_id;
       } else {
-        teamID = dependencies.env.WEBDOCK_GIT_VERCEL_TEAM_ID ?? "";
+        teamID = dependencies.env.SPITZLI_GIT_VERCEL_TEAM_ID ?? "";
         if (!/^team_[A-Za-z0-9]+$/.test(teamID))
           throw new HostingError(
             409,

@@ -8,7 +8,7 @@ import time
 from urllib.error import HTTPError
 import daemon
 import databases
-if os.environ.get('WEBDOCK_DISPOSABLE_POSTGRES_TEST')!='yes' or socket.gethostname()!='postgres-pilot':raise SystemExit('Disposable test node required')
+if os.environ.get('SPITZLI_DISPOSABLE_POSTGRES_TEST')!='yes' or socket.gethostname()!='postgres-pilot':raise SystemExit('Disposable test node required')
 original=databases.execute_database
 node=databases.get('node','postgres-pilot');address=next(a['address'] for a in node['status']['addresses'] if a['type']=='InternalIP')
 def execute(packet,checkpoint):

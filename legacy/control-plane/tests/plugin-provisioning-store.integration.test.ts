@@ -12,7 +12,7 @@ import {
   pluginProvisioningRlsSQL,
   pluginProvisioningPolicy,
 } from "../src/db/plugin-provisioning-rls";
-const enabled = process.env.WEBDOCK_TEST_PLUGIN_PROVISIONING_DB === "true";
+const enabled = process.env.SPITZLI_TEST_PLUGIN_PROVISIONING_DB === "true";
 (enabled ? test : test.skip)(
   "Postgres provisioning serializes duplicates and enforces scoped RLS and live revocation",
   async () => {
@@ -201,8 +201,8 @@ const enabled = process.env.WEBDOCK_TEST_PLUGIN_PROVISIONING_DB === "true";
         AUTH_DATABASE_URL: url,
         DATABASE_WORKER_URL: url,
         NODE_ENV: "development",
-        WEBDOCK_AUTH_PROVIDER: '{"provider":"better-auth"}',
-        WEBDOCK_PROCESS_ROLE: "api",
+        SPITZLI_AUTH_PROVIDER: '{"provider":"better-auth"}',
+        SPITZLI_PROCESS_ROLE: "api",
       });
       delete process.env.DATABASE_RLS_SECRET;
       const { currentClaims } =
@@ -558,8 +558,8 @@ const enabled = process.env.WEBDOCK_TEST_PLUGIN_PROVISIONING_DB === "true";
         "AUTH_DATABASE_URL",
         "DATABASE_WORKER_URL",
         "NODE_ENV",
-        "WEBDOCK_AUTH_PROVIDER",
-        "WEBDOCK_PROCESS_ROLE",
+        "SPITZLI_AUTH_PROVIDER",
+        "SPITZLI_PROCESS_ROLE",
         "DATABASE_RLS_SECRET",
       ]) {
         if (originalEnvironment[key] === undefined) delete process.env[key];

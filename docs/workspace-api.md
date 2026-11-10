@@ -8,22 +8,22 @@ A token acts as the member who made it, in that workspace only. If the member lo
 token does too. Requests go to the API origin, without cookies or an `Origin` header.
 
 ```sh
-export WEBDOCK_TOKEN=wdk_…   # from the console
+export SPITZLI_TOKEN=wdk_…   # from the console
 API=https://api.example.eu
 
 # Projects of the workspace
-curl -H "Authorization: Bearer $WEBDOCK_TOKEN" $API/v1/api/projects
+curl -H "Authorization: Bearer $SPITZLI_TOKEN" $API/v1/api/projects
 
 # Products in a project, with their actions and resources
-curl -H "Authorization: Bearer $WEBDOCK_TOKEN" $API/v1/api/projects/$PROJECT/plugins
+curl -H "Authorization: Bearer $SPITZLI_TOKEN" $API/v1/api/projects/$PROJECT/plugins
 
 # Run an action, e.g. deploy a new image to an app
-curl -H "Authorization: Bearer $WEBDOCK_TOKEN" -H "Content-Type: application/json" \
+curl -H "Authorization: Bearer $SPITZLI_TOKEN" -H "Content-Type: application/json" \
   -d '{"plugin":"hosting","action":"apps.deploy","input":{"resource_id":"…","image":"registry.example.eu/shop@sha256:…","port":8080}}' \
   $API/v1/api/projects/$PROJECT/actions
 
 # Plan, limits and usage
-curl -H "Authorization: Bearer $WEBDOCK_TOKEN" $API/v1/api/usage
+curl -H "Authorization: Bearer $SPITZLI_TOKEN" $API/v1/api/usage
 ```
 
 An action's input is the one its plugin's manifest describes. Errors come back as

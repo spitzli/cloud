@@ -37,19 +37,19 @@ async fn rendered_native_probes_pass_the_canonical_host_boundary() {
     let core = &deployment["spec"]["template"]["spec"]["containers"][0];
     let config = PlatformConfig::from_map(&HashMap::from([
         (
-            "WEBDOCK_API_ORIGIN".into(),
+            "SPITZLI_API_ORIGIN".into(),
             "https://api.example.test".into(),
         ),
         (
-            "WEBDOCK_AUTH_ORIGIN".into(),
+            "SPITZLI_AUTH_ORIGIN".into(),
             "https://auth.example.test".into(),
         ),
         (
-            "WEBDOCK_STUDIO_ORIGIN".into(),
+            "SPITZLI_STUDIO_ORIGIN".into(),
             "https://studio.example.test".into(),
         ),
         (
-            "WEBDOCK_CONSOLE_ORIGIN".into(),
+            "SPITZLI_CONSOLE_ORIGIN".into(),
             "https://console.example.test".into(),
         ),
     ]))

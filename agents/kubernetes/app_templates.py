@@ -19,7 +19,7 @@ FIELDS = {'version','templateID','operationID','generation','leaseToken','leaseU
 
 
 def approved(template_id):
-    path=Path(os.environ.get('WEBDOCK_APP_TEMPLATES','/etc/webdock/app-templates.json'))
+    path=Path(os.environ.get('SPITZLI_APP_TEMPLATES','/etc/webdock/app-templates.json'))
     st=path.stat()
     if st.st_uid!=0 or st.st_mode & 0o022:raise ValueError('Template approvals must be root-owned and not writable by other users')
     return json.loads(path.read_text())[template_id]
@@ -43,7 +43,7 @@ def validate(p,config):
         if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,62}',config[key]):raise ValueError('Invalid ingress configuration')
     env=p['environment']
     if not isinstance(env,dict) or len(json.dumps(env))>32000:raise ValueError('Invalid environment')
-    allowed={'WEBDOCK_AUTH_ISSUER','WEBDOCK_SSO_APP_ORIGIN','WEBDOCK_SSO_CLIENT_ID','WEBDOCK_SSO_CLIENT_SECRET','WEBDOCK_SSO_COOKIE_SECRET','WEBDOCK_SSO_ENFORCE','CMS_INSTANCE_ID','CMS_PROJECT_ID','CMS_ORIGIN','CMS_SITE_NAME','PAYLOAD_SECRET','CMS_BRIDGE_SECRET','CMS_MIGRATING','CMS_MIGRATION_DATABASE_URL','DATABASE_CA_CERT','CMS_BOOTSTRAP_SUBJECT','CMS_BOOTSTRAP_ROLE'}
+    allowed={'SPITZLI_AUTH_ISSUER','SPITZLI_SSO_APP_ORIGIN','SPITZLI_SSO_CLIENT_ID','SPITZLI_SSO_CLIENT_SECRET','SPITZLI_SSO_COOKIE_SECRET','SPITZLI_SSO_ENFORCE','CMS_INSTANCE_ID','CMS_PROJECT_ID','CMS_ORIGIN','CMS_SITE_NAME','PAYLOAD_SECRET','CMS_BRIDGE_SECRET','CMS_MIGRATING','CMS_MIGRATION_DATABASE_URL','DATABASE_CA_CERT','CMS_BOOTSTRAP_SUBJECT','CMS_BOOTSTRAP_ROLE'}
     if set(env)-allowed or env.get('CMS_INSTANCE_ID')!=p['instanceID'] or env.get('CMS_PROJECT_ID')!=p['projectID'] or env.get('CMS_ORIGIN')!=p['origin']:raise ValueError('Invalid environment scope')
     if p['phase']=='migration' and (env.get('CMS_MIGRATING')!='true' or not env.get('CMS_MIGRATION_DATABASE_URL')):raise ValueError('Missing migration credential')
     for key in ['certificateUID','ingressUID']:
@@ -54,7 +54,7 @@ def validate(p,config):
     e.validate_packet({**p,'action':'apply','storageVersion':1,'environmentVersion':1})
     issuer=urlsplit(config['authIssuer'])
     if issuer.scheme!='https' or issuer.username or issuer.password or issuer.path!='/api/auth' or issuer.query or issuer.fragment:raise ValueError('Invalid Auth issuer')
-    if env.get('WEBDOCK_AUTH_ISSUER')!=config['authIssuer']:raise ValueError('Unapproved Auth issuer')
+    if env.get('SPITZLI_AUTH_ISSUER')!=config['authIssuer']:raise ValueError('Unapproved Auth issuer')
     if not 1<=len(config['authAddresses'])<=8:raise ValueError('Invalid Auth addresses')
     for address in config['authAddresses']:
         ip=ipaddress.ip_address(address)

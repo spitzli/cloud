@@ -72,7 +72,7 @@ Adding nodes requires explicit image distribution/scheduling support first.
 Configure the same digest, the platform cluster ID, hostname suffix and independent
 Mail encryption key in Auth (`MAIL_STALWART_IMAGE`, `MAIL_MANAGED_CLUSTER_ID`,
 `MAIL_HOSTNAME_SUFFIX`, `MAIL_ENCRYPTION_KEY`). Apply the native Mail migration before
-enabling `WEBDOCK_NATIVE_MAIL_ENABLED`. Existing instance keys must remain decryptable.
+enabling `SPITZLI_NATIVE_MAIL_ENABLED`. Existing instance keys must remain decryptable.
 
 Bootstrap runs in recovery mode while listener configuration is prepared. Permanent
 credentials are checkpointed to Auth before the recovery environment and temporary
@@ -86,7 +86,7 @@ The real local restricted-container test requires the locally built image and an
 explicit Unix Docker socket; it only creates isolated disposable fixtures:
 
 ```sh
-WEBDOCK_MAIL_DOCKER_TEST=1 DOCKER_HOST=unix:///var/run/docker.sock \
+SPITZLI_MAIL_DOCKER_TEST=1 DOCKER_HOST=unix:///var/run/docker.sock \
   python3 -m unittest discover -s agents/kubernetes -p test_mail_client.py -v
 ```
 

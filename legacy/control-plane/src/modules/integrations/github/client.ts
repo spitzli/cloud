@@ -47,16 +47,16 @@ type Options = {
 
 export function githubOrigin() {
   return (
-    process.env.WEBDOCK_SSO_APP_ORIGIN ||
-    process.env.WEBDOCK_STUDIO_ORIGIN ||
+    process.env.SPITZLI_SSO_APP_ORIGIN ||
+    process.env.SPITZLI_STUDIO_ORIGIN ||
     "http://localhost:3120"
   );
 }
 export function getGitHub() {
-  const clientID = process.env.WEBDOCK_GITHUB_CLIENT_ID;
-  const clientSecret = process.env.WEBDOCK_GITHUB_CLIENT_SECRET;
-  const appSlug = process.env.WEBDOCK_GITHUB_APP_SLUG;
-  const cookieSecret = process.env.WEBDOCK_SSO_COOKIE_SECRET;
+  const clientID = process.env.SPITZLI_GITHUB_CLIENT_ID;
+  const clientSecret = process.env.SPITZLI_GITHUB_CLIENT_SECRET;
+  const appSlug = process.env.SPITZLI_GITHUB_APP_SLUG;
+  const cookieSecret = process.env.SPITZLI_SSO_COOKIE_SECRET;
   if (!clientID || !clientSecret || !appSlug || !cookieSecret) return null;
   try {
     return configureGitHub({

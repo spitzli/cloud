@@ -5,7 +5,7 @@ import pg from "pg";
 import { createRegistry } from "../src/modules/registry/service";
 import { ViewCache, configureViewCache } from "../src/cache";
 
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "registry cache skips data queries but reauthorizes and observes committed writes and related records",
   async () => {

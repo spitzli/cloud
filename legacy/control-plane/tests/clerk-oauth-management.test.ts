@@ -24,10 +24,10 @@ test("OAuth client administration uses fresh provider role and MFA when Clerk is
     assert.equal(await oauth.clientPrivileges({user,action:"update"}),false);
     proof=undefined;
     assert.equal(await oauth.clientPrivileges({user,action:"update"}),false);
-    delete process.env.WEBDOCK_AUTH_PROVIDER;
+    delete process.env.SPITZLI_AUTH_PROVIDER;
     user.role="operator";user.twoFactorEnabled=true;
     assert.equal(await oauth.clientPrivileges({user,action:"update"}),true);
     assert.equal(await oauth.clientPrivileges({user,action:"create"}),false);
-  `],{cwd:fileURLToPath(new URL("../../..",import.meta.url)),env:{...process.env,WEBDOCK_AUTH_PROVIDER:JSON.stringify({provider:"clerk",issuer:"https://identity.example",authorizedParties:["https://console.example"],audience:"console"})},stdout:"pipe",stderr:"pipe"});
+  `],{cwd:fileURLToPath(new URL("../../..",import.meta.url)),env:{...process.env,SPITZLI_AUTH_PROVIDER:JSON.stringify({provider:"clerk",issuer:"https://identity.example",authorizedParties:["https://console.example"],audience:"console"})},stdout:"pipe",stderr:"pipe"});
   expect(result.exitCode,new TextDecoder().decode(result.stderr)).toBe(0);
 });

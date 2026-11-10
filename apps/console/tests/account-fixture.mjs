@@ -1,6 +1,6 @@
 import { fromRepo } from './repo.mjs';
 // Independent recorded profiles keep account tests from deleting another fixture's grants.
-const name = process.env.WEBDOCK_ACCOUNT_FIXTURE ?? "account-browser.json";
+const name = process.env.SPITZLI_ACCOUNT_FIXTURE ?? "account-browser.json";
 if (
   name.length > 96 ||
   !/^account-browser[A-Za-z0-9._-]*\.json$/.test(name) ||

@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
 import { withDatabaseScope } from "@spitzli/database-runtime";
 import { createDatabases } from "../src/db/client";
-const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const fixtureFile = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (fixtureFile ? test : test.skip)(
   "native budget RLS denies tenant mutation and unrelated worker authority",
   async () => {

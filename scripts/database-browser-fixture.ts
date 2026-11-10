@@ -8,7 +8,7 @@ import { WebSocket, WebSocketServer } from "ws";
 import { executeDatabase, exchangeLaunch, inspectSession } from "../legacy/control-plane/src/modules/databases/service";
 import { createGateway } from "../apps/database-gateway/src/server";
 
-const url = new URL(process.env.WEBDOCK_DATABASE_TEST_URL || "");
+const url = new URL(process.env.SPITZLI_DATABASE_TEST_URL || "");
 if (process.env.NODE_ENV === "production" || url.hostname !== "127.0.0.1" || url.port !== "55441" || url.pathname !== "/webdock_admin_test") throw Error("Dedicated local fixture required");
 const pool = new Pool({ connectionString: url.href });
 const run = async <T>(fn: (db: PoolClient) => Promise<T>): Promise<T> => {
@@ -45,7 +45,7 @@ const auth = httpServer(async (req, res) => {
   try {
     if (req.url?.startsWith("/fixture/")) {
       const subject = req.url.endsWith("/bob") ? "bob" : req.url.endsWith("/eve") ? "eve" : "alice";
-      const cookie = await sealData({ kind: "session", accessToken: subject+"-fixture-token", sub: subject, exp: Math.floor(Date.now()/1000)+3600 }, { password: process.env.WEBDOCK_SSO_COOKIE_SECRET!, ttl: 3600 });
+      const cookie = await sealData({ kind: "session", accessToken: subject+"-fixture-token", sub: subject, exp: Math.floor(Date.now()/1000)+3600 }, { password: process.env.SPITZLI_SSO_COOKIE_SECRET!, ttl: 3600 });
       res.writeHead(302, { "Set-Cookie": `webdock-sso=${cookie}; Path=/; HttpOnly; SameSite=Lax`, Location: "http://localhost:3130/tenants/100/databases" }); return res.end();
     }
     if (req.url?.includes(".well-known/openid-configuration")) return json(200, { issuer, authorization_endpoint: issuer+"/authorize", token_endpoint: issuer+"/token", introspection_endpoint: issuer+"/oauth2/introspect", jwks_uri: issuer+"/jwks", response_types_supported: ["code"], subject_types_supported: ["public"], id_token_signing_alg_values_supported: ["RS256"] });

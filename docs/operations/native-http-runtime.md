@@ -10,7 +10,7 @@ throughput or lower Neon compute usage is claimed from changing startup alone.
 
 ## Configuration and lifecycle
 
-Existing environment names remain valid. `WEBDOCK_DATABASE_URL` is validated
+Existing environment names remain valid. `SPITZLI_DATABASE_URL` is validated
 before connecting and must authenticate as the restricted
 `webdock_auth_bootstrap` login. Production retains verified TLS/target policy.
 `NODE_ENV=production` and the existing `LOCO_ENV=production` compatibility alias
@@ -20,7 +20,7 @@ The bootstrap pool retains 1–10 connections, a five-second connect limit and 3
 and a 30-second idle timeout. Other service pool constructors and the exact router
 remain unchanged. There is no new polling loop.
 
-HTTP binds to `WEBDOCK_BIND_ADDRESS` (default `127.0.0.1`) and `PORT` (default
+HTTP binds to `SPITZLI_BIND_ADDRESS` (default `127.0.0.1`) and `PORT` (default
 `3130`). Both raw and bracketed IPv6 bindings are accepted. SIGTERM and SIGINT listeners are registered before accepting traffic.
 Startup initialization and binding are cancellable by those signals, including a
 stalled database connection. Shutdown drains in-flight requests for at most 20 seconds; if a held request/SSE

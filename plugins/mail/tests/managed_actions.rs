@@ -117,8 +117,8 @@ fn claims(action: &str) -> InvocationClaims {
 #[tokio::test]
 #[ignore = "requires fresh task3-owned TLS PostgreSQL"]
 async fn lost_admission_resumes_original_payload_and_transition_checks_share_customer_fence() {
-    let url = std::env::var("WEBDOCK_MAIL_TASK3_TEST_URL").unwrap();
-    let ca = std::fs::read(std::env::var("WEBDOCK_MAIL_TASK3_TEST_CA").unwrap()).unwrap();
+    let url = std::env::var("SPITZLI_MAIL_TASK3_TEST_URL").unwrap();
+    let ca = std::fs::read(std::env::var("SPITZLI_MAIL_TASK3_TEST_CA").unwrap()).unwrap();
     let store = Store::connect_tls(&url, &ca).await.unwrap();
     let plugin = Plugin::new(
         store,

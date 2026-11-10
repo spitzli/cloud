@@ -9,7 +9,7 @@ import { createOTP } from '@better-auth/utils/otp';
 import { base32 } from '@better-auth/utils/base32';
 import { fromRepo } from './repo.mjs';
 
-const reportPath = process.env.WEBDOCK_NATIVE_INSTALL_FIXTURE;
+const reportPath = process.env.SPITZLI_NATIVE_INSTALL_FIXTURE;
 assert.ok(reportPath && ['.runtime-test/native-installer/', '.runtime-test/native-plugin-updates/'].some((base) => reportPath.startsWith(fromRepo(base).pathname)), 'An owned native installer report is required');
 const readJSON = async (path) => JSON.parse(await readFile(path, 'utf8'));
 const report = await readJSON(reportPath);
@@ -19,7 +19,7 @@ const core = await readJSON(paths.coreEnvironment);
 const operator = await readJSON(paths.operatorInput);
 const catalog = await readJSON(paths.catalog);
 const manifest = JSON.parse(catalog.releases[0].manifestRaw);
-const consoleOrigin = core.WEBDOCK_CONSOLE_ORIGIN, authOrigin = core.WEBDOCK_AUTH_ORIGIN;
+const consoleOrigin = core.SPITZLI_CONSOLE_ORIGIN, authOrigin = core.SPITZLI_AUTH_ORIGIN;
 assert.equal(consoleOrigin, 'http://127.0.0.1:6121');
 assert.equal(authOrigin, 'http://localhost:6125');
 const statePath = directory + '/acceptance-state.json', cookiePath = directory + '/acceptance-cookies.json';
@@ -115,7 +115,7 @@ try {
   await page.goto(consoleOrigin + '/extensions/operations/' + state.operationID);
   const operation = await (await page.request.get(consoleOrigin + '/api/console/plugins/operations/' + state.operationID)).json();
   if (['blocked', 'failed'].includes(operation.status)) {
-    assert.equal(process.env.WEBDOCK_NATIVE_INSTALL_RETRY, 'true', `Installation requires explicit retry: ${operation.condition}`);
+    assert.equal(process.env.SPITZLI_NATIVE_INSTALL_RETRY, 'true', `Installation requires explicit retry: ${operation.condition}`);
     const retried = page.waitForResponse((r) => new URL(r.url()).pathname.endsWith('/retry') && r.request().method() === 'POST');
     await page.getByRole('button', { name: 'Retry installation', exact: true }).click();
     const response = await retried; assert.equal(response.status(), 200);
@@ -184,7 +184,7 @@ try {
   await page.getByRole('button', { name: 'Hide', exact: true }).click();
   state.phase = 'sql'; await save();
   const { Client } = await import('pg');
-  const ca = await readFile(process.env.WEBDOCK_NATIVE_DATABASE_CA ?? fromRepo('.dev-local/ca/ca.crt'));
+  const ca = await readFile(process.env.SPITZLI_NATIVE_DATABASE_CA ?? fromRepo('.dev-local/ca/ca.crt'));
   const sql = async (query) => {
     const client = new Client({ host: '127.0.0.1', port: view.port, database: view.database, user: view.user, password: secret.value, connectionTimeoutMillis:10000,query_timeout:10000, ssl: { ca, servername: view.host, rejectUnauthorized: true } });
     await client.connect(); try { return await client.query(query); } finally { await client.end(); }

@@ -75,8 +75,8 @@ Environment=CARGO_HOME={HOME}/.cargo
 Environment=CARGO_BUILD_JOBS=3
 Environment=CARGO_TARGET_DIR={HOME}/native-validator-target
 Environment=XDG_RUNTIME_DIR=/run/user/{UID}
-Environment=WEBDOCK_BUILDKIT_ADDR=unix:///run/user/{UID}/spitzli-buildkit.sock
-Environment=WEBDOCK_BUILDCTL_SHA256={BUILDCTL_SHA}
+Environment=SPITZLI_BUILDKIT_ADDR=unix:///run/user/{UID}/spitzli-buildkit.sock
+Environment=SPITZLI_BUILDCTL_SHA256={BUILDCTL_SHA}
 ExecStart={RUNNER}/bin/runsvc.sh
 KillMode=process
 KillSignal=SIGTERM

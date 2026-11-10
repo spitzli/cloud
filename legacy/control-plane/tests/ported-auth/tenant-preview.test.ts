@@ -80,7 +80,7 @@ test("Session-bound tenant preview is scoped, read-only, auditable and restricti
     logoutPath: "/login",
     headers: operator.headers,
   });
-  process.env.WEBDOCK_STUDIO_CLIENT_ID = studio.clientID;
+  process.env.SPITZLI_STUDIO_CLIENT_ID = studio.clientID;
   const customers = (
     await database.query(
       "INSERT INTO webdock_admin.customers(id,name,notes) VALUES(webdock_auth.next_snowflake(),'Preview One','private operator note'),(webdock_auth.next_snowflake(),'Preview Two','private other note') RETURNING id,name",

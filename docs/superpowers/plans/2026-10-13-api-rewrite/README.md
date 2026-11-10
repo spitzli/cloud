@@ -48,7 +48,7 @@ Inspected 2026-10-13 at commit `95fc3b2ed4317f4d19bdba2c05530ae217924574`. Workt
 | `docs/verification/2026-10-13-customer-plans-navigation.md`, current `plans.ts` | Customer-specific `assign-custom`, immutable history and preserved extras are already implemented. The old reported relocation/MCP mismatch is not assumed to persist. |
 | `mail-product/jobs.ts`, `cron.ts`, `infra/mail/cronjobs.yaml` | Durable mail lease/state machinery already exists; reuse it. Cron route checks VERCEL_ENV; YAML is suspended, not evidence of a running scheduler. |
 | `hosting/bridge.ts` accepts confidential `vercelRuntime` from Studio | Move credential ownership to API; delete this transport field only after every caller changes. Never accept it from browser commands. |
-| `hosting/http.ts` already supports non-Vercel `WEBDOCK_HOSTING_EU_VERIFIED` | Preserve location admission, supply evidence for the real host. Do not merely set a flag to bypass it. |
+| `hosting/http.ts` already supports non-Vercel `SPITZLI_HOSTING_EU_VERIFIED` | Preserve location admission, supply evidence for the real host. Do not merely set a flag to bypass it. |
 | No node_modules or `.env.test.local` in this worktree; shell Node 22.22.3 versus required 24 | Full app suites/builds not run here. Prior release test results are historical evidence only. No shared-root install or production test fallback. |
 | Current kubectl context is `webdock-byok-test` | It does not establish production cluster capacity. No context mutation or cluster provisioning was attempted. |
 

@@ -14,9 +14,9 @@ import {
   evidenceChecks,
 } from "./manifest.mjs";
 const [directory, platform, revision] = process.argv.slice(2);
-const includeCMS = process.env.WEBDOCK_RELEASE_CMS === "true";
+const includeCMS = process.env.SPITZLI_RELEASE_CMS === "true";
 const cmsRuntime = includeCMS ? cmsVersions : undefined;
-const includeDatabases = process.env.WEBDOCK_RELEASE_DATABASES === "true";
+const includeDatabases = process.env.SPITZLI_RELEASE_DATABASES === "true";
 const pin = JSON.parse(
   await readFile(
     new URL("../../vendor/tabularis-web-ui.json", import.meta.url),
@@ -120,7 +120,7 @@ try {
 const {configureFullInstallation}=await import('/app/apps/control-plane/dist/full-installation.ts');
 configureFullInstallation();
 const inputs=[{name:'one',domains:'auth,mail',modules:{mail:{enabled:true}}},{name:'two',domains:'auth,hosting,databases',modules:{hosting:{enabled:true},databases:{enabled:true}}}];
-const values=inputs.map(input=>readConfig({NODE_ENV:'production',WEBDOCK_API_ORIGIN:'https://api.'+input.name+'.example',BETTER_AUTH_URL:'https://auth.'+input.name+'.example',WEBDOCK_STUDIO_ORIGIN:'https://studio.'+input.name+'.example',WEBDOCK_CONSOLE_ORIGIN:'https://console.'+input.name+'.example',WEBDOCK_API_DOMAINS:input.domains,WEBDOCK_MODULES:JSON.stringify({configVersion:1,modules:input.modules})}));
+const values=inputs.map(input=>readConfig({NODE_ENV:'production',SPITZLI_API_ORIGIN:'https://api.'+input.name+'.example',BETTER_AUTH_URL:'https://auth.'+input.name+'.example',SPITZLI_STUDIO_ORIGIN:'https://studio.'+input.name+'.example',SPITZLI_CONSOLE_ORIGIN:'https://console.'+input.name+'.example',SPITZLI_API_DOMAINS:input.domains,SPITZLI_MODULES:JSON.stringify({configVersion:1,modules:input.modules})}));
 if(values[0].apiOrigin===values[1].apiOrigin||values[0].modules.modules.mail!=='enabled'||values[1].modules.modules.mail!=='disabled'||values[1].modules.modules.databases!=='enabled')throw Error('Runtime configuration was retained across installations');`,
   ]);
   checks.push({ name: "api-runtime-configurations", passed: true });
@@ -170,7 +170,7 @@ if(values[0].apiOrigin===values[1].apiOrigin||values[0].modules.modules.mail!=='
         timeout: 120000,
         env: {
           ...process.env,
-          WEBDOCK_MANAGED_RUNTIME_TEST_IMAGE: `${prefix}:database-gateway`,
+          SPITZLI_MANAGED_RUNTIME_TEST_IMAGE: `${prefix}:database-gateway`,
         },
       },
     );

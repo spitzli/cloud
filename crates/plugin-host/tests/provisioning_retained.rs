@@ -39,7 +39,7 @@ async fn reader(f: &fixture::Fixture) -> MetadataProvisioner {
 }
 
 #[tokio::test]
-#[ignore = "requires WEBDOCK_PLUGIN_PROVISIONING_DOCKER_TEST=1; owned disposable PostgreSQL only"]
+#[ignore = "requires SPITZLI_PLUGIN_PROVISIONING_DOCKER_TEST=1; owned disposable PostgreSQL only"]
 async fn retained_returns_existing_login_under_enforced_read_only_session() {
     let f = fixture::Fixture::start().await;
     let provisioner = MetadataProvisioner::connect(&f.admin_url, Some(f.ca.as_bytes()))
@@ -80,7 +80,7 @@ async fn retained_returns_existing_login_under_enforced_read_only_session() {
 }
 
 #[tokio::test]
-#[ignore = "requires WEBDOCK_PLUGIN_PROVISIONING_DOCKER_TEST=1; owned disposable PostgreSQL only"]
+#[ignore = "requires SPITZLI_PLUGIN_PROVISIONING_DOCKER_TEST=1; owned disposable PostgreSQL only"]
 async fn retained_refuses_missing_storage_without_creating_it() {
     let f = fixture::Fixture::start().await;
     let read_only = reader(&f).await;
@@ -117,7 +117,7 @@ async fn retained_refuses_missing_storage_without_creating_it() {
 }
 
 #[tokio::test]
-#[ignore = "requires WEBDOCK_PLUGIN_PROVISIONING_DOCKER_TEST=1; owned disposable PostgreSQL only"]
+#[ignore = "requires SPITZLI_PLUGIN_PROVISIONING_DOCKER_TEST=1; owned disposable PostgreSQL only"]
 async fn retained_rejects_ownership_and_role_drift_without_repair() {
     let f = fixture::Fixture::start().await;
     let provisioner = MetadataProvisioner::connect(&f.admin_url, Some(f.ca.as_bytes()))

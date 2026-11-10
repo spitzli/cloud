@@ -11,7 +11,7 @@ def packet():
       'projectID':'20','clusterID':'30','appID':'40','instanceID':'50','namespace':'wd-20','revision':1,
       'spec':{'image':'ghcr.io/example/cms@sha256:'+'a'*64,'cpuMillicores':250,'memoryBytes':536870912,'ephemeralBytes':134217728,'volumeBytes':1073741824,'port':3000,'healthPath':'/api/health','replicas':1,'args':[]},
       'quota':{'cpuMillicores':250,'memoryBytes':536870912,'ephemeralBytes':134217728,'volumeBytes':1073741824,'apps':1},
-      'environment':{'WEBDOCK_AUTH_ISSUER':'https://auth.example.com/api/auth','CMS_INSTANCE_ID':'50','CMS_PROJECT_ID':'20','CMS_ORIGIN':'https://50.cms.example.com','PAYLOAD_SECRET':'a'*43,'CMS_BRIDGE_SECRET':'b'*43,'CMS_MIGRATING':'true','CMS_MIGRATION_DATABASE_URL':'postgresql://wd_migrate_60:secret@postgres-rw.wd-db-70.svc.cluster.local:5432/db?sslmode=verify-full','DATABASE_CA_CERT':'certificate'},
+      'environment':{'SPITZLI_AUTH_ISSUER':'https://auth.example.com/api/auth','CMS_INSTANCE_ID':'50','CMS_PROJECT_ID':'20','CMS_ORIGIN':'https://50.cms.example.com','PAYLOAD_SECRET':'a'*43,'CMS_BRIDGE_SECRET':'b'*43,'CMS_MIGRATING':'true','CMS_MIGRATION_DATABASE_URL':'postgresql://wd_migrate_60:secret@postgres-rw.wd-db-70.svc.cluster.local:5432/db?sslmode=verify-full','DATABASE_CA_CERT':'certificate'},
       'backendID':'70','origin':'https://50.cms.example.com','pinnedAddresses':['192.0.2.1'],'jobUID':None,'intentRecorded':False,'storageState':'unallocated','certificateUID':None,'ingressUID':None}
 
 

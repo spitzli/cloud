@@ -28,7 +28,7 @@ export function createHostingSetupWorker(dependencies: Dependencies) {
   } = {}) {
     let processed = 0,
       failed = 0;
-    if (dependencies.env.WEBDOCK_SETUP_ENABLED !== "true")
+    if (dependencies.env.SPITZLI_SETUP_ENABLED !== "true")
       return { processed, failed };
     while (processed < limit && Date.now() < deadline) {
       const row = await dispatch(() =>

@@ -61,7 +61,7 @@ test("disabled Databases refuse service binding before credential reads", async 
 });
 test("database maintenance and shared allocation totals retain conservative capacity rules", () => {
   const runtime = createHostingDatabaseProtection({
-    env: { WEBDOCK_CONTROL_DATABASE_ID: "123" },
+    env: { SPITZLI_CONTROL_DATABASE_ID: "123" },
   });
   assert.throws(
     () => runtime.assertDatabaseMaintenanceAllowed("123", "databases.delete"),

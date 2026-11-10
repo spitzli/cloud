@@ -193,14 +193,14 @@ test("compatibility and selected Clerk delegation each require explicit mappings
   await expect(f.bridge(headers)).rejects.toThrow();
   for (const activation of [undefined, "clerk"]) {
     const config = consoleAuthConfiguration({
-      WEBDOCK_AUTH_PROVIDER: JSON.stringify({
+      SPITZLI_AUTH_PROVIDER: JSON.stringify({
         provider: "clerk",
         issuer: evidence.external.issuer,
         authorizedParties: ["https://console.example.test"],
         audience: "webdock-console",
       }),
-      WEBDOCK_CONSOLE_AUTH_PROVIDER: activation,
-      WEBDOCK_CONSOLE_SERVICE_KEY: "s".repeat(32),
+      SPITZLI_CONSOLE_AUTH_PROVIDER: activation,
+      SPITZLI_CONSOLE_SERVICE_KEY: "s".repeat(32),
     });
     expect(config.enabled).toBe(true);
     expect(config.requireExistingMapping).toBe(true);

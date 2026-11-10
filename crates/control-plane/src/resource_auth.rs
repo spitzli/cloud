@@ -37,8 +37,8 @@ pub struct ResourceClientConfig {
 }
 impl ResourceClientConfig {
     pub fn from_environment() -> Result<Option<Self>, &'static str> {
-        let id = std::env::var("WEBDOCK_RESOURCE_CLIENT_ID");
-        let secret = std::env::var("WEBDOCK_RESOURCE_CLIENT_SECRET_FILE");
+        let id = std::env::var("SPITZLI_RESOURCE_CLIENT_ID");
+        let secret = std::env::var("SPITZLI_RESOURCE_CLIENT_SECRET_FILE");
         match (id, secret) {
             (Err(std::env::VarError::NotPresent), Err(std::env::VarError::NotPresent)) => Ok(None),
             (Ok(client_id), Ok(secret)) if !client_id.is_empty() && !secret.is_empty() => {

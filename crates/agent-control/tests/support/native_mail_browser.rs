@@ -52,8 +52,8 @@ pub async fn run(f: Fixture<'_>) {
     )
     .unwrap();
     let config = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
-        ("WEBDOCK_STUDIO_ORIGIN".into(), origin.clone()),
-        ("WEBDOCK_FEATURES".into(), r#"{"mail":"enabled"}"#.into()),
+        ("SPITZLI_STUDIO_ORIGIN".into(), origin.clone()),
+        ("SPITZLI_FEATURES".into(), r#"{"mail":"enabled"}"#.into()),
     ]))
     .unwrap();
     let router = build_app_with_domains(
@@ -98,7 +98,7 @@ pub async fn run(f: Fixture<'_>) {
         Duration::from_secs(if f.configure { 300 } else { 180 }),
         tokio::process::Command::new("node")
             .arg(root.join("apps/console/tests/mail-native-browser.mjs"))
-            .env("WEBDOCK_MAIL_BROWSER_FIXTURE", descriptor)
+            .env("SPITZLI_MAIL_BROWSER_FIXTURE", descriptor)
             .current_dir(&root)
             .kill_on_drop(true)
             .output(),

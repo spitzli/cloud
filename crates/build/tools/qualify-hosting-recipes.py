@@ -45,7 +45,7 @@ def main():
             assert address.startswith("127.0.0.1:")
             docker("exec", container, "psql", "-X", "-q", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "webdock_git_recipe_query", "-c",
                    "CREATE SCHEMA webdock_auth; CREATE TABLE webdock_auth.git_source(id text PRIMARY KEY,project_id text,recipe text); CREATE TABLE webdock_auth.hosting_project(project_id text PRIMARY KEY,cluster_id text);")
-            environment["WEBDOCK_GIT_RECIPE_DATABASE_URL"] = "postgresql://postgres:" + urllib.parse.quote(secret, safe="") + "@" + address + "/webdock_git_recipe_query"
+            environment["SPITZLI_GIT_RECIPE_DATABASE_URL"] = "postgresql://postgres:" + urllib.parse.quote(secret, safe="") + "@" + address + "/webdock_git_recipe_query"
             result = subprocess.run(["cargo", "+1.94.0", "test", "--offline", "--locked", "-p", "spitzli-hosting", "--lib", "frontend_source_", "-j", "2", "--", "--include-ignored", "--nocapture"], cwd=ROOT, env=environment, capture_output=True, text=True, timeout=420)
             output = (result.stdout + result.stderr).replace(secret, "[redacted]")
             import re

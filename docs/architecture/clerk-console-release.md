@@ -66,8 +66,8 @@ the existing secret stores, never in Git, PR text or terminal output.
 
 | Runtime | Required Clerk configuration |
 | --- | --- |
-| Console build/runtime | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, server-only `CLERK_SECRET_KEY`, `WEBDOCK_CONSOLE_SERVICE_KEY`, `WEBDOCK_CONSOLE_AUTH_PROVIDER=clerk`, existing API/public origin |
-| API | `CLERK_ISSUER`, `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `WEBDOCK_CONSOLE_SERVICE_KEY`, exact `WEBDOCK_CONSOLE_ORIGIN`, activation flag |
+| Console build/runtime | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, server-only `CLERK_SECRET_KEY`, `SPITZLI_CONSOLE_SERVICE_KEY`, `SPITZLI_CONSOLE_AUTH_PROVIDER=clerk`, existing API/public origin |
+| API | `CLERK_ISSUER`, `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `SPITZLI_CONSOLE_SERVICE_KEY`, exact `SPITZLI_CONSOLE_ORIGIN`, activation flag |
 | Worker handling Clerk jobs | Same Clerk verifier settings and Console origin/service key; retain restricted worker DB credentials |
 | Offline importer | `CLERK_ISSUER`, `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `DATABASE_URL_UNPOOLED`, verified `DATABASE_CA_CERT` |
 

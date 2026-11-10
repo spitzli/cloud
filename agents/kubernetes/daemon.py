@@ -96,7 +96,7 @@ def run_once(path):
 
 def run_template_once(state):
     # Local operator approval is opt-in; existing agents keep their exact polling contract.
-    if not Path(os.environ.get('WEBDOCK_APP_TEMPLATES','/etc/webdock/app-templates.json')).is_file():return None
+    if not Path(os.environ.get('SPITZLI_APP_TEMPLATES','/etc/webdock/app-templates.json')).is_file():return None
     from app_templates import execute
     packet=agent_request(state['endpoint'],state,'template-claim',{})
     if packet is None:return None
@@ -104,7 +104,7 @@ def run_template_once(state):
     identity={key:packet[key] for key in ['operationID','generation','leaseToken','phase']}
     def checkpoint(**value):return agent_request(state['endpoint'],state,'template-checkpoint',{**identity,**value})
     try:
-        with open(os.environ.get('WEBDOCK_EXECUTOR_LOCK','/run/lock/webdock-managed-executor.lock'),'w') as lock:
+        with open(os.environ.get('SPITZLI_EXECUTOR_LOCK','/run/lock/webdock-managed-executor.lock'),'w') as lock:
             fcntl.flock(lock,fcntl.LOCK_EX)
             proof=execute(packet,checkpoint)
         result={'outcome':'pending'} if proof is None else {'outcome':'succeeded','proof':proof}

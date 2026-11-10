@@ -50,7 +50,7 @@ BusyBox image already present in local Docker, Bun/Playwright available and
 the Console built, run:
 
 ```sh
-WEBDOCK_HOSTING_BROWSER_TEST=1 cargo test -p spitzli-hosting \
+SPITZLI_HOSTING_BROWSER_TEST=1 cargo test -p spitzli-hosting \
   --features docker-test --test postgres \
   native_browser::console_drives_real_native_hosting_and_docker \
   --locked -- --ignored --exact --nocapture
@@ -138,8 +138,8 @@ cargo clippy -p spitzli-hosting --all-targets --all-features --no-deps -- -D war
 ```
 
 Database tests require explicit loopback URLs for `webdock_rls_test` from
-`WEBDOCK_TEST_MIGRATION_DATABASE_URL`, `DATABASE_URL`, `AUTH_DATABASE_URL`, and
-`WEBDOCK_PLUGIN_WORKER_DATABASE_URL`, plus `DATABASE_RLS_SECRET` and
+`SPITZLI_TEST_MIGRATION_DATABASE_URL`, `DATABASE_URL`, `AUTH_DATABASE_URL`, and
+`SPITZLI_PLUGIN_WORKER_DATABASE_URL`, plus `DATABASE_RLS_SECRET` and
 `BETTER_AUTH_SECRET`. Apply the additive migration offline first; the full RPC test
 also requires the native agent-control enrollment/dispatch migration. Fixtures use
 unique records and clean only those records; they do not reset schemas or shared
@@ -147,7 +147,7 @@ data. The test-created installation singleton is serialized by a fixture lock.
 
 ```sh
 cargo test -p spitzli-hosting --test postgres -- --ignored --test-threads=1
-WEBDOCK_HOSTING_DOCKER_TEST=1 cargo test -p spitzli-hosting --features docker-test -- --include-ignored --test-threads=1
+SPITZLI_HOSTING_DOCKER_TEST=1 cargo test -p spitzli-hosting --features docker-test -- --include-ignored --test-threads=1
 ```
 
 The Docker test explicitly uses `/var/run/docker.sock`, requires its reviewed image

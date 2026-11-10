@@ -5,9 +5,9 @@ import { readConfig } from "../src/config";
 const config = () =>
   readConfig({
     NODE_ENV: "test",
-    WEBDOCK_API_ORIGIN: "http://localhost:3130",
+    SPITZLI_API_ORIGIN: "http://localhost:3130",
     BETTER_AUTH_URL: "http://localhost:3125",
-    WEBDOCK_STUDIO_ORIGIN: "http://localhost:3120",
+    SPITZLI_STUDIO_ORIGIN: "http://localhost:3120",
   });
 test("unknown hosts and forged forwarding metadata cannot reach a handler", async () => {
   const app = await createApp(config());

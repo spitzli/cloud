@@ -142,15 +142,15 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
         },
     };
     assert_eq!(
-        std::env::var("WEBDOCK_DISPOSABLE_DATABASE_TEST").as_deref(),
+        std::env::var("SPITZLI_DISPOSABLE_DATABASE_TEST").as_deref(),
         Ok("yes")
     );
     assert_eq!(rustix::process::geteuid().as_raw(), 0);
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("kind-webdock-rust-native-"));
     let client = Client::try_from(
         Config::from_custom_kubeconfig(
-            Kubeconfig::read_from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap()).unwrap(),
+            Kubeconfig::read_from(std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap()).unwrap(),
             &KubeConfigOptions {
                 context: Some(context.clone()),
                 ..Default::default()
@@ -204,13 +204,13 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
         tokio::time::sleep(std::time::Duration::from_millis(10)).await;
     }
     let mut configuration = config();
-    configuration.ca_file = std::env::var("WEBDOCK_DATABASE_TEST_CA").unwrap().into();
+    configuration.ca_file = std::env::var("SPITZLI_DATABASE_TEST_CA").unwrap().into();
     configuration.issuer = "webdock-runtime-database-ca".into();
     configuration.storage_socket = socket.clone();
-    configuration.image = std::env::var("WEBDOCK_DATABASE_TEST_IMAGE").unwrap();
-    configuration.pooler_image = std::env::var("WEBDOCK_DATABASE_TEST_POOLER_IMAGE").unwrap();
+    configuration.image = std::env::var("SPITZLI_DATABASE_TEST_IMAGE").unwrap();
+    configuration.pooler_image = std::env::var("SPITZLI_DATABASE_TEST_POOLER_IMAGE").unwrap();
     configuration.api_cidrs =
-        serde_json::from_str(&std::env::var("WEBDOCK_DATABASE_TEST_API_CIDRS").unwrap()).unwrap();
+        serde_json::from_str(&std::env::var("SPITZLI_DATABASE_TEST_API_CIDRS").unwrap()).unwrap();
     let path = base.join("runtime.json");
     std::fs::write(&path, serde_json::to_vec(&configuration).unwrap()).unwrap();
     std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
@@ -225,7 +225,7 @@ async fn disposable_database_apply_preserves_physical_uid_and_checkpoint_fence()
     let hosts_marker = format!("webdock-owned-database-{numeric}");
     let host_line = format!(
         "\n{} {} db-{numeric}.wrong.fixture.test # {hosts_marker}\n",
-        std::env::var("WEBDOCK_DATABASE_TEST_NODE_IP").unwrap(),
+        std::env::var("SPITZLI_DATABASE_TEST_NODE_IP").unwrap(),
         spec.backend.host
     );
     std::fs::OpenOptions::new()

@@ -70,10 +70,10 @@ pub(super) async fn check_bootstrap_replay(
 ) {
     let environment = HashMap::from([
         ("DATABASE_URL_UNPOOLED".into(), offline.as_str().to_owned()),
-        ("WEBDOCK_AUTH_SECRET".into(), SECRET.to_owned()),
+        ("SPITZLI_AUTH_SECRET".into(), SECRET.to_owned()),
         ("BETTER_AUTH_URL".into(), AUTH.to_owned()),
-        ("WEBDOCK_STUDIO_ORIGIN".into(), STUDIO.to_owned()),
-        ("WEBDOCK_CONSOLE_ORIGIN".into(), CONSOLE.to_owned()),
+        ("SPITZLI_STUDIO_ORIGIN".into(), STUDIO.to_owned()),
+        ("SPITZLI_CONSOLE_ORIGIN".into(), CONSOLE.to_owned()),
     ]);
     assert_eq!(scalar(owner,"SELECT count(*)::bigint AS n FROM webdock_auth.platform_settings WHERE settings->'mailEnabled'='true'::jsonb").await,1);
     assert_eq!(scalar(owner,"SELECT count(*)::bigint AS n FROM webdock_auth.\"oauthClient\" WHERE metadata->'webdock_initial_setup'->'initialMailEnabled'='true'::jsonb").await,1);
@@ -246,7 +246,7 @@ async fn token_revocation_fences_commit(c: &Context<'_>, customer: &str, path: &
             ("client_id", c.secrets["clientID"].as_str().unwrap()),
             (
                 "client_secret",
-                c.secrets["environment"]["WEBDOCK_SSO_CLIENT_SECRET"]
+                c.secrets["environment"]["SPITZLI_SSO_CLIENT_SECRET"]
                     .as_str()
                     .unwrap(),
             ),
@@ -300,7 +300,7 @@ async fn configured_authority_faults_remain_unavailable(c: &Context<'_>, path: &
     // No actor/session/token is constructed and no client secret is printed.
     let missing_client = c.ids.allocate().await.unwrap().to_string();
     let actual_client = c.secrets["clientID"].as_str().unwrap();
-    let actual_secret = c.secrets["environment"]["WEBDOCK_SSO_CLIENT_SECRET"]
+    let actual_secret = c.secrets["environment"]["SPITZLI_SSO_CLIENT_SECRET"]
         .as_str()
         .unwrap();
     for (client, secret) in [
@@ -319,7 +319,7 @@ async fn configured_authority_faults_remain_unavailable(c: &Context<'_>, path: &
                 Arc::clone(c.identity),
                 Arc::clone(c.oauth),
                 Arc::new(keys),
-                c.secrets["environment"]["WEBDOCK_SSO_COOKIE_SECRET"]
+                c.secrets["environment"]["SPITZLI_SSO_COOKIE_SECRET"]
                     .as_str()
                     .unwrap(),
                 spitzli_browser_session::BrowserConfig::new(
@@ -340,9 +340,9 @@ async fn configured_authority_faults_remain_unavailable(c: &Context<'_>, path: &
         ));
         let app = build_app_with_domains(
             spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
-                ("WEBDOCK_AUTH_ORIGIN".into(), AUTH.into()),
-                ("WEBDOCK_STUDIO_ORIGIN".into(), STUDIO.into()),
-                ("WEBDOCK_CONSOLE_ORIGIN".into(), CONSOLE.into()),
+                ("SPITZLI_AUTH_ORIGIN".into(), AUTH.into()),
+                ("SPITZLI_STUDIO_ORIGIN".into(), STUDIO.into()),
+                ("SPITZLI_CONSOLE_ORIGIN".into(), CONSOLE.into()),
             ]))
             .unwrap(),
             c.auth.clone(),
@@ -429,7 +429,7 @@ async fn lowering_retains_active_uncertain_usage(c: &Context<'_>, customer: &str
 }
 
 pub(super) async fn check(c: Context<'_>) {
-    if std::env::var("WEBDOCK_ALLOWANCE_PREVIEW_RACE_TEST").as_deref() == Ok("1") {
+    if std::env::var("SPITZLI_ALLOWANCE_PREVIEW_RACE_TEST").as_deref() == Ok("1") {
         preview_races::check(&c).await;
         return;
     }

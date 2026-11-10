@@ -68,9 +68,9 @@ pub fn fixture_core_configuration(
     console: &str,
 ) -> Result<spitzli_core::config::PlatformConfig, spitzli_core::ContractError> {
     spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
-        ("WEBDOCK_AUTH_ORIGIN".into(), auth.into()),
-        ("WEBDOCK_CONSOLE_ORIGIN".into(), console.into()),
-        ("WEBDOCK_FEATURES".into(), "{\"mail\":\"enabled\"}".into()),
+        ("SPITZLI_AUTH_ORIGIN".into(), auth.into()),
+        ("SPITZLI_CONSOLE_ORIGIN".into(), console.into()),
+        ("SPITZLI_FEATURES".into(), "{\"mail\":\"enabled\"}".into()),
     ]))
 }
 pub fn fixture_platform_id(run: &str) -> TestResult<String> {
@@ -420,15 +420,15 @@ pub struct Fixture {
 impl Fixture {
     /// Explicit public paths only; never fall back to existing project/operator environment.
     async fn planned(source: Source, mode: Mode) -> TestResult<Self> {
-        if std::env::var("WEBDOCK_MANAGED_MAIL_OUTBOX_DOCKER_TEST").as_deref() != Ok("1") {
+        if std::env::var("SPITZLI_MANAGED_MAIL_OUTBOX_DOCKER_TEST").as_deref() != Ok("1") {
             return Err("explicit Task4 Docker opt-in required");
         }
         let binary = PathBuf::from(
-            std::env::var_os("WEBDOCK_MAIL_RUNTIME_BINARY")
+            std::env::var_os("SPITZLI_MAIL_RUNTIME_BINARY")
                 .ok_or("absolute actual Mail binary required")?,
         );
         let gateway_binary = PathBuf::from(
-            std::env::var_os("WEBDOCK_MAIL_GATEWAY_BINARY")
+            std::env::var_os("SPITZLI_MAIL_GATEWAY_BINARY")
                 .ok_or("absolute actual gateway binary required")?,
         );
         if !binary.is_absolute()

@@ -556,10 +556,10 @@ fn cli_is_runnable_and_documents_explicit_configuration() {
 
 #[cfg(feature = "docker")]
 #[tokio::test]
-#[ignore = "requires explicit disposable WEBDOCK_DOCKER_TEST_IMAGE and local Engine"]
+#[ignore = "requires explicit disposable SPITZLI_DOCKER_TEST_IMAGE and local Engine"]
 async fn real_docker_executor_obeys_outbound_control_leases_and_reports_observations() {
     use bollard::{Docker, query_parameters::*};
-    let image = std::env::var("WEBDOCK_DOCKER_TEST_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_DOCKER_TEST_IMAGE").unwrap();
     let dir = tempfile::Builder::new()
         .permissions(std::fs::Permissions::from_mode(0o700))
         .tempdir()

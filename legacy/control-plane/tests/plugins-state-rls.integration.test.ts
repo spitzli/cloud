@@ -9,7 +9,7 @@ import {
   requestPluginState,
   readInstalledPlugins,
 } from "../src/modules/plugins/store";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "plugin state bootstrap, CAS and idempotency use restricted live authority",
   async () => {

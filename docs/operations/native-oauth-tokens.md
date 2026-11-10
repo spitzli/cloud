@@ -1,6 +1,6 @@
 # Native OAuth token exchange and refresh
 
-`WEBDOCK_OAUTH_TOKENS_BACKEND=tokio-postgres` opts code exchange, token persistence,
+`SPITZLI_OAUTH_TOKENS_BACKEND=tokio-postgres` opts code exchange, token persistence,
 refresh and private signing reads into direct PostgreSQL. Default `sea-orm` stays
 unchanged; unknown values fail startup. Core composes native grants/security,
 coordinated IDs, cookie/OAuth/client/public-key reads using the existing shared

@@ -137,9 +137,9 @@ impl Drop for Fixture {
 impl Fixture {
     async fn new(outcome: Outcome) -> Self {
         let url =
-            std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_URL").expect("owned_fixture_url_required");
+            std::env::var("SPITZLI_MAIL_RECOVERY_TEST_URL").expect("owned_fixture_url_required");
         let ca = std::fs::read(
-            std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_CA").expect("owned_fixture_ca_required"),
+            std::env::var("SPITZLI_MAIL_RECOVERY_TEST_CA").expect("owned_fixture_ca_required"),
         )
         .unwrap();
         let store = Store::connect_tls(&url, &ca)
@@ -257,8 +257,8 @@ impl Fixture {
             1,
             "ambiguous_provider_outcome_lost_durable_custody"
         );
-        let url = std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_URL").unwrap();
-        let ca = std::fs::read(std::env::var("WEBDOCK_MAIL_RECOVERY_TEST_CA").unwrap()).unwrap();
+        let url = std::env::var("SPITZLI_MAIL_RECOVERY_TEST_URL").unwrap();
+        let ca = std::fs::read(std::env::var("SPITZLI_MAIL_RECOVERY_TEST_CA").unwrap()).unwrap();
         let store = Store::connect_tls(&url, &ca).await.unwrap();
         let state = store.recovery_state().await.unwrap();
         let operation = Uuid::new_v4();
@@ -312,7 +312,7 @@ impl Fixture {
 #[tokio::test]
 #[ignore = "owned TLS PostgreSQL; plugins/mail/tests/fixtures/mailbox-recovery.py"]
 async fn mailbox_unknown_response_retains_custody() {
-    let outcome = match std::env::var("WEBDOCK_MAIL_FIXTURE_OUTCOME")
+    let outcome = match std::env::var("SPITZLI_MAIL_FIXTURE_OUTCOME")
         .unwrap()
         .as_str()
     {
@@ -345,7 +345,7 @@ async fn mailbox_unknown_response_retains_custody() {
 #[tokio::test]
 #[ignore = "owned TLS PostgreSQL; plugins/mail/tests/fixtures/mailbox-recovery.py"]
 async fn reconciliation_partial_completion_retains_custody() {
-    let suspend = std::env::var("WEBDOCK_MAIL_FIXTURE_OUTCOME").unwrap() == "suspend";
+    let suspend = std::env::var("SPITZLI_MAIL_FIXTURE_OUTCOME").unwrap() == "suspend";
     let f = Fixture::new(if suspend {
         Outcome::SuspendLost
     } else {
@@ -379,7 +379,7 @@ async fn reconciliation_partial_completion_retains_custody() {
 async fn mailbox_success_without_metadata_persistence_retains_custody() {
     let f = Fixture::new(Outcome::Success).await;
     let mailbox = f.mailbox("101").await;
-    let refusal = if std::env::var("WEBDOCK_MAIL_FIXTURE_OUTCOME").unwrap() == "skip" {
+    let refusal = if std::env::var("SPITZLI_MAIL_FIXTURE_OUTCOME").unwrap() == "skip" {
         "RETURN NULL;"
     } else {
         "RAISE EXCEPTION 'fixture_metadata_failure';"
@@ -518,7 +518,7 @@ async fn cancelled_mailbox_process_prepare() {
     f.provider.accepted().await;
     assert_eq!(f.count().await, 1);
     std::fs::write(
-        std::env::var("WEBDOCK_MAIL_FIXTURE_ACCEPTED").unwrap(),
+        std::env::var("SPITZLI_MAIL_FIXTURE_ACCEPTED").unwrap(),
         b"accepted",
     )
     .unwrap();
@@ -547,7 +547,7 @@ async fn cancelled_mailbox_process_verify() {
 async fn reconciliation_success_without_metadata_persistence_retains_custody() {
     let f = Fixture::new(Outcome::Success).await;
     f.plugin.engine_password("101").await.unwrap();
-    let refusal = if std::env::var("WEBDOCK_MAIL_FIXTURE_OUTCOME").unwrap() == "skip" {
+    let refusal = if std::env::var("SPITZLI_MAIL_FIXTURE_OUTCOME").unwrap() == "skip" {
         "RETURN NULL;"
     } else {
         "RAISE EXCEPTION 'fixture_metadata_failure';"

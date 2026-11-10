@@ -50,7 +50,7 @@ fn authorization(p: &spitzli_plugin_protocol::storage::StoragePlan) -> StorageAu
 #[ignore = "owns exact MinIO resources and a disposable PostgreSQL source/metadata database"]
 async fn durable_exports_diagnostics_and_binary_delivery_use_exact_owned_bytes() {
     let f: Fixture = serde_json::from_slice(
-        &std::fs::read(std::env::var("WEBDOCK_ARCHIVES_FIXTURE").unwrap()).unwrap(),
+        &std::fs::read(std::env::var("SPITZLI_ARCHIVES_FIXTURE").unwrap()).unwrap(),
     )
     .unwrap();
     let staging = tempfile::Builder::new()

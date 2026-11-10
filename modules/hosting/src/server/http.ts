@@ -11,9 +11,9 @@ export function createHostingHttp(dependencies: Dependencies) {
     // region without claiming its global CDN/control plane is EU-only.
     const allowed =
       dependencies.env.VERCEL === "1"
-        ? dependencies.env.WEBDOCK_HOSTING_CONTROL_PLANE === "vercel-fra1" &&
+        ? dependencies.env.SPITZLI_HOSTING_CONTROL_PLANE === "vercel-fra1" &&
           dependencies.env.VERCEL_REGION === "fra1"
-        : dependencies.env.WEBDOCK_HOSTING_EU_VERIFIED === "true";
+        : dependencies.env.SPITZLI_HOSTING_EU_VERIFIED === "true";
     if (!allowed)
       throw new HostingError(
         503,

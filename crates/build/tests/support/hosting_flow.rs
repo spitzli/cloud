@@ -80,7 +80,7 @@ async fn publication_recipe(remote_enabled: bool, frontend_enabled: bool) {
  use base64::Engine;let credential=base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(Sha256::digest(f.nonce.as_bytes()));sql(&f.owner,"INSERT INTO webdock_auth.git_worker(id,credential_hash,enabled,country,isolation,evidence,capacity) VALUES($1,$2,true,'ZZ','microvm','unverified local disposable test worker',1)",vec![worker_id.clone().into(),hex::encode(Sha256::digest(credential.as_bytes())).into()]).await;
  let repository=LocalRepository{path:tempfile::tempdir().unwrap()};
  let recipe=if frontend_enabled {spitzli_build::frontend::RECIPE} else {"dockerfile"};
- let vm_root=if frontend_enabled {std::path::PathBuf::from(std::env::var_os("WEBDOCK_FRONTEND_VM_ROOT").expect("new owned frontend VM"))} else {std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.runtime-test/build-vm")}.canonicalize().unwrap();
+ let vm_root=if frontend_enabled {std::path::PathBuf::from(std::env::var_os("SPITZLI_FRONTEND_VM_ROOT").expect("new owned frontend VM"))} else {std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.runtime-test/build-vm")}.canonicalize().unwrap();
  std::fs::write(repository.path.path().join("Dockerfile"),"FROM scratch\nCOPY --chmod=755 busybox /bin/busybox\nCOPY --chmod=755 musl /lib/ld-musl-x86_64.so.1\nSHELL [\"/bin/busybox\",\"sh\",\"-c\"]\nARG BUILD_TOKEN\nRUN echo source-commit-built-in-isolated-vm; echo $BUILD_TOKEN\nENTRYPOINT [\"/bin/busybox\",\"true\"]\n").unwrap();
  if frontend_enabled {
   std::fs::create_dir(repository.path.path().join(".webdock")).unwrap();
@@ -91,9 +91,9 @@ async fn publication_recipe(remote_enabled: bool, frontend_enabled: bool) {
  }
  std::fs::copy(vm_root.join("rootfs/bin/busybox"),repository.path.path().join("busybox")).unwrap();std::fs::copy(vm_root.join("rootfs/lib/ld-musl-x86_64.so.1"),repository.path.path().join("musl")).unwrap();for args in [vec!["init","-b","main"],vec!["add","--all"],vec!["-c","user.name=Fixture","-c","user.email=fixture@example.invalid","commit","-m","fixture"]]{assert!(std::process::Command::new("git").env("GIT_CONFIG_GLOBAL","/dev/null").env("GIT_CONFIG_NOSYSTEM","1").arg("-C").arg(repository.path.path()).args(args).output().unwrap().status.success());}
  let mut auth_options=sea_orm::ConnectOptions::new(std::env::var("AUTH_DATABASE_URL").unwrap());auth_options.max_connections(1).acquire_timeout(std::time::Duration::from_secs(1));let auth=Database::connect(auth_options).await.unwrap();
- let hosting=Arc::new(HostingService::new(db("DATABASE_URL").await,auth.clone(),db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),std::env::var("BETTER_AUTH_SECRET").unwrap(),Arc::new(spitzli_persistence::IdAllocator::new(db("DATABASE_URL").await,spitzli_ids::Identity::platform(0,2).unwrap()))).await.unwrap().with_session_authority(browser.identity.clone(),Some(browser.browser.clone())));
+ let hosting=Arc::new(HostingService::new(db("DATABASE_URL").await,auth.clone(),db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),std::env::var("BETTER_AUTH_SECRET").unwrap(),Arc::new(spitzli_persistence::IdAllocator::new(db("DATABASE_URL").await,spitzli_ids::Identity::platform(0,2).unwrap()))).await.unwrap().with_session_authority(browser.identity.clone(),Some(browser.browser.clone())));
  let evidence_repository_path=repository.path.path().to_path_buf();
- let service=Arc::new(BuildService::new(db("DATABASE_URL").await,db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),Arc::new(spitzli_persistence::IdAllocator::new(db("DATABASE_URL").await,spitzli_ids::Identity::platform(0,2).unwrap())),hosting.clone(),registry.address.to_string()).await.unwrap().with_session_authority(auth,browser.identity.clone(),Some(browser.browser.clone())).await.unwrap().with_repository_provider(Arc::new(repository)));
+ let service=Arc::new(BuildService::new(db("DATABASE_URL").await,db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),Arc::new(spitzli_persistence::IdAllocator::new(db("DATABASE_URL").await,spitzli_ids::Identity::platform(0,2).unwrap())),hosting.clone(),registry.address.to_string()).await.unwrap().with_session_authority(auth,browser.identity.clone(),Some(browser.browser.clone())).await.unwrap().with_repository_provider(Arc::new(repository)));
 
  let listener=tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();let address=listener.local_addr().unwrap();let lose_ack=Arc::new(std::sync::atomic::AtomicBool::new(true));
  let router=spitzli_build::http::worker_router(service.clone()).layer(axum::middleware::from_fn(move|request:axum::extract::Request,next:axum::middleware::Next|{let lost=lose_ack.clone();async move{let complete=request.uri().path()=="/complete";let response=next.run(request).await;if complete&&response.status().is_success()&&lost.swap(false,std::sync::atomic::Ordering::SeqCst){use axum::response::IntoResponse;axum::http::StatusCode::SERVICE_UNAVAILABLE.into_response()}else{response}}}));
@@ -109,7 +109,7 @@ async fn publication_recipe(remote_enabled: bool, frontend_enabled: bool) {
  let original_source_commit=claim["sourceSHA"].as_str().unwrap().to_owned();
  let store_dir=tempfile::tempdir().unwrap();use std::os::unix::fs::PermissionsExt;std::fs::set_permissions(store_dir.path(),std::fs::Permissions::from_mode(0o700)).unwrap();let store=spitzli_build::artifact::ArtifactStore::open(store_dir.path().into(),1024*1024*1024).unwrap();
 
- assert_eq!(std::env::var("WEBDOCK_BUILD_VM_TEST").as_deref(),Ok("1"));
+ assert_eq!(std::env::var("SPITZLI_BUILD_VM_TEST").as_deref(),Ok("1"));
  let hashes=std::fs::read_to_string(vm_root.join("SHA256SUMS")).unwrap();let expected=|name:&str|hashes.lines().find(|l|l.ends_with(&format!("/{name}"))).unwrap().split_whitespace().next().unwrap().to_owned();
  let vm_image=spitzli_build::execution::VmImage::new(vm_root.join("base.raw"),expected("base.raw")).unwrap().with_boot(vm_root.join("kernel"),expected("kernel"),vm_root.join("initrd"),expected("initrd")).unwrap();
  let vm_image=if frontend_enabled {vm_image.with_frontend_output()}else{vm_image};
@@ -122,7 +122,7 @@ async fn publication_recipe(remote_enabled: bool, frontend_enabled: bool) {
  let stored=store.put(&f.cid,build,generation,&artifact_bytes).unwrap();
  let remote = if remote_enabled {
   #[derive(serde::Deserialize)] struct S3Fixture {config: spitzli_object_storage::S3Config, credentials: spitzli_object_storage::Credentials}
-  let config: S3Fixture=serde_json::from_slice(&std::fs::read(std::env::var_os("WEBDOCK_S3_TEST_CONFIG").expect("private owned MinIO fixture")).unwrap()).unwrap();
+  let config: S3Fixture=serde_json::from_slice(&std::fs::read(std::env::var_os("SPITZLI_S3_TEST_CONFIG").expect("private owned MinIO fixture")).unwrap()).unwrap();
   Some(spitzli_build::remote::RemoteArtifacts::new(spitzli_object_storage::Store::loopback_test(config.config,config.credentials).unwrap()))
  } else {None};
  let stored=if let Some(remote)=&remote {remote.persist(&store,&stored).await.unwrap()} else {stored};

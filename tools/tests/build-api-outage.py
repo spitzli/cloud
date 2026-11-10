@@ -114,7 +114,7 @@ def main():
  spec=importlib.util.spec_from_file_location('owned_runtime',Path(__file__).with_name('kubernetes-build-runtime.py'));runtime=importlib.util.module_from_spec(spec);spec.loader.exec_module(runtime)
  oci=runtime.private_file(args.oci.resolve());assert oci.stat().st_size<=512*1024**2
  work=Path(tempfile.mkdtemp(prefix='owned-',dir=ROOT/'.runtime-test/build-api-outage'));work.chmod(0o700)
- os.environ['WEBDOCK_BUILD_OUTAGE_TEST_WORK']=str(work)
+ os.environ['SPITZLI_BUILD_OUTAGE_TEST_WORK']=str(work)
  before=host('snapshot');write(work/'host-before.json',before)
  write(work/'host-ready-before.json',host('ready'))
  record=ownership=kubeconfig=None;stopped=False;thread=None;result={}

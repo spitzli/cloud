@@ -21,7 +21,7 @@
 ## Task1: Identity compatibility configuration
 
 - [x] Add tests for default versus explicitly retained RP/issuer origins and invalid production origins.
-- [x] Add startup parsing for WEBDOCK_PASSKEY_RP_ORIGIN and WEBDOCK_OAUTH_ISSUER_ORIGIN, defaulting to canonical auth origin.
+- [x] Add startup parsing for SPITZLI_PASSKEY_RP_ORIGIN and SPITZLI_OAUTH_ISSUER_ORIGIN, defaulting to canonical auth origin.
 - [x] Add IdentityService::with_passkeys_for_account(account_origin,rp_origin); old with_passkeys behavior remains unchanged. Test exact allowed origins, retained rp.id and foreign-origin exclusion without a database.
 - [x] Wire Core account/reset origin to new canonical Auth and OAuth/BrowserConfig issuer to the retained explicit issuer.
 - [x] Execute relevant real Rust tests/Clippy on EU BUILD; no native compilation on the desktop.

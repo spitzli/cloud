@@ -112,7 +112,7 @@ async fn provider(
     axum::Json(body)
 }
 #[tokio::test]
-#[ignore = "requires owned PostgreSQL18 (WEBDOCK_PLUGIN_TEST_LOCAL_POSTGRES=1 on qualified EU runner)"]
+#[ignore = "requires owned PostgreSQL18 (SPITZLI_PLUGIN_TEST_LOCAL_POSTGRES=1 on qualified EU runner)"]
 async fn atomic_attach_lost_replies_uri_authority_detach_and_key_race() {
     let mut f = fixture::JobFixture::start_with_connections(4).await;
     sql(&f.owner, "INSERT INTO webdock_auth.plan(id,name,limits,is_default,updated_by) VALUES('9999','BYOK test','{\"neon.database\":0,\"postgres.shared\":2,\"memory\":512}',true,'operator')", vec![]).await;

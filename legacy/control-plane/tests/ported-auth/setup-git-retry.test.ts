@@ -16,8 +16,8 @@ test("Git setup recovers terminal release with a fresh build of the pinned commi
     f = await createSetupFixture(db);
   const originalFetch = globalThis.fetch;
   const previous = {
-    id: process.env.WEBDOCK_GITHUB_APP_ID,
-    key: process.env.WEBDOCK_GITHUB_APP_PRIVATE_KEY,
+    id: process.env.SPITZLI_GITHUB_APP_ID,
+    key: process.env.SPITZLI_GITHUB_APP_PRIVATE_KEY,
   };
   let connectionID: string | undefined;
   try {
@@ -138,8 +138,8 @@ test("Git setup recovers terminal release with a fresh build of the pinned commi
     });
     assert.equal(resumed.resources.buildID, undefined);
     assert.equal(resumed.preview.sourceSHA, sha);
-    process.env.WEBDOCK_GITHUB_APP_ID = "123";
-    process.env.WEBDOCK_GITHUB_APP_PRIVATE_KEY = generateKeyPairSync("rsa", {
+    process.env.SPITZLI_GITHUB_APP_ID = "123";
+    process.env.SPITZLI_GITHUB_APP_PRIVATE_KEY = generateKeyPairSync("rsa", {
       modulusLength: 2048,
     })
       .privateKey.export({ type: "pkcs8", format: "pem" })
@@ -247,8 +247,8 @@ test("Git setup recovers terminal release with a fresh build of the pinned commi
   } finally {
     globalThis.fetch = originalFetch;
     for (const [name, value] of [
-      ["WEBDOCK_GITHUB_APP_ID", previous.id],
-      ["WEBDOCK_GITHUB_APP_PRIVATE_KEY", previous.key],
+      ["SPITZLI_GITHUB_APP_ID", previous.id],
+      ["SPITZLI_GITHUB_APP_PRIVATE_KEY", previous.key],
     ]) {
       if (value === undefined) delete process.env[name!];
       else process.env[name!] = value;

@@ -2,7 +2,7 @@ import { configurePayloadSSO } from "@spitzli/payload-sso";
 import { projectBridgeUser } from "@spitzli/cms-bridge/auth";
 import { payloadEnvironment } from "./config.ts";
 export const sso: ReturnType<typeof configurePayloadSSO> | null = process.env
-  .WEBDOCK_SSO_CLIENT_ID
+  .SPITZLI_SSO_CLIENT_ID
   ? configurePayloadSSO({
       successPath: "/cms",
       logoutPath: "/cms",

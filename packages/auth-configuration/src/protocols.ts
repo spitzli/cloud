@@ -1,8 +1,8 @@
 import { readAuthProviderConfiguration } from "./index";
 type Environment = Record<string, string | undefined>;
 export function readAuthProtocolSelection(env: Environment) {
-  const browserProvider = readAuthProviderConfiguration(env.WEBDOCK_AUTH_PROVIDER).provider;
-  const oauthProvider = env.WEBDOCK_OAUTH_PROVIDER ??
+  const browserProvider = readAuthProviderConfiguration(env.SPITZLI_AUTH_PROVIDER).provider;
+  const oauthProvider = env.SPITZLI_OAUTH_PROVIDER ??
     (browserProvider === "better-auth" ? "better-auth" : "disabled");
   if (oauthProvider !== "better-auth" && oauthProvider !== "disabled")
     throw Error("Unsupported OAuth provider; select better-auth or disabled");

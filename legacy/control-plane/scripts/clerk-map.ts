@@ -6,7 +6,7 @@ import { enrollClerkIdentity } from "../src/modules/auth/clerk-mappings";
 const [file, mode] = process.argv.slice(2);
 if (!file || (mode !== undefined && mode !== "--apply"))
   throw Error("Usage: bun scripts/clerk-map.ts manifest.json [--apply]");
-const config = readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER);
+const config = readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER);
 if (config.provider !== "clerk")
   throw Error("Configure the intended Clerk issuer before mapping identities");
 const value: unknown = JSON.parse(await readFile(file, "utf8"));

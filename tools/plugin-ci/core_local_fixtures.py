@@ -121,7 +121,7 @@ def website_gate(pg,output):
     # Match install.ts: provision the website namespace before Payload's table migrations.
     pg.query('CREATE SCHEMA webdock AUTHORIZATION quality;',name)
     with socket.socket() as s:s.bind(('127.0.0.1',0));port=s.getsockname()[1]
-    env=clean_environment();env.update({'TEST_BASE_URL':f'http://127.0.0.1:{port}','NEXT_PUBLIC_SERVER_URL':f'http://127.0.0.1:{port}','DATABASE_URL':url,'DATABASE_URL_UNPOOLED':url,'PAYLOAD_SECRET':secrets.token_hex(32),'PAYLOAD_MIGRATING':'true','WEBDOCK_OWNED_WEBSITE_FIXTURE':'1','WEBDOCK_SSO_ENFORCE':'true','OPERATOR_EMAIL':'owned-qualification@example.test','NEXT_TELEMETRY_DISABLED':'1','NODE_ENV':'production'})
+    env=clean_environment();env.update({'TEST_BASE_URL':f'http://127.0.0.1:{port}','NEXT_PUBLIC_SERVER_URL':f'http://127.0.0.1:{port}','DATABASE_URL':url,'DATABASE_URL_UNPOOLED':url,'PAYLOAD_SECRET':secrets.token_hex(32),'PAYLOAD_MIGRATING':'true','SPITZLI_OWNED_WEBSITE_FIXTURE':'1','SPITZLI_SSO_ENFORCE':'true','OPERATOR_EMAIL':'owned-qualification@example.test','NEXT_TELEMETRY_DISABLED':'1','NODE_ENV':'production'})
     def run(label,args,cwd=ROOT):
         log=output/(label+'.log')
         with log.open('xb') as out:result=subprocess.run(args,cwd=cwd,env=env,stdout=out,stderr=subprocess.STDOUT,timeout=1800)
@@ -178,7 +178,7 @@ def recovery_gate(pg,output):
     flags_sql="SELECT jsonb_build_object('superuser',r.rolsuper,'bypassRLS',r.rolbypassrls,'inherit',r.rolinherit,'createDB',r.rolcreatedb,'createRole',r.rolcreaterole,'dbOwner',pg_get_userbyid(d.datdba))::text FROM pg_roles r,pg_database d WHERE r.rolname='neondb_owner' AND d.datname='"+database+"';"
     expected={'superuser':False,'bypassRLS':False,'inherit':False,'createDB':False,'createRole':False,'dbOwner':'quality'}
     role_before=json.loads(pg.query(flags_sql));require(role_before==expected,'Restricted recovery owner bootstrap is too privileged')
-    env=clean_environment();env.update({'WEBDOCK_TEST_NEON_RECOVERY':'true','WEBDOCK_TEST_NEON_RECOVERY_DATABASE_URL':url,'WEBDOCK_TEST_NEON_RECOVERY_BOOTSTRAP_DATABASE_URL':bootstrap})
+    env=clean_environment();env.update({'SPITZLI_TEST_NEON_RECOVERY':'true','SPITZLI_TEST_NEON_RECOVERY_DATABASE_URL':url,'SPITZLI_TEST_NEON_RECOVERY_BOOTSTRAP_DATABASE_URL':bootstrap})
     test=ROOT/'tools/migrations/neon-enrollment-recovery.integration.test.ts';migration=ROOT/'crates/persistence/migrations/0074_neon_enrollment_recovery.sql'
     args=['bun','--no-env-file','test',str(test.relative_to(ROOT))];log=output/'neon-owner-recovery-pg18.log'
     with log.open('xb') as out:result=subprocess.run(args,env=env,stdout=out,stderr=subprocess.STDOUT,timeout=1800)

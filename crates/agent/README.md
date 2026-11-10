@@ -33,7 +33,7 @@ cargo check -p spitzli-agent --no-default-features --features docker
 Normal tests validate journal recovery/fencing, default denial, revocation, constrained Docker configuration, chart integrity and actual Helm rendering/linting into typed Kubernetes objects. The ignored Engine integration test requires an explicit disposable image digest:
 
 ```sh
-WEBDOCK_DOCKER_TEST_IMAGE=docker.io/library/busybox@sha256:<reviewed-digest> \
+SPITZLI_DOCKER_TEST_IMAGE=docker.io/library/busybox@sha256:<reviewed-digest> \
   cargo test -p spitzli-agent --test docker_lifecycle -- --ignored
 ```
 
@@ -115,15 +115,15 @@ owned local integration backend, not the selected production managed-Mail placem
 The real adapter acceptance is opt-in:
 
 ```sh
-WEBDOCK_MAIL_RUNTIME_DOCKER_TEST=1 \
-WEBDOCK_MAIL_RUNTIME_IMAGE=<reviewed-restricted-repository@sha256:digest> \
+SPITZLI_MAIL_RUNTIME_DOCKER_TEST=1 \
+SPITZLI_MAIL_RUNTIME_IMAGE=<reviewed-restricted-repository@sha256:digest> \
 cargo test -p spitzli-agent --test mail_runtime --locked -- --ignored
 ```
 
 The separate `spitzli-agent-control` test `native_mail` exercises the real restricted database,
 enrolled daemon and engine together, including lost checkpoint/completion acknowledgements,
 retained suspend/resume and enrollment revocation/re-enrollment. It requires the verified local
-database fixture, `WEBDOCK_MAIL_NATIVE_DOCKER_TEST=1` and the same explicit image variable.
+database fixture, `SPITZLI_MAIL_NATIVE_DOCKER_TEST=1` and the same explicit image variable.
 
 ## Reviewed plugin artifacts and mounts
 
@@ -241,9 +241,9 @@ purge. Stopped generation namespaces remain retained. Compatible code-only signe
 update/rollback acceptance is in progress and is not claimed by the loopback tests below.
 
 The `plugin_runtime` test target uses a loopback Kubernetes API fixture by default. Its ignored
-real-cluster test requires explicit `WEBDOCK_PLUGIN_RUNTIME_TEST_KUBECONFIG`,
-`WEBDOCK_PLUGIN_RUNTIME_TEST_CONTEXT` and private `WEBDOCK_PLUGIN_RUNTIME_TEST_CLAIM` paths.
+real-cluster test requires explicit `SPITZLI_PLUGIN_RUNTIME_TEST_KUBECONFIG`,
+`SPITZLI_PLUGIN_RUNTIME_TEST_CONTEXT` and private `SPITZLI_PLUGIN_RUNTIME_TEST_CLAIM` paths.
 Only owned `kind-webdock-rust-*`/`k3d-webdock-rust-*` contexts are accepted by default. The exact
-`webdock-dev` context additionally requires `WEBDOCK_PLUGIN_RUNTIME_ALLOW_DEV_K3S=true` and verified
+`webdock-dev` context additionally requires `SPITZLI_PLUGIN_RUNTIME_ALLOW_DEV_K3S=true` and verified
 `https://127.0.0.1:56443`. The claim requires a `test-*` platform identity and a fresh derived
 namespace; the test removes only that namespace using UID/resource-version preconditions.

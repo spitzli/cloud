@@ -21,8 +21,8 @@ StateDirectoryMode=0700
 RuntimeDirectory=webdock-hosting-agent
 RuntimeDirectoryMode=0700
 Environment=PYTHONDONTWRITEBYTECODE=1
-Environment=WEBDOCK_KUBECTL_CACHE_DIR=/var/lib/webdock-hosting-agent/kube-cache
-Environment=WEBDOCK_EXECUTOR_LOCK=/run/webdock-hosting-agent/executor.lock
+Environment=SPITZLI_KUBECTL_CACHE_DIR=/var/lib/webdock-hosting-agent/kube-cache
+Environment=SPITZLI_EXECUTOR_LOCK=/run/webdock-hosting-agent/executor.lock
 NoNewPrivileges=true
 CapabilityBoundingSet=
 ProtectSystem=strict

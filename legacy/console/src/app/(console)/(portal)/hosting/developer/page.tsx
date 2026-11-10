@@ -6,7 +6,7 @@ import { CodeExample } from '@/components/code-example';
 export default async function Developer() {
   if (!(await getStudioSession())) redirect('/api/sso/login?returnTo=%2Fhosting%2Fdeveloper');
   const { t } = await getRequestI18n();
-  const origin = process.env.WEBDOCK_STUDIO_ORIGIN || process.env.NEXT_PUBLIC_SERVER_URL || 'https://studio.webdock.dev';
+  const origin = process.env.SPITZLI_STUDIO_ORIGIN || process.env.NEXT_PUBLIC_SERVER_URL || 'https://studio.webdock.dev';
   return <div className="access-page">
     <header className="account-heading"><div><h1>{t('Developer tools')}</h1><p>{t('Connect your tools, inspect applications and follow deployment progress.')}</p></div></header>
     <section className="panel">
@@ -22,9 +22,9 @@ export default async function Developer() {
     <section className="panel">
       <h2>{t('Hosting API')}</h2>
       <p>{t('Use a Webdock OAuth access token with hosting:read and the MCP resource as its audience. Replace APP_ID with the application ID shown on its overview.')}</p>
-      <CodeExample label={t('Inspect an application')} code={`curl --fail-with-body '${origin}/api/hosting/apps/APP_ID' \\\n  -H "Authorization: Bearer $WEBDOCK_ACCESS_TOKEN"`} />
+      <CodeExample label={t('Inspect an application')} code={`curl --fail-with-body '${origin}/api/hosting/apps/APP_ID' \\\n  -H "Authorization: Bearer $SPITZLI_ACCESS_TOKEN"`} />
       <p>{t('Find the current operation ID in the application response. Follow it until the requested change is confirmed.')}</p>
-      <CodeExample label={t('Inspect an operation')} code={`curl --fail-with-body '${origin}/api/hosting/operations/OPERATION_ID' \\\n  -H "Authorization: Bearer $WEBDOCK_ACCESS_TOKEN"`} />
+      <CodeExample label={t('Inspect an operation')} code={`curl --fail-with-body '${origin}/api/hosting/operations/OPERATION_ID' \\\n  -H "Authorization: Bearer $SPITZLI_ACCESS_TOKEN"`} />
       <dl>
         <dt>202</dt><dd>{t('Accepted and queued. The change has not finished yet.')}</dd>
         <dt>401 / 403</dt><dd>{t('Check the token, its scopes and your workspace permissions.')}</dd>

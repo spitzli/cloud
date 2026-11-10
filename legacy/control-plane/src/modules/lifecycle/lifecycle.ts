@@ -70,7 +70,7 @@ function input(value: unknown, consoleRequest=false): Input {
 }
 
 async function operator(request: Request, value: Input) {
-  const clientID = process.env.WEBDOCK_STUDIO_CLIENT_ID;
+  const clientID = process.env.SPITZLI_STUDIO_CLIENT_ID;
   const basic = request.headers.get("authorization") || "";
   if (
     !clientID ||
@@ -301,7 +301,7 @@ async function handleLifecycle(request: Request, consoleRequest:boolean): Promis
             }
             if (
               row.customer_id !== value.customerID ||
-              row.client_id === process.env.WEBDOCK_STUDIO_CLIENT_ID ||
+              row.client_id === process.env.SPITZLI_STUDIO_CLIENT_ID ||
               !redirects.length ||
               redirects.some(
                 (url) =>

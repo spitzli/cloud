@@ -1,6 +1,6 @@
 import { createMailGateway } from "./server.ts";
 const required = (name: string) => { const value=process.env[name];if(!value)throw Error(`${name} is required`);return value; };
-const authOrigin=new URL(required("WEBDOCK_AUTH_ORIGIN"));
+const authOrigin=new URL(required("SPITZLI_AUTH_ORIGIN"));
 if(authOrigin.protocol!=="https:" || authOrigin.username || authOrigin.password || authOrigin.pathname!=="/" || authOrigin.search || authOrigin.hash)throw Error("Mail control plane requires an HTTPS origin");
 const secret=required("MAIL_GATEWAY_SECRET");
 if(secret.length<32 || secret.length>512 || /\s/.test(secret))throw Error("Invalid Mail gateway secret");

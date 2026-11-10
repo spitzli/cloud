@@ -4,10 +4,10 @@ import { createHash } from 'node:crypto';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwind from '@tailwindcss/vite';
-// Local HTTPS (WEBDOCK_DEV_HTTPS) uses certificates from a locally trusted CA, e.g. mkcert.
-const cert = process.env.WEBDOCK_DEV_TLS_CERT;
-const key = process.env.WEBDOCK_DEV_TLS_KEY;
-const core = process.env.WEBDOCK_DEV_API_ORIGIN ?? 'http://127.0.0.1:3130';
+// Local HTTPS (SPITZLI_DEV_HTTPS) uses certificates from a locally trusted CA, e.g. mkcert.
+const cert = process.env.SPITZLI_DEV_TLS_CERT;
+const key = process.env.SPITZLI_DEV_TLS_KEY;
+const core = process.env.SPITZLI_DEV_API_ORIGIN ?? 'http://127.0.0.1:3130';
 const coreURL = new URL(core);
 if (coreURL.protocol !== 'http:' || !['127.0.0.1', 'localhost', '[::1]'].includes(coreURL.hostname) || coreURL.username || coreURL.password || coreURL.pathname !== '/' || coreURL.search || coreURL.hash) throw new Error('Local Core origin required for the development proxy');
 export default defineConfig({

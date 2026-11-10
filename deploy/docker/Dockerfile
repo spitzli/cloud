@@ -41,6 +41,6 @@ ENTRYPOINT ["/usr/local/bin/spitzli-plugin-controller"]
 
 FROM runtime AS core
 COPY --from=console-build /src/apps/console/dist /opt/webdock/ui
-ENV WEBDOCK_BIND_ADDRESS=0.0.0.0 PORT=3130 WEBDOCK_UI_DIST=/opt/webdock/ui
+ENV SPITZLI_BIND_ADDRESS=0.0.0.0 PORT=3130 SPITZLI_UI_DIST=/opt/webdock/ui
 EXPOSE 3130
 ENTRYPOINT ["/usr/local/bin/spitzli-control-plane"]

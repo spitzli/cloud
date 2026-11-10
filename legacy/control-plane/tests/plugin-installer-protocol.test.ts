@@ -3,12 +3,12 @@ import { pluginInstallerProtocol } from "../src/protocols/plugin-installer";
 
 test("installer HTTP authenticates before dispatch and bounds JSON without disclosing failures", async () => {
   const previous = {
-    token: process.env.WEBDOCK_PLUGIN_INSTALLER_TOKEN,
-    file: process.env.WEBDOCK_PLUGIN_RUNTIME_FILE,
+    token: process.env.SPITZLI_PLUGIN_INSTALLER_TOKEN,
+    file: process.env.SPITZLI_PLUGIN_RUNTIME_FILE,
   };
   const token = "fixture-installer-" + "a".repeat(40);
-  process.env.WEBDOCK_PLUGIN_INSTALLER_TOKEN = token;
-  process.env.WEBDOCK_PLUGIN_RUNTIME_FILE = "/fixture/runtime.json";
+  process.env.SPITZLI_PLUGIN_INSTALLER_TOKEN = token;
+  process.env.SPITZLI_PLUGIN_RUNTIME_FILE = "/fixture/runtime.json";
   let calls = 0;
   const { app } = pluginInstallerProtocol(
     {
@@ -65,10 +65,10 @@ test("installer HTTP authenticates before dispatch and bounds JSON without discl
     expect(calls).toBe(2);
   } finally {
     if (previous.token === undefined)
-      delete process.env.WEBDOCK_PLUGIN_INSTALLER_TOKEN;
-    else process.env.WEBDOCK_PLUGIN_INSTALLER_TOKEN = previous.token;
+      delete process.env.SPITZLI_PLUGIN_INSTALLER_TOKEN;
+    else process.env.SPITZLI_PLUGIN_INSTALLER_TOKEN = previous.token;
     if (previous.file === undefined)
-      delete process.env.WEBDOCK_PLUGIN_RUNTIME_FILE;
-    else process.env.WEBDOCK_PLUGIN_RUNTIME_FILE = previous.file;
+      delete process.env.SPITZLI_PLUGIN_RUNTIME_FILE;
+    else process.env.SPITZLI_PLUGIN_RUNTIME_FILE = previous.file;
   }
 });

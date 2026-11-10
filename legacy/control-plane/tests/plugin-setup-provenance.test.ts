@@ -33,7 +33,7 @@ test("setup save refuses an unattached or foreign provisioning owner in the same
     audit: async () => {},
     requireDatabases: () => {},
     requireMail: () => {},
-    env: { WEBDOCK_SETUP_ENABLED: "true" },
+    env: { SPITZLI_SETUP_ENABLED: "true" },
   } as any);
   const actor: any = {
     subject: "u",

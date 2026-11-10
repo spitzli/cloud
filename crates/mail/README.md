@@ -89,7 +89,7 @@ Run pure/filesystem/TLS contract checks with `cargo test -p spitzli-mail --featu
 
 `cargo test -p spitzli-mail --features test-support --test engine -- --ignored` creates its own pinned Community Edition container and private volumes on an internal Docker network. It exercises real draft replacement, attachments, pinned TLS SMTP delivery between two fixture accounts, JMAP reads/Sent filing and account/management denial, then removes only its own resources. Loopback TCP forwarding reaches the internal network without enabling internet egress. The upstream engine image retains its declared `NET_BIND_SERVICE` file capability in this test; this is not a claim about the separate restricted production wrapper or runtime provisioning parity.
 
-Gateway configuration retains `WEBDOCK_AUTH_ORIGIN`, `MAIL_GATEWAY_SECRET`, `MAIL_BROWSER_ORIGINS`, `MAIL_SEND_INTERNAL_ORIGIN`, `HOST` and `PORT`. The optional `WEBDOCK_MAIL_CONTROL_CA_FILE` supplies a bounded public certificate bundle; hostname verification remains enabled. Production builds omit `test-support`.
+Gateway configuration retains `SPITZLI_AUTH_ORIGIN`, `MAIL_GATEWAY_SECRET`, `MAIL_BROWSER_ORIGINS`, `MAIL_SEND_INTERNAL_ORIGIN`, `HOST` and `PORT`. The optional `SPITZLI_MAIL_CONTROL_CA_FILE` supplies a bounded public certificate bundle; hostname verification remains enabled. Production builds omit `test-support`.
 
 
 The `spitzli-mail-api` executable accepts `--config /absolute/private.json`. Its owned mode-0600 configuration contains `port`, `controlOrigin`, `controlSecret`, optional `controlAuthority`, `payloadDirectory`, `payloadKey` and optional `webmailSecret`. Omitting the Webmail secret disables the internal Webmail route. It binds IPv4 loopback; the public ingress must expose only `/v1/` and health endpoints. `controlSecret` is Core's separate sending-worker credential. The internal Webmail secret belongs to the browser gateway, and each SMTP hook has its own tenant token.
@@ -114,7 +114,7 @@ Recovery and activation wording matches the retained account mail. Native invita
 
 ## Native mailbox configuration
 
-`WEBDOCK_NATIVE_MAIL_CONFIGURATION_ENABLED=true` is an explicit Core opt-in requiring native Mail administration, the agent and mailbox support. The agent separately requires `mailConfigurationEnabled: true` and an available configuration runtime. The optional `MailConfigurationControl` uses the same enrolled UDS/mTLS channel as lifecycle execution; disabled configuration returns no work, and older Core installations may return `Unimplemented` without disconnecting the agent.
+`SPITZLI_NATIVE_MAIL_CONFIGURATION_ENABLED=true` is an explicit Core opt-in requiring native Mail administration, the agent and mailbox support. The agent separately requires `mailConfigurationEnabled: true` and an available configuration runtime. The optional `MailConfigurationControl` uses the same enrolled UDS/mTLS channel as lifecycle execution; disabled configuration returns no work, and older Core installations may return `Unimplemented` without disconnecting the agent.
 
 Native0024 records original session/browser authority and the exact original member ID or operator authority. Removing and recreating a membership cannot revive its earlier admission. Member fencing precedes configuration locks on the same worker transaction. Historical jobs without provenance remain unclaimed and require an explicit authorized retry. Drain the retained configuration worker before enabling this native lane; do not run both controllers against the same queue.
 

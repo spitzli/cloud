@@ -24,14 +24,14 @@ async fn run(db: &sea_orm::DatabaseConnection, sql: &str, values: Vec<sea_orm::V
 #[tokio::test]
 #[ignore = "owned retained-schema restricted-role fixture only"]
 async fn persisted_launch_rechecks_grants_membership_and_session() {
-    let owner = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let owner = Database::connect(guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     // Offline native migrations, including 0014, are installed before this restricted fixture test.
     let auth_url = guarded("AUTH_DATABASE_URL");
     let auth = Database::connect(auth_url.clone()).await.unwrap();
     let db = Database::connect(guarded("DATABASE_URL")).await.unwrap();
-    let worker = Database::connect(guarded("WEBDOCK_PLUGIN_WORKER_DATABASE_URL"))
+    let worker = Database::connect(guarded("SPITZLI_PLUGIN_WORKER_DATABASE_URL"))
         .await
         .unwrap();
     let ids = Arc::new(
@@ -1429,7 +1429,7 @@ async fn agent_lifecycle(
         "module metadata scope is restored"
     );
     tx.rollback().await.unwrap();
-    if std::env::var("WEBDOCK_BACKUP_AUTHORITY_TEST").as_deref() == Ok("yes") {
+    if std::env::var("SPITZLI_BACKUP_AUTHORITY_TEST").as_deref() == Ok("yes") {
         backup_policy_authority_fixture(
             owner, service, hosting, operator, authority, &agent, database,
         )
@@ -2439,7 +2439,7 @@ async fn retired_order_service(cluster: &str) -> DatabaseService {
     DatabaseService::new(
         Database::connect(guarded("DATABASE_URL")).await.unwrap(),
         auth,
-        Database::connect(guarded("WEBDOCK_PLUGIN_WORKER_DATABASE_URL"))
+        Database::connect(guarded("SPITZLI_PLUGIN_WORKER_DATABASE_URL"))
             .await
             .unwrap(),
         identity,
@@ -2478,7 +2478,7 @@ async fn saturated_order_and_agent_pools(
     }
     let auth = limited("AUTH_DATABASE_URL").await;
     let business = limited("DATABASE_URL").await;
-    let worker = limited("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await;
+    let worker = limited("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await;
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();
     let rls = std::env::var("DATABASE_RLS_SECRET").unwrap();
     let ids = Arc::new(
@@ -2595,7 +2595,7 @@ async fn allocation_enqueue_failure_rolls_back(
     let auth_url = guarded("AUTH_DATABASE_URL");
     let auth = Database::connect(auth_url.clone()).await.unwrap();
     let business = Database::connect(guarded("DATABASE_URL")).await.unwrap();
-    let worker = Database::connect(guarded("WEBDOCK_PLUGIN_WORKER_DATABASE_URL"))
+    let worker = Database::connect(guarded("SPITZLI_PLUGIN_WORKER_DATABASE_URL"))
         .await
         .unwrap();
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();

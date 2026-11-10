@@ -49,7 +49,7 @@ struct Fixture {
 impl Fixture {
     async fn new() -> Self {
         let mut url = url::Url::parse(
-            &std::env::var("WEBDOCK_MAIL_PLUGIN_TEST_ADMIN_URL")
+            &std::env::var("SPITZLI_MAIL_PLUGIN_TEST_ADMIN_URL")
                 .expect("disposable PostgreSQL required"),
         )
         .unwrap();

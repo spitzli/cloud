@@ -16,9 +16,9 @@ UMask=0077
 RuntimeDirectory=webdock-postgres-storage
 RuntimeDirectoryMode=0700
 Environment=PYTHONDONTWRITEBYTECODE=1
-Environment=WEBDOCK_DATABASE_STORAGE=1
-Environment=WEBDOCK_STORAGE_CONFIG=/etc/webdock-postgres-storage.json
-Environment=WEBDOCK_STORAGE_SOCKET=/run/webdock-postgres-storage/control.sock
+Environment=SPITZLI_DATABASE_STORAGE=1
+Environment=SPITZLI_STORAGE_CONFIG=/etc/webdock-postgres-storage.json
+Environment=SPITZLI_STORAGE_SOCKET=/run/webdock-postgres-storage/control.sock
 NoNewPrivileges=true
 CapabilityBoundingSet=CAP_SYS_ADMIN CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER
 # Mounts must be in the host namespace, visible to kubelet. Filesystem namespace

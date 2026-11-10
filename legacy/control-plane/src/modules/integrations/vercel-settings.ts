@@ -1,10 +1,10 @@
 export function vercelSettings() {
-  const clientID = process.env.WEBDOCK_VERCEL_CLIENT_ID,
-    clientSecret = process.env.WEBDOCK_VERCEL_CLIENT_SECRET,
-    slug = process.env.WEBDOCK_VERCEL_INTEGRATION_SLUG,
-    teamID = process.env.WEBDOCK_VERCEL_TEAM_ID,
-    teamSlug = process.env.WEBDOCK_VERCEL_TEAM_SLUG,
-    cookieSecret = process.env.WEBDOCK_SSO_COOKIE_SECRET;
+  const clientID = process.env.SPITZLI_VERCEL_CLIENT_ID,
+    clientSecret = process.env.SPITZLI_VERCEL_CLIENT_SECRET,
+    slug = process.env.SPITZLI_VERCEL_INTEGRATION_SLUG,
+    teamID = process.env.SPITZLI_VERCEL_TEAM_ID,
+    teamSlug = process.env.SPITZLI_VERCEL_TEAM_SLUG,
+    cookieSecret = process.env.SPITZLI_SSO_COOKIE_SECRET;
   if (
     !clientID ||
     !clientSecret ||
@@ -21,6 +21,6 @@ export function vercelSettings() {
     teamID,
     teamSlug,
     cookieSecret,
-    origin: process.env.WEBDOCK_STUDIO_ORIGIN || "http://localhost:3120",
+    origin: process.env.SPITZLI_STUDIO_ORIGIN || "http://localhost:3120",
   };
 }

@@ -20,7 +20,7 @@ fn cookie(header: &str) -> &str {
 #[tokio::test]
 #[ignore = "requires parent's explicit owned retained-schema/RLS fixture"]
 async fn bootstrap_authentication_works_without_widening_business_role_permissions() {
-    let migration_url = guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL");
+    let migration_url = guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL");
     let auth_url = guarded("AUTH_DATABASE_URL");
     let runtime_url = guarded("DATABASE_URL");
     let offline = Database::connect(migration_url).await.unwrap();

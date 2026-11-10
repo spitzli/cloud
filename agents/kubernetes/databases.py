@@ -169,7 +169,7 @@ SELECT pg_catalog.pg_terminate_backend(pid) FROM pg_catalog.pg_stat_activity WHE
 
 
 def configuration():
-    path=Path(os.environ.get('WEBDOCK_DATABASE_CONFIG','/etc/webdock-postgres.json'))
+    path=Path(os.environ.get('SPITZLI_DATABASE_CONFIG','/etc/webdock-postgres.json'))
     info=path.stat()
     if path.is_symlink() or info.st_uid!=os.getuid() or info.st_mode&0o077:raise ValueError('Private database configuration required')
     config=json.loads(path.read_text())
@@ -255,7 +255,7 @@ def storage_request(config,action,value):
 
 
 def kubectl(*args,source=None,timeout=25):
-    config=os.environ.get('WEBDOCK_DATABASE_KUBECONFIG')
+    config=os.environ.get('SPITZLI_DATABASE_KUBECONFIG')
     command=['kubectl','--kubeconfig',config] if config else ['k3s','kubectl']
     result=subprocess.run(command+list(args),input=source,capture_output=True,text=True,timeout=timeout)
     if result.returncode or len(result.stdout)>4000000:raise RuntimeError('Database Kubernetes operation failed')

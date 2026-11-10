@@ -4,7 +4,7 @@ Implemented against the Bun Control Plane and Next.js Console. This document des
 
 ## Runtime configuration
 
-Set `WEBDOCK_MODULES` on the **API and worker**, using the same value on every replica. The Console receives public state and its deterministic revision in the authenticated Studio session; no build-time public environment variable or independent Console setting is used.
+Set `SPITZLI_MODULES` on the **API and worker**, using the same value on every replica. The Console receives public state and its deterministic revision in the authenticated Studio session; no build-time public environment variable or independent Console setting is used.
 
 ```json
 {"configVersion":1,"modules":{"mail":{"enabled":false}}}
@@ -20,7 +20,7 @@ The `state` form supports the transition lifecycle:
 
 Use either `enabled` or `state` per entry, never both. `enabled:true` is equivalent to `state:"enabled"`.
 
-`WEBDOCK_API_DOMAINS` and `WEBDOCK_WORKER_DOMAINS` still select which processes own routes and jobs. Module activation never grants process ownership, customer entitlement, membership or project access. The Console hides products if the API does not own their domain (`storage` uses `portal`). A worker assigned to any disabled or unknown product fails before opening its database pool. Shared project/cluster management bindings, internal registry and the platform PostgreSQL database remain core services independent of customer CMS and database products. Shared authenticated hosting-agent transport remains available to reconcile database and Mail resources; customer hosting routes are separately gated.
+`SPITZLI_API_DOMAINS` and `SPITZLI_WORKER_DOMAINS` still select which processes own routes and jobs. Module activation never grants process ownership, customer entitlement, membership or project access. The Console hides products if the API does not own their domain (`storage` uses `portal`). A worker assigned to any disabled or unknown product fails before opening its database pool. Shared project/cluster management bindings, internal registry and the platform PostgreSQL database remain core services independent of customer CMS and database products. Shared authenticated hosting-agent transport remains available to reconcile database and Mail resources; customer hosting routes are separately gated.
 
 ## Safe shutdown
 

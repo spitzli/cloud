@@ -19,7 +19,7 @@ async fn run() -> Result<(), Error> {
     let config = PluginConfig::load(&args.config)?;
     let environment = std::env::vars().collect();
     let platform = spitzli_core::config::PlatformConfig::from_map(&environment)?;
-    let auth_url = required("WEBDOCK_DATABASE_URL")?;
+    let auth_url = required("SPITZLI_DATABASE_URL")?;
     let auth = spitzli_control_plane::db::connect_runtime(
         &auth_url,
         "webdock_auth_bootstrap",
@@ -27,13 +27,13 @@ async fn run() -> Result<(), Error> {
     )
     .await?;
     let business = spitzli_control_plane::db::connect_runtime(
-        &required("WEBDOCK_SESSION_DATABASE_URL")?,
+        &required("SPITZLI_SESSION_DATABASE_URL")?,
         "webdock_auth_runtime",
         platform.production,
     )
     .await?;
     let worker = spitzli_control_plane::db::connect_runtime(
-        &required("WEBDOCK_WORKER_DATABASE_URL")?,
+        &required("SPITZLI_WORKER_DATABASE_URL")?,
         "webdock_worker_runtime",
         platform.production,
     )

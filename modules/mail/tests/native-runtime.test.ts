@@ -12,7 +12,7 @@ const denied = async (): Promise<never> => {
 };
 test("native runtimes keep separate installation configuration without a global locator", () => {
   const enabled = createNativeKeys({
-    env: { WEBDOCK_NATIVE_MAIL_SENDING_ENABLED: "true" },
+    env: { SPITZLI_NATIVE_MAIL_SENDING_ENABLED: "true" },
     authorizeMail: denied,
   });
   const disabled = createNativeKeys({ env: {}, authorizeMail: denied });
@@ -48,7 +48,7 @@ test("native activation refuses first provisioning during draining but permits r
     database,
     identity: { subject: denied },
     env: {
-      WEBDOCK_NATIVE_MAIL_ENABLED: "true",
+      SPITZLI_NATIVE_MAIL_ENABLED: "true",
       MAIL_MANAGED_CLUSTER_ID: "456",
     },
     requireMail: (intent) => {
@@ -169,7 +169,7 @@ test("native activation and reconciliation recheck selected operator authority i
       await db.query('SELECT id FROM webdock_auth."user" WHERE id=$1 FOR SHARE', [subject]);
       return { ...local, role, banned, emailVerified: true, mustChangePassword: false, operatorAuthorized: role === "operator" };
     } },
-    env: { WEBDOCK_NATIVE_MAIL_ENABLED: "true", AUTH_TEST_MAIL: "true" },
+    env: { SPITZLI_NATIVE_MAIL_ENABLED: "true", AUTH_TEST_MAIL: "true" },
     requireMail() {}, withAuthenticatedDatabase: async (_headers, run) => run(),
     getTenant: async () => ({ operator: true, tenant: { status: "active" } }),
     requireAccessOperator: async () => ({ user: { id: "789" } }),

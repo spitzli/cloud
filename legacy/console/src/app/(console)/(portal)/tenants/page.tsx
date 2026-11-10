@@ -46,7 +46,7 @@ export default async function Tenants({searchParams}: {searchParams: Promise<{ch
           href={
             new URL(
               "/account",
-              process.env.WEBDOCK_AUTH_ISSUER ||
+              process.env.SPITZLI_AUTH_ISSUER ||
                 "https://auth.webdock.dev/api/auth",
             ).href
           }
@@ -61,7 +61,7 @@ export default async function Tenants({searchParams}: {searchParams: Promise<{ch
             href={
               new URL(
                 `/invitation?id=${encodeURIComponent(invite.id)}`,
-                process.env.WEBDOCK_AUTH_ISSUER ||
+                process.env.SPITZLI_AUTH_ISSUER ||
                   "https://auth.webdock.dev/api/auth",
               ).href
             }

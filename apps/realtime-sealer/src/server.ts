@@ -5,9 +5,9 @@ import {createHandler} from './handler';
 
 if(import.meta.main){
   process.umask(0o077);
-  const socket=process.env.WEBDOCK_REALTIME_SOCKET;
+  const socket=process.env.SPITZLI_REALTIME_SOCKET;
   const secret=process.env.NEON_REALTIME_SECRET;
-  const db=process.env.WEBDOCK_REALTIME_DATABASE;
+  const db=process.env.SPITZLI_REALTIME_DATABASE;
   if(!socket||!isAbsolute(socket)||!secret||!db)throw Error('Explicit private realtime configuration required');
   await prepareSocket(socket);
   const server=Bun.serve({unix:socket,maxRequestBodySize:2048,fetch:createHandler({secret,db})});await chmod(socket,0o600);

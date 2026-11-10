@@ -90,7 +90,7 @@ pub async fn roundtrip(
     identity: Arc<IdentityService>,
     cookie: &str,
 ) {
-    let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let owner = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     let principal = identity.authenticate_cookie(cookie).await.unwrap().unwrap();
     let directory = tempfile::tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
@@ -324,7 +324,7 @@ pub async fn roundtrip(
             .await
             .unwrap()
             .unwrap();
-        let unscoped = db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await;
+        let unscoped = db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await;
         let visible:Option<bool>=unscoped.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT webdock_rls.plugin_state_continuations($1,'00000000-0000-4000-8000-000000000000'::uuid) AS active",[lease.id().into()])).await.unwrap().unwrap().try_get("","active").unwrap();
         assert!(visible.is_none());
         assert_eq!(

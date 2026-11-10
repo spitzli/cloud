@@ -29,7 +29,7 @@ export function createNativeService(dependencies: NativeServiceDependencies) {
   async function getTenantMailService(headers: Headers, customerID: string) {
     return withAuthenticatedDatabase(headers, async () => {
       const access = await getTenant(headers, customerID);
-      if (env.WEBDOCK_NATIVE_MAIL_ENABLED !== "true") return null;
+      if (env.SPITZLI_NATIVE_MAIL_ENABLED !== "true") return null;
       const [service, settings] = await Promise.all([
         getMailService(database, customerID),
         getPlatformSettings(),
@@ -45,8 +45,8 @@ export function createNativeService(dependencies: NativeServiceDependencies) {
         ).rowCount;
       return {
         service,
-        mailboxesAvailable: env.WEBDOCK_NATIVE_MAILBOXES_ENABLED === "true",
-        sendingAvailable: env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED === "true",
+        mailboxesAvailable: env.SPITZLI_NATIVE_MAILBOXES_ENABLED === "true",
+        sendingAvailable: env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED === "true",
         canReconcile:
           Boolean(verified) &&
           (!service.enabled ||
@@ -66,7 +66,7 @@ export function createNativeService(dependencies: NativeServiceDependencies) {
     input: Record<string, string>,
   ) {
     return withAuthenticatedDatabase(headers, async () => {
-      if (env.WEBDOCK_NATIVE_MAIL_ENABLED !== "true")
+      if (env.SPITZLI_NATIVE_MAIL_ENABLED !== "true")
         throw new MailServiceError("Native Mail is not available yet.");
       const session = await requireAccessOperator(headers);
       await getTenant(headers, customerID);

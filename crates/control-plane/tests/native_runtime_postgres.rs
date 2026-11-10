@@ -259,36 +259,36 @@ async fn actual_core(mode: NativeMode) {
         .env("HOME", private.path())
         .env("NODE_ENV", "development")
         .env("PORT", port.to_string())
-        .env("WEBDOCK_BIND_ADDRESS", "127.0.0.1")
-        .env("WEBDOCK_DATABASE_URL", &urls["webdock_auth_bootstrap"])
+        .env("SPITZLI_BIND_ADDRESS", "127.0.0.1")
+        .env("SPITZLI_DATABASE_URL", &urls["webdock_auth_bootstrap"])
         .env(
-            "WEBDOCK_SESSION_DATABASE_URL",
+            "SPITZLI_SESSION_DATABASE_URL",
             &urls["webdock_auth_runtime"],
         )
         .env(
-            "WEBDOCK_WORKER_DATABASE_URL",
+            "SPITZLI_WORKER_DATABASE_URL",
             &urls["webdock_worker_runtime"],
         )
         .env(
-            "WEBDOCK_REGISTRY_DATABASE_URL",
+            "SPITZLI_REGISTRY_DATABASE_URL",
             &urls["webdock_registry_runtime"],
         )
-        .env("WEBDOCK_AUTH_SECRET", secret)
+        .env("SPITZLI_AUTH_SECRET", secret)
         .env(
             "DATABASE_RLS_SECRET",
             "owned-plugin-jobs-rls-secret-32bytes",
         )
-        .env("WEBDOCK_API_ORIGIN", format!("http://127.0.0.1:{port}"))
-        .env("WEBDOCK_AUTH_ORIGIN", "http://localhost:3125")
-        .env("WEBDOCK_STUDIO_ORIGIN", "http://localhost:3120")
-        .env("WEBDOCK_CONSOLE_ORIGIN", "http://localhost:3121")
-        .env("WEBDOCK_FEATURES", "{}")
+        .env("SPITZLI_API_ORIGIN", format!("http://127.0.0.1:{port}"))
+        .env("SPITZLI_AUTH_ORIGIN", "http://localhost:3125")
+        .env("SPITZLI_STUDIO_ORIGIN", "http://localhost:3120")
+        .env("SPITZLI_CONSOLE_ORIGIN", "http://localhost:3121")
+        .env("SPITZLI_FEATURES", "{}")
         .env(
-            "WEBDOCK_ID_BACKEND",
+            "SPITZLI_ID_BACKEND",
             if native { "tokio-postgres" } else { "sea-orm" },
         )
         .env(
-            "WEBDOCK_SESSION_READ_BACKEND",
+            "SPITZLI_SESSION_READ_BACKEND",
             if native_session {
                 "tokio-postgres"
             } else {
@@ -296,7 +296,7 @@ async fn actual_core(mode: NativeMode) {
             },
         );
     command.env(
-        "WEBDOCK_SESSION_MANAGEMENT_BACKEND",
+        "SPITZLI_SESSION_MANAGEMENT_BACKEND",
         if native_management {
             "tokio-postgres"
         } else {
@@ -304,7 +304,7 @@ async fn actual_core(mode: NativeMode) {
         },
     );
     command.env(
-        "WEBDOCK_BROWSER_FLOW_BACKEND",
+        "SPITZLI_BROWSER_FLOW_BACKEND",
         if native_browser && !native_authority {
             "tokio-postgres"
         } else {
@@ -313,12 +313,12 @@ async fn actual_core(mode: NativeMode) {
     );
     if native_browser {
         command
-            .env("WEBDOCK_SSO_CLIENT_ID", "102")
-            .env("WEBDOCK_SSO_CLIENT_SECRET", "owned-core-browser-secret")
-            .env("WEBDOCK_SSO_COOKIE_SECRET", secret);
+            .env("SPITZLI_SSO_CLIENT_ID", "102")
+            .env("SPITZLI_SSO_CLIENT_SECRET", "owned-core-browser-secret")
+            .env("SPITZLI_SSO_COOKIE_SECRET", secret);
     }
     command.env(
-        "WEBDOCK_OAUTH_CLIENT_BACKEND",
+        "SPITZLI_OAUTH_CLIENT_BACKEND",
         if (native_oauth || native_browser) && !native_authority {
             "tokio-postgres"
         } else {
@@ -326,7 +326,7 @@ async fn actual_core(mode: NativeMode) {
         },
     );
     command.env(
-        "WEBDOCK_OAUTH_INTROSPECTION_BACKEND",
+        "SPITZLI_OAUTH_INTROSPECTION_BACKEND",
         if native_introspection && !native_security {
             "tokio-postgres"
         } else {
@@ -334,10 +334,10 @@ async fn actual_core(mode: NativeMode) {
         },
     );
     if native_introspection {
-        command.env("WEBDOCK_STUDIO_CLIENT_ID", "102");
+        command.env("SPITZLI_STUDIO_CLIENT_ID", "102");
     }
     command.env(
-        "WEBDOCK_BROWSER_AUTHORITY_BACKEND",
+        "SPITZLI_BROWSER_AUTHORITY_BACKEND",
         if native_authority {
             "tokio-postgres"
         } else {
@@ -345,7 +345,7 @@ async fn actual_core(mode: NativeMode) {
         },
     );
     command.env(
-        "WEBDOCK_OAUTH_SECURITY_BACKEND",
+        "SPITZLI_OAUTH_SECURITY_BACKEND",
         if native_security {
             "tokio-postgres"
         } else {
@@ -353,7 +353,7 @@ async fn actual_core(mode: NativeMode) {
         },
     );
     command.env(
-        "WEBDOCK_OAUTH_GRANTS_BACKEND",
+        "SPITZLI_OAUTH_GRANTS_BACKEND",
         if native_grants && !native_tokens {
             "tokio-postgres"
         } else {
@@ -361,7 +361,7 @@ async fn actual_core(mode: NativeMode) {
         },
     );
     command.env(
-        "WEBDOCK_OAUTH_TOKENS_BACKEND",
+        "SPITZLI_OAUTH_TOKENS_BACKEND",
         if native_tokens {
             "tokio-postgres"
         } else {
@@ -369,7 +369,7 @@ async fn actual_core(mode: NativeMode) {
         },
     );
     command.env(
-        "WEBDOCK_MCP_AUTHORITY_BACKEND",
+        "SPITZLI_MCP_AUTHORITY_BACKEND",
         if native_mcp {
             "tokio-postgres"
         } else {
@@ -377,7 +377,7 @@ async fn actual_core(mode: NativeMode) {
         },
     );
     command.env(
-        "WEBDOCK_ACCOUNT_RECOVERY_BACKEND",
+        "SPITZLI_ACCOUNT_RECOVERY_BACKEND",
         if native_recovery {
             "tokio-postgres"
         } else {
@@ -385,7 +385,7 @@ async fn actual_core(mode: NativeMode) {
         },
     );
     command.env(
-        "WEBDOCK_PASSWORD_LOGIN_BACKEND",
+        "SPITZLI_PASSWORD_LOGIN_BACKEND",
         if native_password {
             "tokio-postgres"
         } else {
@@ -398,8 +398,8 @@ async fn actual_core(mode: NativeMode) {
         std::fs::write(&path, "owned-http-mcp-secret").unwrap();
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
         command
-            .env("WEBDOCK_RESOURCE_CLIENT_ID", "902")
-            .env("WEBDOCK_RESOURCE_CLIENT_SECRET_FILE", path);
+            .env("SPITZLI_RESOURCE_CLIENT_ID", "902")
+            .env("SPITZLI_RESOURCE_CLIENT_SECRET_FILE", path);
     }
     let output = std::fs::File::create(&log).unwrap();
     command
@@ -1214,7 +1214,7 @@ async fn actual_core(mode: NativeMode) {
         "startup must not seed customer or identity records"
     );
     assert!(!std::fs::read_to_string(&log).unwrap().contains(&password));
-    command.env("WEBDOCK_DATABASE_URL", fixture.url.as_str());
+    command.env("SPITZLI_DATABASE_URL", fixture.url.as_str());
     let mut rejected = Process(command.spawn().unwrap());
     let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
     loop {
@@ -1242,7 +1242,7 @@ async fn sigterm_cancels_stalled_database_initialization() {
     let mut process=Process(Command::new(env!("CARGO_BIN_EXE_spitzli-control-plane"))
         .env_clear().env("PATH",std::env::var("PATH").unwrap())
         .env("NODE_ENV","development")
-        .env("WEBDOCK_DATABASE_URL",format!("postgres://webdock_auth_bootstrap:fixture@127.0.0.1:{port}/stalled?sslmode=disable"))
+        .env("SPITZLI_DATABASE_URL",format!("postgres://webdock_auth_bootstrap:fixture@127.0.0.1:{port}/stalled?sslmode=disable"))
         .stdout(Stdio::null()).stderr(Stdio::null()).spawn().unwrap());
     // Accept but never answer PostgreSQL startup: no schema/data or actual provider is involved.
     let (_socket, _) = tokio::time::timeout(Duration::from_secs(5), stalled.accept())

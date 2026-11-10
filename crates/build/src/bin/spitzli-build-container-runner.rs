@@ -99,7 +99,7 @@ fn execute(paths: &Paths) -> Result<()> {
     let request: ContainerBuildRequest = read_json(&paths.request, 64 * 1024)?;
     request.validate()?;
     let metadata: SourceMetadata = read_json(&paths.metadata, 1024)?;
-    if std::env::var("WEBDOCK_COMMIT_SHA").is_ok_and(|sha| sha != metadata.source_sha) {
+    if std::env::var("SPITZLI_COMMIT_SHA").is_ok_and(|sha| sha != metadata.source_sha) {
         return Err(fail("source_sha_mismatch"));
     }
     let source =
@@ -192,16 +192,16 @@ fn transfer(mode: &str, mut args: impl Iterator<Item = String>) -> Result<()> {
     }
     let attempt: AttemptTransfer = read_json(&config, MAX_HANDOFF_BYTES)?;
     for (key, expected) in [
-        ("WEBDOCK_CUSTOMER_ID", attempt.customer_id.as_str()),
-        ("WEBDOCK_PROJECT_ID", attempt.project_id.as_str()),
-        ("WEBDOCK_BUILD_ID", attempt.build_id.as_str()),
-        ("WEBDOCK_COMMIT_SHA", attempt.request.source_sha.as_str()),
+        ("SPITZLI_CUSTOMER_ID", attempt.customer_id.as_str()),
+        ("SPITZLI_PROJECT_ID", attempt.project_id.as_str()),
+        ("SPITZLI_BUILD_ID", attempt.build_id.as_str()),
+        ("SPITZLI_COMMIT_SHA", attempt.request.source_sha.as_str()),
     ] {
         if std::env::var(key).is_ok_and(|v| v != expected) {
             return Err(fail("transfer_identity_mismatch"));
         }
     }
-    if std::env::var("WEBDOCK_GENERATION").is_ok_and(|v| v != attempt.generation.to_string()) {
+    if std::env::var("SPITZLI_GENERATION").is_ok_and(|v| v != attempt.generation.to_string()) {
         return Err(fail("transfer_identity_mismatch"));
     }
     let policy: TransferPolicy = read_json(&policy, 16 * 1024)?;
@@ -214,7 +214,7 @@ fn transfer(mode: &str, mut args: impl Iterator<Item = String>) -> Result<()> {
         runtime.block_on(client.download(&attempt, &directory))
     } else {
         let uid =
-            std::env::var("WEBDOCK_JOB_UID").map_err(|_| fail("invalid_transfer_job_identity"))?;
+            std::env::var("SPITZLI_JOB_UID").map_err(|_| fail("invalid_transfer_job_identity"))?;
         runtime.block_on(client.upload(&attempt, &uid, &directory))
     }
 }

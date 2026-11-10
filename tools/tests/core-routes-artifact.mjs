@@ -30,7 +30,7 @@ console.log('Bundled core health, readiness and guarded registry routes execute 
   const bun = process.env.BUN_BINARY || process.execPath;
   const built = spawnSync(bun, ['--no-env-file', builder], {cwd: fixture,encoding:'utf8'});
   assert.equal(built.status, 0, built.stderr);
-  const run = spawnSync(bun, ['--no-env-file', join(fixture,'dist/entry.js')], {cwd:fixture,encoding:'utf8',timeout:30000,env:{...process.env,DATABASE_URL:'postgres://fixture:fixture@127.0.0.1:1/fixture',WEBDOCK_MODULES:JSON.stringify({configVersion:1,modules:{}}),WEBDOCK_AUTH_PROVIDER:JSON.stringify({provider:'clerk',issuer:'https://clerk.example.test',authorizedParties:['https://console.example.test'],audience:'console'}),WEBDOCK_OAUTH_PROVIDER:'disabled',WEBDOCK_API_DOMAINS:'auth,portal,registry'}});
+  const run = spawnSync(bun, ['--no-env-file', join(fixture,'dist/entry.js')], {cwd:fixture,encoding:'utf8',timeout:30000,env:{...process.env,DATABASE_URL:'postgres://fixture:fixture@127.0.0.1:1/fixture',SPITZLI_MODULES:JSON.stringify({configVersion:1,modules:{}}),SPITZLI_AUTH_PROVIDER:JSON.stringify({provider:'clerk',issuer:'https://clerk.example.test',authorizedParties:['https://console.example.test'],audience:'console'}),SPITZLI_OAUTH_PROVIDER:'disabled',SPITZLI_API_DOMAINS:'auth,portal,registry'}});
   assert.equal(run.status, 0, run.stderr || run.stdout);
   console.log(run.stdout.trim());
 } finally { await rm(fixture,{recursive:true,force:true}); }

@@ -55,7 +55,7 @@ def main():
         docker("start", container)
         for name, test in TESTS.items():
             result = subprocess.run([
-                "docker", "exec", "-e", "WEBDOCK_DISPOSABLE_STORAGE_TEST=yes", container,
+                "docker", "exec", "-e", "SPITZLI_DISPOSABLE_STORAGE_TEST=yes", container,
                 "/usr/local/bin/" + name + "-test", test, "--ignored", "--exact", "--nocapture",
             ], cwd=ROOT, timeout=120)
             if result.returncode:

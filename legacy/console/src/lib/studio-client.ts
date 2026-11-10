@@ -34,7 +34,7 @@ export async function studioCall<T>(
     )
       throw new StudioError("This product is unavailable.", 404);
   }
-  if (!process.env.WEBDOCK_API_ORIGIN)
+  if (!process.env.SPITZLI_API_ORIGIN)
     throw new StudioError("Studio API is not configured.", 503);
   {
     let result: {
@@ -43,9 +43,9 @@ export async function studioCall<T>(
     };
     try {
       result = await requestAPI({
-        apiOrigin: process.env.WEBDOCK_API_ORIGIN,
+        apiOrigin: process.env.SPITZLI_API_ORIGIN,
         uiOrigin:
-          process.env.WEBDOCK_STUDIO_ORIGIN ||
+          process.env.SPITZLI_STUDIO_ORIGIN ||
           process.env.NEXT_PUBLIC_SERVER_URL ||
           "https://studio.webdock.dev",
         ...credentials,

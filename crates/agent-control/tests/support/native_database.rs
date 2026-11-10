@@ -10,11 +10,11 @@ pub fn write_private(path: &Path, value: &serde_json::Value) {
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).unwrap();
 }
 pub async fn client() -> kube::Client {
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(context.starts_with("kind-webdock-rust-native-"));
     kube::Client::try_from(
         kube::Config::from_custom_kubeconfig(
-            kube::config::Kubeconfig::read_from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap())
+            kube::config::Kubeconfig::read_from(std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap())
                 .unwrap(),
             &kube::config::KubeConfigOptions {
                 context: Some(context),
@@ -49,7 +49,7 @@ impl RuntimeFixture {
         let volumes = base.join("volumes");
         std::fs::create_dir(&volumes).unwrap();
         std::fs::set_permissions(&volumes, std::fs::Permissions::from_mode(0o700)).unwrap();
-        let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+        let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
         let node = format!("{}-control-plane", context.trim_start_matches("kind-"));
         let pool = uuid::Uuid::new_v4().to_string();
         let storage = base.join("storage.json");
@@ -86,7 +86,7 @@ impl RuntimeFixture {
         let runtime = base.join("database.json");
         write_private(
             &runtime,
-            &serde_json::json!({"image":std::env::var("WEBDOCK_DATABASE_TEST_IMAGE").unwrap(),"poolerImage":std::env::var("WEBDOCK_DATABASE_TEST_POOLER_IMAGE").unwrap(),"issuer":"webdock-runtime-database-ca","apiCIDRs":serde_json::from_str::<serde_json::Value>(&std::env::var("WEBDOCK_DATABASE_TEST_API_CIDRS").unwrap()).unwrap(),"podCIDRs":["192.168.0.0/16"],"storageSocket":socket,"caFile":std::env::var("WEBDOCK_DATABASE_TEST_CA").unwrap()}),
+            &serde_json::json!({"image":std::env::var("SPITZLI_DATABASE_TEST_IMAGE").unwrap(),"poolerImage":std::env::var("SPITZLI_DATABASE_TEST_POOLER_IMAGE").unwrap(),"issuer":"webdock-runtime-database-ca","apiCIDRs":serde_json::from_str::<serde_json::Value>(&std::env::var("SPITZLI_DATABASE_TEST_API_CIDRS").unwrap()).unwrap(),"podCIDRs":["192.168.0.0/16"],"storageSocket":socket,"caFile":std::env::var("SPITZLI_DATABASE_TEST_CA").unwrap()}),
         );
         Self {
             base,

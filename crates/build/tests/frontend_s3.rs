@@ -40,7 +40,7 @@ async fn retained_frontend_survives_original_worker_loss_and_reuses_original_oci
         credentials: spitzli_object_storage::Credentials,
     }
     let config_path = std::path::PathBuf::from(
-        std::env::var_os("WEBDOCK_S3_TEST_CONFIG").expect("owned private S3 config"),
+        std::env::var_os("SPITZLI_S3_TEST_CONFIG").expect("owned private S3 config"),
     );
     let metadata = config_path.symlink_metadata().unwrap();
     assert!(metadata.is_file() && metadata.permissions().mode() & 0o077 == 0);
@@ -49,7 +49,7 @@ async fn retained_frontend_survives_original_worker_loss_and_reuses_original_oci
         spitzli_object_storage::Store::loopback_test(config.config, config.credentials).unwrap(),
     );
     let vm = std::path::PathBuf::from(
-        std::env::var_os("WEBDOCK_FRONTEND_VM_ROOT").expect("owned VM output"),
+        std::env::var_os("SPITZLI_FRONTEND_VM_ROOT").expect("owned VM output"),
     );
     let bytes = std::fs::read(vm.join("verified-frontend-e2.tar")).unwrap();
     let envelope = Archive::read(&bytes, MAX_OUTPUT).unwrap();

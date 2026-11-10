@@ -1,6 +1,6 @@
 # Native account recovery
 
-`WEBDOCK_ACCOUNT_RECOVERY_BACKEND=tokio-postgres` opts the four owned recovery
+`SPITZLI_ACCOUNT_RECOVERY_BACKEND=tokio-postgres` opts the four owned recovery
 operations into direct SQL: reset request, account activation, delivery dispatch
 and local reset completion. The default remains `sea-orm`; unknown values fail
 startup. Core reuses its bounded max 4/min 0 bootstrap pool and enables the native

@@ -12,7 +12,7 @@
     "lint": "bun --bun eslint . --max-warnings 0 && cd ../.. && bun --bun eslint -c apps/console/eslint.config.mjs plugins/*/ui/*.tsx --max-warnings 0",
     "typecheck": "bun --bun tsc --noEmit",
     "dev:account": "bun --bun vite --host localhost --port 3125 --strictPort",
-    "dev:customer": "WEBDOCK_CUSTOMER_FIXTURE=1 bun --no-env-file tests/preview-server.ts",
+    "dev:customer": "SPITZLI_CUSTOMER_FIXTURE=1 bun --no-env-file tests/preview-server.ts",
     "test:customer-ux": "bun --no-env-file tests/customer-ux-browser.mjs"
   },
   "dependencies": {

@@ -37,7 +37,7 @@ for (const value of [
     throw Error("Local test database required");
 }
 for (const key of Object.keys(process.env))
-  if (/^(WEBDOCK_|VERCEL_|GITHUB_|SMTP_|AWS_)/.test(key))
+  if (/^(SPITZLI_|VERCEL_|GITHUB_|SMTP_|AWS_)/.test(key))
     delete process.env[key];
 Object.assign(process.env, {
   DATABASE_URL: authTest.DATABASE_URL,
@@ -341,8 +341,8 @@ try {
     ...blank,
     AUTH_TEST_MAIL: "true",
     NODE_ENV: "development",
-    WEBDOCK_HOSTING_EU_VERIFIED: "",
-    WEBDOCK_MCP_RESOURCE: studioOrigin + "/api/mcp",
+    SPITZLI_HOSTING_EU_VERIFIED: "",
+    SPITZLI_MCP_RESOURCE: studioOrigin + "/api/mcp",
   };
   const authEnv = {
     ...common,
@@ -350,10 +350,10 @@ try {
     DATABASE_URL_UNPOOLED: authTest.DATABASE_URL,
     BETTER_AUTH_SECRET: authTest.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: authOrigin,
-    WEBDOCK_STUDIO_CLIENT_ID: app.clientID,
-    WEBDOCK_STUDIO_URL: studioOrigin,
+    SPITZLI_STUDIO_CLIENT_ID: app.clientID,
+    SPITZLI_STUDIO_URL: studioOrigin,
     STUDIO_UI_ENABLED: "true",
-    WEBDOCK_MCP_RESOURCE: studioOrigin + "/api/mcp",
+    SPITZLI_MCP_RESOURCE: studioOrigin + "/api/mcp",
   };
   const adminEnv = {
     ...common,
@@ -362,12 +362,12 @@ try {
       adminTest.DATABASE_URL_UNPOOLED ?? adminTest.DATABASE_URL,
     PAYLOAD_SECRET: adminTest.PAYLOAD_SECRET,
     OPERATOR_EMAIL: rootUser.email,
-    WEBDOCK_AUTH_ISSUER: authOrigin + "/api/auth",
-    WEBDOCK_SSO_CLIENT_ID: app.clientID,
-    WEBDOCK_SSO_CLIENT_SECRET: app.clientSecret,
-    WEBDOCK_SSO_COOKIE_SECRET: crypto.randomBytes(40).toString("hex"),
-    WEBDOCK_SSO_APP_ORIGIN: studioOrigin,
-    WEBDOCK_SSO_ALLOW_LOCAL_HTTP: "true",
+    SPITZLI_AUTH_ISSUER: authOrigin + "/api/auth",
+    SPITZLI_SSO_CLIENT_ID: app.clientID,
+    SPITZLI_SSO_CLIENT_SECRET: app.clientSecret,
+    SPITZLI_SSO_COOKIE_SECRET: crypto.randomBytes(40).toString("hex"),
+    SPITZLI_SSO_APP_ORIGIN: studioOrigin,
+    SPITZLI_SSO_ALLOW_LOCAL_HTTP: "true",
     NEXT_PUBLIC_SERVER_URL: studioOrigin,
   };
   fs.mkdirSync(scratch, { recursive: true, mode: 0o700 });

@@ -10,7 +10,7 @@ Next.js frontend for the Webdock API. Business data and authorization live in
   `npm run build:admin` check source and production output.
 
 By default, existing deployments retain central Better Auth SSO. Setting
-`WEBDOCK_CONSOLE_AUTH_PROVIDER=clerk` selects Clerk for Console login, account and
+`SPITZLI_CONSOLE_AUTH_PROVIDER=clerk` selects Clerk for Console login, account and
 organization controls. API activation and the matching production identity
 configuration must be prepared together. See [.env.example](.env.example) and the
 [release/rollback guide](../../docs/architecture/clerk-console-release.md).

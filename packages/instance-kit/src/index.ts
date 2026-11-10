@@ -36,7 +36,7 @@ export function protectUsers(
   collection: CollectionConfig,
   operatorEmail: string,
 ): CollectionConfig {
-  const centrallyManaged = process.env.WEBDOCK_SSO_ENFORCE === "true";
+  const centrallyManaged = process.env.SPITZLI_SSO_ENFORCE === "true";
   // Private, single-use markers: only real Payload recovery operations can set them.
   // They are never accepted from req.context or a caller-supplied request body.
   const recoveryRequests = new WeakMap<

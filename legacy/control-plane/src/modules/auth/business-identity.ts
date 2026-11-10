@@ -33,7 +33,7 @@ export async function getBusinessIdentity(headers: Headers) {
   )
     return null;
   if (
-    readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER)
+    readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER)
       .provider === "clerk"
   ) {
     const { authDatabase } = await import("../../db/runtime");

@@ -124,7 +124,7 @@ async fn github_webhook_receipts_bind_live_source_policy_and_deduplicate_pushes(
         let host = Arc::new(
             spitzli_plugin_host::HostService::new(
                 db("DATABASE_URL").await,
-                db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+                db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
                 secret.clone(),
                 ids.clone(),
                 Arc::new(spitzli_plugin_host::FileBindings::new(host_path)),
@@ -135,7 +135,7 @@ async fn github_webhook_receipts_bind_live_source_policy_and_deduplicate_pushes(
         );
         let gate = Arc::new(
             RepositoryAdmission::new(
-                db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+                db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
                 secret.clone(),
                 host,
                 ed25519_dalek::SigningKey::from_bytes(&[39; 32]),
@@ -193,7 +193,7 @@ async fn github_webhook_receipts_bind_live_source_policy_and_deduplicate_pushes(
         }));
         let service = spitzli_build::BuildService::new(
             db("DATABASE_URL").await,
-            db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+            db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
             secret,
             ids,
             f.service.clone(),
@@ -362,7 +362,7 @@ async fn github_webhook_receipts_bind_live_source_policy_and_deduplicate_pushes(
         );
         let row=f.owner.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,"SELECT latest_build_id=$2 AND NOT auto_publish AS correct FROM webdock_auth.git_source WHERE id=$1",vec![source.into(),second["buildIDs"][0].as_str().unwrap().into()])).await.unwrap().unwrap();
         assert!(row.try_get::<bool>("", "correct").unwrap());
-        let unsigned = db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await;
+        let unsigned = db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await;
         let count = unsigned
             .query_one_raw(Statement::from_string(
                 DbBackend::Postgres,

@@ -68,7 +68,7 @@ function request(
   accessToken = "fixture-access-token",
   basic = "Basic " +
     Buffer.from(
-      `${process.env.WEBDOCK_STUDIO_CLIENT_ID}:fixture-secret`,
+      `${process.env.SPITZLI_STUDIO_CLIENT_ID}:fixture-secret`,
     ).toString("base64"),
 ) {
   return new Request(origin + "/api/studio", {
@@ -93,7 +93,7 @@ test("Studio delegation validates live session identity, bounds inputs and retai
     logoutPath: "/login",
     headers: operator.headers,
   });
-  process.env.WEBDOCK_STUDIO_CLIENT_ID = app.clientID;
+  process.env.SPITZLI_STUDIO_CLIENT_ID = app.clientID;
   const tenant = (
     await database.query(
       "INSERT INTO webdock_admin.customers(id,name,notes) VALUES(webdock_auth.next_snowflake(),'Studio tenant','private operator note') RETURNING id",
@@ -141,9 +141,9 @@ test("Studio delegation validates live session identity, bounds inputs and retai
   assert.equal(safe.data.session, undefined);
   assert.equal(JSON.stringify(safe).includes(customer.session.token), false);
   assert.equal(safe.data.installation.modules.mail, "enabled");
-  const previousModules = process.env.WEBDOCK_MODULES;
+  const previousModules = process.env.SPITZLI_MODULES;
   try {
-    process.env.WEBDOCK_MODULES = JSON.stringify({configVersion:1,modules:{mail:{enabled:false}}});
+    process.env.SPITZLI_MODULES = JSON.stringify({configVersion:1,modules:{mail:{enabled:false}}});
     const hidden = await handleStudioRequest(request("session"), {introspect});
     assert.equal((await hidden.json()).data.installation.modules.mail, "disabled");
     for (const [operation,args] of [["mailConnections",[tenant.id]],["getTenantMail",[tenant.id]],["getMailConnectionStatus",[]]] as const) {
@@ -151,13 +151,13 @@ test("Studio delegation validates live session identity, bounds inputs and retai
       assert.equal(blocked.status,503);
       assert.equal((await blocked.json()).error.code,"module_disabled");
     }
-    process.env.WEBDOCK_MODULES = JSON.stringify({configVersion:1,modules:{mail:{state:"draining"}}});
+    process.env.SPITZLI_MODULES = JSON.stringify({configVersion:1,modules:{mail:{state:"draining"}}});
     const blocked = await handleStudioRequest(request("mailConfigureManaged",[tenant.id]), {introspect});
     assert.equal(blocked.status,503);
     assert.equal((await blocked.json()).error.code,"module_draining");
   } finally {
-    if (previousModules === undefined) delete process.env.WEBDOCK_MODULES;
-    else process.env.WEBDOCK_MODULES = previousModules;
+    if (previousModules === undefined) delete process.env.SPITZLI_MODULES;
+    else process.env.SPITZLI_MODULES = previousModules;
   }
   response = await handleStudioRequest(request("listTenants"), { introspect });
   assert.deepEqual(
@@ -170,8 +170,8 @@ test("Studio delegation validates live session identity, bounds inputs and retai
   assert.equal(response.status, 200);
   assert.equal((await response.json()).data.tenant.notes, undefined);
   await database.query(nativeMailSchemaSQL);
-  const nativeMailFlag = process.env.WEBDOCK_NATIVE_MAIL_ENABLED;
-  process.env.WEBDOCK_NATIVE_MAIL_ENABLED = "true";
+  const nativeMailFlag = process.env.SPITZLI_NATIVE_MAIL_ENABLED;
+  process.env.SPITZLI_NATIVE_MAIL_ENABLED = "true";
   try {
     response = await handleStudioRequest(
       request("getTenantMailService", [tenant.id]),
@@ -195,8 +195,8 @@ test("Studio delegation validates live session identity, bounds inputs and retai
     );
   } finally {
     if (nativeMailFlag === undefined)
-      delete process.env.WEBDOCK_NATIVE_MAIL_ENABLED;
-    else process.env.WEBDOCK_NATIVE_MAIL_ENABLED = nativeMailFlag;
+      delete process.env.SPITZLI_NATIVE_MAIL_ENABLED;
+    else process.env.SPITZLI_NATIVE_MAIL_ENABLED = nativeMailFlag;
   }
   for (const operation of [
     "requireAccessOperator",
@@ -310,7 +310,7 @@ test("Studio customer claims need active membership but no CMS grant; native OAu
     logoutPath: "/login",
     headers: operator.headers,
   });
-  process.env.WEBDOCK_STUDIO_CLIENT_ID = app.clientID;
+  process.env.SPITZLI_STUDIO_CLIENT_ID = app.clientID;
   assert.equal((await currentClaims(customer.id, app.binding)).disabled, true);
   const tenant = (
     await database.query(
@@ -495,7 +495,7 @@ test("Studio preserves safe validation and delegates native organization creatio
     logoutPath: "/login",
     headers: operator.headers,
   });
-  process.env.WEBDOCK_STUDIO_CLIENT_ID = app.clientID;
+  process.env.SPITZLI_STUDIO_CLIENT_ID = app.clientID;
   const tenants = (
     await database.query(
       "INSERT INTO webdock_admin.customers(id,name) VALUES(webdock_auth.next_snowflake(),'Studio invitations one'),(webdock_auth.next_snowflake(),'Studio invitations two') RETURNING id",
@@ -687,12 +687,12 @@ test("Studio preserves safe validation and delegates native organization creatio
 });
 
 test("Studio and hosting introspection outages cannot masquerade as expired browser sessions", async (t) => {
-  const previousClientID = process.env.WEBDOCK_STUDIO_CLIENT_ID;
-  process.env.WEBDOCK_STUDIO_CLIENT_ID = "loop-regression-fixture";
+  const previousClientID = process.env.SPITZLI_STUDIO_CLIENT_ID;
+  process.env.SPITZLI_STUDIO_CLIENT_ID = "loop-regression-fixture";
   t.after(() => {
     if (previousClientID === undefined)
-      delete process.env.WEBDOCK_STUDIO_CLIENT_ID;
-    else process.env.WEBDOCK_STUDIO_CLIENT_ID = previousClientID;
+      delete process.env.SPITZLI_STUDIO_CLIENT_ID;
+    else process.env.SPITZLI_STUDIO_CLIENT_ID = previousClientID;
   });
   const { hostingIdentity } = await import("../../src/modules/hosting/bridge");
   const { HostingError } = await import("@spitzli/hosting-contracts");
@@ -739,14 +739,14 @@ test("portal introspects once locally per request and refreshes all authorizatio
     clientSecret: "fixture-secret",
   };
   const environment = {
-    WEBDOCK_STUDIO_CLIENT_ID: config.clientID,
-    WEBDOCK_SSO_CLIENT_ID: config.clientID,
-    WEBDOCK_SSO_CLIENT_SECRET: config.clientSecret,
-    WEBDOCK_SSO_COOKIE_SECRET:
+    SPITZLI_STUDIO_CLIENT_ID: config.clientID,
+    SPITZLI_SSO_CLIENT_ID: config.clientID,
+    SPITZLI_SSO_CLIENT_SECRET: config.clientSecret,
+    SPITZLI_SSO_COOKIE_SECRET:
       "portal-fixture-cookie-secret-at-least-32-characters",
-    WEBDOCK_SSO_APP_ORIGIN: config.origin,
-    WEBDOCK_AUTH_ISSUER: origin + "/api/auth",
-    WEBDOCK_SSO_ALLOW_LOCAL_HTTP: "true",
+    SPITZLI_SSO_APP_ORIGIN: config.origin,
+    SPITZLI_AUTH_ISSUER: origin + "/api/auth",
+    SPITZLI_SSO_ALLOW_LOCAL_HTTP: "true",
   };
   const previous = Object.fromEntries(
     Object.keys(environment).map((key) => [key, process.env[key]]),
@@ -789,7 +789,7 @@ test("portal introspects once locally per request and refreshes all authorizatio
         exp: expires,
         accessToken: "fixture-access-token",
       },
-      { password: environment.WEBDOCK_SSO_COOKIE_SECRET, ttl: 300 },
+      { password: environment.SPITZLI_SSO_COOKIE_SECRET, ttl: 300 },
     ));
   const call = () =>
     portalRequest(
@@ -931,11 +931,11 @@ test("Studio uses fresh native user security fields without signing discarded JW
   const { default: pg } = await import("pg");
   const operator = await identity(true);
   const clientID = "native-user-fields-fixture";
-  const previous = process.env.WEBDOCK_STUDIO_CLIENT_ID;
-  process.env.WEBDOCK_STUDIO_CLIENT_ID = clientID;
+  const previous = process.env.SPITZLI_STUDIO_CLIENT_ID;
+  process.env.SPITZLI_STUDIO_CLIENT_ID = clientID;
   t.after(() => {
-    if (previous === undefined) delete process.env.WEBDOCK_STUDIO_CLIENT_ID;
-    else process.env.WEBDOCK_STUDIO_CLIENT_ID = previous;
+    if (previous === undefined) delete process.env.SPITZLI_STUDIO_CLIENT_ID;
+    else process.env.SPITZLI_STUDIO_CLIENT_ID = previous;
   });
   const introspect = async () =>
     Response.json({

@@ -33,17 +33,17 @@ export function createHostingByokVercel(dependencies: Dependencies) {
     createHash("sha256").update(text).digest("hex");
   function settings(runtime?: VercelRuntime) {
     const clientID =
-        runtime?.clientID ?? dependencies.env.WEBDOCK_BYOK_VERCEL_CLIENT_ID,
+        runtime?.clientID ?? dependencies.env.SPITZLI_BYOK_VERCEL_CLIENT_ID,
       clientSecret =
         runtime?.clientSecret ??
-        dependencies.env.WEBDOCK_BYOK_VERCEL_CLIENT_SECRET,
+        dependencies.env.SPITZLI_BYOK_VERCEL_CLIENT_SECRET,
       slug =
-        runtime?.slug ?? dependencies.env.WEBDOCK_BYOK_VERCEL_INTEGRATION_SLUG;
-    const origin = runtime?.origin ?? dependencies.env.WEBDOCK_STUDIO_ORIGIN;
+        runtime?.slug ?? dependencies.env.SPITZLI_BYOK_VERCEL_INTEGRATION_SLUG;
+    const origin = runtime?.origin ?? dependencies.env.SPITZLI_STUDIO_ORIGIN;
     const platformTeam =
-      runtime?.platformTeam ?? dependencies.env.WEBDOCK_VERCEL_TEAM_ID;
+      runtime?.platformTeam ?? dependencies.env.SPITZLI_VERCEL_TEAM_ID;
     if (
-      (runtime && runtime.origin !== dependencies.env.WEBDOCK_STUDIO_ORIGIN) ||
+      (runtime && runtime.origin !== dependencies.env.SPITZLI_STUDIO_ORIGIN) ||
       !platformTeam ||
       !/^team_[A-Za-z0-9]+$/.test(platformTeam) ||
       !clientID ||

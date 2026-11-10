@@ -77,8 +77,8 @@ test("native sending isolates keys, stages private payloads and rechecks managed
       "SELECT settings FROM webdock_auth.platform_settings WHERE id=true",
     )
   ).rows[0];
-  const previous = process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED;
-  process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED = "true";
+  const previous = process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED;
+  process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED = "true";
   try {
     await database.query(
       `INSERT INTO webdock_auth.platform_settings(id,settings) VALUES(true,'{"mailEnabled":true}') ON CONFLICT(id) DO UPDATE SET settings=excluded.settings`,
@@ -827,8 +827,8 @@ test("native sending isolates keys, stages private payloads and rechecks managed
     );
   } finally {
     if (previous === undefined)
-      delete process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED;
-    else process.env.WEBDOCK_NATIVE_MAIL_SENDING_ENABLED = previous;
+      delete process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED;
+    else process.env.SPITZLI_NATIVE_MAIL_SENDING_ENABLED = previous;
     for (const table of [
       "send_job",
       "budget_reservation",

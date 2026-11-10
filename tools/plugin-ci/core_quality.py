@@ -180,7 +180,7 @@ def run_checks(mode,output,checkpoint):
     env={k:v for k,v in os.environ.items() if k in {'PATH','HOME','USER','LANG','CI','TMPDIR','CARGO_HOME','RUSTUP_HOME','CARGO_TARGET_DIR','CARGO_BUILD_JOBS','RUST_TEST_THREADS','PLAYWRIGHT_BROWSERS_PATH','NODE_OPTIONS'}}
     tooling=core_tooling.verify(output,compose=mode=='full')
     env['DOCKER_HOST']=core_tooling.NO_DAEMON
-    env['WEBDOCK_COMPUTE_PANEL_EVIDENCE']=str(output/'compute-servers-panel.json')
+    env['SPITZLI_COMPUTE_PANEL_EVIDENCE']=str(output/'compute-servers-panel.json')
     records=[]
     for item in plan(mode):
         if item['id']=='root-build':require(not Path('package-lock.json').exists(),'Root npm install/package-lock is outside the build-only gate')

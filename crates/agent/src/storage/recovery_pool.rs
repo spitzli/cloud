@@ -27,7 +27,7 @@ fn reservation_marker_line(
 }
 #[cfg(feature = "docker")]
 pub(crate) fn reservation_marker(actor: &'static str, stage: &'static str, result: &'static str) {
-    if std::env::var("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1") {
+    if std::env::var("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1") {
         eprintln!("{}", reservation_marker_line(actor, stage, result));
     }
 }
@@ -944,7 +944,7 @@ mod tests {
     #[ignore = "owned privileged filesystem primitive only; no Core grant or full recovery acceptance"]
     fn owned_filesystem_uses_fresh_uuid_actual_uid70_and_real_byte_ceiling() {
         assert_eq!(
-            std::env::var("WEBDOCK_RECOVERY_PHYSICAL_UNIT").as_deref(),
+            std::env::var("SPITZLI_RECOVERY_PHYSICAL_UNIT").as_deref(),
             Ok("yes")
         );
         assert!(Path::new("/.dockerenv").is_file());

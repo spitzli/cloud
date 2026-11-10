@@ -14,7 +14,7 @@ import databases
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--installation-id',required=True);parser.add_argument('--resume-stage',choices=['create','pause','resume','restart','resize','rotateCredentials','delete','purge']);args=parser.parse_args()
-    if os.environ.get('WEBDOCK_DISPOSABLE_POSTGRES_TEST')!='yes' or socket.gethostname()!='postgres-pilot':raise SystemExit('Disposable test node required')
+    if os.environ.get('SPITZLI_DISPOSABLE_POSTGRES_TEST')!='yes' or socket.gethostname()!='postgres-pilot':raise SystemExit('Disposable test node required')
     identity=databases.identifier(args.installation_id);pool=json.loads(Path('/etc/webdock-postgres-storage.json').read_text());ns='wd-db-'+identity
     if databases.get('namespace',ns) and not args.resume_stage:raise SystemExit('Use a fresh synthetic installation ID; inspect any interrupted run separately')
     node=databases.get('node','postgres-pilot');address=next(a['address'] for a in node['status']['addresses'] if a['type']=='InternalIP')

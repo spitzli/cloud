@@ -40,8 +40,8 @@ The existing `api` and `console` targets retain the full distribution. No produc
 Use the existing [self-hosting](/developers/self-hosting) migration and dedicated-role setup, then explicitly initialize plugin state with an empty selection. Runtime startup never creates database roles or upgrades schemas. Historical migration tables remain retained; removing them is a separate data migration.
 
 ```sh
-WEBDOCK_MODULES='{"configVersion":1,"modules":{}}'
-WEBDOCK_API_DOMAINS='auth,portal,registry'
+SPITZLI_MODULES='{"configVersion":1,"modules":{}}'
+SPITZLI_API_DOMAINS='auth,portal,registry'
 ```
 
 Only `auth`, `portal`, `registry` and optional `mcp` are valid core domains. Product selections are rejected by the core entry rather than silently ignored. Runtime plugins still use signed manifests, explicit grants, isolated execution and the [plugin API and MCP contract](/developers/plugin-api-mcp).
@@ -65,23 +65,23 @@ For ordinary Clerk browser sessions, select the explicit native session mode in 
 }
 ```
 
-Use this JSON as `WEBDOCK_AUTH_PROVIDER`. Configure the Clerk server keys and a shared `WEBDOCK_CONSOLE_SERVICE_KEY` of at least 32 characters. The Console also needs its public publishable key. Keep secret keys server-side. Provision the exact issuer/user-to-local-ID mapping before allowing access; email matching is never a fallback.
+Use this JSON as `SPITZLI_AUTH_PROVIDER`. Configure the Clerk server keys and a shared `SPITZLI_CONSOLE_SERVICE_KEY` of at least 32 characters. The Console also needs its public publishable key. Keep secret keys server-side. Provision the exact issuer/user-to-local-ID mapping before allowing access; email matching is never a fallback.
 
 Native session mode does not require an audience claim. It still checks the signature, issuer, authorized browser origin, active provider session, verified user and current local mapping. Existing configurations with `audience` continue to require that audience. Supplying both native session mode and an audience is rejected.
 
-Clerk core startup does not need a Better Auth secret. Legacy OAuth APIs and MCP token issuance are a separate, explicit compatibility capability: select `WEBDOCK_OAUTH_PROVIDER=better-auth` and provide its reviewed configuration if needed. Otherwise those endpoints remain unavailable; Clerk session tokens are not reinterpreted as OAuth access tokens.
+Clerk core startup does not need a Better Auth secret. Legacy OAuth APIs and MCP token issuance are a separate, explicit compatibility capability: select `SPITZLI_OAUTH_PROVIDER=better-auth` and provide its reviewed configuration if needed. Otherwise those endpoints remain unavailable; Clerk session tokens are not reinterpreted as OAuth access tokens.
 
 ## Local acceptance
 
 The disposable fixture uses loopback ports and restricted PostgreSQL roles. It can install a synthetic signed plugin and run the actual core API artifact and assembled Console. It blocks application dotenv discovery and checks ownership before cleanup.
 
 ```sh
-WEBDOCK_BROWSER_PLUGINS=true \
-WEBDOCK_BROWSER_CORE_BUNDLE=true \
-WEBDOCK_BROWSER_CORE_CONSOLE=true \
+SPITZLI_BROWSER_PLUGINS=true \
+SPITZLI_BROWSER_CORE_BUNDLE=true \
+SPITZLI_BROWSER_CORE_CONSOLE=true \
   bun --no-env-file tools/tests/core-browser-fixture.ts
 ```
 
 The command prints its private fixture directory and creates a cleanup script there. Do not commit its credentials. Use only owned development Clerk users for external login tests, and remove them after testing.
 
-For explicit development-only loopback testing, Clerk configuration can add `allowLocalHTTP: true`; the issuer must still use HTTPS. Plugin UI can opt into loopback HTTP with `WEBDOCK_PLUGIN_UI_ALLOW_LOCAL_HTTP=true`. Both exceptions reject production use and non-loopback HTTP. Private plugin actions and host callbacks still use verified TLS.
+For explicit development-only loopback testing, Clerk configuration can add `allowLocalHTTP: true`; the issuer must still use HTTPS. Plugin UI can opt into loopback HTTP with `SPITZLI_PLUGIN_UI_ALLOW_LOCAL_HTTP=true`. Both exceptions reject production use and non-loopback HTTP. Private plugin actions and host callbacks still use verified TLS.

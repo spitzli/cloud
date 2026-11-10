@@ -23,7 +23,7 @@ export function createHostingMailBinding(dependencies: Dependencies) {
     try {
       const origin = new URL(dependencies.env.MAIL_API_ORIGIN!);
       const egressCIDRs = (
-        dependencies.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS ?? ""
+        dependencies.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS ?? ""
       )
         .split(",")
         .map((v) => v.trim())
@@ -107,7 +107,7 @@ export function createHostingMailBinding(dependencies: Dependencies) {
         409,
         "Verify the sender domain before connecting native Mail.",
       );
-    if (input.variable === "WEBDOCK_MAIL_API_URL")
+    if (input.variable === "SPITZLI_MAIL_API_URL")
       throw new HostingError(
         409,
         "Choose a separate variable name for the Mail key.",
@@ -150,7 +150,7 @@ export function createHostingMailBinding(dependencies: Dependencies) {
     return {
       environment: {
         [input.variable]: key,
-        WEBDOCK_MAIL_API_URL: route.origin,
+        SPITZLI_MAIL_API_URL: route.origin,
       },
       runtime,
       credentialRevision: previous?.credentialRevision ?? 1,

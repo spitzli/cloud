@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { chromium } from "playwright";
 import { z } from "zod";
 
-const path = process.env.WEBDOCK_WEBMAIL_BROWSER_FIXTURE;
+const path = process.env.SPITZLI_WEBMAIL_BROWSER_FIXTURE;
 assert.ok(path, "An owned native Webmail fixture file is required");
 const loopback = z.url().refine((value) => {
   const url = new URL(value);
@@ -103,7 +103,7 @@ try {
     await page.setViewportSize({ width, height: 900 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `Webmail overflow at ${width}px`);
   }
-  const screenshots = process.env.WEBDOCK_MAIL_BROWSER_SCREENSHOT_DIR;
+  const screenshots = process.env.SPITZLI_MAIL_BROWSER_SCREENSHOT_DIR;
   if (screenshots) {
     mkdirSync(screenshots, { recursive: true, mode: 0o700 });
     for (const [name, width] of [["desktop", 1280], ["mobile", 375]]) {
@@ -124,7 +124,7 @@ try {
   console.error(network.map((line) => line.replace(/[?#].*$/, "")).join("\n"));
   console.error(errors.join("\n"));
   console.error(gateway.map((request) => `${request.method} ${request.path}`).join("\n"));
-  const screenshots = process.env.WEBDOCK_MAIL_BROWSER_SCREENSHOT_DIR;
+  const screenshots = process.env.SPITZLI_MAIL_BROWSER_SCREENSHOT_DIR;
   if (screenshots) {
     mkdirSync(screenshots, { recursive: true, mode: 0o700 });
     await page.screenshot({ path: join(screenshots, "webmail-native-failed.png"), fullPage: true });

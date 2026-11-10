@@ -6,7 +6,7 @@ import { chromium } from "playwright";
 import { z } from "zod";
 import { configureMail } from "./mail-native-configuration.mjs";
 
-const path = process.env.WEBDOCK_MAIL_BROWSER_FIXTURE;
+const path = process.env.SPITZLI_MAIL_BROWSER_FIXTURE;
 assert.ok(path, "An owned native Mail fixture file is required");
 const fixture = z.strictObject({
   origin: z.url(),
@@ -84,7 +84,7 @@ try {
     await page.setViewportSize({ width, height: 900 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `Mail overflow at ${width}px`);
   }
-  const screenshots = process.env.WEBDOCK_MAIL_BROWSER_SCREENSHOT_DIR;
+  const screenshots = process.env.SPITZLI_MAIL_BROWSER_SCREENSHOT_DIR;
   if (screenshots) {
     mkdirSync(screenshots, { recursive: true, mode: 0o700 });
     for (const [name, width] of [["desktop", 1280], ["mobile", 375]]) {
@@ -102,7 +102,7 @@ try {
   if (fixture.configure)
     console.log("Native configuration passed: verified domain, mailbox, explicit grant, remote restriction and fresh authorized full retry.");
 } catch (error) {
-  const screenshots = process.env.WEBDOCK_MAIL_BROWSER_SCREENSHOT_DIR;
+  const screenshots = process.env.SPITZLI_MAIL_BROWSER_SCREENSHOT_DIR;
   if (screenshots) {
     mkdirSync(screenshots, { recursive: true, mode: 0o700 });
     await page.screenshot({ path: join(screenshots, "mail-native-failed.png"), fullPage: true });

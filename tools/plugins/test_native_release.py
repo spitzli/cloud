@@ -61,6 +61,16 @@ class NativeReleaseTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.finalize()
 
+    def test_both_sdk_namespaces_and_target_aliases_require_the_reviewed_revision(self):
+        manifest = self.root / 'Cargo.toml'
+        for namespace in ['spitzli-', 'webdock-']:
+            source = '[package]\nname="consumer"\nversion="0.1.0"\n[target.\'cfg(unix)\'.dependencies]\nsdk={package="' + namespace + 'plugin-runtime",git="https://github.com/spitzli/cloud-plugin-sdk",rev="' + 'b' * 40 + '"}\n'
+            manifest.write_text(source)
+            self.finalize()
+            manifest.write_text(source.replace('b' * 40, 'd' * 40))
+            with self.subTest(namespace=namespace), self.assertRaises(ValueError):
+                self.finalize()
+
 
 if __name__ == "__main__":
     unittest.main()

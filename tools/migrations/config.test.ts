@@ -32,7 +32,7 @@ test("offline migration requires an exact explicit target and dedicated role", (
 test("fresh role bootstrap is explicit and requires all strong private passwords", () => {
   const env = {
     ...base,
-    WEBDOCK_BOOTSTRAP_EMPTY_DATABASE: "true",
+    SPITZLI_BOOTSTRAP_EMPTY_DATABASE: "true",
     MIGRATION_ROLE_PASSWORDS: JSON.stringify(
       Object.fromEntries(
         [...runtimeRoles, "webdock_offline_migrate"].map((role) => [
@@ -67,7 +67,7 @@ test("bootstrap rejects shared runtime and offline passwords", () => {
       migrationConfig(
         {
           ...base,
-          WEBDOCK_BOOTSTRAP_EMPTY_DATABASE: "true",
+          SPITZLI_BOOTSTRAP_EMPTY_DATABASE: "true",
           MIGRATION_ROLE_PASSWORDS: JSON.stringify(
             Object.fromEntries(
               [...runtimeRoles, "webdock_offline_migrate"].map((role) => [

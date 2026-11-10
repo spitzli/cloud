@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { initializePluginState } from "../src/modules/plugins/bootstrap";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "API refuses missing plugin initialization and boots after explicit offline import",
   async () => {
@@ -34,9 +34,9 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
           BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
           AUTH_TEST_MAIL: "true",
           BETTER_AUTH_URL: "http://localhost:3125",
-          WEBDOCK_API_ORIGIN: origin,
-          WEBDOCK_STUDIO_ORIGIN: "http://localhost:3120",
-          WEBDOCK_API_DOMAINS: "",
+          SPITZLI_API_ORIGIN: origin,
+          SPITZLI_STUDIO_ORIGIN: "http://localhost:3120",
+          SPITZLI_API_DOMAINS: "",
           PORT: String(port),
         },
         stdout: "pipe",

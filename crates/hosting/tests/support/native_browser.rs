@@ -48,13 +48,13 @@ async fn http(f: &Fixture, origin: &str, dist: &Path) -> (axum::Router, Value) {
     )
     .unwrap();
     let registry = spitzli_registry::RegistryService::new(
-        db("WEBDOCK_REGISTRY_DATABASE_URL").await,
+        db("SPITZLI_REGISTRY_DATABASE_URL").await,
         RlsSigner::new(&rls, "webdock_registry_runtime").unwrap(),
     )
     .with_allocator(ids);
     let config = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
-        ("WEBDOCK_STUDIO_ORIGIN".into(), origin.into()),
-        ("WEBDOCK_FEATURES".into(), r#"{"hosting":"enabled"}"#.into()),
+        ("SPITZLI_STUDIO_ORIGIN".into(), origin.into()),
+        ("SPITZLI_FEATURES".into(), r#"{"hosting":"enabled"}"#.into()),
     ]))
     .unwrap();
     let router = build_app_with_domains(
@@ -166,7 +166,7 @@ async fn remove_runtime(engine: &bollard::Docker, installation: &str, app: &str)
 #[ignore = "requires owned PostgreSQL, local Docker, built Console and explicit browser opt-in"]
 async fn console_drives_real_native_hosting_and_docker() {
     assert_eq!(
-        std::env::var("WEBDOCK_HOSTING_BROWSER_TEST").as_deref(),
+        std::env::var("SPITZLI_HOSTING_BROWSER_TEST").as_deref(),
         Ok("1")
     );
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -299,7 +299,7 @@ async fn console_drives_real_native_hosting_and_docker() {
         let env = container.config.unwrap().env.unwrap_or_default();
         assert!(
             env.iter()
-                .any(|value| value == "WEBDOCK_PROOF_TOKEN=browser-proof-value"),
+                .any(|value| value == "SPITZLI_PROOF_TOKEN=browser-proof-value"),
             "Console environment change did not reach the running container"
         );
     })
@@ -375,7 +375,7 @@ async fn run_browser(
         Duration::from_secs(300),
         tokio::process::Command::new("node")
             .arg(root.join("apps/console/tests/hosting-native-browser.mjs"))
-            .env("WEBDOCK_HOSTING_BROWSER_FIXTURE", &descriptor)
+            .env("SPITZLI_HOSTING_BROWSER_FIXTURE", &descriptor)
             .current_dir(root)
             .kill_on_drop(true)
             .output(),

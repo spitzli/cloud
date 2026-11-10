@@ -40,7 +40,7 @@ Bun.plugin({
     }));
   },
 });
-process.env.WEBDOCK_API_ORIGIN = "https://api.example.test";
+process.env.SPITZLI_API_ORIGIN = "https://api.example.test";
 const calls: string[] = [];
 let handle: (operation: string, args: unknown[]) => Promise<unknown>;
 globalThis.fetch = async (_url, init) => {

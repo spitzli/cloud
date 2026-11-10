@@ -771,7 +771,7 @@ async fn metadata_transport_rejects_remote_plaintext_and_invalid_ca_without_logg
 #[ignore = "orchestrated in two phases by fixtures/postgres.py"]
 async fn postgres_server_restart_preserves_intent_sealed_credentials_and_replay() {
     let path = std::path::PathBuf::from(
-        std::env::var_os("WEBDOCK_OBJECT_STORAGE_POSTGRES_CONFIG").unwrap(),
+        std::env::var_os("SPITZLI_OBJECT_STORAGE_POSTGRES_CONFIG").unwrap(),
     )
     .parent()
     .unwrap()

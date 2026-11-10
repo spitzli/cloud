@@ -37,7 +37,7 @@ async fn kubernetes_fair_queue_and_retired_infrastructure_retry() {
             sql(&f.owner,"INSERT INTO webdock_admin.projects(id,name,customer_id) VALUES($1,'owned fairness project',$2)",vec![project.clone().into(),customer.clone().into()]).await;
             sql(&f.owner,"INSERT INTO webdock_auth.hosting_project(project_id,customer_id,provider,cluster_id,namespace,mode) SELECT $1,$2,provider,cluster_id,namespace||'-'||$1,mode FROM webdock_auth.hosting_project WHERE project_id=$3",vec![project.clone().into(),customer.clone().into(),f.pid.clone().into()]).await;
         }
-        let service=BuildService::new(db("DATABASE_URL").await,db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),Arc::new(spitzli_persistence::IdAllocator::new(db("DATABASE_URL").await,spitzli_ids::Identity::platform(0,2).unwrap())),f.service.clone(),"registry.invalid".into()).await.unwrap();
+        let service=BuildService::new(db("DATABASE_URL").await,db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),Arc::new(spitzli_persistence::IdAllocator::new(db("DATABASE_URL").await,spitzli_ids::Identity::platform(0,2).unwrap())),f.service.clone(),"registry.invalid".into()).await.unwrap();
         let enrolled=service.enroll_worker(&f.principal,"DE","artifact-only","Owned fair queue and retry fixture",4).await.unwrap();
         let worker=service.authenticate_worker(enrolled["credential"].as_str().unwrap()).await.unwrap();
         let cluster=service.enroll_kubernetes_cluster(&f.principal,worker.id(),"owned-fair-retry","DE","Owned fair queue and retry fixture",4).await.unwrap();let cluster=cluster["id"].as_str().unwrap();

@@ -156,7 +156,7 @@ async fn recovery(owner: &DatabaseConnection) -> DeliveryRequest {
 #[ignore = "creates and drops an isolated database using the explicitly owned restricted local fixture"]
 async fn account_dispatcher_restart_deduplicates_lost_mail_ack_and_delivers_both_outboxes() {
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert!(matches!(url.host_str(), Some("127.0.0.1" | "localhost")));
     assert_eq!(url.path(), "/webdock_rls_test");
     assert!(url.query().is_none());
@@ -191,7 +191,7 @@ async fn run(url: &url::Url, name: &str) {
     seed(&owner).await;
     let auth = role("AUTH_DATABASE_URL", url).await;
     let business = role("DATABASE_URL", url).await;
-    let worker = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
+    let worker = role("SPITZLI_PLUGIN_WORKER_DATABASE_URL", url).await;
     let allocator = Arc::new(spitzli_persistence::IdAllocator::new(
         business.clone(),
         spitzli_ids::Identity::platform(0, 2).unwrap(),
@@ -261,8 +261,8 @@ async fn run(url: &url::Url, name: &str) {
         );
         identity = Some(account.clone());
         let configuration = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
-            ("WEBDOCK_AUTH_ORIGIN".into(), origin.into()),
-            ("WEBDOCK_FEATURES".into(), "{\"mail\":\"enabled\"}".into()),
+            ("SPITZLI_AUTH_ORIGIN".into(), origin.into()),
+            ("SPITZLI_FEATURES".into(), "{\"mail\":\"enabled\"}".into()),
         ]))
         .unwrap();
         build_app_with_domains(

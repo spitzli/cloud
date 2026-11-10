@@ -36,10 +36,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if export.total_count != args.expected_records || export.data.len() != args.expected_records {
         return Err("Incomplete or changed source inventory; inspect before importing".into());
     }
-    let raw = std::env::var("WEBDOCK_MIGRATION_DATABASE_URL")?;
+    let raw = std::env::var("SPITZLI_MIGRATION_DATABASE_URL")?;
     let target = ConnectionUrl::parse(&raw, true)?;
     target.require_target(&args.target)?;
-    let raw = std::env::var("WEBDOCK_DATABASE_URL")?;
+    let raw = std::env::var("SPITZLI_DATABASE_URL")?;
     let bootstrap = ConnectionUrl::parse(&raw, true)?;
     bootstrap.require_target(&args.target)?;
     let db = Database::connect(target.as_str()).await?;

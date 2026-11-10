@@ -37,15 +37,15 @@ fn command(spec: RuntimeSpec, generation: u64, action: Action) -> Command {
     }
 }
 #[tokio::test]
-#[ignore = "requires explicit disposable WEBDOCK_KUBE_TEST_CONFIG, CONTEXT and IMAGE"]
+#[ignore = "requires explicit disposable SPITZLI_KUBE_TEST_CONFIG, CONTEXT and IMAGE"]
 async fn independent_helm_release_rolls_out_suspends_resumes_and_preserves_approved_secret() {
-    let kubeconfig = PathBuf::from(std::env::var("WEBDOCK_KUBE_TEST_CONFIG").unwrap());
-    let context = std::env::var("WEBDOCK_KUBE_TEST_CONTEXT").unwrap();
+    let kubeconfig = PathBuf::from(std::env::var("SPITZLI_KUBE_TEST_CONFIG").unwrap());
+    let context = std::env::var("SPITZLI_KUBE_TEST_CONTEXT").unwrap();
     assert!(
         context.starts_with("kind-webdock-rust-") || context.starts_with("k3d-webdock-rust-"),
         "only an owned disposable context is allowed"
     );
-    let image = std::env::var("WEBDOCK_KUBE_TEST_IMAGE").unwrap();
+    let image = std::env::var("SPITZLI_KUBE_TEST_IMAGE").unwrap();
     let config = Config::from_custom_kubeconfig(
         Kubeconfig::read_from(&kubeconfig).unwrap(),
         &KubeConfigOptions {

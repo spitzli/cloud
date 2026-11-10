@@ -3,7 +3,7 @@ configureFullInstallation();
 import { validateClerkWorkerConfiguration } from "./modules/auth/clerk-configuration";
 import { validateWorkerModules } from "./installation";
 import { withDatabaseScope } from "@spitzli/database-runtime";
-process.env.WEBDOCK_PROCESS_ROLE = "worker";
+process.env.SPITZLI_PROCESS_ROLE = "worker";
 import {
   readJobQueueConfiguration,
   startCoreJobWorkers,
@@ -12,7 +12,7 @@ import {
 const jobQueueConfiguration = readJobQueueConfiguration();
 
 import { claim, complete, fail, renew, schedule, type JobName } from "./jobs";
-const selected = (process.env.WEBDOCK_WORKER_DOMAINS || "")
+const selected = (process.env.SPITZLI_WORKER_DOMAINS || "")
   .split(",")
   .filter(Boolean);
 if (

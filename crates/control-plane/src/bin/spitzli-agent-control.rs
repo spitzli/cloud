@@ -40,7 +40,7 @@ async fn main() -> Result<(), Error> {
     let configuration_enabled =
         spitzli_control_plane::mail::incoming_configuration_enabled(&environment)?;
     let config = PlatformConfig::from_map(&environment)?;
-    let plugin_config = std::env::var("WEBDOCK_NATIVE_PLUGIN_CONFIG")
+    let plugin_config = std::env::var("SPITZLI_NATIVE_PLUGIN_CONFIG")
         .ok()
         .map(|path| {
             spitzli_control_plane::plugin_config::PluginConfig::load(std::path::Path::new(&path))
@@ -61,7 +61,7 @@ async fn main() -> Result<(), Error> {
         .features
         .require("mail", OperationKind::ContinueAccepted)
         .is_ok()
-        && std::env::var("WEBDOCK_NATIVE_MAIL_AGENT_ENABLED").as_deref() == Ok("true");
+        && std::env::var("SPITZLI_NATIVE_MAIL_AGENT_ENABLED").as_deref() == Ok("true");
     if configuration_enabled && !mail_enabled {
         return Err(
             "Mail configuration execution requires a Mail feature state permitting accepted work"
@@ -69,7 +69,7 @@ async fn main() -> Result<(), Error> {
         );
     }
     // Plugin workloads are served whenever this listener runs; they need no product feature.
-    let workloads_enabled = std::env::var("WEBDOCK_WORKLOADS_ENABLED").as_deref() == Ok("true");
+    let workloads_enabled = std::env::var("SPITZLI_WORKLOADS_ENABLED").as_deref() == Ok("true");
     if !hosting_enabled
         && !databases_enabled
         && !mail_enabled
@@ -81,7 +81,7 @@ async fn main() -> Result<(), Error> {
                 .into(),
         );
     }
-    let auth_url = required("WEBDOCK_DATABASE_URL")?;
+    let auth_url = required("SPITZLI_DATABASE_URL")?;
     let auth = spitzli_control_plane::db::connect_runtime(
         &auth_url,
         "webdock_auth_bootstrap",
@@ -89,13 +89,13 @@ async fn main() -> Result<(), Error> {
     )
     .await?;
     let session = spitzli_control_plane::db::connect_runtime(
-        &required("WEBDOCK_SESSION_DATABASE_URL")?,
+        &required("SPITZLI_SESSION_DATABASE_URL")?,
         "webdock_auth_runtime",
         config.production,
     )
     .await?;
     let worker = spitzli_control_plane::db::connect_runtime(
-        &required("WEBDOCK_WORKER_DATABASE_URL")?,
+        &required("SPITZLI_WORKER_DATABASE_URL")?,
         "webdock_worker_runtime",
         config.production,
     )
@@ -107,9 +107,9 @@ async fn main() -> Result<(), Error> {
         )
         .await?,
     );
-    let key = std::env::var("WEBDOCK_HOSTING_ENCRYPTION_KEY")
+    let key = std::env::var("SPITZLI_HOSTING_ENCRYPTION_KEY")
         .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
-        .or_else(|_| std::env::var("WEBDOCK_AUTH_SECRET"))
+        .or_else(|_| std::env::var("SPITZLI_AUTH_SECRET"))
         .map_err(|_| "Missing retained hosting encryption key")?;
     let authority = spitzli_control_plane::plugin_config::authority_services(
         auth.clone(),
@@ -275,7 +275,7 @@ async fn database_domain(
     new_orders_enabled: bool,
 ) -> Result<Arc<spitzli_databases::DatabaseService>, Error> {
     let lease_secret = std::env::var("BETTER_AUTH_SECRET")
-        .or_else(|_| std::env::var("WEBDOCK_AUTH_SECRET"))
+        .or_else(|_| std::env::var("SPITZLI_AUTH_SECRET"))
         .map_err(|_| "Missing retained database lease secret")?;
     Ok(Arc::new(
         spitzli_databases::DatabaseService::new(
@@ -287,16 +287,16 @@ async fn database_domain(
             ids,
             required("DATABASE_RLS_SECRET")?,
             encryption_key,
-            &required("WEBDOCK_DATABASE_GATEWAY_ORIGIN")?,
+            &required("SPITZLI_DATABASE_GATEWAY_ORIGIN")?,
         )
         .await?
         .with_new_orders_enabled(new_orders_enabled)
         .with_management(spitzli_databases::ManagementConfig {
-            cluster_id: std::env::var("WEBDOCK_DATABASE_CLUSTER_ID").ok(),
-            endpoint_domain: std::env::var("WEBDOCK_DATABASE_DOMAIN").ok(),
-            public_ordering: std::env::var("WEBDOCK_DATABASE_PUBLIC_ENABLED").as_deref()
+            cluster_id: std::env::var("SPITZLI_DATABASE_CLUSTER_ID").ok(),
+            endpoint_domain: std::env::var("SPITZLI_DATABASE_DOMAIN").ok(),
+            public_ordering: std::env::var("SPITZLI_DATABASE_PUBLIC_ENABLED").as_deref()
                 == Ok("true"),
-            protected_database_id: std::env::var("WEBDOCK_CONTROL_DATABASE_ID").ok(),
+            protected_database_id: std::env::var("SPITZLI_CONTROL_DATABASE_ID").ok(),
             lease_secret: Some(lease_secret),
         })?,
     ))

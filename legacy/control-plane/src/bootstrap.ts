@@ -18,9 +18,9 @@ export async function startServer(extension: ServerExtension = {}) {
     config.domains.some((domain) =>
       ["portal", "registry", "integrations", "mcp"].includes(domain),
     ) &&
-    (process.env.WEBDOCK_AUTH_ISSUER !== config.authOrigin + "/api/auth" ||
-      process.env.WEBDOCK_SSO_APP_ORIGIN !== config.studioOrigin ||
-      process.env.WEBDOCK_SSO_CLIENT_ID !== process.env.WEBDOCK_STUDIO_CLIENT_ID)
+    (process.env.SPITZLI_AUTH_ISSUER !== config.authOrigin + "/api/auth" ||
+      process.env.SPITZLI_SSO_APP_ORIGIN !== config.studioOrigin ||
+      process.env.SPITZLI_SSO_CLIENT_ID !== process.env.SPITZLI_STUDIO_CLIENT_ID)
   )
     throw Error(
       "Studio protocol configuration must match canonical origins and client",
@@ -93,7 +93,7 @@ export async function startServer(extension: ServerExtension = {}) {
       await (await import("./protocols/registry")).registryProtocol(config),
     );
   if (config.domains.includes("mcp")) {
-    if (process.env.WEBDOCK_MCP_RESOURCE !== config.studioOrigin + "/api/mcp") throw Error("MCP resource must preserve the canonical Studio audience");
+    if (process.env.SPITZLI_MCP_RESOURCE !== config.studioOrigin + "/api/mcp") throw Error("MCP resource must preserve the canonical Studio audience");
     mounts.push(...await (extension.mcp ? extension.mcp(config) : Promise.resolve().then(async () => (await import("./protocols/mcp")).mcpProtocol(config))));
   }
   const ready = async () => {
@@ -111,8 +111,8 @@ export async function startServer(extension: ServerExtension = {}) {
   await ready();
   const app = await createApp(config, { mounts, ready });
   const { handleConsoleOrigin } = await import("./console-origin");
-  const ingressSecret = process.env.WEBDOCK_INGRESS_SECRET;
-  const trustedProxies = (process.env.WEBDOCK_TRUSTED_PROXIES || "")
+  const ingressSecret = process.env.SPITZLI_INGRESS_SECRET;
+  const trustedProxies = (process.env.SPITZLI_TRUSTED_PROXIES || "")
     .split(",")
     .filter(Boolean);
   if (

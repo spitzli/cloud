@@ -6,7 +6,7 @@ from plugin input. A same-cluster managed PostgreSQL service binding is required
 
 ## Operator configuration
 
-After publishing the reviewed CMS image, set `WEBDOCK_APPROVED_CMS_TEMPLATE` on the
+After publishing the reviewed CMS image, set `SPITZLI_APPROVED_CMS_TEMPLATE` on the
 full control-plane API and setup worker to this JSON structure:
 
 ```json
@@ -90,7 +90,7 @@ adopted. Restarting uses the same PVC, Payload secret, bridge secret and identit
 ## Matched backups and isolated restore
 
 `app_backup.py` is an operator tool, separate from the storage remount helper. Run
-it on the existing managed cluster host with the same `WEBDOCK_EXECUTOR_LOCK` as
+it on the existing managed cluster host with the same `SPITZLI_EXECUTOR_LOCK` as
 the daemon. The config must be private (`0600`) and owned by the operator:
 
 ```json
@@ -225,7 +225,7 @@ forwarding/PTY/user startup files (`restrict`), and force only
 Do not allow arbitrary client commands, environments, socket paths or generic
 application storage actions. The wrapper's fixed socket is
 `/run/webdock-postgres-storage/control.sock`; a different inherited
-`WEBDOCK_STORAGE_SOCKET` is rejected. `SSH_ORIGINAL_COMMAND` is never executed.
+`SPITZLI_STORAGE_SOCKET` is rejected. `SSH_ORIGINAL_COMMAND` is never executed.
 
 The forced wrapper requires root, accepts one newline-terminated JSON request of
 at most 4096 bytes, and allows only `database.capability`, `database.ensure`,

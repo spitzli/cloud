@@ -7,7 +7,7 @@ import {
 } from "@spitzli/database-runtime";
 import { createWorkerDatabases } from "../src/db/client";
 import { createSetupFixture } from "./helpers/setup-fixture";
-const integration = process.env.WEBDOCK_RLS_FIXTURE_FILE ? test : test.skip;
+const integration = process.env.SPITZLI_RLS_FIXTURE_FILE ? test : test.skip;
 function fixturePools() {
   const url = new URL(process.env.API_TEST_OWNER_URL!);
   if (url.hostname !== "127.0.0.1" || url.pathname !== "/webdock_rls_test")

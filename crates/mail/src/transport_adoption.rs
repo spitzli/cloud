@@ -59,7 +59,7 @@ impl ConfiguredTransport {
     }
 }
 fn observation(stage: &'static str) {
-    if std::env::var_os("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref()
+    if std::env::var_os("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref()
         == Some(std::ffi::OsStr::new("1"))
     {
         use std::io::Write;

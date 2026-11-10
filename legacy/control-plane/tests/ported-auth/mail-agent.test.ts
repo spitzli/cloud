@@ -43,14 +43,14 @@ test("only the assigned cluster can claim, checkpoint and complete native Mail p
   await database.query(nativeMailClusterSchemaSQL);
   await database.query(mailboxSchemaSQL);
   const previous = {
-    boxes: process.env.WEBDOCK_NATIVE_MAILBOXES_ENABLED,
-    flag: process.env.WEBDOCK_NATIVE_MAIL_ENABLED,
+    boxes: process.env.SPITZLI_NATIVE_MAILBOXES_ENABLED,
+    flag: process.env.SPITZLI_NATIVE_MAIL_ENABLED,
     key: process.env.MAIL_ENCRYPTION_KEY,
     image: process.env.MAIL_STALWART_IMAGE,
     suffix: process.env.MAIL_HOSTNAME_SUFFIX,
   };
-  process.env.WEBDOCK_NATIVE_MAIL_ENABLED = "true";
-  process.env.WEBDOCK_NATIVE_MAILBOXES_ENABLED = "true";
+  process.env.SPITZLI_NATIVE_MAIL_ENABLED = "true";
+  process.env.SPITZLI_NATIVE_MAILBOXES_ENABLED = "true";
   process.env.MAIL_ENCRYPTION_KEY = randomBytes(32).toString("base64");
   process.env.MAIL_STALWART_IMAGE = `webdock.local/mail-stalwart@sha256:${"a".repeat(64)}`;
   process.env.MAIL_HOSTNAME_SUFFIX = "mail.webdock.dev";
@@ -353,8 +353,8 @@ test("only the assigned cluster can claim, checkpoint and complete native Mail p
     });
   } finally {
     for (const [name, value] of Object.entries({
-      WEBDOCK_NATIVE_MAILBOXES_ENABLED: previous.boxes,
-      WEBDOCK_NATIVE_MAIL_ENABLED: previous.flag,
+      SPITZLI_NATIVE_MAILBOXES_ENABLED: previous.boxes,
+      SPITZLI_NATIVE_MAIL_ENABLED: previous.flag,
       MAIL_ENCRYPTION_KEY: previous.key,
       MAIL_STALWART_IMAGE: previous.image,
       MAIL_HOSTNAME_SUFFIX: previous.suffix,

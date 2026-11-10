@@ -7,7 +7,7 @@ import { initializePluginState } from "../src/modules/plugins/bootstrap";
 import { requestPluginState } from "../src/modules/plugins/store";
 import { createModuleAdmission } from "../src/modules/plugins/admission";
 import { readPublicInstallation } from "../src/modules/plugins/public-view";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "module admission fences state changes, shares nested transactions and denies stale snapshots",
   async () => {

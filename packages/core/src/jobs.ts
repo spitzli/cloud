@@ -8,16 +8,16 @@ export type CoreQueueConfiguration = {
 export function readJobQueueConfiguration(
   env: Record<string, string | undefined> = process.env,
 ): CoreQueueConfiguration {
-  const value = env.WEBDOCK_JOBS_REDIS_URL;
+  const value = env.SPITZLI_JOBS_REDIS_URL;
   if (!value)
-    throw Error("WEBDOCK_JOBS_REDIS_URL is required for Core BullMQ workers");
+    throw Error("SPITZLI_JOBS_REDIS_URL is required for Core BullMQ workers");
   let url: URL;
   try {
     url = new URL(value);
   } catch {
-    throw Error("Invalid WEBDOCK_JOBS_REDIS_URL");
+    throw Error("Invalid SPITZLI_JOBS_REDIS_URL");
   }
-  const prefix = env.WEBDOCK_JOBS_PREFIX ?? "webdock";
+  const prefix = env.SPITZLI_JOBS_PREFIX ?? "webdock";
   if (
     !["redis:", "rediss:"].includes(url.protocol) ||
     url.search ||

@@ -121,7 +121,7 @@ class MailExecutionTests(unittest.TestCase):
         client.bootstrap.return_value = {'username': 'admin', 'password': 'permanent-fixture'}
         client.submission_certificate.return_value = 'a' * 64
         with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
-            stack.enter_context(patch.dict(os.environ, {'WEBDOCK_EXECUTOR_LOCK': directory + '/lock'}))
+            stack.enter_context(patch.dict(os.environ, {'SPITZLI_EXECUTOR_LOCK': directory + '/lock'}))
             prepare = stack.enter_context(patch('executor.prepare_storage'))
             for method in ['prepare_namespace', 'check_owner']:
                 stack.enter_context(patch('executor.' + method))
@@ -184,7 +184,7 @@ class MailExecutionTests(unittest.TestCase):
         packet = MailExecutorTests().packet(); packet['action'] = 'suspend'
         current = {'metadata': {'generation': 1}, 'spec': {'replicas': 1}, 'status': {'observedGeneration': 1}}
         with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
-            stack.enter_context(patch.dict(os.environ, {'WEBDOCK_EXECUTOR_LOCK': directory + '/lock'}))
+            stack.enter_context(patch.dict(os.environ, {'SPITZLI_EXECUTOR_LOCK': directory + '/lock'}))
             stack.enter_context(patch('executor.get', return_value=current))
             stack.enter_context(patch('executor.check_owner'))
             stack.enter_context(patch('executor.pods', return_value=[]))

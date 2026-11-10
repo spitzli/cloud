@@ -15,7 +15,7 @@ fn local(key: &str) -> String {
 async fn main() {
     let auth_url = local("AUTH_DATABASE_URL");
     let auth = Database::connect(&auth_url).await.unwrap();
-    let owner = Database::connect(local("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let owner = Database::connect(local("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     let secret = std::env::var("BETTER_AUTH_SECRET").unwrap();

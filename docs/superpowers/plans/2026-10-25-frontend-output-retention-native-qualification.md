@@ -52,7 +52,7 @@ The existing flow creates its own temporary registry container.
 Executed frontend command, after both gates above:
 
 ```sh
-WEBDOCK_FRONTEND_VM_ROOT="$PWD/.runtime-test/build-vm-frontend-20261025-r2" \
+SPITZLI_FRONTEND_VM_ROOT="$PWD/.runtime-test/build-vm-frontend-20261025-r2" \
   CARGO_TARGET_DIR="$PWD/.runtime-test/frontend-target-20261025-r1" \
   RUSTUP_TOOLCHAIN=1.94.0 \
   python3 tools/tests/object-storage.py \

@@ -6,7 +6,7 @@ use serde_json::Value;
 #[ignore = "uses only the owned PostgreSQL instance created by archives-storage.py"]
 async fn dedicated_export_role_cannot_write_ddl_set_role_or_enter_another_database() {
     let f: Value = serde_json::from_slice(
-        &std::fs::read(std::env::var("WEBDOCK_ARCHIVES_FIXTURE").unwrap()).unwrap(),
+        &std::fs::read(std::env::var("SPITZLI_ARCHIVES_FIXTURE").unwrap()).unwrap(),
     )
     .unwrap();
     let meta = f["database"].as_str().unwrap();

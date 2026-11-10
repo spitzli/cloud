@@ -81,7 +81,7 @@ export function createHostingSetupRecovery(dependencies: Dependencies) {
     const managed = new Set(
       bindings.flatMap((b) =>
         b.service.kind === "mail"
-          ? [b.variable, "WEBDOCK_MAIL_API_URL"]
+          ? [b.variable, "SPITZLI_MAIL_API_URL"]
           : [b.variable],
       ),
     );

@@ -29,9 +29,9 @@ impl Realtime {
     pub fn from_map(env: &HashMap<String, String>) -> Result<Option<Self>, &'static str> {
         let (Some(url), Some(socket)) = (
             env.get("NEON_REALTIME_URL"),
-            env.get("WEBDOCK_REALTIME_SOCKET"),
+            env.get("SPITZLI_REALTIME_SOCKET"),
         ) else {
-            if env.contains_key("NEON_REALTIME_URL") || env.contains_key("WEBDOCK_REALTIME_SOCKET")
+            if env.contains_key("NEON_REALTIME_URL") || env.contains_key("SPITZLI_REALTIME_SOCKET")
             {
                 return Err("Complete private realtime configuration required");
             }
@@ -221,7 +221,7 @@ mod tests {
                 "wss://ep-test.rt.eu.neon.tech/".into(),
             ),
             (
-                "WEBDOCK_REALTIME_SOCKET".into(),
+                "SPITZLI_REALTIME_SOCKET".into(),
                 "/run/webdock-live/sdk.sock".into(),
             ),
         ]);

@@ -3,7 +3,7 @@ name: webdock
 services:
   database-gateway:
     profiles: [databases]
-    image: ${WEBDOCK_DATABASE_GATEWAY_IMAGE:?Set the immutable gateway image with verified Tabularis runtime}
+    image: ${SPITZLI_DATABASE_GATEWAY_IMAGE:?Set the immutable gateway image with verified Tabularis runtime}
     env_file: [./database-gateway.env]
     environment:
       TABULARIS_EXPECTED_COMMIT: ${TABULARIS_EXPECTED_COMMIT:?Use vendor/tabularis-web-ui.json sourceCommit}

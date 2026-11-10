@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { setupProductAvailable } from "../src/modules/hosting/product-admission";
 test("setup options respect product installation state and API process ownership", () => {
   const states = {
-    WEBDOCK_MODULES: JSON.stringify({
+    SPITZLI_MODULES: JSON.stringify({
       configVersion: 1,
       modules: {
         hosting: { enabled: true },
@@ -16,10 +16,10 @@ test("setup options respect product installation state and API process ownership
   expect(
     setupProductAvailable("mail", {
       ...states,
-      WEBDOCK_API_DOMAINS: "auth,hosting",
+      SPITZLI_API_DOMAINS: "auth,hosting",
     }),
   ).toBe(false);
   expect(
-    setupProductAvailable("databases", { WEBDOCK_API_DOMAINS: "auth,hosting" }),
+    setupProductAvailable("databases", { SPITZLI_API_DOMAINS: "auth,hosting" }),
   ).toBe(false);
 });

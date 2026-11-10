@@ -7,7 +7,7 @@ export default async function AccountPage() {
     redirect(
       new URL(
         "/account",
-        process.env.WEBDOCK_AUTH_ISSUER || "https://auth.webdock.dev/api/auth",
+        process.env.SPITZLI_AUTH_ISSUER || "https://auth.webdock.dev/api/auth",
       ).href,
     );
   await auth.protect();

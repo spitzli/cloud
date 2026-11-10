@@ -200,9 +200,9 @@ def acceptance(oci, ownership=None, kubeconfig=None, *, publish_only=False, heal
         if len(ports) != 1 or ports[0]["HostIp"] != "127.0.0.1":
             raise RuntimeError("owned registry endpoint must be loopback-only")
         address = f"127.0.0.1:{ports[0]['HostPort']}"
-        env = {**os.environ, "WEBDOCK_BUILD_RUN_REGISTRY": address, "WEBDOCK_BUILD_RUN_OCI": str(oci)}
+        env = {**os.environ, "SPITZLI_BUILD_RUN_REGISTRY": address, "SPITZLI_BUILD_RUN_OCI": str(oci)}
         if publish_only:
-            env["WEBDOCK_BUILD_PUBLISH_TEST"] = "1"
+            env["SPITZLI_BUILD_PUBLISH_TEST"] = "1"
             test_name = "real_build_oci_publishes_and_registry_readback_matches"
         else:
             endpoint = registry["NetworkSettings"]["Networks"]["bridge"]["IPAddress"]
@@ -214,9 +214,9 @@ def acceptance(oci, ownership=None, kubeconfig=None, *, publish_only=False, heal
             owned_node(record)
             run(["docker", "restart", record["container"]])
             wait_ready(record, kubeconfig)
-            env.update({"WEBDOCK_BUILD_RUNTIME_TEST": "1", "WEBDOCK_KUBE_TEST_CONFIG": str(kubeconfig), "WEBDOCK_KUBE_TEST_CONTEXT": context})
+            env.update({"SPITZLI_BUILD_RUNTIME_TEST": "1", "SPITZLI_KUBE_TEST_CONFIG": str(kubeconfig), "SPITZLI_KUBE_TEST_CONTEXT": context})
             if health_only:
-                env["WEBDOCK_BUILD_HEALTH_TEST"] = "1"
+                env["SPITZLI_BUILD_HEALTH_TEST"] = "1"
                 test_name = "real_build_registry_digest_serves_http_under_native_runtime_policy"
             else:
                 test_name = "real_build_registry_digest_rolls_out_and_failed_rollout_remains_recoverable"

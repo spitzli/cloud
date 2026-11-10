@@ -46,9 +46,9 @@ After=network-online.target
 Wants=network-online.target
 [Service]
 ExecStart=/usr/bin/python3 {target}/daemon.py --credentials {connection} --byok
-Environment=WEBDOCK_KUBECTL={executable}
-Environment=WEBDOCK_KUBECONFIG={kubeconfig}
-Environment=WEBDOCK_KUBECTL_CACHE_DIR={state}/cache
+Environment=SPITZLI_KUBECTL={executable}
+Environment=SPITZLI_KUBECONFIG={kubeconfig}
+Environment=SPITZLI_KUBECTL_CACHE_DIR={state}/cache
 Restart=on-failure
 RestartSec=15
 RestartPreventExitStatus=78

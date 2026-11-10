@@ -4,9 +4,9 @@ use spitzli_persistence::IdAllocator;
 use std::{collections::HashSet, sync::Arc};
 
 #[tokio::test]
-#[ignore = "requires explicitly owned local WEBDOCK_ID_TEST_DATABASE_URL"]
+#[ignore = "requires explicitly owned local SPITZLI_ID_TEST_DATABASE_URL"]
 async fn allocated_ids_survive_restart_failed_business_transactions_and_concurrent_instances() {
-    let raw = std::env::var("WEBDOCK_ID_TEST_DATABASE_URL").unwrap();
+    let raw = std::env::var("SPITZLI_ID_TEST_DATABASE_URL").unwrap();
     let url = url::Url::parse(&raw).unwrap();
     assert!(
         matches!(url.host_str(), Some("localhost" | "127.0.0.1" | "[::1]"))

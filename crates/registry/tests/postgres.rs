@@ -80,12 +80,12 @@ impl Allocator for RevokeOnAudit {
 #[tokio::test]
 #[ignore = "requires explicit local retained-schema RLS fixture environment"]
 async fn operator_crud_atomic_audit_retained_guard_and_revocation() {
-    let owner = connect("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let owner = connect("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     owner
         .execute_unprepared(include_str!("../migrations/0001_customer_deletion.sql"))
         .await
         .unwrap();
-    let runtime = connect("WEBDOCK_REGISTRY_DATABASE_URL").await;
+    let runtime = connect("SPITZLI_REGISTRY_DATABASE_URL").await;
     let auth = connect("AUTH_DATABASE_URL").await;
     let nonce = format!(
         "rust-registry-{}-{}",
@@ -126,7 +126,7 @@ async fn operator_crud_atomic_audit_retained_guard_and_revocation() {
         .unwrap()
     };
     let allocator = spitzli_persistence::IdAllocator::new(
-        connect("WEBDOCK_REGISTRY_DATABASE_URL").await,
+        connect("SPITZLI_REGISTRY_DATABASE_URL").await,
         spitzli_ids::Identity::platform(0, 2).unwrap(),
     );
     let service =

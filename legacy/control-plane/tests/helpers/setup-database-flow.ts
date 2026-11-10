@@ -20,8 +20,8 @@ export async function verifySetupDatabaseFlow(
   planRevisionID: string,
   agent: { clusterID: string; generation: number; credentialHash: string },
 ) {
-  const old = process.env.WEBDOCK_SETUP_ENABLED;
-  process.env.WEBDOCK_SETUP_ENABLED = "true";
+  const old = process.env.SPITZLI_SETUP_ENABLED;
+  process.env.SPITZLI_SETUP_ENABLED = "true";
   const observation = (
     await database.query(
       "SELECT observation FROM webdock_auth.hosting_agent WHERE cluster_id=$1",
@@ -285,7 +285,7 @@ export async function verifySetupDatabaseFlow(
       "DELETE FROM webdock_auth.tenant_subscription WHERE customer_id=$1",
       [customerID],
     );
-    if (old === undefined) delete process.env.WEBDOCK_SETUP_ENABLED;
-    else process.env.WEBDOCK_SETUP_ENABLED = old;
+    if (old === undefined) delete process.env.SPITZLI_SETUP_ENABLED;
+    else process.env.SPITZLI_SETUP_ENABLED = old;
   }
 }

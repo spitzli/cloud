@@ -16,7 +16,7 @@ components:
     image: ''
     existingSecret: ''
     port: 3130
-  # existingSecret must contain WEBDOCK_JOBS_REDIS_URL (redis:// or rediss://).
+  # existingSecret must contain SPITZLI_JOBS_REDIS_URL (redis:// or rediss://).
   # Redis is operator-provisioned with persistence, noeviction and restricted egress.
   worker:
     enabled: false

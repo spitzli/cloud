@@ -48,7 +48,7 @@ def main():
                 config_path=root/('config-'+str(index)+'.json');config_path.write_text(json.dumps(config));config_path.chmod(0o600)
                 state=pool/'_pool'/'state.json';state.write_text(json.dumps(ledger));state.chmod(0o600)
                 socket=str(socket_root/('pool-'+str(index)+'.sock'))
-                process=subprocess.Popen([sys.executable,str(Path(__file__).with_name('storage_service.py'))],env={**os.environ,'WEBDOCK_STORAGE_CONFIG':str(config_path),'WEBDOCK_STORAGE_SOCKET':socket,'WEBDOCK_DATABASE_STORAGE':'1'},stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                process=subprocess.Popen([sys.executable,str(Path(__file__).with_name('storage_service.py'))],env={**os.environ,'SPITZLI_STORAGE_CONFIG':str(config_path),'SPITZLI_STORAGE_SOCKET':socket,'SPITZLI_DATABASE_STORAGE':'1'},stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                 processes.append(process);routes.append({'node':config['node'],'poolID':pool_id,'storageSocket':socket})
                 deadline=time.monotonic()+5
                 while not Path(socket).exists():

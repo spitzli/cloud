@@ -35,7 +35,7 @@ enum StartupStage {
 }
 impl StartupStage {
     fn emit(self) {
-        if std::env::var_os("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref()
+        if std::env::var_os("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref()
             == Some(std::ffi::OsStr::new("1"))
         {
             let stage = match self {
@@ -103,7 +103,7 @@ unsafe extern "C" {
     fn geteuid() -> u32;
 }
 fn report_config_read_failure(path: &std::path::Path, error: &Error) {
-    if std::env::var_os("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref()
+    if std::env::var_os("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref()
         != Some(std::ffi::OsStr::new("1"))
     {
         return;

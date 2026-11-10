@@ -16,17 +16,17 @@ concurrency:
 
 jobs:
   check:
-    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != '' && vars.WEBDOCK_BLACKSMITH_BUILDER_READY == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != '' && vars.SPITZLI_BLACKSMITH_BUILDER_READY == 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 20
     env:
-      WEBDOCK_OCI_BACKEND: blacksmith-buildx
-      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+      SPITZLI_OCI_BACKEND: blacksmith-buildx
+      SPITZLI_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
     steps:
       - name: Require reviewed Blacksmith execution
         shell: bash
         env:
-          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
         run: |
           set -euo pipefail
           case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac
@@ -78,7 +78,7 @@ jobs:
 
   release:
     needs: check
-    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != '' && vars.WEBDOCK_BLACKSMITH_BUILDER_READY == 'true' && (startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push')
+    if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != '' && vars.SPITZLI_BLACKSMITH_BUILDER_READY == 'true' && (startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push')
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 30
     # Restrict this environment to release tags using the repository's tag policy.
@@ -87,13 +87,13 @@ jobs:
       contents: write
       packages: write
     env:
-      WEBDOCK_OCI_BACKEND: blacksmith-buildx
-      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+      SPITZLI_OCI_BACKEND: blacksmith-buildx
+      SPITZLI_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
     steps:
       - name: Require reviewed Blacksmith execution
         shell: bash
         env:
-          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
         run: |
           set -euo pipefail
           case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac
@@ -168,7 +168,7 @@ jobs:
             --verify-tag --title "$GITHUB_REF_NAME" --generate-notes "${prerelease[@]}"
   registry:
     needs: release
-    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != '' && (startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push')
+    if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != '' && (startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push')
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 15
     environment: plugin-release
@@ -178,7 +178,7 @@ jobs:
       - name: Require reviewed Blacksmith execution
         shell: bash
         env:
-          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
         run: |
           set -euo pipefail
           case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac

@@ -129,7 +129,7 @@ Run `apps/auth/scripts/migrate-hosting.ts` only with the intended Auth migration
 
 The existing Studio resource-server OAuth client must be linked to the MCP resource through the native operator provisioning flow, as for existing MCP introspection. Hosting clients require explicit native registration/consent; no dynamic anonymous client registration was enabled.
 
-Hosting bridge/agent routes fail closed in production unless `WEBDOCK_HOSTING_EU_VERIFIED=true`. This is an operator release gate, **not** automatic proof of location. Set it only after the complete operating path is verified. Current Vercel Frankfurt functions do not establish an EU-only control/storage/logging path; the gate has not been enabled or deployed here. The user chose to keep Studio/Auth at Vercel and verify the node locally for now.
+Hosting bridge/agent routes fail closed in production unless `SPITZLI_HOSTING_EU_VERIFIED=true`. This is an operator release gate, **not** automatic proof of location. Set it only after the complete operating path is verified. Current Vercel Frankfurt functions do not establish an EU-only control/storage/logging path; the gate has not been enabled or deployed here. The user chose to keep Studio/Auth at Vercel and verify the node locally for now.
 
 Existing applications keep running independently of the hosting control plane. Rollback means disabling the new routes/observer or revoking the agent; do not drop hosting records, delete namespaces or free uncertain reservations.
 

@@ -33,14 +33,14 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
     if (production && !env[key]) throw Error(`Missing ${key}`);
     return origin(env[key] || fallback);
   };
-  const apiOrigin = required("WEBDOCK_API_ORIGIN", "http://localhost:3130");
+  const apiOrigin = required("SPITZLI_API_ORIGIN", "http://localhost:3130");
   const authOrigin = required("BETTER_AUTH_URL", "http://localhost:3125");
   const studioOrigin = required(
-    "WEBDOCK_STUDIO_ORIGIN",
+    "SPITZLI_STUDIO_ORIGIN",
     "http://localhost:3120",
   );
-  const consoleOrigin = env.WEBDOCK_CONSOLE_ORIGIN
-    ? origin(env.WEBDOCK_CONSOLE_ORIGIN)
+  const consoleOrigin = env.SPITZLI_CONSOLE_ORIGIN
+    ? origin(env.SPITZLI_CONSOLE_ORIGIN)
     : undefined;
   if (
     consoleOrigin &&
@@ -60,7 +60,7 @@ export function readConfig(env: Record<string, string | undefined>): ApiConfig {
   const port = Number(env.PORT || 3130);
   if (!Number.isInteger(port) || port < 1 || port > 65535)
     throw Error("Invalid port");
-  const domains = (env.WEBDOCK_API_DOMAINS ?? "auth,portal,registry").split(",").filter(Boolean);
+  const domains = (env.SPITZLI_API_DOMAINS ?? "auth,portal,registry").split(",").filter(Boolean);
   if (
     domains.some(
       (domain) =>

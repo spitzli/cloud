@@ -14,7 +14,7 @@ async fn db(key: &str) -> DatabaseConnection {
             && parsed.query().is_none()
     );
     let mut options = sea_orm::ConnectOptions::new(value);
-    if key == "WEBDOCK_TEST_MIGRATION_DATABASE_URL" {
+    if key == "SPITZLI_TEST_MIGRATION_DATABASE_URL" {
         options.max_connections(1);
     }
     Database::connect(options).await.unwrap()
@@ -59,7 +59,7 @@ struct Fixture {
 }
 impl Fixture {
     async fn new(runtime: &str) -> Self {
-        let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+        let owner = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
         sql(
             &owner,
             "SELECT pg_advisory_lock(hashtext('webdock-hosting-rust-fixture'))",
@@ -118,7 +118,7 @@ impl Fixture {
             HostingService::new(
                 db("DATABASE_URL").await,
                 db("AUTH_DATABASE_URL").await,
-                db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+                db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
                 std::env::var("DATABASE_RLS_SECRET").unwrap(),
                 std::env::var("BETTER_AUTH_SECRET").unwrap(),
                 Arc::new(spitzli_persistence::IdAllocator::new(
@@ -285,11 +285,11 @@ async fn durable_app_create_claim_complete_controls_quotas_and_revocation() {
 }
 #[cfg(feature = "docker-test")]
 #[tokio::test]
-#[ignore = "requires explicit WEBDOCK_HOSTING_DOCKER_TEST=1 and owned local Docker Engine"]
+#[ignore = "requires explicit SPITZLI_HOSTING_DOCKER_TEST=1 and owned local Docker Engine"]
 async fn persisted_docker_commands_execute_with_live_authority_and_uid_fences() {
     use spitzli_supervisor::{Authorizer, Command, ExecutionError, LeaseGuard, RuntimeAdapter};
     assert_eq!(
-        std::env::var("WEBDOCK_HOSTING_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_HOSTING_DOCKER_TEST").as_deref(),
         Ok("1")
     );
     struct Live {
@@ -391,7 +391,7 @@ async fn retained_storage_requires_exact_delete_and_purge_proofs() {
 }
 #[cfg(feature = "docker-test")]
 #[tokio::test]
-#[ignore = "requires explicit WEBDOCK_HOSTING_DOCKER_TEST=1, native agent-control migrations and local Engine"]
+#[ignore = "requires explicit SPITZLI_HOSTING_DOCKER_TEST=1, native agent-control migrations and local Engine"]
 async fn core_rpc_daemon_docker_receipts_survive_lost_poll_and_completion_ack() {
     use spitzli_agent_control::{ControlPlane, LocalBinding};
     use spitzli_agent_protocol::{self as wire, agent_control_client::AgentControlClient};
@@ -449,7 +449,7 @@ async fn core_rpc_daemon_docker_receipts_survive_lost_poll_and_completion_ack() 
     }
 
     assert_eq!(
-        std::env::var("WEBDOCK_HOSTING_DOCKER_TEST").as_deref(),
+        std::env::var("SPITZLI_HOSTING_DOCKER_TEST").as_deref(),
         Ok("1")
     );
     let engine = bollard::Docker::connect_with_unix(

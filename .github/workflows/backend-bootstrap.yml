@@ -16,17 +16,17 @@ concurrency:
 
 jobs:
   package:
-    if: vars.WEBDOCK_BLACKSMITH_READY == 'true' && vars.WEBDOCK_BLACKSMITH_REGION != '' && vars.WEBDOCK_BLACKSMITH_BUILDER_READY == 'true' && (github.repository == 'spitzli/cloud' && github.ref == 'refs/heads/main')
+    if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != '' && vars.SPITZLI_BLACKSMITH_BUILDER_READY == 'true' && (github.repository == 'spitzli/cloud' && github.ref == 'refs/heads/main')
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 60
     env:
-      WEBDOCK_OCI_BACKEND: blacksmith-buildx
-      WEBDOCK_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+      SPITZLI_OCI_BACKEND: blacksmith-buildx
+      SPITZLI_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
     steps:
       - name: Require reviewed Blacksmith execution
         shell: bash
         env:
-          QUALIFIED_BLACKSMITH_REGION: ${{ vars.WEBDOCK_BLACKSMITH_REGION }}
+          QUALIFIED_BLACKSMITH_REGION: ${{ vars.SPITZLI_BLACKSMITH_REGION }}
         run: |
           set -euo pipefail
           case "${BLACKSMITH_REGION:-}" in us-east|us-west|eu-central|eu-west) ;; *) echo 'Recorded Blacksmith region required' >&2; exit 1 ;; esac

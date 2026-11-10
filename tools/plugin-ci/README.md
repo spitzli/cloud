@@ -34,7 +34,7 @@ checked. CMS is added separately only after its own workflow is reviewed. The
 runner accepts one job at a time. Repository Actions enabling/triggering remains
 an explicit operator action; `manage_runner.py` never enables repository Actions.
 
-Runner labels for `WEBDOCK_PLUGIN_CI_RUNNER`:
+Runner labels for `SPITZLI_PLUGIN_CI_RUNNER`:
 
 ```json
 ["self-hosted","Linux","X64","spitzli-plugin-eu2","trusted-platform"]

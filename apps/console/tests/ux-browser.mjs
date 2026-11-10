@@ -60,7 +60,7 @@ async function open(role = 'owner', surface = 'console', signedIn = true) {
   return { page, context, state };
 }
 async function check(name, run) {
-  if (process.env.WEBDOCK_UX_CASE && !name.toLowerCase().includes(process.env.WEBDOCK_UX_CASE.toLowerCase())) return;
+  if (process.env.SPITZLI_UX_CASE && !name.toLowerCase().includes(process.env.SPITZLI_UX_CASE.toLowerCase())) return;
   try { await run(); console.log(`PASS ${name}`); }
   catch (error) { failures.push(name); console.error(`FAIL ${name}: ${error.message}`); }
 }
@@ -262,7 +262,7 @@ try {
     assert.ok(!actions.includes('unsafe.write') && !actions.includes('apps.power'));
   }));
   await check('Desktop/mobile and light/dark role matrix stays usable', async () => {
-    const shots = process.env.WEBDOCK_UX_SCREENSHOTS === 'true';
+    const shots = process.env.SPITZLI_UX_SCREENSHOTS === 'true';
     if (shots) await mkdir(fromRepo('.runtime-test/ui-ux/screens/'), { recursive: true });
     const matrix = [
       ['operator', 'console', ['/projects', '/customers', '/customers/new', '/customers/101', '/tenants/101', '/plans', '/clusters', '/extensions', '/audit-events']],

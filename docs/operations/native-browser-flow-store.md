@@ -1,6 +1,6 @@
 # Native browser login-flow storage
 
-`WEBDOCK_BROWSER_FLOW_BACKEND=tokio-postgres` opts durable first-party browser
+`SPITZLI_BROWSER_FLOW_BACKEND=tokio-postgres` opts durable first-party browser
 sidecar storage into the checked native PostgreSQL runtime. The default remains
 `sea-orm`; unknown values fail startup. Native mode requires the existing
 first-party SSO client configuration. It uses one max4/min0 native bootstrap pool,

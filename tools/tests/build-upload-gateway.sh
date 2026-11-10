@@ -17,8 +17,8 @@ if [[ ${1:-} == --inside-owned-namespace ]]; then
   trap cleanup EXIT
   mount --make-rprivate /
   mount -t tmpfs -o size=2097152,mode=0700,nosuid,nodev,noexec webdock-upload-owned-test "$root"
-  export WEBDOCK_UPLOAD_LIVE_ROOT="$root"
-  export WEBDOCK_UPLOAD_LIVE_EVIDENCE="$evidence"
+  export SPITZLI_UPLOAD_LIVE_ROOT="$root"
+  export SPITZLI_UPLOAD_LIVE_EVIDENCE="$evidence"
   "$test_binary" --exact real_tmpfs_and_native_http_upload_gate --ignored --nocapture --test-threads=1
   exit
 fi

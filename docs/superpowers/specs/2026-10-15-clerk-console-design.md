@@ -51,7 +51,7 @@ flowchart LR
   L[Deferred CMS/MCP clients] --> O[Existing OAuth endpoints]
 ```
 
-Use new backend entrypoints `/api/console`, `/api/console/hosting`, `/api/console/lifecycle`. Console sends a Clerk session token as Bearer plus `X-Webdock-Service-Key`, a dedicated server-only credential. The latter protects confidential hosting/provider context from direct browser callers. Use `WEBDOCK_ACCOUNT_SERVICE_ORIGIN` for this backend, independent of the legacy OAuth issuer.
+Use new backend entrypoints `/api/console`, `/api/console/hosting`, `/api/console/lifecycle`. Console sends a Clerk session token as Bearer plus `X-Webdock-Service-Key`, a dedicated server-only credential. The latter protects confidential hosting/provider context from direct browser callers. Use `SPITZLI_ACCOUNT_SERVICE_ORIGIN` for this backend, independent of the legacy OAuth issuer.
 
 Existing `/api/studio`, hosting bridge, lifecycle and OAuth endpoints keep their existing token contract. Never try one provider and fall back to another. No Clerk-to-Better-Auth cookie conversion or new local session issuance.
 

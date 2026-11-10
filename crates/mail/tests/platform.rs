@@ -226,7 +226,7 @@ async fn count(owner: &DatabaseConnection, sql: &str) -> i64 {
 #[ignore = "build standalone relay local-provider-test, then run with an explicitly owned local RLS fixture"]
 async fn native_processes_use_restricted_core_and_one_pinned_provider_attempt() {
     let mut url =
-        url::Url::parse(&std::env::var("WEBDOCK_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
+        url::Url::parse(&std::env::var("SPITZLI_TEST_MIGRATION_DATABASE_URL").unwrap()).unwrap();
     assert!(matches!(url.host_str(), Some("127.0.0.1" | "localhost")));
     assert_eq!(url.path(), "/webdock_rls_test");
     assert!(url.query().is_none());
@@ -277,7 +277,7 @@ async fn run(url: &url::Url, name: &str) {
     let key = ed25519_dalek::SigningKey::from_bytes(&[78; 32]);
     let auth = role("AUTH_DATABASE_URL", url).await;
     let business = role("DATABASE_URL", url).await;
-    let worker_db = role("WEBDOCK_PLUGIN_WORKER_DATABASE_URL", url).await;
+    let worker_db = role("SPITZLI_PLUGIN_WORKER_DATABASE_URL", url).await;
     let ids = Arc::new(spitzli_persistence::IdAllocator::new(
         business.clone(),
         spitzli_ids::Identity::platform(0, 2).unwrap(),
@@ -335,8 +335,8 @@ async fn run(url: &url::Url, name: &str) {
     let db = auth.clone();
     let core = TlsServer::bind(move |origin| {
         let configuration = spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
-            ("WEBDOCK_AUTH_ORIGIN".into(), origin.into()),
-            ("WEBDOCK_FEATURES".into(), "{\"mail\":\"enabled\"}".into()),
+            ("SPITZLI_AUTH_ORIGIN".into(), origin.into()),
+            ("SPITZLI_FEATURES".into(), "{\"mail\":\"enabled\"}".into()),
         ]))
         .unwrap();
         build_app_with_domains(

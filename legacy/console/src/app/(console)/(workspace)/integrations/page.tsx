@@ -11,7 +11,7 @@ import { VercelIntegration } from "../../../../components/vercel-integration";
 import Link from "next/link";
 import { requireRegistryOperator } from "../../../../lib/registry-page";
 import { GitHubRepositories } from "../../../../components/github-repositories";
-const mcpResource=()=>new URL("/api/mcp",process.env.WEBDOCK_STUDIO_ORIGIN||process.env.NEXT_PUBLIC_SERVER_URL||"https://studio.webdock.dev").href;
+const mcpResource=()=>new URL("/api/mcp",process.env.SPITZLI_STUDIO_ORIGIN||process.env.NEXT_PUBLIC_SERVER_URL||"https://studio.webdock.dev").href;
 
 const messages: Record<string, string> = {
   connected: msgid("GitHub connected. Choose an installation and a repository below."),
@@ -221,9 +221,9 @@ export default async function Integrations({
               </li>
               <li>{i18n.t("Source import requires")}{" "}
                 <strong>{i18n.t("Repository permissions → Metadata → Read-only; Contents → Read-only")}</strong>{i18n.t(". Source import only reads repositories. Actions → Read and write enables automatic builds in the private build repository; existing Checks → Write may remain. Keep user access token expiration enabled.")}</li>
-              <li>{i18n.t("Set ")}<code>WEBDOCK_GITHUB_CLIENT_ID</code>,{" "}
-                <code>WEBDOCK_GITHUB_CLIENT_SECRET</code>{i18n.t(", and")}{" "}
-                <code>WEBDOCK_GITHUB_APP_SLUG</code>{i18n.t(" in Studio’s server environment. Studio uses its existing SSO cookie secret to encrypt the connection.")}</li>
+              <li>{i18n.t("Set ")}<code>SPITZLI_GITHUB_CLIENT_ID</code>,{" "}
+                <code>SPITZLI_GITHUB_CLIENT_SECRET</code>{i18n.t(", and")}{" "}
+                <code>SPITZLI_GITHUB_APP_SLUG</code>{i18n.t(" in Studio’s server environment. Studio uses its existing SSO cookie secret to encrypt the connection.")}</li>
               <li>{i18n.t("Install the app with ")}<strong>{i18n.t("Only select repositories")}</strong>{i18n.t(", then return here and choose ")}<strong>{i18n.t("Connect GitHub")}</strong>{i18n.t(". Leave automatic user authorization during installation off so this connection starts in Studio.")}</li>
             </ol>
             <p>

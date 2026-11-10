@@ -106,7 +106,7 @@ async fn call(app: &Router, cookie: &str, value: Value) -> (StatusCode, Value) {
 #[tokio::test]
 #[ignore = "requires a fresh owned restricted-role Core PostgreSQL fixture"]
 async fn native_http_neon_customer_boundary_strict_input_and_disconnect_replay() {
-    let owner = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let owner = Database::connect(guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     let auth_url = guarded("AUTH_DATABASE_URL");

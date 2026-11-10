@@ -13,7 +13,7 @@ The registry API accepts OAuth bearer tokens for the Spitzli Cloud MCP resource 
 
 ```bash
 curl --fail-with-body \
-  -H "Authorization: Bearer $WEBDOCK_ACCESS_TOKEN" \
+  -H "Authorization: Bearer $SPITZLI_ACCESS_TOKEN" \
   'https://studio.webdock.dev/api/registry'
 ```
 
@@ -37,7 +37,7 @@ Lists support validated `search`, `page`, `limit`, `status` and `sort` parameter
 
 ```bash
 curl --fail-with-body \
-  -H "Authorization: Bearer $WEBDOCK_ACCESS_TOKEN" \
+  -H "Authorization: Bearer $SPITZLI_ACCESS_TOKEN" \
   'https://studio.webdock.dev/api/registry/projects?status=active&sort=name&limit=20'
 ```
 

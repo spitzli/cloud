@@ -75,12 +75,12 @@ def run(args):
                 if args.case and name != args.case: continue
                 database = 'review10_' + str(index)
                 f.sql(container, f'CREATE DATABASE {database} OWNER mail_owner;')
-                env = {**os.environ, 'WEBDOCK_MAIL_RECOVERY_TEST_URL': f'postgresql://mail_owner:controlled-fixture-only@127.0.0.1:{port}/{database}',
-                       'WEBDOCK_MAIL_RECOVERY_TEST_CA': str(pki/'ca.crt'), 'WEBDOCK_MAIL_FIXTURE_OUTCOME': outcome}
+                env = {**os.environ, 'SPITZLI_MAIL_RECOVERY_TEST_URL': f'postgresql://mail_owner:controlled-fixture-only@127.0.0.1:{port}/{database}',
+                       'SPITZLI_MAIL_RECOVERY_TEST_CA': str(pki/'ca.crt'), 'SPITZLI_MAIL_FIXTURE_OUTCOME': outcome}
                 command = [str(executable), '--ignored', '--exact', exact(name), '--nocapture']
                 if name == 'cancelled_mailbox_process_verify':
                     marker = Path(directory)/'accepted'
-                    env['WEBDOCK_MAIL_FIXTURE_ACCEPTED'] = str(marker)
+                    env['SPITZLI_MAIL_FIXTURE_ACCEPTED'] = str(marker)
                     with (Path(directory)/'cancel-private.log').open('wb') as log:
                         child = subprocess.Popen([str(executable),'--ignored','--exact',exact('cancelled_mailbox_process_prepare')], cwd=ROOT, env=env, stdout=log, stderr=log, start_new_session=True)
                         try:
@@ -98,7 +98,7 @@ def run(args):
                     f.inspect(container)  # Label + exact-ID proof before restarting own PG only.
                     f.docker('restart','--time','5',container)
                     port = f.inspect(container)['NetworkSettings']['Ports']['5432/tcp'][0]['HostPort']
-                    env['WEBDOCK_MAIL_RECOVERY_TEST_URL'] = f'postgresql://mail_owner:controlled-fixture-only@127.0.0.1:{port}/{database}'
+                    env['SPITZLI_MAIL_RECOVERY_TEST_URL'] = f'postgresql://mail_owner:controlled-fixture-only@127.0.0.1:{port}/{database}'
                     until = time.monotonic()+20
                     while f.docker('exec',container,'pg_isready','-h','127.0.0.1','-U','postgres',allowed=True).returncode:
                         if time.monotonic() > until: raise RuntimeError('restart_readiness_deadline')

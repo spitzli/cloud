@@ -30,7 +30,7 @@ pub(super) struct ControlState {
     pub released_request: StdMutex<Option<wire::RecoveryCheckpointRequest>>,
 }
 pub(super) fn enabled() -> bool {
-    std::env::var("WEBDOCK_RECOVERY_AUTHORITY_COMPONENT").as_deref() == Ok("1")
+    std::env::var("SPITZLI_RECOVERY_AUTHORITY_COMPONENT").as_deref() == Ok("1")
         && !super::byte_component::enabled()
         && !super::mail_component::enabled()
 }

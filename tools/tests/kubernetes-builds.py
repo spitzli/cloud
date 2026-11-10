@@ -60,7 +60,7 @@ def main(argv=None):
         preflight=directory/"live-preflight.log"
         with preflight.open("wb") as output:
             preflight.chmod(0o600)
-            result=subprocess.run(["cargo","test","--locked","-p","spitzli-hosting","--test","postgres","kubernetes_live_configuration_preflight","--","--include-ignored","--test-threads=1"],cwd=ROOT,env={**os.environ,"WEBDOCK_KUBERNETES_LIVE_CONFIG":str(options.live_config)},stdout=output,stderr=subprocess.STDOUT,timeout=600)
+            result=subprocess.run(["cargo","test","--locked","-p","spitzli-hosting","--test","postgres","kubernetes_live_configuration_preflight","--","--include-ignored","--test-threads=1"],cwd=ROOT,env={**os.environ,"SPITZLI_KUBERNETES_LIVE_CONFIG":str(options.live_config)},stdout=output,stderr=subprocess.STDOUT,timeout=600)
         assert result.returncode==0 and re.search(r"test result: ok\. 1 passed; 0 failed",preflight.read_text()), "live policy/TLS preflight failed; no PostgreSQL container created; private log: "+str(preflight)
     environment = {**os.environ, "DOCKER_HOST": "unix:///var/run/docker.sock", "POSTGRES_PASSWORD": administrator}
     environment.pop("DOCKER_CONTEXT", None)
@@ -100,16 +100,16 @@ def main(argv=None):
         def url(role, password):
             return f"postgresql://{role}:{urllib.parse.quote(password, safe='')}@{address}/webdock_rls_test"
 
-        env = {**environment, "WEBDOCK_MIGRATION_DATABASE_URL": url("postgres", administrator),
-               "WEBDOCK_TEST_MIGRATION_DATABASE_URL": url("postgres", administrator),
+        env = {**environment, "SPITZLI_MIGRATION_DATABASE_URL": url("postgres", administrator),
+               "SPITZLI_TEST_MIGRATION_DATABASE_URL": url("postgres", administrator),
                "DATABASE_URL": url("webdock_auth_runtime", passwords["webdock_auth_runtime"]),
                "AUTH_DATABASE_URL": url("webdock_auth_bootstrap", passwords["webdock_auth_bootstrap"]),
-               "WEBDOCK_PLUGIN_WORKER_DATABASE_URL": url("webdock_worker_runtime", passwords["webdock_worker_runtime"]),
+               "SPITZLI_PLUGIN_WORKER_DATABASE_URL": url("webdock_worker_runtime", passwords["webdock_worker_runtime"]),
                "DATABASE_RLS_SECRET": secrets.token_hex(32), "BETTER_AUTH_SECRET": secrets.token_hex(32)}
         if live:
-            env.update({"WEBDOCK_KUBERNETES_LIVE_CONFIG":str(options.live_config),
-                        "WEBDOCK_KUBERNETES_LIVE_CUSTODY":str(directory/"custody.json"),
-                        "WEBDOCK_KUBERNETES_LIVE_CLEANUP_PROOF":str(cleanup_proof)})
+            env.update({"SPITZLI_KUBERNETES_LIVE_CONFIG":str(options.live_config),
+                        "SPITZLI_KUBERNETES_LIVE_CUSTODY":str(directory/"custody.json"),
+                        "SPITZLI_KUBERNETES_LIVE_CLEANUP_PROOF":str(cleanup_proof)})
         database_environment = env
         sensitive = [administrator, *passwords.values(), env["DATABASE_RLS_SECRET"], env["BETTER_AUTH_SECRET"]]
         password_file = directory / "passwords.json"
@@ -201,7 +201,7 @@ def main(argv=None):
                     # Never destroy the only reconciliation ledger while a live
                     # Job/Secret might remain. This container is still owned/local.
                     recovery=directory/"private-recovery-env.json"
-                    recovery.write_text(json.dumps({key:value for key,value in (database_environment or {}).items() if key in {"WEBDOCK_TEST_MIGRATION_DATABASE_URL","DATABASE_URL","AUTH_DATABASE_URL","WEBDOCK_PLUGIN_WORKER_DATABASE_URL","DATABASE_RLS_SECRET","BETTER_AUTH_SECRET"}}))
+                    recovery.write_text(json.dumps({key:value for key,value in (database_environment or {}).items() if key in {"SPITZLI_TEST_MIGRATION_DATABASE_URL","DATABASE_URL","AUTH_DATABASE_URL","SPITZLI_PLUGIN_WORKER_DATABASE_URL","DATABASE_RLS_SECRET","BETTER_AUTH_SECRET"}}))
                     recovery.chmod(0o600)
                     print("Live cleanup not proven; exact owned PostgreSQL ledger retained: " + str(directory),flush=True)
                     raise RuntimeError("live cleanup not proven; private owned PostgreSQL ledger retained")

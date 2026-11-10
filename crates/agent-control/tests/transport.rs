@@ -65,7 +65,7 @@ async fn execute(db: &DatabaseConnection, sql: &str, values: Vec<sea_orm::Value>
 #[tokio::test]
 #[ignore = "requires owned retained-schema local fixture; only unique test enrollment is mutated"]
 async fn real_transport_enrollment_generation_revocation_and_connectivity_heartbeat() {
-    let owner = db("WEBDOCK_TEST_MIGRATION_DATABASE_URL").await;
+    let owner = db("SPITZLI_TEST_MIGRATION_DATABASE_URL").await;
     let auth = db("AUTH_DATABASE_URL").await;
     let ids = Arc::new(
         spitzli_persistence::IdAllocator::connect(
@@ -96,7 +96,7 @@ async fn real_transport_enrollment_generation_revocation_and_connectivity_heartb
         spitzli_hosting::HostingService::new(
             db("DATABASE_URL").await,
             auth.clone(),
-            db("WEBDOCK_PLUGIN_WORKER_DATABASE_URL").await,
+            db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,
             std::env::var("DATABASE_RLS_SECRET").unwrap(),
             std::env::var("BETTER_AUTH_SECRET").unwrap(),
             ids,

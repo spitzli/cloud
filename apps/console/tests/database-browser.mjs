@@ -31,7 +31,7 @@ try{
  await page.setViewportSize({width:1440,height:1000});
  await writeFile('.runtime-test/database-browser-state.json',JSON.stringify(await context.storageState()),{mode:0o600});
 
- const env=parseEnv(await readFile('.runtime-test/identity-restricted.env','utf8'));const url=new URL(env.WEBDOCK_TEST_MIGRATION_DATABASE_URL);assert.equal(url.hostname,'127.0.0.1');assert.equal(url.pathname,'/webdock_rls_test');assert.ok(!url.search&&!url.hash);
+ const env=parseEnv(await readFile('.runtime-test/identity-restricted.env','utf8'));const url=new URL(env.SPITZLI_TEST_MIGRATION_DATABASE_URL);assert.equal(url.hostname,'127.0.0.1');assert.equal(url.pathname,'/webdock_rls_test');assert.ok(!url.search&&!url.hash);
  const db=new pg.Client({connectionString:url.toString()});await db.connect();let original,reference;
  try {
    const proof=await db.query('SELECT native_authority FROM webdock_auth.database_session WHERE id=$1 AND grant_id=$2',[opened.scopeID,fixture.grantID]);assert.equal(proof.rowCount,1);const authority=proof.rows[0].native_authority;assert.equal(authority.kind,'first-party-browser');

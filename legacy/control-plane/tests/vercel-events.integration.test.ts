@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomBytes, createHmac } from "node:crypto";
 import { withDatabaseScope } from "@spitzli/database-runtime";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "Vercel events verify bytes, use worker authority and deduplicate completed effects",
   async () => {
@@ -22,12 +22,12 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       project = "prj_event" + base,
       eventID = "event-" + base;
     const values = {
-      WEBDOCK_VERCEL_CLIENT_ID: "fixture",
-      WEBDOCK_VERCEL_CLIENT_SECRET: "fixture-event-signature-key",
-      WEBDOCK_VERCEL_INTEGRATION_SLUG: "fixture",
-      WEBDOCK_VERCEL_TEAM_ID: team,
-      WEBDOCK_VERCEL_TEAM_SLUG: "fixture",
-      WEBDOCK_SSO_COOKIE_SECRET:
+      SPITZLI_VERCEL_CLIENT_ID: "fixture",
+      SPITZLI_VERCEL_CLIENT_SECRET: "fixture-event-signature-key",
+      SPITZLI_VERCEL_INTEGRATION_SLUG: "fixture",
+      SPITZLI_VERCEL_TEAM_ID: team,
+      SPITZLI_VERCEL_TEAM_SLUG: "fixture",
+      SPITZLI_SSO_COOKIE_SECRET:
         "fixture-vercel-cookie-key-at-least-32-characters",
     };
     const previous = Object.fromEntries(
@@ -61,7 +61,7 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
               configurationID: "icfg_fixture",
               accessToken: "fixture-provider-token",
             },
-            values.WEBDOCK_SSO_COOKIE_SECRET,
+            values.SPITZLI_SSO_COOKIE_SECRET,
           ),
       );
       const { vercelRegionEvent } =
@@ -72,7 +72,7 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
         payload: { team: { id: team }, project: { id: project } },
       });
       const request = (
-        signature = createHmac("sha1", values.WEBDOCK_VERCEL_CLIENT_SECRET)
+        signature = createHmac("sha1", values.SPITZLI_VERCEL_CLIENT_SECRET)
           .update(payload)
           .digest("hex"),
       ) =>

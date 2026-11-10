@@ -2,7 +2,7 @@
 # Exact owned nested Engine only; no host Docker socket, cluster or trust mutation.
 set -eu
 umask 077
-test "${WEBDOCK_OWNED_RECOVERY_FIXTURE:-}" = yes
+test "${SPITZLI_OWNED_RECOVERY_FIXTURE:-}" = yes
 test -f /.dockerenv
 test "$(id -u)" = 0
 mkdir -p /var/lib/webdock-owned-engine /var/run/webdock-owned-engine

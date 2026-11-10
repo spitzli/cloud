@@ -12,7 +12,7 @@ const PG_IMAGE: &str = "docker.io/library/postgres@sha256:4da1a4828be12604092fa5
 const CE_IMAGE: &str = "webdock.local/mail-stalwart@sha256:09460db6473d8d7103836c806603096bc6d9b59ad3d90ce8276d553e88e2c1ad";
 
 pub(crate) fn enabled() -> bool {
-    std::env::var("WEBDOCK_RECOVERY_MAIL_COMPONENT").as_deref() == Ok("1")
+    std::env::var("SPITZLI_RECOVERY_MAIL_COMPONENT").as_deref() == Ok("1")
 }
 /// These are configuration ceilings, not evidence of PG initialization or data usage.
 /// Named preflight must measure the pinned images and actual PGDATA/WAL/tmp mounts.
@@ -284,12 +284,12 @@ impl Drop for MailInvokeAttempt {
 }
 fn invoke_prefix_enabled() -> bool {
     enabled()
-        && std::env::var_os("WEBDOCK_RECOVERY_MAIL_INVOKE_PREFIX").as_deref()
+        && std::env::var_os("SPITZLI_RECOVERY_MAIL_INVOKE_PREFIX").as_deref()
             == Some(std::ffi::OsStr::new("1"))
 }
 fn prelude_enabled() -> bool {
     enabled()
-        && std::env::var_os("WEBDOCK_RECOVERY_MAIL_PRELUDE").as_deref()
+        && std::env::var_os("SPITZLI_RECOVERY_MAIL_PRELUDE").as_deref()
             == Some(std::ffi::OsStr::new("1"))
 }
 
@@ -1146,7 +1146,7 @@ async fn source_postgres(role: &str, database: &str, pki: &MailPki) -> (String, 
     let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
     let port = listener.local_addr().unwrap().port();
     drop(listener);
-    let image = std::env::var("WEBDOCK_RECOVERY_POSTGRES_IMAGE_ID").unwrap();
+    let image = std::env::var("SPITZLI_RECOVERY_POSTGRES_IMAGE_ID").unwrap();
     let token = uuid::Uuid::new_v4().simple().to_string();
     let args = vec![
         "run".to_owned(),
@@ -2426,7 +2426,7 @@ pub(super) async fn foundation(
         hex::encode(catalog_key.to_bytes()).as_bytes(),
     );
     let image =
-        std::env::var("WEBDOCK_RECOVERY_MAIL_IMAGE").expect("verified current owned Mail OCI root");
+        std::env::var("SPITZLI_RECOVERY_MAIL_IMAGE").expect("verified current owned Mail OCI root");
     let gateway_client = gateway_client_identity(&pki);
     let (policy, mut recipe) = foundation_runtime_profiles(
         &pki,
@@ -2513,11 +2513,11 @@ pub(super) async fn foundation(
     .await;
     let app = build_app_with_domains(
         spitzli_core::config::PlatformConfig::from_map(&HashMap::from([
-            ("WEBDOCK_AUTH_ORIGIN".into(), AUTH.into()),
-            ("WEBDOCK_STUDIO_ORIGIN".into(), STUDIO.into()),
-            ("WEBDOCK_CONSOLE_ORIGIN".into(), CONSOLE.into()),
+            ("SPITZLI_AUTH_ORIGIN".into(), AUTH.into()),
+            ("SPITZLI_STUDIO_ORIGIN".into(), STUDIO.into()),
+            ("SPITZLI_CONSOLE_ORIGIN".into(), CONSOLE.into()),
             (
-                "WEBDOCK_FEATURES".into(),
+                "SPITZLI_FEATURES".into(),
                 "{\"hosting\":\"enabled\",\"mail\":\"enabled\"}".into(),
             ),
         ]))
@@ -5023,7 +5023,7 @@ async fn provision_actual_customer_pvc(
     let pv_name = format!("wd-own-mail-{}", uuid::Uuid::new_v4().simple());
     assert!(kube(&["get", "pv", &pv_name, "--ignore-not-found", "-o", "json"]).is_null());
     let node =
-        std::env::var("WEBDOCK_RECOVERY_NODE_NAME").expect("actual measured owned Node name");
+        std::env::var("SPITZLI_RECOVERY_NODE_NAME").expect("actual measured owned Node name");
     let pv = json!({"apiVersion":"v1","kind":"PersistentVolume","metadata":{"name":pv_name,"labels":{"webdock.recovery-fixture":"matched-mail","webdock.dev/customer-id":customer}},"spec":{"capacity":{"storage":"2Gi"},"accessModes":["ReadWriteOnce"],"volumeMode":"Filesystem","persistentVolumeReclaimPolicy":"Retain","storageClassName":"","claimRef":{"namespace":namespace,"name":pvc_name,"uid":pvc_uid},"local":{"path":data},"nodeAffinity":{"required":{"nodeSelectorTerms":[{"matchExpressions":[{"key":"kubernetes.io/hostname","operator":"In","values":[node]}]}]}}}});
     super::write_diagnostic_json(Path::new("/diagnostics/mail-static-pv.json"),&json!({"state":"pending-before-create","pv":pv_name,"pvc":pvc_name,"pvcUID":pvc_uid,"namespace":namespace,"node":node,"data":data,"bytes":2*GIB,"coverage":"operator static provisioning; not WorkloadExecutor native-storage integration"})).unwrap();
     create_kube(&pv);
@@ -5845,7 +5845,7 @@ async fn install_mail_profile(c: &mut Context<'_>, runtime: &Value) -> (Value, S
             ce_labels: BTreeMap::from([("webdock.dev/customer-id".into(), c.customer.into())]),
         },
     };
-    let helper_image = std::env::var("WEBDOCK_RECOVERY_MAIL_IMAGE").unwrap();
+    let helper_image = std::env::var("SPITZLI_RECOVERY_MAIL_IMAGE").unwrap();
     let mut config = serde_json::to_value(RecoveryRuntimeConfig {
         mode: RecoveryMode::BackupAndRestore,
         version: 1,
@@ -6268,7 +6268,7 @@ async fn cold_restore(
         },
         tls_certificate: tls.certificate.clone(),
         tls_key: tls.private_key.clone(),
-        gateway_image: std::env::var("WEBDOCK_RECOVERY_GATEWAY_IMAGE").unwrap(),
+        gateway_image: std::env::var("SPITZLI_RECOVERY_GATEWAY_IMAGE").unwrap(),
     };
     let stage = cold.join("stage");
     let replay = cold.join("replay");
@@ -7287,10 +7287,10 @@ async fn forward_probe(
 #[ignore = "build-only owned forwarding comparison; named runtime window required"]
 async fn forward_runtime_tool() {
     assert_eq!(
-        std::env::var_os("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref(),
+        std::env::var_os("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref(),
         Some(std::ffi::OsStr::new("1"))
     );
-    match std::env::var("WEBDOCK_FORWARD_TOOL_MODE").as_deref() {
+    match std::env::var("SPITZLI_FORWARD_TOOL_MODE").as_deref() {
         Ok("prepare") => {
             assert!(!Path::new(FORWARD_TOOL_ROOT).exists());
             forward_tool_prepare(Path::new(FORWARD_TOOL_ROOT));

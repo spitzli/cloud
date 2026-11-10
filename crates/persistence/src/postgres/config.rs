@@ -170,7 +170,7 @@ mod tests {
     }
     #[test]
     fn native_tls_rejects_fifo_without_blocking() {
-        const CHILD: &str = "WEBDOCK_OWNED_TLS_FIFO_TEST";
+        const CHILD: &str = "SPITZLI_OWNED_TLS_FIFO_TEST";
         if let Some(path) = std::env::var_os(CHILD) {
             assert!(file(path.to_str().unwrap(), false).is_err());
             return;

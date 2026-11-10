@@ -8,7 +8,7 @@ use spitzli_plugin_host::provisioning::storage::MetadataProvisioner;
 #[path = "../../plugin-host/tests/support/provisioning_fixture.rs"]
 mod fixture;
 #[tokio::test]
-#[ignore = "requires WEBDOCK_PLUGIN_PROVISIONING_DOCKER_TEST=1; owned fresh dual-interface PostgreSQL fixture"]
+#[ignore = "requires SPITZLI_PLUGIN_PROVISIONING_DOCKER_TEST=1; owned fresh dual-interface PostgreSQL fixture"]
 async fn one_cluster_on_different_tcp_interfaces_is_never_separate_storage() {
     let f = fixture::Fixture::start().await;
     let interfaces = interfaces(&f);

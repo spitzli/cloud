@@ -4,13 +4,13 @@ import { randomBytes, createHash } from "node:crypto";
 import { assertTestDatabase } from "./helpers/database";
 assertTestDatabase(process.env.API_TEST_DATABASE_URL!);
 const issuer = "https://oauth-fixture.clerk.accounts.dev";
-process.env.WEBDOCK_AUTH_PROVIDER = JSON.stringify({
+process.env.SPITZLI_AUTH_PROVIDER = JSON.stringify({
   provider: "clerk",
   issuer,
   authorizedParties: ["https://console.example.invalid"],
   tokenMode: "session",
 });
-process.env.WEBDOCK_OAUTH_PROVIDER = "better-auth";
+process.env.SPITZLI_OAUTH_PROVIDER = "better-auth";
 process.env.CLERK_ISSUER = issuer;
 process.env.CLERK_SECRET_KEY = "sk_test_fixture";
 process.env.CLERK_PUBLISHABLE_KEY = "pk_test_fixture";
@@ -136,7 +136,7 @@ test("selected Clerk keeps real Better Auth OAuth sessions while owning Hosting 
       [issuer, external, account.user.id],
     );
   }
-  const previous = process.env.WEBDOCK_STUDIO_CLIENT_ID;
+  const previous = process.env.SPITZLI_STUDIO_CLIENT_ID;
   const cid = (
     await database.query(
       "INSERT INTO webdock_admin.customers(id,name) VALUES(webdock_auth.next_snowflake(),'Hosting OAuth fixture') RETURNING id",
@@ -198,8 +198,8 @@ test("selected Clerk keeps real Better Auth OAuth sessions while owning Hosting 
       return c;
     };
     // Provision pre-existing legacy OAuth clients before the selector cutover.
-    const selected = process.env.WEBDOCK_AUTH_PROVIDER;
-    process.env.WEBDOCK_AUTH_PROVIDER = JSON.stringify({
+    const selected = process.env.SPITZLI_AUTH_PROVIDER;
+    process.env.SPITZLI_AUTH_PROVIDER = JSON.stringify({
       provider: "better-auth",
     });
     let app, resource;
@@ -207,9 +207,9 @@ test("selected Clerk keeps real Better Auth OAuth sessions while owning Hosting 
       app = await create(true);
       resource = await create(false);
     } finally {
-      process.env.WEBDOCK_AUTH_PROVIDER = selected;
+      process.env.SPITZLI_AUTH_PROVIDER = selected;
     }
-    process.env.WEBDOCK_STUDIO_CLIENT_ID = resource.client_id;
+    process.env.SPITZLI_STUDIO_CLIENT_ID = resource.client_id;
     const verifier = randomBytes(32).toString("base64url");
     const params = new URLSearchParams({
       client_id: app.client_id,
@@ -455,8 +455,8 @@ test("selected Clerk keeps real Better Auth OAuth sessions while owning Hosting 
       401,
     );
   } finally {
-    if (previous === undefined) delete process.env.WEBDOCK_STUDIO_CLIENT_ID;
-    else process.env.WEBDOCK_STUDIO_CLIENT_ID = previous;
+    if (previous === undefined) delete process.env.SPITZLI_STUDIO_CLIENT_ID;
+    else process.env.SPITZLI_STUDIO_CLIENT_ID = previous;
     await database.query(
       "DELETE FROM webdock_auth.clerk_organization WHERE issuer=$1 AND organization_id=$2",
       [issuer, org],

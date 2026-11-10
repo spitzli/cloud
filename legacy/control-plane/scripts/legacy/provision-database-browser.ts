@@ -5,11 +5,11 @@ import { database } from "../../src/db/runtime";
 import { encryptMailSecret } from "../../src/modules/platform/platform";
 import { databaseCommand, databaseEngine } from "@spitzli/database-contracts";
 
-const actor = process.env.WEBDOCK_DATABASE_OPERATOR_ID;
+const actor = process.env.SPITZLI_DATABASE_OPERATOR_ID;
 const path = process.argv[2];
 if (!actor || !path)
   throw Error(
-    "Provide WEBDOCK_DATABASE_OPERATOR_ID and the private inventory path",
+    "Provide SPITZLI_DATABASE_OPERATOR_ID and the private inventory path",
   );
 const rows = z
   .array(

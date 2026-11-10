@@ -50,7 +50,7 @@ class PluginBuildTests(unittest.TestCase):
                 calls.append((command,kwargs))
                 if 'build' in command:(out/'image.tar').write_bytes(b'fixture')
                 return b''
-            with patch.dict(os.environ,{'GITHUB_TOKEN':'private-github-token','ACTIONS_ID_TOKEN_REQUEST_TOKEN':'private-oidc','WEBDOCK_PLUGIN_INSTALLER_TOKEN':'private-installer'}),patch.object(worker,'run_bounded',side_effect=run):script.build_image(source,out,'123')
+            with patch.dict(os.environ,{'GITHUB_TOKEN':'private-github-token','ACTIONS_ID_TOKEN_REQUEST_TOKEN':'private-oidc','SPITZLI_PLUGIN_INSTALLER_TOKEN':'private-installer'}),patch.object(worker,'run_bounded',side_effect=run):script.build_image(source,out,'123')
             build=next((cmd,opts) for cmd,opts in calls if 'build' in cmd)
             self.assertEqual(build[0][-1],str(source))
             self.assertIn('compression=gzip,force-compression=true', ' '.join(build[0]))
@@ -70,7 +70,7 @@ class PluginBuildTests(unittest.TestCase):
                 return b''
             for _ in range(2):
                 captured=io.StringIO()
-                with patch.dict(os.environ,{'GITHUB_TOKEN':'private-github-token','ACTIONS_ID_TOKEN_REQUEST_TOKEN':'private-oidc','WEBDOCK_PLUGIN_INSTALLER_TOKEN':'private-installer'}),patch.object(worker,'run_bounded',side_effect=run),contextlib.redirect_stdout(captured),self.assertRaises(worker.BuildFailed):
+                with patch.dict(os.environ,{'GITHUB_TOKEN':'private-github-token','ACTIONS_ID_TOKEN_REQUEST_TOKEN':'private-oidc','SPITZLI_PLUGIN_INSTALLER_TOKEN':'private-installer'}),patch.object(worker,'run_bounded',side_effect=run),contextlib.redirect_stdout(captured),self.assertRaises(worker.BuildFailed):
                     script.build_image(source,out,'123')
                 text=captured.getvalue();first,_,rest=text.partition('\n')
                 self.assertRegex(first,r'^::stop-commands::[a-f0-9]{64}$')

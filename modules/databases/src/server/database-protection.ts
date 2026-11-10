@@ -20,7 +20,7 @@ export function createHostingDatabaseProtection(dependencies: Dependencies) {
   function assertDatabaseMaintenanceAllowed(
     databaseID: string,
     action: string,
-    protectedID = dependencies.env.WEBDOCK_CONTROL_DATABASE_ID,
+    protectedID = dependencies.env.SPITZLI_CONTROL_DATABASE_ID,
   ) {
     if (
       protectedID &&

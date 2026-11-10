@@ -4,7 +4,7 @@ import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomBytes } from "node:crypto";
 import { createRegistry } from "../src/modules/registry/service";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "registry keeps ownership, archive dependencies and atomic audit under signed operator RLS",
   async () => {
@@ -81,7 +81,7 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       created.push(c.id);
       expect(c.country).toBe("DE");
       const credentials = JSON.parse(
-        await readFile(process.env.WEBDOCK_RLS_FIXTURE_FILE!, "utf8"),
+        await readFile(process.env.SPITZLI_RLS_FIXTURE_FILE!, "utf8"),
       );
       const portal = new ScopedPool(
         { connectionString: credentials.roles.webdock_auth_runtime, max: 1 },
@@ -344,14 +344,14 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
         ).rows[0].n,
       ).toBe(9);
       const envKeys = [
-        "WEBDOCK_VERCEL_CLIENT_ID",
-        "WEBDOCK_VERCEL_CLIENT_SECRET",
-        "WEBDOCK_VERCEL_INTEGRATION_SLUG",
-        "WEBDOCK_VERCEL_TEAM_ID",
-        "WEBDOCK_VERCEL_TEAM_SLUG",
-        "WEBDOCK_SSO_COOKIE_SECRET",
-        "WEBDOCK_STUDIO_ORIGIN",
-        "WEBDOCK_MANAGED_DATABASES",
+        "SPITZLI_VERCEL_CLIENT_ID",
+        "SPITZLI_VERCEL_CLIENT_SECRET",
+        "SPITZLI_VERCEL_INTEGRATION_SLUG",
+        "SPITZLI_VERCEL_TEAM_ID",
+        "SPITZLI_VERCEL_TEAM_SLUG",
+        "SPITZLI_SSO_COOKIE_SECRET",
+        "SPITZLI_STUDIO_ORIGIN",
+        "SPITZLI_MANAGED_DATABASES",
       ];
       const savedEnv = Object.fromEntries(
         envKeys.map((key) => [key, process.env[key]]),
@@ -433,15 +433,15 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       };
       try {
         Object.assign(process.env, {
-          WEBDOCK_VERCEL_CLIENT_ID: "fixture",
-          WEBDOCK_VERCEL_CLIENT_SECRET: "fixture-client-secret",
-          WEBDOCK_VERCEL_INTEGRATION_SLUG: "fixture",
-          WEBDOCK_VERCEL_TEAM_ID: teamID,
-          WEBDOCK_VERCEL_TEAM_SLUG: "fixture",
-          WEBDOCK_SSO_COOKIE_SECRET:
+          SPITZLI_VERCEL_CLIENT_ID: "fixture",
+          SPITZLI_VERCEL_CLIENT_SECRET: "fixture-client-secret",
+          SPITZLI_VERCEL_INTEGRATION_SLUG: "fixture",
+          SPITZLI_VERCEL_TEAM_ID: teamID,
+          SPITZLI_VERCEL_TEAM_SLUG: "fixture",
+          SPITZLI_SSO_COOKIE_SECRET:
             "fixture-vercel-cookie-key-at-least-32-characters",
-          WEBDOCK_STUDIO_ORIGIN: "https://studio.webdock.dev",
-          WEBDOCK_MANAGED_DATABASES: JSON.stringify({
+          SPITZLI_STUDIO_ORIGIN: "https://studio.webdock.dev",
+          SPITZLI_MANAGED_DATABASES: JSON.stringify({
             [schemaName]: {
               url: `postgresql://${schemaName}_runtime:fixture@fixture.neon.tech/neondb?sslmode=verify-full`,
             },
@@ -461,7 +461,7 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
                 configurationID: "icfg_fixture",
                 accessToken: "fixture-provider-token",
               },
-              process.env.WEBDOCK_SSO_COOKIE_SECRET!,
+              process.env.SPITZLI_SSO_COOKIE_SECRET!,
             );
             await saveVercelLink(
               deletionActor,
@@ -637,7 +637,7 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
         assert.equal(reads,4);
       }finally{await registry.close();}
     `;
-    const child=Bun.spawnSync([process.execPath,"--no-env-file","-e",script],{cwd:new URL("../",import.meta.url).pathname,env:{...process.env,WEBDOCK_AUTH_PROVIDER:JSON.stringify({provider:"clerk",issuer,authorizedParties:["https://console.example.invalid"],tokenMode:"session"})},stdout:"pipe",stderr:"pipe"});
+    const child=Bun.spawnSync([process.execPath,"--no-env-file","-e",script],{cwd:new URL("../",import.meta.url).pathname,env:{...process.env,SPITZLI_AUTH_PROVIDER:JSON.stringify({provider:"clerk",issuer,authorizedParties:["https://console.example.invalid"],tokenMode:"session"})},stdout:"pipe",stderr:"pipe"});
     expect(child.exitCode,new TextDecoder().decode(child.stderr)).toBe(0);
   }finally{
     await db.query("DELETE FROM webdock_auth.tenant_customer WHERE customer_id=$1",[customer]);

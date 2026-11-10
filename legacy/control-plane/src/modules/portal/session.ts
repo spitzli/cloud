@@ -6,8 +6,8 @@ import { withDatabaseScope } from "@spitzli/database-runtime";
 import { database } from "../../db/runtime";
 /** Read the existing mapping under the exact session verified by introspection. */
 export function createPortalSession() {
-  const clientID = process.env.WEBDOCK_SSO_CLIENT_ID!;
-  const clientSecret = process.env.WEBDOCK_SSO_CLIENT_SECRET!;
+  const clientID = process.env.SPITZLI_SSO_CLIENT_ID!;
+  const clientSecret = process.env.SPITZLI_SSO_CLIENT_SECRET!;
   return configureOAuthSession({
     introspect: async (token) => {
       const response = await introspectToken(token, clientID, clientSecret);
@@ -34,7 +34,7 @@ export function createPortalSession() {
     ],
     lookupUser: async (identity) => {
       if (!identity.sessionID || identity.role !== "operator") return null;
-      const provider = readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider;
+      const provider = readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider;
       const memberships = provider === "clerk" ? await legacyClerkMemberships(identity.sub) : undefined;
       if (provider === "clerk" && (!memberships?.operator || !memberships.twoFactorEnabled)) return null;
       return withDatabaseScope(

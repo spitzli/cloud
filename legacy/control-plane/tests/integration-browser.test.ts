@@ -15,7 +15,7 @@ function fixture(
 ) {
   const calls: string[] = [];
   const registry = installationRegistry({
-    WEBDOCK_MODULES: JSON.stringify({
+    SPITZLI_MODULES: JSON.stringify({
       configVersion: 1,
       modules: { hosting: { state } },
     }),

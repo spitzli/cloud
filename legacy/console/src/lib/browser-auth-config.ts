@@ -2,10 +2,10 @@ import { readAuthProviderConfiguration } from "@spitzli/auth-configuration";
 export function readBrowserAuthConfiguration(
   env: Record<string, string | undefined>,
 ) {
-  const configured = readAuthProviderConfiguration(env.WEBDOCK_AUTH_PROVIDER);
+  const configured = readAuthProviderConfiguration(env.SPITZLI_AUTH_PROVIDER);
   if (configured.provider === "clerk")
     return { ...configured, transport: "console" as const };
-  if (env.WEBDOCK_CONSOLE_AUTH_PROVIDER === "clerk")
+  if (env.SPITZLI_CONSOLE_AUTH_PROVIDER === "clerk")
     return {
       provider: "clerk" as const,
       transport: "console" as const,
@@ -21,7 +21,7 @@ export const browserAuthConfiguration = readBrowserAuthConfiguration(
 );
 /** Relative Clerk URLs otherwise resolve against the internal deployment host. */
 export function browserAuthPageURL(path: "/login" | "/sign-up", env: Record<string, string | undefined> = process.env) {
-  const origin = env.NEXT_PUBLIC_SERVER_URL || env.WEBDOCK_CONSOLE_ORIGIN;
+  const origin = env.NEXT_PUBLIC_SERVER_URL || env.SPITZLI_CONSOLE_ORIGIN;
   return origin ? new URL(path, origin).href : path;
 }
 export function safeBrowserReturn(value: string | null | undefined): string {

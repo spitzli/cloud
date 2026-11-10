@@ -156,7 +156,7 @@ try {
     BETTER_AUTH_URL: "http://localhost:3125",
     BETTER_AUTH_SECRET: env.BETTER_AUTH_SECRET,
     API_TEST_OWNER_URL: target.href,
-    WEBDOCK_RLS_FIXTURE_FILE: root + ".rls-fixture.json",
+    SPITZLI_RLS_FIXTURE_FILE: root + ".rls-fixture.json",
   };
   const artifacts = {
     ".rls-fixture.json": JSON.stringify(fixture),

@@ -90,7 +90,7 @@ fn attempt(generation: u64) -> AttemptTransfer {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[ignore = "requires private user/mount namespace and isolated memory cgroup"]
 async fn maximum_gateway_service() {
-    let work = std::path::PathBuf::from(std::env::var_os("WEBDOCK_UPLOAD_MAX_WORK").unwrap());
+    let work = std::path::PathBuf::from(std::env::var_os("SPITZLI_UPLOAD_MAX_WORK").unwrap());
     let root = work.join("gateway-tmpfs");
     let fd = File::open(&root).unwrap();
     let baseline = used(&fd);

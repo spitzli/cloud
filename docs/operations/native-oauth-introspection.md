@@ -1,6 +1,6 @@
 # Native OAuth token introspection
 
-Set `WEBDOCK_OAUTH_INTROSPECTION_BACKEND=tokio-postgres` to opt owned standard,
+Set `SPITZLI_OAUTH_INTROSPECTION_BACKEND=tokio-postgres` to opt owned standard,
 first-party Portal and MCP introspection, plus UserInfo, into direct PostgreSQL.
 The default remains `sea-orm`; unknown values fail startup. This also selects the
 native client/public-key reads and reuses Core's shared max4/min0 native bootstrap

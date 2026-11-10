@@ -1,5 +1,5 @@
 import path from 'node:path';
 import type {NextConfig} from 'next';
-const publicOrigin = process.env.NEXT_PUBLIC_SERVER_URL || process.env.WEBDOCK_CONSOLE_ORIGIN;
+const publicOrigin = process.env.NEXT_PUBLIC_SERVER_URL || process.env.SPITZLI_CONSOLE_ORIGIN;
 const config:NextConfig={output:'standalone',outputFileTracingExcludes:{'/*':['./.env*','../../**/.env*','../../.superpowers/**/*']},experimental:{globalNotFound:true,serverActions:{bodySizeLimit:'2mb',allowedOrigins:publicOrigin?[new URL(publicOrigin).host]:[]}},transpilePackages:['@spitzli/console-kit','@spitzli/module-hosting','@spitzli/module-cms','@spitzli/module-storage','@spitzli/module-databases','@spitzli/module-sdk','@spitzli/module-mail','@spitzli/search','@spitzli/hosting-contracts','@spitzli/i18n','@spitzli/payload-sso','@spitzli/page-builder'],outputFileTracingRoot:path.resolve(process.cwd(),'../..'),turbopack:{root:path.resolve(process.cwd(),'../..')},async headers(){return[{source:'/:path*',headers:[{key:'X-Robots-Tag',value:'noindex, nofollow'},{key:'Referrer-Policy',value:'same-origin'},{key:'X-Content-Type-Options',value:'nosniff'}]}];}};
 export default config;

@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomBytes } from "node:crypto";
 import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "bindings enforce tenant and agent-cluster ownership with restricted database roles",
   async () => {

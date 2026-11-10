@@ -42,7 +42,7 @@ impl Drop for Fixture {
 impl Fixture {
     async fn start() -> Self {
         assert_eq!(
-            std::env::var("WEBDOCK_BOOTSTRAP_DOCKER_TEST").as_deref(),
+            std::env::var("SPITZLI_BOOTSTRAP_DOCKER_TEST").as_deref(),
             Ok("1")
         );
         let nonce = uuid::Uuid::new_v4().simple().to_string();
@@ -191,10 +191,10 @@ async fn command(
         tokio::process::Command::new(env!("CARGO_BIN_EXE_spitzli-bootstrap-operator"))
             .env_clear()
             .env("DATABASE_URL_UNPOOLED", url.as_str())
-            .env("WEBDOCK_AUTH_SECRET", SECRET)
+            .env("SPITZLI_AUTH_SECRET", SECRET)
             .env("BETTER_AUTH_URL", AUTH)
-            .env("WEBDOCK_STUDIO_ORIGIN", STUDIO)
-            .env("WEBDOCK_CONSOLE_ORIGIN", CONSOLE)
+            .env("SPITZLI_STUDIO_ORIGIN", STUDIO)
+            .env("SPITZLI_CONSOLE_ORIGIN", CONSOLE)
             .args(["--target", target, "--config"])
             .arg(config)
             .arg("--output")
@@ -538,7 +538,7 @@ async fn usable(fixture: &Fixture, owner: &DatabaseConnection, secrets: &Value) 
         ready.principal.user_id
     );
     let client_id = secrets["clientID"].as_str().unwrap().to_owned();
-    let client_secret = secrets["environment"]["WEBDOCK_SSO_CLIENT_SECRET"]
+    let client_secret = secrets["environment"]["SPITZLI_SSO_CLIENT_SECRET"]
         .as_str()
         .unwrap()
         .to_owned();
@@ -559,7 +559,7 @@ async fn usable(fixture: &Fixture, owner: &DatabaseConnection, secrets: &Value) 
         identity.clone(),
         oauth.clone(),
         Arc::new(keys()),
-        secrets["environment"]["WEBDOCK_SSO_COOKIE_SECRET"]
+        secrets["environment"]["SPITZLI_SSO_COOKIE_SECRET"]
             .as_str()
             .unwrap(),
         spitzli_browser_session::BrowserConfig::new(

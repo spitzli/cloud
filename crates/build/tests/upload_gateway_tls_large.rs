@@ -247,17 +247,17 @@ fn output(root: &Path, attempt: &AttemptTransfer, mib: u64) -> (PathBuf, u64) {
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "requires owned dedicated tmpfs namespace, live fixed TLS relay and reverse SSH tunnel"]
 async fn actual_large_tls_transfer() {
-    let work = PathBuf::from(std::env::var_os("WEBDOCK_TLS_LARGE_WORK").unwrap());
+    let work = PathBuf::from(std::env::var_os("SPITZLI_TLS_LARGE_WORK").unwrap());
     let root = work.join("gateway");
     let data = work.join("fixture-data");
-    let fixture = PathBuf::from(std::env::var_os("WEBDOCK_TLS_LARGE_CERTS").unwrap());
+    let fixture = PathBuf::from(std::env::var_os("SPITZLI_TLS_LARGE_CERTS").unwrap());
     assert!(fixture.is_absolute());
-    let timeout = std::env::var("WEBDOCK_TLS_LARGE_TIMEOUT")
+    let timeout = std::env::var("SPITZLI_TLS_LARGE_TIMEOUT")
         .unwrap()
         .parse::<u64>()
         .unwrap();
-    let sizes = std::env::var("WEBDOCK_TLS_LARGE_SIZES").unwrap();
-    let evidence = PathBuf::from(std::env::var_os("WEBDOCK_TLS_LARGE_EVIDENCE").unwrap());
+    let sizes = std::env::var("SPITZLI_TLS_LARGE_SIZES").unwrap();
+    let evidence = PathBuf::from(std::env::var_os("SPITZLI_TLS_LARGE_EVIDENCE").unwrap());
     let fd = File::open(&root).unwrap();
     let initial = used(&fd);
     let gateway =

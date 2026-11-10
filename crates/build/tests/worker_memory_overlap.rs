@@ -117,7 +117,7 @@ impl PublicationGuard for Guard {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[ignore = "requires tools/tests/build-worker-memory.py owned namespace/cgroup/registry"]
 async fn maximum_worker_overlap_service() {
-    let work = PathBuf::from(std::env::var_os("WEBDOCK_WORKER_MAX_WORK").unwrap());
+    let work = PathBuf::from(std::env::var_os("SPITZLI_WORKER_MAX_WORK").unwrap());
     let config: Value =
         serde_json::from_slice(&std::fs::read(work.join("config.json")).unwrap()).unwrap();
     let address: std::net::SocketAddr =

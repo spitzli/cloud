@@ -1,5 +1,5 @@
 //! Real PostgreSQL, no Core: a disposable local server named by
-//! `WEBDOCK_POSTGRES_PLUGIN_TEST_ADMIN_URL` (loopback only) holds plugin storage and shared databases.
+//! `SPITZLI_POSTGRES_PLUGIN_TEST_ADMIN_URL` (loopback only) holds plugin storage and shared databases.
 //! Dedicated instances go to a stand-in for Core's `plugin.workloads`; they run on the local k3s
 //! in the live dev stack.
 use serde_json::{Value, json};
@@ -53,7 +53,7 @@ impl Core {
 
 fn admin_url() -> url::Url {
     let url = url::Url::parse(
-        &std::env::var("WEBDOCK_POSTGRES_PLUGIN_TEST_ADMIN_URL").expect("disposable local server"),
+        &std::env::var("SPITZLI_POSTGRES_PLUGIN_TEST_ADMIN_URL").expect("disposable local server"),
     )
     .unwrap();
     assert_eq!(url.host_str(), Some("127.0.0.1"));

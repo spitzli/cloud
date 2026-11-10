@@ -35,7 +35,7 @@ fn request(location: &str) -> AuthorizationRequest {
 #[tokio::test]
 #[ignore = "requires owned restricted local fixture"]
 async fn confidential_browser_handoff_is_one_use_origin_bound_and_live() {
-    let offline = Database::connect(guarded("WEBDOCK_TEST_MIGRATION_DATABASE_URL"))
+    let offline = Database::connect(guarded("SPITZLI_TEST_MIGRATION_DATABASE_URL"))
         .await
         .unwrap();
     offline

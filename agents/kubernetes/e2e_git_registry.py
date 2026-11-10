@@ -23,8 +23,8 @@ def main():
     config = json.loads(subprocess.check_output([*kubectl, 'config', 'view', '-o', 'json']))
     if config['current-context'] != 'kind-webdock-git-e2e' or any(urlparse(c['cluster']['server']).hostname != '127.0.0.1' for c in config['clusters']):
         raise SystemExit('Refusing non-disposable or non-loopback Kubernetes target')
-    os.environ['WEBDOCK_E2E_KUBECONFIG'] = str(kubeconfig)
-    os.environ['WEBDOCK_REGISTRY_CONFIG'] = str(workspace / 'registry-policy.json')
+    os.environ['SPITZLI_E2E_KUBECONFIG'] = str(kubeconfig)
+    os.environ['SPITZLI_REGISTRY_CONFIG'] = str(workspace / 'registry-policy.json')
     os.environ['PATH'] = str(workspace.parent / 'bin') + ':' + os.environ['PATH']
     os.environ['TMPDIR'] = str(workspace)
     import tempfile

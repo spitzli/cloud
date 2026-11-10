@@ -6,13 +6,13 @@ import { getPayload, jwtSign, JWTAuthentication } from 'payload';
 Object.assign(process.env, {
   DATABASE_URL: 'postgresql://unused:unused@127.0.0.1:1/unused',
   PAYLOAD_SECRET: 'test-secret-for-sso-policy-only-at-least-32',
-  WEBDOCK_AUTH_ISSUER: 'https://auth.example.test/api/auth',
-  WEBDOCK_SSO_CLIENT_ID: 'policy-test',
-  WEBDOCK_SSO_CLIENT_SECRET: 'test-client-secret',
-  WEBDOCK_SSO_COOKIE_SECRET: 'test-cookie-secret-longer-than-thirty-two',
-  WEBDOCK_SSO_APP_ORIGIN: 'https://cms.example.test',
-  WEBDOCK_SSO_ALLOW_LOCAL_HTTP: 'false',
-  WEBDOCK_SSO_ENFORCE: 'true',
+  SPITZLI_AUTH_ISSUER: 'https://auth.example.test/api/auth',
+  SPITZLI_SSO_CLIENT_ID: 'policy-test',
+  SPITZLI_SSO_CLIENT_SECRET: 'test-client-secret',
+  SPITZLI_SSO_COOKIE_SECRET: 'test-cookie-secret-longer-than-thirty-two',
+  SPITZLI_SSO_APP_ORIGIN: 'https://cms.example.test',
+  SPITZLI_SSO_ALLOW_LOCAL_HTTP: 'false',
+  SPITZLI_SSO_ENFORCE: 'true',
 });
 
 test('enforced SSO rejects native login, recovery and existing Payload JWTs without removing auth fields', async () => {

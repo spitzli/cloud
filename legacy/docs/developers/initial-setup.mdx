@@ -11,7 +11,7 @@ This procedure initializes the native Auth foundation in `apps/control-plane`, s
 
 ## Open the private browser setup
 
-Use the dedicated `webdock_offline_migrate` database login created by the installer, through `DATABASE_URL_UNPOOLED`. Keep this credential offline. Remote connections require `DATABASE_CA_CERT`. Set the exact canonical `BETTER_AUTH_URL`, `WEBDOCK_STUDIO_ORIGIN` and `WEBDOCK_CONSOLE_ORIGIN` in this command's environment before starting. These three origins must be distinct; use HTTPS except for explicit loopback development with a loopback database.
+Use the dedicated `webdock_offline_migrate` database login created by the installer, through `DATABASE_URL_UNPOOLED`. Keep this credential offline. Remote connections require `DATABASE_CA_CERT`. Set the exact canonical `BETTER_AUTH_URL`, `SPITZLI_STUDIO_ORIGIN` and `SPITZLI_CONSOLE_ORIGIN` in this command's environment before starting. These three origins must be distinct; use HTTPS except for explicit loopback development with a loopback database.
 
 Run the command on the same machine as your browser. Pass the exact `host:port/database` and a new private output filename:
 
@@ -22,7 +22,7 @@ bun run setup:admin -- db.example.com:5432/webdock /private/initial-operator-sec
 
 Open the private `http://127.0.0.1:…/#…` link printed in the terminal. Treat the entire link as a setup credential. The random capability stays in the URL fragment, is removed from the address bar when the page loads, and authorizes only this temporary local session. The command always binds to `127.0.0.1`; there is no public setup route or configurable public bind address. The session expires after ten minutes. An optional final argument sets an expiry of 60–900 seconds.
 
-The form shows the configured origins without allowing changes. Enter your name, email and a unique temporary password of 16–128 characters, and confirm that you have verified ownership of the address. Provisioning marks that address verified without sending a verification email. Unset `WEBDOCK_INITIAL_OPERATOR_PASSWORD` when using the browser form.
+The form shows the configured origins without allowing changes. Enter your name, email and a unique temporary password of 16–128 characters, and confirm that you have verified ownership of the address. Provisioning marks that address verified without sending a verification email. Unset `SPITZLI_INITIAL_OPERATOR_PASSWORD` when using the browser form.
 
 The server accepts one submission at a time and stops after success or an uncertain commit. Client credentials never appear in the browser response: they go exclusively to the selected output file, created with mode `0600` without overwriting an existing file or following a symlink. The terminal reports only record IDs and a metadata checksum. After success, continue with application service configuration and real security setup below. If a connection closes during submission, check the terminal and private output before retrying.
 
@@ -36,7 +36,7 @@ Use the dedicated `webdock_offline_migrate` database login created by the instal
 
 Choose three distinct canonical origins before provisioning: Auth, the Studio compatibility protocol, and Console. The callback stays on the Studio protocol origin. Do not substitute the Console origin in OAuth callbacks, issuer settings or MCP audiences.
 
-Set `BETTER_AUTH_URL`, `WEBDOCK_STUDIO_ORIGIN` and `WEBDOCK_CONSOLE_ORIGIN` in the private command environment. They must exactly match the input. HTTPS is required except for explicit loopback development with a loopback database.
+Set `BETTER_AUTH_URL`, `SPITZLI_STUDIO_ORIGIN` and `SPITZLI_CONSOLE_ORIGIN` in the private command environment. They must exactly match the input. HTTPS is required except for explicit loopback development with a loopback database.
 
 ```sh
 umask 077
@@ -51,16 +51,16 @@ cat > initial-operator.json <<'JSON'
 JSON
 ```
 
-Use an address whose ownership you have verified. Offline provisioning marks that address verified; it does not send a verification email. Supply a unique temporary password of 16–128 characters either as `password` in this private JSON file or through `WEBDOCK_INITIAL_OPERATOR_PASSWORD`, never both. For an interactive shell, avoid putting the password in command history:
+Use an address whose ownership you have verified. Offline provisioning marks that address verified; it does not send a verification email. Supply a unique temporary password of 16–128 characters either as `password` in this private JSON file or through `SPITZLI_INITIAL_OPERATOR_PASSWORD`, never both. For an interactive shell, avoid putting the password in command history:
 
 ```sh
-read -rs WEBDOCK_INITIAL_OPERATOR_PASSWORD
-export WEBDOCK_INITIAL_OPERATOR_PASSWORD
+read -rs SPITZLI_INITIAL_OPERATOR_PASSWORD
+export SPITZLI_INITIAL_OPERATOR_PASSWORD
 bun --no-env-file tools/migrations/operator.ts \
   db.example.com:5432/webdock \
   initial-operator.json \
   initial-operator-secrets.json
-unset WEBDOCK_INITIAL_OPERATOR_PASSWORD
+unset SPITZLI_INITIAL_OPERATOR_PASSWORD
 ```
 
 To use the migration image instead, first replace the bootstrap administrator URL in `migrator.env` with the dedicated offline migrator URL, remove the empty-database bootstrap settings, and include the same canonical origins/password configuration. The image's normal entrypoint runs schema installation, so override it explicitly for this command. Mount a private input/output directory owned by the selected container user:
@@ -79,7 +79,7 @@ The command refuses existing operators, earlier bootstrap audit records, an exis
 
 ## Configure the application services
 
-After a successful command, retain the private output in your secret-management system. Its `environment` object contains the issuer and canonical origins, matching `WEBDOCK_SSO_CLIENT_ID` / `WEBDOCK_STUDIO_CLIENT_ID`, `WEBDOCK_SSO_CLIENT_SECRET` and a separate `WEBDOCK_SSO_COOKIE_SECRET`. Apply these to the API runtime configuration. Do not expose this file in public build arguments, browser bundles or source control.
+After a successful command, retain the private output in your secret-management system. Its `environment` object contains the issuer and canonical origins, matching `SPITZLI_SSO_CLIENT_ID` / `SPITZLI_STUDIO_CLIENT_ID`, `SPITZLI_SSO_CLIENT_SECRET` and a separate `SPITZLI_SSO_COOKIE_SECRET`. Apply these to the API runtime configuration. Do not expose this file in public build arguments, browser bundles or source control.
 
 Configure the Auth and Console UI origins and their API connection separately, following the deployment configuration. Complete the runtime database roles, context signing key, Auth signing secret, trusted ingress and HTTPS configuration before starting services. The initial-operator command does not create DNS, certificates, reverse-proxy routes or deploy containers. The Console client uses the exact registered paths:
 

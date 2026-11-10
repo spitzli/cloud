@@ -534,7 +534,7 @@ impl HostingService {
         let app_id = field(&op, "app_id")?;
         let action = field(&op, "action")?;
         if outcome == "failed" {
-            if std::env::var("WEBDOCK_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1") {
+            if std::env::var("SPITZLI_RECOVERY_COMPONENT_TEST").as_deref() == Ok("1") {
                 eprintln!(
                     "recovery_component execution_failure code={}",
                     recovery_execution_class(&input["error"])

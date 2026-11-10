@@ -114,7 +114,7 @@ try:
     assert int(execute('df', '-B1', '--output=avail', fixture).stdout.splitlines()[1]) >= 12 * 1024 ** 3
     verify()
     started = True
-    result = subprocess.run(engine + ['exec', '-e', 'WEBDOCK_MAIL_KIND_TEST=yes', '-e', 'WEBDOCK_MAIL_KIND_CASE=' + args.case, '-e', 'WEBDOCK_MAIL_TEST_ROOT=' + fixture, '-e', 'WEBDOCK_KUBE_TEST_CONFIG=' + fixture + '/kubeconfig', '-e', 'WEBDOCK_KUBE_TEST_CONTEXT=' + args.context, '-e', 'WEBDOCK_MAIL_RUNTIME_IMAGE=' + args.image, '-e', 'WEBDOCK_MAIL_PROBE_IMAGE=' + args.probe_image, node, fixture + '/lib/ld-linux-x86-64.so.2', '--library-path', fixture + '/lib', fixture + '/mail-test', 'owned_mail_kubernetes_' + args.case, '--exact', '--ignored', '--nocapture'], check=False)
+    result = subprocess.run(engine + ['exec', '-e', 'SPITZLI_MAIL_KIND_TEST=yes', '-e', 'SPITZLI_MAIL_KIND_CASE=' + args.case, '-e', 'SPITZLI_MAIL_TEST_ROOT=' + fixture, '-e', 'SPITZLI_KUBE_TEST_CONFIG=' + fixture + '/kubeconfig', '-e', 'SPITZLI_KUBE_TEST_CONTEXT=' + args.context, '-e', 'SPITZLI_MAIL_RUNTIME_IMAGE=' + args.image, '-e', 'SPITZLI_MAIL_PROBE_IMAGE=' + args.probe_image, node, fixture + '/lib/ld-linux-x86-64.so.2', '--library-path', fixture + '/lib', fixture + '/mail-test', 'owned_mail_kubernetes_' + args.case, '--exact', '--ignored', '--nocapture'], check=False)
     # The test writes this marker only after guarded namespace/PV deletion and quota-backed storage purge.
     completed = execute('test', '-f', fixture + '/cleanup-complete', check=False).returncode == 0
     if completed:

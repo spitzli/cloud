@@ -126,7 +126,7 @@ async fn core_jobs_reservations_and_original_download_authority_remain_canonical
     let (client_cert, client_key) = leaf(false);
 
     let binding: Value = serde_json::from_slice(
-        &std::fs::read(std::env::var("WEBDOCK_ARCHIVES_FIXTURE").unwrap()).unwrap(),
+        &std::fs::read(std::env::var("SPITZLI_ARCHIVES_FIXTURE").unwrap()).unwrap(),
     )
     .unwrap();
     let manifest: Value = serde_json::from_slice(include_bytes!("../manifest.json")).unwrap();

@@ -11,7 +11,7 @@ fn cookie(header: &str) -> &str {
 #[tokio::test]
 #[ignore = "requires an explicitly configured isolated identity test database"]
 async fn operator_setup_mfa_recovery_and_revocation_are_real_and_single_use() {
-    let raw = std::env::var("WEBDOCK_IDENTITY_TEST_DATABASE_URL").unwrap();
+    let raw = std::env::var("SPITZLI_IDENTITY_TEST_DATABASE_URL").unwrap();
     let url = url::Url::parse(&raw).unwrap();
     assert!([Some("localhost"), Some("127.0.0.1"), Some("[::1]")].contains(&url.host_str()));
     assert!(["postgres", "postgresql"].contains(&url.scheme()));

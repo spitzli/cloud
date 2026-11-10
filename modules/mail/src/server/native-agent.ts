@@ -174,7 +174,7 @@ export function createNativeAgent(dependencies: NativeAgentDependencies) {
   }
 
   async function claimNativeMail(agent: Agent) {
-    if (env.WEBDOCK_NATIVE_MAIL_ENABLED !== "true") return null;
+    if (env.SPITZLI_NATIVE_MAIL_ENABLED !== "true") return null;
     const settings = mailAgentConfig();
     await transaction(async (db) => {
       const a = await verifyMailAgent(db, agent);
