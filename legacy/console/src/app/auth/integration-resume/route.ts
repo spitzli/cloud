@@ -6,18 +6,18 @@ export async function GET(request: Request): Promise<Response> {
     return new Response(null, { status: 404 });
   const token = await (await auth()).getToken();
   return resumeIntegrationCallback({
-    apiOrigin: process.env.WEBDOCK_API_ORIGIN ?? "",
+    apiOrigin: process.env.SPITZLI_API_ORIGIN ?? "",
     uiOrigin:
-      process.env.WEBDOCK_STUDIO_ORIGIN ||
+      process.env.SPITZLI_STUDIO_ORIGIN ||
       process.env.NEXT_PUBLIC_SERVER_URL ||
       "https://studio.webdock.dev",
     consoleOrigin:
-      process.env.WEBDOCK_CONSOLE_ORIGIN ||
-      process.env.WEBDOCK_STUDIO_ORIGIN ||
+      process.env.SPITZLI_CONSOLE_ORIGIN ||
+      process.env.SPITZLI_STUDIO_ORIGIN ||
       process.env.NEXT_PUBLIC_SERVER_URL ||
       "https://studio.webdock.dev",
     cookie: request.headers.get("cookie") ?? "",
     bearerToken: token,
-    serviceKey: process.env.WEBDOCK_CONSOLE_SERVICE_KEY,
+    serviceKey: process.env.SPITZLI_CONSOLE_SERVICE_KEY,
   });
 }

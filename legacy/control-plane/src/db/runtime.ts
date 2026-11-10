@@ -4,7 +4,7 @@ import { currentDatabaseScope } from "@spitzli/database-runtime";
 const local = process.env.NODE_ENV !== "production";
 const businessURL = process.env.DATABASE_URL || "";
 export const databasePools =
-  process.env.WEBDOCK_PROCESS_ROLE === "worker"
+  process.env.SPITZLI_PROCESS_ROLE === "worker"
     ? createWorkerDatabases({
         environment: local ? "development" : "production",
         workerURL: process.env.DATABASE_WORKER_URL || "",

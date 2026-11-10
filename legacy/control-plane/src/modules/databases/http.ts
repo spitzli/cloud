@@ -56,7 +56,7 @@ export async function databaseBridge(request: Request) {
 export async function databaseGateway(request: Request) {
   try {
     requireHostingEnvironment();
-    const expected = process.env.WEBDOCK_DATABASE_GATEWAY_SECRET;
+    const expected = process.env.SPITZLI_DATABASE_GATEWAY_SECRET;
     const supplied = request.headers
       .get("authorization")
       ?.match(/^Bearer (\S+)$/)?.[1];

@@ -14,11 +14,11 @@ export function installationRegistry(
   env: Record<string, string | undefined> = process.env,
 ) {
   let config: unknown;
-  if (env.WEBDOCK_MODULES !== undefined) {
+  if (env.SPITZLI_MODULES !== undefined) {
     try {
-      config = JSON.parse(env.WEBDOCK_MODULES);
+      config = JSON.parse(env.SPITZLI_MODULES);
     } catch {
-      throw Error("WEBDOCK_MODULES must contain valid installation JSON");
+      throw Error("SPITZLI_MODULES must contain valid installation JSON");
     }
   }
   return createRegistry(
@@ -59,8 +59,8 @@ export function publicInstallation(
   env: Record<string, string | undefined> = process.env,
 ): ModuleView {
   const view = installationRegistry(env).publicView();
-  if (env.WEBDOCK_API_DOMAINS !== undefined) {
-    const domains = env.WEBDOCK_API_DOMAINS.split(",");
+  if (env.SPITZLI_API_DOMAINS !== undefined) {
+    const domains = env.SPITZLI_API_DOMAINS.split(",");
     for (const [module, domain] of Object.entries({
       mail: "mail",
       hosting: "hosting",

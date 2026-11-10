@@ -79,17 +79,17 @@ export function portalProtocols(config: ApiConfig): Mount[] {
     ];
   }
   if (
-    process.env.WEBDOCK_AUTH_ISSUER !== config.authOrigin + "/api/auth" ||
-    process.env.WEBDOCK_SSO_APP_ORIGIN !== config.studioOrigin
+    process.env.SPITZLI_AUTH_ISSUER !== config.authOrigin + "/api/auth" ||
+    process.env.SPITZLI_SSO_APP_ORIGIN !== config.studioOrigin
   )
     throw Error("Portal canonical origins mismatch");
   const session = createPortalSession();
-  const clientID = process.env.WEBDOCK_SSO_CLIENT_ID,
-    clientSecret = process.env.WEBDOCK_SSO_CLIENT_SECRET;
+  const clientID = process.env.SPITZLI_SSO_CLIENT_ID,
+    clientSecret = process.env.SPITZLI_SSO_CLIENT_SECRET;
   if (
     !clientID ||
     !clientSecret ||
-    clientID !== process.env.WEBDOCK_STUDIO_CLIENT_ID
+    clientID !== process.env.SPITZLI_STUDIO_CLIENT_ID
   )
     throw Error("Studio client identity mismatch");
   const call = (request: Request) =>

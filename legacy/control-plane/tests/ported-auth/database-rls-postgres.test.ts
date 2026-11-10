@@ -6,7 +6,7 @@ import pg from "pg";
 import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
 
 // Explicit opt-in: uses only synthetic rows in the disposable local restore.
-const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const fixtureFile = process.env.SPITZLI_RLS_FIXTURE_FILE;
 test(
   "real PostgreSQL roles enforce signed tenant, preview, key and worker isolation",
   { skip: !fixtureFile },

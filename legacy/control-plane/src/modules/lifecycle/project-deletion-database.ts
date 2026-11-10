@@ -11,7 +11,7 @@ const managedSchemaName = (value: string) =>
 /** Only a dedicated, schema-owning runtime credential may be used, never the platform owner. */
 export function managedDatabase(
   schema: string,
-  raw = process.env.WEBDOCK_MANAGED_DATABASES || "{}",
+  raw = process.env.SPITZLI_MANAGED_DATABASES || "{}",
 ) {
   if (!managedSchemaName(schema))
     throw new APIError(

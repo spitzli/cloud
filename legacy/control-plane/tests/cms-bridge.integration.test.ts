@@ -11,7 +11,7 @@ const enabled = process.env.API_TEST_DATABASE_URL;
       await import("../src/modules/portal/studio-api");
     const { startTenantPreview, exitTenantPreview } =
       await import("../src/modules/access/tenant-preview");
-    const previous = process.env.WEBDOCK_DEMO_BRIDGES;
+    const previous = process.env.SPITZLI_DEMO_BRIDGES;
     await withMailFixture(async (f) => {
       const app = await registerApplication({
         label: "CMS fixture",
@@ -36,7 +36,7 @@ const enabled = process.env.API_TEST_DATABASE_URL;
         sessionID: f.operator.principal.sessionID,
       };
       try {
-        process.env.WEBDOCK_DEMO_BRIDGES = JSON.stringify({
+        process.env.SPITZLI_DEMO_BRIDGES = JSON.stringify({
           [app.binding]: {
             origin: "https://fixture.webdock.dev",
             secret: "fixture-bridge-secret-must-never-be-returned",
@@ -96,8 +96,8 @@ const enabled = process.env.API_TEST_DATABASE_URL;
           'DELETE FROM webdock_auth."oauthClient" WHERE "clientId"=$1',
           [app.clientID],
         );
-        if (previous === undefined) delete process.env.WEBDOCK_DEMO_BRIDGES;
-        else process.env.WEBDOCK_DEMO_BRIDGES = previous;
+        if (previous === undefined) delete process.env.SPITZLI_DEMO_BRIDGES;
+        else process.env.SPITZLI_DEMO_BRIDGES = previous;
       }
     });
   },

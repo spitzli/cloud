@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { Pool } from "pg";
 import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
 import { schedule, claim, complete } from "../src/jobs";
-const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const fixtureFile = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (fixtureFile ? test : test.skip)(
   "durable jobs claim once, reclaim expired leases and reject stale completion",
   async () => {

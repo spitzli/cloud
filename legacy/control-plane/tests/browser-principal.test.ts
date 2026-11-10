@@ -97,7 +97,7 @@ test("Clerk Mail worker rejects missing backend verification key without needing
     authorizedParties: ["https://console.example.test"],
     audience: "webdock-console",
   };
-  const env = { WEBDOCK_AUTH_PROVIDER: JSON.stringify(configuration) };
+  const env = { SPITZLI_AUTH_PROVIDER: JSON.stringify(configuration) };
   expect(() => validateClerkWorkerConfiguration(["mail"], env)).toThrow();
   expect(() => validateClerkWorkerConfiguration(["hosting"], env)).toThrow();
   expect(() =>

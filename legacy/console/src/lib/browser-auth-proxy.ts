@@ -43,7 +43,7 @@ export function createBrowserProxy(
       if (request.nextUrl.pathname.startsWith("/api/"))
         return NextResponse.next();
       const token = await (await auth()).getToken();
-      const serviceKey = process.env.WEBDOCK_CONSOLE_SERVICE_KEY;
+      const serviceKey = process.env.SPITZLI_CONSOLE_SERVICE_KEY;
       if (
         token &&
         configured.transport === "console" &&
@@ -69,7 +69,7 @@ export function createBrowserProxy(
     },
   );
   return async (request: NextRequest, event: NextFetchEvent) => {
-    const canonicalOrigin = process.env.NEXT_PUBLIC_SERVER_URL || process.env.WEBDOCK_CONSOLE_ORIGIN;
+    const canonicalOrigin = process.env.NEXT_PUBLIC_SERVER_URL || process.env.SPITZLI_CONSOLE_ORIGIN;
     if (canonicalOrigin) request = canonicalClerkRequest(request, canonicalOrigin, {
       allowLocalHTTP: "allowLocalHTTP" in configured && configured.allowLocalHTTP === true,
       environment: process.env.NODE_ENV,

@@ -83,11 +83,11 @@ async function probe(
   return verifySourceRuntime(
     row,
     binding,
-    process.env.WEBDOCK_PLUGIN_RUNTIME_FILE!,
+    process.env.SPITZLI_PLUGIN_RUNTIME_FILE!,
   );
 }
 const settings = {
-  token: () => process.env.WEBDOCK_PLUGIN_INSTALLER_TOKEN ?? "",
+  token: () => process.env.SPITZLI_PLUGIN_INSTALLER_TOKEN ?? "",
   configured: () => installerConfigured(),
   actor: currentActor,
   verifyActor,

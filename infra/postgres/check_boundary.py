@@ -8,7 +8,7 @@ import subprocess
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--kubeconfig',required=True);args=parser.parse_args()
-    if os.environ.get('WEBDOCK_DISPOSABLE_POSTGRES_TEST')!='yes':raise SystemExit('Explicit disposable test confirmation required')
+    if os.environ.get('SPITZLI_DISPOSABLE_POSTGRES_TEST')!='yes':raise SystemExit('Explicit disposable test confirmation required')
     k=['kubectl','--kubeconfig',args.kubeconfig]
     conf=json.loads(subprocess.check_output(k+['config','view','--minify','-o','json']))
     if not conf['clusters'][0]['cluster']['server'].startswith('https://127.0.0.1:'):raise SystemExit('Only a loopback test cluster is accepted')

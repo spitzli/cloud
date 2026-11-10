@@ -157,14 +157,14 @@ test("Real Better Auth flow: closed signup, password change, MFA, OIDC and immed
     "operator",
   );
   await t.test("selected Clerk compatibility rejects local admin and organization management with an existing operator session", async () => {
-    const previous = process.env.WEBDOCK_AUTH_PROVIDER;
-    process.env.WEBDOCK_AUTH_PROVIDER = JSON.stringify({provider:"clerk",issuer:"https://fixture.clerk.accounts.dev",authorizedParties:["https://console.example.invalid"],tokenMode:"session"});
+    const previous = process.env.SPITZLI_AUTH_PROVIDER;
+    process.env.SPITZLI_AUTH_PROVIDER = JSON.stringify({provider:"clerk",issuer:"https://fixture.clerk.accounts.dev",authorizedParties:["https://console.example.invalid"],tokenMode:"session"});
     try {
       assert.equal((await call("/admin/set-role", {userId:operator.id,role:"user"})).status,403);
       assert.equal((await call("/admin/ban-user", {userId:operator.id})).status,403);
       assert.equal((await call("/organization/create", {name:"Local bypass",slug:"local-bypass"})).status,403);
     } finally {
-      if(previous === undefined)delete process.env.WEBDOCK_AUTH_PROVIDER;else process.env.WEBDOCK_AUTH_PROVIDER=previous;
+      if(previous === undefined)delete process.env.SPITZLI_AUTH_PROVIDER;else process.env.SPITZLI_AUTH_PROVIDER=previous;
       await database.query(`UPDATE webdock_auth."user" SET role='operator' WHERE id=$1`,[operator.id]);
     }
   });

@@ -10,7 +10,7 @@ async function linkedUserProof(subject: string) {
 }
 import { authDatabase as database } from "../../db/runtime";
 export const mcpResource =
-  process.env.WEBDOCK_MCP_RESOURCE || "https://studio.webdock.dev/api/mcp";
+  process.env.SPITZLI_MCP_RESOURCE || "https://studio.webdock.dev/api/mcp";
 export const mcpScopes = ["webdock:read", "webdock:write"] as const;
 
 // Re-evaluate operator authorization on every resource request, including JWTs.

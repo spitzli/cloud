@@ -78,7 +78,7 @@ export async function VercelProjectPanel({ projectID }: { projectID: string }) {
       </section>
     );
   const s = result.snapshot;
-  const teamSlug = process.env.WEBDOCK_VERCEL_TEAM_SLUG;
+  const teamSlug = process.env.SPITZLI_VERCEL_TEAM_SLUG;
   const dashboard =
     teamSlug && /^[a-z0-9-]+$/.test(teamSlug)
       ? `https://vercel.com/${encodeURIComponent(teamSlug)}/${encodeURIComponent(s.name)}`

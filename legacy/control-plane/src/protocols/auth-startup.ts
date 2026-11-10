@@ -15,7 +15,7 @@ export async function createAuthProtocolMounts(
   },
 ): Promise<Mount[]> {
   if (config.domains.includes("mcp") && selection.oauthProvider === "disabled")
-    throw Error("MCP requires an explicitly selected OAuth provider (WEBDOCK_OAUTH_PROVIDER=better-auth)");
+    throw Error("MCP requires an explicitly selected OAuth provider (SPITZLI_OAUTH_PROVIDER=better-auth)");
   if (!config.domains.includes("auth")) return [];
   if (selection.browserProvider === "clerk" && selection.oauthProvider === "disabled") return [];
   if ((process.env.BETTER_AUTH_SECRET?.length ?? 0) < 32)

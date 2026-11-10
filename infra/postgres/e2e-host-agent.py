@@ -10,7 +10,7 @@ import time
 from urllib.error import HTTPError
 ROOT=Path(__file__).resolve().parents[2]
 BASE=ROOT/'.superpowers/sdd/2026-10-12-managed-postgresql'
-if os.environ.get('WEBDOCK_DISPOSABLE_POSTGRES_TEST')!='yes':raise SystemExit('Explicit disposable E2E environment required')
+if os.environ.get('SPITZLI_DISPOSABLE_POSTGRES_TEST')!='yes':raise SystemExit('Explicit disposable E2E environment required')
 sys.path.insert(0,str(ROOT/'agents/kubernetes'))
 import daemon
 import databases

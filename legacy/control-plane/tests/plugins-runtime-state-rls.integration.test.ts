@@ -3,7 +3,7 @@ import { Pool } from "pg";
 import { randomBytes, randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { ScopedPool, withDatabaseScope } from "@spitzli/database-runtime";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "plugin invocation RLS binds documents to live grant, actor, project and runtime",
   async () => {

@@ -6,7 +6,7 @@ import { authDatabase, workerDatabase } from "../../db/runtime";
 import { createClerkMappings } from "./clerk-mappings";
 import { createClerkSessionBridge } from "./clerk-bridge";
 
-const selected = selectAuthPlugin(process.env.WEBDOCK_AUTH_PROVIDER);
+const selected = selectAuthPlugin(process.env.SPITZLI_AUTH_PROVIDER);
 const configuration = selected.configuration;
 export const browserAuthProvider = configuration.provider;
 export async function getClerkBrowserAdapter() {
@@ -21,7 +21,7 @@ export async function getClerkBrowserAdapter() {
       process.env.CLERK_JWT_KEY,
     ),
     mappings: createClerkMappings(
-      process.env.WEBDOCK_PROCESS_ROLE === "worker"
+      process.env.SPITZLI_PROCESS_ROLE === "worker"
         ? workerDatabase
         : authDatabase,
     ),
@@ -31,13 +31,13 @@ export async function getClerkBrowserAdapter() {
 export async function validateBrowserAuthConfiguration() {
   await selected.load();
   if (configuration.provider === "clerk") {
-    if ((process.env.WEBDOCK_CONSOLE_SERVICE_KEY?.length ?? 0) < 32)
-      throw Error("Clerk Console requires WEBDOCK_CONSOLE_SERVICE_KEY with at least 32 characters");
+    if ((process.env.SPITZLI_CONSOLE_SERVICE_KEY?.length ?? 0) < 32)
+      throw Error("Clerk Console requires SPITZLI_CONSOLE_SERVICE_KEY with at least 32 characters");
     if (!/^sk_(live|test)_/.test(process.env.CLERK_SECRET_KEY ?? ""))
       throw Error("Configured Clerk backend secret required");
     const origin = new URL(
-      process.env.WEBDOCK_CONSOLE_ORIGIN ??
-        process.env.WEBDOCK_SSO_APP_ORIGIN ??
+      process.env.SPITZLI_CONSOLE_ORIGIN ??
+        process.env.SPITZLI_SSO_APP_ORIGIN ??
         "",
     ).origin;
     if (!configuration.authorizedParties.includes(origin))

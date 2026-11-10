@@ -11,7 +11,7 @@ import {
 import { encryptMailSecret } from "../../../src/modules/platform/platform";
 import type { HostingActor } from "@spitzli/hosting-contracts";
 
-const url = process.env.WEBDOCK_DATABASE_TEST_URL;
+const url = process.env.SPITZLI_DATABASE_TEST_URL;
 test(
   "database grants, launches and revocation use real tenant boundaries",
   { skip: !url },

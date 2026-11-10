@@ -126,7 +126,7 @@ export async function manageClerkTeam(
         organizationId,
         emailAddress,
         role: invitationRole(input.role),
-        redirectUrl: new URL("/sign-up", process.env.WEBDOCK_CONSOLE_ORIGIN)
+        redirectUrl: new URL("/sign-up", process.env.SPITZLI_CONSOLE_ORIGIN)
           .href,
       });
     } else if (["cancel", "resend"].includes(input.action)) {
@@ -152,7 +152,7 @@ export async function manageClerkTeam(
           organizationId,
           emailAddress: invitation.emailAddress,
           role: invitation.role,
-          redirectUrl: new URL("/sign-up", process.env.WEBDOCK_CONSOLE_ORIGIN)
+          redirectUrl: new URL("/sign-up", process.env.SPITZLI_CONSOLE_ORIGIN)
             .href,
         });
     } else throw new ConsoleAuthError(400, "Unknown team action.");

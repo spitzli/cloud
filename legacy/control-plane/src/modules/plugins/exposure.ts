@@ -27,7 +27,7 @@ export async function registerPluginTools(
   canWrite: boolean,
   discover: typeof listRuntimePlugins = listRuntimePlugins,
 ) {
-  if (!process.env.WEBDOCK_PLUGIN_RUNTIME_FILE) return;
+  if (!process.env.SPITZLI_PLUGIN_RUNTIME_FILE) return;
   for (const tool of pluginTools(await discover(), canWrite)) {
     const schema = tool.input
       ? z.fromJSONSchema(tool.input as any)

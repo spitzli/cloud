@@ -19,7 +19,7 @@ export default async function GitConnection({
   try {
     const state = readGitFlowCookie(
       await headers(),
-      (process.env.WEBDOCK_STUDIO_ORIGIN || process.env.WEBDOCK_STUDIO_ORIGIN || process.env.NEXT_PUBLIC_SERVER_URL || "https://studio.webdock.dev"),
+      (process.env.SPITZLI_STUDIO_ORIGIN || process.env.SPITZLI_STUDIO_ORIGIN || process.env.NEXT_PUBLIC_SERVER_URL || "https://studio.webdock.dev"),
     );
     data = await hostingCall({
       action: "git.oauth.options",

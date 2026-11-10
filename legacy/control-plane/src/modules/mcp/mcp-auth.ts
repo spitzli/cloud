@@ -4,10 +4,10 @@ import { currentRegistryActor } from "../integrations/operator";
 import { POST as nativeIntrospection } from "../../protocols/legacy-auth/api/mcp/introspect/route";
 import type { RegistryActor } from "../registry/compat";
 export const mcpOrigin = () =>
-  process.env.WEBDOCK_STUDIO_ORIGIN || "http://localhost:3120";
+  process.env.SPITZLI_STUDIO_ORIGIN || "http://localhost:3120";
 export const mcpResource = () => `${mcpOrigin()}/api/mcp`;
 export const mcpIssuer = () =>
-  process.env.WEBDOCK_AUTH_ISSUER || "https://auth.webdock.dev/api/auth";
+  process.env.SPITZLI_AUTH_ISSUER || "https://auth.webdock.dev/api/auth";
 export function challenge(status: 401 | 403, scope = "webdock:read") {
   return Response.json(
     {
@@ -56,8 +56,8 @@ export async function introspectMCP(request: Request) {
   const authorization = request.headers.get("authorization");
   if (!authorization?.startsWith("Bearer ") || authorization.length > 16384)
     return null;
-  const clientID = process.env.WEBDOCK_SSO_CLIENT_ID,
-    secret = process.env.WEBDOCK_SSO_CLIENT_SECRET;
+  const clientID = process.env.SPITZLI_SSO_CLIENT_ID,
+    secret = process.env.SPITZLI_SSO_CLIENT_SECRET;
   if (!clientID || !secret)
     throw Error("MCP authentication configuration unavailable");
   const response = await nativeIntrospection(

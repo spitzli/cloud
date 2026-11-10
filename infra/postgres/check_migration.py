@@ -15,7 +15,7 @@ import databases as db
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--target-id',required=True);args=parser.parse_args()
-    if os.environ.get('WEBDOCK_DISPOSABLE_POSTGRES_TEST')!='yes' or socket.gethostname()!='postgres-pilot':raise SystemExit('Disposable node required')
+    if os.environ.get('SPITZLI_DISPOSABLE_POSTGRES_TEST')!='yes' or socket.gethostname()!='postgres-pilot':raise SystemExit('Disposable node required')
     identity=db.identifier(args.target_id);namespace='wd-db-'+identity
     if db.get('namespace',namespace):raise SystemExit('Fresh target required; inspect any interrupted transfer separately')
     pool=json.loads(Path('/etc/webdock-postgres-storage.json').read_text());source=db.get('cluster','postgres','wd-db-126')

@@ -4,7 +4,7 @@ const hostingCall = async <T>(command: unknown): Promise<T> =>
 import { commandSchema } from "@spitzli/hosting-contracts";
 import { vercelCompletionURL } from "../../../../modules/integrations/vercel/vercel-oauth";
 export async function GET(request: Request) {
-  const origin = process.env.WEBDOCK_STUDIO_ORIGIN!;
+  const origin = process.env.SPITZLI_STUDIO_ORIGIN!;
   const cookieName =
     (new URL(origin).protocol === "https:" ? "__Host-" : "") +
     "webdock-byok-vercel";

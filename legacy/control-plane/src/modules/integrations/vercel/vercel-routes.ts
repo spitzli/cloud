@@ -4,7 +4,7 @@ import { configureVercelOAuth, VercelOAuthError } from "./vercel-oauth";
 import { vercelSettings } from "../vercel-settings";
 import { saveVercelConnection, removeVercelConnection } from "./vercel-store";
 const origin = () =>
-  process.env.WEBDOCK_STUDIO_ORIGIN || "http://localhost:3120";
+  process.env.SPITZLI_STUDIO_ORIGIN || "http://localhost:3120";
 const notice = (state: string) =>
   new Response(null, {
     status: 303,

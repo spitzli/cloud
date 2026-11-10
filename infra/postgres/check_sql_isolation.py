@@ -19,7 +19,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--kubeconfig',required=True);parser.add_argument('--installation-id',required=True)
     args=parser.parse_args()
-    if os.environ.get('WEBDOCK_DISPOSABLE_POSTGRES_TEST')!='yes' or not re.fullmatch(r'[1-9][0-9]*',args.installation_id):raise SystemExit('Explicit disposable test confirmation required')
+    if os.environ.get('SPITZLI_DISPOSABLE_POSTGRES_TEST')!='yes' or not re.fullmatch(r'[1-9][0-9]*',args.installation_id):raise SystemExit('Explicit disposable test confirmation required')
     command=['kubectl','--kubeconfig',args.kubeconfig]
     config=json.loads(subprocess.check_output(command+['config','view','--minify','-o','json']))
     if not re.match(r'^https://127\.0\.0\.1:\d+$',config['clusters'][0]['cluster']['server']):raise SystemExit('Only an explicitly selected loopback test cluster is accepted')

@@ -61,7 +61,7 @@ class Fake:
             if self.mode=='bad_select' and self.host_attempts<3:return subprocess.CompletedProcess(args,0,b'0\n',b'')
             out=b'1\n'
         elif Path(args[0]).name=='database-primitives':
-            config=json.loads(Path(kwargs['env']['WEBDOCK_PG_REVIEW_COMPONENT_INPUT']).read_text())
+            config=json.loads(Path(kwargs['env']['SPITZLI_PG_REVIEW_COMPONENT_INPUT']).read_text())
             code=101 if config['baseline'] else 0
             out=('test result: FAILED. 0 passed; 5 failed' if config['baseline'] else 'test result: ok. 5 passed; 0 failed').encode()
         return subprocess.CompletedProcess(args,code,out,err)

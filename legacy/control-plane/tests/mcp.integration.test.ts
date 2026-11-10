@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test";
 import { Pool } from "pg";
 import { randomBytes, createHash } from "node:crypto";
-const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const enabled = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (enabled ? test : test.skip)(
   "MCP HTTP authenticates real scoped OAuth tokens and observes session revocation",
   async () => {
@@ -18,10 +18,10 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       (base + BigInt(n)).toString(),
     );
     const keys = [
-      "WEBDOCK_STUDIO_ORIGIN",
-      "WEBDOCK_AUTH_ISSUER",
-      "WEBDOCK_SSO_CLIENT_ID",
-      "WEBDOCK_SSO_CLIENT_SECRET",
+      "SPITZLI_STUDIO_ORIGIN",
+      "SPITZLI_AUTH_ISSUER",
+      "SPITZLI_SSO_CLIENT_ID",
+      "SPITZLI_SSO_CLIENT_SECRET",
     ];
     const saved = Object.fromEntries(
       keys.map((key) => [key, process.env[key]]),
@@ -30,8 +30,8 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       studio = "https://studio.webdock.dev";
     try {
       Object.assign(process.env, {
-        WEBDOCK_STUDIO_ORIGIN: studio,
-        WEBDOCK_AUTH_ISSUER: origin + "/api/auth",
+        SPITZLI_STUDIO_ORIGIN: studio,
+        SPITZLI_AUTH_ISSUER: origin + "/api/auth",
       });
       await db.query(
         `INSERT INTO webdock_auth."user"(id,name,email,role,"emailVerified","mustChangePassword","twoFactorEnabled") VALUES($1,'MCP fixture',$2,'operator',true,false,true)`,
@@ -81,8 +81,8 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
           client_id: client.client_id,
         },
       });
-      process.env.WEBDOCK_SSO_CLIENT_ID = client.client_id;
-      process.env.WEBDOCK_SSO_CLIENT_SECRET = client.client_secret!;
+      process.env.SPITZLI_SSO_CLIENT_ID = client.client_id;
+      process.env.SPITZLI_SSO_CLIENT_SECRET = client.client_secret!;
       const verifier = randomBytes(32).toString("base64url"),
         params = new URLSearchParams({
           client_id: client.client_id,
@@ -128,7 +128,7 @@ const enabled = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       const { mcpProtocol } = await import("../src/protocols/mcp");
       const config = readConfig({
           NODE_ENV: "development",
-          WEBDOCK_STUDIO_ORIGIN: studio,
+          SPITZLI_STUDIO_ORIGIN: studio,
         }),
         app = await createApp(config, { mounts: mcpProtocol(config) });
       const call = (method: string, body: unknown = {}) =>

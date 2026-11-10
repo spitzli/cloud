@@ -20,7 +20,7 @@ test("native mail bindings recover the same private key after interruption and r
     let project = "",
       cluster = "";
     const oldOrigin = process.env.MAIL_API_ORIGIN,
-      oldEgress = process.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS;
+      oldEgress = process.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS;
     try {
       project = (
         await f.db.query(
@@ -55,7 +55,7 @@ test("native mail bindings recover the same private key after interruption and r
       };
 
       process.env.MAIL_API_ORIGIN = "https://mail.example.invalid";
-      process.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS = "192.0.2.10/32";
+      process.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS = "192.0.2.10/32";
       const app = await executeHosting(actor, {
         action: "apps.prepare",
         projectID: project,
@@ -86,7 +86,7 @@ test("native mail bindings recover the same private key after interruption and r
           kind: "mail",
           connectionID: f.actorA.connectionID,
           domainID: f.domainA.id,
-          variable: "WEBDOCK_MAIL_API_KEY",
+          variable: "SPITZLI_MAIL_API_KEY",
         },
         revision: 0,
         idempotencyKey: key(),
@@ -110,12 +110,12 @@ test("native mail bindings recover the same private key after interruption and r
       ).rows[0];
       const env = openEnvironment(app.appID, stored.environment_encrypted);
       assert.equal(
-        JSON.stringify(bound).includes(env.WEBDOCK_MAIL_API_KEY),
+        JSON.stringify(bound).includes(env.SPITZLI_MAIL_API_KEY),
         false,
       );
-      assert.equal(env.WEBDOCK_MAIL_API_URL, "https://mail.example.invalid");
+      assert.equal(env.SPITZLI_MAIL_API_URL, "https://mail.example.invalid");
       const request = new Request("https://mail.example.invalid/emails", {
-        headers: { authorization: "Bearer " + env.WEBDOCK_MAIL_API_KEY },
+        headers: { authorization: "Bearer " + env.SPITZLI_MAIL_API_KEY },
       });
       assert.equal(
         (await authorizeMailKey(request, "sending_access")).connectionID,
@@ -233,7 +233,7 @@ test("native mail bindings recover the same private key after interruption and r
           replicas: 1,
         },
         environment: [
-          { name: "WEBDOCK_MAIL_API_URL", value: "manually-configured" },
+          { name: "SPITZLI_MAIL_API_URL", value: "manually-configured" },
         ],
         subscriptionRevision: 0,
         idempotencyKey: key(),
@@ -267,7 +267,7 @@ test("native mail bindings recover the same private key after interruption and r
           await authorizeMailKey(
             new Request("https://mail.example.invalid/emails", {
               headers: {
-                authorization: "Bearer " + secondEnv.WEBDOCK_MAIL_API_KEY,
+                authorization: "Bearer " + secondEnv.SPITZLI_MAIL_API_KEY,
               },
             }),
             "sending_access",
@@ -286,8 +286,8 @@ test("native mail bindings recover the same private key after interruption and r
       if (oldOrigin === undefined) delete process.env.MAIL_API_ORIGIN;
       else process.env.MAIL_API_ORIGIN = oldOrigin;
       if (oldEgress === undefined)
-        delete process.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS;
-      else process.env.WEBDOCK_APPLICATION_MAIL_EGRESS_CIDRS = oldEgress;
+        delete process.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS;
+      else process.env.SPITZLI_APPLICATION_MAIL_EGRESS_CIDRS = oldEgress;
       await f.db.query(
         "DELETE FROM webdock_auth.hosting_service_binding WHERE project_id=$1",
         [project],

@@ -107,10 +107,10 @@ if (["integration", "ported", "all"].includes(mode)) {
   }
 }
 if (mode === "rls") {
-  if (!process.env.WEBDOCK_RLS_FIXTURE_FILE)
+  if (!process.env.SPITZLI_RLS_FIXTURE_FILE)
     throw Error("Explicit restricted-role fixture required");
   const fixture = JSON.parse(
-    await readFile(process.env.WEBDOCK_RLS_FIXTURE_FILE, "utf8"),
+    await readFile(process.env.SPITZLI_RLS_FIXTURE_FILE, "utf8"),
   );
   const env = rlsEnvironment(
     process.env,

@@ -6,7 +6,7 @@ import { requireHostingEnvironment } from "../../../../../../modules/hosting/htt
 export async function POST(request: Request) {
   try {
     requireHostingEnvironment();
-    const secret = process.env.WEBDOCK_GITHUB_WEBHOOK_SECRET;
+    const secret = process.env.SPITZLI_GITHUB_WEBHOOK_SECRET;
     if (!secret)
       throw new HostingError(503, "GitHub webhook setup is incomplete.");
     const reader = request.body?.getReader();

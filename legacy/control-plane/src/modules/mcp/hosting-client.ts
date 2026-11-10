@@ -1,8 +1,8 @@
 import { HostingError, type HostingCommand } from "@spitzli/hosting-contracts";
 import { hostingBridge } from "../hosting/bridge";
 export async function hostingTokenCall(token: string, command: HostingCommand) {
-  const id = process.env.WEBDOCK_SSO_CLIENT_ID,
-    secret = process.env.WEBDOCK_SSO_CLIENT_SECRET;
+  const id = process.env.SPITZLI_SSO_CLIENT_ID,
+    secret = process.env.SPITZLI_SSO_CLIENT_SECRET;
   if (!id || !secret)
     throw new HostingError(503, "Hosting authentication is unavailable.");
   const response = await hostingBridge(

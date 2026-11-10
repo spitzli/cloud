@@ -7,10 +7,10 @@ import { mailOperations } from "../src/modules/mail/product/api-contract";
 test("every Mail operation requires its API key on canonical and legacy hosts", async () => {
   const config = readConfig({
     NODE_ENV: "test",
-    WEBDOCK_API_ORIGIN: "http://localhost:3130",
+    SPITZLI_API_ORIGIN: "http://localhost:3130",
     BETTER_AUTH_URL: "http://localhost:3125",
-    WEBDOCK_STUDIO_ORIGIN: "http://localhost:3120",
-    WEBDOCK_API_DOMAINS: "mail",
+    SPITZLI_STUDIO_ORIGIN: "http://localhost:3120",
+    SPITZLI_API_DOMAINS: "mail",
   });
   const app = await createApp(config, {
     mounts: await legacyAuthProtocols(config),

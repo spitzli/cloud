@@ -15,13 +15,13 @@ import {
   isMailProvisioning,
 } from "@spitzli/module-mail/manifest";
 const disabled = {
-  WEBDOCK_MODULES: JSON.stringify({
+  SPITZLI_MODULES: JSON.stringify({
     configVersion: 1,
     modules: { mail: { enabled: false } },
   }),
 };
 test("disabled Mail exposes no canonical, legacy, documentation or callback endpoints", async () => {
-  const config = readConfig({ ...disabled, WEBDOCK_API_DOMAINS: "mail" });
+  const config = readConfig({ ...disabled, SPITZLI_API_DOMAINS: "mail" });
   const mounts = await legacyAuthProtocols(config);
   expect(mounts).toEqual([]);
   const app = await createApp(config, { mounts });
@@ -44,19 +44,19 @@ test("disabled Mail cannot be assigned to a worker, while draining keeps jobs ru
     "disabled",
   );
   validateWorkerModules(["mail"], {
-    WEBDOCK_MODULES: JSON.stringify({
+    SPITZLI_MODULES: JSON.stringify({
       configVersion: 1,
       modules: { mail: { state: "draining" } },
     }),
   });
 });
 test("installation configuration fails closed and ownership restricts the public view", () => {
-  expect(() => installationRegistry({ WEBDOCK_MODULES: "" })).toThrow();
+  expect(() => installationRegistry({ SPITZLI_MODULES: "" })).toThrow();
   expect(
-    publicInstallation({ WEBDOCK_API_DOMAINS: "auth,portal" }).modules.mail,
+    publicInstallation({ SPITZLI_API_DOMAINS: "auth,portal" }).modules.mail,
   ).toBe("disabled");
   expect(
-    publicInstallation({ WEBDOCK_API_DOMAINS: "auth,portal,mail", WEBDOCK_MODULES: JSON.stringify({configVersion: 1, modules: {mail: {enabled: true}}}) }).modules
+    publicInstallation({ SPITZLI_API_DOMAINS: "auth,portal,mail", SPITZLI_MODULES: JSON.stringify({configVersion: 1, modules: {mail: {enabled: true}}}) }).modules
       .mail,
   ).toBe("enabled");
 });
@@ -92,9 +92,9 @@ test("legacy and current Mail operations are covered without disabling authentic
 test("MCP omits disabled Mail tools and rejects calls from an already-created tool session", async () => {
   const { registerHostingTools } =
     await import("../src/modules/mcp/hosting-mcp");
-  const previous = process.env.WEBDOCK_MODULES;
+  const previous = process.env.SPITZLI_MODULES;
   try {
-    process.env.WEBDOCK_MODULES = JSON.stringify({configVersion: 1, modules: {mail: {enabled: true}, hosting: {enabled: true}}});
+    process.env.SPITZLI_MODULES = JSON.stringify({configVersion: 1, modules: {mail: {enabled: true}, hosting: {enabled: true}}});
     const callbacks = new Map<string, Function>();
     let called = false;
     const server = {
@@ -111,7 +111,7 @@ test("MCP omits disabled Mail tools and rejects calls from an already-created to
     );
     const mailTool = [...callbacks].find(([name]) => name === "byok_mail_get");
     expect(mailTool).toBeDefined();
-    process.env.WEBDOCK_MODULES = disabled.WEBDOCK_MODULES;
+    process.env.SPITZLI_MODULES = disabled.SPITZLI_MODULES;
     expect((await mailTool![1]({ customerID: "123" })).isError).toBe(true);
     expect(called).toBe(false);
     callbacks.clear();
@@ -120,8 +120,8 @@ test("MCP omits disabled Mail tools and rejects calls from an already-created to
       [...callbacks.keys()].some((name) => name.startsWith("byok_mail_")),
     ).toBe(false);
   } finally {
-    if (previous === undefined) delete process.env.WEBDOCK_MODULES;
-    else process.env.WEBDOCK_MODULES = previous;
+    if (previous === undefined) delete process.env.SPITZLI_MODULES;
+    else process.env.SPITZLI_MODULES = previous;
   }
 });
 
@@ -131,7 +131,7 @@ test("all product defaults, omitted modules, unknown IDs and worker ownership ar
   ).toEqual(["databases", "hosting", "mail", "storage"]);
   expect(Object.values(installationRegistry({}).publicView().modules).every(state => state === "disabled")).toBe(true);
   const env = {
-    WEBDOCK_MODULES: JSON.stringify({
+    SPITZLI_MODULES: JSON.stringify({
       configVersion: 1,
       modules: { hosting: { state: "draining" } },
     }),
@@ -145,7 +145,7 @@ test("all product defaults, omitted modules, unknown IDs and worker ownership ar
   validateWorkerModules(["hosting"], env);
   expect(() =>
     installationRegistry({
-      WEBDOCK_MODULES:
+      SPITZLI_MODULES:
         '{"configVersion":1,"modules":{"unknown":{"enabled":true}}}',
     }),
   ).toThrow();
@@ -154,7 +154,7 @@ test("all product defaults, omitted modules, unknown IDs and worker ownership ar
 
 test("disabled products reject direct requests before any mounted handler", async () => {
   const config = readConfig({
-    WEBDOCK_MODULES: '{"configVersion":1,"modules":{}}',
+    SPITZLI_MODULES: '{"configVersion":1,"modules":{}}',
   });
   const app = await createApp(config);
   for (const path of [
@@ -194,11 +194,11 @@ test("Studio command classifiers distinguish databases and retain existing-resou
 test("database MCP tools are independent from customer Hosting and retain call-time gates", async () => {
   const { registerHostingTools } =
     await import("../src/modules/mcp/hosting-mcp");
-  const previous = process.env.WEBDOCK_MODULES;
+  const previous = process.env.SPITZLI_MODULES;
   const callbacks = new Map<string, Function>();
   let calls = 0;
   try {
-    process.env.WEBDOCK_MODULES = JSON.stringify({
+    process.env.SPITZLI_MODULES = JSON.stringify({
       configVersion: 1,
       modules: { databases: { enabled: true } },
     });
@@ -215,27 +215,27 @@ test("database MCP tools are independent from customer Hosting and retain call-t
     );
     expect(callbacks.has("databases_list")).toBe(true);
     expect(callbacks.has("list_hosting_apps")).toBe(false);
-    process.env.WEBDOCK_MODULES = '{"configVersion":1,"modules":{}}';
+    process.env.SPITZLI_MODULES = '{"configVersion":1,"modules":{}}';
     expect(
       (await callbacks.get("databases_list")!({ projectID: "123" })).isError,
     ).toBe(true);
     expect(calls).toBe(0);
   } finally {
-    if (previous === undefined) delete process.env.WEBDOCK_MODULES;
-    else process.env.WEBDOCK_MODULES = previous;
+    if (previous === undefined) delete process.env.SPITZLI_MODULES;
+    else process.env.SPITZLI_MODULES = previous;
   }
 });
 
 test("removed billing configuration and worker ownership are rejected", () => {
- expect(() => installationRegistry({WEBDOCK_MODULES: JSON.stringify({configVersion: 1, modules: {billing: {enabled: true}}})})).toThrow();
+ expect(() => installationRegistry({SPITZLI_MODULES: JSON.stringify({configVersion: 1, modules: {billing: {enabled: true}}})})).toThrow();
  expect(() => validateWorkerModules(["billing"], {})).toThrow("disabled");
 });
 
 test("core installation metadata contains no product contributions", () => {
   configureInstallation([]);
   try {
-    expect(publicInstallation({ WEBDOCK_API_DOMAINS: "auth,portal,registry" }).modules).toEqual({});
-    expect(() => installationRegistry({ WEBDOCK_MODULES: JSON.stringify({ configVersion: 1, modules: { mail: { enabled: true } } }) })).toThrow();
+    expect(publicInstallation({ SPITZLI_API_DOMAINS: "auth,portal,registry" }).modules).toEqual({});
+    expect(() => installationRegistry({ SPITZLI_MODULES: JSON.stringify({ configVersion: 1, modules: { mail: { enabled: true } } }) })).toThrow();
   } finally {
     configureFullInstallation();
   }

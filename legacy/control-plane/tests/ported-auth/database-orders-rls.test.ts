@@ -5,7 +5,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import pg from "pg";
 import { withDatabaseScope } from "@spitzli/database-runtime";
 import type { HostingActor } from "@spitzli/hosting-contracts";
-const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const fixtureFile = process.env.SPITZLI_RLS_FIXTURE_FILE;
 test(
   "customer order acceptance creates and upgrades a dedicated backend under constrained RLS",
   { skip: !fixtureFile },
@@ -21,8 +21,8 @@ test(
       DATABASE_WORKER_URL: fixture.roles.webdock_worker_runtime,
       DATABASE_RLS_SECRET: fixture.contextSecret,
       BETTER_AUTH_SECRET: "synthetic-only-rls-test-".repeat(3),
-      WEBDOCK_DATABASE_PUBLIC_ENABLED: "true",
-      WEBDOCK_DATABASE_DOMAIN: "rls.invalid",
+      SPITZLI_DATABASE_PUBLIC_ENABLED: "true",
+      SPITZLI_DATABASE_DOMAIN: "rls.invalid",
     });
     const { executeHosting } =
       await import("../../src/modules/hosting/service");
@@ -176,7 +176,7 @@ test(
           10 * 1024 ** 3,
         ],
       );
-      process.env.WEBDOCK_DATABASE_CLUSTER_ID = cluster;
+      process.env.SPITZLI_DATABASE_CLUSTER_ID = cluster;
       await assert.rejects(
         scope(() =>
           database.query(

@@ -10,34 +10,34 @@ const configuration = {
 test("JSON Clerk delegation requires an explicit service key and preserves provider boundaries", () => {
   expect(consoleAuthConfiguration({}).enabled).toBe(false);
   expect(
-    consoleAuthConfiguration({ WEBDOCK_CONSOLE_AUTH_PROVIDER: "clerk" })
+    consoleAuthConfiguration({ SPITZLI_CONSOLE_AUTH_PROVIDER: "clerk" })
       .enabled,
   ).toBe(true);
   const selected = consoleAuthConfiguration({
-    WEBDOCK_AUTH_PROVIDER: JSON.stringify(configuration),
+    SPITZLI_AUTH_PROVIDER: JSON.stringify(configuration),
   });
   expect(selected.enabled).toBe(false);
   expect(
     consoleAuthConfiguration({
-      WEBDOCK_AUTH_PROVIDER: JSON.stringify(configuration),
-      WEBDOCK_CONSOLE_AUTH_PROVIDER: "clerk",
+      SPITZLI_AUTH_PROVIDER: JSON.stringify(configuration),
+      SPITZLI_CONSOLE_AUTH_PROVIDER: "clerk",
     }).enabled,
   ).toBe(false);
   expect(consoleAuthConfiguration({
-    WEBDOCK_AUTH_PROVIDER: JSON.stringify(configuration),
-    WEBDOCK_CONSOLE_SERVICE_KEY: "s".repeat(32),
+    SPITZLI_AUTH_PROVIDER: JSON.stringify(configuration),
+    SPITZLI_CONSOLE_SERVICE_KEY: "s".repeat(32),
   }).enabled).toBe(true);
   expect(selected.audience).toBe("webdock-console");
   expect(selected.requireExistingMapping).toBe(true);
   expect(() =>
     consoleAuthConfiguration({
-      WEBDOCK_AUTH_PROVIDER: JSON.stringify(configuration),
+      SPITZLI_AUTH_PROVIDER: JSON.stringify(configuration),
       CLERK_ISSUER: "https://other.clerk.accounts.dev",
     }),
   ).toThrow();
   expect(() =>
     consoleAuthConfiguration({
-      WEBDOCK_AUTH_PROVIDER: JSON.stringify({
+      SPITZLI_AUTH_PROVIDER: JSON.stringify({
         ...configuration,
         audience: undefined,
       }),

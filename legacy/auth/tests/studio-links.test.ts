@@ -22,10 +22,10 @@ test("Studio links use a configured canonical origin and keep business links loc
   assert.equal(businessURL("/tenants", {}), "/tenants");
   assert.equal(businessURL("/tenants", { STUDIO_UI_ENABLED: "false" }), "/tenants");
   assert.equal(businessURL("/tenants", enabled), "https://studio.webdock.dev/tenants");
-  assert.equal(studioURL("/sites", { WEBDOCK_STUDIO_ORIGIN: "https://studio.example.test/" }), "https://studio.example.test/sites");
-  assert.equal(studioURL("/tenants", { NODE_ENV: "development", WEBDOCK_STUDIO_ORIGIN: "http://localhost:3120" }), "http://localhost:3120/tenants");
+  assert.equal(studioURL("/sites", { SPITZLI_STUDIO_ORIGIN: "https://studio.example.test/" }), "https://studio.example.test/sites");
+  assert.equal(studioURL("/tenants", { NODE_ENV: "development", SPITZLI_STUDIO_ORIGIN: "http://localhost:3120" }), "http://localhost:3120/tenants");
   for (const origin of ["http://studio.example.test", "javascript:alert(1)", "https://user:secret@studio.example.test", "https://studio.example.test/nested", "https://studio.example.test/?evil=1", "https://studio.example.test/#fragment", "http://localhost:3120"]) {
-    assert.throws(() => studioURL("/tenants", { ...enabled, WEBDOCK_STUDIO_ORIGIN: origin }));
+    assert.throws(() => studioURL("/tenants", { ...enabled, SPITZLI_STUDIO_ORIGIN: origin }));
   }
   for (const path of ["https://evil.test", "//evil.test", "/\\evil.test"]) assert.throws(() => studioURL(path, enabled));
 });

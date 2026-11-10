@@ -7,7 +7,7 @@ import { Pool } from "pg";
 import { withDatabaseScope } from "@spitzli/database-runtime";
 import { currentConsolePrincipal, withConsolePrincipal } from "../src/modules/auth/principal";
 import { createDatabases } from "../src/db/client";
-const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const fixtureFile = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (fixtureFile ? test : test.skip)(
   "Clerk RLS uses live verified scope without a legacy session",
   async () => {
@@ -33,8 +33,8 @@ const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       other = id(),
       issuer = "https://fixture.clerk.accounts.dev";
     const storageID="clerk-storage-"+user;
-    const previousStudioOrigin = process.env.WEBDOCK_STUDIO_ORIGIN;
-    process.env.WEBDOCK_STUDIO_ORIGIN = "https://studio.example.invalid";
+    const previousStudioOrigin = process.env.SPITZLI_STUDIO_ORIGIN;
+    process.env.SPITZLI_STUDIO_ORIGIN = "https://studio.example.invalid";
     try {
       const constraintClient = await owner.connect();
       try {
@@ -326,11 +326,11 @@ const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       expect((await withDatabaseScope(legacy, allowed)).rows[0].operator).toBe(false);
       const { signedDatabaseScope } = await import("../src/db/signed-scope");
       const signedPools = createDatabases({environment:"test",businessURL:fixture.roles.webdock_auth_runtime,authURL:fixture.roles.webdock_auth_bootstrap,workerURL:fixture.roles.webdock_worker_runtime,signingSecret:fixture.contextSecret,max:1,scope:signedDatabaseScope});
-      const previousProvider = process.env.WEBDOCK_AUTH_PROVIDER;
+      const previousProvider = process.env.SPITZLI_AUTH_PROVIDER;
       try {
-        process.env.WEBDOCK_AUTH_PROVIDER = JSON.stringify({provider:"clerk",issuer,authorizedParties:["https://console.example.invalid"],tokenMode:"session"});
-        const previousOAuth = process.env.WEBDOCK_OAUTH_PROVIDER;
-        process.env.WEBDOCK_OAUTH_PROVIDER = "better-auth";
+        process.env.SPITZLI_AUTH_PROVIDER = JSON.stringify({provider:"clerk",issuer,authorizedParties:["https://console.example.invalid"],tokenMode:"session"});
+        const previousOAuth = process.env.SPITZLI_OAUTH_PROVIDER;
+        process.env.SPITZLI_OAUTH_PROVIDER = "better-auth";
         try {
           const { selectedIdentityDirectory } = await import("../src/modules/auth/principal");
           const read = () => selectedIdentityDirectory.session(signedPools.business, {subject: user, sessionID: legacyID});
@@ -341,14 +341,14 @@ const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
           expect(await withDatabaseScope({...legacy,memberships},read)).toBeNull();
           await owner.query('UPDATE webdock_auth.clerk_identity SET enabled=true WHERE user_id=$1',[user]);
         } finally {
-          if (previousOAuth === undefined) delete process.env.WEBDOCK_OAUTH_PROVIDER;
-          else process.env.WEBDOCK_OAUTH_PROVIDER = previousOAuth;
+          if (previousOAuth === undefined) delete process.env.SPITZLI_OAUTH_PROVIDER;
+          else process.env.SPITZLI_OAUTH_PROVIDER = previousOAuth;
         }
         const direct = {kind:"session" as const,subject:user,sessionID:legacyID,authProvider:"better-auth" as const};
         expect((await withDatabaseScope(direct,()=>signedPools.business.query("SELECT webdock_rls.operator() AS operator"))).rows[0].operator).toBe(false);
         expect((await withDatabaseScope({...direct,memberships:{...memberships,operator:true,twoFactorEnabled:true}},()=>signedPools.business.query("SELECT webdock_rls.operator() AS operator"))).rows[0].operator).toBe(true);
       } finally {
-        if(previousProvider === undefined) delete process.env.WEBDOCK_AUTH_PROVIDER; else process.env.WEBDOCK_AUTH_PROVIDER = previousProvider;
+        if(previousProvider === undefined) delete process.env.SPITZLI_AUTH_PROVIDER; else process.env.SPITZLI_AUTH_PROVIDER = previousProvider;
         await signedPools.close();
       }
       expect((await withDatabaseScope({ ...legacy, authProvider: "better-auth" }, allowed)).rows[0].operator).toBe(true);
@@ -384,7 +384,7 @@ const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
           assert.deepEqual(await run(() => listTenants(new Headers())), []);
         } finally { await closeDatabases(); }
       `], { cwd: import.meta.dir + "/..", env: { ...process.env,
-        WEBDOCK_AUTH_PROVIDER: JSON.stringify({ provider: "clerk", issuer, authorizedParties: ["https://console.example.invalid"], tokenMode: "session" }),
+        SPITZLI_AUTH_PROVIDER: JSON.stringify({ provider: "clerk", issuer, authorizedParties: ["https://console.example.invalid"], tokenMode: "session" }),
         CLERK_ISSUER: issuer,
       } });
       expect(compatibility.exitCode, compatibility.stderr.toString()).toBe(0);
@@ -507,8 +507,8 @@ const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
         ).rows[0].n,
       ).toBe(0);
     } finally {
-      if (previousStudioOrigin === undefined) delete process.env.WEBDOCK_STUDIO_ORIGIN;
-      else process.env.WEBDOCK_STUDIO_ORIGIN = previousStudioOrigin;
+      if (previousStudioOrigin === undefined) delete process.env.SPITZLI_STUDIO_ORIGIN;
+      else process.env.SPITZLI_STUDIO_ORIGIN = previousStudioOrigin;
       await owner.query("DELETE FROM webdock_auth.tenant_storage WHERE id=$1 AND label='Clerk fixture' AND encrypted_token='fixture-only'",[storageID]);
       await pools.close();
       await owner.end();

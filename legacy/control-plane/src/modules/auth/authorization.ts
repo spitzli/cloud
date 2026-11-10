@@ -54,8 +54,8 @@ export async function currentClaims(
   // Studio is the global customer portal; website grants and CMS availability
   // remain independent from this membership-based reader identity.
   if (
-    process.env.WEBDOCK_STUDIO_CLIENT_ID &&
-    row.client_id === process.env.WEBDOCK_STUDIO_CLIENT_ID &&
+    process.env.SPITZLI_STUDIO_CLIENT_ID &&
+    row.client_id === process.env.SPITZLI_STUDIO_CLIENT_ID &&
     !row.organization_id
   ) {
     const proof = legacyProof;

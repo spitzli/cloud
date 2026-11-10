@@ -6,9 +6,9 @@ export type StudioSession={user:{id:string;name:string;email:string;role:'operat
 export type AuthSession={user:StudioSession['user'] & {banned?:boolean};session:{id:string;userId:string;expiresAt:string}};
 export async function authView<T>(path:string,body?:unknown,requestHeaders?:Headers):Promise<T>{
  const incoming=requestHeaders||await headers();
- if(!process.env.WEBDOCK_API_ORIGIN)throw new StudioError('Account API is not configured.',503);
+ if(!process.env.SPITZLI_API_ORIGIN)throw new StudioError('Account API is not configured.',503);
  let response:{status:number;body:{data?:T;error?:{kind?:string;message?:string}}};
- try{response=await requestAPI({apiOrigin:process.env.WEBDOCK_API_ORIGIN,uiOrigin:process.env.BETTER_AUTH_URL||'https://auth.webdock.dev',cookie:incoming.get('cookie')||'',path,body});}
+ try{response=await requestAPI({apiOrigin:process.env.SPITZLI_API_ORIGIN,uiOrigin:process.env.BETTER_AUTH_URL||'https://auth.webdock.dev',cookie:incoming.get('cookie')||'',path,body});}
  catch{throw new StudioError('Account services are temporarily unavailable.',503);}
  if(response.status===401)throw new AccessError('Sign in again.',401);
  if(response.status<200||response.status>=300||response.body.error)throw studioError(response.body.error?.kind||'StudioError',response.body.error?.message||'Request unavailable.',response.status);

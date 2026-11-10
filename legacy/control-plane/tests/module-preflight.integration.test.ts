@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { withDatabaseScope } from "@spitzli/database-runtime";
 import { createWorkerDatabases } from "../src/db/client";
 import { assertMailCanDisable } from "@spitzli/module-mail/server/lifecycle";
-(process.env.WEBDOCK_RLS_FIXTURE_FILE ? test : test.skip)(
+(process.env.SPITZLI_RLS_FIXTURE_FILE ? test : test.skip)(
   "Mail shutdown sees retained suspended instances through the restricted worker role",
   async () => {
     const url = new URL(process.env.API_TEST_OWNER_URL!);

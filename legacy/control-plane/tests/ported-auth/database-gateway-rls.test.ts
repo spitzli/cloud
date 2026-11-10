@@ -5,7 +5,7 @@ import { randomBytes } from "node:crypto";
 import pg from "pg";
 import { withDatabaseScope } from "@spitzli/database-runtime";
 import type { HostingActor } from "@spitzli/hosting-contracts";
-const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const fixtureFile = process.env.SPITZLI_RLS_FIXTURE_FILE;
 test(
   "strict database roles preserve launch exchange, runtime profile, inspection and revocation",
   { skip: !fixtureFile },
@@ -21,8 +21,8 @@ test(
       DATABASE_WORKER_URL: fixture.roles.webdock_worker_runtime,
       DATABASE_RLS_SECRET: fixture.contextSecret,
       BETTER_AUTH_SECRET: "synthetic-gateway-rls-".repeat(3),
-      WEBDOCK_DATABASE_GATEWAY_SECRET: "synthetic-gateway-secret-".repeat(3),
-      WEBDOCK_DATABASE_GATEWAY_ORIGIN: "https://gateway.rls.invalid",
+      SPITZLI_DATABASE_GATEWAY_SECRET: "synthetic-gateway-secret-".repeat(3),
+      SPITZLI_DATABASE_GATEWAY_ORIGIN: "https://gateway.rls.invalid",
     });
     const { database, authDatabase, workerDatabase } =
       await import("../../src/db/runtime");
@@ -65,7 +65,7 @@ test(
       ) as Promise<{ code: string }>;
     const http = (
       body: unknown,
-      credential = process.env.WEBDOCK_DATABASE_GATEWAY_SECRET,
+      credential = process.env.SPITZLI_DATABASE_GATEWAY_SECRET,
     ) =>
       databaseGateway(
         new Request("https://auth.rls.invalid/api/databases/gateway", {

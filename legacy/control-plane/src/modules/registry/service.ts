@@ -49,7 +49,7 @@ export async function createRegistry() {
     pool,
     readCachedView,
     withSessionScope: async (actor, run) => {
-      const authProvider = readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider;
+      const authProvider = readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider;
       const inherited = currentDatabaseScope();
       const verified = inherited?.kind === "session" && inherited.subject === actor.subject && inherited.sessionID === actor.sessionID && (inherited.clerk || inherited.memberships);
       const memberships = authProvider === "clerk" && !verified

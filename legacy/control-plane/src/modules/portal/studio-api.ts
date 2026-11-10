@@ -221,7 +221,7 @@ async function delegatedSession(
   accessToken: string,
   dependencies: Dependencies,
 ) {
-  const clientID = process.env.WEBDOCK_STUDIO_CLIENT_ID;
+  const clientID = process.env.SPITZLI_STUDIO_CLIENT_ID;
   const basic = request.headers.get("authorization") || "";
   if (
     !clientID ||
@@ -510,7 +510,7 @@ async function handleRequest(
       request.headers.get("origin") !==
         new URL(
           (clerk
-            ? process.env.WEBDOCK_SSO_APP_ORIGIN
+            ? process.env.SPITZLI_SSO_APP_ORIGIN
             : process.env.BETTER_AUTH_URL) || "http://localhost:3125",
         ).origin
     )
@@ -522,9 +522,9 @@ async function handleRequest(
         ? await nativeSession(request.headers)
         : await delegatedSession(request, accessToken, dependencies);
     requireInstalledOperation(operation, args);
-    if (process.env.WEBDOCK_API_DOMAINS !== undefined) {
+    if (process.env.SPITZLI_API_DOMAINS !== undefined) {
       const domain = studioOperationDomain(operation, args);
-      if (!process.env.WEBDOCK_API_DOMAINS.split(",").includes(domain))
+      if (!process.env.SPITZLI_API_DOMAINS.split(",").includes(domain))
         fail(503, "This service is temporarily unavailable.");
     }
     product = await loadProductOperation(operation, args);

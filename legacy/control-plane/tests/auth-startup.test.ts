@@ -5,35 +5,35 @@ import { readConfig } from "../src/config";
 const clerk = JSON.stringify({provider:"clerk",issuer:"https://identity.example",authorizedParties:["https://console.example"],audience:"console"});
 
 test("Clerk starts auth foundation without importing Better Auth or requiring its secret", async () => {
-  const config = readConfig({WEBDOCK_API_DOMAINS:"auth,portal,registry"});
+  const config = readConfig({SPITZLI_API_DOMAINS:"auth,portal,registry"});
   let loaded = false;
-  const mounts = await createAuthProtocolMounts(config, readAuthProtocolSelection({WEBDOCK_AUTH_PROVIDER:clerk}), async () => { loaded = true; throw Error("must not load"); });
+  const mounts = await createAuthProtocolMounts(config, readAuthProtocolSelection({SPITZLI_AUTH_PROVIDER:clerk}), async () => { loaded = true; throw Error("must not load"); });
   expect(mounts).toEqual([]);
   expect(loaded).toBe(false);
 });
 test("OAuth compatibility is explicit for Clerk and legacy installs retain their issuer", () => {
   expect(readAuthProtocolSelection({}).oauthProvider).toBe("better-auth");
-  expect(readAuthProtocolSelection({WEBDOCK_AUTH_PROVIDER:clerk}).oauthProvider).toBe("disabled");
-  expect(readAuthProtocolSelection({WEBDOCK_AUTH_PROVIDER:clerk,WEBDOCK_OAUTH_PROVIDER:"better-auth"}).compatibility).toBe(true);
-  expect(() => readAuthProtocolSelection({WEBDOCK_OAUTH_PROVIDER:"clerk-jwt"})).toThrow("Unsupported OAuth provider");
+  expect(readAuthProtocolSelection({SPITZLI_AUTH_PROVIDER:clerk}).oauthProvider).toBe("disabled");
+  expect(readAuthProtocolSelection({SPITZLI_AUTH_PROVIDER:clerk,SPITZLI_OAUTH_PROVIDER:"better-auth"}).compatibility).toBe(true);
+  expect(() => readAuthProtocolSelection({SPITZLI_OAUTH_PROVIDER:"clerk-jwt"})).toThrow("Unsupported OAuth provider");
 });
 test("requesting MCP without an OAuth capability fails before loading a runtime", async () => {
-  const config=readConfig({WEBDOCK_API_DOMAINS:"auth,mcp"});
-  await expect(createAuthProtocolMounts(config,readAuthProtocolSelection({WEBDOCK_AUTH_PROVIDER:clerk}))).rejects.toThrow("MCP requires an explicitly selected OAuth provider");
+  const config=readConfig({SPITZLI_API_DOMAINS:"auth,mcp"});
+  await expect(createAuthProtocolMounts(config,readAuthProtocolSelection({SPITZLI_AUTH_PROVIDER:clerk}))).rejects.toThrow("MCP requires an explicitly selected OAuth provider");
 });
 test("disabled OAuth denies introspection before importing the legacy runtime", async () => {
-  const previous = process.env.WEBDOCK_AUTH_PROVIDER;
-  const previousOAuth = process.env.WEBDOCK_OAUTH_PROVIDER;
-  process.env.WEBDOCK_AUTH_PROVIDER = clerk;
-  delete process.env.WEBDOCK_OAUTH_PROVIDER;
+  const previous = process.env.SPITZLI_AUTH_PROVIDER;
+  const previousOAuth = process.env.SPITZLI_OAUTH_PROVIDER;
+  process.env.SPITZLI_AUTH_PROVIDER = clerk;
+  delete process.env.SPITZLI_OAUTH_PROVIDER;
   try {
     const { introspectToken } = await import("../src/modules/auth/introspection");
     await expect(introspectToken("untrusted-token", "client", "secret")).rejects.toThrow("Legacy OAuth capability is disabled");
   } finally {
-    if (previous === undefined) delete process.env.WEBDOCK_AUTH_PROVIDER;
-    else process.env.WEBDOCK_AUTH_PROVIDER = previous;
-    if (previousOAuth === undefined) delete process.env.WEBDOCK_OAUTH_PROVIDER;
-    else process.env.WEBDOCK_OAUTH_PROVIDER = previousOAuth;
+    if (previous === undefined) delete process.env.SPITZLI_AUTH_PROVIDER;
+    else process.env.SPITZLI_AUTH_PROVIDER = previous;
+    if (previousOAuth === undefined) delete process.env.SPITZLI_OAUTH_PROVIDER;
+    else process.env.SPITZLI_OAUTH_PROVIDER = previousOAuth;
   }
 });
 test("Clerk portal, registry and plugin modules never import the unselected runtime", () => {
@@ -46,7 +46,7 @@ test("Clerk portal, registry and plugin modules never import the unselected runt
     await import("./apps/control-plane/src/protocols/plugins");
   `], {
     cwd: root,
-    env: { ...process.env, WEBDOCK_AUTH_PROVIDER: clerk, DATABASE_URL: "postgres://fixture:fixture@localhost:5432/webdock_test" },
+    env: { ...process.env, SPITZLI_AUTH_PROVIDER: clerk, DATABASE_URL: "postgres://fixture:fixture@localhost:5432/webdock_test" },
   });
   expect(result.stderr.toString()).toBe("");
   expect(result.exitCode).toBe(0);
@@ -126,7 +126,7 @@ test("selected Clerk Console transport revalidates mocked identity and authoriza
   `;
   const result = Bun.spawnSync([process.execPath, "-e", script], {
     cwd: new URL("../../../", import.meta.url).pathname,
-    env: {...process.env, WEBDOCK_MODULES: JSON.stringify({configVersion:1,modules:{}}), DATABASE_URL:"postgres://fixture:fixture@localhost:5432/webdock_test", WEBDOCK_AUTH_PROVIDER:clerk, WEBDOCK_CONSOLE_SERVICE_KEY:"s".repeat(32), WEBDOCK_API_DOMAINS:"auth,portal,registry", BETTER_AUTH_SECRET:"", CLERK_ISSUER:"" },
+    env: {...process.env, SPITZLI_MODULES: JSON.stringify({configVersion:1,modules:{}}), DATABASE_URL:"postgres://fixture:fixture@localhost:5432/webdock_test", SPITZLI_AUTH_PROVIDER:clerk, SPITZLI_CONSOLE_SERVICE_KEY:"s".repeat(32), SPITZLI_API_DOMAINS:"auth,portal,registry", BETTER_AUTH_SECRET:"", CLERK_ISSUER:"" },
   });
   expect(result.stderr.toString()).toBe("");
   expect(result.exitCode).toBe(0);

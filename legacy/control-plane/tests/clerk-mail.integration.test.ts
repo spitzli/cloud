@@ -9,7 +9,7 @@ import { withConsolePrincipal } from "../src/modules/auth/principal";
 import { database, workerDatabase } from "../src/db/runtime";
 import { transaction } from "../src/modules/hosting/db";
 
-const fixture = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const fixture = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (fixture ? test : test.skip)(
   "Clerk-only native mailbox grants require explicit live membership, applied revision, and worker revalidation",
   async () => {
@@ -30,9 +30,9 @@ const fixture = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       sender = id();
     const issuer = "https://fixture.clerk.accounts.dev";
     const savedIssuer = process.env.CLERK_ISSUER;
-    const savedProvider = process.env.WEBDOCK_AUTH_PROVIDER;
+    const savedProvider = process.env.SPITZLI_AUTH_PROVIDER;
     const selectedProvider = JSON.stringify({ provider: "clerk", issuer, authorizedParties: ["https://console.example.test"], audience: "webdock" });
-    process.env.WEBDOCK_AUTH_PROVIDER = selectedProvider;
+    process.env.SPITZLI_AUTH_PROVIDER = selectedProvider;
     process.env.CLERK_ISSUER = issuer;
     let memberPresent = true,
       memberID = "orgmem_original",
@@ -89,8 +89,8 @@ const fixture = process.env.WEBDOCK_RLS_FIXTURE_FILE;
       "MAIL_ENCRYPTION_KEY",
       "MAIL_STALWART_IMAGE",
       "MAIL_HOSTNAME_SUFFIX",
-      "WEBDOCK_NATIVE_MAILBOXES_ENABLED",
-      "WEBDOCK_NATIVE_MAIL_SENDING_ENABLED",
+      "SPITZLI_NATIVE_MAILBOXES_ENABLED",
+      "SPITZLI_NATIVE_MAIL_SENDING_ENABLED",
     ];
     const oldMailEnv = Object.fromEntries(
       mailEnvNames.map((name) => [name, process.env[name]]),
@@ -259,10 +259,10 @@ const fixture = process.env.WEBDOCK_RLS_FIXTURE_FILE;
         ),
       ).rejects.toThrow();
       process.env.CLERK_ISSUER = "https://wrong.clerk.accounts.dev";
-      process.env.WEBDOCK_AUTH_PROVIDER = JSON.stringify({ ...JSON.parse(selectedProvider), issuer: process.env.CLERK_ISSUER });
+      process.env.SPITZLI_AUTH_PROVIDER = JSON.stringify({ ...JSON.parse(selectedProvider), issuer: process.env.CLERK_ISSUER });
       await expect(queued()).rejects.toThrow("not configured");
       process.env.CLERK_ISSUER = issuer;
-      process.env.WEBDOCK_AUTH_PROVIDER = selectedProvider;
+      process.env.SPITZLI_AUTH_PROVIDER = selectedProvider;
       providerOperator = true;
       await owner.query(
         `UPDATE webdock_auth."user" SET role='operator' WHERE id=$1`,
@@ -449,8 +449,8 @@ const fixture = process.env.WEBDOCK_RLS_FIXTURE_FILE;
         MAIL_ENCRYPTION_KEY: encryptionKey,
         MAIL_STALWART_IMAGE: `webdock.local/mail-stalwart@sha256:${"a".repeat(64)}`,
         MAIL_HOSTNAME_SUFFIX: "mail.example.invalid",
-        WEBDOCK_NATIVE_MAILBOXES_ENABLED: "true",
-        WEBDOCK_NATIVE_MAIL_SENDING_ENABLED: "false",
+        SPITZLI_NATIVE_MAILBOXES_ENABLED: "true",
+        SPITZLI_NATIVE_MAIL_SENDING_ENABLED: "false",
       });
       await owner.query(
         "INSERT INTO webdock_auth.hosting_cluster(id,name,provider,country,region,location_evidence,verified,capacity) VALUES($1,'Mail migration fixture','Contabo','DE','Germany','Isolated test',true,$2)",
@@ -591,8 +591,8 @@ const fixture = process.env.WEBDOCK_RLS_FIXTURE_FILE;
         if (value === undefined) delete process.env[name];
         else process.env[name] = value;
       }
-      if (savedProvider === undefined) delete process.env.WEBDOCK_AUTH_PROVIDER;
-      else process.env.WEBDOCK_AUTH_PROVIDER = savedProvider;
+      if (savedProvider === undefined) delete process.env.SPITZLI_AUTH_PROVIDER;
+      else process.env.SPITZLI_AUTH_PROVIDER = savedProvider;
       if (savedIssuer === undefined) delete process.env.CLERK_ISSUER;
       else process.env.CLERK_ISSUER = savedIssuer;
       if (oldSettings)

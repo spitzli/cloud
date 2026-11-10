@@ -64,17 +64,17 @@ describe("public Console origin", () => {
   });
 
   test("alias is optional and must be a distinct secure origin in production", () => {
-    const env = {NODE_ENV: "production", WEBDOCK_API_ORIGIN: "https://api.webdock.dev", BETTER_AUTH_URL: "https://auth.webdock.dev", WEBDOCK_STUDIO_ORIGIN: studioOrigin};
+    const env = {NODE_ENV: "production", SPITZLI_API_ORIGIN: "https://api.webdock.dev", BETTER_AUTH_URL: "https://auth.webdock.dev", SPITZLI_STUDIO_ORIGIN: studioOrigin};
     expect(readConfig(env).consoleOrigin).toBeUndefined();
-    expect(readConfig({...env, WEBDOCK_CONSOLE_ORIGIN: consoleOrigin}).consoleOrigin).toBe(consoleOrigin);
-    for (const value of [studioOrigin, env.BETTER_AUTH_URL, env.WEBDOCK_API_ORIGIN, "http://localhost:3128", `${consoleOrigin}/path`])
-      expect(() => readConfig({...env, WEBDOCK_CONSOLE_ORIGIN: value})).toThrow();
+    expect(readConfig({...env, SPITZLI_CONSOLE_ORIGIN: consoleOrigin}).consoleOrigin).toBe(consoleOrigin);
+    for (const value of [studioOrigin, env.BETTER_AUTH_URL, env.SPITZLI_API_ORIGIN, "http://localhost:3128", `${consoleOrigin}/path`])
+      expect(() => readConfig({...env, SPITZLI_CONSOLE_ORIGIN: value})).toThrow();
   });
 });
 
 test("Clerk Console login entry never dispatches to the legacy SSO handler", async () => {
- const prior=process.env.WEBDOCK_CONSOLE_AUTH_PROVIDER;
- process.env.WEBDOCK_CONSOLE_AUTH_PROVIDER="clerk";
+ const prior=process.env.SPITZLI_CONSOLE_AUTH_PROVIDER;
+ process.env.SPITZLI_CONSOLE_AUTH_PROVIDER="clerk";
  try {
   for (const method of ["GET","HEAD"]) {
    const response=await handleConsoleOrigin(new Request(`${consoleOrigin}/api/sso/login?returnTo=https://evil.example`,{method}),config,()=>{throw Error("legacy login must not run");});
@@ -86,5 +86,5 @@ test("Clerk Console login entry never dispatches to the legacy SSO handler", asy
    expect(request.url).toBe(`${studioOrigin}/api/sso/callback?code=legacy`);return new Response("legacy callback preserved");
   });
   expect(await callback.text()).toBe("legacy callback preserved");
- } finally {if(prior===undefined)delete process.env.WEBDOCK_CONSOLE_AUTH_PROVIDER;else process.env.WEBDOCK_CONSOLE_AUTH_PROVIDER=prior;}
+ } finally {if(prior===undefined)delete process.env.SPITZLI_CONSOLE_AUTH_PROVIDER;else process.env.SPITZLI_CONSOLE_AUTH_PROVIDER=prior;}
 });

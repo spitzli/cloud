@@ -14,7 +14,7 @@ import { encryptMailSecret, decryptMailSecret } from "../platform/platform";
 export const { executeDatabase, exchangeLaunch, inspectSession } =
   createDatabaseService({
     recipientAuthority: {
-      isExternal: () => !!currentConsolePrincipal() || readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider === "clerk",
+      isExternal: () => !!currentConsolePrincipal() || readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider === "clerk",
       async allowed(subject, customerID) {
         const proof = await legacyClerkMemberships(subject);
         return !!proof && (proof.operator || proof.roles.some(role => role.customerID === customerID));
@@ -29,5 +29,5 @@ export const { executeDatabase, exchangeLaunch, inspectSession } =
     hostingAudit,
     encryptMailSecret,
     decryptMailSecret,
-    gatewayOrigin: () => process.env.WEBDOCK_DATABASE_GATEWAY_ORIGIN,
+    gatewayOrigin: () => process.env.SPITZLI_DATABASE_GATEWAY_ORIGIN,
   });

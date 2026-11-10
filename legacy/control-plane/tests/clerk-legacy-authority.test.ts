@@ -78,7 +78,7 @@ for (const selected of [false, true]) {
       cwd: new URL("../../../", import.meta.url).pathname,
       env: {
         ...process.env,
-        WEBDOCK_AUTH_PROVIDER: selected ? JSON.stringify({ provider: "clerk", issuer: "https://identity.example", authorizedParties: ["https://console.example"], audience: "console" }) : JSON.stringify({ provider: "better-auth" }),
+        SPITZLI_AUTH_PROVIDER: selected ? JSON.stringify({ provider: "clerk", issuer: "https://identity.example", authorizedParties: ["https://console.example"], audience: "console" }) : JSON.stringify({ provider: "better-auth" }),
         CLERK_ISSUER: "https://identity.example",
         CLERK_SECRET_KEY: "sk_test_fixture",
         CLERK_PUBLISHABLE_KEY: "pk_test_fixture",

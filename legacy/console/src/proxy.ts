@@ -16,9 +16,9 @@ export default createBrowserProxy(
       request,
       () =>
         requestAPI<{ data?: { installation?: ModuleView } }>({
-          apiOrigin: process.env.WEBDOCK_API_ORIGIN || "",
+          apiOrigin: process.env.SPITZLI_API_ORIGIN || "",
           uiOrigin:
-            process.env.WEBDOCK_STUDIO_ORIGIN ||
+            process.env.SPITZLI_STUDIO_ORIGIN ||
             process.env.NEXT_PUBLIC_SERVER_URL ||
             "https://studio.webdock.dev",
           ...credentials,

@@ -10,7 +10,7 @@ const registry = JSON.parse(
 const siteEnvironment = parseEnv(
   fs.readFileSync("../../../pizza2400/.env.deploy", "utf8"),
 );
-const configuredURL = siteEnvironment.WEBDOCK_STUDIO_URL;
+const configuredURL = siteEnvironment.SPITZLI_STUDIO_URL;
 if (
   !configuredURL ||
   new URL(configuredURL).origin !== "https://studio.webdock.dev"

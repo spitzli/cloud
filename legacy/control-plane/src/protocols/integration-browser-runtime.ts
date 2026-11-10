@@ -29,7 +29,7 @@ export function createIntegrationBrowserRuntime(
     browserAuthProvider === "better-auth" ? createPortalSession() : null;
   const secret =
     process.env.BETTER_AUTH_SECRET ||
-    process.env.WEBDOCK_SSO_COOKIE_SECRET ||
+    process.env.SPITZLI_SSO_COOKIE_SECRET ||
     "";
   // An unconfigured GitHub integration must not make a fresh Clerk Core fail startup.
   const handoff =

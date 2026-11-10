@@ -12,7 +12,7 @@ import { createPluginSourceService } from "../src/modules/plugins/sources-store"
 import { sourceHash } from "../src/modules/plugins/sources-policy";
 import { createPluginInstallerDispatch } from "../src/modules/plugins/sources-dispatch";
 import { createVerifiedSourceActorRunner } from "../src/modules/plugins/sources-identity";
-const fixtureFile = process.env.WEBDOCK_RLS_FIXTURE_FILE;
+const fixtureFile = process.env.SPITZLI_RLS_FIXTURE_FILE;
 (fixtureFile ? test : test.skip)(
   "source imports enforce real restricted-role upload, lifecycle, retention and activation fences",
   async () => {

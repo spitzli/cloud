@@ -80,7 +80,7 @@ class Connected(Fixture):
    except OSError:pass
   threading.Thread(target=accept,daemon=True).start()
   password_file=self.out/'role-passwords.json';password_file.write_text(json.dumps(self.s['rolePasswords']));password_file.chmod(0o600)
-  env={**os.environ,'WEBDOCK_MIGRATION_DATABASE_URL':f'postgresql://postgres:{self.s["coreAdministrator"]}@127.0.0.1:{port}/webdock_rls_test','DATABASE_RLS_SECRET':self.s['rlsKey'],'BETTER_AUTH_SECRET':self.s['masterKey']}
+  env={**os.environ,'SPITZLI_MIGRATION_DATABASE_URL':f'postgresql://postgres:{self.s["coreAdministrator"]}@127.0.0.1:{port}/webdock_rls_test','DATABASE_RLS_SECRET':self.s['rlsKey'],'BETTER_AUTH_SECRET':self.s['masterKey']}
   try:self.run(['cargo','run','--locked','-p','spitzli-control-plane','--bin','spitzli-migrate','--','--target',f'127.0.0.1:{port}/webdock_rls_test','--initialize-empty','--provision-roles-from',str(password_file)],env=env,timeout=600)
   finally:listener.close()
   self.docker('exec',self.s['coreID'],'psql','-U','postgres','-d','webdock_rls_test','-c','INSERT INTO webdock_auth.snowflake_state(singleton) VALUES(true)')
@@ -122,7 +122,7 @@ class Connected(Fixture):
    config.pop('write');config.pop('read')
   config_path=self.out/'connected-config.json';config_path.write_text(json.dumps(config));config_path.chmod(0o600)
   self.docker('cp',str(config_path),self.s['name']+':/connected/config.json')
-  env={**os.environ,'DATABASE_URL':dsn('webdock_auth_runtime'),'AUTH_DATABASE_URL':dsn('webdock_auth_bootstrap'),'WEBDOCK_PLUGIN_WORKER_DATABASE_URL':dsn('webdock_worker_runtime'),'WEBDOCK_TEST_MIGRATION_DATABASE_URL':f'postgresql://postgres:{self.s["coreAdministrator"]}@127.0.0.1:5432/webdock_rls_test','BETTER_AUTH_SECRET':self.s['masterKey'],'DATABASE_RLS_SECRET':self.s['rlsKey'],'WEBDOCK_CONNECTED_BACKUP_TEST':'yes','WEBDOCK_CONNECTED_BACKUP_PHASE':phase,'RUST_MIN_STACK':'16777216'}
+  env={**os.environ,'DATABASE_URL':dsn('webdock_auth_runtime'),'AUTH_DATABASE_URL':dsn('webdock_auth_bootstrap'),'SPITZLI_PLUGIN_WORKER_DATABASE_URL':dsn('webdock_worker_runtime'),'SPITZLI_TEST_MIGRATION_DATABASE_URL':f'postgresql://postgres:{self.s["coreAdministrator"]}@127.0.0.1:5432/webdock_rls_test','BETTER_AUTH_SECRET':self.s['masterKey'],'DATABASE_RLS_SECRET':self.s['rlsKey'],'SPITZLI_CONNECTED_BACKUP_TEST':'yes','SPITZLI_CONNECTED_BACKUP_PHASE':phase,'RUST_MIN_STACK':'16777216'}
   import threading
   stop=threading.Event();errors=[]
   def faults():
@@ -142,7 +142,7 @@ class Connected(Fixture):
   worker=threading.Thread(target=faults,daemon=True) if phase=='restore' else None
   if worker:worker.start()
   try:
-   self.docker('exec',*[arg for key in env if key.startswith('WEBDOCK_') or key in ['DATABASE_URL','AUTH_DATABASE_URL','BETTER_AUTH_SECRET','DATABASE_RLS_SECRET','RUST_MIN_STACK'] for arg in ['--env',key]],self.s['name'],'/connected/lib/ld-linux-x86-64.so.2','--library-path','/connected/lib','/connected/fixture','--ignored','--nocapture','--test-threads=1',env=env,timeout=1400)
+   self.docker('exec',*[arg for key in env if key.startswith('SPITZLI_') or key in ['DATABASE_URL','AUTH_DATABASE_URL','BETTER_AUTH_SECRET','DATABASE_RLS_SECRET','RUST_MIN_STACK'] for arg in ['--env',key]],self.s['name'],'/connected/lib/ld-linux-x86-64.so.2','--library-path','/connected/lib','/connected/fixture','--ignored','--nocapture','--test-threads=1',env=env,timeout=1400)
   finally:
    stop.set()
    if worker:

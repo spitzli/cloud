@@ -83,7 +83,7 @@ async function identity(
   },
 ): Promise<IdentityPlan> {
   const issuer = new URL(
-    process.env.WEBDOCK_AUTH_ISSUER || "https://auth.webdock.dev/api/auth",
+    process.env.SPITZLI_AUTH_ISSUER || "https://auth.webdock.dev/api/auth",
   );
   if (
     (issuer.protocol !== "https:" &&
@@ -96,8 +96,8 @@ async function identity(
     issuer.password
   )
     throw new APIError("Account service is not configured.", 503);
-  const client = process.env.WEBDOCK_SSO_CLIENT_ID,
-    secret = process.env.WEBDOCK_SSO_CLIENT_SECRET;
+  const client = process.env.SPITZLI_SSO_CLIENT_ID,
+    secret = process.env.SPITZLI_SSO_CLIENT_SECRET;
   const principal=currentConsolePrincipal();
   if ((!client || !secret) && !principal)
     throw new APIError("Account service is not configured.", 503);
@@ -226,7 +226,7 @@ async function records(actor: RegistryActor, id: string) {
     origin = new URL(project.url || "").origin;
   if (
     binding.origin !==
-      new URL(process.env.WEBDOCK_STUDIO_ORIGIN || "https://studio.webdock.dev")
+      new URL(process.env.SPITZLI_STUDIO_ORIGIN || "https://studio.webdock.dev")
         .origin ||
     !/^\/sites\/[1-9][0-9]*$/.test(binding.pathname) ||
     binding.search ||

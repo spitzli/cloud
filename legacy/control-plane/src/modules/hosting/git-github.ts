@@ -10,13 +10,13 @@ export type {
 } from "@spitzli/module-hosting/github";
 export function createGitHubProvider(
   config: GitHubConfig = {
-    appID: process.env.WEBDOCK_GITHUB_APP_ID ?? "",
+    appID: process.env.SPITZLI_GITHUB_APP_ID ?? "",
     privateKey:
-      process.env.WEBDOCK_GITHUB_APP_PRIVATE_KEY ||
-      process.env.WEBDOCK_GITHUB_PRIVATE_KEY ||
+      process.env.SPITZLI_GITHUB_APP_PRIVATE_KEY ||
+      process.env.SPITZLI_GITHUB_PRIVATE_KEY ||
       "",
-    clientID: process.env.WEBDOCK_GITHUB_CLIENT_ID ?? "",
-    clientSecret: process.env.WEBDOCK_GITHUB_CLIENT_SECRET ?? "",
+    clientID: process.env.SPITZLI_GITHUB_CLIENT_ID ?? "",
+    clientSecret: process.env.SPITZLI_GITHUB_CLIENT_SECRET ?? "",
   },
   fetcher: Fetch = fetch,
 ) {

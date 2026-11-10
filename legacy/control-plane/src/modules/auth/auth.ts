@@ -133,7 +133,7 @@ export function createAuthentication(options: {
       },
       hooks: {
         before: createAuthMiddleware(async (ctx) => {
-          if (readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider === "clerk" &&
+          if (readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider === "clerk" &&
             (ctx.path.startsWith("/admin/") || ctx.path.startsWith("/organization/")))
             throw new APIError("FORBIDDEN", { message: "Manage accounts, roles and team memberships in Clerk." });
           if (
@@ -300,7 +300,7 @@ export function createAuthentication(options: {
           rateLimit: { introspect: { window: 60, max: 600 } },
           clientPrivileges: async ({ user, action }) => {
             if (action === "create") return Boolean(offlineProvisioning.getStore());
-            if (readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider === "clerk") {
+            if (readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider === "clerk") {
               if (!user?.id || user.banned === true) return false;
               try {
                 const proof = await legacyClerkMemberships(user.id);
@@ -313,7 +313,7 @@ export function createAuthentication(options: {
             page: "/account",
             consentReferenceId: () => undefined,
             shouldRedirect: async ({ user }) => {
-              if (readAuthProviderConfiguration(process.env.WEBDOCK_AUTH_PROVIDER).provider === "clerk") {
+              if (readAuthProviderConfiguration(process.env.SPITZLI_AUTH_PROVIDER).provider === "clerk") {
                 try {
                   const proof = await legacyClerkMemberships(user.id);
                   return !proof || (proof.operator && !proof.twoFactorEnabled);

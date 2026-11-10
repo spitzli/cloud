@@ -40,7 +40,7 @@ export default async function People({
           href={
             new URL(
               "/account",
-              process.env.WEBDOCK_AUTH_ISSUER ||
+              process.env.SPITZLI_AUTH_ISSUER ||
                 "https://auth.webdock.dev/api/auth",
             ).href
           }

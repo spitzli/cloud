@@ -6,12 +6,12 @@ from pathlib import Path
 import socket
 import sys
 from datetime import datetime,timedelta,timezone
-if os.environ.get('WEBDOCK_DISPOSABLE_POSTGRES_TEST')!='yes' or socket.gethostname()!='postgres-pilot':raise SystemExit('Disposable test node required')
+if os.environ.get('SPITZLI_DISPOSABLE_POSTGRES_TEST')!='yes' or socket.gethostname()!='postgres-pilot':raise SystemExit('Disposable test node required')
 sys.path.insert(0,'/tmp/webdock-e2e-agent')
 import storage,database_storage
 root=Path('/var/lib/webdock-db-pilot');volume=root/'125';data=volume/'mount/data'
 config={'root':str(root),'node':'postgres-pilot','clusterID':'456','poolID':'bd0ba8e4-e801-4c16-bf1b-060129437ccb','capacityBytes':4294967296,'reserveBytes':1073741824}
-path=Path('/tmp/bounded-postgres-config.json');path.write_text(json.dumps(config));path.chmod(0o600);os.environ['WEBDOCK_STORAGE_CONFIG']=str(path)
+path=Path('/tmp/bounded-postgres-config.json');path.write_text(json.dumps(config));path.chmod(0o600);os.environ['SPITZLI_STORAGE_CONFIG']=str(path)
 # The caller must hibernate this exact disposable Cluster before unmounting.
 import subprocess
 pods=json.loads(subprocess.check_output(['kubectl','get','pods','-n','wd-db-125','-o','json']))['items']

@@ -1,12 +1,12 @@
 export const mailSendExample=`curl https://api.webdock.dev/api/mail/v1/emails \\
-  -H "Authorization: Bearer $WEBDOCK_MAIL_API_KEY" \\
+  -H "Authorization: Bearer $SPITZLI_MAIL_API_KEY" \\
   -H "Content-Type: application/json" \\
   -H "Idempotency-Key: order-42-receipt" \\
   -d '{"from":"Shop <mail@example.com>","to":"delivered@test.mail.webdock.dev","subject":"Receipt","text":"Thank you."}'`;
 export const mailFetchExample=`const response = await fetch("https://api.webdock.dev/api/mail/v1/emails", {
   method: "POST",
   headers: {
-    Authorization: "Bearer " + process.env.WEBDOCK_MAIL_API_KEY,
+    Authorization: "Bearer " + process.env.SPITZLI_MAIL_API_KEY,
     "Content-Type": "application/json",
     "Idempotency-Key": "order-42-receipt"
   },
@@ -30,7 +30,7 @@ export async function POST(request) {
   const signature = request.headers.get("webhook-signature") ?? "";
   if (!/^[0-9]+$/.test(time) || Math.abs(Date.now()/1000-Number(time)) > 300)
     return new Response(null, {status: 401});
-  const secret = process.env.WEBDOCK_WEBHOOK_SECRET;
+  const secret = process.env.SPITZLI_WEBHOOK_SECRET;
   const expected = "v1," + createHmac("sha256", Buffer.from(secret.slice(6), "base64"))
     .update(id + "." + time + "." + raw).digest("base64");
   const actual = Buffer.from(signature), wanted = Buffer.from(expected);

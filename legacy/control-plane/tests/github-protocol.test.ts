@@ -74,7 +74,7 @@ test("Core and full mount one GitHub protocol, enforce live identity and preserv
     const beforeSelect = identityReads;
     assert.equal((await full.handle(new Request(config.studioOrigin + "/api/github/select", {method:"POST", headers:{origin:config.studioOrigin}}))).status, 503);
     assert.equal(identityReads, beforeSelect);
-    delete process.env.WEBDOCK_SSO_COOKIE_SECRET;
+    delete process.env.SPITZLI_SSO_COOKIE_SECRET;
     assert.equal(githubProtocols(config).flatMap(m => m.app.routes).some(r => r.path === "/v1/integrations/resume"), false);
   `,
     ],
@@ -82,21 +82,21 @@ test("Core and full mount one GitHub protocol, enforce live identity and preserv
       cwd: new URL("../../../", import.meta.url).pathname,
       env: {
         ...process.env,
-        WEBDOCK_AUTH_PROVIDER: JSON.stringify({
+        SPITZLI_AUTH_PROVIDER: JSON.stringify({
           provider: "clerk",
           issuer: "https://identity.example",
           authorizedParties: ["https://studio.example.test"],
           audience: "console",
         }),
-        WEBDOCK_CONSOLE_SERVICE_KEY: "test-service-key-32-characters-long",
-        WEBDOCK_MODULES: JSON.stringify({ configVersion: 1, modules: {} }),
-        WEBDOCK_API_DOMAINS: "auth,portal,registry",
-        WEBDOCK_STUDIO_ORIGIN: "https://studio.example.test",
-        WEBDOCK_SSO_APP_ORIGIN: "https://studio.example.test",
-        WEBDOCK_GITHUB_CLIENT_ID: "Iv1.test-client",
-        WEBDOCK_GITHUB_CLIENT_SECRET: "test-client-secret",
-        WEBDOCK_GITHUB_APP_SLUG: "test-app",
-        WEBDOCK_SSO_COOKIE_SECRET: "test-sso-cookie-secret-32-characters-long",
+        SPITZLI_CONSOLE_SERVICE_KEY: "test-service-key-32-characters-long",
+        SPITZLI_MODULES: JSON.stringify({ configVersion: 1, modules: {} }),
+        SPITZLI_API_DOMAINS: "auth,portal,registry",
+        SPITZLI_STUDIO_ORIGIN: "https://studio.example.test",
+        SPITZLI_SSO_APP_ORIGIN: "https://studio.example.test",
+        SPITZLI_GITHUB_CLIENT_ID: "Iv1.test-client",
+        SPITZLI_GITHUB_CLIENT_SECRET: "test-client-secret",
+        SPITZLI_GITHUB_APP_SLUG: "test-app",
+        SPITZLI_SSO_COOKIE_SECRET: "test-sso-cookie-secret-32-characters-long",
         DATABASE_URL: "postgres://fixture:fixture@localhost:5432/webdock_test",
         BETTER_AUTH_SECRET: "",
         CLERK_ISSUER: "",

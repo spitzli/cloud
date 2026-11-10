@@ -7,7 +7,7 @@ import {
 } from "@spitzli/database-runtime";
 import { createSetupFixture } from "./helpers/setup-fixture";
 
-const integration = process.env.WEBDOCK_RLS_FIXTURE_FILE ? test : test.skip;
+const integration = process.env.SPITZLI_RLS_FIXTURE_FILE ? test : test.skip;
 integration(
   "API agent rehydrates Clerk through existing bootstrap mapping reads and authorizes with restricted worker SQL",
   async () => {
@@ -37,12 +37,12 @@ integration(
       permissions: ["org:databases:manage"],
     };
     Object.assign(process.env, {
-      WEBDOCK_PROCESS_ROLE: "api",
-      WEBDOCK_AUTH_PROVIDER: '{"provider":"better-auth"}',
-      WEBDOCK_CONSOLE_AUTH_PROVIDER: "clerk",
+      SPITZLI_PROCESS_ROLE: "api",
+      SPITZLI_AUTH_PROVIDER: '{"provider":"better-auth"}',
+      SPITZLI_CONSOLE_AUTH_PROVIDER: "clerk",
       CLERK_ISSUER: issuer,
-      WEBDOCK_CONSOLE_ORIGIN: "https://console.example.test",
-      WEBDOCK_CONSOLE_SERVICE_KEY: "fixture".repeat(8),
+      SPITZLI_CONSOLE_ORIGIN: "https://console.example.test",
+      SPITZLI_CONSOLE_SERVICE_KEY: "fixture".repeat(8),
       CLERK_SECRET_KEY: "fixture-only",
       CLERK_PUBLISHABLE_KEY: "fixture-only",
     });

@@ -145,12 +145,12 @@ test("Actions HTTP source accepts only OIDC while installer mutation routes reta
     .setExpirationTime("5m")
     .sign(pair.privateKey);
   const old = {
-    token: process.env.WEBDOCK_PLUGIN_INSTALLER_TOKEN,
-    file: process.env.WEBDOCK_PLUGIN_RUNTIME_FILE,
+    token: process.env.SPITZLI_PLUGIN_INSTALLER_TOKEN,
+    file: process.env.SPITZLI_PLUGIN_RUNTIME_FILE,
   };
   const token = "installer-fixture-" + "x".repeat(40);
-  process.env.WEBDOCK_PLUGIN_INSTALLER_TOKEN = token;
-  process.env.WEBDOCK_PLUGIN_RUNTIME_FILE = "/runtime-fixture";
+  process.env.SPITZLI_PLUGIN_INSTALLER_TOKEN = token;
+  process.env.SPITZLI_PLUGIN_RUNTIME_FILE = "/runtime-fixture";
   let mutations = 0,
     reads = 0;
   const { app } = pluginInstallerProtocol(
@@ -216,9 +216,9 @@ test("Actions HTTP source accepts only OIDC while installer mutation routes reta
     expect(reads).toBe(1);
   } finally {
     if (old.token === undefined)
-      delete process.env.WEBDOCK_PLUGIN_INSTALLER_TOKEN;
-    else process.env.WEBDOCK_PLUGIN_INSTALLER_TOKEN = old.token;
-    if (old.file === undefined) delete process.env.WEBDOCK_PLUGIN_RUNTIME_FILE;
-    else process.env.WEBDOCK_PLUGIN_RUNTIME_FILE = old.file;
+      delete process.env.SPITZLI_PLUGIN_INSTALLER_TOKEN;
+    else process.env.SPITZLI_PLUGIN_INSTALLER_TOKEN = old.token;
+    if (old.file === undefined) delete process.env.SPITZLI_PLUGIN_RUNTIME_FILE;
+    else process.env.SPITZLI_PLUGIN_RUNTIME_FILE = old.file;
   }
 });

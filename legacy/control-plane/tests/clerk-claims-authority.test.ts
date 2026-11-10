@@ -37,13 +37,13 @@ test("OAuth and MCP claims recheck provider operator roles and preserve default 
     proof = undefined;
     assert.equal((await currentMCPClaims("123")).webdock_role, "operator");
     assert.equal((await currentClaims("123", "binding")).webdock_role, "operator");
-    process.env.WEBDOCK_STUDIO_CLIENT_ID = "studio";
+    process.env.SPITZLI_STUDIO_CLIENT_ID = "studio";
     row.client_id = "studio";
     row.role = "unknown";
     assert.equal((await currentClaims("123", "binding")).disabled, true);
     row.role = "user";
     assert.equal((await currentClaims("123", "binding")).webdock_role, "reader");
-    delete process.env.WEBDOCK_STUDIO_CLIENT_ID;
+    delete process.env.SPITZLI_STUDIO_CLIENT_ID;
     row.role = "operator";
     principal = { userID: "123", operator: false };
     assert.equal((await currentClaims("123", "binding")).disabled, true);
@@ -53,7 +53,7 @@ test("OAuth and MCP claims recheck provider operator roles and preserve default 
     ],
     {
       cwd: fileURLToPath(new URL("../../..", import.meta.url)),
-      env: { ...process.env, WEBDOCK_STUDIO_CLIENT_ID: "" },
+      env: { ...process.env, SPITZLI_STUDIO_CLIENT_ID: "" },
       stdout: "pipe",
       stderr: "pipe",
     },
@@ -92,7 +92,7 @@ test("compatibility business identity projects provider authority on every read"
       cwd: fileURLToPath(new URL("../../..", import.meta.url)),
       env: {
         ...process.env,
-        WEBDOCK_AUTH_PROVIDER: JSON.stringify({
+        SPITZLI_AUTH_PROVIDER: JSON.stringify({
           provider: "clerk",
           issuer: "https://identity.example",
           authorizedParties: ["https://console.example"],

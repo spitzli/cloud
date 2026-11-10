@@ -93,7 +93,7 @@ type Settings = {
   runtimes: Record<string, RuntimeBinding>;
 };
 function settings(): Settings {
-  const file = process.env.WEBDOCK_PLUGIN_RUNTIME_FILE;
+  const file = process.env.SPITZLI_PLUGIN_RUNTIME_FILE;
   if (!file)
     throw new PluginError(
       "capability_unavailable",

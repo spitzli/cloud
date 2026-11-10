@@ -439,7 +439,7 @@ def execute(directory):
         assert not any(mount.get('Type')=='volume' for mount in inspection['metadata']['Mounts']), 'unexpected retained/anonymous volume budget'
         wait_for_postgres(commands,directory/'candidate/host-psql',pin['port'],password,private)
         owner = f"postgresql://postgres:{password}@127.0.0.1:{pin['port']}/webdock_rls_test"
-        migration_env = dict(safe_env, WEBDOCK_MIGRATION_DATABASE_URL=owner, DATABASE_RLS_SECRET=rls)
+        migration_env = dict(safe_env, SPITZLI_MIGRATION_DATABASE_URL=owner, DATABASE_RLS_SECRET=rls)
         code,_ = command([str(directory / 'candidate/spitzli-migrate'),'--target',f"127.0.0.1:{pin['port']}/webdock_rls_test",'--initialize-empty','--provision-roles-from',str(role_file)],'migration',env=migration_env,timeout=120)
         assert code == 0, 'copied <=55 bootstrap failed'
         print('owned <=55 bootstrap completed',flush=True)
@@ -461,7 +461,7 @@ def execute(directory):
             if input_file.exists():
                 input_file.unlink()
             write(input_file,component)
-            test_env = dict(safe_env, WEBDOCK_PG_REVIEW_COMPONENT_INPUT=str(input_file))
+            test_env = dict(safe_env, SPITZLI_PG_REVIEW_COMPONENT_INPUT=str(input_file))
             code,out=command([str(directory / 'candidate/database-primitives'),pin['filter'],'--ignored','--test-threads=1','--nocapture'],phase+'-primitives',env=test_env,timeout=180)
             assert code == expected_test_exit, phase+' primitive outcome unexpected'
             assert ('0 passed; 5 failed' if baseline else '5 passed; 0 failed') in out, 'exact component selection/result required'
