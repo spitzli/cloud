@@ -1,0 +1,88 @@
+{
+  "date": "2026-11-11",
+  "scope": [
+    "Distinct Spitzli Account identity, personal navigation and developer access",
+    "One-time workspace token display without shared mutation cache retention",
+    "Compatible Console MCP ingress route"
+  ],
+  "baseCommit": "8f6aca8324084de53654f69bbc80005e1cab2acb",
+  "validation": {
+    "consoleUnitTests": 254,
+    "consoleProductionBrowserSuites": 29,
+    "accountRouteThemeViewportChecks": 30,
+    "viewports": [
+      320,
+      375,
+      414,
+      768,
+      1280
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "newTokenStateTestsIncludedInConsoleTotal": 3,
+    "actualCoreAccountBrowser": {
+      "database": "fresh owned local PostgreSQL18",
+      "runtimeRoles": "restricted; no superuser or BYPASSRLS",
+      "passkeys": "virtual Chromium authenticator",
+      "flows": [
+        "password change",
+        "TOTP enrollment and confirmation",
+        "one-time recovery codes and replay denial",
+        "session revocation",
+        "consent and S256 PKCE Console handoff",
+        "sibling-origin passkey denial",
+        "passkey registration/rename/sign-in/removal",
+        "declined device check",
+        "forced fresh authentication",
+        "central logout"
+      ]
+    },
+    "actualRetainedDatabaseCases": {
+      "workspaceProjectsAndApiTokens": 1,
+      "genuineOAuthConsentPkceRefreshMcpAuthority": 1,
+      "actualResourceMcpHttpScopesAndRevocation": 6
+    },
+    "defaultRelatedRustRegression": {
+      "passed": 28,
+      "ignored": 128,
+      "suites": 36
+    },
+    "gatewayRoutingTests": 17,
+    "lintTypecheckProductionBuild": true,
+    "rustFormat": true,
+    "architectureContractsAndFrozenMigrations": true,
+    "publicDocs": "Mintlify build/validation passed; no broken links; existing warnings for historical internal JSON overlays"
+  },
+  "testBoundaries": [
+    "HTTP UI fixtures do not prove server authorization.",
+    "Actual Core/PG18 and OAuth/MCP tests are local and separate from UI fixtures.",
+    "No physical passkey, live customer sign-in or full-platform production E2E claim."
+  ],
+  "release": {
+    "desiredAccountOrigin": "https://accounts.spitzli.cloud",
+    "sourceMustMergeBeforePublishing": true,
+    "canonicalOriginCutoverPerformed": false,
+    "nativeBackendsActivated": false,
+    "existingCredentialsProtocolIdentifiersAndFeatureFlagsRetained": true,
+    "broaderVersionedInternalRebrandComplete": false
+  },
+  "testedChangedSourceSHA256": {
+    "apps/console/package.json": "a95f00f013da427945b278a4652e1945d8db23c91c144b38a3da57729b340fd2",
+    "apps/console/src/AccountUI.tsx": "d4e660884ba5081bd38cb4a922239d1074781b2637290e067e2c913d6d13f859",
+    "apps/console/src/ApiTokens.tsx": "ca50a07ccf2ad99107c7b2cb57dcf45d8431c768b64f55bc0fdfc06eee1a05ad",
+    "apps/console/src/AuthFrame.tsx": "980ab690929b4e93f65d80cc7136969ee4c2cb0549090ddcedb3121261a79145",
+    "apps/console/src/DeveloperAccess.tsx": "b14e07b06b3603c3869e73d35ba061ed09729ff72528f172f46f43a381754e4a",
+    "apps/console/src/styles.css": "65d3446eebcbad07aa9eb6afb9f0e3b84fd88d3310fab477a0957e9707b0a807",
+    "apps/console/tests/account-browser.mjs": "9b90adb4fd36fbec31c3d1eb0ed0a6acf7154918ad1257a88ea8e4ed1041a9f6",
+    "apps/console/tests/account-design-browser.mjs": "b32b5a2f72101dab78cca5e8a0d52ca02cdf9901a7fb90369e4fd09ec5d360e9",
+    "apps/console/tests/api-tokens-browser.mjs": "479e7967193cea7633601835b842538f469053203a3b862b6cfc1cbb378ecf08",
+    "apps/console/tests/api-tokens-state.test.tsx": "93bff287d931383db430911a91c709f9ad826ba0913e6343430fc46c6bdd2d0f",
+    "crates/control-plane/examples/account_browser_fixture.rs": "8caf4368efab8a998b2d275cae365f134b6228b625f02a8384f233e024ff1c74",
+    "deploy/backend-gateway/render.py": "d88bdc47e8edeba915bdeb2064d8df45a110730cd276551c329ff08c2e81447b",
+    "deploy/backend-gateway/tests/test_profile.py": "f98e04ff81ef0349647bddd7feed0f2d6c09c4b5f00de1334211ef931e1579a5",
+    "docs/developers/mcp.mdx": "fe37311e7d292fc12922f800352020489321179f18ee6eec2647b916121b7c77",
+    "docs/operations/2026-11-11-accounts-and-developer-access.md": "f9dc3755ea6d7f7d9b2dcca235e53f0a850740b5804956e13b238737ca62c7a5"
+  }
+}

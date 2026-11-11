@@ -215,14 +215,17 @@ def vercel_output(c,surface,database_gateway=None,navigation_aliases=None,realti
   match=[{'type':'host','value':{'eq':host}}]
   routes += [{'src':'^/(?:api|v1|\\.well-known)(?:/.*)?$','has':match,'status':404,'headers':{'cache-control':'no-store'}},{'src':'^/(.*)$','has':match,'status':307,'headers':{'Location':origin(c[SURFACES[surface]])+'/$1','cache-control':'no-store'}}]
  gateway=origin(c['gatewayOrigin'])
- def proxy(kind,host=None):
-  for path in PATHS[kind]:
+ def proxy(kind,host=None,paths=None):
+  for path in PATHS[kind] if paths is None else paths:
    if path.startswith('/.well-known'):continue
    wildcard=path.endswith('*');literal=path[:-1] if wildcard else path
    rule={'src':'^'+re.escape(literal)+('(.*)' if wildcard else '')+'$','dest':gateway+'/__'+kind+literal+('$1' if wildcard else ''),'headers':{'cache-control':'private, no-store','x-vercel-enable-rewrite-caching':'0'},'caseSensitive':True}
    if host:rule['has']=[{'type':'host','value':{'eq':host}}]
    routes.append(rule)
- if surface=='console':proxy('studio',urllib.parse.urlsplit(origin(c['studioOrigin'])).hostname)
+ if surface=='console':
+  proxy('studio',urllib.parse.urlsplit(origin(c['studioOrigin'])).hostname)
+  # The public Console URL shares the retained bearer authority; never its browser cookies.
+  proxy('studio',paths=['/api/mcp'])
  proxy(surface)
  routes += [{'src':'^/assets/.*$','headers':{'cache-control':'public, max-age=31536000, immutable'},'continue':True},{'handle':'filesystem'},{'src':'^/(?:api|v1|assets|\\.well-known)(?:/.*)?$','status':404},{'src':'^/.*\\.[a-zA-Z0-9]+$','status':404},{'src':'^/.*$','dest':'/index.html','headers':{'cache-control':'no-store'}}]
  return {'version':3,'framework':{'slug':'vite','version':'8.3.4'},'routes':routes}

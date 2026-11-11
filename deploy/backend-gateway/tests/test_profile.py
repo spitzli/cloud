@@ -69,6 +69,18 @@ class Gateway(unittest.TestCase):
         self.assertIn("frame-ancestors 'none'",routes[0]['headers']['content-security-policy'])
         account=self.module().vercel_output(config(),'account')
         self.assertTrue(any(r.get('dest','').startswith('https://edge.example.test/__account/api/auth/') for r in account['routes']))
+    def test_console_mcp_uses_existing_studio_bearer_authority(self):
+        routes=self.module().vercel_output(config(),'console')['routes']
+        canonical=[r for r in routes if r.get('src')=='^/api/mcp$' and not r.get('has')]
+        self.assertEqual(len(canonical),1,'the canonical Console endpoint must not fall through to404')
+        self.assertEqual(canonical[0]['dest'],'https://edge.example.test/__studio/api/mcp')
+        self.assertEqual(canonical[0]['headers']['cache-control'],'private, no-store')
+        # Cookie-based Console and Auth endpoints retain their own Host boundary.
+        for path in ['^/api/console/','^/api/sso/login$']:
+            self.assertFalse(any(r.get('src','').startswith(path) and not r.get('has') and '/__studio/' in r.get('dest','') for r in routes))
+        account=self.module().vercel_output(config(),'account')['routes']
+        self.assertFalse(any(r.get('src')=='^/api/mcp$' for r in account))
+
     def test_native_https_keeps_prefix_authority_and_denies_public_worker_routes(self):
         c=config();c['coreUpstream']='http://10.90.0.20:3130'
         text=self.module().native_https(c)

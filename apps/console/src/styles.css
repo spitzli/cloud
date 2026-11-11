@@ -47,3 +47,59 @@ input:user-invalid, select:user-invalid, textarea:user-invalid { border-color: v
 .database-management>.page-heading{margin-bottom:1rem}.database-management label{display:grid;gap:.4rem;font-size:13px;font-weight:500}.database-management input:not([type=checkbox]),.database-management select,.database-management textarea{width:100%;min-height:38px;padding:.55rem .7rem;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}.database-management textarea{min-height:95px;resize:vertical}.database-management>.database-project{max-width:420px}.database-management .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:.8rem}.database-management .form-actions{grid-column:1/-1;display:flex;gap:.65rem;align-items:center;flex-wrap:wrap}.database-management .checkbox-label{display:flex;align-items:flex-start;gap:.6rem}.database-management .checkbox-label input{margin-top:.3rem}.database-management .database-order>h3,.database-management .database-catalog>h3{margin-bottom:.8rem}.database-management>.security-list{margin-top:1rem}.database-management .row-actions{margin-top:1rem;flex-wrap:wrap}.database-management .database-catalog>.security-list{max-height:320px;overflow:auto;margin-bottom:1.2rem}.database-management .database-details{display:grid;gap:1rem}.database-management .database-catalog .security-list label{min-width:150px}.database-management .panel .allowance-list{display:flex;gap:1.25rem;flex-wrap:wrap}@media(max-width:700px){.database-management .form-grid{grid-template-columns:1fr}.database-management .security-list>li{align-items:flex-start;gap:.8rem}.database-management .database-catalog .security-list label{min-width:120px}.database-management .row-actions{gap:.5rem}}
 .database-workspace-picker{display:grid;gap:.4rem;max-width:420px;margin-bottom:1.5rem;font-size:13px;font-weight:500}.database-workspace-picker select{min-height:38px;padding:.55rem .7rem;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
 }
+
+/* Hallmark · component: Account chrome · genre: modern-minimal · theme: existing Spitzli
+ * audience: customers with multiple workspaces · use: personal security · tone: expressive, personal
+ * states: existing accessible form controls; active navigation, loading/error/success feedback
+ * pre-emit critique: P4 H4 E4 S5 R5 V4 */
+@layer components {
+.account-brand { min-height: 44px; display: inline-flex; align-items: center; gap: .65rem; flex-shrink: 0; color: var(--ink); }
+.account-brand:hover { text-decoration: none; }
+.account-brand > span:last-child { display: grid; gap: .05rem; line-height: 1.1; }
+.account-brand .font-brand { font-size: 1.2rem; font-weight: 600; letter-spacing: -.03em; }
+.account-brand-label { color: var(--muted); font-size: .75rem; font-weight: 500; }
+.account-entry { background: var(--bg); }
+.account-panel { border-top: 3px solid var(--accent); }
+.account-panel h1 { overflow-wrap: anywhere; }
+.account-layout { min-height: 100dvh; display: flex; flex-direction: column; }
+.account-header { background: var(--panel); border-bottom: 1px solid var(--line); }
+.account-header-inner { max-width: 1088px; min-height: 80px; display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; margin-inline: auto; }
+.account-console-link { display: inline-flex; gap: .5rem; align-items: center; min-height: 44px; padding-inline: .75rem; font-size: .8125rem; white-space: nowrap; }
+.account-navigation { background: var(--panel); border-bottom: 1px solid var(--line); }
+.account-navigation-inner { max-width: 1088px; display: flex; flex-wrap: wrap; gap: 0 1.5rem; padding-inline: 1.5rem; margin-inline: auto; }
+.account-navigation a { display: inline-flex; align-items: center; gap: .5rem; min-height: 52px; border-bottom: 2px solid transparent; color: var(--muted); font-size: .8125rem; font-weight: 500; white-space: nowrap; }
+.account-navigation a:hover { color: var(--ink); text-decoration: none; }
+.account-navigation a[aria-current='page'] { color: var(--ink); border-color: var(--accent); }
+.account-navigation a:active { background: var(--soft); }
+.account-content { width: 100%; min-width: 0; max-width: 1088px; margin-inline: auto; padding: 2.5rem 1.5rem 4rem; outline: none; flex: 1; }
+.account-context { margin-bottom: .75rem; font-size: .8125rem; color: var(--muted); }
+.account-footer { width: 100%; max-width: 1088px; margin-inline: auto; padding: 1.25rem 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; }
+.account-layout h1, .account-layout h2 { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  .account-header-inner { min-height: 72px; padding: .75rem 1rem; gap: .5rem; }
+  .account-console-link { display: none; }
+  .account-navigation-inner { gap: 0 1rem; padding-inline: 1rem; }
+  .account-navigation a { gap: .35rem; min-height: 48px; font-size: .75rem; }
+  .account-navigation a svg { width: 15px; height: 15px; }
+  .account-content { padding: 1.75rem 1rem 3rem; }
+  .account-footer { padding-inline: 1rem; }
+}
+}
+html:has(.account-layout, .account-entry), body:has(.account-layout, .account-entry) { overflow-x: clip; }
+@media (max-width: 380px) { .account-navigation a svg { display: none; } }
+
+/* The Account surface uses the existing violet with stronger brand hierarchy. */
+:root { --account-identity-bg: color-mix(in srgb, var(--accent) 7%, var(--panel)); }
+@layer components {
+.account-brand .font-brand { font-size: 1.625rem; line-height: 1; }
+.account-brand-label { font-size: .6875rem; letter-spacing: .01em; }
+.account-header { border-top: 4px solid var(--accent); }
+.account-identity { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2.5rem; border-left: 4px solid var(--accent); padding: 1.5rem; background: var(--account-identity-bg); }
+.account-person { display: grid; place-items: center; flex-shrink: 0; width: 64px; height: 64px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-family: var(--font-brand); font-size: 2rem; font-weight: 600; }
+.account-identity .account-context { margin: 0 0 .25rem; }
+.account-person-name { font-family: var(--font-brand); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.2; overflow-wrap: anywhere; }
+.account-person-email { margin-top: .35rem; font-size: .8125rem; color: var(--muted); overflow-wrap: anywhere; }
+.account-entry::before { content: ''; position: absolute; inset: 0 0 auto; height: 4px; background: var(--accent); }
+.account-panel h1 { font-family: var(--font-brand); font-size: 1.875rem; letter-spacing: -.035em; }
+@media (max-width: 640px) { .account-identity { padding: 1rem; gap: .875rem; margin-bottom: 1.75rem; } .account-person { width: 48px; height: 48px; font-size: 1.5rem; } }
+}
