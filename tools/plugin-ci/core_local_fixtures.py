@@ -121,7 +121,7 @@ def website_gate(pg,output):
     # Match install.ts: provision the website namespace before Payload's table migrations.
     pg.query('CREATE SCHEMA webdock AUTHORIZATION quality;',name)
     with socket.socket() as s:s.bind(('127.0.0.1',0));port=s.getsockname()[1]
-    env=clean_environment();env.update({'TEST_BASE_URL':f'http://127.0.0.1:{port}','NEXT_PUBLIC_SERVER_URL':f'http://127.0.0.1:{port}','DATABASE_URL':url,'DATABASE_URL_UNPOOLED':url,'PAYLOAD_SECRET':secrets.token_hex(32),'PAYLOAD_MIGRATING':'true','SPITZLI_OWNED_WEBSITE_FIXTURE':'1','SPITZLI_SSO_ENFORCE':'true','OPERATOR_EMAIL':'owned-qualification@example.test','NEXT_TELEMETRY_DISABLED':'1','NODE_ENV':'production'})
+    env=clean_environment();env.update({'TEST_BASE_URL':f'http://127.0.0.1:{port}','NEXT_PUBLIC_SERVER_URL':f'http://127.0.0.1:{port}','DATABASE_URL':url,'DATABASE_URL_UNPOOLED':url,'PAYLOAD_SECRET':secrets.token_hex(32),'PAYLOAD_MIGRATING':'true','SPITZLI_OWNED_WEBSITE_FIXTURE':'1','SPITZLI_SSO_ENFORCE':'true','OPERATOR_EMAIL':'owned-qualification@example.test','HOST':'127.0.0.1','PORT':str(port),'NODE_ENV':'production'})
     def run(label,args,cwd=ROOT):
         log=output/(label+'.log')
         with log.open('xb') as out:result=subprocess.run(args,cwd=cwd,env=env,stdout=out,stderr=subprocess.STDOUT,timeout=1800)
@@ -134,16 +134,16 @@ def website_gate(pg,output):
     log=output/'website-server.log'
     with log.open('xb') as stream:
         log.chmod(0o600)
-        proc=subprocess.Popen(['bun','--bun','../../node_modules/next/dist/bin/next','start','-H','127.0.0.1','-p',str(port)],cwd=ROOT/'apps/website',env=env,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
+        proc=subprocess.Popen(['bun','--no-env-file','run','start'],cwd=ROOT/'apps/website',env=env,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
         try:
             deadline=time.monotonic()+90
             while True:
-                require(proc.poll() is None,'Owned production Next server exited')
+                require(proc.poll() is None,'Owned production Vinext server exited')
                 try:
                     with urllib.request.urlopen(env['TEST_BASE_URL'],timeout=2) as response:
                         if response.status==200:break
                 except Exception:pass
-                require(time.monotonic()<deadline,'Owned production Next server did not become ready');time.sleep(0.2)
+                require(time.monotonic()<deadline,'Owned production Vinext server did not become ready');time.sleep(0.2)
             run('website-site-http',['bun','--no-env-file','test','apps/website/tests/site.test.mjs'])
             run('website-package-tests',['bun','--no-env-file','run','test'],ROOT/'apps/website')
         finally:
@@ -152,7 +152,7 @@ def website_gate(pg,output):
             except subprocess.TimeoutExpired:os.killpg(proc.pid,signal.SIGKILL);proc.wait(timeout=10)
     raw=(output/'website-site-http.log').read_text();require('1 pass' in raw and '0 fail' in raw,'Nonzero successful actual site.test required')
     package_counts=website_package_counts((output/'website-package-tests.log').read_text())
-    return {'actualPayloadMigrationsAndOwnedSeedPassed':True,'productionNextBuildPassed':True,'productionNextHTTPTestPassed':True,'sitePassedTests':1,'websitePackageTestCounts':package_counts,'databaseAndHTTPWereOwnedLoopbackOnly':True,'schemaPushEnabled':False,'liveCMSOrDatabaseURLUsed':False,'NextBuildID':(ROOT/'apps/website/.next/BUILD_ID').read_text().strip()}
+    return {'actualPayloadMigrationsAndOwnedSeedPassed':True,'productionVinextBuildPassed':True,'productionVinextHTTPTestPassed':True,'sitePassedTests':1,'websitePackageTestCounts':package_counts,'databaseAndHTTPWereOwnedLoopbackOnly':True,'schemaPushEnabled':False,'liveCMSOrDatabaseURLUsed':False,'serverSHA256':hashlib.sha256((ROOT/'apps/website/.output/server/index.mjs').read_bytes()).hexdigest()}
 
 
 def recovery_url(port,password,database):

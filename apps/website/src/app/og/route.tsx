@@ -1,19 +1,18 @@
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 import { ImageResponse } from 'next/og';
+import logo from '../../../public/spitzli-logo.png?inline';
+import fontData from '../../../public/fonts/spitzli-cloud-og-medium.ttf?inline';
 
 export const dynamic = 'force-static';
 export const runtime = 'nodejs';
 const colors = { paper: '#141318', ink: '#F5F3F9', muted: '#B4AFBE', accent: '#C6A3FF' };
 export async function GET() {
-  const logo = await readFile(path.join(process.cwd(), 'public/spitzli-logo.png'));
-  const font = await readFile(path.join(process.cwd(), 'public/fonts/spitzli-cloud-og-medium.ttf'));
+  const font = Buffer.from(fontData.slice(fontData.indexOf(',') + 1), 'base64');
   return new ImageResponse(
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 64, background: colors.paper, color: colors.ink, fontFamily: 'Spitzli Cloud OG Sans' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
         {/* Existing owned logo bytes, unchanged. */}
         {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse renders its own embedded image. */}
-        <img src={`data:image/png;base64,${logo.toString('base64')}`} alt="" width={80} height={80}/>
+        <img src={logo} alt="" width={80} height={80}/>
         <span style={{ fontSize: 42 }}>Spitzli Cloud</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

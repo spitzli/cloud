@@ -26,6 +26,7 @@ legacy/control-plane/dist-core/
 # Rust build output and disposable runtime verification state.
 /target/
 /.runtime-test/
+/apps/console/.runtime-test/
 
 # Local Tilt development state (generated credentials and database bootstrap output).
 /.dev-local/

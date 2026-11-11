@@ -1,10 +1,10 @@
 import { build } from "esbuild";
 import { copyFile, lstat, mkdir, readlink, symlink } from "node:fs/promises";
 import path from "node:path";
-import nft from "next/dist/compiled/@vercel/nft/index.js";
+import { nodeFileTrace } from "@vercel/nft";
 await build({
   entryPoints: ["src/migrate.ts"],
-  outfile: ".next/migrate.mjs",
+  outfile: "dist/migrate.mjs",
   bundle: true,
   platform: "node",
   target: "node24",
@@ -12,17 +12,17 @@ await build({
   external: ["payload", "pg", "sharp", "@payloadcms/db-postgres"],
   logLevel: "info",
 });
-// Next bundles Payload for route handlers; the standalone migration's external
+// Vinext bundles Payload for route handlers; the standalone migration's external
 // imports need their own traced production closure, not the entire monorepo.
 const root = path.resolve("../..");
-const { fileList } = await nft.nodeFileTrace(
-  [path.resolve(".next/migrate.mjs")],
+const { fileList } = await nodeFileTrace(
+  [path.resolve("dist/migrate.mjs")],
   { base: root, processCwd: root, mixedModules: true },
 );
 for (const file of fileList) {
-  if (file === "apps/cms-instance/.next/migrate.mjs") continue;
+  if (file === "apps/cms-instance/dist/migrate.mjs") continue;
   const source = path.join(root, file),
-    destination = path.resolve(".next/standalone", file);
+    destination = path.resolve("dist/standalone", file);
   await mkdir(path.dirname(destination), { recursive: true });
   if ((await lstat(source)).isSymbolicLink()) {
     try {

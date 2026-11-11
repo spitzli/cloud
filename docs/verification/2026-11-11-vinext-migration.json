@@ -1,0 +1,127 @@
+{
+  "verifiedAt": "2026-11-10T23:14:28.867935+00:00",
+  "scope": "Active website and isolated CMS moved completely from Next compiler/server commands to Vinext; hosting retained. Archived Next applications remain retired.",
+  "baseCommit": "24a72dac4288105ea385b9d6d035cd5573895275",
+  "versions": {
+    "vinext": "1.4.5",
+    "vite": "8.3.4",
+    "react": "19.3.1",
+    "reactDOM": "19.3.1",
+    "reactServerDOMWebpack": "19.3.1",
+    "viteRSC": "0.5.39",
+    "payload": "4.0.0-canary.37",
+    "bun": "1.4.3",
+    "nitro": "3.0.261103-rc"
+  },
+  "applications": {
+    "website": {
+      "development": "Native Vinext/Vite on Bun",
+      "production": "Nitro Bun server or Vercel prebuilt Bun function",
+      "vercelFunctionRegions": [
+        "fra1"
+      ],
+      "nextDependency": "Development types and Payload peer compatibility only; no active Next compiler/server commands"
+    },
+    "cmsInstance": {
+      "development": "Vinext/Vite",
+      "production": "Vinext dist/standalone/server.js on Bun, UID/GID 65532:65532",
+      "migration": "Separate bundled migration with directly declared @vercel/nft traced closure"
+    },
+    "console": "Existing Vite application, aligned React version and requalified"
+  },
+  "compatibilityFixes": [
+    "Payload RSC/client boundaries stay in Vite while native Payload/database packages stay external",
+    "CJS client dependencies are prebundled for development",
+    "Public srvx request adaptation preserves JSON POST/PUT/PATCH bodies, methods and auth headers under Bun",
+    "Pinned Vinext patch handles versioned Google-font module IDs and emits OG WASM in Nitro output",
+    "Owned OG logo/font assets are embedded at build time; local avatar avoids third-party requests",
+    "Managed CMS export, Docker startup, migration closure, artifact ignores and qualification harness use Vinext outputs"
+  ],
+  "qualification": {
+    "canonicalFrontendCommands": 18,
+    "consoleComponentsPassed": 251,
+    "consoleBrowserSuitesPassed": 28,
+    "websiteUnitTestsPassed": 7,
+    "websiteRuntimeTargets": [
+      "Vercel prebuilt",
+      "Bun production",
+      "Vite development"
+    ],
+    "websiteRuntimeProof": [
+      "Fresh isolated PostgreSQL with distinct migration/runtime roles",
+      "Public routes, SEO, self-hosted fonts, responsive hydration",
+      "PNG OG signature and exact 1200x630 dimensions",
+      "OIDC discovery, PKCE, nonce and signed ID token against a local IdP",
+      "Payload field-permissions API, edit/save, SQL readback and public content update",
+      "Live role downgrade, mutation denial and session revocation",
+      "No external browser requests"
+    ],
+    "productionTargetFixtureTransport": "HTTPS",
+    "developmentFixtureTransport": "Explicit non-production HTTP loopback SSO; exact copied app source protects generated types",
+    "productionIntentPrefetch": "Exact source with real Vinext RSC hover/focus prefetch and client navigation",
+    "cmsUnitTestsPassed": 17,
+    "cmsConditionalTestsSkipped": 7,
+    "cmsImageProof": "Source and separately exported images passed fresh PG18/TLS, separate roles, explicit/idempotent migrations, legacy retained media, exact 10 MiB bridge transport and container recreation",
+    "sdkTestsPassed": 30,
+    "exporterTestsPassed": 17,
+    "pluginCITestsPassed": 56,
+    "qualityRunnerTestsPassed": 20,
+    "qualityArchitectureTestsPassed": 4,
+    "qualityClippy": "Passed"
+  },
+  "localCMSImages": {
+    "finalSourceImage": "sha256:c7bc70e1843fad593485bc7744d1848330e4e4893a015fd94cb9242d1996311c",
+    "independentExportImage": "sha256:df9e34e152f517bda090ea3a2a0f42c0be707a9f29b14ab063bf250ef099da9f"
+  },
+  "preservation": {
+    "protectedCheckoutHeadIndexStatusDiffAndDirtyFileHashesUnchanged": true,
+    "protectedDirtyFileHashesVerified": 66,
+    "existingSQLMigrationAndJournalFilesUnchanged": true,
+    "retainedMailCodecDomainsAndKeysUnchanged": true,
+    "productionDataOrSchemaMigrated": false,
+    "nativeAuthProductionActivated": false,
+    "customerBuildsOrMailProvisioned": false,
+    "newSSH1PasswordOrLocalSigningPrompts": false
+  },
+  "limitations": [
+    "Controlled local IdP/database fixtures, not real customer/provider or full-platform E2E acceptance",
+    "Vinext CI qualification, main merge and production candidate/promotion are separate remaining release gates",
+    "Managed CMS production rollout requires matching Core/artifact/environment qualification; no partial backend rollout",
+    "Complete internal rebrand still has versioned data/auth/protocol and operational migrations beyond this framework change"
+  ],
+  "testedChangedSourceSHA256": {
+    ".dockerignore": "184646ad800fb48f58af2f07be4e859d6ff1fc50714a3014f961938e3607f4b7",
+    ".gitignore": "18e8c1cbd6f6f81f18ce52e0f0a9a354e22a993e9c37034f9c63a39032a9d677",
+    "README.md": "9859c2808edff0e17b45bef53d2048198b82fd760e5bf1c856d11d27da5462f6",
+    "apps/cms-instance/.gitignore": "e7225b4917171319cce97eab039f914f29e3a7d11d777417c8a0b9d87e29cb85",
+    "apps/cms-instance/Dockerfile": "f84f70b492b15e62390f7a94578e2cdb2894d562bbc1e6978e89bf03e523b8c1",
+    "apps/cms-instance/README.md": "c66b92b802f16f7494b6f34474ee68d2f9a23e7b3b999eeeebe2965d2f886d8d",
+    "apps/cms-instance/build-migration.mjs": "b0a23a284832c49fc1e0d2e664482fd2d0e288523ccbe5dc15e00881908f1958",
+    "apps/cms-instance/next.config.ts": "31109baa61c9f376ddc082a18172079346f6364a23a65606db156e3fda6f7584",
+    "apps/cms-instance/package.json": "58c9cd1cbbdc56dc33914f2e4e05b761b05e9ecd29a9f0f6b9bef8d989524adf",
+    "apps/cms-instance/scripts/acceptance.py": "e346bd8812e79c46ba33d3a6aa19fc7ffe993f6fa7f86d3f45c9cf8c4ee75aee",
+    "apps/cms-instance/tsconfig.json": "59640329e74877639edced5aa1697e3b81c435e9f7f78ed594ee35f17c6f24ac",
+    "apps/cms-instance/vite.config.ts": "ff080bf0237b09604cdc1018ed973dbe7c7e03580f1e3aa970d4fc3a78a289fa",
+    "apps/console/package.json": "92c3db9297f4a9932796b0a146635e5b9eaaf656e8f4c2e9c160d85d1fd7f107",
+    "apps/website/.gitignore": "d5f2b25e782f9ebf83f5a7214ea4935ba8cf569947805dc71e65459b92e782d1",
+    "apps/website/eslint.config.mjs": "94f60de3e424b2b0d62fe7fe185d0087e87d911e8f8492ea6b487f575d43dc51",
+    "apps/website/next.config.ts": "1370bd118adbcac961f9d7f0998479657cfceffb3095a78e060b654e2a1ccf9f",
+    "apps/website/package.json": "745b8e96b8dbfe2a77f30085a8e0da924fe5c3ec6bd4e6b9ebe3caa9c3cded84",
+    "apps/website/src/app/og/route.tsx": "5cd6a58b4b20c8154285d1d657a4bff315026fe63bea6808108d1159efd2c5a2",
+    "apps/website/src/payload.config.ts": "2ea3e1a64f24a8728523b5645c8cddcf34592ca0713446a08ab147cc61398f3c",
+    "apps/website/tests/cms-bridge-postgres.integration.test.ts": "631bdb095886b1a2644cfed7022b8069689dce4a2361ab09a3a391c8429cb52b",
+    "apps/website/tests/intent-prefetch-production.mjs": "e689ee1ffb318593ab30e5ee9bd8c8d278a30fe11a3d4ac1f2094768bd7aaddb",
+    "apps/website/tests/request-adapter.test.mjs": "4caee36fd00302ba53ebc1f862d5bffa6a1172e750062dbab09973be876b68ac",
+    "apps/website/tests/runtime-acceptance.mjs": "4b8e0c388dd852a5e2fb3183ae95440ad1398b52a39c438e30091af507eeae2d",
+    "apps/website/tsconfig.json": "85e932cf5ed8396d31d48ed7e4c916e8b84f5f71eec10a804583fae8115efcec",
+    "apps/website/vercel.json": "3e5992cc2b0167df644d4b9ac5efec6bf028029590223806dd7777ebde148291",
+    "apps/website/vite.config.ts": "66554223745d21fd5df8985a911256680820864594505f2dac5b85594b0c1469",
+    "bun.lock": "8e28edb28c6733df4cfe8e978cc11751dad58ca07407e335157a3903aa9ec63d",
+    "extensions/managed-cms/package.json": "7d82bf3a0adc5e52eb91456360d9b4ee3ee4aeb6a53b205dce48b4f820e52388",
+    "package.json": "1ce9a7328067ae9bb3af7b4c2164a83fc4bca8fc047aa746e1b4fd71b2ea4052",
+    "patches/vinext@1.4.5.patch": "3192539361406fb94b2338cb9faff169f30106f71ee959aee8b72f402f0b1682",
+    "tools/plugin-ci/core_local_fixtures.py": "304f9f71bc0620fe450454c6f91400085e0616ea9b262d851041916d1c089cda",
+    "tools/plugins/export_cms.py": "b091944e03c420d6e204131c8f90ad3d91c5006796b23098b4e8692981ea463e",
+    "tools/quality/src/runner.rs": "e97ecdda4388d27bbab6090c5bd71a4dea4bb273904fc63821fc808f81c41b70"
+  }
+}

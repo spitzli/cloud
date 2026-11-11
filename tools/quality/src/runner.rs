@@ -385,6 +385,28 @@ pub fn plan(scope: Scope, standalone_manifests: &[PathBuf]) -> Vec<Check> {
                 &["run", "--filter", "@spitzli/console", script],
             ));
         }
+        for script in [
+            "lint",
+            "typecheck",
+            "test:unit",
+            "build:vercel",
+            "test:prefetch",
+            "test:runtime",
+            "build",
+            "test:runtime:bun",
+            "test:runtime:dev",
+        ] {
+            checks.push(Check::new(
+                "bun",
+                &["run", "--filter", "@spitzli/web", script],
+            ));
+        }
+        for script in ["typecheck", "test", "build"] {
+            checks.push(Check::new(
+                "bun",
+                &["run", "--filter", "@spitzli/cms-instance", script],
+            ));
+        }
     }
     checks
 }
@@ -469,7 +491,7 @@ mod tests {
         let checks = plan(Scope::All, &manifests);
         assert_eq!(
             checks.iter().filter(|check| check.program == "bun").count(),
-            6
+            18
         );
         for path in manifests {
             for command in ["fmt", "clippy", "test"] {

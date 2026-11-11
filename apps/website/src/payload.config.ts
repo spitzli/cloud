@@ -20,7 +20,7 @@ export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '',
   serverURL,
   routes: { admin: "/system" },
-  admin: { user: 'users', importMap: { baseDir: dirname, importMapFile: path.resolve(dirname, "app/(payload)/system/importMap.js") }, components: { beforeLogin: ['/components/sso-login#SSOLogin'] } },
+  admin: { avatar: 'default', user: 'users', importMap: { baseDir: dirname, importMapFile: path.resolve(dirname, "app/(payload)/system/importMap.js") }, components: { beforeLogin: ['/components/sso-login#SSOLogin'] } },
   collections: [protectUsers({
     slug: 'users',
   admin: { useAsTitle: 'email' },

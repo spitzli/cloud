@@ -1,0 +1,41 @@
+diff --git a/dist/plugins/fonts.js b/dist/plugins/fonts.js
+index ac0ec67be5f06e93b49c60f9ae15e04909702a12..2c52cd97e7c0499a7ac72a0b5ef2297d030839d4 100644
+--- a/dist/plugins/fonts.js
++++ b/dist/plugins/fonts.js
+@@ -487,12 +487,12 @@ function createGoogleFontsPlugin(fontGoogleShimPath, shimsDir) {
+ 		},
+ 		transform: {
+ 			filter: {
+-				id: { include: /\.(tsx?|jsx?|mjs)$/ },
++				id: { include: /\.(tsx?|jsx?|mjs)(?:\?.*)?$/ },
+ 				code: "next/font/google"
+ 			},
+ 			async handler(code, id) {
+ 				if (id.startsWith("\0")) return null;
+-				if (!id.match(/\.(tsx?|jsx?|mjs)$/)) return null;
++				if (!id.split("?", 1)[0].match(/\.(tsx?|jsx?|mjs)$/)) return null;
+ 				if (!code.includes("next/font/google")) return null;
+ 				if (id.startsWith(shimsDir)) return null;
+ 				const transformAssetsDir = this.environment?.config?.build?.assetsDir ?? DEFAULT_ASSETS_DIR;
+diff --git a/dist/plugins/og-assets.js b/dist/plugins/og-assets.js
+index a219de851ebb7ff495bad5ca55c0e0eb21ad2e11..2e46166aa4e93262eabf04a833b78bcb508cc206 100644
+--- a/dist/plugins/og-assets.js
++++ b/dist/plugins/og-assets.js
+@@ -222,7 +222,7 @@ function createOgAssetsPlugin() {
+ 			order: "post",
+ 			handler(_options, bundle) {
+ 				const envName = this.environment?.name;
+-				if (envName !== "rsc" && envName !== "ssr") return;
++				if (envName !== "rsc" && envName !== "ssr" && envName !== "nitro") return;
+ 				const dedupedBases = /* @__PURE__ */ new Set();
+ 				dedupedBasesByEnvironment.set(envName, dedupedBases);
+ 				const chunks = Object.values(bundle).filter((o) => o.type === "chunk");
+@@ -258,7 +258,7 @@ function createOgAssetsPlugin() {
+ 			order: "post",
+ 			async handler(options, bundle) {
+ 				const envName = this.environment?.name;
+-				if (envName !== "rsc" && envName !== "ssr") return;
++				if (envName !== "rsc" && envName !== "ssr" && envName !== "nitro") return;
+ 				const outDir = options.dir;
+ 				if (!outDir) return;
+ 				const chunkCode = Object.values(bundle).map((output) => output.type === "chunk" ? output.code : "").join("\n");

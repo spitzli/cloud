@@ -1,5 +1,9 @@
-import path from 'node:path';
 import type { NextConfig } from 'next';
 import { withPayload } from '@payloadcms/next/withPayload';
-const nextConfig: NextConfig = { experimental:{globalNotFound:true}, transpilePackages:['@spitzli/i18n','@spitzli/payload-sso','@spitzli/instance-kit','@spitzli/cms-ui', '@spitzli/cms-bridge'],outputFileTracingRoot:path.resolve(process.cwd(),'../..'),turbopack: { root: path.resolve(process.cwd(), '../..') } };
+const nextConfig: NextConfig = {
+  experimental: { globalNotFound: true },
+  transpilePackages: ['@payloadcms/next', '@payloadcms/ui', '@spitzli/i18n', '@spitzli/payload-sso', '@spitzli/instance-kit', '@spitzli/cms-ui', '@spitzli/cms-bridge'],
+  // Keep Payload's error classes and database adapter in one native module graph.
+  serverExternalPackages: ['payload', '@payloadcms/db-postgres', '@payloadcms/email-nodemailer', 'pg'],
+};
 export default withPayload(nextConfig);

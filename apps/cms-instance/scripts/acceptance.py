@@ -293,12 +293,12 @@ def main(s3_config=None, mc=None, access=None):
                     listener.bind(("127.0.0.1", 0))
                     image_port = listener.getsockname()[1]
                 image_origin = f"http://127.0.0.1:{image_port}"
-            image_env = envfile("image.env", {**runtime, "PORT": str(image_port), "HOSTNAME": "127.0.0.1" if args.s3 else "0.0.0.0", "CMS_IMAGE_TEST_ORIGIN": image_origin})
+            image_env = envfile("image.env", {**runtime, "PORT": str(image_port), "HOST": "127.0.0.1" if args.s3 else "0.0.0.0", "HOSTNAME": "127.0.0.1" if args.s3 else "0.0.0.0", "CMS_IMAGE_TEST_ORIGIN": image_origin})
             def start_image(suffix, environment=image_env):
                 container = fixture.create("container", f"{PREFIX}{run_id}-cms-{suffix}", ["--network", job_network, *([] if args.s3 else ["--network-alias", "cms"]), "--read-only", "--tmpfs", "/tmp:rw,noexec,nosuid,size=64m", "--env-file", str(environment), "--memory", "768m", "--memory-swap", "768m", "--cpus", "2", "--pids-limit", "256", *(["--publish", "127.0.0.1::3000"] if args.keep else []), "--volume", f"{certs / 'server.crt'}:/tls/ca.crt:ro", "--volume", f"{volume}:/data", image_id])
                 fixture.run("start-image", ["docker", "start", container["id"]])
                 return container
-            rejected_env = envfile("image-rejected.env", {**mismatch, "PORT": str(image_port), "HOSTNAME": "127.0.0.1" if args.s3 else "0.0.0.0"})
+            rejected_env = envfile("image-rejected.env", {**mismatch, "PORT": str(image_port), "HOST": "127.0.0.1" if args.s3 else "0.0.0.0", "HOSTNAME": "127.0.0.1" if args.s3 else "0.0.0.0"})
             rejected = start_image("rejected", rejected_env)
             probe_env = envfile("image-rejected-probe.env", {**runtime, "CMS_IMAGE_TEST_ORIGIN": image_origin, "CMS_IMAGE_ACCEPTANCE_PHASE": "binding-rejection"})
             fixture.job("image-binding-rejection", bun_image, ["bun", "test", "./apps/cms-instance/tests/image-acceptance.test.ts"], probe_env, mounts, "65532:65532", job_network)
