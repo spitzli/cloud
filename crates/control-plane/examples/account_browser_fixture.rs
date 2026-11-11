@@ -144,7 +144,7 @@ async fn main() {
         .provision_client(
             &owner,
             ClientRegistration {
-                name: "Webdock Console".into(),
+                name: "Spitzli Cloud Console".into(),
                 redirect_uris: vec![
                     "http://127.0.0.1:3121/api/sso/callback".into(),
                     "http://127.0.0.1:3120/api/sso/callback".into(),

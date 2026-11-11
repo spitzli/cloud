@@ -3,7 +3,7 @@ title: "MCP integration"
 description: "Connect an OAuth-capable client to Spitzli Cloud registry or hosting tools."
 ---
 
-Spitzli Cloud uses stateless Streamable HTTP with JSON responses at `https://studio.webdock.dev/api/mcp`.
+Spitzli Cloud uses stateless Streamable HTTP with JSON responses at `https://console.spitzli.cloud/api/mcp`.
 
 <Steps>
   <Step title="Prepare the client">Use an operator-registered OAuth client with the exact callback used by your MCP client. Complete the account security setup before authorizing.</Step>
@@ -16,11 +16,13 @@ Spitzli Cloud uses stateless Streamable HTTP with JSON responses at `https://stu
 {
   "mcpServers": {
     "Spitzli Cloud": {
-      "url": "https://studio.webdock.dev/api/mcp"
+      "url": "https://console.spitzli.cloud/api/mcp"
     }
   }
 }
 ```
+
+Sign-in opens your personal account at `https://accounts.spitzli.cloud`. Configure the client ID issued for your exact callback URL. Use OAuth discovery for the resource audience and authorization server; the public server URL does not replace those retained protocol identifiers. Existing registered clients continue to work.
 
 ## Scope families
 

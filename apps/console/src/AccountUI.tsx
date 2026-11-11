@@ -1,6 +1,7 @@
+import { DeveloperAccess } from "./DeveloperAccess";
 import { tenantsSchema } from "./workspace-contracts";
 import { WorkspaceAvatar } from "./WorkspaceAvatar";
-import { AuthHeader, Brand, PageFailure, PageProgress, authFrame, authPanel } from "./AuthFrame";
+import { AuthHeader, AccountBrand, PageFailure, PageProgress, accountFrame as authFrame, accountPanel as authPanel } from "./AuthFrame";
 import { ThemeButton } from "./theme";
 import { LocalePicker } from "./Locale";
 import { formText } from "./form";
@@ -1491,6 +1492,11 @@ function WelcomePasskey({ done }: { done: () => void }) {
   );
 }
 export function AccountApp() {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = "Spitzli Account";
+    return () => { document.title = previous; };
+  }, []);
   const api = useApi();
   const client = useQueryClient();
   const [confirmingMfa, setConfirmingMfa] = useState(false);
@@ -1708,9 +1714,9 @@ export function AccountApp() {
       <ConsentPage />
     ) : location.pathname === "/logout" ? (
       <LogoutPage session={session.data} />
-    ) : ready && (location.pathname === "/workspaces" || location.pathname === "/sites") ? (
+    ) : ready && ["/workspaces", "/sites", "/developers"].includes(location.pathname) ? (
       // Older mails link to /sites; websites now live inside a workspace's projects.
-      <WorkspacesPage />
+      location.pathname === "/developers" ? <DeveloperAccess /> : <WorkspacesPage />
     ) : ready && location.pathname === "/invitation" ? (
       <InvitationPage />
     ) : (
@@ -1718,7 +1724,7 @@ export function AccountApp() {
         <div className={ui.pageHeading}>
           <div>
             <h1 className={ui.pageTitle}>Account security</h1>
-            <p className={ui.cx(`${ui.pageLead} [overflow-wrap:anywhere]`)}>{session.data.user.email}</p>
+            <p className={ui.pageLead}>Choose how you sign in and manage access to your account.</p>
           </div>
           {ready && api.config.consoleOrigin ? (
             <a
@@ -1766,61 +1772,48 @@ export function AccountApp() {
 
 function AccountShell({ session, consoleLink, children }: { session: Session; consoleLink: boolean; children: ReactNode }) {
   const api = useApi();
-  return (
-    // Single-purpose steps keep the focused sign-in frame; account pages share the Console shell.
-    ["/consent", "/logout", "/invitation"].includes(location.pathname) ? (
-      <main className={authFrame}>
-        <AuthHeader product="Account" href="/account" />
-        <div className={location.pathname === "/invitation" ? "w-full max-w-[760px]" : "w-full max-w-[540px]"}>{children}</div>
-      </main>
-    ) : (
-      <div className="grid min-h-dvh grid-cols-[minmax(0,1fr)] grid-rows-[56px_1fr] md:grid-cols-[210px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
-        <a className="fixed -top-24 left-4 z-50 border border-focus bg-surface px-4 py-2.5 focus:top-2.5" href="#main">
-          Skip to content
-        </a>
-        <header className="sticky top-0 z-10 col-span-full flex items-center gap-1 border-b border-outline bg-page px-3 md:gap-3 md:px-4">
-          <Brand product="Account" href="/account" />
-          <div className="ml-auto flex items-center gap-0 md:gap-1">
+  const consoleHref = consoleLink && api.config.consoleOrigin ? `${api.config.consoleOrigin}/api/sso/login` : undefined;
+  const focused = ["/consent", "/logout", "/invitation"].includes(location.pathname);
+  return focused ? (
+    <main className={authFrame}>
+      <AuthHeader product="Account" href="/account" />
+      <div className={location.pathname === "/invitation" ? "w-full max-w-[760px]" : "w-full max-w-[540px]"}>{children}</div>
+    </main>
+  ) : (
+    <div className="account-layout">
+      <a className="fixed -top-24 left-4 z-50 border border-focus bg-surface px-4 py-2.5 focus:top-2.5" href="#main">Skip to content</a>
+      <header className="account-header">
+        <div className="account-header-inner">
+          <AccountBrand />
+          <div className="ml-auto flex items-center gap-1">
+            {consoleHref ? <a className="account-console-link" href={consoleHref}>Console <span aria-hidden>↗</span></a> : null}
             <LocalePicker />
             <ThemeButton />
-            <UserMenu
-              name={session.user.name}
-              email={session.user.email}
-              consoleHref={
-                consoleLink && api.config.consoleOrigin
-                  ? `${api.config.consoleOrigin}/api/sso/login`
-                  : undefined
-              }
-              signOut="/logout"
-            />
+            <UserMenu name={session.user.name} email={session.user.email} consoleHref={consoleHref} signOut="/logout" />
           </div>
-        </header>
-        <aside className="sticky top-14 flex h-[calc(100dvh-56px)] flex-col self-start overflow-y-auto border-r border-outline bg-subtle px-2 py-3 max-md:hidden">
-          <nav aria-label="Account">
-            {[
-              { href: "/account", label: "Security", Icon: ShieldCheckIcon },
-              { href: "/workspaces", label: "Workspaces", Icon: BuildingsIcon },
-            ].map(({ href, label, Icon }) => (
-              <a
-                key={href}
-                href={href}
-                className={`my-px flex min-h-[34px] items-center gap-2.5 rounded-md px-2.5 text-sm hover:bg-soft hover:text-foreground hover:no-underline [&_svg]:shrink-0 ${location.pathname === href ? "bg-soft font-medium text-foreground" : "text-muted"}`}
-                aria-current={location.pathname === href ? "page" : undefined}
-              >
-                <Icon size={18} aria-hidden />
-                {label}
-              </a>
-            ))}
-          </nav>
-        </aside>
-        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1040px] px-4 pt-6 pb-12 outline-none md:px-7 md:pt-8 md:pb-14 lg:px-10 lg:pt-10 lg:pb-16">
-          <nav aria-label="Account sections" className="mb-6 flex gap-2 md:hidden">
-            <a className={ui.button()} href="/account">Security</a>
-            <a className={ui.button()} href="/workspaces">Workspaces</a>
-          </nav>
-          {children}
-        </main>
+        </div>
+      </header>
+      <div className="account-navigation">
+        <nav aria-label="Account" className="account-navigation-inner">
+          {[
+            { href: "/account", label: "Security", Icon: ShieldCheckIcon },
+            { href: "/workspaces", label: "Workspaces", Icon: BuildingsIcon },
+            { href: "/developers", label: "Developer access", Icon: KeyIcon },
+          ].map(({ href, label, Icon }) => (
+            <a key={href} href={href} aria-current={location.pathname === href || (href === "/workspaces" && location.pathname === "/sites") ? "page" : undefined}>
+              <Icon size={18} aria-hidden />{label}
+            </a>
+          ))}
+        </nav>
       </div>
-    )
+      <main id="main" tabIndex={-1} className="account-content">
+        <div className="account-identity">
+          <span className="account-person" aria-hidden>{Array.from(session.user.name.trim() || session.user.email)[0]?.toUpperCase()}</span>
+          <div className="min-w-0"><p className="account-context">Your Spitzli account</p><p className="account-person-name">{session.user.name}</p><p className="account-person-email">{session.user.email}</p></div>
+        </div>
+        {children}
+      </main>
+      <footer className="account-footer">One Spitzli account. All your workspaces.</footer>
+    </div>
   );
 }

@@ -25,7 +25,7 @@ try {
   }else{
     // The Console redirects to the account origin on its own.
   }
-  await page.getByRole('heading',{name:'Sign in to Webdock'}).waitFor();assert.equal(new URL(page.url()).origin,authOrigin);
+  await page.getByRole('heading',{name:'Sign in to Spitzli Cloud'}).waitFor();assert.equal(new URL(page.url()).origin,authOrigin);
   await page.getByRole('textbox',{name:'Email',exact:true}).fill(fixture.email);
   await page.getByLabel('Password',{exact:true}).fill(fixture.password);
   await page.getByRole('button',{name:'Sign in',exact:true}).click();
@@ -47,7 +47,7 @@ try {
   assert.equal(await page.getByRole('button',{name:'I saved my recovery codes',exact:true}).isDisabled(),true);
   await page.getByRole('button',{name:'Download codes',exact:true}).click();
   await page.getByRole('button',{name:'I saved my recovery codes',exact:true}).click();
-  await page.getByRole('heading',{name:'Connect Webdock Console?'}).waitFor();
+  await page.getByRole('heading',{name:'Connect Spitzli Cloud Console?'}).waitFor();
   await page.getByRole('button',{name:'Allow access',exact:true}).click();
   await page.waitForURL(consoleOrigin+'/projects');
   await page.getByRole('heading',{name:'Projects',exact:true}).waitFor();
@@ -84,7 +84,7 @@ try {
   await sessionsSection.getByText('Other session',{exact:true}).waitFor();
   await sessionsSection.getByRole('button',{name:'Sign out',exact:true}).click();
   await other.reload();
-  await other.getByRole('heading',{name:'Sign in to Webdock',exact:true}).waitFor();
+  await other.getByRole('heading',{name:'Sign in to Spitzli Cloud',exact:true}).waitFor();
   await other.getByLabel('Email',{exact:true}).fill(fixture.email);
   await other.getByLabel('Password',{exact:true}).fill(fixture.replacement);
   await other.getByRole('button',{name:'Sign in',exact:true}).click();
@@ -109,12 +109,12 @@ try {
   await page.getByLabel('Passkey name',{exact:true}).fill('Renamed browser passkey');
   await page.getByRole('button',{name:'Rename',exact:true}).click();
   await page.locator('input[value="Renamed browser passkey"]').waitFor();
-  for(const width of [360,768,1280]) {await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`account fits ${width}px`);if(width===360)await page.screenshot({path:fromRepo('.runtime-test/account-security-mobile.png').pathname,fullPage:true});}
+  for(const width of [320,375,414,768,1280]) {await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`account fits ${width}px`);if(width===375)await page.screenshot({path:fromRepo('.runtime-test/account-security-mobile.png').pathname,fullPage:true});}
   await page.setViewportSize({width:1280,height:900});await page.screenshot({path:fromRepo('.runtime-test/account-security.png').pathname,fullPage:true});
   await page.goto(consoleOrigin+'/projects');
   await page.getByRole('button',{name:/^Account menu for/}).click();
   await page.getByRole('menuitem',{name:'Sign out',exact:true}).click();
-  await page.getByRole('heading',{name:'Sign out of Webdock?',exact:true}).waitFor();assert.equal(new URL(page.url()).origin,authOrigin);
+  await page.getByRole('heading',{name:'Sign out of Spitzli Cloud?',exact:true}).waitFor();assert.equal(new URL(page.url()).origin,authOrigin);
   await page.getByRole('button',{name:'Sign out',exact:true}).click();
   await page.waitForURL(consoleOrigin+'/login');
   // The Console redirects to the account origin on its own.
@@ -125,7 +125,7 @@ try {
   const forced=await page.request.get(consoleOrigin+'/api/sso/login',{maxRedirects:0});
   const forcedURL=new URL(forced.headers().location);forcedURL.searchParams.set('prompt','login');
   await page.goto(forcedURL.href);
-  await page.getByRole('heading',{name:'Sign in to Webdock',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Sign in to Spitzli Cloud',exact:true}).waitFor();
   await page.getByRole('button',{name:'Sign in with a passkey',exact:true}).click();
   await page.waitForURL(consoleOrigin+'/projects');
   const after=(await (await page.request.get(authOrigin+'/api/auth/get-session')).json()).session.id;

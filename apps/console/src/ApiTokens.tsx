@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useApi, useSession } from "./context";
-import { Empty, Failure, Loading } from "./common";
+import { Empty, Failure, Loading, Modal } from "./common";
 import { useTenants } from "./WorkspaceNav";
+import { sessionCacheScope } from "./session-cache";
 import * as ui from "./ui";
 
 const tokenSchema = z.object({
@@ -14,8 +15,8 @@ const tokenSchema = z.object({
   expiresAt: z.string(),
   lastUsedAt: z.string().nullable(),
   createdBy: z.string(),
-  token: z.string().optional(),
 });
+const createdTokenSchema = tokenSchema.extend({ token: z.string().min(20).max(512) });
 const day = (value: string) => new Date(value).toLocaleDateString();
 
 /** A workspace's API tokens: made here, shown once, used as Bearer tokens against the API origin. */
@@ -25,28 +26,62 @@ export function WorkspaceApiTokens({ id }: { id: string }) {
   const tenants = useTenants();
   const role = tenants.data?.find((tenant) => tenant.id === id)?.role;
   const manager = !session.user.preview && (session.user.role === "operator" || role === "owner" || role === "admin");
+  if (tenants.isPending) return <Loading>Checking workspace access…</Loading>;
+  if (tenants.isError) return <Failure error={tenants.error} retry={() => void tenants.refetch()} />;
+  if (!manager) return <Empty title="Workspace administrator access required">An owner or administrator manages API tokens. You can continue using the services shared with you.</Empty>;
+  const scope = JSON.stringify([api.config.apiOrigin, sessionCacheScope(session), id, role]);
+  return <ScopedApiTokens key={scope} id={id} />;
+}
+
+function ScopedApiTokens({ id }: { id: string }) {
+  const api = useApi();
   const client = useQueryClient();
+  const current = useRef(true);
+  const request = useRef<AbortController | null>(null);
   const [form, setForm] = useState({ name: "", canWrite: false, days: 90 });
+  const [secret, setSecret] = useState<{ id: string; value: string } | null>(null);
+  const [copyFeedback, setCopyFeedback] = useState("");
+  const [target, setTarget] = useState<z.infer<typeof tokenSchema> | null>(null);
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    current.current = true;
+    return () => { current.current = false; request.current?.abort(); };
+  }, []);
   const tokens = useQuery({
     queryKey: ["api-tokens", id],
-    enabled: manager,
     queryFn: ({ signal }) => api.get(`/api/console/tenant/${id}/api-tokens`, z.array(tokenSchema), signal),
   });
   const create = useMutation({
-    mutationFn: () => api.write(`/api/console/tenant/${id}/api-tokens`, "POST", form, tokenSchema),
+    mutationFn: async () => {
+      request.current = new AbortController();
+      const made = await api.request(`/api/console/tenant/${id}/api-tokens`, createdTokenSchema, { method: "POST", body: JSON.stringify(form), signal: request.current.signal });
+      // The one-time secret must never enter React Query's retained mutation data.
+      if (current.current) setSecret({ id: made.id, value: made.token });
+    },
+    gcTime: 0, retry: false,
     onSuccess: () => {
+      if (!current.current) return;
       setForm({ name: "", canWrite: false, days: 90 });
+      setCopyFeedback(""); setMessage("");
       void client.invalidateQueries({ queryKey: ["api-tokens", id] });
     },
   });
   const revoke = useMutation({
     mutationFn: (token: string) => api.request(`/api/console/tenant/${id}/api-tokens/${token}`, z.object({}), { method: "DELETE" }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ["api-tokens", id] }),
+    gcTime: 0, retry: false,
+    onSuccess: (_, token) => {
+      if (!current.current) return;
+      setSecret(value => value?.id === token ? null : value);
+      setTarget(null); setMessage("Token revoked. Requests using it will be rejected.");
+      void client.invalidateQueries({ queryKey: ["api-tokens", id] });
+    },
   });
-  if (tenants.isPending) return <Loading>Checking workspace access…</Loading>;
-  if (tenants.isError) return <Failure error={tenants.error} retry={() => void tenants.refetch()} />;
-  if (!manager) return <Empty title="Workspace administrator access required">An owner or administrator manages API tokens. You can continue using the services shared with you.</Empty>;
-  const secret = create.data?.token;
+  const copyToken = async () => {
+    if (!secret) return;
+    try { await navigator.clipboard.writeText(secret.value); if (current.current) setCopyFeedback("Token copied."); }
+    catch { if (current.current) setCopyFeedback("Copy is unavailable. Select the token and copy it manually."); }
+  };
+  const busy = create.isPending || revoke.isPending;
   return (
     <section>
       <div className={ui.pageHeading}>
@@ -54,15 +89,16 @@ export function WorkspaceApiTokens({ id }: { id: string }) {
           <h1 className={ui.pageTitle}>API tokens</h1>
           <p className={ui.pageLead}>Let scripts and CI pipelines use this workspace. A token acts with your role here and nowhere else.</p>
         </div>
+        <button type="button" className={ui.button()} disabled={tokens.isFetching} onClick={() => { void tokens.refetch(); }}>{tokens.isFetching ? "Refreshing…" : "Refresh tokens"}</button>
       </div>
       <form
         className={ui.cx(ui.card, "mb-6")}
         onSubmit={(event) => {
           event.preventDefault();
-          create.mutate();
+          if (!busy) create.mutate();
         }}
       >
-        <div className={ui.cx(ui.cardBody, "sm:grid-cols-[1fr_auto_auto]")}>
+        <fieldset disabled={busy} className={ui.cx(ui.cardBody, "sm:grid-cols-[1fr_auto_auto]")}>
           <label className={ui.field}>
             Name
             <input className={ui.input} required maxLength={80} value={form.name} onChange={(e) => { setForm({ ...form, name: e.target.value }); }} placeholder="CI deploy" />
@@ -82,18 +118,24 @@ export function WorkspaceApiTokens({ id }: { id: string }) {
               <option value={365}>1 year</option>
             </select>
           </label>
-        </div>
+        </fieldset>
         <div className={ui.cardFooter}>
           <span role={create.isError ? "alert" : undefined} className={create.isError ? "text-danger" : undefined}>
-            {create.isError ? create.error.message : "The token is shown once. Store it in your CI's secrets."}
+            {create.isError ? `${create.error.message} Check the token list before creating another token.` : "The token is shown once. Store it in your CI's secrets."}
           </span>
-          <button className={ui.button("primary")} disabled={create.isPending}>Create token</button>
+          <button className={ui.button("primary")} disabled={busy}>{create.isPending ? "Creating…" : "Create token"}</button>
         </div>
       </form>
+      {message ? <p role="status" className="mb-4 text-sm text-success">{message}</p> : null}
       {secret ? (
         <div role="status" className={ui.cx(ui.notice, "mb-6 grid gap-2")}>
           <strong>Copy this token now. It will not be shown again.</strong>
-          <code className={ui.cx(ui.mono, "select-all [overflow-wrap:anywhere]")}>{secret}</code>
+          <code className={ui.cx(ui.mono, "select-all [overflow-wrap:anywhere]")}>{secret.value}</code>
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="button" className={ui.button()} onClick={() => { void copyToken(); }}>Copy token</button>
+            <button type="button" className={ui.button("quiet")} onClick={() => { setSecret(null); setCopyFeedback(""); }}>Hide token</button>
+            <span className="text-sm text-muted">{copyFeedback}</span>
+          </div>
           <span className="text-muted">
             Use it as <code className={ui.mono}>Authorization: Bearer …</code> against <code className={ui.mono}>{new URL("/v1/api/projects", api.config.workspaceApiOrigin ?? api.config.apiOrigin).href}</code>.
           </span>
@@ -106,13 +148,13 @@ export function WorkspaceApiTokens({ id }: { id: string }) {
           <div className={ui.card}>
             {tokens.data.map((t) => (
               <div key={t.id} className={ui.cardRow}>
-                <div className="min-w-0">
+                <div className="min-w-0 [overflow-wrap:anywhere]">
                   <span className="font-medium">{t.name}</span>
                   <p className="text-xs text-muted">
                     {t.canWrite ? "Read and change" : "Read only"}, by {t.createdBy}, expires {day(t.expiresAt)}, {t.lastUsedAt ? `last used ${day(t.lastUsedAt)}` : "never used"}
                   </p>
                 </div>
-                <button type="button" className={ui.button("quiet")} disabled={revoke.isPending} onClick={() => { revoke.mutate(t.id); }}>
+                <button type="button" className={ui.button("quiet")} disabled={busy} onClick={() => { revoke.reset(); setTarget(t); }}>
                   Revoke
                 </button>
               </div>
@@ -122,7 +164,14 @@ export function WorkspaceApiTokens({ id }: { id: string }) {
           <p className="text-sm text-muted">No tokens yet.</p>
         )
       ) : null}
-      {revoke.isError ? <p role="alert" className="mt-3 text-sm text-danger">{revoke.error.message}</p> : null}
+      {target ? <Modal title="Revoke API token?" close={() => { setTarget(null); }} dismissible={!revoke.isPending}>
+        <p className="text-sm [overflow-wrap:anywhere]">Scripts using <strong>{target.name}</strong> will lose access immediately. Create and install a replacement first if they still need access.</p>
+        {revoke.isError ? <p role="alert" className="mt-3 text-sm text-danger">{revoke.error.message} Refresh the list to check whether the token was revoked.</p> : null}
+        <div className="mt-5 flex flex-wrap justify-end gap-2">
+          <button type="button" className={ui.button()} disabled={revoke.isPending} onClick={() => { setTarget(null); }}>Cancel</button>
+          <button type="button" className={ui.button("danger")} disabled={revoke.isPending} onClick={() => { revoke.mutate(target.id); }}>{revoke.isPending ? "Revoking…" : "Revoke token"}</button>
+        </div>
+      </Modal> : null}
     </section>
   );
 }

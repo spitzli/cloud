@@ -44,11 +44,25 @@ try {
   assert.equal(await session.page.getByRole('status').locator('code').last().textContent(), 'https://api.example.test/v1/api/projects', 'scripts must use the canonical API host, with a slash before v1');
   assert.deepEqual(state.posts[0], { name: 'CI deploy', canWrite: true, days: 30 });
   await session.page.getByText(/Read and change, by Ada/).waitFor();
+  await session.page.getByRole('button', { name: 'Revoke', exact: true }).click();
+  const confirmation = session.page.getByRole('dialog', { name: 'Revoke API token?' });
+  await confirmation.waitFor();
+  await confirmation.getByRole('button', { name: 'Revoke token', exact: true }).click();
+  await session.page.getByText('No tokens yet.').waitFor();
+  assert.equal(await session.page.getByText('wdk_' + 'f'.repeat(64)).count(), 0, 'a revoked token must disappear from the one-time secret panel');
+  await session.page.getByRole('textbox', { name: 'Name' }).fill('CI deploy');
+  await session.page.getByRole('combobox', { name: 'Access' }).selectOption('write');
+  await session.page.getByRole('button', { name: 'Create token' }).click();
+  await session.page.getByText('wdk_' + 'f'.repeat(64)).waitFor();
   // After a reload the secret is gone for good.
   await session.page.reload();
   await session.page.getByText(/Read and change, by Ada/).waitFor();
   assert.equal(await session.page.getByText('wdk_' + 'f'.repeat(64)).count(), 0);
-  await session.page.getByRole('button', { name: 'Revoke' }).click();
+  await session.page.getByRole('button', { name: 'Revoke', exact: true }).click();
+  await session.page.getByRole('dialog', { name: 'Revoke API token?' }).getByRole('button', { name: 'Cancel', exact: true }).click();
+  assert.equal(state.tokens.length, 1, 'cancel preserves the token');
+  await session.page.getByRole('button', { name: 'Revoke', exact: true }).click();
+  await session.page.getByRole('dialog', { name: 'Revoke API token?' }).getByRole('button', { name: 'Revoke token', exact: true }).click();
   await session.page.getByText('No tokens yet.').waitFor();
   await session.page.setViewportSize({ width: 390, height: 844 });
   assert.ok(await session.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'no horizontal scroll at phone width');
