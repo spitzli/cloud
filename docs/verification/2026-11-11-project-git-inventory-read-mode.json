@@ -59,6 +59,19 @@
     "crates/build/tests/support/core_flow.rs": "936ce1994bbb78b73bec68059f4322710379d76be634136a70b44fd74b318e45",
     "crates/control-plane/src/app.rs": "da1fbccf31ad8db09d1cf5e09f7acb41c631456cd6b4e2671d1ba2e6a5465d5b",
     "crates/control-plane/src/http.rs": "0fc6eb0905a64b3e21c1e028850d85a8d8d56bfc9478a1159276b8834ad53f4a",
-    "crates/control-plane/src/resource_auth.rs": "3dd7d2aedf320ef2869e41af6b61c81c940d4d8d52e46bf201225e11a4fcb365"
+    "crates/control-plane/src/resource_auth.rs": "3dd7d2aedf320ef2869e41af6b61c81c940d4d8d52e46bf201225e11a4fcb365",
+    ".github/workflows/quality.yml": "d7d616210559dda0d6f118ff227f0f2c66385dd9c0e64eb0518f5b2f3859f9f2"
+  },
+  "ciGateBudgetAdjustment": {
+    "cancelledHead": "e43623fb62b3246a1450f746a1fc1396215b5ffd",
+    "run": 43104750541,
+    "job": 130805042958,
+    "reason": "GitHub job exceeded its 45 minute execution limit",
+    "nativeQualityStep": "success",
+    "cancelledStep": "Verify native deployment manifests and probe routing",
+    "oldBudgetMinutes": 45,
+    "newBudgetMinutes": 60,
+    "runnerAndAllCheckStepsUnchanged": true,
+    "applicationSourceUnchanged": true
   }
 }

@@ -19,7 +19,7 @@ jobs:
   quality:
     if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != ''
     runs-on: blacksmith-4vcpu-ubuntu-2404
-    timeout-minutes: 45
+    timeout-minutes: 60
     # One ephemeral target for workspace and standalone crates; keep full test assertions.
     env:
       CARGO_TARGET_DIR: ${{ github.workspace }}/target
