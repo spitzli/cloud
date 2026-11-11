@@ -102,7 +102,7 @@ pub struct BuildService {
     hosting: Arc<HostingService>,
     provider: Arc<dyn RepositoryProvider>,
     repository_configured: bool,
-    registry: String,
+    registry: Option<String>,
     authority: Option<Arc<session::SessionVerifier>>,
     github_webhooks: Option<(
         github_webhook::GithubWebhookVerifier,
@@ -153,6 +153,18 @@ impl BuildService {
         hosting: Arc<HostingService>,
         registry: String,
     ) -> Result<Self> {
+        Self::new_inventory(db, worker, secret, ids, hosting)
+            .await?
+            .with_execution_registry(registry)
+    }
+    /// Read existing sources and history without admitting execution or worker traffic.
+    pub async fn new_inventory(
+        db: DatabaseConnection,
+        worker: DatabaseConnection,
+        secret: String,
+        ids: Arc<IdAllocator>,
+        hosting: Arc<HostingService>,
+    ) -> Result<Self> {
         for (connection, role) in [
             (&db, "webdock_auth_runtime"),
             (&worker, "webdock_worker_runtime"),
@@ -160,16 +172,6 @@ impl BuildService {
             spitzli_persistence::connection::verify_runtime_role(connection, role)
                 .await
                 .map_err(|_| error("invalid_database_role"))?;
-        }
-        if registry.is_empty()
-            || registry.len() > 253
-            || registry.contains('/')
-            || registry.contains('@')
-            || !registry
-                .bytes()
-                .all(|b| b.is_ascii_alphanumeric() || b".-:".contains(&b))
-        {
-            return Err(error("invalid_registry"));
         }
         let signer = RlsSigner::new(secret.clone(), "webdock_auth_runtime")
             .map_err(|_| error("invalid_signer"))?;
@@ -182,10 +184,38 @@ impl BuildService {
             hosting,
             provider: Arc::new(Unavailable),
             repository_configured: false,
-            registry,
+            registry: None,
             authority: None,
             github_webhooks: None,
         })
+    }
+    pub fn with_execution_registry(mut self, registry: String) -> Result<Self> {
+        if registry.is_empty()
+            || registry.len() > 253
+            || registry.contains('/')
+            || registry.contains('@')
+            || !registry
+                .bytes()
+                .all(|b| b.is_ascii_alphanumeric() || b".-:".contains(&b))
+        {
+            return Err(error("invalid_registry"));
+        }
+        self.registry = Some(registry);
+        Ok(self)
+    }
+    pub fn execution_configured(&self) -> bool {
+        self.registry.is_some()
+    }
+    fn registry_host(&self) -> Result<&str> {
+        self.registry
+            .as_deref()
+            .ok_or_else(|| error("build_execution_unavailable"))
+    }
+    fn require_execution(&self, write: bool) -> Result<()> {
+        if write && !self.execution_configured() {
+            return Err(error("build_execution_unavailable"));
+        }
+        Ok(())
     }
     pub fn with_repository_provider(mut self, provider: Arc<dyn RepositoryProvider>) -> Self {
         self.provider = provider;
@@ -208,6 +238,7 @@ impl BuildService {
         event: &str,
         allow_new: bool,
     ) -> Result<Value> {
+        self.require_execution(true)?;
         let (verifier, admission) = self
             .github_webhooks
             .as_ref()
@@ -233,6 +264,7 @@ impl BuildService {
         Ok(())
     }
     async fn worker_tx(&self) -> Result<DatabaseTransaction> {
+        self.require_execution(true)?;
         let tx = self.worker.begin().await.map_err(db_error)?;
         self.scope(&tx, "plugin-admission").await?;
         Self::module(&tx, true).await?;
@@ -376,6 +408,7 @@ impl BuildService {
         let manage = matches!(command, BuildCommand::SourceConfigure { .. });
         let write = command.write();
         let authority_guard = self.begin_authority(principal, authority, write).await?;
+        self.require_execution(write)?;
         if let BuildCommand::SourceWebhook {
             source_id,
             revision,
@@ -410,8 +443,9 @@ impl BuildService {
                     Err(e) => return Err(e),
                 };
                 let targets=rows(&tx,"SELECT jsonb_build_object('id',id,'name',name) AS value FROM webdock_auth.hosting_app WHERE project_id=$1 AND status<>'deleted' ORDER BY name,id",vec![project.clone().into()]).await?;
-                let write_allowed =
-                    !principal.in_read_only_preview() && authority.is_none_or(|a| !a.read_only());
+                let write_allowed = self.execution_configured()
+                    && !principal.in_read_only_preview()
+                    && authority.is_none_or(|a| !a.read_only());
                 let can_build = write_allowed
                     && Self::authorize(&tx, principal, &project, true, false)
                         .await
@@ -420,10 +454,10 @@ impl BuildService {
                     && Self::authorize(&tx, principal, &project, true, true)
                         .await
                         .is_ok();
-                json!({"source":source,"targets":targets,"canBuild":can_build,"canConfigure":can_configure,"canApprove":can_build,"canBindPlatform":false,"blockers":if self.repository_configured{vec![]}else{vec!["Repository provider adapter is unavailable."]}})
+                json!({"source":source,"targets":targets,"canBuild":can_build,"canConfigure":can_configure,"canApprove":can_build,"canBindPlatform":false,"blockers":self.configuration_blockers()})
             }
             BuildCommand::SourcesList { .. } => {
-                let records=rows(&tx,"SELECT to_jsonb(s) AS value FROM webdock_auth.git_source s WHERE project_id=$1 ORDER BY created_at,id",vec![project.clone().into()]).await?;
+                let records=rows(&tx,"SELECT to_jsonb(s)||jsonb_build_object('metadata',r.metadata) AS value FROM webdock_auth.git_source s LEFT JOIN webdock_auth.git_repository r ON r.connection_id=s.connection_id AND r.repository_id=s.repository_id WHERE s.project_id=$1 ORDER BY s.created_at,s.id",vec![project.clone().into()]).await?;
                 let mut docs = Vec::new();
                 for record in records {
                     docs.push(self.source_view(&tx, &record).await?);
@@ -1225,7 +1259,7 @@ impl BuildService {
             .map_err(hosting)?;
         let repository = format!(
             "{}/customers/{}/projects/{}",
-            self.registry,
+            self.registry_host()?,
             field(&r, "customer_id")?,
             field(&r, "project_id")?
         );
@@ -1388,6 +1422,16 @@ impl BuildService {
             }));
         }
         Ok(field(&sources[0], "id")?.into())
+    }
+    fn configuration_blockers(&self) -> Vec<&'static str> {
+        let mut blockers = Vec::new();
+        if !self.execution_configured() {
+            blockers.push("Git build execution is not configured. Existing sources and history are read-only.");
+        }
+        if !self.repository_configured {
+            blockers.push("Repository provider adapter is unavailable.");
+        }
+        blockers
     }
     async fn source_view(&self, tx: &DatabaseTransaction, s: &Value) -> Result<Value> {
         let environment = self
@@ -1576,7 +1620,8 @@ impl BuildService {
     }
 }
 impl BuildService {
-    async fn operator(tx: &DatabaseTransaction, actor: &Principal) -> Result<()> {
+    async fn operator(&self, tx: &DatabaseTransaction, actor: &Principal) -> Result<()> {
+        self.require_execution(true)?;
         let row = rows(
             tx,
             "SELECT coalesce(webdock_rls.actor(),'null'::jsonb) AS value",
@@ -1620,7 +1665,7 @@ impl BuildService {
             .await
             .map_err(|_| error("authentication_required"))?;
         Self::module(&tx, false).await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         use base64::Engine;
         let mut random = [0u8; 32];
         getrandom::getrandom(&mut random).map_err(|_| error("entropy_unavailable"))?;
@@ -1629,7 +1674,7 @@ impl BuildService {
         execute(&tx,"INSERT INTO webdock_auth.git_worker(id,credential_hash,enabled,country,isolation,evidence,capacity) VALUES($1,$2,true,$3,$4,$5,$6)",vec![id.clone().into(),hex::encode(Sha256::digest(credential.as_bytes())).into(),country.into(),isolation.into(),evidence.into(),(capacity as i32).into()]).await?;
         self.audit(&tx, &actor.user_id, "git.worker.enroll", &id, "enabled")
             .await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         tx.commit().await.map_err(db_error)?;
         Ok(json!({"id":id,"generation":1,"credential":credential}))
     }
@@ -1643,11 +1688,11 @@ impl BuildService {
             .begin(&self.db, actor)
             .await
             .map_err(|_| error("authentication_required"))?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         if execute(&tx,"UPDATE webdock_auth.git_worker SET enabled=false,generation=generation+1 WHERE id=$1 AND generation=$2",vec![id.into(),generation.into()]).await?!=1{return Err(error("worker_generation_conflict"));}
         self.audit(&tx, &actor.user_id, "git.worker.revoke", id, "revoked")
             .await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         tx.commit().await.map_err(db_error)?;
         Ok(())
     }

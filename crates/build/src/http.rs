@@ -183,6 +183,9 @@ fn digest(value: &str) -> bool {
     })
 }
 pub fn worker_router(service: Arc<BuildService>) -> Router {
+    if !service.execution_configured() {
+        return Router::new();
+    }
     Router::new()
         .route("/{*path}", any(handler))
         .with_state(service)

@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-11",
+  "scope": "Read retained Git inventory when build execution is unconfigured; show recorded application diagnostics",
+  "baseCommit": "8f6aca8324084de53654f69bbc80005e1cab2acb",
+  "behavior": {
+    "coreReadModeWhenRegistryMissing": true,
+    "realCustomerSessionAndTenantAuthorizationPreserved": true,
+    "buildSourceConfigurationPublicationAndWorkerAdmissionDeniedInReadMode": true,
+    "workerHttpRouterNotMountedInReadMode": true,
+    "repositoryNamesReadFromAuthorizedMetadata": true,
+    "privateWorkerPathsSeparatedFromOAuthResources": true,
+    "applicationFailedStateRetainedWithErrorAndOperationLink": true
+  },
+  "validation": {
+    "ownedPostgresVersion": 18,
+    "actualCoreCustomerReadHttpStatus": 200,
+    "retainedDatabaseCases": 2,
+    "additionalOperatorEnrollmentAndAdmissionDenial": true,
+    "normalConfiguredBrowserAndWorkerBoundaries": true,
+    "sessionRevocationAndWrongProjectDenied": true,
+    "relatedRust": {
+      "passed": 409,
+      "ignored": 74,
+      "suites": 60
+    },
+    "consoleUnits": 251,
+    "productionBrowserSuites": 28,
+    "projectContextBrowser": {
+      "passed": true,
+      "failedApplicationViewports": [
+        320,
+        375,
+        414,
+        768,
+        1280
+      ],
+      "onlyReadCommandsSent": true
+    },
+    "strictClippyLintTypesBuildFormatAndContracts": true
+  },
+  "releaseBoundary": {
+    "sourceQualificationOnly": true,
+    "productionDeploymentPerformed": false,
+    "productionSchemaDataCredentialsOrNativeBackendFlagsChanged": false,
+    "customerManualRuntimeModified": false,
+    "publicUntrustedBuildExecutionActivated": false,
+    "fullPlatformProductionE2eClaim": false
+  },
+  "testedChangedSourceSHA256": {
+    "apps/console/src/ProjectRuntime.tsx": "e384ddc0238e88a91323cfcef67dec294b5a5e7d999bd5f48d846c4464a68209",
+    "apps/console/tests/project-context-browser.mjs": "ba79cb94c8297197ff67e0b5285554ce6adcad418f1827449a29076d222d13e3",
+    "crates/build/README.md": "5bd67d12dc311acffc0395714372ae3e9c3660ae0e3427548fc272c60fabf762",
+    "crates/build/src/connections.rs": "9b8d5de33b93cde0d517a43dc1b34f642cb7d4359a37d7bd84dcfc7e445fcd91",
+    "crates/build/src/http.rs": "7d920f0849854a6c17087b7ecd347c98640573152dddf7c06795f9cc8b8cbe20",
+    "crates/build/src/service.rs": "7a52d6585c3fbbd68dd1610e39576ba5626855c635a1465ba145b71be5d8efe6",
+    "crates/build/src/service/github_webhook.rs": "312e7c6fd3be5000f4b73bf044000abe9e7ca3127c2e1972e46db1ad30dc8b49",
+    "crates/build/src/service/kubernetes.rs": "e9908565e1a5322be8f00e1896fde6d818cbf7664dc82846b75fded68aa7529a",
+    "crates/build/src/service/volumes.rs": "00547e8c18e4acce2f52f0a2d6ff220294f4d8ceedc6a1ee052d4bc9037d1124",
+    "crates/build/tests/support/core_flow.rs": "936ce1994bbb78b73bec68059f4322710379d76be634136a70b44fd74b318e45",
+    "crates/control-plane/src/app.rs": "da1fbccf31ad8db09d1cf5e09f7acb41c631456cd6b4e2671d1ba2e6a5465d5b",
+    "crates/control-plane/src/http.rs": "0fc6eb0905a64b3e21c1e028850d85a8d8d56bfc9478a1159276b8834ad53f4a",
+    "crates/control-plane/src/resource_auth.rs": "3dd7d2aedf320ef2869e41af6b61c81c940d4d8d52e46bf201225e11a4fcb365"
+  }
+}

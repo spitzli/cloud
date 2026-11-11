@@ -6,6 +6,7 @@ The service uses restricted `webdock_auth_runtime` and `webdock_worker_runtime` 
 
 ## API
 
+- `BuildService::new_inventory(session_db, worker_db, rls_secret, ids, hosting)` reads existing sources, connections and build/release history with the same current session and tenant authority. It exposes no build/configuration/approval permission, rejects mutations and webhooks, and mounts no worker routes. Core uses this mode when `SPITZLI_BUILD_REGISTRY_HOST` is absent; saved Git sources do not require execution to be enabled.
 - `BuildService::new(session_db, worker_db, rls_secret, ids, hosting, registry_host)`; `with_repository_provider(Arc<dyn RepositoryProvider>)` supplies installation/repository verification, immutable commit resolution, and normalized source archives.
 - `execute(&Principal, Value)` handles customer connection/repository reads and disconnect, source list/get/configure, build request/list/get/cancel, release list/approve/rollback. Retained `projectID`, `targetID`, `sourceSHA` and pagination names are preserved. Build requests select an app target; multiple sources require an explicit target. Source environment values remain encrypted; only names are returned.
 - `enroll_worker`, `revoke_worker` require a current mapped operator. `authenticate_worker` returns opaque `WorkerIdentity`; every worker action checks its current persisted generation, enabled state and credential hash.

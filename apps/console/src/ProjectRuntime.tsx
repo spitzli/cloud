@@ -38,7 +38,11 @@ export function ProjectRuntime({ projectID, customer }: { projectID: string; cus
         : apps.error ? <Failure error={apps.error} retry={() => void apps.refetch()} />
         : !apps.data.docs.length ? <p className="px-5 pb-5 text-sm text-muted">{t("No applications in this project yet.")}</p>
         : <ul>{apps.data.docs.map(app => <li key={app.id} className={ui.cardRow}>
-          <Link className="font-medium" to="/hosting/apps/$appID" params={{ appID: app.id }}>{app.name}</Link>
+          <div className="min-w-0 flex-1 max-sm:basis-full">
+            <Link className="font-medium [overflow-wrap:anywhere]" to="/hosting/apps/$appID" params={{ appID: app.id }}>{app.name}</Link>
+            {app.status === "failed" && app.lastError ? <p className="mt-1 text-sm text-danger [overflow-wrap:anywhere]">{app.lastError}</p> : null}
+            {app.status === "failed" && app.operationID ? <Link className="mt-2 inline-flex min-h-11 items-center text-sm underline" to="/hosting/operations/$operationID" params={{ operationID: app.operationID }}>{t("Review operation")}</Link> : null}
+          </div>
           <div className="flex items-center gap-2"><span className="text-xs text-muted">{t("Recorded state")}</span><Status status={app.status} /></div>
         </li>)}</ul>}
       {apps.isSuccess && native && apps.data.totalPages > 1 ? <p className={ui.cardFooter}>{t("Open application management to see all applications.")}</p> : null}

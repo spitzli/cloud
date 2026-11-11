@@ -302,6 +302,7 @@ impl BuildService {
         revision: i32,
         enabled: bool,
     ) -> Result<Value> {
+        self.require_execution(true)?;
         crate::contracts::id(project)?;
         crate::contracts::id(source_id)?;
         if revision <= 0 {
