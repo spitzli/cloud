@@ -1,9 +1,9 @@
 # Execution stays disabled until the operator records Blacksmith qualification.
-# See webdock/tools/plugin-ci/BLACKSMITH.md; runner labels alone do not select a region.
+# See tools/plugin-ci/BLACKSMITH.md; runner labels alone do not select a region.
 name: Native quality
 
 # Checks handle public platform source only, with no deployment/tenant credentials.
-# Customer image builds run through Webdock's dedicated K3s backend.
+# Customer image builds run through Spitzli Cloud's dedicated K3s backend.
 on:
   push:
   workflow_dispatch:
@@ -78,6 +78,8 @@ jobs:
         run: bunx playwright install --with-deps chromium
       - name: Verify deployment, catalog and environment migration policies
         run: |
+          python3 -m unittest discover -s tools/plugin-ci -p 'test_blacksmith_workflows.py'
+          python3 -m unittest discover -s tools/plugin-ci -p 'test_native_release_region.py'
           python3 -m unittest discover -s tools/migrations -p 'test_rename_environment.py'
           python3 -m unittest discover -s tools/plugin-runtime -p 'test_*.py'
           python3 -m unittest discover -s tools/plugin-release -p 'test_catalog_presentation.py'

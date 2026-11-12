@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-12",
+  "scope": "Native plugin production image release allocation; own source CI exception retained",
+  "before": {
+    "usWestSourceCheck": true,
+    "usWestProductionRelease": true
+  },
+  "after": {
+    "usWestSourceCheck": true,
+    "usWestProductionRelease": false,
+    "euCentralTaggedRelease": true,
+    "euWestTaggedRelease": true
+  },
+  "existingSourceQualificationChecks": 7,
+  "allocationRegressionTests": 3,
+  "productionChanged": false
+}
