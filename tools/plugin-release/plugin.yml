@@ -78,7 +78,7 @@ jobs:
 
   release:
     needs: check
-    if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != '' && vars.SPITZLI_BLACKSMITH_BUILDER_READY == 'true' && (startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push')
+    if: vars.SPITZLI_BLACKSMITH_READY == 'true' && vars.SPITZLI_BLACKSMITH_REGION != '' && vars.SPITZLI_BLACKSMITH_BUILDER_READY == 'true' && (vars.SPITZLI_BLACKSMITH_REGION == 'eu-central' || vars.SPITZLI_BLACKSMITH_REGION == 'eu-west') && (startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push')
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 30
     # Restrict this environment to release tags using the repository's tag policy.
