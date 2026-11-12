@@ -205,7 +205,7 @@ def export_sdk(source: Path, destination: Path, plan: dict):
                 target.write_bytes(path.read_bytes())
     legal_files(source, destination)
     copy_toolchain(source, destination)
-    (destination / "README.md").write_text("# Webdock plugin SDK\n\nShared Rust protocol, native transport, mTLS, authorization, storage and mail contracts. Core owns the catalog, customer metadata, provider connections and BYOK credentials. No runtime credentials are included.\n\nPin consumers to an immutable Git revision. Install protobuf-compiler before building. Generate Cargo.lock, then run `cargo test --workspace --locked`.\n")
+    (destination / "README.md").write_text("# Spitzli Cloud plugin SDK\n\nShared Rust protocol, native transport, mTLS, authorization, storage and mail contracts. Core owns the catalog, customer metadata, provider connections and BYOK credentials. No runtime credentials are included.\n\nPin consumers to an immutable Git revision. Install protobuf-compiler before building. Generate Cargo.lock, then run `cargo test --workspace --locked`.\n")
 
 
 def validate_pin(value: str | None, label: str):
@@ -449,7 +449,7 @@ def main():
     if output.resolve().is_relative_to(source):
         raise ValueError("output must be outside the source snapshot")
     output.parent.mkdir(parents=True, exist_ok=True)
-    staging = Path(tempfile.mkdtemp(prefix=".webdock-export-", dir=output.parent))
+    staging = Path(tempfile.mkdtemp(prefix=".spitzli-export-", dir=output.parent))
     try:
         if args.mode == "sdk":
             export_sdk(source, staging, plan)

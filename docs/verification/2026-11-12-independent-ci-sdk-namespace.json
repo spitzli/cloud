@@ -1,0 +1,209 @@
+{
+  "date": "2026-11-12",
+  "scope": "Own GitHub CI and independently exported SDK source; no production runtime activation",
+  "canonicalEnvironmentPrefix": "SPITZLI_",
+  "repositories": [
+    {
+      "repository": "spitzli/cloud-plugin-archives",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-archives/pull/2",
+      "sourceHead": "12264dbe31fda311b7f0983bedb01559e548cde1",
+      "mergedMain": "9442431dd49b8fb8ad3aa3c18f62e67fa6c29342",
+      "qualifiedTree": "0247ea6cf5f6415dc0673b3d49f87c4847b9b6f9",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-archives/actions/runs/43203105217/job/131131318027",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-5g57i3myhjpoqfhs",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-echo-demo",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-echo-demo/pull/2",
+      "sourceHead": "09785c23054f430ed01f8ba20a5dace097ac4d79",
+      "mergedMain": "33f94ee19cda60d450c77b007249192ee960e1c2",
+      "qualifiedTree": "c1e85e90d9da11fec1e780107cf919b1c5edd61f",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-echo-demo/actions/runs/43203130030/job/131131402241",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-or76nnvksmrzefc2",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-github-repository",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-github-repository/pull/2",
+      "sourceHead": "a7d89fe58de2f19d1ea4c2d8906a3a7d61987b70",
+      "mergedMain": "03b23a1f2646493aadbdc50bed3f3a893544ed77",
+      "qualifiedTree": "589fe974879411656b3c3d8384699f37dc8ed942",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-github-repository/actions/runs/43203152871/job/131131481858",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-gwozgz4ugapdev4p",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-hosting",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-hosting/pull/3",
+      "sourceHead": "e9314108354763d09b54282d6b7d6e62f85fa193",
+      "mergedMain": "8a58e917069ed1ce7c48c99b30d70c5587db564f",
+      "qualifiedTree": "2e44deb132e5932a61dd20ab94118455d025faa6",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-hosting/actions/runs/43203175089/job/131131558468",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-rbd6jhjqjjz4nxxk",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-lumaserv-compute",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-lumaserv-compute/pull/2",
+      "sourceHead": "2c6937dc4f06239aa9779a5cf24f7d19b63cd121",
+      "mergedMain": "efa19f81367b71a260996fb60026f113543e9137",
+      "qualifiedTree": "a6c2f87d507e771d2c85b91703df54be1ee7706f",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-lumaserv-compute/actions/runs/43203193826/job/131131625811",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-hedzje4nbpo5gdym",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-mail-relay",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-mail-relay/pull/2",
+      "sourceHead": "6f4692014fb33e05aaf56abae8b0fb22b90185e0",
+      "mergedMain": "021f2583b9a74eba4bbd35c2c21eecd0155c79fb",
+      "qualifiedTree": "cca3cb56a49d65ae2df996329e40c61502a463b9",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-mail-relay/actions/runs/43203241471/job/131131796100",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-odu5sdm7qzfbg5hf",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-mail",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-mail/pull/3",
+      "sourceHead": "274dd38795e93a5d17ddaa4011e88b764d8f3fa3",
+      "mergedMain": "69890bf0c75a86baa6b9e847a5db2f8d261522d8",
+      "qualifiedTree": "e5be9021d495e4f031aa11d78915e58f33b403f8",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-mail/actions/runs/43203218136/job/131131713222",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-ufiqrbciq4ucend4",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-managed-cms",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-managed-cms/pull/2",
+      "sourceHead": "1ae364705a9a9b4e60d5a9fc8dc523e3a68f7abc",
+      "mergedMain": "f00dad5b6617f3921cdd54c13459e59b7e6bfb8b",
+      "qualifiedTree": "221185ef6ddbc17a4e2d53995473c12ddbf310de",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-managed-cms/actions/runs/43203265658/job/131131877460",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-2deeofwpgb4qkdnv",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-neon",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-neon/pull/7",
+      "sourceHead": "476c93c8f1dd011c9441076b705fbdf0def82d4a",
+      "mergedMain": "8d6feb2e798095cf1ad5516428371376b5a18607",
+      "qualifiedTree": "ccef1b27596fd585175e71485aa9ca5d37c44de2",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-neon/actions/runs/43203314452/job/131132045664",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-kuuswif7tdc6eeo6",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-object-storage",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-object-storage/pull/3",
+      "sourceHead": "90ad0ea98ae367ff3a00532aaa0626f18cb1e3d7",
+      "mergedMain": "d61452fa36013a0eac9c1a62e8d7de083cba4e6b",
+      "qualifiedTree": "47a5f93f59dae211fd46b4e820abbda473b687b3",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-object-storage/actions/runs/43203338565/job/131132130085",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-mhaowa2ya3nlp7ib",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-postgres",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-postgres/pull/3",
+      "sourceHead": "0b14652de095dd2d91327e23a564eef0f85fe19d",
+      "mergedMain": "a0f2ea6ef495d4877d145198a6effe86d650aaa8",
+      "qualifiedTree": "8a750556f4c048a8c67bd45c2113eb6cadbc25a2",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-postgres/actions/runs/43203362400/job/131132210751",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-atucxznfwqiwavql",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/cloud-plugin-sdk",
+      "pullRequest": "https://github.com/spitzli/cloud-plugin-sdk/pull/2",
+      "sourceHead": "33cfad7af378a06b20ceb4464c5837cf1f39c025",
+      "mergedMain": "cea6665120d055579ff08a9584cf69025f16316b",
+      "qualifiedTree": "35efdefdb4681e6dcf8c8a7f11ad07abce6f18d8",
+      "jobUrl": "https://github.com/spitzli/cloud-plugin-sdk/actions/runs/43202871267/job/131130503901",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-jsfhrv2mkjg6slcj",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/webdock-extension-lumaserv",
+      "pullRequest": "https://github.com/spitzli/webdock-extension-lumaserv/pull/2",
+      "sourceHead": "c1bb0a5ee741aaf10ad65e9037bd96d55d397674",
+      "mergedMain": "df692a6d4ab24e3a9a257a50f6e7ee4b6fbb7f15",
+      "qualifiedTree": "2c692c059cc3308f185214bc7f995dda34e3caeb",
+      "jobUrl": "https://github.com/spitzli/webdock-extension-lumaserv/actions/runs/43203387045/job/131132295721",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-vlv3lwb7moetewyz",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/webdock-extension-managed-analytics",
+      "pullRequest": "https://github.com/spitzli/webdock-extension-managed-analytics/pull/2",
+      "sourceHead": "ded74524cb1324a18f9445ad67d630868ee53b7f",
+      "mergedMain": "66aa647074d74024f06f4289deaeaed7d9343d7d",
+      "qualifiedTree": "e7753fea87c7b5898abf0d2b8c5077c39d71f2db",
+      "jobUrl": "https://github.com/spitzli/webdock-extension-managed-analytics/actions/runs/43203409594/job/131132373259",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-cam7dhx3uavrrkt6",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/webdock-extension-managed-apps",
+      "pullRequest": "https://github.com/spitzli/webdock-extension-managed-apps/pull/2",
+      "sourceHead": "04eec7568cac6796ccc82bdc5c019a8c8a9c2060",
+      "mergedMain": "dcfcf39808039ed820e5c99447fe04793caaa2f8",
+      "qualifiedTree": "b5ae6ebff50bf5a8d96e9b2ab8e637768e81c993",
+      "jobUrl": "https://github.com/spitzli/webdock-extension-managed-apps/actions/runs/43203431493/job/131132446506",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-hp32lsyvwqs2vrhi",
+      "sourceChecks": "success"
+    },
+    {
+      "repository": "spitzli/webdock-extension-project-notes",
+      "pullRequest": "https://github.com/spitzli/webdock-extension-project-notes/pull/2",
+      "sourceHead": "394eb1732c75235535525666ada886c9fe5b83bf",
+      "mergedMain": "8443c9933d87383dfaaf5618c6bee5719cff2f1e",
+      "qualifiedTree": "976c094fc4cfad294499c65f5f2cee3b31f4a775",
+      "jobUrl": "https://github.com/spitzli/webdock-extension-project-notes/actions/runs/43203457820/job/131132536542",
+      "actualRunner": "blacksmith-4vcpu-ubuntu-2404-nh65yccd76g455c5",
+      "sourceChecks": "success"
+    }
+  ],
+  "ciQualification": {
+    "localWorkflowAndBuilderTests": 15,
+    "blacksmithOnly": true,
+    "runnerAndManagedBuilderGuards": "passed on each actual runner",
+    "recordedAndRuntimeMatchedRegion": "us-west",
+    "ownerRegionExceptionScope": "Spitzli own GitHub CI only"
+  },
+  "retiredCiAliases": {
+    "retiredAliases": 49,
+    "organizationAliases": 3,
+    "repositoryAliases": 46,
+    "qualifiedIndependentDefaultBranches": 16,
+    "canonicalGateValuesAndScopePreserved": true,
+    "oldRunnerSelectorsAndUnusedManualBuilderVariablesRemoved": true,
+    "formerRunnerHostAndCredentialsUntouched": true,
+    "noRuntimeOrArtifactChanges": true
+  },
+  "sdkExport": {
+    "crates": 10,
+    "pluginsInSourceInventory": 9,
+    "localExportTests": 17,
+    "readmeTitle": "Spitzli Cloud plugin SDK",
+    "sourceNamesAndEnvironmentBindings": "canonical main snapshot",
+    "protocolAndPersistedCryptographicDomains": "retained for coordinated runtime/data migration",
+    "independentSdkTests": 130,
+    "testSuites": 47,
+    "ignoredTests": 0,
+    "formatCheck": "passed",
+    "strictClippy": "passed",
+    "registryDependenciesPreservedFromCanonicalLockfile": 371
+  },
+  "preserved": {
+    "originalIndependentCheckouts": 16,
+    "protectedMainAndManagedWorktreeFiles": 134,
+    "runtimeArtifactsAndPrivateProfiles": true,
+    "credentialsAndStorage": true
+  },
+  "remaining": [
+    "Pin independent native plugins to the qualified canonical SDK and build matching executables before runtime activation",
+    "Version and migrate retained schemas, roles, wire contracts, cryptographic domains and persistent runtime paths together",
+    "Migrate remaining external resource names and current public documentation; preserve historical evidence"
+  ]
+}
