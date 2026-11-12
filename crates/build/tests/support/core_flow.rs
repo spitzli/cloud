@@ -58,3 +58,90 @@ async fn mounted_build_routes_preserve_browser_and_worker_authority_boundaries()
     fixture.cleanup().await;
     outcome.unwrap();
 }
+
+#[tokio::test]
+#[ignore = "owned restricted database fixture; no cluster, registry or worker execution"]
+async fn inventory_without_execution_serves_customer_sources_and_closes_all_writes() {
+    let fixture = Arc::new(Fixture::new("kubernetes").await);
+    let f = fixture.clone();
+    let original_browser = Arc::new(browser::BrowserFixture::new(&fixture).await);
+    let original = original_browser.clone();
+    let connection = id(&f.owner).await;
+    let outcome = tokio::spawn(async move {
+        f.configure("k3s").await;
+        let ids = Arc::new(spitzli_persistence::IdAllocator::new(db("AUTH_DATABASE_URL").await, spitzli_ids::Identity::platform(0, 2).unwrap()));
+        let full = spitzli_build::BuildService::new(db("DATABASE_URL").await, db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await, std::env::var("DATABASE_RLS_SECRET").unwrap(), ids.clone(), f.service.clone(), "registry.invalid".into()).await.unwrap()
+            .with_session_authority(db("AUTH_DATABASE_URL").await, original.identity.clone(), Some(original.browser.clone())).await.unwrap();
+        let mut draft = spec(); draft.as_object_mut().unwrap().remove("image"); draft.as_object_mut().unwrap().remove("template");
+        let made = f.service.execute(&f.principal, json!({"action":"apps.prepare","projectID":f.pid,"name":"inventory-target","spec":draft,"subscriptionRevision":1,"idempotencyKey":"inventory-target-1"})).await.unwrap();
+        let target = made["appID"].as_str().or_else(|| made["id"].as_str()).unwrap();
+        sql(&f.owner,"INSERT INTO webdock_auth.git_connection(id,customer_id,installation_id,account_id,account_login,permissions,state) VALUES($1,$2,'1234','1234','fixture','{}','active')",vec![connection.clone().into(),f.cid.clone().into()]).await;
+        sql(&f.owner,"INSERT INTO webdock_auth.git_repository(connection_id,customer_id,repository_id,metadata) VALUES($1,$2,'55','{\"fullName\":\"fixture/connected\"}')",vec![connection.clone().into(),f.cid.clone().into()]).await;
+        let configure = json!({"action":"git.source.configure","projectID":f.pid,"targetID":target,"connectionID":connection,"repositoryID":"55","branch":"main","rootDirectory":".","recipe":"dockerfile","revision":0});
+        let source = full.execute(&f.principal, configure.clone()).await.unwrap();
+        let source_id = source["id"].as_str().unwrap();
+        let operator_inventory = spitzli_build::BuildService::new_inventory(db("DATABASE_URL").await,db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),ids.clone(),f.service.clone()).await.unwrap();
+        assert_eq!(operator_inventory.enroll_worker(&f.principal,"DE","artifact-only","Owned fixture; execution must stay disabled",1).await.unwrap_err().code,"build_execution_unavailable");
+        assert_eq!(operator_inventory.configure_kubernetes_admission(&f.principal,true,1,1).await.unwrap_err().code,"build_execution_unavailable");
+        // Use a real customer membership and re-authenticated canonical principal, not a forged role.
+        sql(&f.owner,"UPDATE webdock_auth.\"user\" SET role='user' WHERE id=$1",vec![f.uid.clone().into()]).await;
+        sql(&f.owner,"INSERT INTO webdock_auth.member(id,\"organizationId\",\"userId\",role,\"createdAt\") SELECT $1,t.organization_id,$2,'owner',now() FROM webdock_auth.tenant_customer t WHERE t.customer_id=$3",vec![format!("{}-member",f.nonce).into(),f.uid.clone().into(),f.cid.clone().into()]).await;
+        let customer_browser = browser::BrowserFixture::new(&f).await;
+        let cookies = CookiePolicy::new(false,"fixture-hosting-cookie-key-at-least-32-bytes").unwrap();
+        let customer_cookie = format!("{}={}",cookies.name(),cookies.sign(&format!("{}-token",f.nonce)).unwrap());
+        let customer = customer_browser.identity.authenticate_cookie(&customer_cookie).await.unwrap().unwrap();
+        assert!(!customer.is_operator());
+        let inventory = Arc::new(spitzli_build::BuildService::new_inventory(db("DATABASE_URL").await,db("SPITZLI_PLUGIN_WORKER_DATABASE_URL").await,std::env::var("DATABASE_RLS_SECRET").unwrap(),ids,f.service.clone()).await.unwrap()
+            .with_session_authority(db("AUTH_DATABASE_URL").await,customer_browser.identity.clone(),Some(customer_browser.browser.clone())).await.unwrap());
+        assert!(!inventory.execution_configured());
+        let config = spitzli_core::config::PlatformConfig::from_map(&std::collections::HashMap::from([
+            ("SPITZLI_FEATURES".into(), "{\"hosting\":\"enabled\"}".into()),
+            ("SPITZLI_CONSOLE_ORIGIN".into(), "https://console.example.invalid".into()),
+            ("SPITZLI_AUTH_ORIGIN".into(), "https://auth.example.invalid".into()),
+            ("SPITZLI_STUDIO_ORIGIN".into(), "https://studio.example.invalid".into()),
+        ])).unwrap();
+        let router = spitzli_control_plane::http::build_app_with_domains(config, db("AUTH_DATABASE_URL").await, spitzli_control_plane::http::Services {
+            identity: Some(customer_browser.identity.clone()), browser: Some(customer_browser.browser.clone()), hosting: Some(f.service.clone()), build: Some(inventory.clone()), ..Default::default()
+        });
+        let request = |input:Value| Request::builder().method("POST").uri("/api/console/hosting").header("host","console.example.invalid").header("origin","https://console.example.invalid").header("content-type","application/json").header("cookie",&customer_browser.cookie).body(Body::from(input.to_string())).unwrap();
+        let response = router.oneshot(request(json!({"action":"git.sources.list","projectID":f.pid}))).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let bytes = response.into_body().collect().await.unwrap().to_bytes();
+        assert_eq!(serde_json::from_slice::<Value>(&bytes).unwrap()["docs"][0]["repositoryName"], "fixture/connected");
+
+        let read = json!({"action":"git.sources.list","projectID":f.pid});
+        let ceiling = || spitzli_build::BuildCeiling { read: true, write: true };
+        let listed = inventory.execute_with_authority(&customer,&customer_browser.authority,read.clone(),ceiling()).await.unwrap();
+        assert_eq!(listed["docs"][0]["repositoryName"],"fixture/connected");
+        let info = inventory.execute_with_authority(&customer,&customer_browser.authority,json!({"action":"git.source.get","projectID":f.pid}),ceiling()).await.unwrap();
+        for field in ["canBuild","canConfigure","canApprove"] { assert_eq!(info[field],false); }
+        assert!(info["blockers"].as_array().unwrap().iter().any(|v|v.as_str().unwrap().contains("read-only")));
+        for command in [configure,json!({"action":"git.builds.request","projectID":f.pid,"targetID":target,"idempotencyKey":"inventory-build-1"}),json!({"action":"git.source.webhook.configure","projectID":f.pid,"sourceID":source_id,"revision":1,"enabled":true}),json!({"action":"git.connections.disconnect","customerID":f.cid,"connectionID":connection,"revision":1})] {
+            assert_eq!(inventory.execute_with_authority(&customer,&customer_browser.authority,command,ceiling()).await.unwrap_err().code,"build_execution_unavailable");
+        }
+        assert!(inventory.execute_with_authority(&customer,&customer_browser.authority,json!({"action":"git.sources.list","projectID":"9223372036854775806"}),ceiling()).await.is_err());
+        assert_eq!(inventory.authenticate_worker(&"S".repeat(43)).await.err().unwrap().code,"build_execution_unavailable");
+        assert_eq!(inventory.receive_github_webhook(b"{}","","","push",true).await.unwrap_err().code,"build_execution_unavailable");
+        let response = spitzli_build::http::worker_router(inventory.clone()).oneshot(Request::builder().method("POST").uri("/claim").body(Body::from("{}")).unwrap()).await.unwrap();
+        assert_eq!(response.status(),StatusCode::NOT_FOUND);
+        for action in ["git.builds.list", "git.releases.list"] {
+            let history = inventory.execute_with_authority(&customer,&customer_browser.authority,json!({"action":action,"projectID":f.pid}),ceiling()).await.unwrap();
+            assert!(history["docs"].as_array().unwrap().is_empty());
+        }
+        let unchanged = inventory.execute_with_authority(&customer,&customer_browser.authority,read.clone(),ceiling()).await.unwrap(); assert_eq!(listed,unchanged);
+        customer_browser.revoke(&f.owner).await;
+        assert!(inventory.execute_with_authority(&customer,&customer_browser.authority,read,ceiling()).await.is_err());
+        customer_browser.cleanup(&f.owner).await;
+    }).await;
+    for table in ["git_source", "git_repository", "git_connection"] {
+        sql(
+            &fixture.owner,
+            &format!("DELETE FROM webdock_auth.{table} WHERE customer_id=$1"),
+            vec![fixture.cid.clone().into()],
+        )
+        .await;
+    }
+    original_browser.cleanup(&fixture.owner).await;
+    fixture.cleanup().await;
+    outcome.unwrap();
+}

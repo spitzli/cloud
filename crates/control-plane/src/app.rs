@@ -513,11 +513,10 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     let build = if config.features.state("hosting")
         != spitzli_core::features::FeatureState::Disabled
         && let Some(hosting) = &hosting
-        && let Ok(registry_host) = std::env::var("SPITZLI_BUILD_REGISTRY_HOST")
     {
         let worker_url = std::env::var("SPITZLI_WORKER_DATABASE_URL")
             .map_err(|_| Error::Message("Missing SPITZLI_WORKER_DATABASE_URL".into()))?;
-        let mut service = spitzli_build::BuildService::new(
+        let mut service = spitzli_build::BuildService::new_inventory(
             crate::db::connect_runtime(&session_url, "webdock_auth_runtime", config.production)
                 .await?,
             crate::db::connect_runtime(&worker_url, "webdock_worker_runtime", config.production)
@@ -525,13 +524,17 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             rls_secret.clone(),
             ids.clone(),
             hosting.clone(),
-            registry_host,
         )
         .await
         .map_err(|_| Error::Message("Build initialization failed".into()))?
         .with_session_authority(db.clone(), identity.clone(), browser.clone())
         .await
         .map_err(|_| Error::Message("Build authority initialization failed".into()))?;
+        if let Ok(registry_host) = std::env::var("SPITZLI_BUILD_REGISTRY_HOST") {
+            service = service
+                .with_execution_registry(registry_host)
+                .map_err(|_| Error::Message("Invalid build registry configuration".into()))?;
+        }
         if let Some(repository) = plugins
             .as_ref()
             .and_then(|plugins| plugins.repository.clone())
