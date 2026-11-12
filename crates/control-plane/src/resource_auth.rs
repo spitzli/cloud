@@ -68,6 +68,10 @@ impl Resource {
     }
 }
 pub fn protocol_path(path: &str) -> bool {
+    // Worker credentials belong to the private API boundary, not OAuth resources.
+    if path == "/api/hosting/git/worker" || path.starts_with("/api/hosting/git/worker/") {
+        return false;
+    }
     path == "/api/registry"
         || path.starts_with("/api/registry/")
         || path == "/api/hosting"

@@ -33,7 +33,7 @@ impl BuildService {
             .begin(&self.db, actor)
             .await
             .map_err(|_| error("authentication_required"))?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         Self::kubernetes_admission_lock(&tx).await?;
         let cluster=rows(&tx,"SELECT to_jsonb(c) AS value FROM webdock_auth.git_build_cluster c WHERE id=$1 FOR UPDATE",vec![cluster_id.into()]).await?.pop().ok_or_else(||error("kubernetes_cluster_unavailable"))?;
         if !cluster["storage_policy"].is_null() && policy.is_none() {
@@ -57,7 +57,7 @@ impl BuildService {
             "explicit-policy-change",
         )
         .await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         tx.commit().await.map_err(db_error)
     }
     pub(super) async fn assign_storage_request(

@@ -577,6 +577,12 @@ mod tests {
             ("/api/invitations", [false, true, true, false]),
             ("/api/sites", [false, true, true, false]),
             ("/api/sites/", [true, false, false, false]),
+            ("/api/hosting/git/worker/claim", [true, false, false, false]),
+            (
+                "/api/hosting/git/worker/unknown",
+                [true, false, false, false],
+            ),
+            ("/api/hosting/git/workerish", [false, false, true, false]),
             ("/api/mcp", [false, false, true, false]),
             ("/api/mcp/", [true, false, false, false]),
             ("/api/console/session", [false, false, true, true]),

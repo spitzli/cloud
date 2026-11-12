@@ -71,7 +71,7 @@ impl BuildService {
             .begin(&self.db, actor)
             .await
             .map_err(|_| error("authentication_required"))?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         Self::kubernetes_admission_lock(&tx).await?;
         execute(&tx, "UPDATE webdock_auth.git_build_admission SET enabled=$1,global_slots=$2,tenant_slots=$3 WHERE singleton", vec![enabled.into(), (global_slots as i32).into(), (tenant_slots as i32).into()]).await?;
         self.audit(
@@ -82,7 +82,7 @@ impl BuildService {
             if enabled { "enabled" } else { "disabled" },
         )
         .await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         tx.commit().await.map_err(db_error)
     }
 
@@ -100,7 +100,7 @@ impl BuildService {
             .begin(&self.db, actor)
             .await
             .map_err(|_| error("authentication_required"))?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         Self::kubernetes_admission_lock(&tx).await?;
         if rows(&tx, "SELECT to_jsonb(p) AS value FROM webdock_admin.projects p JOIN webdock_admin.customers c ON c.id=p.customer_id WHERE p.id=$1 AND p.customer_id=$2 AND p.status='active' AND c.status='active' FOR SHARE OF c", vec![project_id.into(),customer_id.into()]).await?.is_empty() {
             return Err(error("project_unavailable"));
@@ -116,7 +116,7 @@ impl BuildService {
             if enabled { "enabled" } else { "disabled" },
         )
         .await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         tx.commit().await.map_err(db_error)
     }
 
@@ -155,7 +155,7 @@ impl BuildService {
             .await
             .map_err(|_| error("authentication_required"))?;
         Self::module(&tx, false).await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         Self::kubernetes_admission_lock(&tx).await?;
         let worker = rows(&tx, "SELECT to_jsonb(w) AS value FROM webdock_auth.git_worker w WHERE id=$1 AND enabled AND isolation='artifact-only' AND country=$2 FOR SHARE", vec![worker_id.into(),country.into()]).await?.pop().ok_or_else(||error("invalid_kubernetes_worker"))?;
         if worker["capacity"].as_u64().unwrap_or(0) < u64::from(capacity) {
@@ -171,7 +171,7 @@ impl BuildService {
             "disabled",
         )
         .await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         tx.commit().await.map_err(db_error)?;
         Ok(
             json!({"id":id,"workerID":worker_id,"namespace":namespace,"enabled":false,"publicReady":false}),
@@ -190,7 +190,7 @@ impl BuildService {
             .begin(&self.db, actor)
             .await
             .map_err(|_| error("authentication_required"))?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         Self::kubernetes_admission_lock(&tx).await?;
         if execute(
             &tx,
@@ -210,7 +210,7 @@ impl BuildService {
             if enabled { "enabled" } else { "disabled" },
         )
         .await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         tx.commit().await.map_err(db_error)
     }
 
@@ -228,7 +228,7 @@ impl BuildService {
             .begin(&self.db, actor)
             .await
             .map_err(|_| error("authentication_required"))?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         Self::kubernetes_admission_lock(&tx).await?;
         if execute(&tx,"UPDATE webdock_auth.git_build_cluster c SET worker_id=w.id,worker_generation=w.generation,enabled=false FROM webdock_auth.git_worker w WHERE c.id=$1 AND w.id=$2 AND w.enabled AND w.isolation='artifact-only' AND w.country=c.country AND w.capacity>=c.capacity",vec![cluster_id.into(),worker_id.into()]).await?!=1 {
             return Err(error("invalid_kubernetes_worker"));
@@ -241,7 +241,7 @@ impl BuildService {
             "disabled",
         )
         .await?;
-        Self::operator(&tx, actor).await?;
+        self.operator(&tx, actor).await?;
         tx.commit().await.map_err(db_error)
     }
 

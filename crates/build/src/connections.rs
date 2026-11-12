@@ -80,6 +80,7 @@ impl BuildService {
         crate::contracts::id(customer)?;
         let write = matches!(command, Command::Disconnect { .. });
         let authority_guard = self.begin_authority(principal, authority, write).await?;
+        self.require_execution(write)?;
         let tx = self
             .signer
             .begin(&self.db, principal)
