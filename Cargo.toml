@@ -24,6 +24,9 @@ tracing = "0.1"
 [profile.release]
 lto = "thin"
 strip = "debuginfo"
+# One codegen unit: better inlining and smaller binaries at the cost of longer release builds.
+# panic stays "unwind": plugin and recovery code relies on catching panics.
+codegen-units = 1
 
 
 # Keep standalone plugin lint tables identical; tools/quality checks parity.
