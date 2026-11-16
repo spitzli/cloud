@@ -68,6 +68,8 @@ struct Session {
     target: Mutex<Option<String>>,
     sensitive: Mutex<Vec<String>>,
     negotiation: Mutex<Option<Negotiation>>,
+    /// Last successful control-plane inspection; reused for INSPECT_REUSE to avoid a round trip per query.
+    inspected: Mutex<Option<(tokio::time::Instant, Resolved)>>,
     cancellations: Mutex<HashMap<String, CancelRequest>>,
     active: Arc<Semaphore>,
     queries: Arc<Semaphore>,
@@ -107,6 +109,8 @@ impl IntoResponse for Error {
         response
     }
 }
+/// How long a successful access inspection is reused within one session.
+const INSPECT_REUSE: Duration = Duration::from_secs(1);
 fn expired() -> Error {
     Error::new(401, "Database access expired or was revoked.")
 }
@@ -251,6 +255,17 @@ impl Gateway {
         if session.cancel.is_cancelled() || session.expires <= Utc::now() {
             return Err(expired());
         }
+        // Revocation is observed within INSPECT_REUSE; local cancel/expiry checks above always run.
+        if let Some((at, resolved)) = session.inspected.lock().await.as_ref()
+            && at.elapsed() < INSPECT_REUSE
+        {
+            return Ok(resolved.clone());
+        }
+        let resolved = self.inspect_control(session).await?;
+        *session.inspected.lock().await = Some((tokio::time::Instant::now(), resolved.clone()));
+        Ok(resolved)
+    }
+    async fn inspect_control(&self, session: &Session) -> Result<Resolved> {
         let access = self
             .control
             .inspect(&session.token)
@@ -573,6 +588,7 @@ async fn launch(
         target: Mutex::new(None),
         sensitive: Mutex::new(vec![]),
         negotiation: Mutex::new(None),
+        inspected: Mutex::new(None),
         cancellations: Mutex::new(HashMap::new()),
         active: Arc::new(Semaphore::new(16)),
         queries: Arc::new(Semaphore::new(4)),
