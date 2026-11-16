@@ -657,6 +657,7 @@ pub(crate) async fn reconcile_with_registry(
         crate::kubernetes::autoscaling::apply(client.clone(), command, guard, uid).await?;
     }
     let deadline = tokio::time::Instant::now() + Duration::from_secs(120);
+    let mut backoff = crate::backoff::Backoff::new();
     loop {
         guard.check().await?;
         let mut observed = inspect(client.clone(), spec).await?;
@@ -685,7 +686,7 @@ pub(crate) async fn reconcile_with_registry(
         if tokio::time::Instant::now() >= deadline {
             return Err(ExecutionError::Runtime);
         }
-        tokio::time::sleep(Duration::from_millis(500)).await;
+        backoff.wait_until(Some(deadline)).await;
     }
 }
 pub async fn inspect(client: Client, spec: &RuntimeSpec) -> Result<ObservedState> {

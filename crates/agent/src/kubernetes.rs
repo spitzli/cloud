@@ -904,6 +904,7 @@ impl RuntimeAdapter for KubernetesAdapter {
             autoscaling::apply(self.client.clone(), command, guard, uid).await?;
         }
         let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(120);
+        let mut backoff = crate::backoff::Backoff::new();
         loop {
             guard.check_for(command).await?;
             let observed = self.inspect(spec).await?;
@@ -916,7 +917,7 @@ impl RuntimeAdapter for KubernetesAdapter {
             if tokio::time::Instant::now() >= deadline {
                 return Err(ExecutionError::Runtime);
             }
-            tokio::time::sleep(std::time::Duration::from_millis(250)).await;
+            backoff.wait_until(Some(deadline)).await;
         }
     }
     async fn inspect_completed(

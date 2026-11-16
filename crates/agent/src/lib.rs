@@ -1,4 +1,6 @@
 //! Privileged executors. Keep this crate and its credentials out of the public API process.
+#[cfg(any(feature = "docker", feature = "kubernetes"))]
+mod backoff;
 pub mod config;
 #[cfg(feature = "docker")]
 pub mod docker;

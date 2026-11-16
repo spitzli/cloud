@@ -188,6 +188,7 @@ impl KubernetesAdapter {
         }
         let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(120);
         let pods: Api<Pod> = Api::namespaced(self.client.clone(), &spec.namespace());
+        let mut backoff = crate::backoff::Backoff::new();
         loop {
             guard.check_for(command).await?;
             let remaining = pods
@@ -207,7 +208,7 @@ impl KubernetesAdapter {
             if tokio::time::Instant::now() >= deadline {
                 return Err(ExecutionError::Runtime);
             }
-            tokio::time::sleep(std::time::Duration::from_millis(250)).await;
+            backoff.wait_until(Some(deadline)).await;
         }
         Ok(ObservedState {
             autoscaling: None,
@@ -434,6 +435,7 @@ impl KubernetesAdapter {
                 .map_err(|_| ExecutionError::Runtime)?;
         }
         let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(120);
+        let mut backoff = crate::backoff::Backoff::new();
         loop {
             guard.check().await?;
             let claim = claims
@@ -472,7 +474,7 @@ impl KubernetesAdapter {
             if tokio::time::Instant::now() >= deadline {
                 return Err(ExecutionError::Runtime);
             }
-            tokio::time::sleep(std::time::Duration::from_millis(250)).await;
+            backoff.wait_until(Some(deadline)).await;
         }
         guard.check_for(command).await?;
         if self.deployment(spec).await?.is_some() {

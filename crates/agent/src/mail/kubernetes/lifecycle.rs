@@ -157,6 +157,7 @@ impl Execution<'_> {
         previous_pod: Option<&str>,
     ) -> Result<DynamicObject> {
         let deadline = tokio::time::Instant::now() + Duration::from_secs(65);
+        let mut backoff = crate::backoff::Backoff::new();
         loop {
             self.guard().await?;
             let deployment = self
@@ -204,7 +205,7 @@ impl Execution<'_> {
                 tracing::warn!(phase="ready-timeout",desired_replicas=replicas,generation=?deployment.metadata.generation,observed_generation=?deployment.data["status"]["observedGeneration"],updated=?deployment.data["status"]["updatedReplicas"],available=?deployment.data["status"]["availableReplicas"],pods=?states,"Mail readiness was not observed");
                 return Err(ExecutionError::Runtime);
             }
-            tokio::time::sleep(Duration::from_millis(250)).await;
+            backoff.wait_until(Some(deadline)).await;
         }
     }
     async fn restart_recovery(&self, deployment: &DynamicObject) -> Result<()> {

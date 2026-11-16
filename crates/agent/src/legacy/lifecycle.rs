@@ -316,6 +316,7 @@ pub(super) async fn execute(
                 .map_err(api_failure)?;
         }
         let deadline = tokio::time::Instant::now() + Duration::from_secs(120);
+        let mut backoff = crate::backoff::Backoff::new();
         loop {
             guard.check().await?;
             let remaining = pods(client.clone(), spec, ns.is_some(), false).await?;
@@ -339,7 +340,7 @@ pub(super) async fn execute(
             if tokio::time::Instant::now() >= deadline {
                 return Err(ExecutionError::Runtime);
             }
-            tokio::time::sleep(Duration::from_millis(250)).await;
+            backoff.wait_until(Some(deadline)).await;
         }
         if ns.is_some() {
             cleanup_secrets(client.clone(), spec, guard).await?;
@@ -377,12 +378,13 @@ pub(super) async fn execute(
                 .map_err(api_failure)?;
         }
         let deadline = tokio::time::Instant::now() + Duration::from_secs(60);
+        let mut backoff = crate::backoff::Backoff::new();
         while claims.get_opt(&claim).await.map_err(api_failure)?.is_some() {
             guard.check().await?;
             if tokio::time::Instant::now() >= deadline {
                 return Err(ExecutionError::Runtime);
             }
-            tokio::time::sleep(Duration::from_millis(200)).await;
+            backoff.wait_until(Some(deadline)).await;
         }
         // The binder may change PV resourceVersion when the claim disappears; re-read and verify before CAS deletion.
         if let Some(pv) = volumes.get_opt(&pv_name).await.map_err(api_failure)? {
@@ -394,6 +396,7 @@ pub(super) async fn execute(
                 .await
                 .map_err(api_failure)?;
         }
+        let mut backoff = crate::backoff::Backoff::new();
         while volumes
             .get_opt(&pv_name)
             .await
@@ -404,7 +407,7 @@ pub(super) async fn execute(
             if tokio::time::Instant::now() >= deadline {
                 return Err(ExecutionError::Runtime);
             }
-            tokio::time::sleep(Duration::from_millis(200)).await;
+            backoff.wait_until(Some(deadline)).await;
         }
         guard.check().await?;
         storage

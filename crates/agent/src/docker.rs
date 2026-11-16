@@ -1331,6 +1331,7 @@ where
     CF: std::future::Future<Output = Result<()>>,
     IF: std::future::Future<Output = Result<ObservedState>>,
 {
+    let mut backoff = crate::backoff::Backoff::new();
     loop {
         check().await?;
         let observed = inspect().await?;
@@ -1342,7 +1343,7 @@ where
             return Ok(observed);
         }
         // Existing Executor deadline/authority ticker owns cancellation; no new lease or timeout.
-        tokio::time::sleep(Duration::from_millis(250)).await;
+        backoff.wait_until(None).await;
     }
 }
 #[cfg(test)]
