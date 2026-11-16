@@ -1,6 +1,7 @@
 import {msgid} from '@spitzli/i18n';
 import type { Field, GlobalConfig } from 'payload';
 import { faqs } from '../lib/content';
+import { invalidateLanding } from '../lib/landing-cache';
 import { authenticated } from './access';
 
 export const landingDefaults = {
@@ -36,6 +37,7 @@ const text = (name: Exclude<keyof typeof landingDefaults, 'faqs' | 'useCases'>, 
 export const LandingPage: GlobalConfig = {
   slug: 'landing-page', label: msgid("Landing page"),
   access: { read: authenticated, update: authenticated },
+  hooks: { afterChange: [() => { invalidateLanding(); }] },
   fields: [
     { type: 'tabs', tabs: [
       { label: msgid("SEO & contact"), fields: [text('seoTitle', msgid("Page title")), text('seoDescription', msgid("Description"), true), { name: 'contactEmail', type: 'email', required: true, defaultValue: landingDefaults.contactEmail }] },
