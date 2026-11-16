@@ -43,8 +43,8 @@ import { WorkspaceProjects } from "./WorkspaceProjects";
 import { useTenants } from "./WorkspaceNav";
 import { ProductPage } from "./plugins/ProductPage";
 import { Plans, WorkspaceUsage } from "./Usage";
-import { WorkspaceDomains } from "./Domains";
-import { WorkspaceApiTokens } from "./ApiTokens";
+const WorkspaceDomains = lazyRouteComponent(() => import("./Domains"), "WorkspaceDomains");
+const WorkspaceApiTokens = lazyRouteComponent(() => import("./ApiTokens"), "WorkspaceApiTokens");
 const WorkspaceConnections = lazyRouteComponent(() => import("./Connections"), "WorkspaceConnections");
 import { Clusters } from "./Placement";
 import { ProjectPage } from "./ProjectPage";
@@ -347,7 +347,7 @@ const domainsRoute = createRoute({
   path: "/workspaces/$id/domains",
   component: () => {
     const { id } = domainsRoute.useParams();
-    return <WorkspaceDomains key={id} id={id} />;
+    return <Suspense fallback={<Loading>Loading…</Loading>}><WorkspaceDomains key={id} id={id} /></Suspense>;
   },
 });
 const apiTokensRoute = createRoute({
@@ -355,7 +355,7 @@ const apiTokensRoute = createRoute({
   path: "/workspaces/$id/api-tokens",
   component: () => {
     const { id } = apiTokensRoute.useParams();
-    return <WorkspaceApiTokens key={id} id={id} />;
+    return <Suspense fallback={<Loading>Loading…</Loading>}><WorkspaceApiTokens key={id} id={id} /></Suspense>;
   },
 });
 const connectionsRoute = createRoute({
