@@ -169,6 +169,8 @@ struct Message {
     contents: String,
     size: usize,
 }
+/// At most this many policy bodies (up to 52 MiB each) are buffered concurrently.
+static BUFFERED: tokio::sync::Semaphore = tokio::sync::Semaphore::const_new(8);
 pub(crate) async fn handle(
     control: &dyn crate::send_control::SendControl,
     customer: &str,
@@ -203,7 +205,10 @@ pub(crate) async fn handle(
     let result:std::result::Result<Value,crate::send_control::ControlError>=async {
         let auth=control.call(json!({"action":"send.policy.auth","customerID":customer,"token":token})).await?;
         if auth["ok"]!=true {return Err(crate::send_control::ControlError::unavailable());}
-        let raw=tokio::time::timeout(std::time::Duration::from_secs(20),axum::body::to_bytes(request.into_body(),52*1024*1024)).await.map_err(|_|crate::send_control::ControlError::unavailable())?.map_err(|_|crate::send_control::ControlError::invalid())?;
+        // Bound concurrent 52 MiB buffers; waiting for a slot shares the existing 20s budget.
+        let deadline=tokio::time::Instant::now()+std::time::Duration::from_secs(20);
+        let _permit=tokio::time::timeout_at(deadline,BUFFERED.acquire()).await.map_err(|_|crate::send_control::ControlError::unavailable())?.map_err(|_|crate::send_control::ControlError::unavailable())?;
+        let raw=tokio::time::timeout_at(deadline,axum::body::to_bytes(request.into_body(),52*1024*1024)).await.map_err(|_|crate::send_control::ControlError::unavailable())?.map_err(|_|crate::send_control::ControlError::invalid())?;
         let hook:Hook=serde_json::from_slice(&raw).map_err(|_|crate::send_control::ControlError::invalid())?;
         if hook.context.stage!="data" {return Err(crate::send_control::ControlError::invalid());}
         let proofs=hook.message.headers.iter().filter(|(name,_)|name.eq_ignore_ascii_case("x-webdock-submission")).collect::<Vec<_>>();
