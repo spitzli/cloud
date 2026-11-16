@@ -568,7 +568,11 @@ impl KubernetesAdapter {
         Ok(())
     }
     async fn upgrade(&self, command: &Command, guard: &LeaseGuard) -> Result<()> {
-        let _ = ApprovedChart::verify(&self.chart.path, &self.chart.digest)?;
+        // Recursive chart hashing is blocking file I/O; keep it off the async workers.
+        let chart = self.chart.clone();
+        tokio::task::spawn_blocking(move || ApprovedChart::verify(&chart.path, &chart.digest))
+            .await
+            .map_err(|_| ExecutionError::Runtime)??;
         let mut values = if command.action == Action::Stop {
             let manifest = self
                 .helm_read(&command.spec, &["get", "manifest"], guard)
