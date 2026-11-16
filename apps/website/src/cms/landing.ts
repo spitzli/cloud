@@ -37,7 +37,7 @@ const text = (name: Exclude<keyof typeof landingDefaults, 'faqs' | 'useCases'>, 
 export const LandingPage: GlobalConfig = {
   slug: 'landing-page', label: msgid("Landing page"),
   access: { read: authenticated, update: authenticated },
-  hooks: { afterChange: [() => { invalidateLanding(); }] },
+  hooks: { afterChange: [({ doc }) => { invalidateLanding(); return doc; }] },
   fields: [
     { type: 'tabs', tabs: [
       { label: msgid("SEO & contact"), fields: [text('seoTitle', msgid("Page title")), text('seoDescription', msgid("Description"), true), { name: 'contactEmail', type: 'email', required: true, defaultValue: landingDefaults.contactEmail }] },

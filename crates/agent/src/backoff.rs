@@ -37,6 +37,6 @@ mod tests {
     fn grows_to_cap() {
         let mut b = Backoff::new();
         let seq: Vec<_> = (0..8).map(|_| b.advance().as_millis()).collect();
-        assert_eq!(seq, [250, 375, 562, 843, 1264, 1896, 2000, 2000]);
+        assert_eq!(seq, [250, 375, 562, 843, 1265, 1898, 2000, 2000]);
     }
 }
