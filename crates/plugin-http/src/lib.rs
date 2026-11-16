@@ -24,6 +24,45 @@ fn denied() -> Error {
 fn transport_error() -> Error {
     Error::Transport
 }
+/// Everything that shapes a pinned client's trust; requests differing in any field never share connections.
+#[derive(Clone, PartialEq, Eq, Hash)]
+pub(crate) struct ClientKey {
+    pub(crate) host: String,
+    pub(crate) addresses: Vec<SocketAddr>,
+    pub(crate) ca: Option<String>,
+    pub(crate) https_only: bool,
+}
+/// Reuses pinned clients (and their keep-alive connections) instead of a TCP+TLS handshake per call.
+pub(crate) fn pinned_client(key: ClientKey) -> Result<reqwest::Client> {
+    static CLIENTS: std::sync::LazyLock<
+        std::sync::Mutex<std::collections::HashMap<ClientKey, reqwest::Client>>,
+    > = std::sync::LazyLock::new(Default::default);
+    let mut clients = CLIENTS.lock().map_err(|_| transport_error())?;
+    if let Some(client) = clients.get(&key) {
+        return Ok(client.clone());
+    }
+    let mut builder = reqwest::Client::builder()
+        .https_only(key.https_only)
+        .no_proxy()
+        .redirect(reqwest::redirect::Policy::none())
+        .retry(reqwest::retry::never())
+        .pool_max_idle_per_host(4)
+        .pool_idle_timeout(Duration::from_secs(30))
+        .connect_timeout(Duration::from_secs(3))
+        .resolve_to_addrs(&key.host, &key.addresses);
+    if let Some(ca) = &key.ca {
+        builder = builder.add_root_certificate(
+            reqwest::Certificate::from_pem(ca.as_bytes()).map_err(|_| denied())?,
+        );
+    }
+    let client = builder.build().map_err(|_| transport_error())?;
+    // Bound memory: bindings are few; a full cache is simply rebuilt.
+    if clients.len() >= 128 {
+        clients.clear();
+    }
+    clients.insert(key, client.clone());
+    Ok(client)
+}
 pub const MAIL_REQUEST_BYTES: usize = 25 * 1024 * 1024;
 pub const MAIL_RESPONSE_BYTES: usize = 64 * 1024;
 const JSON_BYTES: usize = 1024 * 1024;
@@ -189,25 +228,18 @@ async fn send(
         .iter()
         .map(|ip| SocketAddr::new(*ip, port))
         .collect::<Vec<_>>();
-    let mut client = reqwest::Client::builder()
-        .https_only(true)
-        .no_proxy()
-        .redirect(reqwest::redirect::Policy::none())
-        .retry(reqwest::retry::never())
-        .pool_max_idle_per_host(0)
-        .connect_timeout(Duration::from_secs(3))
-        .timeout(deadline)
-        .resolve_to_addrs(hostname, &addresses);
-    if let Some(ca) = &input.binding.ca {
-        client = client.add_root_certificate(
-            reqwest::Certificate::from_pem(ca.as_bytes()).map_err(|_| denied())?,
-        );
-    }
-    let client = client.build().map_err(|_| transport_error())?;
-    let mut request = client.request(
-        reqwest::Method::from_bytes(input.method.as_bytes()).map_err(|_| denied())?,
-        input.url,
-    );
+    let client = pinned_client(ClientKey {
+        host: hostname.to_owned(),
+        addresses,
+        ca: input.binding.ca.clone(),
+        https_only: true,
+    })?;
+    let mut request = client
+        .request(
+            reqwest::Method::from_bytes(input.method.as_bytes()).map_err(|_| denied())?,
+            input.url,
+        )
+        .timeout(deadline);
     for (key, value) in &input.binding.headers {
         let name = reqwest::header::HeaderName::from_bytes(key.as_bytes()).map_err(|_| denied())?;
         let mut value = reqwest::header::HeaderValue::from_str(value).map_err(|_| denied())?;

@@ -180,25 +180,18 @@ pub async fn send_storage(
         .iter()
         .map(|ip| SocketAddr::new(*ip, port))
         .collect::<Vec<_>>();
-    let mut client = reqwest::Client::builder()
-        .https_only(!target.insecure_test)
-        .no_proxy()
-        .redirect(reqwest::redirect::Policy::none())
-        .retry(reqwest::retry::never())
-        .pool_max_idle_per_host(0)
-        .connect_timeout(Duration::from_secs(3))
-        .timeout(Duration::from_secs(300))
-        .resolve_to_addrs(host, &addresses);
-    if let Some(ca) = &target.binding.ca {
-        client = client.add_root_certificate(
-            reqwest::Certificate::from_pem(ca.as_bytes()).map_err(|_| deny())?,
-        );
-    }
-    let client = client.build().map_err(|_| Error::Transport)?;
-    let mut request = client.request(
-        reqwest::Method::from_bytes(target.method.as_bytes()).map_err(|_| deny())?,
-        target.url,
-    );
+    let client = crate::pinned_client(crate::ClientKey {
+        host: host.to_owned(),
+        addresses,
+        ca: target.binding.ca.clone(),
+        https_only: !target.insecure_test,
+    })?;
+    let mut request = client
+        .request(
+            reqwest::Method::from_bytes(target.method.as_bytes()).map_err(|_| deny())?,
+            target.url,
+        )
+        .timeout(Duration::from_secs(300));
     for (k, v) in &target.headers {
         let mut v = reqwest::header::HeaderValue::from_str(v).map_err(|_| deny())?;
         v.set_sensitive(true);
