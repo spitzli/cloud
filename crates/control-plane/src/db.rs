@@ -75,7 +75,8 @@ impl RuntimeLimits {
         let max = num("SPITZLI_RUNTIME_DB_MAX_CONNECTIONS", 20).clamp(1, 200) as u32;
         Self {
             max_connections: max,
-            min_connections: (num("SPITZLI_RUNTIME_DB_MIN_CONNECTIONS", 1) as u32).min(max),
+            min_connections: num("SPITZLI_RUNTIME_DB_MIN_CONNECTIONS", 1).min(u64::from(max))
+                as u32,
             acquire_timeout: std::time::Duration::from_secs(
                 num("SPITZLI_RUNTIME_DB_ACQUIRE_TIMEOUT_SECS", 5).clamp(1, 60),
             ),
