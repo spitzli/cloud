@@ -386,15 +386,24 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     if account_mail.is_some() {
         let (identity, access) = (identity.clone(), access.clone());
         tokio::spawn(async move {
+            // Poll every 2s while jobs flow; back off to 8s while both queues stay empty.
+            let mut idle_secs = 2;
             loop {
                 let (sent, invited) = tokio::join!(
                     identity.dispatch_delivery_jobs(10),
                     access.dispatch_invitation_jobs(10)
                 );
-                if sent.is_err() || invited.is_err() {
-                    tracing::warn!("Account mail delivery unavailable; jobs stay queued");
-                }
-                tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+                let busy = match (&sent, &invited) {
+                    (Ok(s), Ok(i)) => {
+                        s.delivered + s.failed + i.delivered + i.failed + i.canceled > 0
+                    }
+                    _ => {
+                        tracing::warn!("Account mail delivery unavailable; jobs stay queued");
+                        true
+                    }
+                };
+                idle_secs = if busy { 2 } else { (idle_secs * 2).min(8) };
+                tokio::time::sleep(std::time::Duration::from_secs(idle_secs)).await;
             }
         });
     }
