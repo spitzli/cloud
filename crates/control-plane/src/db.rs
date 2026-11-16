@@ -111,6 +111,26 @@ impl RuntimePools {
     }
 }
 
+/// Preserve the previous bootstrap connection policy without framework initialization.
+pub async fn connect_bootstrap(
+    config: &crate::config::RuntimeConfig,
+) -> crate::runtime::Result<DatabaseConnection> {
+    let database = &config.database;
+    let mut options = ConnectOptions::new(database.uri.as_str());
+    options
+        .min_connections(database.min_connections)
+        .max_connections(database.max_connections)
+        .connect_timeout(database.connect_timeout)
+        .acquire_timeout(database.acquire_timeout)
+        .idle_timeout(database.idle_timeout)
+        .sqlx_logging(false);
+    let db = Database::connect(options)
+        .await
+        .map_err(|_| crate::runtime::Error::Message("Runtime database connection failed".into()))?;
+    require_runtime_role(&db, "webdock_auth_bootstrap").await?;
+    Ok(db)
+}
+
 #[cfg(test)]
 mod runtime_limits_tests {
     use super::RuntimeLimits;
@@ -130,24 +150,4 @@ mod runtime_limits_tests {
         assert_eq!((o.max_connections, o.min_connections), (3, 3));
         assert_eq!(o.acquire_timeout, Duration::from_secs(5));
     }
-}
-
-/// Preserve the previous bootstrap connection policy without framework initialization.
-pub async fn connect_bootstrap(
-    config: &crate::config::RuntimeConfig,
-) -> crate::runtime::Result<DatabaseConnection> {
-    let database = &config.database;
-    let mut options = ConnectOptions::new(database.uri.as_str());
-    options
-        .min_connections(database.min_connections)
-        .max_connections(database.max_connections)
-        .connect_timeout(database.connect_timeout)
-        .acquire_timeout(database.acquire_timeout)
-        .idle_timeout(database.idle_timeout)
-        .sqlx_logging(false);
-    let db = Database::connect(options)
-        .await
-        .map_err(|_| crate::runtime::Error::Message("Runtime database connection failed".into()))?;
-    require_runtime_role(&db, "webdock_auth_bootstrap").await?;
-    Ok(db)
 }
