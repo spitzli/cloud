@@ -170,8 +170,11 @@ impl UiAssets {
                 });
         let is_asset = decoded.starts_with("/assets/") || relative.extension().is_some();
         let result = if is_asset {
+            // Static bundles only (never API responses): serve build-time .br/.gz siblings when accepted.
             ServeDir::new(&self.dist)
                 .append_index_html_on_directories(false)
+                .precompressed_br()
+                .precompressed_gzip()
                 .oneshot(request)
                 .await
                 .map(|r| r.map(Body::new))
