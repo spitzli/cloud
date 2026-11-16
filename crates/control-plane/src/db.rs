@@ -37,16 +37,98 @@ pub async fn connect_runtime(
         spitzli_persistence::connection::ConnectionUrl::parse(url, production).map_err(|_| {
             crate::runtime::Error::Message("Invalid PostgreSQL connection policy".into())
         })?;
+    let limits = RuntimeLimits::from_env();
     let mut options = ConnectOptions::new(url.as_str());
     options
-        .max_connections(10)
-        .min_connections(1)
+        .max_connections(limits.max_connections)
+        .min_connections(limits.min_connections)
+        .acquire_timeout(limits.acquire_timeout)
+        .idle_timeout(limits.idle_timeout)
         .sqlx_logging(false);
     let db = Database::connect(options)
         .await
         .map_err(|_| crate::runtime::Error::Message("Runtime database connection failed".into()))?;
     require_runtime_role(&db, expected).await?;
     Ok(db)
+}
+
+/// Runtime pool limits; overridable per deployment without a rebuild.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct RuntimeLimits {
+    pub max_connections: u32,
+    pub min_connections: u32,
+    pub acquire_timeout: std::time::Duration,
+    pub idle_timeout: std::time::Duration,
+}
+
+impl RuntimeLimits {
+    pub fn from_env() -> Self {
+        Self::from_lookup(|key| std::env::var(key).ok())
+    }
+
+    fn from_lookup(get: impl Fn(&str) -> Option<String>) -> Self {
+        let num = |key: &str, default: u64| {
+            get(key)
+                .and_then(|v| v.trim().parse::<u64>().ok())
+                .unwrap_or(default)
+        };
+        let max = num("SPITZLI_RUNTIME_DB_MAX_CONNECTIONS", 20).clamp(1, 200) as u32;
+        Self {
+            max_connections: max,
+            min_connections: (num("SPITZLI_RUNTIME_DB_MIN_CONNECTIONS", 1) as u32).min(max),
+            acquire_timeout: std::time::Duration::from_secs(
+                num("SPITZLI_RUNTIME_DB_ACQUIRE_TIMEOUT_SECS", 5).clamp(1, 60),
+            ),
+            idle_timeout: std::time::Duration::from_secs(
+                num("SPITZLI_RUNTIME_DB_IDLE_TIMEOUT_SECS", 300).clamp(10, 3600),
+            ),
+        }
+    }
+}
+
+/// Shares one pool per (URL, role) across services instead of opening a pool per service.
+#[derive(Default)]
+pub struct RuntimePools {
+    pools: tokio::sync::Mutex<std::collections::HashMap<(String, String), DatabaseConnection>>,
+}
+
+impl RuntimePools {
+    pub async fn get(
+        &self,
+        url: &str,
+        expected: &str,
+        production: bool,
+    ) -> crate::runtime::Result<DatabaseConnection> {
+        let key = (url.to_owned(), expected.to_owned());
+        let mut pools = self.pools.lock().await;
+        if let Some(db) = pools.get(&key) {
+            return Ok(db.clone());
+        }
+        let db = connect_runtime(url, expected, production).await?;
+        pools.insert(key, db.clone());
+        Ok(db)
+    }
+}
+
+#[cfg(test)]
+mod runtime_limits_tests {
+    use super::RuntimeLimits;
+    use std::time::Duration;
+
+    #[test]
+    fn defaults_and_overrides() {
+        let d = RuntimeLimits::from_lookup(|_| None);
+        assert_eq!((d.max_connections, d.min_connections), (20, 1));
+        assert_eq!(d.acquire_timeout, Duration::from_secs(5));
+        let o = RuntimeLimits::from_lookup(|k| match k {
+            "SPITZLI_RUNTIME_DB_MAX_CONNECTIONS" => Some("3".into()),
+            "SPITZLI_RUNTIME_DB_MIN_CONNECTIONS" => Some("9".into()),
+            "SPITZLI_RUNTIME_DB_ACQUIRE_TIMEOUT_SECS" => Some("bad".into()),
+            _ => None,
+        });
+        assert_eq!((o.max_connections, o.min_connections), (3, 3));
+        assert_eq!(o.acquire_timeout, Duration::from_secs(5));
+    }
 }
 
 /// Preserve the previous bootstrap connection policy without framework initialization.

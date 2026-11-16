@@ -10,6 +10,7 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     let env = std::env::vars().collect();
     let config = runtime.platform.clone();
     let db = crate::db::connect_bootstrap(runtime).await?;
+    let runtime_pools = crate::db::RuntimePools::default();
     let auth_compatibility = AuthCompatibility::from_map(&env, &config)
         .map_err(|error| Error::Message(error.to_string()))?;
     let secret = std::env::var("SPITZLI_AUTH_SECRET")
@@ -198,9 +199,9 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     });
     let registry_url = std::env::var("SPITZLI_REGISTRY_DATABASE_URL")
         .map_err(|_| Error::Message("Missing SPITZLI_REGISTRY_DATABASE_URL".into()))?;
-    let registry_db =
-        crate::db::connect_runtime(&registry_url, "webdock_registry_runtime", config.production)
-            .await?;
+    let registry_db = runtime_pools
+        .get(&registry_url, "webdock_registry_runtime", config.production)
+        .await?;
     let rls_secret = std::env::var("DATABASE_RLS_SECRET")
         .map_err(|_| Error::Message("Missing DATABASE_RLS_SECRET".into()))?;
     let signer = spitzli_identity::RlsSigner::new(rls_secret.clone(), "webdock_registry_runtime")
@@ -342,8 +343,9 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
     let session_url = std::env::var("SPITZLI_SESSION_DATABASE_URL")
         .or_else(|_| std::env::var("DATABASE_URL"))
         .map_err(|_| Error::Message("Missing session database URL".into()))?;
-    let session_db =
-        crate::db::connect_runtime(&session_url, "webdock_auth_runtime", config.production).await?;
+    let session_db = runtime_pools
+        .get(&session_url, "webdock_auth_runtime", config.production)
+        .await?;
     // Existing Core/session database and retained platform encryption key only.
     let neon_connections = Some(std::sync::Arc::new(
         crate::neon_connections::NeonConnections::new(
@@ -409,12 +411,12 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         let environment_secret = std::env::var("SPITZLI_HOSTING_ENCRYPTION_KEY")
             .or_else(|_| std::env::var("BETTER_AUTH_SECRET"))
             .unwrap_or_else(|_| secret.clone());
-        let session_db =
-            crate::db::connect_runtime(&session_url, "webdock_auth_runtime", config.production)
-                .await?;
-        let worker_db =
-            crate::db::connect_runtime(&worker_url, "webdock_worker_runtime", config.production)
-                .await?;
+        let session_db = runtime_pools
+            .get(&session_url, "webdock_auth_runtime", config.production)
+            .await?;
+        let worker_db = runtime_pools
+            .get(&worker_url, "webdock_worker_runtime", config.production)
+            .await?;
         Some(std::sync::Arc::new(
             spitzli_hosting::HostingService::new(
                 session_db,
@@ -456,18 +458,12 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         Some(std::sync::Arc::new(
             crate::plugins::PluginEndpoints::initialize(
                 crate::plugins::PluginDependencies {
-                    business: crate::db::connect_runtime(
-                        &session_url,
-                        "webdock_auth_runtime",
-                        config.production,
-                    )
-                    .await?,
-                    worker: crate::db::connect_runtime(
-                        &worker_url,
-                        "webdock_worker_runtime",
-                        config.production,
-                    )
-                    .await?,
+                    business: runtime_pools
+                        .get(&session_url, "webdock_auth_runtime", config.production)
+                        .await?,
+                    worker: runtime_pools
+                        .get(&worker_url, "webdock_worker_runtime", config.production)
+                        .await?,
                     auth: db.clone(),
                     identity: identity.clone(),
                     browser: browser.clone(),
@@ -517,9 +513,11 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         let worker_url = std::env::var("SPITZLI_WORKER_DATABASE_URL")
             .map_err(|_| Error::Message("Missing SPITZLI_WORKER_DATABASE_URL".into()))?;
         let mut service = spitzli_build::BuildService::new_inventory(
-            crate::db::connect_runtime(&session_url, "webdock_auth_runtime", config.production)
+            runtime_pools
+                .get(&session_url, "webdock_auth_runtime", config.production)
                 .await?,
-            crate::db::connect_runtime(&worker_url, "webdock_worker_runtime", config.production)
+            runtime_pools
+                .get(&worker_url, "webdock_worker_runtime", config.production)
                 .await?,
             rls_secret.clone(),
             ids.clone(),
@@ -574,10 +572,12 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
         let gateway_secret = std::env::var("SPITZLI_DATABASE_GATEWAY_SECRET")
             .map_err(|_| Error::Message("Missing SPITZLI_DATABASE_GATEWAY_SECRET".into()))?;
         let service = spitzli_databases::DatabaseService::new(
-            crate::db::connect_runtime(&session_url, "webdock_auth_runtime", config.production)
+            runtime_pools
+                .get(&session_url, "webdock_auth_runtime", config.production)
                 .await?,
             db.clone(),
-            crate::db::connect_runtime(&worker_url, "webdock_worker_runtime", config.production)
+            runtime_pools
+                .get(&worker_url, "webdock_worker_runtime", config.production)
                 .await?,
             identity.clone(),
             browser.clone(),
@@ -618,18 +618,20 @@ pub async fn build_runtime(runtime: &RuntimeConfig) -> Result<Router> {
             |key: &str| std::env::var(key).map_err(|_| Error::Message(format!("Missing {key}")));
         let dependencies = spitzli_mail::MailDependencies {
             auth: db.clone(),
-            business: crate::db::connect_runtime(
-                &required("SPITZLI_SESSION_DATABASE_URL")?,
-                "webdock_auth_runtime",
-                config.production,
-            )
-            .await?,
-            worker: crate::db::connect_runtime(
-                &required("SPITZLI_WORKER_DATABASE_URL")?,
-                "webdock_worker_runtime",
-                config.production,
-            )
-            .await?,
+            business: runtime_pools
+                .get(
+                    &required("SPITZLI_SESSION_DATABASE_URL")?,
+                    "webdock_auth_runtime",
+                    config.production,
+                )
+                .await?,
+            worker: runtime_pools
+                .get(
+                    &required("SPITZLI_WORKER_DATABASE_URL")?,
+                    "webdock_worker_runtime",
+                    config.production,
+                )
+                .await?,
             identity: identity.clone(),
             browser: browser.clone(),
             ids: ids.clone(),
