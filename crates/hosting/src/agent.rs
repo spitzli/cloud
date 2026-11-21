@@ -61,6 +61,81 @@ impl HostingService {
             credential_hash: stored,
         })
     }
+    /// Combining identity lookups requires the same configured database authority.
+    pub fn require_transport_database(&self, db: &DatabaseConnection) -> Result<()> {
+        let source = self.auth.get_postgres_connection_pool().connect_options();
+        let target = db.get_postgres_connection_pool().connect_options();
+        if source.get_host() != target.get_host()
+            || source.get_port() != target.get_port()
+            || source.get_socket() != target.get_socket()
+            || source.get_database() != target.get_database()
+            || source.get_username() != target.get_username()
+        {
+            return Err(error(503, "Agent transport database authority differs."));
+        }
+        Ok(())
+    }
+    /// Backend-only: Core must verify transport extensions and listener binding, never metadata.
+    /// Reads enrollment and retained credentials in one current snapshot; never caches authority.
+    pub async fn authenticate_agent_transport(
+        &self,
+        installation: &str,
+        agent_id: &str,
+        generation: i32,
+        peer: &spitzli_agent_protocol::TransportIdentity,
+    ) -> Result<AgentIdentity> {
+        fn slug(value: &str, max: usize) -> bool {
+            !value.is_empty()
+                && value.len() <= max
+                && value.as_bytes()[0].is_ascii_lowercase()
+                && value
+                    .bytes()
+                    .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+        }
+        if !slug(installation, 24) || !slug(agent_id, 64) || generation <= 0 {
+            return Err(error(401, "Cluster authentication failed."));
+        }
+        let row = one(&self.auth,
+            "SELECT e.cluster_id,e.credential_hash AS enrollment_hash,a.credential_hash,e.transport,e.unix_uid,e.certificate_sha256 FROM webdock_auth.agent_transport_enrollment e JOIN webdock_auth.hosting_agent a ON a.cluster_id=e.cluster_id WHERE e.installation=$1 AND e.agent_id=$2 AND e.generation=$3 AND a.generation=e.generation AND NOT e.revoked AND NOT a.revoked",
+            vec![installation.into(), agent_id.into(), generation.into()],
+        ).await?.ok_or_else(|| error(401, "Cluster authentication failed."))?;
+        let cluster: String = row.try_get("", "cluster_id").map_err(db_error)?;
+        contracts::record_id(&cluster)?;
+        let transport: String = row.try_get("", "transport").map_err(db_error)?;
+        let bound = match peer {
+            spitzli_agent_protocol::TransportIdentity::Unix { uid, .. } => {
+                transport == "unix"
+                    && row
+                        .try_get::<Option<i64>>("", "unix_uid")
+                        .map_err(db_error)?
+                        == Some(i64::from(*uid))
+            }
+            spitzli_agent_protocol::TransportIdentity::MutualTls(cert) => {
+                transport == "mtls"
+                    && row
+                        .try_get::<Option<String>>("", "certificate_sha256")
+                        .map_err(db_error)?
+                        .as_deref()
+                        == Some(cert.sha256.as_str())
+            }
+        };
+        let enrollment: String = row.try_get("", "enrollment_hash").map_err(db_error)?;
+        let stored: String = row.try_get("", "credential_hash").map_err(db_error)?;
+        if !bound
+            || enrollment.len() != 64
+            || !enrollment
+                .bytes()
+                .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+            || !bool::from(stored.as_bytes().ct_eq(enrollment.as_bytes()))
+        {
+            return Err(error(401, "Cluster authentication failed."));
+        }
+        Ok(AgentIdentity {
+            cluster,
+            generation,
+            credential_hash: stored,
+        })
+    }
     pub(super) async fn verify_agent(
         tx: &DatabaseTransaction,
         agent: &AgentIdentity,

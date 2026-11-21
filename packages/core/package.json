@@ -21,7 +21,7 @@
   "dependencies": {
     "@spitzli/platform-db": "*",
     "drizzle-orm": "1.0.0-rc.4",
-    "zod": "4.6.5",
+    "zod": "4.6.6",
     "bullmq": "6.3.16",
     "ioredis": "6.0.0",
     "@spitzli/plugin-sdk": "*"

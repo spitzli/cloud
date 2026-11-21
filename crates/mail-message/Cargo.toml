@@ -7,7 +7,7 @@ license.workspace = true
 publish = false
 
 [dependencies]
-lettre = { version = "0.11.23", default-features = false }
+lettre = { version = "0.11.24", default-features = false }
 base64 = "0.22"
 chrono.workspace = true
 hex = "0.4"

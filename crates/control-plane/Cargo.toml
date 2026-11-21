@@ -9,7 +9,7 @@ default-run = "spitzli-control-plane"
 [dependencies]
 reqwest = { version = "0.12", default-features = false, features = ["json"] }
 spitzli-export-protocol={path="../export-protocol"}
-rmcp={version="=3.5.1",default-features=false,features=["server","transport-streamable-http-server"]}
+rmcp={version="=3.9.0",default-features=false,features=["server","transport-streamable-http-server"]}
 spitzli-build={path="../build"}
 spitzli-plugin-host={path="../plugin-host"}
 spitzli-plugin-protocol={path="../plugin-protocol"}

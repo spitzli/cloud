@@ -18,7 +18,7 @@
     "@spitzli/core": "*",
     "@spitzli/database-contracts": "*",
     "@spitzli/hosting-contracts": "*",
-    "zod": "4.6.5",
+    "zod": "4.6.6",
     "@spitzli/console-kit": "*",
     "@spitzli/i18n": "*",
     "@tabularis/web-ui": "file:../../vendor/tabularis-web-ui-fdd6c0a6-startup.tgz",

@@ -12,7 +12,7 @@
     "./capacity-totals": "./src/capacity-totals.ts"
   },
   "dependencies": {
-    "zod": "4.6.5",
+    "zod": "4.6.6",
     "@spitzli/i18n": "*",
     "@spitzli/adapter-hosting-vercel": "*",
     "@spitzli/database-runtime": "*"

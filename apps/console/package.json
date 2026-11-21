@@ -27,12 +27,12 @@
     "@spitzli/i18n": "*",
     "@spitzli/module-databases": "*",
     "buffer": "6.0.3",
-    "dompurify": "3.4.16",
+    "dompurify": "3.4.18",
     "qrcode.react": "4.2.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "tailwind-merge": "3.7.0",
-    "zod": "4.6.5"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",

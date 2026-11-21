@@ -172,6 +172,26 @@
     {
       "file": "0075_neon_database_attachments.sql",
       "sha256": "a8d23e3bbe46d96852f13311396376f2ca8350f590763aa4e3bd045e261733e7"
+    },
+    {
+      "file": "0076_waitlist_contact_budget.sql",
+      "sha256": "20e4991adc8a63f4811f46470b4bee84ec8bb2b3f4cf4da52af29ca3a6fca8de"
+    },
+    {
+      "file": "0077_legacy_plugin_adoption.sql",
+      "sha256": "693cdea1aeecbc4c576e8d7a648e4cbaa3dddb7ff05d408a2b0bb430a1a29350"
+    },
+    {
+      "file": "0078_native_cms_template_execution.sql",
+      "sha256": "f16ae3e39ad55d8b1d4bc2722bd56363208ebb8eb7a5ee2ef4ebec6e6bdda92d"
+    },
+    {
+      "file": "0079_native_cms_foundation.sql",
+      "sha256": "d3babee16b4a568812a2d39337026d69523240dbcb9513869e6a8e0adb2178b1"
+    },
+    {
+      "file": "0081_waitlist_budget_initialization.sql",
+      "sha256": "979a2179498e807660af03eaf434a24f8e7bea22d7bce8047e64ff2b9980b37d"
     }
   ]
 }

@@ -104,6 +104,171 @@ async fn real_transport_enrollment_generation_revocation_and_connectivity_heartb
         .await
         .unwrap(),
     );
+    let mut other_url = url::Url::parse(&std::env::var("AUTH_DATABASE_URL").unwrap()).unwrap();
+    other_url.set_path("/postgres");
+    let other_authority = Database::connect(other_url.as_str()).await.unwrap();
+    assert!(
+        ControlPlane::new(other_authority, hosting.clone(), None)
+            .await
+            .is_err(),
+        "atomic admission must not substitute a different configured enrollment database"
+    );
+    // Admission must read both live identities together, with no cached authority.
+    let peer = wire::TransportIdentity::Unix { uid, gid: 0 };
+    let statement_counts = std::env::var("WEBDOCK_TEST_AGENT_QUERY_STATS").as_deref() == Ok("true");
+    async fn authentication_calls(owner: &DatabaseConnection) -> i64 {
+        owner.query_one_raw(Statement::from_string(DbBackend::Postgres,
+            "SELECT coalesce(sum(calls),0)::bigint AS calls FROM public.pg_stat_statements WHERE userid='webdock_auth_bootstrap'::regrole AND dbid=(SELECT oid FROM pg_database WHERE datname=current_database())"))
+            .await.unwrap().unwrap().try_get("", "calls").unwrap()
+    }
+    let calls_before = if statement_counts {
+        Some(authentication_calls(&owner).await)
+    } else {
+        None
+    };
+    let admitted = hosting
+        .authenticate_agent_transport(&installation, "local-agent", 1, &peer)
+        .await
+        .unwrap();
+    assert_eq!(admitted.cluster_id(), cluster);
+    assert_eq!(admitted.generation(), 1);
+    if let Some(before) = calls_before {
+        assert_eq!(
+            authentication_calls(&owner).await - before,
+            1,
+            "current enrollment and retained identity require exactly one admission query"
+        );
+    }
+
+    for (installation_id, agent_id, generation, candidate) in [
+        ("missing".to_owned(), "local-agent", 1, peer.clone()),
+        (installation.clone(), "missing", 1, peer.clone()),
+        (installation.clone(), "local-agent", 2, peer.clone()),
+        (
+            installation.clone(),
+            "local-agent",
+            1,
+            wire::TransportIdentity::Unix {
+                uid: uid.wrapping_add(1),
+                gid: 0,
+            },
+        ),
+        (
+            installation.clone(),
+            "local-agent",
+            1,
+            wire::TransportIdentity::MutualTls(wire::CertificateIdentity {
+                sha256: "1".repeat(64),
+                not_before: 0,
+                not_after: u64::MAX,
+            }),
+        ),
+    ] {
+        assert!(
+            hosting
+                .authenticate_agent_transport(&installation_id, agent_id, generation, &candidate)
+                .await
+                .is_err()
+        );
+    }
+    execute(
+        &owner,
+        "UPDATE webdock_auth.hosting_agent SET revoked=true WHERE cluster_id=$1",
+        vec![cluster.clone().into()],
+    )
+    .await;
+    assert!(
+        hosting
+            .authenticate_agent_transport(&installation, "local-agent", 1, &peer)
+            .await
+            .is_err()
+    );
+    execute(
+        &owner,
+        "UPDATE webdock_auth.hosting_agent SET revoked=false,generation=2 WHERE cluster_id=$1",
+        vec![cluster.clone().into()],
+    )
+    .await;
+    assert!(
+        hosting
+            .authenticate_agent_transport(&installation, "local-agent", 1, &peer)
+            .await
+            .is_err()
+    );
+    execute(
+        &owner,
+        "UPDATE webdock_auth.hosting_agent SET generation=1 WHERE cluster_id=$1",
+        vec![cluster.clone().into()],
+    )
+    .await;
+    execute(
+        &owner,
+        "UPDATE webdock_auth.agent_transport_enrollment SET revoked=true WHERE installation=$1",
+        vec![installation.clone().into()],
+    )
+    .await;
+    assert!(
+        hosting
+            .authenticate_agent_transport(&installation, "local-agent", 1, &peer)
+            .await
+            .is_err()
+    );
+    execute(&owner, "UPDATE webdock_auth.agent_transport_enrollment SET revoked=false,credential_hash=repeat('f',64) WHERE installation=$1", vec![installation.clone().into()]).await;
+    assert!(
+        hosting
+            .authenticate_agent_transport(&installation, "local-agent", 1, &peer)
+            .await
+            .is_err()
+    );
+    execute(&owner, "UPDATE webdock_auth.agent_transport_enrollment e SET credential_hash=a.credential_hash FROM webdock_auth.hosting_agent a WHERE e.cluster_id=a.cluster_id AND e.installation=$1", vec![installation.clone().into()]).await;
+    assert!(
+        hosting
+            .authenticate_agent_transport(&installation, "local-agent", 1, &peer)
+            .await
+            .is_ok()
+    );
+    execute(
+        &owner,
+        "UPDATE webdock_auth.agent_transport_enrollment SET generation=2 WHERE installation=$1",
+        vec![installation.clone().into()],
+    )
+    .await;
+    assert!(
+        hosting
+            .authenticate_agent_transport(&installation, "local-agent", 2, &peer)
+            .await
+            .is_err()
+    );
+    execute(&owner, "UPDATE webdock_auth.agent_transport_enrollment SET generation=1,transport='mtls',unix_uid=NULL,certificate_sha256=repeat('1',64) WHERE installation=$1", vec![installation.clone().into()]).await;
+    let certificate = wire::TransportIdentity::MutualTls(wire::CertificateIdentity {
+        sha256: "1".repeat(64),
+        not_before: 0,
+        not_after: u64::MAX,
+    });
+    assert!(
+        hosting
+            .authenticate_agent_transport(&installation, "local-agent", 1, &certificate)
+            .await
+            .is_ok()
+    );
+    let wrong_certificate = wire::TransportIdentity::MutualTls(wire::CertificateIdentity {
+        sha256: "2".repeat(64),
+        not_before: 0,
+        not_after: u64::MAX,
+    });
+    assert!(
+        hosting
+            .authenticate_agent_transport(&installation, "local-agent", 1, &wrong_certificate)
+            .await
+            .is_err()
+    );
+    assert!(
+        hosting
+            .authenticate_agent_transport(&installation, "local-agent", 1, &peer)
+            .await
+            .is_err()
+    );
+    execute(&owner, "UPDATE webdock_auth.agent_transport_enrollment SET transport='unix',unix_uid=$2,certificate_sha256=NULL WHERE installation=$1", vec![installation.clone().into(),i64::from(uid).into()]).await;
     let control = ControlPlane::new(
         auth.clone(),
         hosting.clone(),

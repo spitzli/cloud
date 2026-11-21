@@ -17,11 +17,11 @@
     "@spitzli/mail-contracts": "*",
     "@spitzli/core": "*",
     "ipaddr.js": "2.3.0",
-    "zod": "4.6.5",
+    "zod": "4.6.6",
     "@spitzli/hosting-contracts": "*",
     "@spitzli/database-runtime": "*",
     "@spitzli/i18n": "*",
-    "dompurify": "^3.4.16"
+    "dompurify": "^3.4.18"
   },
   "peerDependencies": {
     "react": "^19",

@@ -199,6 +199,9 @@ impl ControlPlane {
         spitzli_persistence::connection::verify_runtime_role(&db, "webdock_auth_bootstrap")
             .await
             .map_err(|_| denied())?;
+        hosting
+            .require_transport_database(&db)
+            .map_err(hosting_error)?;
         if let Some(binding) = &local {
             validate_identity(&wire::AgentIdentity {
                 installation: binding.installation.clone(),
@@ -257,44 +260,17 @@ impl ControlPlane {
         {
             return Err(denied());
         }
-        let row=self.db.query_one_raw(Statement::from_sql_and_values(DbBackend::Postgres,
-            "SELECT e.cluster_id,e.credential_hash,e.transport,e.unix_uid,e.certificate_sha256 FROM webdock_auth.agent_transport_enrollment e WHERE e.installation=$1 AND e.agent_id=$2 AND e.generation=$3 AND NOT e.revoked",
-            [identity.installation.clone().into(),identity.agent_id.clone().into(),(identity.generation as i32).into()])).await.map_err(unavailable)?.ok_or_else(denied)?;
-        let transport: String = row.try_get("", "transport").map_err(unavailable)?;
-        match peer {
-            wire::TransportIdentity::Unix { uid, .. } => {
-                if transport != "unix"
-                    || row
-                        .try_get::<Option<i64>>("", "unix_uid")
-                        .map_err(unavailable)?
-                        != Some(i64::from(uid))
-                {
-                    return Err(denied());
-                }
-            }
-            wire::TransportIdentity::MutualTls(cert) => {
-                if transport != "mtls"
-                    || row
-                        .try_get::<Option<String>>("", "certificate_sha256")
-                        .map_err(unavailable)?
-                        .as_deref()
-                        != Some(cert.sha256.as_str())
-                {
-                    return Err(denied());
-                }
-            }
-        }
         self.hosting
-            .authenticate_enrolled_agent(
-                &row.try_get::<String>("", "cluster_id")
-                    .map_err(unavailable)?,
+            .authenticate_agent_transport(
+                &identity.installation,
+                &identity.agent_id,
                 identity.generation as i32,
-                &row.try_get::<String>("", "credential_hash")
-                    .map_err(unavailable)?,
+                &peer,
             )
             .await
             .map_err(hosting_error)
     }
+
     async fn prepared_wire(
         &self,
         agent: &AgentIdentity,
